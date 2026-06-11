@@ -19,6 +19,7 @@
         <module>islands</module>
         <module>items</module>
         <module>playerdata</module>
+        <module>collections</module>
     </modules>
 
     <properties>
