@@ -24,6 +24,7 @@
         <module>quests</module>
         <module>profiles</module>
         <module>minions</module>
+        <module>economy</module>
     </modules>
 
     <properties>
