@@ -42,6 +42,7 @@
         <module>bazaar</module>
         <module>foraging</module>
         <module>auction</module>
+        <module>accessories</module>
         <module>plugin</module>
     </modules>
 
