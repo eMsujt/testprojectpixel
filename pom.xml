@@ -37,6 +37,7 @@
         <module>stats</module>
         <module>events</module>
         <module>slayers</module>
+        <module>dungeons</module>
     </modules>
 
     <properties>
