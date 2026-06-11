@@ -33,6 +33,7 @@
         <module>enchanting</module>
         <module>mining</module>
         <module>island</module>
+        <module>scoreboard</module>
     </modules>
 
     <properties>
