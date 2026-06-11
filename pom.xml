@@ -32,6 +32,7 @@
         <module>npc</module>
         <module>enchanting</module>
         <module>mining</module>
+        <module>island</module>
     </modules>
 
     <properties>
