@@ -21,6 +21,7 @@
         <module>playerdata</module>
         <module>collections</module>
         <module>combat</module>
+        <module>quests</module>
     </modules>
 
     <properties>
