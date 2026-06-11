@@ -26,6 +26,7 @@
         <module>minions</module>
         <module>economy</module>
         <module>banking</module>
+        <module>farming</module>
     </modules>
 
     <properties>
