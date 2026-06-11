@@ -41,6 +41,7 @@
         <module>fishing</module>
         <module>bazaar</module>
         <module>foraging</module>
+        <module>auction</module>
         <module>plugin</module>
     </modules>
 
