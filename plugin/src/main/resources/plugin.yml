@@ -1,0 +1,20 @@
+name: SkyBlock
+version: 1.0.0
+main: com.skyblock.plugin.SkyBlockPlugin
+api-version: '26.1'
+description: Hypixel-SkyBlock-style remake for Paper
+authors: [SkyBlock Team]
+website: https://github.com/eMsujt/testprojectpixel
+load: POSTWORLD
+
+commands:
+  skyblock:
+    description: Root SkyBlock command.
+    usage: /<command> [help]
+    aliases: [sb]
+    permission: skyblock.command.skyblock
+
+permissions:
+  skyblock.command.skyblock:
+    description: Allows use of the /skyblock command.
+    default: true
