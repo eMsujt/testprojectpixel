@@ -29,6 +29,7 @@
         <module>slayer</module>
         <module>forging</module>
         <module>crafting</module>
+        <module>npc</module>
     </modules>
 
     <properties>
