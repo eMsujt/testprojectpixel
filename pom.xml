@@ -39,6 +39,7 @@
         <module>slayers</module>
         <module>dungeons</module>
         <module>fishing</module>
+        <module>bazaar</module>
         <module>plugin</module>
     </modules>
 
