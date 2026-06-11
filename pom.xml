@@ -39,6 +39,7 @@
         <module>slayers</module>
         <module>dungeons</module>
         <module>fishing</module>
+        <module>pets</module>
         <module>plugin</module>
     </modules>
 
