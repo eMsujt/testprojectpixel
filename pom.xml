@@ -40,6 +40,7 @@
         <module>dungeons</module>
         <module>fishing</module>
         <module>bazaar</module>
+        <module>foraging</module>
         <module>plugin</module>
     </modules>
 
