@@ -20,6 +20,7 @@
         <module>items</module>
         <module>playerdata</module>
         <module>collections</module>
+        <module>bazaar</module>
     </modules>
 
     <properties>
