@@ -38,6 +38,7 @@
         <module>events</module>
         <module>slayers</module>
         <module>dungeons</module>
+        <module>plugin</module>
     </modules>
 
     <properties>
