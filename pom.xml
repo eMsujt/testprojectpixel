@@ -15,6 +15,7 @@
     <modules>
         <module>api</module>
         <module>core</module>
+        <module>enchantments</module>
         <module>islands</module>
         <module>items</module>
         <module>playerdata</module>
