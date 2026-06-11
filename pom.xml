@@ -35,6 +35,7 @@
         <module>island</module>
         <module>scoreboard</module>
         <module>stats</module>
+        <module>bestiary</module>
     </modules>
 
     <properties>
