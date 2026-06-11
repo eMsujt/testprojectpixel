@@ -16,6 +16,7 @@
         <module>api</module>
         <module>core</module>
         <module>islands</module>
+        <module>items</module>
     </modules>
 
     <properties>
