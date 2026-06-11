@@ -36,6 +36,7 @@
         <module>scoreboard</module>
         <module>stats</module>
         <module>events</module>
+        <module>slayers</module>
     </modules>
 
     <properties>
