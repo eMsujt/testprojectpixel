@@ -25,6 +25,7 @@
         <module>profiles</module>
         <module>minions</module>
         <module>economy</module>
+        <module>fishing</module>
     </modules>
 
     <properties>
