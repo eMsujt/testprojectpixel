@@ -22,6 +22,7 @@
         <module>collections</module>
         <module>combat</module>
         <module>quests</module>
+        <module>profiles</module>
     </modules>
 
     <properties>
