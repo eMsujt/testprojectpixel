@@ -28,6 +28,7 @@
         <module>banking</module>
         <module>slayer</module>
         <module>forging</module>
+        <module>crafting</module>
     </modules>
 
     <properties>
