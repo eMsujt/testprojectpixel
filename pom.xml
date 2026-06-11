@@ -44,6 +44,7 @@
         <module>auction</module>
         <module>auctionhouse</module>
         <module>accessories</module>
+        <module>guilds</module>
         <module>plugin</module>
     </modules>
 
