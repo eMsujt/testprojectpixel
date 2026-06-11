@@ -23,6 +23,7 @@
         <module>combat</module>
         <module>quests</module>
         <module>profiles</module>
+        <module>skills</module>
     </modules>
 
     <properties>
