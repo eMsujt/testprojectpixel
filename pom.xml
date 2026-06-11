@@ -35,6 +35,7 @@
         <module>island</module>
         <module>scoreboard</module>
         <module>stats</module>
+        <module>events</module>
     </modules>
 
     <properties>
