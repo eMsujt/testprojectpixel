@@ -57,6 +57,7 @@
         <module>dungeon</module>
         <module>party</module>
         <module>museum</module>
+        <module>minion</module>
         <module>plugin</module>
     </modules>
 
