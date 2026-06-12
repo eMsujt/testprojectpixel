@@ -154,6 +154,10 @@ commands:
     description: View and manage Crimson Isle faction, reputation, and Kuudra keys.
     usage: /crimsonisle <faction [set <faction>]|reputation [add|remove <faction> <amt>]|kuudra [add|remove <tier> <amt>]>
     permission: skyblock.crimsonisle
+  kuudra:
+    description: View and manage Kuudra key counts and completion counts per tier.
+    usage: /kuudra <keys|completions> [add|remove <tier> <amount>]
+    permission: skyblock.kuudra
   backpack:
     description: Create and manage personal item backpacks.
     usage: /backpack <create <name>|delete <name>|list>
@@ -190,4 +194,7 @@ permissions:
     default: true
   skyblock.guild:
     description: Use the /guild command to create and manage guilds.
+    default: true
+  skyblock.kuudra:
+    description: Use the /kuudra command to view and manage Kuudra keys and completions.
     default: true
