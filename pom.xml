@@ -43,6 +43,7 @@
         <module>foraging</module>
         <module>auction</module>
         <module>auctionhouse</module>
+        <module>auctions</module>
         <module>accessories</module>
         <module>guilds</module>
         <module>fairysouls</module>
