@@ -136,6 +136,9 @@ commands:
     description: Manage your accessory bag and view stat bonuses.
     usage: /accessorybag <list|add|remove|bonuses>
     aliases: [abag]
+  essence:
+    description: View and manage your essence balances.
+    usage: /essence <balance [type]|add <type> <amount>|remove <type> <amount>>
 
 permissions:
   skyblock.warp:
