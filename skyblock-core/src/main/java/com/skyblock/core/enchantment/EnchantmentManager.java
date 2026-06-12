@@ -1,0 +1,242 @@
+package com.skyblock.core.enchantment;
+
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
+/**
+ * Singleton managing SkyBlock enchantments applied to player items.
+ *
+ * <p>Tracks which enchantments at which levels are active for each player.
+ * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ */
+public final class EnchantmentManager {
+
+    /** Every SkyBlock enchant type. */
+    public enum EnchantType {
+        // Combat
+        SHARPNESS,
+        CRITICAL,
+        SMITE,
+        BANE_OF_ARTHROPODS,
+        FIRST_STRIKE,
+        GIANT_KILLER,
+        ENDER_SLAYER,
+        DRAGON_HUNTER,
+        THUNDERLORD,
+        VAMPIRISM,
+        LIFE_STEAL,
+        LETHALITY,
+        EXECUTE,
+        PROSECUTE,
+        OVERLOAD,
+        // Utility / Special
+        TELEKINESIS,
+        LOOTING,
+        SMELTING_TOUCH,
+        MAGNET,
+        SILK_TOUCH,
+        // Fishing
+        LUCK_OF_THE_SEA,
+        ANGLER,
+        FRAIL,
+        EXPERTISE,
+        // Farming
+        CULTIVATING,
+        GREEN_THUMB,
+        DEDICATION,
+        REPLENISH,
+        HARVESTING,
+        TURBO_WHEAT,
+        TURBO_COCO,
+        TURBO_CACTUS,
+        TURBO_MELON,
+        TURBO_PUMPKIN,
+        TURBO_WARTS,
+        TURBO_MUSHROOMS,
+        TURBO_POTATO,
+        TURBO_CARROT,
+        TURBO_SUGAR_CANE,
+        // Mining / Tool
+        EFFICIENCY,
+        FORTUNE,
+        // Armor
+        PROTECTION,
+        THORNS,
+        GROWTH,
+        FEATHER_FALLING,
+        SUGAR_RUSH,
+        REJUVENATE,
+        // Misc
+        LUCK,
+        CHANCE,
+        ULTIMATE_WISE
+    }
+
+    /** Maximum level allowed per enchant type. */
+    private static final Map<EnchantType, Integer> MAX_LEVELS;
+
+    static {
+        MAX_LEVELS = new EnumMap<>(EnchantType.class);
+        MAX_LEVELS.put(EnchantType.SHARPNESS, 7);
+        MAX_LEVELS.put(EnchantType.CRITICAL, 7);
+        MAX_LEVELS.put(EnchantType.SMITE, 7);
+        MAX_LEVELS.put(EnchantType.BANE_OF_ARTHROPODS, 7);
+        MAX_LEVELS.put(EnchantType.FIRST_STRIKE, 4);
+        MAX_LEVELS.put(EnchantType.GIANT_KILLER, 7);
+        MAX_LEVELS.put(EnchantType.ENDER_SLAYER, 7);
+        MAX_LEVELS.put(EnchantType.DRAGON_HUNTER, 5);
+        MAX_LEVELS.put(EnchantType.THUNDERLORD, 7);
+        MAX_LEVELS.put(EnchantType.VAMPIRISM, 6);
+        MAX_LEVELS.put(EnchantType.LIFE_STEAL, 5);
+        MAX_LEVELS.put(EnchantType.LETHALITY, 6);
+        MAX_LEVELS.put(EnchantType.EXECUTE, 5);
+        MAX_LEVELS.put(EnchantType.PROSECUTE, 5);
+        MAX_LEVELS.put(EnchantType.OVERLOAD, 5);
+        MAX_LEVELS.put(EnchantType.TELEKINESIS, 1);
+        MAX_LEVELS.put(EnchantType.LOOTING, 4);
+        MAX_LEVELS.put(EnchantType.SMELTING_TOUCH, 1);
+        MAX_LEVELS.put(EnchantType.MAGNET, 1);
+        MAX_LEVELS.put(EnchantType.SILK_TOUCH, 1);
+        MAX_LEVELS.put(EnchantType.LUCK_OF_THE_SEA, 7);
+        MAX_LEVELS.put(EnchantType.ANGLER, 6);
+        MAX_LEVELS.put(EnchantType.FRAIL, 5);
+        MAX_LEVELS.put(EnchantType.EXPERTISE, 10);
+        MAX_LEVELS.put(EnchantType.CULTIVATING, 10);
+        MAX_LEVELS.put(EnchantType.GREEN_THUMB, 5);
+        MAX_LEVELS.put(EnchantType.DEDICATION, 4);
+        MAX_LEVELS.put(EnchantType.REPLENISH, 1);
+        MAX_LEVELS.put(EnchantType.HARVESTING, 6);
+        MAX_LEVELS.put(EnchantType.TURBO_WHEAT, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_COCO, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_CACTUS, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_MELON, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_PUMPKIN, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_WARTS, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_MUSHROOMS, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_POTATO, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_CARROT, 5);
+        MAX_LEVELS.put(EnchantType.TURBO_SUGAR_CANE, 5);
+        MAX_LEVELS.put(EnchantType.EFFICIENCY, 5);
+        MAX_LEVELS.put(EnchantType.FORTUNE, 4);
+        MAX_LEVELS.put(EnchantType.PROTECTION, 7);
+        MAX_LEVELS.put(EnchantType.THORNS, 3);
+        MAX_LEVELS.put(EnchantType.GROWTH, 7);
+        MAX_LEVELS.put(EnchantType.FEATHER_FALLING, 7);
+        MAX_LEVELS.put(EnchantType.SUGAR_RUSH, 3);
+        MAX_LEVELS.put(EnchantType.REJUVENATE, 5);
+        MAX_LEVELS.put(EnchantType.LUCK, 7);
+        MAX_LEVELS.put(EnchantType.CHANCE, 5);
+        MAX_LEVELS.put(EnchantType.ULTIMATE_WISE, 5);
+    }
+
+    private static final EnchantmentManager INSTANCE = new EnchantmentManager();
+
+    /** Per-player enchantment levels; absent entries mean the enchantment is not applied. */
+    private final Map<UUID, Map<EnchantType, Integer>> playerEnchantments = new HashMap<>();
+
+    private EnchantmentManager() {
+    }
+
+    /**
+     * Returns the single shared {@code EnchantmentManager} instance.
+     *
+     * @return the singleton instance
+     */
+    public static EnchantmentManager getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Returns the level of the given enchant type for the given player, or
+     * {@code 0} if the enchantment is not applied.
+     *
+     * @param playerId the player to look up
+     * @param type     the enchant type to query
+     * @return the enchantment level, or {@code 0}
+     */
+    public int getLevel(UUID playerId, EnchantType type) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        return enchants == null ? 0 : enchants.getOrDefault(type, 0);
+    }
+
+    /**
+     * Applies an enchant type at the given level to the player.
+     *
+     * @param playerId the player to update
+     * @param type     the enchant type to apply
+     * @param level    the level to set; must be between 1 and the enchantment's max level
+     * @throws IllegalArgumentException if the level is out of range
+     */
+    public void setEnchantment(UUID playerId, EnchantType type, int level) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        int max = MAX_LEVELS.getOrDefault(type, 1);
+        if (level < 1 || level > max) {
+            throw new IllegalArgumentException(
+                    "Level " + level + " out of range [1, " + max + "] for " + type);
+        }
+        playerEnchantments.computeIfAbsent(playerId, id -> new EnumMap<>(EnchantType.class))
+                .put(type, level);
+    }
+
+    /**
+     * Removes an enchant type from the player.
+     *
+     * @param playerId the player to update
+     * @param type     the enchant type to remove
+     * @return {@code true} if the enchantment was present, {@code false} otherwise
+     */
+    public boolean removeEnchantment(UUID playerId, EnchantType type) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        if (enchants == null) {
+            return false;
+        }
+        boolean removed = enchants.remove(type) != null;
+        if (enchants.isEmpty()) {
+            playerEnchantments.remove(playerId);
+        }
+        return removed;
+    }
+
+    /**
+     * Returns an unmodifiable view of all enchantments currently applied to the player.
+     *
+     * @param playerId the player to look up
+     * @return a map of enchant type to level; empty if the player has none
+     */
+    public Map<EnchantType, Integer> getEnchantments(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        return enchants == null ? Collections.emptyMap() : Collections.unmodifiableMap(enchants);
+    }
+
+    /**
+     * Returns the maximum allowed level for the given enchant type.
+     *
+     * @param type the enchant type to query
+     * @return the maximum level
+     */
+    public int getMaxLevel(EnchantType type) {
+        Objects.requireNonNull(type, "type");
+        return MAX_LEVELS.getOrDefault(type, 1);
+    }
+
+    /**
+     * Removes all enchantment data for the given player.
+     *
+     * @param playerId the player to remove
+     * @return {@code true} if the player had data, {@code false} otherwise
+     */
+    public boolean remove(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return playerEnchantments.remove(playerId) != null;
+    }
+}
