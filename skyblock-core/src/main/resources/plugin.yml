@@ -56,3 +56,6 @@ commands:
     description: View your collection progress.
     usage: /collection [name]
     aliases: [col]
+  quest:
+    description: Manage your SkyBlock quests.
+    usage: /quest [list|start|status|reset]

@@ -20,6 +20,7 @@ import com.skyblock.core.command.LeaderboardCommand;
 import com.skyblock.core.command.PetsCommand;
 import com.skyblock.core.command.ShopCommand;
 import com.skyblock.core.command.SkyBlockMenuCommand;
+import com.skyblock.core.command.QuestCommand;
 import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.crafting.SkyBlockRecipeManager;
@@ -103,6 +104,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("pets").setExecutor(new PetsCommand(petManager));
         ProfileManager.getInstance();
         QuestManager.getInstance();
+        com.skyblock.core.quest.QuestManager.getInstance();
+        getCommand("quest").setExecutor(new QuestCommand(QuestManager.getInstance()));
         ScoreboardManager.getInstance();
         ShopManager shopManager = ShopManager.getInstance();
         SkyBlockRecipeManager.getInstance();
