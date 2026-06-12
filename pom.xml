@@ -72,6 +72,7 @@
         <module>pets</module>
         <module>farming</module>
         <module>guild</module>
+        <module>auction_house</module>
         <module>plugin</module>
     </modules>
 
