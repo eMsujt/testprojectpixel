@@ -44,6 +44,7 @@ import com.skyblock.core.economy.EconomyManager;
 import com.skyblock.core.enchant.EnchantCommand;
 import com.skyblock.core.enchant.EnchantmentCommand;
 import com.skyblock.core.enchant.EnchantmentListener;
+import com.skyblock.core.enchant.SkyBlockEnchantListener;
 import com.skyblock.core.enchant.SkyBlockEnchantFacade;
 import com.skyblock.core.enchant.SkyBlockEnchantManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
@@ -62,6 +63,7 @@ import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.pets.PetManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.npc.NPCListener;
+import com.skyblock.core.npc.NPCManager;
 import com.skyblock.core.npc.NpcCommand;
 import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.quest.QuestCommand;
@@ -289,6 +291,14 @@ public final class SkyBlockPlugin extends JavaPlugin {
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
+
+        com.skyblock.core.enchantment.EnchantmentManager.getInstance();
+        com.skyblock.core.enchant.EnchantmentManager.getInstance();
+        com.skyblock.core.enchanting.EnchantmentManager.getInstance();
+        com.skyblock.core.collections.CollectionManager.getInstance();
+        com.skyblock.core.quests.QuestManager.getInstance();
+        NPCManager.getInstance();
+        getServer().getPluginManager().registerEvents(new SkyBlockEnchantListener(SkyBlockEnchantManager.getInstance()), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
