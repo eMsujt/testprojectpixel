@@ -99,8 +99,14 @@ public final class IslandCommand implements TabExecutor {
             player.sendMessage("You do not have an island. Use /island create to make one.");
             return;
         }
-        player.sendMessage("Teleporting to your island...");
-        // Teleport logic would go here once world generation is in place.
+        UUID ownerUuid = island.get().getOwner();
+        islandManager.getIslandWorld(ownerUuid).ifPresentOrElse(
+                world -> {
+                    player.sendMessage("Teleporting to your island...");
+                    player.teleport(world.getSpawnLocation());
+                },
+                () -> player.sendMessage("Your island world is not loaded.")
+        );
     }
 
     private void handleVisit(Player player, String[] args) {
@@ -121,8 +127,13 @@ public final class IslandCommand implements TabExecutor {
             player.sendMessage(target.getName() + " does not have an island.");
             return;
         }
-        player.sendMessage("Visiting " + target.getName() + "'s island...");
-        // Teleport logic would go here once world generation is in place.
+        islandManager.getIslandWorld(target.getUniqueId()).ifPresentOrElse(
+                world -> {
+                    player.sendMessage("Visiting " + target.getName() + "'s island...");
+                    player.teleport(world.getSpawnLocation());
+                },
+                () -> player.sendMessage(target.getName() + "'s island world is not loaded.")
+        );
     }
 
     private void handleInvite(Player player, String[] args) {
