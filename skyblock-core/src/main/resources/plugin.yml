@@ -22,6 +22,7 @@ commands:
   skill:
     description: View your SkyBlock skill levels and XP.
     usage: /skill [skill]
+    permission: skyblock.skill
   auction:
     description: Open the Auction House.
     usage: /auction [create|view|cancel]
@@ -38,6 +39,7 @@ commands:
   slay:
     description: Manage your slayer quests.
     usage: /slay [type|start|info]
+    permission: skyblock.slayer
   pets:
     description: Manage your pets.
     usage: /pets [equip|unequip|list]
@@ -50,6 +52,7 @@ commands:
   warp:
     description: Teleport to a named warp point.
     usage: /warp [name|set <name>|delete <name>]
+    permission: skyblock.warp
   shop:
     description: Browse and purchase items from the SkyBlock shop.
     usage: /shop [category|buy <category> <item>]
@@ -76,6 +79,7 @@ commands:
     description: View your collection progress.
     usage: /collection [name]
     aliases: [col]
+    permission: skyblock.collection
   npc:
     description: Interact with NPCs and their shops.
     usage: /npc <list|shop <npc>|buy <npc> <item>>
@@ -132,3 +136,20 @@ commands:
     description: Manage your accessory bag and view stat bonuses.
     usage: /accessorybag <list|add|remove|bonuses>
     aliases: [abag]
+
+permissions:
+  skyblock.warp:
+    description: Use the /warp command to teleport to warp points.
+    default: true
+  skyblock.warp.set:
+    description: Create and delete warp points via /warp set and /warp delete.
+    default: op
+  skyblock.collection:
+    description: Use the /collection command to view collection progress.
+    default: true
+  skyblock.skill:
+    description: Use the /skill command to view skill levels and XP.
+    default: true
+  skyblock.slayer:
+    description: Use the /slay command to manage slayer quests.
+    default: true
