@@ -5,15 +5,30 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Tracks which {@link SkyBlockEvent}s are currently active.
+ * Singleton tracking which {@link SkyBlockEvent}s are currently active.
  *
  * <p>Events are started and stopped explicitly; the manager keeps the set of
- * active events and answers queries about them. Not thread-safe; synchronize
- * externally if accessed from multiple threads.</p>
+ * active events and answers queries about them. Access the shared instance
+ * via {@link #getInstance()}. Not thread-safe; synchronize externally if
+ * accessed from multiple threads.</p>
  */
 public final class EventManager {
 
+    private static final EventManager INSTANCE = new EventManager();
+
     private final Set<SkyBlockEvent> activeEvents = EnumSet.noneOf(SkyBlockEvent.class);
+
+    private EventManager() {
+    }
+
+    /**
+     * Returns the shared manager instance.
+     *
+     * @return the singleton {@code EventManager}
+     */
+    public static EventManager getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * Starts an event, marking it as active.
