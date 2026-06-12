@@ -1,0 +1,80 @@
+mobs:
+  zombie_soldier:
+    displayName: "Zombie Soldier"
+    entityType: ZOMBIE
+    health: 100.0
+    damage: 15.0
+    xpReward: 20
+    coinReward: 10
+
+  skeleton_archer:
+    displayName: "Skeleton Archer"
+    entityType: SKELETON
+    health: 80.0
+    damage: 20.0
+    xpReward: 25
+    coinReward: 12
+
+  spider_jockey:
+    displayName: "Spider Jockey"
+    entityType: SPIDER
+    health: 120.0
+    damage: 18.0
+    xpReward: 30
+    coinReward: 15
+
+  cave_spider:
+    displayName: "Cave Spider"
+    entityType: CAVE_SPIDER
+    health: 60.0
+    damage: 12.0
+    xpReward: 15
+    coinReward: 8
+
+  blaze_warrior:
+    displayName: "Blaze Warrior"
+    entityType: BLAZE
+    health: 200.0
+    damage: 35.0
+    xpReward: 50
+    coinReward: 25
+
+  enderman_elite:
+    displayName: "Enderman Elite"
+    entityType: ENDERMAN
+    health: 300.0
+    damage: 45.0
+    xpReward: 75
+    coinReward: 40
+
+  creeper_bomber:
+    displayName: "Creeper Bomber"
+    entityType: CREEPER
+    health: 50.0
+    damage: 60.0
+    xpReward: 35
+    coinReward: 20
+
+  witch_hexer:
+    displayName: "Witch Hexer"
+    entityType: WITCH
+    health: 150.0
+    damage: 25.0
+    xpReward: 45
+    coinReward: 30
+
+  guardian_watcher:
+    displayName: "Guardian Watcher"
+    entityType: GUARDIAN
+    health: 250.0
+    damage: 40.0
+    xpReward: 60
+    coinReward: 35
+
+  wither_skeleton:
+    displayName: "Wither Skeleton"
+    entityType: WITHER_SKELETON
+    health: 350.0
+    damage: 55.0
+    xpReward: 90
+    coinReward: 50
