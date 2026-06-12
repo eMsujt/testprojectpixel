@@ -25,6 +25,9 @@ bazaar:
 economy:
   starting-balance: 500.0
   max-balance: 1000000000.0
+  coin-gain-multiplier: 1.0       # global multiplier for all coin rewards
+  sell-price-multiplier: 1.0      # multiplier applied to NPC sell prices
+  drop-coin-multiplier: 1.0       # multiplier for coins dropped by mobs
 
 bank:
   interest-rate: 0.0         # daily interest rate (0 = disabled)
@@ -38,7 +41,19 @@ daily-reward:
 # ─── Skills ───────────────────────────────────────────────────────────────────
 skills:
   max-level: 60
-  xp-multiplier: 1.0
+  xp-multiplier: 1.0             # global multiplier applied on top of per-skill rates
+  xp-rates:
+    farming: 1.0
+    mining: 1.0
+    combat: 1.0
+    foraging: 1.0
+    fishing: 1.0
+    enchanting: 1.0
+    alchemy: 1.0
+    taming: 1.0
+    carpentry: 1.0
+    runecrafting: 1.0
+    social: 1.0
 
 # ─── Collections ──────────────────────────────────────────────────────────────
 collections:
@@ -48,6 +63,11 @@ collections:
 slayer:
   max-tier: 4
   cost-multiplier: 1.0       # scales the coin cost to start a quest
+  xp-multiplier: 1.0         # global multiplier for slayer XP rewards
+  boss:
+    heal-percent: 0.1        # fraction of max HP the boss heals each interval (0.1 = 10%)
+    heal-interval-ticks: 100 # ticks between boss self-heal pulses
+    despawn-on-quit: true    # despawn boss when the quest owner disconnects
 
 # ─── Dungeons ─────────────────────────────────────────────────────────────────
 dungeons:
