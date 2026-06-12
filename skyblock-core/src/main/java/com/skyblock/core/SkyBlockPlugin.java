@@ -80,6 +80,8 @@ import com.skyblock.core.mining.MiningListener;
 import com.skyblock.core.mining.MiningManager;
 import com.skyblock.core.farming.FarmingListener;
 import com.skyblock.core.farming.FarmingManager;
+import com.skyblock.core.mob.CustomMobListener;
+import com.skyblock.core.mob.CustomMobManager;
 import com.skyblock.core.mob.MobLootListener;
 import com.skyblock.core.mob.MobLootManager;
 import com.skyblock.core.mob.MobManager;
@@ -229,6 +231,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EnchantmentListener(SkyBlockEnchantManager.getInstance()), this);
         MobLootManager mobLootManager = MobLootManager.getInstance();
         getServer().getPluginManager().registerEvents(new MobLootListener(mobLootManager), this);
+        CustomMobManager customMobManager = CustomMobManager.getInstance();
+        getServer().getPluginManager().registerEvents(new CustomMobListener(customMobManager), this);
         ArmorSetManager armorSetManager = ArmorSetManager.getInstance();
         getServer().getPluginManager().registerEvents(new ArmorSetListener(armorSetManager), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.talisman.TalismanListener(talismanManager), this);
