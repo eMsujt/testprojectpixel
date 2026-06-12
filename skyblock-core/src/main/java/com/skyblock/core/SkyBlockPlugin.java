@@ -50,7 +50,8 @@ import com.skyblock.core.storage.YamlPlayerStorage;
 import com.skyblock.core.warps.WarpManager;
 import com.skyblock.farming.FarmingManager;
 import com.skyblock.foraging.ForagingManager;
-import com.skyblock.mining.MiningManager;
+import com.skyblock.core.mining.MiningListener;
+import com.skyblock.core.mining.MiningManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -131,8 +132,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("warp").setExecutor(new WarpCommand(warpManager));
         getCommand("shop").setExecutor(new ShopCommand(shopManager, economyManager));
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(leaderboardManager));
+        getServer().getPluginManager().registerEvents(new MiningListener(miningManager), this);
         getServer().getPluginManager().registerEvents(
-                new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
+                new SkyBlockEventListener(farmingManager, foragingManager), this);
         getServer().getPluginManager().registerEvents(new AlchemyListener(alchemyManager), this);
         getServer().getPluginManager().registerEvents(new CombatListener(CombatManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
