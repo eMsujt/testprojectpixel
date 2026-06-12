@@ -1,5 +1,7 @@
 package com.skyblock.foraging;
 
+import org.bukkit.Material;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -12,6 +14,29 @@ import java.util.UUID;
  * synchronize externally if accessed from multiple threads.</p>
  */
 public final class ForagingManager {
+
+    public static final Map<Material, Integer> WOOD_XP_MAP;
+
+    static {
+        Map<Material, Integer> map = new HashMap<>();
+        map.put(Material.OAK_LOG,                6);
+        map.put(Material.BIRCH_LOG,              6);
+        map.put(Material.SPRUCE_LOG,             6);
+        map.put(Material.JUNGLE_LOG,             6);
+        map.put(Material.ACACIA_LOG,             6);
+        map.put(Material.DARK_OAK_LOG,           6);
+        map.put(Material.MANGROVE_LOG,           6);
+        map.put(Material.CHERRY_LOG,             6);
+        map.put(Material.STRIPPED_OAK_LOG,       6);
+        map.put(Material.STRIPPED_BIRCH_LOG,     6);
+        map.put(Material.STRIPPED_SPRUCE_LOG,    6);
+        map.put(Material.STRIPPED_JUNGLE_LOG,    6);
+        map.put(Material.STRIPPED_ACACIA_LOG,    6);
+        map.put(Material.STRIPPED_DARK_OAK_LOG,  6);
+        map.put(Material.STRIPPED_MANGROVE_LOG,  6);
+        map.put(Material.STRIPPED_CHERRY_LOG,    6);
+        WOOD_XP_MAP = Map.copyOf(map);
+    }
 
     private final Map<UUID, Integer> logsChopped = new HashMap<>();
     private final Map<UUID, Double> experience = new HashMap<>();
