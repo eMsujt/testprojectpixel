@@ -40,6 +40,7 @@ import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.forge.ForgeManager;
 import com.skyblock.core.listener.CoreListeners;
 import com.skyblock.core.magic.FairySoulManager;
+import com.skyblock.core.menu.MenuListener;
 import com.skyblock.core.menu.MenuManager;
 import com.skyblock.core.minion.MinionCommand;
 import com.skyblock.core.minion.MinionManager;
@@ -171,7 +172,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AlchemyListener(alchemyManager), this);
         getServer().getPluginManager().registerEvents(new CombatListener(CombatManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
-        getServer().getPluginManager().registerEvents(MenuManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(new MenuListener(MenuManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new CoreListeners(playerDataManager), this);
         CombatStatsManager combatStatsManager = CombatStatsManager.getInstance();
         getServer().getPluginManager().registerEvents(new CombatStatsListener(combatStatsManager), this);
