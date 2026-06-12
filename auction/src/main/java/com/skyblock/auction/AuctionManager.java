@@ -11,47 +11,51 @@ import java.util.UUID;
  * other players outbid each other, and ending the auction settles it with the
  * highest bidder.
  *
- * <p>Auctions are identified by an id assigned on creation. Not thread-safe;
+ * <p>Auctions are identified by a UUID assigned on creation. Not thread-safe;
  * synchronize externally if accessed from multiple threads.</p>
  */
 public final class AuctionManager {
 
     /** A single active auction house listing. */
-    private static final class Listing {
-        final UUID seller;
-        final String itemName;
-        double highestBid;
-        UUID highestBidder;
+    public static final class AuctionListing {
+        private final UUID seller;
+        private final String itemName;
+        private double highestBid;
+        private UUID highestBidder;
 
-        Listing(UUID seller, String itemName, double startingBid) {
+        AuctionListing(UUID seller, String itemName, double startingBid) {
             this.seller = seller;
             this.itemName = itemName;
             this.highestBid = startingBid;
         }
+
+        public UUID getSeller() { return seller; }
+        public String getItemName() { return itemName; }
+        public double getHighestBid() { return highestBid; }
+        public UUID getHighestBidder() { return highestBidder; }
     }
 
-    private final Map<Long, Listing> listings = new HashMap<>();
-    private long nextAuctionId = 1;
+    private final Map<UUID, AuctionListing> listings = new HashMap<>();
 
     /**
      * Creates a new auction for the given item.
      *
-     * @param seller      the selling player's UUID, must not be null
+     * @param player      the selling player's UUID, must not be null
      * @param itemName    the name of the auctioned item, must not be null
      * @param startingBid the minimum first bid, must not be negative
-     * @return the id of the newly created auction
-     * @throws IllegalArgumentException if {@code seller} or {@code itemName} is
+     * @return the UUID of the newly created auction
+     * @throws IllegalArgumentException if {@code player} or {@code itemName} is
      *                                  null, or {@code startingBid} is negative
      */
-    public long createAuction(UUID seller, String itemName, double startingBid) {
-        if (seller == null || itemName == null) {
-            throw new IllegalArgumentException("seller and itemName must not be null");
+    public UUID createListing(UUID player, String itemName, double startingBid) {
+        if (player == null || itemName == null) {
+            throw new IllegalArgumentException("player and itemName must not be null");
         }
         if (startingBid < 0) {
             throw new IllegalArgumentException("startingBid must not be negative: " + startingBid);
         }
-        long auctionId = nextAuctionId++;
-        listings.put(auctionId, new Listing(seller, itemName, startingBid));
+        UUID auctionId = UUID.randomUUID();
+        listings.put(auctionId, new AuctionListing(player, itemName, startingBid));
         return auctionId;
     }
 
@@ -59,15 +63,15 @@ public final class AuctionManager {
      * Places a bid on an active auction. The first bid must meet the starting
      * bid; later bids must strictly exceed the current highest bid.
      *
-     * @param auctionId the auction id
+     * @param auctionId the auction UUID
      * @param bidder    the bidding player's UUID, must not be null
      * @param amount    the bid amount
      * @throws IllegalArgumentException if the auction does not exist, the
      *                                  bidder is null or the seller, or the
      *                                  amount is too low
      */
-    public void placeBid(long auctionId, UUID bidder, double amount) {
-        Listing listing = requireListing(auctionId);
+    public void placeBid(UUID auctionId, UUID bidder, double amount) {
+        AuctionListing listing = requireListing(auctionId);
         if (bidder == null) {
             throw new IllegalArgumentException("bidder must not be null");
         }
@@ -88,66 +92,33 @@ public final class AuctionManager {
     /**
      * Returns whether an auction with the given id is currently active.
      *
-     * @param auctionId the auction id
+     * @param auctionId the auction UUID
      * @return {@code true} if the auction exists and has not ended
      */
-    public boolean isActive(long auctionId) {
+    public boolean isActive(UUID auctionId) {
         return listings.containsKey(auctionId);
     }
 
     /**
-     * Returns the seller of an active auction.
+     * Returns the listing for an active auction.
      *
-     * @param auctionId the auction id
-     * @return the selling player's UUID
+     * @param auctionId the auction UUID
+     * @return the {@link AuctionListing}, never null
      * @throws IllegalArgumentException if the auction does not exist
      */
-    public UUID getSeller(long auctionId) {
-        return requireListing(auctionId).seller;
-    }
-
-    /**
-     * Returns the name of the item being auctioned.
-     *
-     * @param auctionId the auction id
-     * @return the auctioned item's name
-     * @throws IllegalArgumentException if the auction does not exist
-     */
-    public String getItemName(long auctionId) {
-        return requireListing(auctionId).itemName;
-    }
-
-    /**
-     * Returns the current highest bid, or the starting bid if no one has bid.
-     *
-     * @param auctionId the auction id
-     * @return the current highest bid
-     * @throws IllegalArgumentException if the auction does not exist
-     */
-    public double getHighestBid(long auctionId) {
-        return requireListing(auctionId).highestBid;
-    }
-
-    /**
-     * Returns the current highest bidder.
-     *
-     * @param auctionId the auction id
-     * @return the highest bidder's UUID, or null if no one has bid
-     * @throws IllegalArgumentException if the auction does not exist
-     */
-    public UUID getHighestBidder(long auctionId) {
-        return requireListing(auctionId).highestBidder;
+    public AuctionListing getListing(UUID auctionId) {
+        return requireListing(auctionId);
     }
 
     /**
      * Ends an auction, removing it from the active listings.
      *
-     * @param auctionId the auction id
+     * @param auctionId the auction UUID
      * @return the winning bidder's UUID, or null if no one bid
      * @throws IllegalArgumentException if the auction does not exist
      */
-    public UUID endAuction(long auctionId) {
-        Listing listing = listings.remove(auctionId);
+    public UUID endAuction(UUID auctionId) {
+        AuctionListing listing = listings.remove(auctionId);
         if (listing == null) {
             throw new IllegalArgumentException("no active auction with id: " + auctionId);
         }
@@ -159,12 +130,12 @@ public final class AuctionManager {
      *
      * @return an unmodifiable view of the active auction ids
      */
-    public Set<Long> getActiveAuctions() {
+    public Set<UUID> getActiveAuctions() {
         return Collections.unmodifiableSet(listings.keySet());
     }
 
-    private Listing requireListing(long auctionId) {
-        Listing listing = listings.get(auctionId);
+    private AuctionListing requireListing(UUID auctionId) {
+        AuctionListing listing = listings.get(auctionId);
         if (listing == null) {
             throw new IllegalArgumentException("no active auction with id: " + auctionId);
         }
