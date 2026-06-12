@@ -1,0 +1,5 @@
+name: SkyBlock
+main: com.skyblock.core.SkyBlockPlugin
+api-version: '1.21'
+version: 1.0.0-SNAPSHOT
+description: SkyBlock plugin
