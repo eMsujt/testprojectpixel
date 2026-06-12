@@ -10,17 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Handles the {@code /slay} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /slay info}              — show XP and level for all slayer types</li>
- *   <li>{@code /slay start <type>}      — start a Tier-1 quest for the given type</li>
- *   <li>{@code /slay type <type>}       — show XP and level for a single slayer type</li>
- * </ul>
- * </p>
- */
 public final class SlayerCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("info", "start", "type");
