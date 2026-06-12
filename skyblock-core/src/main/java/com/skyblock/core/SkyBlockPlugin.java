@@ -65,6 +65,8 @@ import com.skyblock.core.skill.SkillCommand;
 import com.skyblock.core.skills.SkillManager;
 import com.skyblock.core.stats.CombatStatsListener;
 import com.skyblock.core.stats.CombatStatsManager;
+import com.skyblock.core.storage.StorageCommand;
+import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.YamlPlayerStorage;
 import com.skyblock.core.talisman.TalismanCommand;
 import com.skyblock.core.talisman.TalismanManager;
@@ -176,6 +178,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WarpManager.getInstance();
         FishingManager fishingManager = FishingManager.getInstance();
         YamlPlayerStorage.getInstance();
+        StorageManager storageManager = StorageManager.getInstance();
+        StorageCommand storageCommand = new StorageCommand(storageManager);
+        getCommand("storage").setExecutor(storageCommand);
+        getCommand("storage").setTabCompleter(storageCommand);
 
         IslandManager.getInstance();
         getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));
