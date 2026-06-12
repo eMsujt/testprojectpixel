@@ -1,5 +1,6 @@
 package com.skyblock.core;
 
+import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.island.IslandCommand;
 import com.skyblock.core.island.IslandManager;
@@ -7,6 +8,7 @@ import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionManager;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.combat.StatManager;
+import com.skyblock.core.command.LeaderboardCommand;
 import com.skyblock.core.command.ShopCommand;
 import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.SkillsCommand;
@@ -90,6 +92,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         warpManager.load(new java.io.File(getDataFolder(), "warps.yml"));
         getCommand("warp").setExecutor(new WarpCommand(warpManager));
         getCommand("shop").setExecutor(new ShopCommand(ShopManager.getInstance(), EconomyManager.getInstance()));
+        getCommand("leaderboard").setExecutor(new LeaderboardCommand(LeaderboardManager.getInstance()));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
         getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);
