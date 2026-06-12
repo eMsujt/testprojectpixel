@@ -3,3 +3,29 @@ main: com.skyblock.core.SkyBlockPlugin
 api-version: '1.21'
 version: '1.0'
 description: SkyBlock plugin for Paper
+
+commands:
+  island:
+    description: Manage your SkyBlock island.
+    usage: /island <create|home|visit|invite|kick|leave>
+  skills:
+    description: View your SkyBlock skills.
+    usage: /skills [skill]
+  auction:
+    description: Open the Auction House.
+    usage: /auction [create|view|cancel]
+  bazaar:
+    description: Open the Bazaar.
+    usage: /bazaar [product]
+  profile:
+    description: View your SkyBlock profile.
+    usage: /profile [player]
+  slay:
+    description: Manage your slayer quests.
+    usage: /slay [type|start|info]
+  pets:
+    description: Manage your pets.
+    usage: /pets [equip|unequip|list]
+  f:
+    description: Manage SkyBlock friendships.
+    usage: /f <add|remove|list|accept|deny>
