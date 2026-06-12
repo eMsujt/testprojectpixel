@@ -97,3 +97,6 @@ commands:
     description: Claim your daily coin reward.
     usage: /dailyreward [status]
     aliases: [daily]
+  storage:
+    description: Manage your personal storage pages.
+    usage: /storage <info|upgrade|reset>
