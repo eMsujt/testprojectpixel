@@ -1,5 +1,7 @@
 package com.skyblock.core;
 
+import com.skyblock.core.achievement.AchievementCommand;
+import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.alchemy.AlchemyListener;
 import com.skyblock.core.alchemy.AlchemyManager;
@@ -106,6 +108,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         LeaderboardManager leaderboardManager = LeaderboardManager.getInstance();
         AlchemyManager alchemyManager = AlchemyManager.getInstance();
         getCommand("alchemy").setExecutor(new AlchemyCommand(alchemyManager));
+        AchievementManager achievementManager = AchievementManager.getInstance();
+        getCommand("achievement").setExecutor(new AchievementCommand(achievementManager));
         MinionManager minionManager = MinionManager.getInstance();
         getCommand("minion").setExecutor(new MinionCommand(minionManager));
         PetManager petManager = PetManager.getInstance();

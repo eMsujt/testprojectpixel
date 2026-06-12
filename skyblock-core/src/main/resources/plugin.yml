@@ -65,3 +65,7 @@ commands:
   alchemy:
     description: Brew potions using the SkyBlock alchemy system.
     usage: /alchemy [list|brew|status|collect|cancel]
+  achievement:
+    description: View and track SkyBlock achievements.
+    usage: /achievement <list|info <id>|view>
+    aliases: [achievements]
