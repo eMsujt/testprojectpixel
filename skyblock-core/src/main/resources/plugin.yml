@@ -77,3 +77,9 @@ commands:
   crafting:
     description: Browse SkyBlock crafting recipes and track your crafting history.
     usage: /crafting <list|view|history|craft>
+  quest:
+    description: Manage your SkyBlock quests.
+    usage: /quest <list|start|status|reset>
+  achievement:
+    description: View your SkyBlock achievements.
+    usage: /achievement [list|view]
