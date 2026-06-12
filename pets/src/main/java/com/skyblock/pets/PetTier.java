@@ -1,0 +1,59 @@
+package com.skyblock.pets;
+
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+
+/**
+ * Pet tiers, ordered from least to most rare.
+ *
+ * <p>Each tier carries the display name and chat color used when rendering
+ * pet names and lore. Ordinal order is meaningful: {@link #compareTo(Enum)}
+ * ranks tiers, and {@link #next()} steps one tier up (e.g. for tier
+ * upgrades).</p>
+ */
+public enum PetTier {
+
+    COMMON("Common", NamedTextColor.WHITE),
+    UNCOMMON("Uncommon", NamedTextColor.GREEN),
+    RARE("Rare", NamedTextColor.BLUE),
+    EPIC("Epic", NamedTextColor.DARK_PURPLE),
+    LEGENDARY("Legendary", NamedTextColor.GOLD),
+    MYTHIC("Mythic", NamedTextColor.LIGHT_PURPLE);
+
+    private final String displayName;
+    private final TextColor color;
+
+    PetTier(String displayName, TextColor color) {
+        this.displayName = displayName;
+        this.color = color;
+    }
+
+    /**
+     * Returns the human-readable name of this tier.
+     *
+     * @return the display name, e.g. {@code "Legendary"}
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * Returns the chat color used to render pets of this tier.
+     *
+     * @return the tier color
+     */
+    public TextColor getColor() {
+        return color;
+    }
+
+    /**
+     * Returns the next pet tier, or this tier if it is already the
+     * highest.
+     *
+     * @return the upgraded tier
+     */
+    public PetTier next() {
+        PetTier[] values = values();
+        return ordinal() + 1 < values.length ? values[ordinal() + 1] : this;
+    }
+}
