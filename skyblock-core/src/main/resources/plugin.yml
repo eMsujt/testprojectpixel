@@ -69,6 +69,10 @@ commands:
   dungeon:
     description: Manage and view dungeon runs.
     usage: /dungeon [start|leave|info]
+  essence:
+    description: View and manage your SkyBlock essence balances.
+    usage: /essence <balance|add|remove> [type] [amount]
+    permission: skyblock.essence
   forge:
     description: Forge items using the SkyBlock forge.
     usage: /forge [list|start|collect]
@@ -152,4 +156,7 @@ permissions:
     default: true
   skyblock.slayer:
     description: Use the /slay command to manage slayer quests.
+    default: true
+  skyblock.essence:
+    description: Use the /essence command to view and manage essence balances.
     default: true
