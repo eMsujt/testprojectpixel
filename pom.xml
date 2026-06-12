@@ -51,6 +51,7 @@
         <module>talismans</module>
         <module>profile</module>
         <module>hotm</module>
+        <module>brewing</module>
         <module>plugin</module>
     </modules>
 
