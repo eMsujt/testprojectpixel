@@ -19,6 +19,7 @@ import com.skyblock.core.command.BankCommand;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.command.CollectionCommand;
 import com.skyblock.core.command.DungeonCommand;
+import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.command.LeaderboardCommand;
 import com.skyblock.core.command.PetsCommand;
 import com.skyblock.core.command.ShopCommand;
@@ -111,7 +112,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("minion").setExecutor(new MinionCommand(minionManager));
         PetManager petManager = PetManager.getInstance();
         getCommand("pets").setExecutor(new PetsCommand(petManager));
-        ProfileManager.getInstance();
+        ProfileManager profileManager = ProfileManager.getInstance();
+        getCommand("profile").setExecutor(new ProfileCommand(profileManager));
         NpcManager npcManager = NpcManager.getInstance();
         getCommand("npc").setExecutor(new NpcCommand(npcManager, economyManager));
         QuestManager.getInstance();
