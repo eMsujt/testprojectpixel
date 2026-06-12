@@ -58,6 +58,15 @@ public final class DungeonManager {
     }
 
     /**
+     * Returns an unmodifiable view of all active sessions keyed by session ID.
+     *
+     * @return the active sessions
+     */
+    public Map<UUID, DungeonSession> getActiveSessions() {
+        return Collections.unmodifiableMap(sessions);
+    }
+
+    /**
      * Adds a player to an active session.
      *
      * @param sessionId the target session
