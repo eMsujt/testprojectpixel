@@ -20,6 +20,26 @@ import java.util.UUID;
  */
 public final class FishingManager {
 
+    /** Maps fish ID to the fishing XP awarded when that fish is caught. */
+    public static final Map<String, Integer> CATCH_TABLE;
+
+    static {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("RAW_COD",        10);
+        map.put("RAW_SALMON",     10);
+        map.put("PUFFERFISH",     15);
+        map.put("TROPICAL_FISH",  15);
+        map.put("INK_SAC",         5);
+        map.put("LILY_PAD",        5);
+        map.put("BONE",            5);
+        map.put("STRING",          5);
+        map.put("NAUTILUS_SHELL", 25);
+        map.put("SEA_LANTERN",    20);
+        map.put("PRISMARINE_SHARD", 20);
+        map.put("PRISMARINE_CRYSTALS", 20);
+        CATCH_TABLE = Map.copyOf(map);
+    }
+
     private final EnumMap<FishingZone, List<FishingDrop>> lootTables = new EnumMap<>(FishingZone.class);
     private final Map<UUID, Integer> catches = new HashMap<>();
     private final Map<UUID, Double> experience = new HashMap<>();
