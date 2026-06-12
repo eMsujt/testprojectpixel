@@ -3,6 +3,8 @@ package com.skyblock.core.combat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
@@ -25,6 +27,10 @@ public final class CombatManager {
 
     private final StatManager stats = StatManager.getInstance();
     final Random random = new Random();
+
+    private final Map<UUID, Integer> playerKills  = new HashMap<>();
+    private final Map<UUID, Integer> playerDeaths = new HashMap<>();
+    private final Map<UUID, Integer> mobKills     = new HashMap<>();
 
     private CombatManager() {
     }
@@ -91,5 +97,53 @@ public final class CombatManager {
         }
 
         return Math.max(0.0, effective);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Per-player kill / death tracking
+    // ---------------------------------------------------------------------------
+
+    public int getKills(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return playerKills.getOrDefault(playerId, 0);
+    }
+
+    public int addKill(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        int total = playerKills.getOrDefault(playerId, 0) + 1;
+        playerKills.put(playerId, total);
+        return total;
+    }
+
+    public int getDeaths(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return playerDeaths.getOrDefault(playerId, 0);
+    }
+
+    public int addDeath(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        int total = playerDeaths.getOrDefault(playerId, 0) + 1;
+        playerDeaths.put(playerId, total);
+        return total;
+    }
+
+    public int getMobKills(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return mobKills.getOrDefault(playerId, 0);
+    }
+
+    public int addMobKill(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        int total = mobKills.getOrDefault(playerId, 0) + 1;
+        mobKills.put(playerId, total);
+        return total;
+    }
+
+    public boolean reset(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        boolean had = playerKills.remove(playerId) != null;
+        had |= playerDeaths.remove(playerId) != null;
+        had |= mobKills.remove(playerId) != null;
+        return had;
     }
 }

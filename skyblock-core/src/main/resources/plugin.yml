@@ -36,6 +36,9 @@ commands:
   profile:
     description: View your SkyBlock profile.
     usage: /profile [player]
+  combat:
+    description: View and manage your combat stats.
+    usage: /combat [info|kills|deaths|mobkills|reset]
   slay:
     description: Manage your slayer quests.
     usage: /slay [type|start|info]
