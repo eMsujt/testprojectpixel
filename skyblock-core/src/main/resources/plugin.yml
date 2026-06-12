@@ -127,6 +127,9 @@ commands:
   wardrobe:
     description: Save and load named armor outfits.
     usage: /wardrobe <save|load|delete|list>
+  mining:
+    description: View mining level, XP, speed bonus, and ore XP values.
+    usage: /mining [ores|speedbonus]
   fishing:
     description: View fishing stats and trophy fish catches.
     usage: /fishing [trophy [<fish>|reset]]

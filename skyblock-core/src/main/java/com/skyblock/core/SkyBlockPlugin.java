@@ -89,6 +89,7 @@ import com.skyblock.core.talisman.TalismanManager;
 import com.skyblock.core.warps.WarpManager;
 import com.skyblock.core.foraging.ForagingListener;
 import com.skyblock.core.foraging.ForagingManager;
+import com.skyblock.core.mining.MiningCommand;
 import com.skyblock.core.mining.MiningListener;
 import com.skyblock.core.mining.MiningManager;
 import com.skyblock.core.farming.CropMilestoneListener;
@@ -150,6 +151,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MobManager mobManager = MobManager.getInstance();
         mobManager.init(this);
         MiningManager miningManager = MiningManager.getInstance();
+        MiningCommand miningCommand = new MiningCommand(miningManager);
+        getCommand("mining").setExecutor(miningCommand);
+        getCommand("mining").setTabCompleter(miningCommand);
         FarmingManager farmingManager = FarmingManager.getInstance();
         ForagingManager foragingManager = ForagingManager.getInstance();
 
