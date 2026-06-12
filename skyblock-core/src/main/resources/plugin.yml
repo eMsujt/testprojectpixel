@@ -39,3 +39,7 @@ commands:
   shop:
     description: Browse and purchase items from the SkyBlock shop.
     usage: /shop [category|buy <category> <item>]
+  leaderboard:
+    description: View player leaderboards.
+    usage: /leaderboard [category]
+    aliases: [lb]
