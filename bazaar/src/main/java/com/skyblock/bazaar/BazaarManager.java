@@ -1,129 +1,124 @@
 package com.skyblock.bazaar;
 
+import com.skyblock.bazaar.BazaarOrder.OrderType;
+
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.Deque;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
- * Manages bazaar product listings with instant buy and instant sell prices.
+ * Manages the bazaar order book.
  *
- * <p>Products are identified by their product id (e.g. {@code "ENCHANTED_DIAMOND"}).
- * Unlisted products cannot be traded. Not thread-safe; synchronize externally
- * if accessed from multiple threads.</p>
+ * <p>Buy and sell orders are stored per-product in two
+ * {@code ConcurrentHashMap<String, Deque<BazaarOrder>>} maps keyed by product id.
+ * Each deque is a {@link ConcurrentLinkedDeque} so individual enqueue/dequeue
+ * operations are thread-safe without external locking.</p>
  */
 public final class BazaarManager {
 
-    private final Map<String, Double> buyPrices = new HashMap<>();
-    private final Map<String, Double> sellPrices = new HashMap<>();
+    private final ConcurrentHashMap<String, Deque<BazaarOrder>> buyOrders = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Deque<BazaarOrder>> sellOrders = new ConcurrentHashMap<>();
 
     /**
-     * Lists a product on the bazaar, or updates its prices if already listed.
+     * Places a buy order for the given product.
      *
-     * @param productId the product id, must not be null
-     * @param buyPrice  the per-unit instant buy price, must not be negative
-     * @param sellPrice the per-unit instant sell price, must not be negative
-     * @throws IllegalArgumentException if a price is negative or {@code productId} is null
+     * @param productId    the product id, must not be null
+     * @param playerId     the buying player's UUID, must not be null
+     * @param amount       units to buy, must be positive
+     * @param pricePerUnit per-unit limit price, must not be negative
+     * @return the newly created {@link BazaarOrder}
      */
-    public void listProduct(String productId, double buyPrice, double sellPrice) {
-        if (productId == null) {
-            throw new IllegalArgumentException("productId must not be null");
-        }
-        if (buyPrice < 0 || sellPrice < 0) {
-            throw new IllegalArgumentException(
-                    "prices must not be negative: buy=" + buyPrice + ", sell=" + sellPrice);
-        }
-        buyPrices.put(productId, buyPrice);
-        sellPrices.put(productId, sellPrice);
+    public BazaarOrder placeBuyOrder(String productId, UUID playerId, int amount, double pricePerUnit) {
+        BazaarOrder order = new BazaarOrder(UUID.randomUUID(), playerId, productId, amount, pricePerUnit, OrderType.BUY);
+        buyOrders.computeIfAbsent(productId, k -> new ConcurrentLinkedDeque<>()).addLast(order);
+        return order;
     }
 
     /**
-     * Removes a product from the bazaar.
+     * Places a sell order for the given product.
+     *
+     * @param productId    the product id, must not be null
+     * @param playerId     the selling player's UUID, must not be null
+     * @param amount       units to sell, must be positive
+     * @param pricePerUnit per-unit limit price, must not be negative
+     * @return the newly created {@link BazaarOrder}
+     */
+    public BazaarOrder placeSellOrder(String productId, UUID playerId, int amount, double pricePerUnit) {
+        BazaarOrder order = new BazaarOrder(UUID.randomUUID(), playerId, productId, amount, pricePerUnit, OrderType.SELL);
+        sellOrders.computeIfAbsent(productId, k -> new ConcurrentLinkedDeque<>()).addLast(order);
+        return order;
+    }
+
+    /**
+     * Cancels an open order by its id, searching both buy and sell books.
+     *
+     * @param orderId the order id to remove
+     * @return {@code true} if the order was found and removed
+     */
+    public boolean cancelOrder(UUID orderId) {
+        for (Deque<BazaarOrder> deque : buyOrders.values()) {
+            if (deque.removeIf(o -> o.orderId().equals(orderId))) {
+                return true;
+            }
+        }
+        for (Deque<BazaarOrder> deque : sellOrders.values()) {
+            if (deque.removeIf(o -> o.orderId().equals(orderId))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns all open buy orders for the given product, in insertion order.
      *
      * @param productId the product id
-     * @return {@code true} if the product was listed and has been removed
+     * @return an unmodifiable view; empty if no orders exist
      */
-    public boolean delistProduct(String productId) {
-        sellPrices.remove(productId);
-        return buyPrices.remove(productId) != null;
+    public Collection<BazaarOrder> getBuyOrders(String productId) {
+        Deque<BazaarOrder> deque = buyOrders.get(productId);
+        return deque == null ? Collections.emptyList() : Collections.unmodifiableCollection(deque);
     }
 
     /**
-     * Returns whether the product is currently listed on the bazaar.
+     * Returns all open sell orders for the given product, in insertion order.
      *
      * @param productId the product id
-     * @return {@code true} if the product is listed
+     * @return an unmodifiable view; empty if no orders exist
      */
-    public boolean isListed(String productId) {
-        return buyPrices.containsKey(productId);
+    public Collection<BazaarOrder> getSellOrders(String productId) {
+        Deque<BazaarOrder> deque = sellOrders.get(productId);
+        return deque == null ? Collections.emptyList() : Collections.unmodifiableCollection(deque);
     }
 
     /**
-     * Returns the per-unit instant buy price of a listed product.
+     * Returns the best (lowest) ask price among open sell orders for a product.
      *
      * @param productId the product id
-     * @return the instant buy price per unit
-     * @throws IllegalArgumentException if the product is not listed
+     * @return the lowest pricePerUnit, or {@link Double#MAX_VALUE} if no sell orders exist
      */
-    public double getBuyPrice(String productId) {
-        Double price = buyPrices.get(productId);
-        if (price == null) {
-            throw new IllegalArgumentException("product is not listed: " + productId);
+    public double getBestSellPrice(String productId) {
+        Deque<BazaarOrder> deque = sellOrders.get(productId);
+        if (deque == null) {
+            return Double.MAX_VALUE;
         }
-        return price;
+        return deque.stream().mapToDouble(BazaarOrder::pricePerUnit).min().orElse(Double.MAX_VALUE);
     }
 
     /**
-     * Returns the per-unit instant sell price of a listed product.
+     * Returns the best (highest) bid price among open buy orders for a product.
      *
      * @param productId the product id
-     * @return the instant sell price per unit
-     * @throws IllegalArgumentException if the product is not listed
+     * @return the highest pricePerUnit, or {@code 0} if no buy orders exist
      */
-    public double getSellPrice(String productId) {
-        Double price = sellPrices.get(productId);
-        if (price == null) {
-            throw new IllegalArgumentException("product is not listed: " + productId);
+    public double getBestBuyPrice(String productId) {
+        Deque<BazaarOrder> deque = buyOrders.get(productId);
+        if (deque == null) {
+            return 0;
         }
-        return price;
-    }
-
-    /**
-     * Calculates the total cost of instantly buying the given amount of a product.
-     *
-     * @param productId the product id
-     * @param amount    the number of units to buy, must be positive
-     * @return the total cost
-     * @throws IllegalArgumentException if the product is not listed or {@code amount} is not positive
-     */
-    public double instantBuy(String productId, int amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("amount must be positive: " + amount);
-        }
-        return getBuyPrice(productId) * amount;
-    }
-
-    /**
-     * Calculates the total payout of instantly selling the given amount of a product.
-     *
-     * @param productId the product id
-     * @param amount    the number of units to sell, must be positive
-     * @return the total payout
-     * @throws IllegalArgumentException if the product is not listed or {@code amount} is not positive
-     */
-    public double instantSell(String productId, int amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("amount must be positive: " + amount);
-        }
-        return getSellPrice(productId) * amount;
-    }
-
-    /**
-     * Returns the ids of all products currently listed on the bazaar.
-     *
-     * @return an unmodifiable view of the listed product ids
-     */
-    public Set<String> getListedProducts() {
-        return Collections.unmodifiableSet(buyPrices.keySet());
+        return deque.stream().mapToDouble(BazaarOrder::pricePerUnit).max().orElse(0);
     }
 }
