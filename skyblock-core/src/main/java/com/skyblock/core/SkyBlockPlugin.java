@@ -216,6 +216,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         TradeCommand tradeCommand = new TradeCommand(tradeManager);
         getCommand("trade").setExecutor(tradeCommand);
         getCommand("trade").setTabCompleter(tradeCommand);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.trade.TradeListener(tradeManager), this);
 
         WardrobeManager wardrobeManager = WardrobeManager.getInstance();
         WardrobeCommand wardrobeCommand = new WardrobeCommand(wardrobeManager);
