@@ -48,6 +48,8 @@ import com.skyblock.core.scoreboard.ScoreboardManager;
 import com.skyblock.core.shop.ShopManager;
 import com.skyblock.core.skills.SkillManager;
 import com.skyblock.core.storage.YamlPlayerStorage;
+import com.skyblock.core.talisman.TalismanCommand;
+import com.skyblock.core.talisman.TalismanManager;
 import com.skyblock.core.warps.WarpManager;
 import com.skyblock.farming.FarmingManager;
 import com.skyblock.foraging.ForagingManager;
@@ -121,6 +123,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ShopManager shopManager = ShopManager.getInstance();
         SkyBlockRecipeManager.getInstance();
         StatManager.getInstance();
+        TalismanManager talismanManager = TalismanManager.getInstance();
+        getCommand("talisman").setExecutor(new TalismanCommand(talismanManager));
         WarpManager.getInstance();
         FishingManager fishingManager = FishingManager.getInstance();
         YamlPlayerStorage.getInstance();
