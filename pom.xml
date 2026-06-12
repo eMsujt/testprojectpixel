@@ -59,6 +59,7 @@
         <module>museum</module>
         <module>minion</module>
         <module>calendar</module>
+        <module>housing</module>
         <module>plugin</module>
     </modules>
 
