@@ -89,3 +89,7 @@ commands:
   achievement:
     description: View your SkyBlock achievements.
     usage: /achievement [list|view]
+  dailyreward:
+    description: Claim your daily coin reward.
+    usage: /dailyreward [status]
+    aliases: [daily]
