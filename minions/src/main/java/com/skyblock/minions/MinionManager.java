@@ -21,7 +21,7 @@ public final class MinionManager {
     /** The maximum number of minions a single player may place. */
     public static final int MAX_MINIONS_PER_PLAYER = 25;
 
-    private final Map<UUID, List<MinionInstance>> minions = new HashMap<>();
+    private final Map<UUID, List<MinionInstance>> islandMinions = new HashMap<>();
 
     /**
      * Places a new tier 1 minion for the player at the given location.
@@ -38,7 +38,7 @@ public final class MinionManager {
         Objects.requireNonNull(ownerId, "ownerId");
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(location, "location");
-        List<MinionInstance> placed = minions.computeIfAbsent(ownerId, id -> new ArrayList<>());
+        List<MinionInstance> placed = islandMinions.computeIfAbsent(ownerId, id -> new ArrayList<>());
         if (placed.size() >= MAX_MINIONS_PER_PLAYER) {
             throw new IllegalStateException(
                     "player already has the maximum of " + MAX_MINIONS_PER_PLAYER + " minions: " + ownerId);
@@ -58,7 +58,7 @@ public final class MinionManager {
      * @return an unmodifiable view of the player's minions, possibly empty
      */
     public List<MinionInstance> getMinions(UUID ownerId) {
-        return Collections.unmodifiableList(minions.getOrDefault(ownerId, Collections.emptyList()));
+        return Collections.unmodifiableList(islandMinions.getOrDefault(ownerId, Collections.emptyList()));
     }
 
     /**
@@ -70,7 +70,7 @@ public final class MinionManager {
      */
     public MinionInstance getMinionAt(UUID ownerId, Location location) {
         Objects.requireNonNull(location, "location");
-        for (MinionInstance minion : minions.getOrDefault(ownerId, Collections.emptyList())) {
+        for (MinionInstance minion : islandMinions.getOrDefault(ownerId, Collections.emptyList())) {
             if (minion.getLocation().equals(location)) {
                 return minion;
             }
@@ -88,7 +88,7 @@ public final class MinionManager {
     public MinionInstance removeMinion(UUID ownerId, Location location) {
         MinionInstance minion = getMinionAt(ownerId, location);
         if (minion != null) {
-            minions.get(ownerId).remove(minion);
+            islandMinions.get(ownerId).remove(minion);
         }
         return minion;
     }
@@ -100,6 +100,6 @@ public final class MinionManager {
      * @return the number of placed minions
      */
     public int getMinionCount(UUID ownerId) {
-        return minions.getOrDefault(ownerId, Collections.emptyList()).size();
+        return islandMinions.getOrDefault(ownerId, Collections.emptyList()).size();
     }
 }
