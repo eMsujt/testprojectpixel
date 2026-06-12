@@ -33,6 +33,10 @@ import com.skyblock.core.crafting.SkyBlockRecipeManager;
 import com.skyblock.core.dungeon.DungeonManager;
 import com.skyblock.core.economy.EconomyManager;
 import com.skyblock.core.enchant.EnchantCommand;
+import com.skyblock.core.enchant.EnchantmentCommand;
+import com.skyblock.core.enchant.EnchantmentListener;
+import com.skyblock.core.enchant.EnchantmentManager;
+import com.skyblock.core.enchant.SkyBlockEnchantManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.enchanting.EnchantmentManager;
@@ -125,6 +129,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EnchantCommand enchantCommand = new EnchantCommand(enchantManager);
         getCommand("enchant").setExecutor(enchantCommand);
         getCommand("enchant").setTabCompleter(enchantCommand);
+        EnchantmentManager enchantmentManager = EnchantmentManager.getInstance();
+        EnchantmentCommand enchantmentCommand = new EnchantmentCommand(enchantmentManager);
+        getCommand("enchantment").setExecutor(enchantmentCommand);
+        getCommand("enchantment").setTabCompleter(enchantmentCommand);
         FairySoulManager.getInstance();
         ForgeManager forgeManager = ForgeManager.getInstance();
         getCommand("forge").setExecutor(new ForgeCommand(forgeManager));
@@ -178,6 +186,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CoreListeners(playerDataManager), this);
         CombatStatsManager combatStatsManager = CombatStatsManager.getInstance();
         getServer().getPluginManager().registerEvents(new CombatStatsListener(combatStatsManager), this);
+        getServer().getPluginManager().registerEvents(new EnchantmentListener(SkyBlockEnchantManager.getInstance()), this);
 
         getLogger().info("SkyBlock core enabled.");
     }

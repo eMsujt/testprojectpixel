@@ -71,6 +71,9 @@ commands:
   enchanting:
     description: View and apply SkyBlock enchantments.
     usage: /enchanting <list|info|apply|remove|view>
+  enchantment:
+    description: View and apply SkyBlock enchantments via the enchantment manager.
+    usage: /enchantment <list|info|apply|remove|view>
   enchant:
     description: View and apply SkyBlock custom enchants.
     usage: /enchant <list|info|apply|remove|view>
