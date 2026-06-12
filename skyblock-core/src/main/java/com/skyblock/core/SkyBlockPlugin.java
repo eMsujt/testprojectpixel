@@ -117,7 +117,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         NpcManager npcManager = NpcManager.getInstance();
         getCommand("npc").setExecutor(new NpcCommand(npcManager, economyManager));
         QuestManager.getInstance();
-        ScoreboardManager.getInstance();
+        ScoreboardManager.getInstance().start(this);
         ShopManager shopManager = ShopManager.getInstance();
         SkyBlockRecipeManager.getInstance();
         StatManager.getInstance();
@@ -154,6 +154,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         } catch (java.io.IOException e) {
             getLogger().warning("Failed to save warps: " + e.getMessage());
         }
+        ScoreboardManager.getInstance().stop();
         getLogger().info("SkyBlock core disabled.");
         instance = null;
     }

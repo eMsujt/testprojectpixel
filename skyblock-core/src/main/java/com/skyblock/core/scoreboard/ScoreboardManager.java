@@ -4,75 +4,78 @@ import com.skyblock.core.economy.EconomyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scheduler.BukkitTask;
 
-/**
- * Singleton that maintains a sidebar scoreboard for every online player,
- * refreshed every 2 seconds (40 ticks).
- *
- * <p>Call {@link #start(Plugin)} once from {@code onEnable} and
- * {@link #stop()} from {@code onDisable}.</p>
- */
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public final class ScoreboardManager {
 
     private static final ScoreboardManager INSTANCE = new ScoreboardManager();
 
-    private static final long UPDATE_INTERVAL_TICKS = 40L;
+    private static final long UPDATE_INTERVAL_TICKS = 20L;
     private static final String OBJECTIVE_NAME = "skyblock_sidebar";
 
-    private BukkitTask task;
+    private final Map<UUID, BukkitTask> tasks = new HashMap<>();
+    private Plugin plugin;
 
     private ScoreboardManager() {}
 
-    /**
-     * Returns the single shared {@code ScoreboardManager} instance.
-     *
-     * @return the singleton instance
-     */
     public static ScoreboardManager getInstance() {
         return INSTANCE;
     }
 
-    /**
-     * Starts the repeating update task.
-     *
-     * @param plugin the owning plugin (used to schedule the task)
-     */
     public void start(Plugin plugin) {
-        if (task != null) {
-            return;
-        }
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::updateAll, UPDATE_INTERVAL_TICKS, UPDATE_INTERVAL_TICKS);
-    }
-
-    /** Cancels the repeating update task. */
-    public void stop() {
-        if (task != null) {
-            task.cancel();
-            task = null;
-        }
-    }
-
-    /** Updates the sidebar scoreboard for every online player. */
-    private void updateAll() {
+        this.plugin = plugin;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            update(player);
+            startForPlayer(player);
+        }
+        Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), plugin);
+    }
+
+    public void stop() {
+        for (BukkitTask task : tasks.values()) {
+            task.cancel();
+        }
+        tasks.clear();
+    }
+
+    public void startForPlayer(Player player) {
+        stopForPlayer(player);
+        BukkitTask task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (!player.isOnline()) {
+                    cancel();
+                    tasks.remove(player.getUniqueId());
+                    return;
+                }
+                update(player);
+            }
+        }.runTaskTimer(plugin, 0L, UPDATE_INTERVAL_TICKS);
+        tasks.put(player.getUniqueId(), task);
+    }
+
+    public void stopForPlayer(Player player) {
+        BukkitTask existing = tasks.remove(player.getUniqueId());
+        if (existing != null) {
+            existing.cancel();
         }
     }
 
-    /**
-     * Rebuilds the sidebar scoreboard for a single player.
-     *
-     * @param player the player whose scoreboard should be refreshed
-     */
     public void update(Player player) {
         Scoreboard board = player.getScoreboard();
 
-        // Replace the objective each update to avoid stale score entries.
         Objective existing = board.getObjective(OBJECTIVE_NAME);
         if (existing != null) {
             existing.unregister();
@@ -101,5 +104,17 @@ public final class ScoreboardManager {
             return String.format("%.1fK", coins / 1_000);
         }
         return String.format("%.0f", coins);
+    }
+
+    private class ScoreboardListener implements Listener {
+        @EventHandler
+        public void onJoin(PlayerJoinEvent event) {
+            startForPlayer(event.getPlayer());
+        }
+
+        @EventHandler
+        public void onQuit(PlayerQuitEvent event) {
+            stopForPlayer(event.getPlayer());
+        }
     }
 }
