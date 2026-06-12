@@ -11,11 +11,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,8 +23,9 @@ public final class ScoreboardManager {
     private static final ScoreboardManager INSTANCE = new ScoreboardManager();
 
     private static final long UPDATE_INTERVAL_TICKS = 20L;
-    private static final String OBJECTIVE_NAME = "skyblock_sidebar";
+    private static final String TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "SKYBLOCK";
 
+    private final Map<UUID, SkyBlockScoreboard> boards = new HashMap<>();
     private final Map<UUID, BukkitTask> tasks = new HashMap<>();
     private Plugin plugin;
 
@@ -48,10 +48,16 @@ public final class ScoreboardManager {
             task.cancel();
         }
         tasks.clear();
+        for (SkyBlockScoreboard board : boards.values()) {
+            board.delete();
+        }
+        boards.clear();
     }
 
     public void startForPlayer(Player player) {
         stopForPlayer(player);
+        SkyBlockScoreboard board = new SkyBlockScoreboard(player, TITLE);
+        boards.put(player.getUniqueId(), board);
         BukkitTask task = new BukkitRunnable() {
             @Override
             public void run() {
@@ -71,29 +77,28 @@ public final class ScoreboardManager {
         if (existing != null) {
             existing.cancel();
         }
+        SkyBlockScoreboard board = boards.remove(player.getUniqueId());
+        if (board != null) {
+            board.delete();
+        }
     }
 
     public void update(Player player) {
-        Scoreboard board = player.getScoreboard();
-
-        Objective existing = board.getObjective(OBJECTIVE_NAME);
-        if (existing != null) {
-            existing.unregister();
+        SkyBlockScoreboard board = boards.get(player.getUniqueId());
+        if (board == null) {
+            return;
         }
-
-        Objective obj = board.registerNewObjective(OBJECTIVE_NAME, "dummy",
-                ChatColor.GOLD + "" + ChatColor.BOLD + "SKYBLOCK");
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-
         double coins = EconomyManager.getInstance().getBalance(player.getUniqueId());
-
-        obj.getScore(ChatColor.YELLOW + "Coins").setScore(6);
-        obj.getScore(ChatColor.WHITE + formatCoins(coins)).setScore(5);
-        obj.getScore(" ").setScore(4);
-        obj.getScore(ChatColor.AQUA + "Location").setScore(3);
-        obj.getScore(ChatColor.WHITE + player.getWorld().getName()).setScore(2);
-        obj.getScore("  ").setScore(1);
-        obj.getScore(ChatColor.GRAY + "skyblock.example.net").setScore(0);
+        List<String> lines = Arrays.asList(
+            ChatColor.YELLOW + "Coins",
+            ChatColor.WHITE + formatCoins(coins),
+            " ",
+            ChatColor.AQUA + "Location",
+            ChatColor.WHITE + player.getWorld().getName(),
+            "  ",
+            ChatColor.GRAY + "skyblock.example.net"
+        );
+        board.updateLines(lines);
     }
 
     private static String formatCoins(double coins) {
