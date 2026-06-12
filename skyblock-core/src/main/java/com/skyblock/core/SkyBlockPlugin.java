@@ -1,7 +1,9 @@
 package com.skyblock.core;
 
 import com.skyblock.core.leaderboard.LeaderboardManager;
+import com.skyblock.core.auction.AuctionCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
+import com.skyblock.core.auction.AuctionManager;
 import com.skyblock.core.island.IslandCommand;
 import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.bazaar.BazaarManager;
@@ -70,6 +72,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EconomyManager.getInstance();
         SkillManager skillManager = SkillManager.getInstance();
         AuctionHouseManager.getInstance();
+        AuctionManager auctionManager = AuctionManager.getInstance();
+        getCommand("auction").setExecutor(new AuctionCommand(auctionManager));
         BazaarManager.getInstance();
         CollectionManager.getInstance();
         EnchantmentManager.getInstance();
