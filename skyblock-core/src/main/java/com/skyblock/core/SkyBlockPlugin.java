@@ -29,6 +29,8 @@ import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.crafting.SkyBlockRecipeManager;
 import com.skyblock.core.dungeon.DungeonManager;
 import com.skyblock.core.economy.EconomyManager;
+import com.skyblock.core.enchanting.EnchantingCommand;
+import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.enchanting.EnchantmentManager;
 import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.forge.ForgeCommand;
@@ -106,6 +108,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         DungeonManager dungeonManager = DungeonManager.getInstance();
         getCommand("dungeon").setExecutor(new DungeonCommand(dungeonManager));
         EnchantmentManager.getInstance();
+        EnchantingManager enchantingManager = EnchantingManager.getInstance();
+        getCommand("enchanting").setExecutor(new EnchantingCommand(enchantingManager));
         FairySoulManager.getInstance();
         ForgeManager forgeManager = ForgeManager.getInstance();
         getCommand("forge").setExecutor(new ForgeCommand(forgeManager));
