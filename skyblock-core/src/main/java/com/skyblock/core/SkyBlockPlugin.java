@@ -1,6 +1,8 @@
 package com.skyblock.core;
 
 import com.skyblock.core.leaderboard.LeaderboardManager;
+import com.skyblock.core.slayer.SlayerManager;
+import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.island.IslandCommand;
 import com.skyblock.core.island.IslandManager;
@@ -93,6 +95,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("warp").setExecutor(new WarpCommand(warpManager));
         getCommand("shop").setExecutor(new ShopCommand(ShopManager.getInstance(), EconomyManager.getInstance()));
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(LeaderboardManager.getInstance()));
+        SlayerManager.getInstance();
+        getCommand("slay").setExecutor(new SlayerCommand(SlayerManager.getInstance()));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
         getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);
