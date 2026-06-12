@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Location;
 
 /**
@@ -69,6 +70,7 @@ public final class IslandManager {
     private static final IslandManager INSTANCE = new IslandManager();
 
     private final Map<UUID, PlayerIsland> islands = new HashMap<>();
+    public final ConcurrentHashMap<UUID, Location> islandHomes = new ConcurrentHashMap<>();
 
     private IslandManager() {
     }
@@ -186,6 +188,30 @@ public final class IslandManager {
      */
     public boolean deleteIsland(UUID owner) {
         return islands.remove(owner) != null;
+    }
+
+    /**
+     * Sets the home teleport location for a player's island.
+     *
+     * @param owner the island owner's player UUID
+     * @param home  the new home location
+     */
+    public void setHome(UUID owner, Location home) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(home, "home");
+        islandHomes.put(owner, home.clone());
+    }
+
+    /**
+     * Returns the home teleport location for a player's island.
+     *
+     * @param owner the island owner's player UUID
+     * @return the home location, or empty if none is set
+     */
+    public Optional<Location> getHome(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        Location loc = islandHomes.get(owner);
+        return loc == null ? Optional.empty() : Optional.of(loc.clone());
     }
 
     private PlayerIsland requireIsland(UUID owner) {
