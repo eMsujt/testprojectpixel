@@ -99,6 +99,8 @@ import com.skyblock.core.bestiary.BestiaryCommand;
 import com.skyblock.core.bestiary.BestiaryManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.party.PartyManager;
+import com.skyblock.core.slayer.SlayerCommand;
+import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.accessory.AccessoryBagCommand;
 import com.skyblock.core.accessory.AccessoryBagManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
@@ -276,6 +278,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         AccessoryBagCommand accessoryBagCommand = new AccessoryBagCommand(accessoryBagManager);
         getCommand("accessorybag").setExecutor(accessoryBagCommand);
         getCommand("accessorybag").setTabCompleter(accessoryBagCommand);
+
+        SlayerManager slayerManager = SlayerManager.getInstance();
+        SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
+        getCommand("slay").setExecutor(slayerCommand);
+        getCommand("slay").setTabCompleter(slayerCommand);
 
         getLogger().info("SkyBlock core enabled.");
     }
