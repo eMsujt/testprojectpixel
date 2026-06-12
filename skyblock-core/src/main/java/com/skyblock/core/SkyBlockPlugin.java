@@ -216,6 +216,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MobLootListener(mobLootManager), this);
         ArmorSetManager armorSetManager = ArmorSetManager.getInstance();
         getServer().getPluginManager().registerEvents(new ArmorSetListener(armorSetManager), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.talisman.TalismanListener(talismanManager), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
