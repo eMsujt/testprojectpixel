@@ -95,6 +95,8 @@ import com.skyblock.core.mining.MiningManager;
 import com.skyblock.core.farming.CropMilestoneListener;
 import com.skyblock.core.farming.FarmingListener;
 import com.skyblock.core.farming.FarmingManager;
+import com.skyblock.core.farming.JacobContestCommand;
+import com.skyblock.core.farming.JacobContestManager;
 import com.skyblock.core.mob.CustomMobListener;
 import com.skyblock.core.mob.CustomMobManager;
 import com.skyblock.core.mob.MobLootListener;
@@ -168,6 +170,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("mining").setExecutor(miningCommand);
         getCommand("mining").setTabCompleter(miningCommand);
         FarmingManager farmingManager = FarmingManager.getInstance();
+        JacobContestManager jacobContestManager = JacobContestManager.getInstance();
+        JacobContestCommand jacobContestCommand = new JacobContestCommand(jacobContestManager);
+        getCommand("jacobcontest").setExecutor(jacobContestCommand);
+        getCommand("jacobcontest").setTabCompleter(jacobContestCommand);
         ForagingManager foragingManager = ForagingManager.getInstance();
 
         // initialise all singletons so they are ready before commands fire
