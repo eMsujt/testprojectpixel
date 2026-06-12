@@ -46,6 +46,7 @@
         <module>accessories</module>
         <module>guilds</module>
         <module>fairysouls</module>
+        <module>backpacks</module>
         <module>plugin</module>
     </modules>
 
