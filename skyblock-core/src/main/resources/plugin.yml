@@ -56,3 +56,6 @@ commands:
     description: View your collection progress.
     usage: /collection [name]
     aliases: [col]
+  npc:
+    description: Interact with NPCs and their shops.
+    usage: /npc <list|shop <npc>|buy <npc> <item>>
