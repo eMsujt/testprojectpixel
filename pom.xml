@@ -67,6 +67,7 @@
         <module>collection</module>
         <module>skills</module>
         <module>bestiary</module>
+        <module>wardrobe</module>
         <module>plugin</module>
     </modules>
 
