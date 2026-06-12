@@ -72,6 +72,8 @@ import com.skyblock.core.mining.MiningManager;
 import com.skyblock.core.farming.FarmingListener;
 import com.skyblock.core.farming.FarmingManager;
 import com.skyblock.core.mob.MobManager;
+import com.skyblock.core.slayer.SlayerCommand;
+import com.skyblock.core.slayer.SlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -161,6 +163,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WarpManager.getInstance();
         FishingManager fishingManager = FishingManager.getInstance();
         YamlPlayerStorage.getInstance();
+        SlayerManager slayerManager = SlayerManager.getInstance();
+        SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
+        getCommand("slay").setExecutor(slayerCommand);
+        getCommand("slay").setTabCompleter(slayerCommand);
 
         IslandManager.getInstance();
         getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));
