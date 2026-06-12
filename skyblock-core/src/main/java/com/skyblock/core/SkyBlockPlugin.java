@@ -112,6 +112,8 @@ import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.accessory.AccessoryBagCommand;
 import com.skyblock.core.accessory.AccessoryBagManager;
+import com.skyblock.core.essence.EssenceCommand;
+import com.skyblock.core.essence.EssenceManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -152,6 +154,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
         // initialise all singletons so they are ready before commands fire
         EconomyManager economyManager = EconomyManager.getInstance();
+        EssenceManager essenceManager = EssenceManager.getInstance();
+        EssenceCommand essenceCommand = new EssenceCommand(essenceManager);
+        getCommand("essence").setExecutor(essenceCommand);
+        getCommand("essence").setTabCompleter(essenceCommand);
         SkillManager skillManager = SkillManager.getInstance();
         AuctionHouseManager auctionHouseManager = AuctionHouseManager.getInstance();
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
@@ -318,6 +324,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.collections.CollectionManager.getInstance();
         com.skyblock.core.quests.QuestManager.getInstance();
         NPCManager.getInstance();
+        com.skyblock.core.hud.ScoreboardManager.getInstance();
+        com.skyblock.core.minions.MinionManager.getInstance();
+        com.skyblock.core.pets.PetsManager.getInstance();
+        com.skyblock.core.skills.SkillsManager.getInstance();
         getServer().getPluginManager().registerEvents(new SkyBlockEnchantListener(SkyBlockEnchantManager.getInstance()), this);
 
         getLogger().info("SkyBlock core enabled.");
