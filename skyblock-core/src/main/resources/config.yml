@@ -1,0 +1,126 @@
+# SkyBlock Core Configuration
+# All subsystem defaults are defined here.
+
+# ─── Island ───────────────────────────────────────────────────────────────────
+island:
+  size: 100                  # radius in blocks from the island centre
+  void-height: 0             # Y level below which players are teleported to spawn
+  spawn-offset:              # spawn point relative to island centre
+    x: 0
+    y: 64
+    z: 0
+
+# ─── Auction House ────────────────────────────────────────────────────────────
+auction-house:
+  max-listings-per-player: 10
+  listing-duration-hours: 48
+  tax-percent: 1.0           # percentage cut taken from every sale
+
+# ─── Bazaar ───────────────────────────────────────────────────────────────────
+bazaar:
+  max-buy-orders-per-player: 10
+  max-sell-orders-per-player: 10
+
+# ─── Economy / Bank ───────────────────────────────────────────────────────────
+economy:
+  starting-balance: 500.0
+  max-balance: 1000000000.0
+
+bank:
+  interest-rate: 0.0         # daily interest rate (0 = disabled)
+  max-balance: 2000000000.0
+
+# ─── Daily Reward ─────────────────────────────────────────────────────────────
+daily-reward:
+  cooldown-hours: 24
+  coin-reward: 1000
+
+# ─── Skills ───────────────────────────────────────────────────────────────────
+skills:
+  max-level: 60
+  xp-multiplier: 1.0
+
+# ─── Collections ──────────────────────────────────────────────────────────────
+collections:
+  enabled: true
+
+# ─── Slayer ───────────────────────────────────────────────────────────────────
+slayer:
+  max-tier: 4
+  cost-multiplier: 1.0       # scales the coin cost to start a quest
+
+# ─── Dungeons ─────────────────────────────────────────────────────────────────
+dungeons:
+  enabled: true
+  floor-world-prefix: "dungeon_"
+  party-max-size: 5
+
+# ─── Pets ─────────────────────────────────────────────────────────────────────
+pets:
+  max-owned: 50
+  xp-multiplier: 1.0
+
+# ─── Minions ──────────────────────────────────────────────────────────────────
+minions:
+  max-per-player: 5
+  default-speed-ticks: 200   # ticks between minion actions at tier 1
+
+# ─── Crafting / Item Forge ────────────────────────────────────────────────────
+item-forge:
+  enabled: true
+
+# ─── Enchanting ───────────────────────────────────────────────────────────────
+enchanting:
+  max-level: 6
+  bookshelves-required: 15
+
+# ─── Essence ──────────────────────────────────────────────────────────────────
+essence:
+  enabled: true
+
+# ─── Talismans / Accessories ──────────────────────────────────────────────────
+talismans:
+  enabled: true
+
+# ─── Warps ────────────────────────────────────────────────────────────────────
+warps:
+  max-per-player: 5
+
+# ─── Scoreboard ───────────────────────────────────────────────────────────────
+scoreboard:
+  enabled: true
+  update-interval-ticks: 20  # how often the sidebar refreshes
+
+# ─── Quests ───────────────────────────────────────────────────────────────────
+quests:
+  max-active: 3
+
+# ─── Party ────────────────────────────────────────────────────────────────────
+party:
+  max-size: 5
+
+# ─── Trade ────────────────────────────────────────────────────────────────────
+trade:
+  enabled: true
+
+# ─── NPC ──────────────────────────────────────────────────────────────────────
+npc:
+  enabled: true
+
+# ─── Notifications ────────────────────────────────────────────────────────────
+notifications:
+  action-bar: true
+  title-duration-ticks: 60
+
+# ─── Leaderboard ──────────────────────────────────────────────────────────────
+leaderboard:
+  update-interval-minutes: 10
+  top-n: 10
+
+# ─── Profiles ─────────────────────────────────────────────────────────────────
+profiles:
+  max-per-player: 3
+
+# ─── Storage ──────────────────────────────────────────────────────────────────
+storage:
+  save-interval-minutes: 5
