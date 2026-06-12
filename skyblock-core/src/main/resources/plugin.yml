@@ -29,3 +29,6 @@ commands:
   f:
     description: Manage SkyBlock friendships.
     usage: /f <add|remove|list|accept|deny>
+  warp:
+    description: Teleport to a named warp point.
+    usage: /warp [name|set <name>|delete <name>]

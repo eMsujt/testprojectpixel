@@ -6,6 +6,7 @@ import com.skyblock.core.collections.CollectionManager;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.combat.StatManager;
 import com.skyblock.core.command.SkillsCommand;
+import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.commands.SkyBlockCommand;
 import com.skyblock.core.economy.EconomyManager;
 import com.skyblock.core.enchanting.EnchantmentManager;
@@ -79,6 +80,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
         getCommand("skyblock").setExecutor(new SkyBlockCommand(playerDataManager));
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
+        com.skyblock.core.warp.WarpManager warpManager = com.skyblock.core.warp.WarpManager.getInstance();
+        warpManager.load(new java.io.File(getDataFolder(), "warps.yml"));
+        getCommand("warp").setExecutor(new WarpCommand(warpManager));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
         getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);
@@ -91,6 +95,12 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        try {
+            com.skyblock.core.warp.WarpManager.getInstance().save(
+                    new java.io.File(getDataFolder(), "warps.yml"));
+        } catch (java.io.IOException e) {
+            getLogger().warning("Failed to save warps: " + e.getMessage());
+        }
         getLogger().info("SkyBlock core disabled.");
         instance = null;
     }
