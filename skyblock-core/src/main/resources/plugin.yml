@@ -53,6 +53,9 @@ commands:
   bank:
     description: Manage your SkyBlock bank account.
     usage: /bank [deposit|withdraw|balance]
+  banking:
+    description: Manage your SkyBlock banking account.
+    usage: /banking [deposit|withdraw|balance]
   dungeon:
     description: Manage and view dungeon runs.
     usage: /dungeon [start|leave|info]
