@@ -23,6 +23,10 @@
         </dependency>
         <dependency>
             <groupId>com.skyblock</groupId>
+            <artifactId>skyblock-economy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.skyblock</groupId>
             <artifactId>skyblock-api</artifactId>
         </dependency>
         <dependency>
