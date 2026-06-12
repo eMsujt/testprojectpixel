@@ -2,58 +2,61 @@ package com.skyblock.pets;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
 /**
- * Manages the pet each player currently has equipped.
+ * Singleton managing the pet each player currently has equipped.
  *
- * <p>Equipped pets are stored in a {@link HashMap} keyed by player UUID.
+ * <p>Active pets are stored in a {@link HashMap} keyed by player UUID.
  * Each player has at most one {@link ActivePet} at a time; equipping a new
  * pet unequips the previous one first. The manager fires
  * {@link PetAbility#onEquip(Player)} and {@link PetAbility#onUnequip(Player)}
- * for every ability of the affected pet. Not thread-safe; synchronize
- * externally if accessed from multiple threads.</p>
+ * for every ability of the affected pet. Access the shared instance via
+ * {@link #getInstance()}. Not thread-safe; synchronize externally if
+ * accessed from multiple threads.</p>
  */
 public final class PetManager {
+
+    private static final PetManager INSTANCE = new PetManager();
+
+    private PetManager() {
+    }
+
+    /**
+     * Returns the shared manager instance.
+     *
+     * @return the singleton {@code PetManager}
+     */
+    public static PetManager getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * A pet currently equipped by a player.
      *
      * <p>Instances are created only through
      * {@link PetManager#equipPet(Player, Pet)}.</p>
+     *
+     * @param petName the equipped pet's display name, never null
+     * @param pet     the equipped pet's definition, never null
      */
-    public static final class ActivePet {
-
-        private final UUID owner;
-        private final Pet pet;
-
-        private ActivePet(UUID owner, Pet pet) {
-            this.owner = owner;
-            this.pet = pet;
-        }
+    public record ActivePet(String petName, Pet pet) {
 
         /**
-         * Returns the unique id of the player this pet is equipped on.
+         * Validates the components.
          *
-         * @return the owning player's UUID
+         * @throws NullPointerException if the pet name or pet is null
          */
-        public UUID getOwner() {
-            return owner;
-        }
-
-        /**
-         * Returns the equipped pet's definition.
-         *
-         * @return the pet
-         */
-        public Pet getPet() {
-            return pet;
+        public ActivePet {
+            Objects.requireNonNull(petName, "petName");
+            Objects.requireNonNull(pet, "pet");
         }
     }
 
-    private final Map<UUID, ActivePet> equippedPets = new HashMap<>();
+    private final Map<UUID, ActivePet> activePets = new HashMap<>();
 
     /**
      * Equips a pet on a player, unequipping their current pet first if they
@@ -74,7 +77,7 @@ public final class PetManager {
             throw new IllegalArgumentException("player and pet must not be null");
         }
         Pet previous = unequipPet(player);
-        equippedPets.put(player.getUniqueId(), new ActivePet(player.getUniqueId(), pet));
+        activePets.put(player.getUniqueId(), new ActivePet(pet.getName(), pet));
         for (PetAbility ability : pet.getAbilities()) {
             ability.onEquip(player);
         }
@@ -94,14 +97,14 @@ public final class PetManager {
         if (player == null) {
             throw new IllegalArgumentException("player must not be null");
         }
-        ActivePet removed = equippedPets.remove(player.getUniqueId());
+        ActivePet removed = activePets.remove(player.getUniqueId());
         if (removed == null) {
             return null;
         }
-        for (PetAbility ability : removed.pet.getAbilities()) {
+        for (PetAbility ability : removed.pet().getAbilities()) {
             ability.onUnequip(player);
         }
-        return removed.pet;
+        return removed.pet();
     }
 
     /**
@@ -111,7 +114,7 @@ public final class PetManager {
      * @return {@code true} if the player has an equipped pet
      */
     public boolean hasEquippedPet(UUID playerId) {
-        return equippedPets.containsKey(playerId);
+        return activePets.containsKey(playerId);
     }
 
     /**
@@ -121,6 +124,6 @@ public final class PetManager {
      * @return the player's active pet, or {@code null} if none is equipped
      */
     public ActivePet getEquippedPet(UUID playerId) {
-        return equippedPets.get(playerId);
+        return activePets.get(playerId);
     }
 }
