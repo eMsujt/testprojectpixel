@@ -25,14 +25,58 @@ import java.util.TreeMap;
  */
 public final class BazaarManager {
 
+    /** Catalog of all tradeable bazaar products. */
+    public enum BazaarProduct {
+        WHEAT,
+        CARROT,
+        POTATO,
+        SUGAR_CANE,
+        PUMPKIN,
+        MELON,
+        SEEDS,
+        COCOA_BEANS,
+        CACTUS,
+        MUSHROOM,
+        NETHER_WART,
+        RED_MUSHROOM,
+        BROWN_MUSHROOM,
+        SAND,
+        GRAVEL,
+        ICE,
+        NETHERRACK,
+        GLOWSTONE_DUST,
+        COBBLESTONE,
+        OAK_WOOD,
+        SPRUCE_WOOD,
+        BIRCH_WOOD,
+        DARK_OAK_WOOD,
+        JUNGLE_WOOD,
+        ACACIA_WOOD,
+        RAW_FISH,
+        PUFFERFISH,
+        CLOWNFISH,
+        RAW_SALMON,
+        INK_SACK,
+        ROTTEN_FLESH,
+        BONE,
+        GUNPOWDER,
+        SPIDER_EYE,
+        STRING,
+        FEATHER,
+        LEATHER,
+        RABBIT_HIDE,
+        RAW_CHICKEN,
+        RAW_BEEF
+    }
+
     /**
-     * A single bazaar product with live pricing, volume data, and order books.
+     * A single bazaar product listing with live pricing, volume data, and order books.
      *
      * <p>Instances are created only through
      * {@link BazaarManager#addProduct(String, double, double)} and mutated
      * only through {@link BazaarManager}.</p>
      */
-    public static final class BazaarProduct {
+    public static final class ProductData {
 
         private final String productId;
         private double buyPrice;
@@ -44,7 +88,7 @@ public final class BazaarManager {
         /** Asks: lowest price first. */
         private final TreeMap<Long, Long> sellOrders = new TreeMap<>();
 
-        private BazaarProduct(String productId, double buyPrice, double sellPrice) {
+        private ProductData(String productId, double buyPrice, double sellPrice) {
             this.productId = productId;
             this.buyPrice = buyPrice;
             this.sellPrice = sellPrice;
@@ -133,7 +177,7 @@ public final class BazaarManager {
         }
     }
 
-    private final Map<String, BazaarProduct> products = new HashMap<>();
+    private final Map<String, ProductData> products = new HashMap<>();
 
     /**
      * Registers a new product in the bazaar.
@@ -142,11 +186,11 @@ public final class BazaarManager {
      * @param buyPrice  the instant-buy price per unit, must be positive
      * @param sellPrice the instant-sell price per unit, must be positive and
      *                  not exceed {@code buyPrice}
-     * @return the newly created product
+     * @return the newly created product data
      * @throws IllegalArgumentException if any argument is invalid or the
      *                                  product is already registered
      */
-    public BazaarProduct addProduct(String productId, double buyPrice, double sellPrice) {
+    public ProductData addProduct(String productId, double buyPrice, double sellPrice) {
         if (productId == null || productId.isBlank()) {
             throw new IllegalArgumentException("productId must not be null or blank");
         }
@@ -161,7 +205,7 @@ public final class BazaarManager {
         if (products.containsKey(productId)) {
             throw new IllegalArgumentException("product already registered: " + productId);
         }
-        BazaarProduct product = new BazaarProduct(productId, buyPrice, sellPrice);
+        ProductData product = new ProductData(productId, buyPrice, sellPrice);
         products.put(productId, product);
         return product;
     }
@@ -177,7 +221,7 @@ public final class BazaarManager {
      *                                  prices are invalid
      */
     public void updatePrices(String productId, double buyPrice, double sellPrice) {
-        BazaarProduct product = requireProduct(productId);
+        ProductData product = requireProduct(productId);
         if (buyPrice <= 0 || sellPrice <= 0) {
             throw new IllegalArgumentException("buyPrice and sellPrice must be positive");
         }
@@ -200,7 +244,7 @@ public final class BazaarManager {
      *                                  {@code amount} is not positive
      */
     public double instantBuy(String productId, int amount) {
-        BazaarProduct product = requireProduct(productId);
+        ProductData product = requireProduct(productId);
         if (amount <= 0) {
             throw new IllegalArgumentException("amount must be positive: " + amount);
         }
@@ -218,7 +262,7 @@ public final class BazaarManager {
      *                                  {@code amount} is not positive
      */
     public double instantSell(String productId, int amount) {
-        BazaarProduct product = requireProduct(productId);
+        ProductData product = requireProduct(productId);
         if (amount <= 0) {
             throw new IllegalArgumentException("amount must be positive: " + amount);
         }
@@ -237,7 +281,7 @@ public final class BazaarManager {
      *                                  {@code price}/{@code quantity} are invalid
      */
     public void placeBuyOrder(String productId, long price, long quantity) {
-        BazaarProduct product = requireProduct(productId);
+        ProductData product = requireProduct(productId);
         requirePositive(price, "price");
         requirePositive(quantity, "quantity");
         product.buyOrders.merge(price, quantity, Math::addExact);
@@ -254,7 +298,7 @@ public final class BazaarManager {
      *                                  {@code price}/{@code quantity} are invalid
      */
     public void placeSellOrder(String productId, long price, long quantity) {
-        BazaarProduct product = requireProduct(productId);
+        ProductData product = requireProduct(productId);
         requirePositive(price, "price");
         requirePositive(quantity, "quantity");
         product.sellOrders.merge(price, quantity, Math::addExact);
@@ -274,7 +318,7 @@ public final class BazaarManager {
      *                                  {@code quantity} exceeds what is queued
      */
     public void cancelBuyOrder(String productId, long price, long quantity) {
-        BazaarProduct product = requireProduct(productId);
+        ProductData product = requireProduct(productId);
         requirePositive(quantity, "quantity");
         cancelOrder(product.buyOrders, price, quantity, "buy");
     }
@@ -293,7 +337,7 @@ public final class BazaarManager {
      *                                  {@code quantity} exceeds what is queued
      */
     public void cancelSellOrder(String productId, long price, long quantity) {
-        BazaarProduct product = requireProduct(productId);
+        ProductData product = requireProduct(productId);
         requirePositive(quantity, "quantity");
         cancelOrder(product.sellOrders, price, quantity, "sell");
     }
@@ -312,9 +356,9 @@ public final class BazaarManager {
      * Returns a product by id.
      *
      * @param productId the product id
-     * @return the product, or {@code null} if none is registered under that id
+     * @return the product data, or {@code null} if none is registered under that id
      */
-    public BazaarProduct getProduct(String productId) {
+    public ProductData getProduct(String productId) {
         return products.get(productId);
     }
 
@@ -323,7 +367,7 @@ public final class BazaarManager {
      *
      * @return an unmodifiable view of the registered products
      */
-    public Collection<BazaarProduct> getProducts() {
+    public Collection<ProductData> getProducts() {
         return Collections.unmodifiableCollection(products.values());
     }
 
@@ -331,8 +375,8 @@ public final class BazaarManager {
     // Internal helpers
     // -------------------------------------------------------------------------
 
-    private BazaarProduct requireProduct(String productId) {
-        BazaarProduct product = products.get(productId);
+    private ProductData requireProduct(String productId) {
+        ProductData product = products.get(productId);
         if (product == null) {
             throw new IllegalArgumentException("no product registered with id: " + productId);
         }
