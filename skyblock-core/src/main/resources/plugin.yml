@@ -143,6 +143,11 @@ commands:
   essence:
     description: View and manage your essence balances.
     usage: /essence <balance [type]|add <type> <amount>|remove <type> <amount>>
+  crimsonisle:
+    description: View and manage your Crimson Isle progression.
+    usage: /crimsonisle <faction|reputation|kuudra>
+    aliases: [crimson]
+    permission: skyblock.crimsonisle
 
 permissions:
   skyblock.warp:
@@ -162,4 +167,7 @@ permissions:
     default: true
   skyblock.essence:
     description: Use the /essence command to view and manage essence balances.
+    default: true
+  skyblock.crimsonisle:
+    description: Use the /crimsonisle command to view and manage Crimson Isle progression.
     default: true

@@ -332,6 +332,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.skills.SkillsManager.getInstance();
         getServer().getPluginManager().registerEvents(new SkyBlockEnchantListener(SkyBlockEnchantManager.getInstance()), this);
 
+        com.skyblock.core.crimson.CrimsonIsleManager crimsonIsleManager = com.skyblock.core.crimson.CrimsonIsleManager.getInstance();
+        com.skyblock.core.crimson.CrimsonIsleCommand crimsonIsleCommand = new com.skyblock.core.crimson.CrimsonIsleCommand(crimsonIsleManager);
+        getCommand("crimsonisle").setExecutor(crimsonIsleCommand);
+        getCommand("crimsonisle").setTabCompleter(crimsonIsleCommand);
+
         getLogger().info("SkyBlock core enabled.");
     }
 
