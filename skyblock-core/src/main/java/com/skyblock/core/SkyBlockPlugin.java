@@ -13,6 +13,7 @@ import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.combat.StatManager;
 import com.skyblock.core.command.BankCommand;
 import com.skyblock.core.command.BazaarCommand;
+import com.skyblock.core.command.CollectionCommand;
 import com.skyblock.core.command.DungeonCommand;
 import com.skyblock.core.command.LeaderboardCommand;
 import com.skyblock.core.command.PetsCommand;
@@ -86,7 +87,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("bazaar").setExecutor(new BazaarCommand(bazaarManager));
         BankManager bankManager = BankManager.getInstance();
         getCommand("bank").setExecutor(new BankCommand(bankManager));
-        CollectionManager.getInstance();
+        CollectionManager collectionManager = CollectionManager.getInstance();
+        getCommand("collection").setExecutor(new CollectionCommand(collectionManager));
         DungeonManager dungeonManager = DungeonManager.getInstance();
         getCommand("dungeon").setExecutor(new DungeonCommand(dungeonManager));
         EnchantmentManager.getInstance();
