@@ -71,6 +71,7 @@
         <module>item_forge</module>
         <module>pets</module>
         <module>farming</module>
+        <module>guild</module>
         <module>plugin</module>
     </modules>
 
