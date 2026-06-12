@@ -38,7 +38,6 @@ import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.forge.ForgeManager;
 import com.skyblock.core.listener.CoreListeners;
-import com.skyblock.core.listeners.SkyBlockEventListener;
 import com.skyblock.core.magic.FairySoulManager;
 import com.skyblock.core.menu.MenuManager;
 import com.skyblock.core.minion.MinionCommand;
@@ -47,6 +46,7 @@ import com.skyblock.core.pets.PetManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.npc.NpcCommand;
 import com.skyblock.core.npc.NpcManager;
+import com.skyblock.core.command.QuestCommand;
 import com.skyblock.core.quests.QuestManager;
 import com.skyblock.core.scoreboard.ScoreboardManager;
 import com.skyblock.core.shop.ShopManager;
@@ -62,7 +62,8 @@ import com.skyblock.core.foraging.ForagingListener;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.mining.MiningListener;
 import com.skyblock.core.mining.MiningManager;
-import com.skyblock.farming.FarmingManager;
+import com.skyblock.core.farming.FarmingListener;
+import com.skyblock.core.farming.FarmingManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -94,7 +95,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
         PlayerDataManager playerDataManager = PlayerDataManager.getInstance();
         MiningManager miningManager = MiningManager.getInstance();
-        FarmingManager farmingManager = new FarmingManager();
+        FarmingManager farmingManager = FarmingManager.getInstance();
         ForagingManager foragingManager = ForagingManager.getInstance();
 
         // initialise all singletons so they are ready before commands fire
@@ -128,7 +129,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("profile").setExecutor(new ProfileCommand(profileManager));
         NpcManager npcManager = NpcManager.getInstance();
         getCommand("npc").setExecutor(new NpcCommand(npcManager, economyManager));
-        QuestManager.getInstance();
+        QuestCommand questCommand = new QuestCommand(QuestManager.getInstance());
+        getCommand("quest").setExecutor(questCommand);
+        getCommand("quest").setTabCompleter(questCommand);
         ScoreboardManager.getInstance().start(this);
         ShopManager shopManager = ShopManager.getInstance();
         SkyBlockRecipeManager.getInstance();
@@ -156,8 +159,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(leaderboardManager));
         getServer().getPluginManager().registerEvents(new MiningListener(miningManager), this);
         getServer().getPluginManager().registerEvents(new ForagingListener(foragingManager), this);
-        getServer().getPluginManager().registerEvents(
-                new SkyBlockEventListener(farmingManager), this);
+        getServer().getPluginManager().registerEvents(new FarmingListener(farmingManager), this);
         getServer().getPluginManager().registerEvents(new AlchemyListener(alchemyManager), this);
         getServer().getPluginManager().registerEvents(new CombatListener(CombatManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
