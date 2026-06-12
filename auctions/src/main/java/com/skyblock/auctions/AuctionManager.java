@@ -115,7 +115,7 @@ public final class AuctionManager {
         }
     }
 
-    private final Map<UUID, AuctionListing> activeAuctions = new HashMap<>();
+    private final Map<UUID, AuctionListing> listings = new HashMap<>();
 
     /**
      * Creates a new listing for the given item and adds it to the active
@@ -143,7 +143,7 @@ public final class AuctionManager {
         UUID id = UUID.randomUUID();
         AuctionListing listing =
                 new AuctionListing(id, seller.getUniqueId(), itemName, type, startingPrice);
-        activeAuctions.put(id, listing);
+        listings.put(id, listing);
         return listing;
     }
 
@@ -205,7 +205,7 @@ public final class AuctionManager {
             throw new IllegalArgumentException("seller cannot buy their own listing");
         }
         listing.highestBidder = buyer.getUniqueId();
-        activeAuctions.remove(auctionId);
+        listings.remove(auctionId);
         return listing;
     }
 
@@ -223,7 +223,7 @@ public final class AuctionManager {
             throw new IllegalArgumentException(
                     "cannot end a " + listing.type.getDisplayName() + " listing: " + auctionId);
         }
-        activeAuctions.remove(auctionId);
+        listings.remove(auctionId);
         return listing.highestBidder;
     }
 
@@ -247,7 +247,7 @@ public final class AuctionManager {
         if (listing.highestBidder != null) {
             return false;
         }
-        activeAuctions.remove(auctionId);
+        listings.remove(auctionId);
         return true;
     }
 
@@ -258,7 +258,7 @@ public final class AuctionManager {
      * @return {@code true} if the listing exists and has not been settled
      */
     public boolean isActive(UUID auctionId) {
-        return activeAuctions.containsKey(auctionId);
+        return listings.containsKey(auctionId);
     }
 
     /**
@@ -268,7 +268,7 @@ public final class AuctionManager {
      * @return the listing, or {@code null} if none is active under that id
      */
     public AuctionListing getListing(UUID auctionId) {
-        return activeAuctions.get(auctionId);
+        return listings.get(auctionId);
     }
 
     /**
@@ -277,11 +277,11 @@ public final class AuctionManager {
      * @return an unmodifiable view of the active listings
      */
     public Collection<AuctionListing> getActiveAuctions() {
-        return Collections.unmodifiableCollection(activeAuctions.values());
+        return Collections.unmodifiableCollection(listings.values());
     }
 
     private AuctionListing requireListing(UUID auctionId) {
-        AuctionListing listing = activeAuctions.get(auctionId);
+        AuctionListing listing = listings.get(auctionId);
         if (listing == null) {
             throw new IllegalArgumentException("no active auction with id: " + auctionId);
         }
