@@ -72,6 +72,8 @@ import com.skyblock.core.mining.MiningManager;
 import com.skyblock.core.farming.FarmingListener;
 import com.skyblock.core.farming.FarmingManager;
 import com.skyblock.core.mob.MobManager;
+import com.skyblock.core.reward.DailyRewardCommand;
+import com.skyblock.core.reward.DailyRewardManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -161,6 +163,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WarpManager.getInstance();
         FishingManager fishingManager = FishingManager.getInstance();
         YamlPlayerStorage.getInstance();
+        DailyRewardManager dailyRewardManager = DailyRewardManager.getInstance();
+        DailyRewardCommand dailyRewardCommand = new DailyRewardCommand(dailyRewardManager);
+        getCommand("dailyreward").setExecutor(dailyRewardCommand);
+        getCommand("dailyreward").setTabCompleter(dailyRewardCommand);
 
         IslandManager.getInstance();
         getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));

@@ -89,3 +89,6 @@ commands:
   achievement:
     description: View your SkyBlock achievements.
     usage: /achievement [list|view]
+  dailyreward:
+    description: Claim your daily reward of 1,000 coins.
+    usage: /dailyreward [status]
