@@ -17,6 +17,15 @@ import java.util.UUID;
  */
 public final class DungeonManager {
 
+    /** Playable dungeon classes. */
+    public enum DungeonClass {
+        HEALER,
+        MAGE,
+        BERSERK,
+        ARCHER,
+        TANK
+    }
+
     /** All dungeon floors available in SkyBlock. */
     public enum DungeonType {
         ENTRANCE,
@@ -65,6 +74,8 @@ public final class DungeonManager {
     private final Map<UUID, Map<DungeonType, Integer>> bestScores = new HashMap<>();
     /** Completion count per player per dungeon type. */
     private final Map<UUID, Map<DungeonType, Integer>> completionCounts = new HashMap<>();
+    /** Selected dungeon class per player. */
+    private final Map<UUID, DungeonClass> playerClasses = new HashMap<>();
 
     private DungeonManager() {}
 
@@ -187,5 +198,28 @@ public final class DungeonManager {
         Objects.requireNonNull(type, "type");
         Map<DungeonType, Integer> counts = completionCounts.get(playerId);
         return counts == null ? 0 : counts.getOrDefault(type, 0);
+    }
+
+    /**
+     * Sets the dungeon class for the given player.
+     *
+     * @param playerId     the player
+     * @param dungeonClass the chosen class
+     */
+    public void setClass(UUID playerId, DungeonClass dungeonClass) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(dungeonClass, "dungeonClass");
+        playerClasses.put(playerId, dungeonClass);
+    }
+
+    /**
+     * Returns the player's selected dungeon class, or {@code null} if none chosen.
+     *
+     * @param playerId the player to look up
+     * @return the selected {@link DungeonClass}, or {@code null}
+     */
+    public DungeonClass getClass(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return playerClasses.get(playerId);
     }
 }
