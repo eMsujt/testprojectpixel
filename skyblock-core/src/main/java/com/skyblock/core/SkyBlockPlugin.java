@@ -91,6 +91,7 @@ import com.skyblock.core.foraging.ForagingListener;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.mining.MiningListener;
 import com.skyblock.core.mining.MiningManager;
+import com.skyblock.core.farming.CropMilestoneListener;
 import com.skyblock.core.farming.FarmingListener;
 import com.skyblock.core.farming.FarmingManager;
 import com.skyblock.core.mob.CustomMobListener;
@@ -279,6 +280,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MiningListener(miningManager), this);
         getServer().getPluginManager().registerEvents(new ForagingListener(foragingManager), this);
         getServer().getPluginManager().registerEvents(new FarmingListener(farmingManager), this);
+        getServer().getPluginManager().registerEvents(new CropMilestoneListener(farmingManager), this);
         getServer().getPluginManager().registerEvents(new AlchemyListener(alchemyManager), this);
         getServer().getPluginManager().registerEvents(new CombatListener(CombatManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
