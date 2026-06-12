@@ -65,6 +65,7 @@ import com.skyblock.core.mining.MiningListener;
 import com.skyblock.core.mining.MiningManager;
 import com.skyblock.core.farming.FarmingListener;
 import com.skyblock.core.farming.FarmingManager;
+import com.skyblock.core.mob.MobManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -95,6 +96,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         instance = this;
 
         PlayerDataManager playerDataManager = PlayerDataManager.getInstance();
+        MobManager mobManager = MobManager.getInstance();
+        mobManager.init(this);
         MiningManager miningManager = MiningManager.getInstance();
         FarmingManager farmingManager = FarmingManager.getInstance();
         ForagingManager foragingManager = ForagingManager.getInstance();
