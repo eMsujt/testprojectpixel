@@ -1,0 +1,96 @@
+minions:
+  FARMER:
+    displayName: "Farmer Minion"
+    description: "Harvests crops automatically."
+    resource: WHEAT
+    baseInterval: 26
+
+  MINER:
+    displayName: "Miner Minion"
+    description: "Mines stone and ores automatically."
+    resource: COBBLESTONE
+    baseInterval: 26
+
+  LUMBERJACK:
+    displayName: "Lumberjack Minion"
+    description: "Chops wood automatically."
+    resource: OAK_LOG
+    baseInterval: 26
+
+  FISHERMAN:
+    displayName: "Fisherman Minion"
+    description: "Fishes automatically."
+    resource: COD
+    baseInterval: 35
+
+  COBBLESTONE:
+    displayName: "Cobblestone Minion"
+    description: "Generates cobblestone automatically."
+    resource: COBBLESTONE
+    baseInterval: 14
+
+  SNOW:
+    displayName: "Snow Minion"
+    description: "Generates snow automatically."
+    resource: SNOWBALL
+    baseInterval: 14
+
+  CLAY:
+    displayName: "Clay Minion"
+    description: "Collects clay automatically."
+    resource: CLAY_BALL
+    baseInterval: 26
+
+  FLOWER:
+    displayName: "Flower Minion"
+    description: "Grows flowers automatically."
+    resource: DANDELION
+    baseInterval: 26
+
+  MELON:
+    displayName: "Melon Minion"
+    description: "Grows melons automatically."
+    resource: MELON_SLICE
+    baseInterval: 26
+
+  PUMPKIN:
+    displayName: "Pumpkin Minion"
+    description: "Grows pumpkins automatically."
+    resource: PUMPKIN
+    baseInterval: 35
+
+  MUSHROOM:
+    displayName: "Mushroom Minion"
+    description: "Grows mushrooms automatically."
+    resource: BROWN_MUSHROOM
+    baseInterval: 26
+
+  CACTUS:
+    displayName: "Cactus Minion"
+    description: "Grows cactus automatically."
+    resource: CACTUS
+    baseInterval: 17
+
+  SUGAR_CANE:
+    displayName: "Sugar Cane Minion"
+    description: "Grows sugar cane automatically."
+    resource: SUGAR_CANE
+    baseInterval: 17
+
+  WHEAT:
+    displayName: "Wheat Minion"
+    description: "Harvests wheat automatically."
+    resource: WHEAT
+    baseInterval: 26
+
+  CARROT:
+    displayName: "Carrot Minion"
+    description: "Harvests carrots automatically."
+    resource: CARROT
+    baseInterval: 26
+
+  POTATO:
+    displayName: "Potato Minion"
+    description: "Harvests potatoes automatically."
+    resource: POTATO
+    baseInterval: 26
