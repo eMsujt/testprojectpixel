@@ -48,6 +48,7 @@ import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.quests.QuestManager;
 import com.skyblock.core.scoreboard.ScoreboardManager;
 import com.skyblock.core.shop.ShopManager;
+import com.skyblock.core.skill.SkillCommand;
 import com.skyblock.core.skills.SkillManager;
 import com.skyblock.core.stats.CombatStatsListener;
 import com.skyblock.core.stats.CombatStatsManager;
@@ -139,6 +140,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));
         getCommand("skyblock").setExecutor(new SkyBlockMenuCommand(MenuManager.getInstance()));
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
+        com.skyblock.core.skill.SkillManager skillManagerV2 = com.skyblock.core.skill.SkillManager.getInstance();
+        SkillCommand skillCommand = new SkillCommand(skillManagerV2);
+        getCommand("skill").setExecutor(skillCommand);
+        getCommand("skill").setTabCompleter(skillCommand);
         com.skyblock.core.warp.WarpManager warpManager = com.skyblock.core.warp.WarpManager.getInstance();
         warpManager.load(new java.io.File(getDataFolder(), "warps.yml"));
         getCommand("warp").setExecutor(new WarpCommand(warpManager));
