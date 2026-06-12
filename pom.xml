@@ -64,6 +64,7 @@
         <module>achievements</module>
         <module>alchemy</module>
         <module>collection</module>
+        <module>skills</module>
         <module>plugin</module>
     </modules>
 
