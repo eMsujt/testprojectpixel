@@ -1,0 +1,170 @@
+package com.skyblock.items;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+/**
+ * Registry of custom item definitions: each item has a unique id, a display
+ * name, an {@link ItemType}, and a {@link Rarity}.
+ *
+ * <p>Definitions are stored in a {@link ConcurrentHashMap} keyed by item id,
+ * so all operations are thread-safe.</p>
+ */
+public final class ItemManager {
+
+    /** The functional category of a custom item. */
+    public enum ItemType {
+        /** Swords, bows, and other weapons. */
+        WEAPON,
+        /** Helmets, chestplates, leggings, and boots. */
+        ARMOR,
+        /** Pickaxes, axes, hoes, and other gathering tools. */
+        TOOL,
+        /** Talismans and other passive accessories. */
+        ACCESSORY,
+        /** Potions, food, and other consumables. */
+        CONSUMABLE,
+        /** Crafting ingredients and dropped materials. */
+        MATERIAL,
+        /** Blocks and decorative items. */
+        BLOCK
+    }
+
+    /** A single custom item definition. */
+    public static final class ItemDefinition {
+
+        private final String id;
+        private final String displayName;
+        private final ItemType type;
+        private final Rarity rarity;
+
+        private ItemDefinition(String id, String displayName, ItemType type, Rarity rarity) {
+            this.id = id;
+            this.displayName = displayName;
+            this.type = type;
+            this.rarity = rarity;
+        }
+
+        /** Returns the unique id of this item. */
+        public String getId() {
+            return id;
+        }
+
+        /** Returns the human-readable name of this item. */
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        /** Returns the functional category of this item. */
+        public ItemType getType() {
+            return type;
+        }
+
+        /** Returns the rarity tier of this item. */
+        public Rarity getRarity() {
+            return rarity;
+        }
+    }
+
+    private final ConcurrentHashMap<String, ItemDefinition> definitions = new ConcurrentHashMap<>();
+
+    /**
+     * Registers a new item definition.
+     *
+     * @param id          the item's unique id, non-blank
+     * @param displayName the item's display name, non-blank
+     * @param type        the item's functional category
+     * @param rarity      the item's rarity tier
+     * @return the created definition
+     * @throws IllegalArgumentException if an item with the same id is already
+     *                                  registered
+     */
+    public ItemDefinition register(String id, String displayName, ItemType type, Rarity rarity) {
+        String validated = requireId(id);
+        if (displayName == null || displayName.isBlank()) {
+            throw new IllegalArgumentException("displayName must be non-blank");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("type must be non-null");
+        }
+        if (rarity == null) {
+            throw new IllegalArgumentException("rarity must be non-null");
+        }
+        ItemDefinition definition = new ItemDefinition(validated, displayName.trim(), type, rarity);
+        if (definitions.putIfAbsent(validated, definition) != null) {
+            throw new IllegalArgumentException("item is already registered: " + validated);
+        }
+        return definition;
+    }
+
+    /**
+     * Returns the definition registered under the given id, if any.
+     *
+     * @param id the item's id
+     * @return the definition, or empty if no item with that id is registered
+     */
+    public Optional<ItemDefinition> getItem(String id) {
+        return Optional.ofNullable(definitions.get(requireId(id)));
+    }
+
+    /**
+     * Removes the definition registered under the given id.
+     *
+     * @param id the item's id
+     * @return {@code true} if the item was registered and is now removed
+     */
+    public boolean unregister(String id) {
+        return definitions.remove(requireId(id)) != null;
+    }
+
+    /**
+     * Returns all registered definitions of the given type.
+     *
+     * @param type the category to filter by
+     * @return the matching definitions, empty if there are none
+     */
+    public List<ItemDefinition> getItemsByType(ItemType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("type must be non-null");
+        }
+        return definitions.values().stream()
+                .filter(definition -> definition.type == type)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Returns all registered definitions of the given rarity.
+     *
+     * @param rarity the rarity tier to filter by
+     * @return the matching definitions, empty if there are none
+     */
+    public List<ItemDefinition> getItemsByRarity(Rarity rarity) {
+        if (rarity == null) {
+            throw new IllegalArgumentException("rarity must be non-null");
+        }
+        return definitions.values().stream()
+                .filter(definition -> definition.rarity == rarity)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * Returns an unmodifiable view of all registered definitions keyed by
+     * item id.
+     *
+     * @return the registry contents, empty if no items are registered
+     */
+    public Map<String, ItemDefinition> getItems() {
+        return Collections.unmodifiableMap(definitions);
+    }
+
+    private static String requireId(String id) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("id must be non-blank");
+        }
+        return id.trim();
+    }
+}
