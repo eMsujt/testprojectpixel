@@ -68,6 +68,7 @@ import com.skyblock.core.stats.CombatStatsManager;
 import com.skyblock.core.storage.StorageCommand;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.YamlPlayerStorage;
+import com.skyblock.core.stat.StatListener;
 import com.skyblock.core.talisman.TalismanCommand;
 import com.skyblock.core.talisman.TalismanManager;
 import com.skyblock.core.warps.WarpManager;
@@ -172,7 +173,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         skyBlockCraftingManager.init(this);
         CraftingManager craftingManager = CraftingManager.getInstance();
         getCommand("crafting").setExecutor(new CraftingCommand(craftingManager));
-        StatManager.getInstance();
+        com.skyblock.core.stat.StatManager statManager = com.skyblock.core.stat.StatManager.getInstance();
+        getServer().getPluginManager().registerEvents(new StatListener(statManager), this);
         TalismanManager talismanManager = TalismanManager.getInstance();
         getCommand("talisman").setExecutor(new TalismanCommand(talismanManager));
         WarpManager.getInstance();
