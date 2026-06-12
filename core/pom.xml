@@ -25,6 +25,18 @@
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.skyblock</groupId>
+            <artifactId>skyblock-mining</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.skyblock</groupId>
+            <artifactId>skyblock-farming</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.skyblock</groupId>
+            <artifactId>skyblock-foraging</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
