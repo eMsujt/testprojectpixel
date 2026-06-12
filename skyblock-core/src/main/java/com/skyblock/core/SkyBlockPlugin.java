@@ -176,6 +176,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CoreListeners(playerDataManager), this);
         CombatStatsManager combatStatsManager = CombatStatsManager.getInstance();
         getServer().getPluginManager().registerEvents(new CombatStatsListener(combatStatsManager), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.skill.SkillListener(skillManagerV2), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
