@@ -20,6 +20,7 @@ import com.skyblock.core.island.IslandUpgradeManager;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collection.CollectionListener;
 import com.skyblock.core.collection.CollectionManager;
+import com.skyblock.core.combat.CombatCommand;
 import com.skyblock.core.combat.CombatListener;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.combat.StatManager;
@@ -316,6 +317,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CropMilestoneListener(farmingManager), this);
         getServer().getPluginManager().registerEvents(new AlchemyListener(alchemyManager), this);
         getServer().getPluginManager().registerEvents(new CombatListener(CombatManager.getInstance()), this);
+        CombatCommand combatCommand = new CombatCommand(CombatManager.getInstance());
+        getCommand("combat").setExecutor(combatCommand);
+        getCommand("combat").setTabCompleter(combatCommand);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
         getServer().getPluginManager().registerEvents(new MenuListener(MenuManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new CoreListeners(playerDataManager), this);
