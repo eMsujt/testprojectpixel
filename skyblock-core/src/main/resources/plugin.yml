@@ -43,3 +43,12 @@ commands:
     description: View player leaderboards.
     usage: /leaderboard [category]
     aliases: [lb]
+  bank:
+    description: Manage your SkyBlock bank account.
+    usage: /bank [deposit|withdraw|balance]
+  dungeon:
+    description: Manage and view dungeon runs.
+    usage: /dungeon [start|leave|info]
+  forge:
+    description: Forge items using the SkyBlock forge.
+    usage: /forge [list|start|collect]
