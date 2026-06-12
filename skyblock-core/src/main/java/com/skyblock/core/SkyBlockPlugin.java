@@ -83,6 +83,8 @@ import com.skyblock.core.farming.FarmingManager;
 import com.skyblock.core.mob.MobLootListener;
 import com.skyblock.core.mob.MobLootManager;
 import com.skyblock.core.mob.MobManager;
+import com.skyblock.core.magicfind.MagicFindListener;
+import com.skyblock.core.magicfind.MagicFindManager;
 import com.skyblock.core.reward.DailyRewardCommand;
 import com.skyblock.core.reward.DailyRewardManager;
 import com.skyblock.core.trade.TradeCommand;
@@ -229,6 +231,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EnchantmentListener(SkyBlockEnchantManager.getInstance()), this);
         MobLootManager mobLootManager = MobLootManager.getInstance();
         getServer().getPluginManager().registerEvents(new MobLootListener(mobLootManager), this);
+        MagicFindManager magicFindManager = MagicFindManager.getInstance();
+        getServer().getPluginManager().registerEvents(new MagicFindListener(magicFindManager, mobLootManager), this);
         ArmorSetManager armorSetManager = ArmorSetManager.getInstance();
         getServer().getPluginManager().registerEvents(new ArmorSetListener(armorSetManager), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.talisman.TalismanListener(talismanManager), this);
