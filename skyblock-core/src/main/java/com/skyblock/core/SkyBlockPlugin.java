@@ -31,6 +31,7 @@ import com.skyblock.core.crafting.CraftingManager;
 import com.skyblock.core.crafting.SkyBlockRecipeManager;
 import com.skyblock.core.dungeon.DungeonManager;
 import com.skyblock.core.economy.EconomyManager;
+import com.skyblock.core.enchant.EnchantCommand;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.enchanting.EnchantmentManager;
@@ -115,6 +116,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EnchantmentManager.getInstance();
         EnchantingManager enchantingManager = EnchantingManager.getInstance();
         getCommand("enchanting").setExecutor(new EnchantingCommand(enchantingManager));
+        com.skyblock.core.enchant.EnchantManager enchantManager = com.skyblock.core.enchant.EnchantManager.getInstance();
+        EnchantCommand enchantCommand = new EnchantCommand(enchantManager);
+        getCommand("enchant").setExecutor(enchantCommand);
+        getCommand("enchant").setTabCompleter(enchantCommand);
         FairySoulManager.getInstance();
         ForgeManager forgeManager = ForgeManager.getInstance();
         getCommand("forge").setExecutor(new ForgeCommand(forgeManager));
