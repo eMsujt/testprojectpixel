@@ -53,6 +53,7 @@
         <module>hotm</module>
         <module>brewing</module>
         <module>reforging</module>
+        <module>leaderboards</module>
         <module>plugin</module>
     </modules>
 
