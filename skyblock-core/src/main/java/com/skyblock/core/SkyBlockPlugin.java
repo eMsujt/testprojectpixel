@@ -118,7 +118,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
         getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);
-        getServer().getPluginManager().registerEvents(fishingManager, this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
         getServer().getPluginManager().registerEvents(MenuManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new CoreListeners(playerDataManager), this);
 
