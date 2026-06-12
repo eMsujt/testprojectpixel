@@ -116,6 +116,9 @@ commands:
   wardrobe:
     description: Save and load named armor outfits.
     usage: /wardrobe <save|load|delete|list>
+  fishing:
+    description: View fishing stats and trophy fish catches.
+    usage: /fishing [trophy [<fish>|reset]]
   bestiary:
     description: Track your mob kill counts.
     usage: /bestiary [view <mob>|reset]
