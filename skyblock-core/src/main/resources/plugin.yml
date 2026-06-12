@@ -100,3 +100,7 @@ commands:
   storage:
     description: Manage your personal storage pages.
     usage: /storage <info|upgrade|reset>
+  guild:
+    description: Create and manage player guilds.
+    usage: /guild <create|disband|invite|kick|leave|info|list>
+    aliases: [g]
