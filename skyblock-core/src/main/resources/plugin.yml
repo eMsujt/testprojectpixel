@@ -106,3 +106,6 @@ commands:
   trade:
     description: Trade items with another player.
     usage: /trade <player|accept|decline|add|remove|view|confirm|cancel>
+  wardrobe:
+    description: Save and load named armor outfits.
+    usage: /wardrobe <save|load|delete|list>
