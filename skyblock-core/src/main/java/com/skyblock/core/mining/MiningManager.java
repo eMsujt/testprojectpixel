@@ -1,5 +1,8 @@
 package com.skyblock.core.mining;
 
+import org.bukkit.Material;
+
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -13,6 +16,49 @@ import java.util.Objects;
  * <p>Not thread-safe; synchronize externally if needed.</p>
  */
 public final class MiningManager {
+
+    /** Ore types tracked by the mining skill, each carrying XP awarded on break. */
+    public enum OreType {
+        COAL_ORE(Material.COAL_ORE, 5),
+        DEEPSLATE_COAL_ORE(Material.DEEPSLATE_COAL_ORE, 5),
+        IRON_ORE(Material.IRON_ORE, 10),
+        DEEPSLATE_IRON_ORE(Material.DEEPSLATE_IRON_ORE, 10),
+        GOLD_ORE(Material.GOLD_ORE, 15),
+        DEEPSLATE_GOLD_ORE(Material.DEEPSLATE_GOLD_ORE, 15),
+        REDSTONE_ORE(Material.REDSTONE_ORE, 15),
+        DEEPSLATE_REDSTONE_ORE(Material.DEEPSLATE_REDSTONE_ORE, 15),
+        LAPIS_ORE(Material.LAPIS_ORE, 20),
+        DEEPSLATE_LAPIS_ORE(Material.DEEPSLATE_LAPIS_ORE, 20),
+        DIAMOND_ORE(Material.DIAMOND_ORE, 50),
+        DEEPSLATE_DIAMOND_ORE(Material.DEEPSLATE_DIAMOND_ORE, 50),
+        EMERALD_ORE(Material.EMERALD_ORE, 65),
+        DEEPSLATE_EMERALD_ORE(Material.DEEPSLATE_EMERALD_ORE, 65),
+        NETHER_QUARTZ_ORE(Material.NETHER_QUARTZ_ORE, 20),
+        NETHER_GOLD_ORE(Material.NETHER_GOLD_ORE, 15),
+        ANCIENT_DEBRIS(Material.ANCIENT_DEBRIS, 120);
+
+        private final Material material;
+        private final int xp;
+
+        OreType(Material material, int xp) {
+            this.material = material;
+            this.xp = xp;
+        }
+
+        public Material getMaterial() { return material; }
+        public int getXp() { return xp; }
+    }
+
+    /** Lookup from {@link Material} to {@link OreType} for fast block-break dispatch. */
+    public static final Map<Material, OreType> MATERIAL_TO_ORE;
+
+    static {
+        Map<Material, OreType> map = new EnumMap<>(Material.class);
+        for (OreType ore : OreType.values()) {
+            map.put(ore.getMaterial(), ore);
+        }
+        MATERIAL_TO_ORE = Map.copyOf(map);
+    }
 
     /** Mining-speed bonus entry for a given skill-level range. */
     public static final class MiningSpeedBonus {
