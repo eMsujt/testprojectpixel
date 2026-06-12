@@ -1,21 +1,14 @@
 package com.skyblock.core.combat;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
 /**
- * Singleton Bukkit listener that intercepts {@link EntityDamageByEntityEvent}
- * and replaces Minecraft's raw damage with a SkyBlock damage calculation.
- *
- * <p>Formula (attacker must be a {@link Player}):</p>
+ * Singleton manager that computes SkyBlock damage using the formula:
  * <ol>
  *   <li>Strength bonus  — {@code base * (1 + strength / 100)}</li>
  *   <li>Critical hit    — roll {@code [0, 100)} against {@code critChance};
@@ -23,14 +16,15 @@ import java.util.UUID;
  *   <li>Defense reduction — {@code effective * 100 / (defense + 100)}</li>
  * </ol>
  *
+ * <p>Event handling is delegated to {@link CombatListener}.</p>
  * <p>Not thread-safe; synchronize externally if needed.</p>
  */
-public final class CombatManager implements Listener {
+public final class CombatManager {
 
     private static final CombatManager INSTANCE = new CombatManager();
 
     private final StatManager stats = StatManager.getInstance();
-    private final Random random = new Random();
+    final Random random = new Random();
 
     private CombatManager() {
     }
@@ -42,44 +36,6 @@ public final class CombatManager implements Listener {
      */
     public static CombatManager getInstance() {
         return INSTANCE;
-    }
-
-    /**
-     * Intercepts entity-damage events where the attacker is a player and
-     * overwrites the damage with the SkyBlock formula result.
-     *
-     * @param event the damage event
-     */
-    @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        Entity attacker = event.getDamager();
-        if (!(attacker instanceof Player)) {
-            return;
-        }
-
-        UUID attackerId = attacker.getUniqueId();
-        double strength  = stats.getStat(attackerId, StatManager.CombatStat.STRENGTH);
-        double critChance = stats.getStat(attackerId, StatManager.CombatStat.CRIT_CHANCE);
-        double critDamage = stats.getStat(attackerId, StatManager.CombatStat.CRIT_DAMAGE);
-
-        double baseDamage = event.getDamage();
-
-        // 1. Strength bonus
-        double effective = baseDamage * (1.0 + strength / 100.0);
-
-        // 2. Critical hit
-        if (random.nextDouble() * 100.0 < critChance) {
-            effective *= (1.0 + critDamage / 100.0);
-        }
-
-        // 3. Defense reduction (defender must be a LivingEntity for stat lookup)
-        Entity defender = event.getEntity();
-        if (defender instanceof LivingEntity) {
-            double defense = getDefense(defender);
-            effective = effective * 100.0 / (defense + 100.0);
-        }
-
-        event.setDamage(Math.max(0.0, effective));
     }
 
     // ---------------------------------------------------------------------------
@@ -99,6 +55,20 @@ public final class CombatManager implements Listener {
             return 0.0;
         }
         return Math.max(0.0, stats.getStat(entity.getUniqueId(), StatManager.CombatStat.DEFENSE));
+    }
+
+    /**
+     * Returns the effective STRENGTH, CRIT_CHANCE, and CRIT_DAMAGE stats
+     * for the given player via the shared {@link StatManager}.
+     *
+     * @param playerId the attacker's UUID
+     * @return array: [strength, critChance, critDamage]
+     */
+    double[] getAttackStats(UUID playerId) {
+        double strength   = stats.getStat(playerId, StatManager.CombatStat.STRENGTH);
+        double critChance = stats.getStat(playerId, StatManager.CombatStat.CRIT_CHANCE);
+        double critDamage = stats.getStat(playerId, StatManager.CombatStat.CRIT_DAMAGE);
+        return new double[]{strength, critChance, critDamage};
     }
 
     /**
