@@ -68,3 +68,6 @@ commands:
   enchanting:
     description: View and apply SkyBlock enchantments.
     usage: /enchanting <list|info|apply|remove|view>
+  talisman:
+    description: Manage your equipped talismans and view stat bonuses.
+    usage: /talisman <list|equip|unequip|equipped|bonuses>
