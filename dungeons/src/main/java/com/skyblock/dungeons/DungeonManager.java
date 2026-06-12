@@ -1,98 +1,110 @@
 package com.skyblock.dungeons;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
+
 /**
- * Tracks active dungeon sessions keyed by session ID.
+ * Tracks active dungeon runs keyed by session ID.
  *
- * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ * <p>A run is started for a party of players on a {@link DungeonFloor}; each
+ * player can be in at most one active run at a time. Not thread-safe;
+ * synchronize externally if accessed from multiple threads.</p>
  */
 public final class DungeonManager {
 
-    private final Map<UUID, DungeonSession> sessions = new HashMap<>();
+    private final Map<UUID, DungeonSession> activeSessions = new HashMap<>();
+    private final Map<UUID, UUID> playerSessions = new HashMap<>();
 
     /**
-     * Starts a new dungeon session.
+     * Starts a new dungeon run for the given party.
      *
-     * @param sessionId unique identifier for this run
-     * @param floor     the dungeon floor number, must be positive
-     * @param bossId    the UUID of the boss entity
+     * @param party the players entering the dungeon, must not be null or empty
+     * @param floor the floor to run, must not be null
      * @return the newly created {@link DungeonSession}
-     * @throws IllegalArgumentException if floor is not positive
+     * @throws IllegalArgumentException if the party is null or empty, the
+     *                                  floor is null, or any party member is
+     *                                  already in an active run
      */
-    public DungeonSession startSession(UUID sessionId, int floor, UUID bossId) {
-        Objects.requireNonNull(sessionId, "sessionId");
-        Objects.requireNonNull(bossId, "bossId");
-        if (floor < 1) {
-            throw new IllegalArgumentException("floor must be positive: " + floor);
+    public DungeonSession startRun(List<Player> party, DungeonFloor floor) {
+        if (party == null || party.isEmpty()) {
+            throw new IllegalArgumentException("party must not be null or empty");
         }
-        DungeonSession session = new DungeonSession(floor, bossId);
-        sessions.put(sessionId, session);
+        if (floor == null) {
+            throw new IllegalArgumentException("floor must not be null");
+        }
+        Set<UUID> playerIds = new LinkedHashSet<>();
+        for (Player player : party) {
+            if (player == null) {
+                throw new IllegalArgumentException("party must not contain null players");
+            }
+            UUID playerId = player.getUniqueId();
+            if (playerSessions.containsKey(playerId)) {
+                throw new IllegalArgumentException(
+                        "player is already in an active run: " + player.getName());
+            }
+            playerIds.add(playerId);
+        }
+        DungeonSession session = new DungeonSession(UUID.randomUUID(), floor, playerIds);
+        activeSessions.put(session.getSessionId(), session);
+        for (UUID playerId : playerIds) {
+            playerSessions.put(playerId, session.getSessionId());
+        }
         return session;
     }
 
     /**
-     * Returns the session with the given ID, or empty if none exists.
+     * Ends a run, removing it and all of its players from tracking.
      *
-     * @param sessionId the session to look up
-     * @return the session wrapped in an Optional
+     * @param sessionId the run to end
+     * @return {@code true} if the run existed and has been ended
+     */
+    public boolean endRun(UUID sessionId) {
+        DungeonSession session = activeSessions.remove(sessionId);
+        if (session == null) {
+            return false;
+        }
+        for (UUID playerId : session.getPlayerIds()) {
+            playerSessions.remove(playerId);
+        }
+        return true;
+    }
+
+    /**
+     * Returns the run with the given session ID, or empty if none exists.
+     *
+     * @param sessionId the run to look up
+     * @return the run wrapped in an Optional
      */
     public Optional<DungeonSession> getSession(UUID sessionId) {
-        return Optional.ofNullable(sessions.get(sessionId));
+        return Optional.ofNullable(activeSessions.get(sessionId));
     }
 
     /**
-     * Ends a session, removing it from tracking.
+     * Returns the active run the given player is in, or empty if none.
      *
-     * @param sessionId the session to remove
+     * @param playerId the player to look up
+     * @return the player's run wrapped in an Optional
      */
-    public void endSession(UUID sessionId) {
-        sessions.remove(sessionId);
+    public Optional<DungeonSession> getSessionForPlayer(UUID playerId) {
+        UUID sessionId = playerSessions.get(playerId);
+        return sessionId == null ? Optional.empty() : getSession(sessionId);
     }
 
     /**
-     * Returns an unmodifiable view of all active sessions keyed by session ID.
+     * Returns an unmodifiable view of all active runs keyed by session ID.
      *
-     * @return the active sessions
+     * @return the active runs
      */
     public Map<UUID, DungeonSession> getActiveSessions() {
-        return Collections.unmodifiableMap(sessions);
-    }
-
-    /**
-     * Adds a player to an active session.
-     *
-     * @param sessionId the target session
-     * @param playerId  the player to add
-     * @throws IllegalArgumentException if the session does not exist
-     */
-    public void addPlayer(UUID sessionId, UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        DungeonSession session = sessions.get(sessionId);
-        if (session == null) {
-            throw new IllegalArgumentException("no active session: " + sessionId);
-        }
-        session.playerIds.add(playerId);
-    }
-
-    /**
-     * Removes a player from an active session.
-     *
-     * @param sessionId the target session
-     * @param playerId  the player to remove
-     */
-    public void removePlayer(UUID sessionId, UUID playerId) {
-        DungeonSession session = sessions.get(sessionId);
-        if (session != null) {
-            session.playerIds.remove(playerId);
-        }
+        return Collections.unmodifiableMap(activeSessions);
     }
 
     /**
@@ -100,28 +112,29 @@ public final class DungeonManager {
      */
     public static final class DungeonSession {
 
-        private final int floor;
-        private final UUID bossId;
-        private final List<UUID> playerIds = new ArrayList<>();
+        private final UUID sessionId;
+        private final DungeonFloor floor;
+        private final Set<UUID> playerIds;
 
-        private DungeonSession(int floor, UUID bossId) {
+        private DungeonSession(UUID sessionId, DungeonFloor floor, Set<UUID> playerIds) {
+            this.sessionId = sessionId;
             this.floor = floor;
-            this.bossId = bossId;
+            this.playerIds = playerIds;
         }
 
-        /** Returns the dungeon floor this session is on. */
-        public int getFloor() {
+        /** Returns the unique id of this run. */
+        public UUID getSessionId() {
+            return sessionId;
+        }
+
+        /** Returns the dungeon floor this run is on. */
+        public DungeonFloor getFloor() {
             return floor;
         }
 
-        /** Returns the UUID of the boss for this session. */
-        public UUID getBossId() {
-            return bossId;
-        }
-
-        /** Returns an unmodifiable view of the players in this session. */
-        public List<UUID> getPlayerIds() {
-            return Collections.unmodifiableList(playerIds);
+        /** Returns an unmodifiable view of the players in this run. */
+        public Set<UUID> getPlayerIds() {
+            return Collections.unmodifiableSet(playerIds);
         }
     }
 }
