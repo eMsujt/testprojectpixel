@@ -1,52 +1,103 @@
 package com.skyblock.islands;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.bukkit.Location;
 
 /**
- * Registry of all loaded islands.
+ * Singleton registry of player islands, keyed by owner UUID.
  *
- * <p>Islands are indexed by island id and by owner. All access goes through
- * {@code synchronized} methods, so the manager is safe to use from
- * concurrent contexts; the {@link Island} instances it hands out are not.</p>
+ * <p>Each player owns at most one {@link PlayerIsland}. Islands are immutable
+ * snapshots; updates such as {@link #setIslandLevel(UUID, int)} replace the
+ * stored record. Not thread-safe; synchronize externally if accessed from
+ * multiple threads.</p>
  */
 public final class IslandManager {
 
-    private final Map<UUID, Island> islandsById = new HashMap<>();
-    private final Map<UUID, UUID> islandIdByOwner = new HashMap<>();
+    /**
+     * Immutable snapshot of a single player island.
+     *
+     * @param owner         player UUID of the island owner
+     * @param spawnLocation location players are sent to when visiting
+     * @param level         the island's upgrade level, at least 1
+     * @param members       member UUIDs, not including the owner
+     */
+    public record PlayerIsland(UUID owner, Location spawnLocation, int level, Set<UUID> members) {
+
+        /**
+         * Validates arguments and defensively copies mutable state.
+         *
+         * @throws IllegalArgumentException if {@code level} is less than 1
+         */
+        public PlayerIsland {
+            Objects.requireNonNull(owner, "owner");
+            Objects.requireNonNull(spawnLocation, "spawnLocation");
+            Objects.requireNonNull(members, "members");
+            if (level < 1) {
+                throw new IllegalArgumentException("level must be at least 1, got " + level);
+            }
+            spawnLocation = spawnLocation.clone();
+            members = Set.copyOf(members);
+        }
+
+        /**
+         * Returns a copy of the island spawn location.
+         *
+         * @return the spawn location
+         */
+        @Override
+        public Location spawnLocation() {
+            return spawnLocation.clone();
+        }
+
+        /**
+         * Checks whether a player is the owner or a member of this island.
+         *
+         * @param playerId the player to check
+         * @return {@code true} if the player belongs to this island
+         */
+        public boolean isMember(UUID playerId) {
+            return owner.equals(playerId) || members.contains(playerId);
+        }
+    }
+
+    private static final IslandManager INSTANCE = new IslandManager();
+
+    private final Map<UUID, PlayerIsland> islands = new HashMap<>();
+
+    private IslandManager() {
+    }
 
     /**
-     * Creates and registers a new island for the given owner.
+     * Returns the single shared {@code IslandManager} instance.
+     *
+     * @return the singleton instance
+     */
+    public static IslandManager getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Creates and registers a new level-1 island for the given owner.
      *
      * @param owner         player UUID of the island owner
      * @param spawnLocation initial spawn location of the island
      * @return the newly created island
      * @throws IllegalStateException if the owner already has an island
      */
-    public synchronized Island createIsland(UUID owner, Location spawnLocation) {
+    public PlayerIsland createIsland(UUID owner, Location spawnLocation) {
         Objects.requireNonNull(owner, "owner");
-        if (islandIdByOwner.containsKey(owner)) {
+        if (islands.containsKey(owner)) {
             throw new IllegalStateException("Player " + owner + " already owns an island");
         }
-        UUID islandId = UUID.randomUUID();
-        Island island = new Island(islandId, owner, spawnLocation);
-        islandsById.put(islandId, island);
-        islandIdByOwner.put(owner, islandId);
+        PlayerIsland island = new PlayerIsland(owner, spawnLocation, 1, Set.of());
+        islands.put(owner, island);
         return island;
-    }
-
-    /**
-     * Looks up an island by its id.
-     *
-     * @param islandId the island id
-     * @return the island, or empty if none is registered under that id
-     */
-    public synchronized Optional<Island> getIsland(UUID islandId) {
-        return Optional.ofNullable(islandsById.get(islandId));
     }
 
     /**
@@ -55,22 +106,94 @@ public final class IslandManager {
      * @param owner the owner's player UUID
      * @return the island, or empty if the player owns no island
      */
-    public synchronized Optional<Island> getIslandByOwner(UUID owner) {
-        return Optional.ofNullable(islandIdByOwner.get(owner)).map(islandsById::get);
+    public Optional<PlayerIsland> getIsland(UUID owner) {
+        return Optional.ofNullable(islands.get(owner));
     }
 
     /**
-     * Removes an island from the registry.
+     * Returns whether the given player owns an island.
      *
-     * @param islandId id of the island to remove
-     * @return {@code true} if an island was registered under that id
+     * @param owner the owner's player UUID
+     * @return {@code true} if the player owns an island
      */
-    public synchronized boolean deleteIsland(UUID islandId) {
-        Island removed = islandsById.remove(islandId);
-        if (removed == null) {
-            return false;
+    public boolean hasIsland(UUID owner) {
+        return islands.containsKey(owner);
+    }
+
+    /**
+     * Sets the upgrade level of a player's island.
+     *
+     * @param owner the owner's player UUID
+     * @param level the new level, must be at least 1
+     * @return the updated island
+     * @throws IllegalArgumentException if {@code level} is less than 1
+     * @throws IllegalStateException    if the player owns no island
+     */
+    public PlayerIsland setIslandLevel(UUID owner, int level) {
+        PlayerIsland island = requireIsland(owner);
+        PlayerIsland updated =
+                new PlayerIsland(island.owner(), island.spawnLocation(), level, island.members());
+        islands.put(owner, updated);
+        return updated;
+    }
+
+    /**
+     * Adds a player to the member roster of an island.
+     *
+     * @param owner    the island owner's player UUID
+     * @param playerId the player to add, must not be the owner
+     * @return the updated island
+     * @throws IllegalArgumentException if {@code playerId} is the owner
+     * @throws IllegalStateException    if the owner owns no island
+     */
+    public PlayerIsland addMember(UUID owner, UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        PlayerIsland island = requireIsland(owner);
+        if (owner.equals(playerId)) {
+            throw new IllegalArgumentException("owner cannot be added as a member");
         }
-        islandIdByOwner.remove(removed.getOwner());
-        return true;
+        Set<UUID> members = new LinkedHashSet<>(island.members());
+        members.add(playerId);
+        PlayerIsland updated =
+                new PlayerIsland(island.owner(), island.spawnLocation(), island.level(), members);
+        islands.put(owner, updated);
+        return updated;
+    }
+
+    /**
+     * Removes a player from the member roster of an island.
+     *
+     * @param owner    the island owner's player UUID
+     * @param playerId the player to remove
+     * @return the updated island
+     * @throws IllegalStateException if the owner owns no island
+     */
+    public PlayerIsland removeMember(UUID owner, UUID playerId) {
+        PlayerIsland island = requireIsland(owner);
+        Set<UUID> members = new LinkedHashSet<>(island.members());
+        members.remove(playerId);
+        PlayerIsland updated =
+                new PlayerIsland(island.owner(), island.spawnLocation(), island.level(), members);
+        islands.put(owner, updated);
+        return updated;
+    }
+
+    /**
+     * Removes a player's island from the registry.
+     *
+     * @param owner the owner's player UUID
+     * @return {@code true} if the player owned an island
+     */
+    public boolean deleteIsland(UUID owner) {
+        return islands.remove(owner) != null;
+    }
+
+    private PlayerIsland requireIsland(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        PlayerIsland island = islands.get(owner);
+        if (island == null) {
+            throw new IllegalStateException("Player " + owner + " owns no island");
+        }
+        return island;
     }
 }
