@@ -39,6 +39,7 @@ import com.skyblock.core.magic.FairySoulManager;
 import com.skyblock.core.menu.MenuManager;
 import com.skyblock.core.minion.MinionCommand;
 import com.skyblock.core.minion.MinionManager;
+import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.pets.PetManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.npc.NpcCommand;
@@ -114,6 +115,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("minion").setExecutor(new MinionCommand(minionManager));
         PetManager petManager = PetManager.getInstance();
         getCommand("pets").setExecutor(new PetsCommand(petManager));
+        com.skyblock.core.pet.PetManager petDefinitionManager =
+                com.skyblock.core.pet.PetManager.getInstance();
+        getCommand("pet").setExecutor(new PetCommand(petDefinitionManager, petManager));
         ProfileManager profileManager = ProfileManager.getInstance();
         getCommand("profile").setExecutor(new ProfileCommand(profileManager));
         NpcManager npcManager = NpcManager.getInstance();

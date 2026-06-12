@@ -68,3 +68,6 @@ commands:
   enchanting:
     description: View and apply SkyBlock enchantments.
     usage: /enchanting <list|info|apply|remove|view>
+  pet:
+    description: View pet definitions and your active pet bonus.
+    usage: /pet [list|info <type>|active]
