@@ -9,6 +9,7 @@ import com.skyblock.core.island.IslandCommand;
 import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionManager;
+import com.skyblock.core.combat.CombatListener;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.combat.StatManager;
 import com.skyblock.core.command.BankCommand;
@@ -119,7 +120,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(leaderboardManager));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
-        getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(new CombatListener(CombatManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
         getServer().getPluginManager().registerEvents(MenuManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new CoreListeners(playerDataManager), this);
