@@ -63,6 +63,7 @@
         <module>shop</module>
         <module>achievements</module>
         <module>alchemy</module>
+        <module>collection</module>
         <module>plugin</module>
     </modules>
 
