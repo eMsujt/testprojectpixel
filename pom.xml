@@ -56,6 +56,7 @@
         <module>leaderboards</module>
         <module>dungeon</module>
         <module>party</module>
+        <module>museum</module>
         <module>plugin</module>
     </modules>
 
