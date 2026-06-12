@@ -113,3 +113,6 @@ commands:
   wardrobe:
     description: Save and load named armor outfits.
     usage: /wardrobe <save|load|delete|list>
+  bestiary:
+    description: Track your mob kill counts.
+    usage: /bestiary [view <mob>|reset]
