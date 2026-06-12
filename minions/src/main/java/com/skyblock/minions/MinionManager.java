@@ -10,13 +10,12 @@ import java.util.UUID;
 import org.bukkit.Location;
 
 /**
- * Singleton tracking the minions each player has placed on their island.
+ * Singleton tracking minions placed on islands, keyed by location.
  *
- * <p>Placed minions are stored in a {@link HashMap} keyed by the owner's
- * player UUID. At most one minion may occupy a block, and a player may
- * place at most {@link #MAX_MINIONS_PER_PLAYER} minions. Access the shared
- * instance via {@link #getInstance()}. Not thread-safe; synchronize
- * externally if accessed from multiple threads.</p>
+ * <p>At most one minion may occupy a block, and a player may place at most
+ * {@link #MAX_MINIONS_PER_PLAYER} minions. Access the shared instance via
+ * {@link #getInstance()}. Not thread-safe; synchronize externally if accessed
+ * from multiple threads.</p>
  */
 public final class MinionManager {
 
@@ -37,46 +36,11 @@ public final class MinionManager {
         return INSTANCE;
     }
 
-    /**
-     * A single minion placed on a player's island.
-     *
-     * <p>Instances are created only through
-     * {@link MinionManager#placeMinion(UUID, MinionType, Location)} and
-     * always start at tier 1.</p>
-     *
-     * @param type     the kind of minion placed, never null
-     * @param location the block the minion stands on, never null
-     * @param tier     the minion's upgrade tier, at least 1
-     */
-    public record PlacedMinion(MinionType type, Location location, int tier) {
+    /** Primary store: location → minion. */
+    private final Map<Location, MinionInstance> placedMinions = new HashMap<>();
 
-        /**
-         * Validates the components and defensively copies the location.
-         *
-         * @throws NullPointerException     if the type or location is null
-         * @throws IllegalArgumentException if {@code tier} is less than 1
-         */
-        public PlacedMinion {
-            Objects.requireNonNull(type, "type");
-            Objects.requireNonNull(location, "location");
-            if (tier < 1) {
-                throw new IllegalArgumentException("tier must be at least 1, got " + tier);
-            }
-            location = location.clone();
-        }
-
-        /**
-         * Returns a copy of the location the minion stands on.
-         *
-         * @return the minion's location
-         */
-        @Override
-        public Location location() {
-            return location.clone();
-        }
-    }
-
-    private final Map<UUID, List<PlacedMinion>> islandMinions = new HashMap<>();
+    /** Secondary index: owner UUID → list of their minion locations. */
+    private final Map<UUID, List<Location>> ownerIndex = new HashMap<>();
 
     /**
      * Places a new tier 1 minion for the player at the given location.
@@ -84,68 +48,77 @@ public final class MinionManager {
      * @param ownerId  the owner's player UUID
      * @param type     the kind of minion to place
      * @param location the block to place the minion on
-     * @return the newly placed minion
+     * @return the newly created {@link MinionInstance}
      * @throws IllegalStateException if the player already has
      *                               {@link #MAX_MINIONS_PER_PLAYER} minions, or a
      *                               minion already occupies the location
      */
-    public PlacedMinion placeMinion(UUID ownerId, MinionType type, Location location) {
+    public MinionInstance placeMinion(UUID ownerId, MinionType type, Location location) {
         Objects.requireNonNull(ownerId, "ownerId");
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(location, "location");
-        List<PlacedMinion> placed = islandMinions.computeIfAbsent(ownerId, id -> new ArrayList<>());
-        if (placed.size() >= MAX_MINIONS_PER_PLAYER) {
+        if (placedMinions.containsKey(location)) {
+            throw new IllegalStateException("a minion is already placed at " + location);
+        }
+        List<Location> owned = ownerIndex.computeIfAbsent(ownerId, id -> new ArrayList<>());
+        if (owned.size() >= MAX_MINIONS_PER_PLAYER) {
             throw new IllegalStateException(
                     "player already has the maximum of " + MAX_MINIONS_PER_PLAYER + " minions: " + ownerId);
         }
-        if (getMinionAt(ownerId, location) != null) {
-            throw new IllegalStateException("a minion is already placed at " + location);
-        }
-        PlacedMinion minion = new PlacedMinion(type, location, 1);
-        placed.add(minion);
+        MinionInstance minion = new MinionInstance(type, location);
+        placedMinions.put(location.clone(), minion);
+        owned.add(location.clone());
         return minion;
     }
 
     /**
-     * Returns the player's placed minions.
-     *
-     * @param ownerId the owner's player UUID
-     * @return an unmodifiable view of the player's minions, possibly empty
-     */
-    public List<PlacedMinion> getMinions(UUID ownerId) {
-        return Collections.unmodifiableList(islandMinions.getOrDefault(ownerId, Collections.emptyList()));
-    }
-
-    /**
-     * Returns the player's minion at the given location, if any.
-     *
-     * @param ownerId  the owner's player UUID
-     * @param location the block to look at
-     * @return the minion at that location, or {@code null} if none
-     */
-    public PlacedMinion getMinionAt(UUID ownerId, Location location) {
-        Objects.requireNonNull(location, "location");
-        for (PlacedMinion minion : islandMinions.getOrDefault(ownerId, Collections.emptyList())) {
-            if (minion.location().equals(location)) {
-                return minion;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Removes the player's minion at the given location.
+     * Removes the minion at the given location.
      *
      * @param ownerId  the owner's player UUID
      * @param location the block the minion stands on
      * @return the minion that was removed, or {@code null} if none existed
      */
-    public PlacedMinion removeMinion(UUID ownerId, Location location) {
-        PlacedMinion minion = getMinionAt(ownerId, location);
+    public MinionInstance removeMinion(UUID ownerId, Location location) {
+        Objects.requireNonNull(ownerId, "ownerId");
+        Objects.requireNonNull(location, "location");
+        MinionInstance minion = placedMinions.remove(location);
         if (minion != null) {
-            islandMinions.get(ownerId).remove(minion);
+            List<Location> owned = ownerIndex.get(ownerId);
+            if (owned != null) {
+                owned.remove(location);
+            }
         }
         return minion;
+    }
+
+    /**
+     * Returns the minion at the given location, if any.
+     *
+     * @param location the block to look at
+     * @return the minion at that location, or {@code null} if none
+     */
+    public MinionInstance getMinion(Location location) {
+        Objects.requireNonNull(location, "location");
+        return placedMinions.get(location);
+    }
+
+    /**
+     * Returns all minions placed by the given player.
+     *
+     * @param ownerId the owner's player UUID
+     * @return an unmodifiable list of the player's minions, possibly empty
+     */
+    public List<MinionInstance> getMinions(UUID ownerId) {
+        Objects.requireNonNull(ownerId, "ownerId");
+        List<Location> locations = ownerIndex.getOrDefault(ownerId, Collections.emptyList());
+        List<MinionInstance> result = new ArrayList<>(locations.size());
+        for (Location loc : locations) {
+            MinionInstance m = placedMinions.get(loc);
+            if (m != null) {
+                result.add(m);
+            }
+        }
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -155,6 +128,6 @@ public final class MinionManager {
      * @return the number of placed minions
      */
     public int getMinionCount(UUID ownerId) {
-        return islandMinions.getOrDefault(ownerId, Collections.emptyList()).size();
+        return ownerIndex.getOrDefault(ownerId, Collections.emptyList()).size();
     }
 }
