@@ -1,5 +1,10 @@
 package com.skyblock.core.bazaar;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,16 +13,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 /**
- * Singleton managing the bazaar order book.  Buy orders are matched against
- * sell orders automatically when a compatible order is added.
+ * Singleton managing the bazaar order book with YAML-backed persistence.
+ *
+ * <p>Call {@link #load(File)} on plugin enable and {@link #save(File)} on
+ * plugin disable to persist orders across restarts.</p>
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class BazaarManager {
 
     private static final BazaarManager INSTANCE = new BazaarManager();
+    private static final String FILE_NAME = "bazaar.yml";
+    private static final Logger LOG = Logger.getLogger(BazaarManager.class.getName());
 
     /** A standing buy order: a player willing to buy {@code quantity} of {@code itemId}
      *  at up to {@code priceEach} coins each. */
@@ -182,5 +192,107 @@ public final class BazaarManager {
     public void clear() {
         buyOrders.clear();
         sellOrders.clear();
+    }
+
+    /**
+     * Loads buy and sell orders from {@code bazaar.yml} in the given data folder.
+     * Any currently stored orders are discarded first.
+     *
+     * @param dataFolder the plugin's data folder; created if it does not exist
+     */
+    public void load(File dataFolder) {
+        Objects.requireNonNull(dataFolder, "dataFolder");
+        clear();
+        File file = new File(dataFolder, FILE_NAME);
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+
+        List<?> buyList = cfg.getList("buy-orders", Collections.emptyList());
+        for (Object entry : buyList) {
+            if (!(entry instanceof Map<?, ?> map)) continue;
+            try {
+                UUID id       = UUID.fromString((String) map.get("id"));
+                UUID buyer    = UUID.fromString((String) map.get("buyer"));
+                String itemId = (String) map.get("itemId");
+                int qty       = ((Number) map.get("quantity")).intValue();
+                double price  = ((Number) map.get("priceEach")).doubleValue();
+                BuyOrder order = new BuyOrder(id, buyer, itemId, qty, price);
+                buyOrders.computeIfAbsent(itemId, k -> new ArrayList<>()).add(order);
+            } catch (Exception e) {
+                LOG.warning("Skipping malformed buy-order entry: " + e.getMessage());
+            }
+        }
+        for (List<BuyOrder> list : buyOrders.values()) {
+            list.sort(Comparator.comparingDouble(BuyOrder::priceEach).reversed());
+        }
+
+        List<?> sellList = cfg.getList("sell-orders", Collections.emptyList());
+        for (Object entry : sellList) {
+            if (!(entry instanceof Map<?, ?> map)) continue;
+            try {
+                UUID id        = UUID.fromString((String) map.get("id"));
+                UUID seller    = UUID.fromString((String) map.get("seller"));
+                String itemId  = (String) map.get("itemId");
+                int qty        = ((Number) map.get("quantity")).intValue();
+                double price   = ((Number) map.get("priceEach")).doubleValue();
+                SellOrder order = new SellOrder(id, seller, itemId, qty, price);
+                sellOrders.computeIfAbsent(itemId, k -> new ArrayList<>()).add(order);
+            } catch (Exception e) {
+                LOG.warning("Skipping malformed sell-order entry: " + e.getMessage());
+            }
+        }
+        for (List<SellOrder> list : sellOrders.values()) {
+            list.sort(Comparator.comparingDouble(SellOrder::priceEach));
+        }
+    }
+
+    /**
+     * Saves all current buy and sell orders to {@code bazaar.yml} in the given
+     * data folder.
+     *
+     * @param dataFolder the plugin's data folder; created if it does not exist
+     */
+    public void save(File dataFolder) {
+        Objects.requireNonNull(dataFolder, "dataFolder");
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs();
+        }
+        YamlConfiguration cfg = new YamlConfiguration();
+
+        List<Map<String, Object>> buyList = new ArrayList<>();
+        for (List<BuyOrder> list : buyOrders.values()) {
+            for (BuyOrder o : list) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id",        o.id().toString());
+                map.put("buyer",     o.buyer().toString());
+                map.put("itemId",    o.itemId());
+                map.put("quantity",  o.quantity());
+                map.put("priceEach", o.priceEach());
+                buyList.add(map);
+            }
+        }
+        cfg.set("buy-orders", buyList);
+
+        List<Map<String, Object>> sellList = new ArrayList<>();
+        for (List<SellOrder> list : sellOrders.values()) {
+            for (SellOrder o : list) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id",        o.id().toString());
+                map.put("seller",    o.seller().toString());
+                map.put("itemId",    o.itemId());
+                map.put("quantity",  o.quantity());
+                map.put("priceEach", o.priceEach());
+                sellList.add(map);
+            }
+        }
+        cfg.set("sell-orders", sellList);
+
+        try {
+            cfg.save(new File(dataFolder, FILE_NAME));
+        } catch (IOException e) {
+            LOG.severe("Failed to save bazaar.yml: " + e.getMessage());
+        }
     }
 }

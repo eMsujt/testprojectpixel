@@ -63,7 +63,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EconomyManager.getInstance();
         SkillManager skillManager = SkillManager.getInstance();
         AuctionHouseManager.getInstance();
-        BazaarManager.getInstance();
+        BazaarManager.getInstance().load(getDataFolder());
         CollectionManager.getInstance();
         EnchantmentManager.getInstance();
         FairySoulManager.getInstance();
@@ -91,6 +91,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        BazaarManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock core disabled.");
         instance = null;
     }
