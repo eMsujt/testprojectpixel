@@ -14,28 +14,6 @@ import java.util.UUID;
  */
 public final class SkillManager {
 
-    /** A skill a player can level up by performing its activity. */
-    public enum SkillType {
-        /** Harvesting crops and breeding farm animals. */
-        FARMING,
-        /** Mining ores, stone, and gemstones. */
-        MINING,
-        /** Slaying mobs and bosses. */
-        COMBAT,
-        /** Chopping logs and gathering forest resources. */
-        FORAGING,
-        /** Catching fish and sea creatures. */
-        FISHING,
-        /** Enchanting items at an enchantment table. */
-        ENCHANTING,
-        /** Brewing potions. */
-        ALCHEMY,
-        /** Levelling up pets. */
-        TAMING,
-        /** Crafting items. */
-        CARPENTRY
-    }
-
     /** The highest level a skill can reach. */
     public static final int MAX_LEVEL = 50;
 
