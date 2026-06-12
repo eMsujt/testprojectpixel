@@ -11,6 +11,7 @@ import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.island.IslandCommand;
 import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.bazaar.BazaarManager;
+import com.skyblock.core.collection.CollectionListener;
 import com.skyblock.core.collection.CollectionManager;
 import com.skyblock.core.combat.CombatListener;
 import com.skyblock.core.combat.CombatManager;
@@ -166,6 +167,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("warp").setExecutor(new WarpCommand(warpManager));
         getCommand("shop").setExecutor(new ShopCommand(shopManager, economyManager));
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(leaderboardManager));
+        getServer().getPluginManager().registerEvents(new CollectionListener(collectionManager), this);
         getServer().getPluginManager().registerEvents(new MiningListener(miningManager), this);
         getServer().getPluginManager().registerEvents(new ForagingListener(foragingManager), this);
         getServer().getPluginManager().registerEvents(new FarmingListener(farmingManager), this);
