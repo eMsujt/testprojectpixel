@@ -59,3 +59,6 @@ commands:
   npc:
     description: Interact with NPCs and their shops.
     usage: /npc <list|shop <npc>|buy <npc> <item>>
+  minion:
+    description: Manage your placed minions.
+    usage: /minion <list|place|upgrade|remove|info>

@@ -33,6 +33,7 @@ import com.skyblock.core.listener.CoreListeners;
 import com.skyblock.core.listeners.SkyBlockEventListener;
 import com.skyblock.core.magic.FairySoulManager;
 import com.skyblock.core.menu.MenuManager;
+import com.skyblock.core.minion.MinionCommand;
 import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.pets.PetManager;
 import com.skyblock.core.profile.ProfileManager;
@@ -100,7 +101,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ForgeManager forgeManager = ForgeManager.getInstance();
         getCommand("forge").setExecutor(new ForgeCommand(forgeManager));
         LeaderboardManager leaderboardManager = LeaderboardManager.getInstance();
-        MinionManager.getInstance();
+        MinionManager minionManager = MinionManager.getInstance();
+        getCommand("minion").setExecutor(new MinionCommand(minionManager));
         PetManager petManager = PetManager.getInstance();
         getCommand("pets").setExecutor(new PetsCommand(petManager));
         ProfileManager.getInstance();
