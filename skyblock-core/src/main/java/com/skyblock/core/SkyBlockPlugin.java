@@ -239,7 +239,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ProfileManager profileManager = ProfileManager.getInstance();
         getCommand("profile").setExecutor(new ProfileCommand(profileManager));
         NpcManager npcManager = NpcManager.getInstance();
-        getCommand("npc").setExecutor(new NpcCommand(npcManager, economyManager));
+        NpcCommand npcCommand = new NpcCommand(npcManager, economyManager);
+        getCommand("npc").setExecutor(npcCommand);
+        getCommand("npc").setTabCompleter(npcCommand);
         getServer().getPluginManager().registerEvents(new NPCListener(npcManager), this);
         QuestCommand questCommand = new QuestCommand(QuestManager.getInstance());
         getCommand("quest").setExecutor(questCommand);
