@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.bukkit.entity.EntityType;
+
 /**
  * Tracks each player's combat stats and performs damage calculations.
  *
@@ -16,6 +18,7 @@ import java.util.UUID;
 public final class CombatManager {
 
     private final Map<UUID, Map<CombatStat, Double>> playerStats = new HashMap<>();
+    private final Map<UUID, Map<EntityType, Integer>> killCounts = new HashMap<>();
 
     /**
      * Returns the player's current value for a stat.
@@ -67,6 +70,47 @@ public final class CombatManager {
      */
     public void resetStats(UUID playerId) {
         playerStats.remove(playerId);
+    }
+
+    /**
+     * Records a kill of the given entity type for the player and returns the
+     * updated kill count for that entity type.
+     *
+     * @param playerId   the killer's UUID
+     * @param entityType the type of entity killed, must not be null
+     * @return the player's total kill count for this entity type after the kill
+     */
+    public int addKill(UUID playerId, EntityType entityType) {
+        Objects.requireNonNull(entityType, "entityType");
+        return killCounts.computeIfAbsent(playerId, id -> new EnumMap<>(EntityType.class))
+                .merge(entityType, 1, Integer::sum);
+    }
+
+    /**
+     * Returns the number of times the player has killed the given entity type.
+     *
+     * @param playerId   the player's UUID
+     * @param entityType the entity type to look up, must not be null
+     * @return the kill count, zero if the player has never killed this type
+     */
+    public int getKillCount(UUID playerId, EntityType entityType) {
+        Objects.requireNonNull(entityType, "entityType");
+        Map<EntityType, Integer> counts = killCounts.get(playerId);
+        if (counts == null) {
+            return 0;
+        }
+        return counts.getOrDefault(entityType, 0);
+    }
+
+    /**
+     * Returns an unmodifiable view of the player's kill counts keyed by entity type.
+     *
+     * @param playerId the player's UUID
+     * @return an unmodifiable map of entity type to kill count, empty if no kills recorded
+     */
+    public Map<EntityType, Integer> getKillCounts(UUID playerId) {
+        Map<EntityType, Integer> counts = killCounts.get(playerId);
+        return counts != null ? Map.copyOf(counts) : Map.of();
     }
 
     /**
