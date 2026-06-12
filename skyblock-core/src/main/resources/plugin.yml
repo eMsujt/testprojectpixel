@@ -170,6 +170,10 @@ commands:
     description: View and manage your Rift dimension state.
     usage: /rift <info|enter [zone]|exit|reset>
     permission: skyblock.rift
+  jacobcontest:
+    description: View and participate in Jacob's Farming Contests.
+    usage: /jacobcontest [info|enter <crop>|pb [crop]|medals]
+    permission: skyblock.jacobcontest
 
 permissions:
   skyblock.warp:
@@ -204,4 +208,7 @@ permissions:
     default: true
   skyblock.rift:
     description: Use the /rift command to manage Rift dimension state.
+    default: true
+  skyblock.jacobcontest:
+    description: Use the /jacobcontest command to view and participate in Jacob's Farming Contests.
     default: true
