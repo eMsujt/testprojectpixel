@@ -26,6 +26,8 @@ import com.skyblock.core.command.ShopCommand;
 import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.command.WarpCommand;
+import com.skyblock.core.crafting.CraftingCommand;
+import com.skyblock.core.crafting.CraftingManager;
 import com.skyblock.core.crafting.SkyBlockRecipeManager;
 import com.skyblock.core.dungeon.DungeonManager;
 import com.skyblock.core.economy.EconomyManager;
@@ -124,6 +126,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ScoreboardManager.getInstance().start(this);
         ShopManager shopManager = ShopManager.getInstance();
         SkyBlockRecipeManager.getInstance();
+        CraftingManager craftingManager = CraftingManager.getInstance();
+        getCommand("crafting").setExecutor(new CraftingCommand(craftingManager));
         StatManager.getInstance();
         TalismanManager talismanManager = TalismanManager.getInstance();
         getCommand("talisman").setExecutor(new TalismanCommand(talismanManager));
