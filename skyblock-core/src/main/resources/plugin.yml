@@ -52,3 +52,7 @@ commands:
   forge:
     description: Forge items using the SkyBlock forge.
     usage: /forge [list|start|collect]
+  collection:
+    description: View your collection progress.
+    usage: /collection [name]
+    aliases: [col]
