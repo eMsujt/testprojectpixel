@@ -131,6 +131,8 @@ import com.skyblock.core.hotm.HotmManager;
 import com.skyblock.core.rift.RiftCommand;
 import com.skyblock.core.rift.RiftListener;
 import com.skyblock.core.rift.RiftManager;
+import com.skyblock.core.garden.GardenCommand;
+import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -374,6 +376,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("rift").setExecutor(riftCommand);
         getCommand("rift").setTabCompleter(riftCommand);
         getServer().getPluginManager().registerEvents(new RiftListener(riftManager), this);
+
+        GardenManager gardenManager = GardenManager.getInstance();
+        GardenCommand gardenCommand = new GardenCommand(gardenManager);
+        getCommand("garden").setExecutor(gardenCommand);
+        getCommand("garden").setTabCompleter(gardenCommand);
 
         com.skyblock.core.enchantment.EnchantmentManager.getInstance();
         com.skyblock.core.enchant.EnchantmentManager.getInstance();
