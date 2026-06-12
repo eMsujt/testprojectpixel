@@ -36,6 +36,8 @@ import com.skyblock.core.menu.MenuManager;
 import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.pets.PetManager;
 import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.npc.NpcCommand;
+import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.quests.QuestManager;
 import com.skyblock.core.scoreboard.ScoreboardManager;
 import com.skyblock.core.shop.ShopManager;
@@ -102,6 +104,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         PetManager petManager = PetManager.getInstance();
         getCommand("pets").setExecutor(new PetsCommand(petManager));
         ProfileManager.getInstance();
+        NpcManager npcManager = NpcManager.getInstance();
+        getCommand("npc").setExecutor(new NpcCommand(npcManager, economyManager));
         QuestManager.getInstance();
         ScoreboardManager.getInstance();
         ShopManager shopManager = ShopManager.getInstance();
