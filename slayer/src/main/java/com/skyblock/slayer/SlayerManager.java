@@ -36,7 +36,8 @@ public final class SlayerManager {
      * @param type     the slayer quest line
      * @param amount   the amount of XP to add, must be non-negative
      * @return the new XP total
-     * @throws ArithmeticException if the addition would overflow
+     * @throws IllegalArgumentException if {@code amount} is negative
+     * @throws ArithmeticException      if the addition would overflow
      */
     public long addXp(UUID playerId, SlayerType type, long amount) {
         requireNonNegative(amount);
