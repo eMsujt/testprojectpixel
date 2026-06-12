@@ -15,6 +15,9 @@ commands:
   skills:
     description: View your SkyBlock skills.
     usage: /skills [skill]
+  skill:
+    description: View your SkyBlock skill levels and XP.
+    usage: /skill [skill]
   auction:
     description: Open the Auction House.
     usage: /auction [create|view|cancel]
