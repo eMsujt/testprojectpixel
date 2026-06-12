@@ -32,6 +32,9 @@ public final class SlayerManager {
         return INSTANCE;
     }
 
+    /** Required mob kills per tier (index 0 = tier 1). */
+    private static final int[] REQUIRED_KILLS_BY_TIER = {5, 25, 100, 250, 500};
+
     /**
      * A single slayer quest: the boss line, the chosen tier and the kill
      * progress accumulated toward spawning the boss.
@@ -43,11 +46,13 @@ public final class SlayerManager {
 
         private final SlayerType type;
         private final int tier;
+        private final int requiredKills;
         private int kills;
 
         private SlayerQuest(SlayerType type, int tier) {
             this.type = type;
             this.tier = tier;
+            this.requiredKills = REQUIRED_KILLS_BY_TIER[tier - 1];
         }
 
         public SlayerType getType() {
@@ -58,6 +63,10 @@ public final class SlayerManager {
             return tier;
         }
 
+        public int getRequiredKills() {
+            return requiredKills;
+        }
+
         public int getKills() {
             return kills;
         }
@@ -65,6 +74,19 @@ public final class SlayerManager {
 
     private final Map<UUID, SlayerQuest> activeQuests = new HashMap<>();
     private final Map<UUID, Map<SlayerType, Long>> xpMap = new HashMap<>();
+
+    /**
+     * Starts a tier-1 slayer quest for the player.
+     *
+     * @param player the player starting the quest, must not be null
+     * @param type   the slayer quest line, must not be null
+     * @return the newly started quest
+     * @throws IllegalArgumentException if the player or type is null
+     * @throws IllegalStateException    if the player already has an active quest
+     */
+    public SlayerQuest startQuest(Player player, SlayerType type) {
+        return startQuest(player, type, 1);
+    }
 
     /**
      * Starts a new slayer quest for the player.
