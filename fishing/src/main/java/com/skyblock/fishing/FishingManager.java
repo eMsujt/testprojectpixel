@@ -1,18 +1,26 @@
 package com.skyblock.fishing;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 /**
- * Tracks each player's fishing progression: total catches and earned
- * fishing experience.
+ * Manages fishing loot tables per {@link FishingZone} and tracks each
+ * player's fishing progression: total catches and earned fishing experience.
  *
- * <p>Players start at zero catches and zero experience. Not thread-safe;
- * synchronize externally if accessed from multiple threads.</p>
+ * <p>Loot tables are stored in an {@link EnumMap} keyed by zone; each zone
+ * holds an ordered list of {@link FishingDrop} entries. Players start at zero
+ * catches and zero experience. Not thread-safe; synchronize externally if
+ * accessed from multiple threads.</p>
  */
 public final class FishingManager {
 
+    private final EnumMap<FishingZone, List<FishingDrop>> lootTables = new EnumMap<>(FishingZone.class);
     private final Map<UUID, Integer> catches = new HashMap<>();
     private final Map<UUID, Double> experience = new HashMap<>();
 
@@ -61,5 +69,74 @@ public final class FishingManager {
     public void reset(UUID playerId) {
         catches.remove(playerId);
         experience.remove(playerId);
+    }
+
+    /**
+     * Adds a drop entry to the loot table for the given zone.
+     *
+     * @param zone the fishing zone, must not be null
+     * @param drop the drop to register, must not be null
+     * @throws IllegalArgumentException if either argument is null
+     */
+    public void registerDrop(FishingZone zone, FishingDrop drop) {
+        if (zone == null || drop == null) {
+            throw new IllegalArgumentException("zone and drop must not be null");
+        }
+        lootTables.computeIfAbsent(zone, z -> new ArrayList<>()).add(drop);
+    }
+
+    /**
+     * Returns an unmodifiable view of the drops registered for the given zone.
+     *
+     * @param zone the fishing zone, must not be null
+     * @return the zone's drop list, or an empty list if none have been
+     *         registered
+     * @throws IllegalArgumentException if zone is null
+     */
+    public List<FishingDrop> getDrops(FishingZone zone) {
+        if (zone == null) {
+            throw new IllegalArgumentException("zone must not be null");
+        }
+        List<FishingDrop> drops = lootTables.get(zone);
+        return drops != null ? Collections.unmodifiableList(drops) : Collections.emptyList();
+    }
+
+    /**
+     * Rolls the loot table for the given zone. Each drop is independently
+     * tested against its {@link FishingDrop#getDropChance()}; the first match
+     * in registration order is returned.
+     *
+     * @param zone the fishing zone to roll, must not be null
+     * @param rng  the random source, must not be null
+     * @return the first drop whose chance test passed, or {@code null} if none
+     *         triggered
+     * @throws IllegalArgumentException if zone or rng is null
+     */
+    public FishingDrop rollDrop(FishingZone zone, Random rng) {
+        if (zone == null) {
+            throw new IllegalArgumentException("zone must not be null");
+        }
+        if (rng == null) {
+            throw new IllegalArgumentException("rng must not be null");
+        }
+        for (FishingDrop drop : lootTables.getOrDefault(zone, Collections.emptyList())) {
+            if (rng.nextDouble() < drop.getDropChance()) {
+                return drop;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Removes all drops registered for the given zone.
+     *
+     * @param zone the fishing zone to clear, must not be null
+     * @throws IllegalArgumentException if zone is null
+     */
+    public void clearDrops(FishingZone zone) {
+        if (zone == null) {
+            throw new IllegalArgumentException("zone must not be null");
+        }
+        lootTables.remove(zone);
     }
 }
