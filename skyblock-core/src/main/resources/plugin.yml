@@ -65,3 +65,6 @@ commands:
   alchemy:
     description: Brew potions using the SkyBlock alchemy system.
     usage: /alchemy [list|brew|status|collect|cancel]
+  enchanting:
+    description: View and apply SkyBlock enchantments.
+    usage: /enchanting <list|info|apply|remove|view>
