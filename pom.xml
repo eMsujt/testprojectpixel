@@ -68,6 +68,7 @@
         <module>skills</module>
         <module>bestiary</module>
         <module>wardrobe</module>
+        <module>item_forge</module>
         <module>plugin</module>
     </modules>
 
