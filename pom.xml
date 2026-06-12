@@ -62,6 +62,7 @@
         <module>housing</module>
         <module>shop</module>
         <module>achievements</module>
+        <module>fairy_souls</module>
         <module>plugin</module>
     </modules>
 
