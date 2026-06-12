@@ -15,6 +15,8 @@ import com.skyblock.core.bank.BankingManager;
 import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.island.IslandCommand;
 import com.skyblock.core.island.IslandManager;
+import com.skyblock.core.island.IslandUpgradeCommand;
+import com.skyblock.core.island.IslandUpgradeManager;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collection.CollectionListener;
 import com.skyblock.core.collection.CollectionManager;
@@ -203,6 +205,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
         IslandManager.getInstance();
         getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));
+        IslandUpgradeManager islandUpgradeManager = IslandUpgradeManager.getInstance();
+        IslandUpgradeCommand islandUpgradeCommand = new IslandUpgradeCommand(islandUpgradeManager, IslandManager.getInstance(), economyManager);
+        getCommand("islandupgrade").setExecutor(islandUpgradeCommand);
+        getCommand("islandupgrade").setTabCompleter(islandUpgradeCommand);
         getCommand("skyblock").setExecutor(new SkyBlockMenuCommand(MenuManager.getInstance()));
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
         com.skyblock.core.skill.SkillManager skillManagerV2 = com.skyblock.core.skill.SkillManager.getInstance();
