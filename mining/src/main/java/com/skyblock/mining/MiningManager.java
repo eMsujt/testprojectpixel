@@ -1,5 +1,7 @@
 package com.skyblock.mining;
 
+import org.bukkit.Material;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +18,31 @@ import java.util.UUID;
  * thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class MiningManager {
+
+    /** XP awarded per block broken, keyed by ore {@link Material}. */
+    public static final Map<Material, Integer> ORE_XP_MAP;
+
+    static {
+        Map<Material, Integer> map = new HashMap<>();
+        map.put(Material.COAL_ORE,         5);
+        map.put(Material.DEEPSLATE_COAL_ORE, 5);
+        map.put(Material.IRON_ORE,         10);
+        map.put(Material.DEEPSLATE_IRON_ORE, 10);
+        map.put(Material.GOLD_ORE,         15);
+        map.put(Material.DEEPSLATE_GOLD_ORE, 15);
+        map.put(Material.REDSTONE_ORE,     15);
+        map.put(Material.DEEPSLATE_REDSTONE_ORE, 15);
+        map.put(Material.LAPIS_ORE,        20);
+        map.put(Material.DEEPSLATE_LAPIS_ORE, 20);
+        map.put(Material.DIAMOND_ORE,      50);
+        map.put(Material.DEEPSLATE_DIAMOND_ORE, 50);
+        map.put(Material.EMERALD_ORE,      65);
+        map.put(Material.DEEPSLATE_EMERALD_ORE, 65);
+        map.put(Material.NETHER_QUARTZ_ORE, 20);
+        map.put(Material.NETHER_GOLD_ORE,  15);
+        map.put(Material.ANCIENT_DEBRIS,   120);
+        ORE_XP_MAP = Map.copyOf(map);
+    }
 
     /**
      * A single player's mining progression.
