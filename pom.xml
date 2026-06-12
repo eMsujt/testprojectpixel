@@ -54,6 +54,7 @@
         <module>brewing</module>
         <module>reforging</module>
         <module>leaderboards</module>
+        <module>dungeon</module>
         <module>plugin</module>
     </modules>
 
