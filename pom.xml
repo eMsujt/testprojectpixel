@@ -70,6 +70,7 @@
         <module>wardrobe</module>
         <module>item_forge</module>
         <module>pets</module>
+        <module>farming</module>
         <module>plugin</module>
     </modules>
 
