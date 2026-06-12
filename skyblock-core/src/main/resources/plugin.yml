@@ -71,6 +71,9 @@ commands:
   enchanting:
     description: View and apply SkyBlock enchantments.
     usage: /enchanting <list|info|apply|remove|view>
+  fairysoul:
+    description: View your fairy soul collection progress.
+    usage: /fairysoul <count|list|total>
   talisman:
     description: Manage your equipped talismans and view stat bonuses.
     usage: /talisman <list|equip|unequip|equipped|bonuses>
