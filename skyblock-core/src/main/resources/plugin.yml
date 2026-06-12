@@ -5,6 +5,10 @@ version: '1.0'
 description: SkyBlock plugin for Paper
 
 commands:
+  skyblock:
+    description: Open the SkyBlock main menu.
+    usage: /skyblock
+    aliases: [sb]
   island:
     description: Manage your SkyBlock island.
     usage: /island <create|home|visit|invite|kick|leave>

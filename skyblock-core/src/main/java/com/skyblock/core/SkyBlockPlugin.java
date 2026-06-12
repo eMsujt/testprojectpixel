@@ -5,6 +5,7 @@ import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionManager;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.combat.StatManager;
+import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.commands.SkyBlockCommand;
@@ -78,7 +79,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WarpManager.getInstance();
         FishingManager fishingManager = FishingManager.getInstance();
 
-        getCommand("skyblock").setExecutor(new SkyBlockCommand(playerDataManager));
+        getCommand("skyblock").setExecutor(new SkyBlockMenuCommand(MenuManager.getInstance()));
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
         com.skyblock.core.warp.WarpManager warpManager = com.skyblock.core.warp.WarpManager.getInstance();
         warpManager.load(new java.io.File(getDataFolder(), "warps.yml"));
