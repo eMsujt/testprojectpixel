@@ -8,14 +8,29 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 /**
- * Tracks each player's active slayer quest and accumulated slayer XP for
- * each {@link SlayerType}.
+ * Singleton tracking each player's active slayer quest and accumulated
+ * slayer XP for each {@link SlayerType}.
  *
  * <p>Active quests are stored in a {@link HashMap} keyed by player UUID. A
- * player may have at most one quest at a time. Not thread-safe; synchronize
- * externally if accessed from multiple threads.</p>
+ * player may have at most one quest at a time. Access the shared instance
+ * via {@link #getInstance()}. Not thread-safe; synchronize externally if
+ * accessed from multiple threads.</p>
  */
 public final class SlayerManager {
+
+    private static final SlayerManager INSTANCE = new SlayerManager();
+
+    private SlayerManager() {
+    }
+
+    /**
+     * Returns the shared manager instance.
+     *
+     * @return the singleton {@code SlayerManager}
+     */
+    public static SlayerManager getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * A single slayer quest: the boss line, the chosen tier and the kill
