@@ -47,6 +47,8 @@ import com.skyblock.core.quests.QuestManager;
 import com.skyblock.core.scoreboard.ScoreboardManager;
 import com.skyblock.core.shop.ShopManager;
 import com.skyblock.core.skills.SkillManager;
+import com.skyblock.core.stats.CombatStatsListener;
+import com.skyblock.core.stats.CombatStatsManager;
 import com.skyblock.core.storage.YamlPlayerStorage;
 import com.skyblock.core.warps.WarpManager;
 import com.skyblock.farming.FarmingManager;
@@ -142,6 +144,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
         getServer().getPluginManager().registerEvents(MenuManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new CoreListeners(playerDataManager), this);
+        CombatStatsManager combatStatsManager = CombatStatsManager.getInstance();
+        getServer().getPluginManager().registerEvents(new CombatStatsListener(combatStatsManager), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
