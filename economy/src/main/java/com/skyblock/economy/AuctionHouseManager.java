@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Manages auction house listings that support both buy-it-now (BIN) and
@@ -15,11 +16,13 @@ import java.util.UUID;
 public final class AuctionHouseManager {
 
     /** A single active auction house listing. */
-    public record AuctionListing(UUID seller, String itemName, double startingBid,
-                                 boolean binListing) {
+    public record AuctionListing(UUID id, UUID seller, ItemStack item, String itemName,
+                                 double startingBid, boolean binListing) {
 
         public AuctionListing {
+            if (id == null) throw new IllegalArgumentException("id must not be null");
             if (seller == null) throw new IllegalArgumentException("seller must not be null");
+            if (item == null) throw new IllegalArgumentException("item must not be null");
             if (itemName == null) throw new IllegalArgumentException("itemName must not be null");
             if (startingBid < 0) throw new IllegalArgumentException("startingBid must not be negative: " + startingBid);
         }
@@ -42,15 +45,18 @@ public final class AuctionHouseManager {
      * Creates a new auction house listing.
      *
      * @param seller      the selling player's UUID, must not be null
-     * @param itemName    the name of the listed item, must not be null
+     * @param item        the item being listed, must not be null
+     * @param itemName    the display name of the listed item, must not be null
      * @param startingBid the minimum bid or BIN price, must not be negative
      * @param binListing  {@code true} for a buy-it-now listing, {@code false}
      *                    for a bid-based auction
      * @return the UUID of the newly created listing
      */
-    public UUID createListing(UUID seller, String itemName, double startingBid, boolean binListing) {
-        AuctionListing listing = new AuctionListing(seller, itemName, startingBid, binListing);
+    public UUID createListing(UUID seller, ItemStack item, String itemName, double startingBid,
+                              boolean binListing) {
         UUID listingId = UUID.randomUUID();
+        AuctionListing listing = new AuctionListing(listingId, seller, item, itemName,
+                startingBid, binListing);
         listings.put(listingId, new ListingState(listing));
         return listingId;
     }
