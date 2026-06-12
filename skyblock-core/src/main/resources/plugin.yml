@@ -174,6 +174,10 @@ commands:
     description: View and participate in Jacob's Farming Contests.
     usage: /jacobcontest [info|enter <crop>|pb [crop]|medals]
     permission: skyblock.jacobcontest
+  season:
+    description: View and manage the current SkyBlock season.
+    usage: /season <current|next|set <season>|advance>
+    permission: skyblock.season
 
 permissions:
   skyblock.warp:
@@ -211,4 +215,7 @@ permissions:
     default: true
   skyblock.jacobcontest:
     description: Use the /jacobcontest command to view and participate in Jacob's Farming Contests.
+    default: true
+  skyblock.season:
+    description: Use the /season command to view and manage the current SkyBlock season.
     default: true
