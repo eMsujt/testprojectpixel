@@ -35,6 +35,7 @@ import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.crafting.CraftingCommand;
+import com.skyblock.core.crafting.CraftingListener;
 import com.skyblock.core.crafting.CraftingManager;
 import com.skyblock.core.crafting.SkyBlockCraftingManager;
 import com.skyblock.core.crafting.SkyBlockRecipeManager;
@@ -196,6 +197,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         skyBlockCraftingManager.init(this);
         CraftingManager craftingManager = CraftingManager.getInstance();
         getCommand("crafting").setExecutor(new CraftingCommand(craftingManager));
+        getServer().getPluginManager().registerEvents(new CraftingListener(craftingManager), this);
         com.skyblock.core.stat.StatManager statManager = com.skyblock.core.stat.StatManager.getInstance();
         getServer().getPluginManager().registerEvents(new StatListener(statManager), this);
         TalismanManager talismanManager = TalismanManager.getInstance();
