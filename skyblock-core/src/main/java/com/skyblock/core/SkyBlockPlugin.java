@@ -1,9 +1,26 @@
 package com.skyblock.core;
 
+import com.skyblock.core.auction.AuctionHouseManager;
+import com.skyblock.core.bazaar.BazaarManager;
+import com.skyblock.core.collections.CollectionManager;
 import com.skyblock.core.combat.CombatManager;
+import com.skyblock.core.combat.StatManager;
+import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.commands.SkyBlockCommand;
+import com.skyblock.core.economy.EconomyManager;
+import com.skyblock.core.enchanting.EnchantmentManager;
+import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.listeners.SkyBlockEventListener;
+import com.skyblock.core.magic.FairySoulManager;
 import com.skyblock.core.menu.MenuManager;
+import com.skyblock.core.minion.MinionManager;
+import com.skyblock.core.pets.PetManager;
+import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.quests.QuestManager;
+import com.skyblock.core.scoreboard.ScoreboardManager;
+import com.skyblock.core.shop.ShopManager;
+import com.skyblock.core.skills.SkillManager;
+import com.skyblock.core.warps.WarpManager;
 import com.skyblock.farming.FarmingManager;
 import com.skyblock.foraging.ForagingManager;
 import com.skyblock.mining.MiningManager;
@@ -41,10 +58,30 @@ public final class SkyBlockPlugin extends JavaPlugin {
         FarmingManager farmingManager = new FarmingManager();
         ForagingManager foragingManager = new ForagingManager();
 
+        // initialise all singletons so they are ready before commands fire
+        EconomyManager.getInstance();
+        SkillManager skillManager = SkillManager.getInstance();
+        AuctionHouseManager.getInstance();
+        BazaarManager.getInstance();
+        CollectionManager.getInstance();
+        EnchantmentManager.getInstance();
+        FairySoulManager.getInstance();
+        MinionManager.getInstance();
+        PetManager.getInstance();
+        ProfileManager.getInstance();
+        QuestManager.getInstance();
+        ScoreboardManager.getInstance();
+        ShopManager.getInstance();
+        StatManager.getInstance();
+        WarpManager.getInstance();
+        FishingManager fishingManager = FishingManager.getInstance();
+
         getCommand("skyblock").setExecutor(new SkyBlockCommand(playerDataManager));
+        getCommand("skills").setExecutor(new SkillsCommand(skillManager));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
         getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(fishingManager, this);
         getServer().getPluginManager().registerEvents(MenuManager.getInstance(), this);
 
         getLogger().info("SkyBlock core enabled.");
