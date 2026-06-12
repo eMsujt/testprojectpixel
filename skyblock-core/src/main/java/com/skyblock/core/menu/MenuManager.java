@@ -1,12 +1,7 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,13 +9,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton that manages open {@link SkyBlockMenu} instances and routes
- * inventory events to the correct menu.
- *
- * <p>Register this class as a Bukkit {@link Listener} on startup so that
- * click and close events are forwarded to the active menu for each player.</p>
+ * Singleton that manages open {@link SkyBlockMenu} instances for each player.
  */
-public final class MenuManager implements Listener {
+public final class MenuManager {
 
     /**
      * Abstract base for all SkyBlock GUI menus.
@@ -91,24 +82,5 @@ public final class MenuManager implements Listener {
     public void closeMenu(Player player) {
         Objects.requireNonNull(player, "player");
         openMenus.remove(player.getUniqueId());
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) {
-            return;
-        }
-        SkyBlockMenu menu = openMenus.get(player.getUniqueId());
-        if (menu != null) {
-            event.setCancelled(true);
-            menu.onClick(event);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        if (event.getPlayer() instanceof Player player) {
-            openMenus.remove(player.getUniqueId());
-        }
     }
 }
