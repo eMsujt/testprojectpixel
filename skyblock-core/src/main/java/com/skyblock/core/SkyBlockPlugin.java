@@ -126,6 +126,9 @@ import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.HotmCommand;
 import com.skyblock.core.hotm.HotmManager;
+import com.skyblock.core.rift.RiftCommand;
+import com.skyblock.core.rift.RiftListener;
+import com.skyblock.core.rift.RiftManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -356,6 +359,12 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
         BossBarManager bossBarManager = BossBarManager.getInstance();
         getServer().getPluginManager().registerEvents(new BossBarListener(bossBarManager), this);
+
+        RiftManager riftManager = RiftManager.getInstance();
+        RiftCommand riftCommand = new RiftCommand(riftManager);
+        getCommand("rift").setExecutor(riftCommand);
+        getCommand("rift").setTabCompleter(riftCommand);
+        getServer().getPluginManager().registerEvents(new RiftListener(riftManager), this);
 
         com.skyblock.core.enchantment.EnchantmentManager.getInstance();
         com.skyblock.core.enchant.EnchantmentManager.getInstance();

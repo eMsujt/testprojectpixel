@@ -162,6 +162,10 @@ commands:
     description: Create and manage player guilds.
     usage: /guild <create|invite|accept|decline|kick|leave|disband|info>
     permission: skyblock.guild
+  rift:
+    description: View and manage your Rift dimension state.
+    usage: /rift <info|enter [zone]|exit|reset>
+    permission: skyblock.rift
 
 permissions:
   skyblock.warp:
@@ -190,4 +194,7 @@ permissions:
     default: true
   skyblock.guild:
     description: Use the /guild command to create and manage guilds.
+    default: true
+  skyblock.rift:
+    description: Use the /rift command to manage Rift dimension state.
     default: true
