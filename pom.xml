@@ -58,6 +58,7 @@
         <module>party</module>
         <module>museum</module>
         <module>minion</module>
+        <module>calendar</module>
         <module>plugin</module>
     </modules>
 
