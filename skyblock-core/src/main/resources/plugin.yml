@@ -154,6 +154,10 @@ commands:
     description: View and manage Crimson Isle faction, reputation, and Kuudra keys.
     usage: /crimsonisle <faction [set <faction>]|reputation [add|remove <faction> <amt>]|kuudra [add|remove <tier> <amt>]>
     permission: skyblock.crimsonisle
+  guild:
+    description: Create and manage player guilds.
+    usage: /guild <create|invite|accept|decline|kick|leave|disband|info>
+    permission: skyblock.guild
 
 permissions:
   skyblock.warp:
@@ -176,4 +180,7 @@ permissions:
     default: true
   skyblock.crimsonisle:
     description: Use the /crimsonisle command to view and manage Crimson Isle data.
+    default: true
+  skyblock.guild:
+    description: Use the /guild command to create and manage guilds.
     default: true
