@@ -5,9 +5,11 @@ import com.skyblock.api.SkyBlockAPI;
 import com.skyblock.api.SkyBlockAPIProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,12 +42,16 @@ public final class SkyBlockPlugin extends JavaPlugin implements SkyBlockAPI {
     public void onEnable() {
         instance = this;
         SkyBlockAPIProvider.set(this);
+        modules.values().forEach(IModule::onEnable);
         getLogger().info("SkyBlock core enabled.");
     }
 
     @Override
     public void onDisable() {
         getLogger().info("SkyBlock core disabled.");
+        List<IModule> reversed = new ArrayList<>(modules.values());
+        Collections.reverse(reversed);
+        reversed.forEach(IModule::onDisable);
         SkyBlockAPIProvider.clear();
         instance = null;
     }
@@ -56,6 +62,9 @@ public final class SkyBlockPlugin extends JavaPlugin implements SkyBlockAPI {
      */
     public <T extends IModule> void registerModule(Class<T> type, T module) {
         modules.put(type, module);
+        if (isEnabled()) {
+            module.onEnable();
+        }
     }
 
     @Override
