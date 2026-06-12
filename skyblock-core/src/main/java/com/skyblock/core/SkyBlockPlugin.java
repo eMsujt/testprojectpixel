@@ -58,6 +58,7 @@ import com.skyblock.core.menu.MenuListener;
 import com.skyblock.core.menu.MenuManager;
 import com.skyblock.core.minion.MinionCommand;
 import com.skyblock.core.minion.MinionManager;
+import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.pets.PetManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.npc.NPCListener;
@@ -184,6 +185,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.core.minion.MinionListener(minionManager), this);
         PetManager petManager = PetManager.getInstance();
         getCommand("pets").setExecutor(new PetsCommand(petManager));
+        com.skyblock.core.pet.PetManager petManagerV2 = com.skyblock.core.pet.PetManager.getInstance();
+        PetCommand petCommand = new PetCommand(petManagerV2);
+        getCommand("pet").setExecutor(petCommand);
+        getCommand("pet").setTabCompleter(petCommand);
         ProfileManager profileManager = ProfileManager.getInstance();
         getCommand("profile").setExecutor(new ProfileCommand(profileManager));
         NpcManager npcManager = NpcManager.getInstance();
