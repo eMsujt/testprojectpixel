@@ -86,6 +86,8 @@ import com.skyblock.core.mob.CustomMobManager;
 import com.skyblock.core.mob.MobLootListener;
 import com.skyblock.core.mob.MobLootManager;
 import com.skyblock.core.mob.MobManager;
+import com.skyblock.core.notification.NotificationListener;
+import com.skyblock.core.notification.NotificationManager;
 import com.skyblock.core.reward.DailyRewardCommand;
 import com.skyblock.core.reward.DailyRewardManager;
 import com.skyblock.core.trade.TradeCommand;
@@ -237,6 +239,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ArmorSetManager armorSetManager = ArmorSetManager.getInstance();
         getServer().getPluginManager().registerEvents(new ArmorSetListener(armorSetManager), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.talisman.TalismanListener(talismanManager), this);
+        NotificationManager notificationManager = NotificationManager.getInstance();
+        getServer().getPluginManager().registerEvents(new NotificationListener(notificationManager), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
