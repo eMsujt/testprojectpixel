@@ -77,13 +77,13 @@ public final class CollectionCommand implements TabExecutor {
         int tier = collectionManager.getTier(player.getUniqueId(), collection);
         long toNext = collectionManager.getItemsToNextTier(player.getUniqueId(), collection);
 
-        sender.sendMessage("=== " + collection.name().toLowerCase() + " Collection ===");
-        sender.sendMessage("Tier: " + tier + " / " + CollectionManager.MAX_TIER);
-        sender.sendMessage("Items: " + items);
+        player.sendMessage("=== " + collection.name().toLowerCase() + " Collection ===");
+        player.sendMessage("Tier: " + tier + " / " + CollectionManager.MAX_TIER);
+        player.sendMessage("Items: " + items);
         if (tier < CollectionManager.MAX_TIER) {
-            sender.sendMessage("To next tier: " + toNext);
+            player.sendMessage("To next tier: " + toNext);
         } else {
-            sender.sendMessage("Collection maxed out!");
+            player.sendMessage("Collection maxed out!");
         }
     }
 
