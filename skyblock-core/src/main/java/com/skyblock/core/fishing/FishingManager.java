@@ -1,14 +1,8 @@
 package com.skyblock.core.fishing;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -16,16 +10,15 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * Singleton Bukkit listener that intercepts {@link PlayerFishEvent} and
- * replaces vanilla loot with a SkyBlock fishing loot table scaled by the
- * player's fishing level.
+ * Singleton manager for SkyBlock fishing skill progression and loot rolls.
  *
- * <p>Fishing XP is awarded per catch. Fishing level thresholds follow a simple
+ * <p>Tracks per-player fishing XP and level, and exposes a weighted loot table
+ * keyed on minimum fishing skill level. Fishing level thresholds follow a simple
  * exponential curve (50 XP × level² per level-up, capped at level 50).</p>
  *
  * <p>Not thread-safe; synchronize externally if needed.</p>
  */
-public final class FishingManager implements Listener {
+public final class FishingManager {
 
     /** All fish types obtainable through SkyBlock fishing. */
     public enum FishType {
@@ -68,7 +61,8 @@ public final class FishingManager implements Listener {
     };
 
     private static final int MAX_LEVEL = 50;
-    private static final double XP_PER_CATCH = 10.0;
+    /** Base XP awarded per successful catch. */
+    public static final double XP_PER_CATCH = 10.0;
 
     private static final FishingManager INSTANCE = new FishingManager();
 
@@ -89,33 +83,6 @@ public final class FishingManager implements Listener {
      */
     public static FishingManager getInstance() {
         return INSTANCE;
-    }
-
-    /**
-     * Intercepts {@link PlayerFishEvent} when a fish is caught, replaces the
-     * vanilla item with SkyBlock loot appropriate to the player's fishing level,
-     * and awards fishing XP.
-     *
-     * @param event the fishing event
-     */
-    @EventHandler
-    public void onPlayerFish(PlayerFishEvent event) {
-        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
-            return;
-        }
-        if (!(event.getCaught() instanceof Item)) {
-            return;
-        }
-
-        Player player = event.getPlayer();
-        UUID id = player.getUniqueId();
-
-        int level = getLevel(id);
-        ItemStack loot = rollLoot(level);
-
-        ((Item) event.getCaught()).setItemStack(loot);
-
-        addXp(id, XP_PER_CATCH);
     }
 
     // ---------------------------------------------------------------------------
