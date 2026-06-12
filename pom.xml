@@ -52,6 +52,7 @@
         <module>profile</module>
         <module>hotm</module>
         <module>brewing</module>
+        <module>reforging</module>
         <module>plugin</module>
     </modules>
 
