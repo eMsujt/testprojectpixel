@@ -55,6 +55,7 @@ import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.fishing.TrophyFishingManager;
 import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.forge.ForgeManager;
+import com.skyblock.core.itemforge.ItemForgeManager;
 import com.skyblock.core.listener.CoreListeners;
 import com.skyblock.core.magic.FairySoulManager;
 import com.skyblock.core.menu.MenuListener;
@@ -181,6 +182,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         FairySoulManager.getInstance();
         ForgeManager forgeManager = ForgeManager.getInstance();
         getCommand("forge").setExecutor(new ForgeCommand(forgeManager));
+        ItemForgeManager itemForgeManager = ItemForgeManager.getInstance();
+        com.skyblock.core.itemforge.ForgeCommand itemForgeCommand =
+                new com.skyblock.core.itemforge.ForgeCommand(itemForgeManager);
+        getCommand("itemforge").setExecutor(itemForgeCommand);
+        getCommand("itemforge").setTabCompleter(itemForgeCommand);
         LeaderboardManager leaderboardManager = LeaderboardManager.getInstance();
         AlchemyManager alchemyManager = AlchemyManager.getInstance();
         getCommand("alchemy").setExecutor(new AlchemyCommand(alchemyManager));
