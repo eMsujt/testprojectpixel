@@ -98,6 +98,8 @@ import com.skyblock.core.bestiary.BestiaryCommand;
 import com.skyblock.core.bestiary.BestiaryManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.party.PartyManager;
+import com.skyblock.core.accessory.AccessoryBagCommand;
+import com.skyblock.core.accessory.AccessoryBagManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -267,6 +269,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         PartyCommand partyCommand = new PartyCommand(partyManager);
         getCommand("party").setExecutor(partyCommand);
         getCommand("party").setTabCompleter(partyCommand);
+
+        AccessoryBagManager accessoryBagManager = AccessoryBagManager.getInstance();
+        AccessoryBagCommand accessoryBagCommand = new AccessoryBagCommand(accessoryBagManager);
+        getCommand("accessorybag").setExecutor(accessoryBagCommand);
+        getCommand("accessorybag").setTabCompleter(accessoryBagCommand);
 
         getLogger().info("SkyBlock core enabled.");
     }

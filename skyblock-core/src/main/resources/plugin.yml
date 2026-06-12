@@ -119,3 +119,7 @@ commands:
   party:
     description: Manage your party.
     usage: /party <invite|accept|decline|kick|leave|list>
+  accessorybag:
+    description: Manage your accessory bag and view stat bonuses.
+    usage: /accessorybag <list|add|remove|bonuses>
+    aliases: [abag]
