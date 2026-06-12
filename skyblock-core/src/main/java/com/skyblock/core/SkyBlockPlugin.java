@@ -192,7 +192,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         AuctionManager auctionManager = AuctionManager.getInstance();
         getCommand("auction").setExecutor(new AuctionCommand(auctionManager));
         BazaarManager bazaarManager = BazaarManager.getInstance();
-        getCommand("bazaar").setExecutor(new BazaarCommand(bazaarManager));
+        BazaarCommand bazaarCommand = new BazaarCommand(bazaarManager);
+        getCommand("bazaar").setExecutor(bazaarCommand);
+        getCommand("bazaar").setTabCompleter(bazaarCommand);
         BankManager bankManager = BankManager.getInstance();
         BankCommand bankCommand = new BankCommand(bankManager);
         getCommand("bank").setExecutor(bankCommand);
