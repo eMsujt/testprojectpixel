@@ -1,0 +1,107 @@
+recipes:
+  enchanted_diamond_sword:
+    type: shaped
+    result: DIAMOND_SWORD
+    resultAmount: 1
+    shape:
+      - "D"
+      - "D"
+      - "S"
+    ingredientMap:
+      D: DIAMOND
+      S: STICK
+
+  enchanted_diamond_pickaxe:
+    type: shaped
+    result: DIAMOND_PICKAXE
+    resultAmount: 1
+    shape:
+      - "DDD"
+      - " S "
+      - " S "
+    ingredientMap:
+      D: DIAMOND
+      S: STICK
+
+  enchanted_diamond_helmet:
+    type: shaped
+    result: DIAMOND_HELMET
+    resultAmount: 1
+    shape:
+      - "DDD"
+      - "D D"
+    ingredientMap:
+      D: DIAMOND
+
+  enchanted_diamond_chestplate:
+    type: shaped
+    result: DIAMOND_CHESTPLATE
+    resultAmount: 1
+    shape:
+      - "D D"
+      - "DDD"
+      - "DDD"
+    ingredientMap:
+      D: DIAMOND
+
+  enchanted_diamond_leggings:
+    type: shaped
+    result: DIAMOND_LEGGINGS
+    resultAmount: 1
+    shape:
+      - "DDD"
+      - "D D"
+      - "D D"
+    ingredientMap:
+      D: DIAMOND
+
+  enchanted_diamond_boots:
+    type: shaped
+    result: DIAMOND_BOOTS
+    resultAmount: 1
+    shape:
+      - "D D"
+      - "D D"
+    ingredientMap:
+      D: DIAMOND
+
+  ender_eye_bundle:
+    type: shapeless
+    result: ENDER_EYE
+    resultAmount: 4
+    ingredients:
+      - ENDER_PEARL
+      - ENDER_PEARL
+      - BLAZE_POWDER
+      - BLAZE_POWDER
+
+  skyblock_magma_cream:
+    type: shapeless
+    result: MAGMA_CREAM
+    resultAmount: 6
+    ingredients:
+      - SLIME_BALL
+      - BLAZE_POWDER
+      - BLAZE_POWDER
+
+  obsidian_block:
+    type: shaped
+    result: OBSIDIAN
+    resultAmount: 4
+    shape:
+      - "WW"
+      - "WW"
+    ingredientMap:
+      W: NETHERRACK
+
+  enchanted_bow:
+    type: shaped
+    result: BOW
+    resultAmount: 1
+    shape:
+      - " SL"
+      - "S L"
+      - " SL"
+    ingredientMap:
+      S: STICK
+      L: STRING
