@@ -5,6 +5,7 @@ import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionManager;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.combat.StatManager;
+import com.skyblock.core.command.ShopCommand;
 import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.command.WarpCommand;
@@ -84,6 +85,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.warp.WarpManager warpManager = com.skyblock.core.warp.WarpManager.getInstance();
         warpManager.load(new java.io.File(getDataFolder(), "warps.yml"));
         getCommand("warp").setExecutor(new WarpCommand(warpManager));
+        getCommand("shop").setExecutor(new ShopCommand(ShopManager.getInstance(), EconomyManager.getInstance()));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
         getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);

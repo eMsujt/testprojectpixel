@@ -36,3 +36,6 @@ commands:
   warp:
     description: Teleport to a named warp point.
     usage: /warp [name|set <name>|delete <name>]
+  shop:
+    description: Browse and purchase items from the SkyBlock shop.
+    usage: /shop [category|buy <category> <item>]
