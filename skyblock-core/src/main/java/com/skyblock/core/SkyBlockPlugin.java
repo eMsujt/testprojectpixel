@@ -120,6 +120,10 @@ import com.skyblock.core.crimson.CrimsonIsleCommand;
 import com.skyblock.core.crimson.CrimsonIsleManager;
 import com.skyblock.core.hotm.HotmCommand;
 import com.skyblock.core.hotm.HotmManager;
+import com.skyblock.core.backpack.BackpackCommand;
+import com.skyblock.core.backpack.BackpackManager;
+import com.skyblock.core.bossbar.BossBarListener;
+import com.skyblock.core.bossbar.BossBarManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -337,6 +341,14 @@ public final class SkyBlockPlugin extends JavaPlugin {
         CrimsonIsleCommand crimsonIsleCommand = new CrimsonIsleCommand(crimsonIsleManager);
         getCommand("crimsonisle").setExecutor(crimsonIsleCommand);
         getCommand("crimsonisle").setTabCompleter(crimsonIsleCommand);
+
+        BackpackManager backpackManager = BackpackManager.getInstance();
+        BackpackCommand backpackCommand = new BackpackCommand(backpackManager);
+        getCommand("backpack").setExecutor(backpackCommand);
+        getCommand("backpack").setTabCompleter(backpackCommand);
+
+        BossBarManager bossBarManager = BossBarManager.getInstance();
+        getServer().getPluginManager().registerEvents(new BossBarListener(bossBarManager), this);
 
         com.skyblock.core.enchantment.EnchantmentManager.getInstance();
         com.skyblock.core.enchant.EnchantmentManager.getInstance();
