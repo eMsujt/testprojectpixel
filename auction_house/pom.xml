@@ -19,7 +19,8 @@
     <dependencies>
         <dependency>
             <groupId>com.skyblock</groupId>
-            <artifactId>skyblock-api</artifactId>
+            <artifactId>skyblock-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
