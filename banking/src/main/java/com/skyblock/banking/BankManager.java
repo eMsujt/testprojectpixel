@@ -1,98 +1,190 @@
 package com.skyblock.banking;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.entity.Player;
 
 /**
- * Manages per-player bank account balances.
+ * Manages per-player bank accounts.
  *
- * <p>Balances are stored in a {@link ConcurrentHashMap} keyed by player
- * UUID. Updates use atomic {@code compute} operations so deposits and
- * withdrawals are safe to call from any thread.</p>
+ * <p>Accounts are stored in a {@link HashMap} keyed by player UUID. Each
+ * player owns at most one {@link BankAccount}, which tracks its balance and
+ * {@link BankTier}; deposits are capped at the account tier's coin cap.
+ * Not thread-safe; synchronize externally if accessed from multiple
+ * threads.</p>
  */
 public final class BankManager {
 
-    private final ConcurrentHashMap<UUID, Long> balances = new ConcurrentHashMap<>();
+    /**
+     * A single player's bank account, tracking its balance and upgrade tier.
+     *
+     * <p>Balances are mutated only through {@link BankManager}.</p>
+     */
+    public static final class BankAccount {
+
+        private final UUID owner;
+        private BankTier tier = BankTier.STARTER;
+        private long balance;
+
+        private BankAccount(UUID owner) {
+            this.owner = owner;
+        }
+
+        /**
+         * Returns the unique id of the player owning this account.
+         *
+         * @return the owning player's UUID
+         */
+        public UUID getOwner() {
+            return owner;
+        }
+
+        /**
+         * Returns the account's upgrade tier, which caps deposits.
+         *
+         * @return the current tier, initially {@link BankTier#STARTER}
+         */
+        public BankTier getTier() {
+            return tier;
+        }
+
+        /**
+         * Returns the account's current balance.
+         *
+         * @return the balance in coins, never negative
+         */
+        public long getBalance() {
+            return balance;
+        }
+    }
+
+    private final Map<UUID, BankAccount> accounts = new HashMap<>();
 
     /**
-     * Returns the player's current bank balance, or {@code 0} if the
-     * player has no account yet.
+     * Opens a bank account for a player with a zero balance at the
+     * {@link BankTier#STARTER} tier.
      *
-     * @param playerId the player's UUID
-     * @return the current balance in coins
+     * @param player the player to open an account for, must not be null
+     * @return {@code true} if the account was opened, {@code false} if the
+     *         player already has one
+     * @throws IllegalArgumentException if the player is null
      */
-    public long getBalance(UUID playerId) {
-        return balances.getOrDefault(playerId, 0L);
+    public boolean openAccount(Player player) {
+        if (player == null) {
+            throw new IllegalArgumentException("player must not be null");
+        }
+        UUID playerId = player.getUniqueId();
+        return accounts.putIfAbsent(playerId, new BankAccount(playerId)) == null;
     }
 
     /**
-     * Returns whether the player's bank balance covers the given amount.
-     *
-     * @param playerId the player's UUID
-     * @param amount   the amount to check, must be non-negative
-     * @return {@code true} if the player's balance is at least {@code amount}
-     */
-    public boolean has(UUID playerId, long amount) {
-        requireNonNegative(amount);
-        return getBalance(playerId) >= amount;
-    }
-
-    /**
-     * Adds coins to the player's bank account.
-     *
-     * @param playerId the player's UUID
-     * @param amount   the amount to deposit, must be non-negative
-     * @return the new balance after the deposit
-     * @throws ArithmeticException if the deposit would overflow the account
-     */
-    public long deposit(UUID playerId, long amount) {
-        requireNonNegative(amount);
-        return balances.compute(playerId,
-                (id, balance) -> Math.addExact(balance != null ? balance : 0L, amount));
-    }
-
-    /**
-     * Removes coins from the player's bank account if the balance covers it.
-     *
-     * @param playerId the player's UUID
-     * @param amount   the amount to withdraw, must be non-negative
-     * @return {@code true} if the withdrawal succeeded, {@code false} if
-     *         the player's balance was insufficient
-     */
-    public boolean withdraw(UUID playerId, long amount) {
-        requireNonNegative(amount);
-        boolean[] success = {false};
-        balances.compute(playerId, (id, balance) -> {
-            long current = balance != null ? balance : 0L;
-            if (current < amount) {
-                return balance;
-            }
-            success[0] = true;
-            return current - amount;
-        });
-        return success[0];
-    }
-
-    /**
-     * Sets the player's bank balance directly.
-     *
-     * @param playerId the player's UUID
-     * @param balance  the new balance, must be non-negative
-     */
-    public void setBalance(UUID playerId, long balance) {
-        requireNonNegative(balance);
-        balances.put(playerId, balance);
-    }
-
-    /**
-     * Removes the player's bank account entirely (e.g. on data wipe).
+     * Closes a player's bank account, discarding any remaining balance.
      *
      * @param playerId the player's UUID
      * @return the balance the account held, or {@code 0} if there was none
      */
-    public long clear(UUID playerId) {
-        Long removed = balances.remove(playerId);
-        return removed != null ? removed : 0L;
+    public long closeAccount(UUID playerId) {
+        BankAccount removed = accounts.remove(playerId);
+        return removed != null ? removed.balance : 0L;
+    }
+
+    /**
+     * Returns whether a player has an open bank account.
+     *
+     * @param playerId the player's UUID
+     * @return {@code true} if the player has an account
+     */
+    public boolean hasAccount(UUID playerId) {
+        return accounts.containsKey(playerId);
+    }
+
+    /**
+     * Returns a player's bank account.
+     *
+     * @param playerId the player's UUID
+     * @return the player's account
+     * @throws IllegalArgumentException if the player has no account
+     */
+    public BankAccount getAccount(UUID playerId) {
+        BankAccount account = accounts.get(playerId);
+        if (account == null) {
+            throw new IllegalArgumentException("no account for player: " + playerId);
+        }
+        return account;
+    }
+
+    /**
+     * Returns the balance of a player's bank account.
+     *
+     * @param playerId the player's UUID
+     * @return the current balance in coins
+     * @throws IllegalArgumentException if the player has no account
+     */
+    public long getBalance(UUID playerId) {
+        return getAccount(playerId).balance;
+    }
+
+    /**
+     * Adds coins to a player's bank account, clamped to the account tier's
+     * coin cap.
+     *
+     * @param playerId the player's UUID
+     * @param amount   the amount to deposit, must be non-negative
+     * @return the amount actually deposited, which is less than
+     *         {@code amount} if the deposit would exceed the tier's cap
+     * @throws IllegalArgumentException if the player has no account or the
+     *                                  amount is negative
+     */
+    public long deposit(UUID playerId, long amount) {
+        requireNonNegative(amount);
+        BankAccount account = getAccount(playerId);
+        long deposited = Math.min(amount, account.tier.getCoinCap() - account.balance);
+        account.balance += deposited;
+        return deposited;
+    }
+
+    /**
+     * Removes coins from a player's bank account if the balance covers it.
+     *
+     * @param playerId the player's UUID
+     * @param amount   the amount to withdraw, must be non-negative
+     * @return {@code true} if the withdrawal succeeded, {@code false} if the
+     *         player's balance was insufficient
+     * @throws IllegalArgumentException if the player has no account or the
+     *                                  amount is negative
+     */
+    public boolean withdraw(UUID playerId, long amount) {
+        requireNonNegative(amount);
+        BankAccount account = getAccount(playerId);
+        if (account.balance < amount) {
+            return false;
+        }
+        account.balance -= amount;
+        return true;
+    }
+
+    /**
+     * Upgrades a player's bank account to the given tier.
+     *
+     * @param playerId the player's UUID
+     * @param tier     the tier to upgrade to, must rank above the current one
+     * @return {@code false} if {@code tier} does not rank above the account's
+     *         current tier, {@code true} if the account was upgraded
+     * @throws IllegalArgumentException if the player has no account or the
+     *                                  tier is null
+     */
+    public boolean upgradeTier(UUID playerId, BankTier tier) {
+        if (tier == null) {
+            throw new IllegalArgumentException("tier must not be null");
+        }
+        BankAccount account = getAccount(playerId);
+        if (tier.compareTo(account.tier) <= 0) {
+            return false;
+        }
+        account.tier = tier;
+        return true;
     }
 
     private static void requireNonNegative(long amount) {
