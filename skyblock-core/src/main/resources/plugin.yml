@@ -12,6 +12,10 @@ commands:
   island:
     description: Manage your SkyBlock island.
     usage: /island <create|home|visit|invite|kick|leave>
+  islandupgrade:
+    description: Purchase upgrades for your SkyBlock island.
+    usage: /islandupgrade <list|info|buy>
+    aliases: [iu]
   skills:
     description: View your SkyBlock skills.
     usage: /skills [skill]
