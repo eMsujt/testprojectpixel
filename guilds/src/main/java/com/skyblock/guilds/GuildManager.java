@@ -1,11 +1,9 @@
 package com.skyblock.guilds;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
+
+import org.bukkit.entity.Player;
 
 /**
  * Manages guilds and their memberships.
@@ -17,38 +15,38 @@ import java.util.UUID;
  */
 public final class GuildManager {
 
-    private final Map<String, Set<UUID>> guildMembers = new HashMap<>();
-    private final Map<String, UUID> guildOwners = new HashMap<>();
-    private final Map<UUID, String> playerGuilds = new HashMap<>();
+    /** Each member's unique id mapped to the guild they belong to. */
+    private final HashMap<UUID, Guild> guilds = new HashMap<>();
 
     /**
-     * Creates a new guild with the given owner as its first member.
+     * Creates a new guild with the given player as its owner and first member.
      *
+     * @param owner     the founding player, must not be null
      * @param guildName the unique guild name, must not be null or blank
-     * @param owner     the unique id of the founding player, must not be null
-     * @throws IllegalArgumentException if the name is null or blank, the owner
-     *                                  is null, a guild with that name already
+     * @return the newly created guild
+     * @throws IllegalArgumentException if the owner is null, the name is null
+     *                                  or blank, a guild with that name already
      *                                  exists, or the owner is already in a guild
      */
-    public void createGuild(String guildName, UUID owner) {
-        if (guildName == null || guildName.isBlank()) {
-            throw new IllegalArgumentException("guildName must not be null or blank");
-        }
+    public Guild createGuild(Player owner, String guildName) {
         if (owner == null) {
             throw new IllegalArgumentException("owner must not be null");
         }
-        if (guildMembers.containsKey(guildName)) {
+        if (guildName == null || guildName.isBlank()) {
+            throw new IllegalArgumentException("guildName must not be null or blank");
+        }
+        UUID ownerId = owner.getUniqueId();
+        Guild current = guilds.get(ownerId);
+        if (current != null) {
+            throw new IllegalArgumentException(
+                    "player is already in a guild: " + current.getName());
+        }
+        if (guildExists(guildName)) {
             throw new IllegalArgumentException("guild already exists: " + guildName);
         }
-        if (playerGuilds.containsKey(owner)) {
-            throw new IllegalArgumentException(
-                    "player is already in a guild: " + playerGuilds.get(owner));
-        }
-        Set<UUID> members = new LinkedHashSet<>();
-        members.add(owner);
-        guildMembers.put(guildName, members);
-        guildOwners.put(guildName, owner);
-        playerGuilds.put(owner, guildName);
+        Guild guild = new Guild(guildName, ownerId);
+        guilds.put(ownerId, guild);
+        return guild;
     }
 
     /**
@@ -58,13 +56,12 @@ public final class GuildManager {
      * @return {@code true} if the guild existed and has been disbanded
      */
     public boolean disbandGuild(String guildName) {
-        Set<UUID> members = guildMembers.remove(guildName);
-        if (members == null) {
+        Guild guild = findGuild(guildName);
+        if (guild == null) {
             return false;
         }
-        guildOwners.remove(guildName);
-        for (UUID member : members) {
-            playerGuilds.remove(member);
+        for (UUID member : guild.getMembers()) {
+            guilds.remove(member);
         }
         return true;
     }
@@ -76,31 +73,33 @@ public final class GuildManager {
      * @return {@code true} if the guild exists
      */
     public boolean guildExists(String guildName) {
-        return guildMembers.containsKey(guildName);
+        return findGuild(guildName) != null;
     }
 
     /**
      * Adds a player to an existing guild.
      *
+     * @param player    the joining player, must not be null
      * @param guildName the guild name
-     * @param playerId  the unique id of the player, must not be null
-     * @throws IllegalArgumentException if the guild does not exist, the player
-     *                                  is null, or the player is already in a guild
+     * @throws IllegalArgumentException if the player is null, the guild does
+     *                                  not exist, or the player is already in a guild
      */
-    public void addMember(String guildName, UUID playerId) {
-        if (playerId == null) {
-            throw new IllegalArgumentException("playerId must not be null");
+    public void addMember(Player player, String guildName) {
+        if (player == null) {
+            throw new IllegalArgumentException("player must not be null");
         }
-        Set<UUID> members = guildMembers.get(guildName);
-        if (members == null) {
+        Guild guild = findGuild(guildName);
+        if (guild == null) {
             throw new IllegalArgumentException("guild does not exist: " + guildName);
         }
-        if (playerGuilds.containsKey(playerId)) {
+        UUID playerId = player.getUniqueId();
+        Guild current = guilds.get(playerId);
+        if (current != null) {
             throw new IllegalArgumentException(
-                    "player is already in a guild: " + playerGuilds.get(playerId));
+                    "player is already in a guild: " + current.getName());
         }
-        members.add(playerId);
-        playerGuilds.put(playerId, guildName);
+        guild.addMember(playerId);
+        guilds.put(playerId, guild);
     }
 
     /**
@@ -111,64 +110,34 @@ public final class GuildManager {
      * @return {@code true} if the player was in a guild and has been removed
      */
     public boolean removeMember(UUID playerId) {
-        String guildName = playerGuilds.get(playerId);
-        if (guildName == null) {
+        Guild guild = guilds.get(playerId);
+        if (guild == null) {
             return false;
         }
-        if (playerId.equals(guildOwners.get(guildName))) {
-            return disbandGuild(guildName);
+        if (playerId.equals(guild.getOwner())) {
+            return disbandGuild(guild.getName());
         }
-        guildMembers.get(guildName).remove(playerId);
-        playerGuilds.remove(playerId);
+        guild.removeMember(playerId);
+        guilds.remove(playerId);
         return true;
     }
 
     /**
-     * Returns the name of the guild the player belongs to.
+     * Returns the guild the player belongs to.
      *
      * @param playerId the unique id of the player
-     * @return the guild name, or {@code null} if the player is not in a guild
+     * @return the player's guild, or {@code null} if the player is not in a guild
      */
-    public String getGuild(UUID playerId) {
-        return playerGuilds.get(playerId);
+    public Guild getGuild(UUID playerId) {
+        return guilds.get(playerId);
     }
 
-    /**
-     * Returns the unique id of a guild's owner.
-     *
-     * @param guildName the guild name
-     * @return the owner's unique id
-     * @throws IllegalArgumentException if the guild does not exist
-     */
-    public UUID getOwner(String guildName) {
-        UUID owner = guildOwners.get(guildName);
-        if (owner == null) {
-            throw new IllegalArgumentException("guild does not exist: " + guildName);
+    private Guild findGuild(String guildName) {
+        for (Guild guild : guilds.values()) {
+            if (guild.getName().equals(guildName)) {
+                return guild;
+            }
         }
-        return owner;
-    }
-
-    /**
-     * Returns the members of a guild in join order.
-     *
-     * @param guildName the guild name
-     * @return an unmodifiable view of the members' unique ids
-     * @throws IllegalArgumentException if the guild does not exist
-     */
-    public Set<UUID> getMembers(String guildName) {
-        Set<UUID> members = guildMembers.get(guildName);
-        if (members == null) {
-            throw new IllegalArgumentException("guild does not exist: " + guildName);
-        }
-        return Collections.unmodifiableSet(members);
-    }
-
-    /**
-     * Returns the names of all existing guilds.
-     *
-     * @return an unmodifiable view of the guild names
-     */
-    public Set<String> getGuildNames() {
-        return Collections.unmodifiableSet(guildMembers.keySet());
+        return null;
     }
 }
