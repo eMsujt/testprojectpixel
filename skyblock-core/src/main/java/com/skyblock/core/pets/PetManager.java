@@ -32,7 +32,7 @@ public final class PetManager {
 
     /** Every pet type available in SkyBlock. */
     public enum PetType {
-        WOLF, RABBIT, BEE, LION, TIGER, ELEPHANT, HORSE,
+        CHICKEN, WOLF, RABBIT, BEE, LION, TIGER, ELEPHANT, HORSE,
         CAT, PARROT, PENGUIN, TURTLE, SHEEP, PIG, DOLPHIN,
         BLAZE, ENDERMAN, SKELETON, SPIDER, ZOMBIE
     }
