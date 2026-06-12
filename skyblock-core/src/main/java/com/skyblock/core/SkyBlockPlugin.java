@@ -3,6 +3,8 @@ package com.skyblock.core;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.alchemy.AlchemyListener;
 import com.skyblock.core.alchemy.AlchemyManager;
+import com.skyblock.core.armorset.ArmorSetListener;
+import com.skyblock.core.armorset.ArmorSetManager;
 import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.auction.AuctionCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
@@ -205,6 +207,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EnchantmentListener(SkyBlockEnchantManager.getInstance()), this);
         MobLootManager mobLootManager = MobLootManager.getInstance();
         getServer().getPluginManager().registerEvents(new MobLootListener(mobLootManager), this);
+        ArmorSetManager armorSetManager = ArmorSetManager.getInstance();
+        getServer().getPluginManager().registerEvents(new ArmorSetListener(armorSetManager), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
