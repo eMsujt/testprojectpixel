@@ -21,9 +21,9 @@ public final class EnchantmentCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS =
             Arrays.asList("list", "info", "apply", "remove", "view");
 
-    private final EnchantmentManager enchantmentManager;
+    private final SkyBlockEnchantFacade enchantmentManager;
 
-    public EnchantmentCommand(EnchantmentManager enchantmentManager) {
+    public EnchantmentCommand(SkyBlockEnchantFacade enchantmentManager) {
         this.enchantmentManager = enchantmentManager;
     }
 
