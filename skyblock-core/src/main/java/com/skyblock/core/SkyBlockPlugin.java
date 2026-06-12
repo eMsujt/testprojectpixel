@@ -116,6 +116,8 @@ import com.skyblock.core.accessory.AccessoryBagCommand;
 import com.skyblock.core.accessory.AccessoryBagManager;
 import com.skyblock.core.essence.EssenceCommand;
 import com.skyblock.core.essence.EssenceManager;
+import com.skyblock.core.crimsonisle.CrimsonIsleCommand;
+import com.skyblock.core.crimsonisle.CrimsonIsleManager;
 import com.skyblock.core.hotm.HotmCommand;
 import com.skyblock.core.hotm.HotmManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
@@ -330,6 +332,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         HotmCommand hotmCommand = new HotmCommand(hotmManager);
         getCommand("hotm").setExecutor(hotmCommand);
         getCommand("hotm").setTabCompleter(hotmCommand);
+
+        CrimsonIsleManager crimsonIsleManager = CrimsonIsleManager.getInstance();
+        CrimsonIsleCommand crimsonIsleCommand = new CrimsonIsleCommand(crimsonIsleManager);
+        getCommand("crimsonisle").setExecutor(crimsonIsleCommand);
+        getCommand("crimsonisle").setTabCompleter(crimsonIsleCommand);
 
         com.skyblock.core.enchantment.EnchantmentManager.getInstance();
         com.skyblock.core.enchant.EnchantmentManager.getInstance();
