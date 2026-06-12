@@ -85,6 +85,8 @@ import com.skyblock.core.mob.MobLootManager;
 import com.skyblock.core.mob.MobManager;
 import com.skyblock.core.reward.DailyRewardCommand;
 import com.skyblock.core.reward.DailyRewardManager;
+import com.skyblock.core.trade.TradeCommand;
+import com.skyblock.core.trade.TradeManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -190,6 +192,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         StorageCommand storageCommand = new StorageCommand(storageManager);
         getCommand("storage").setExecutor(storageCommand);
         getCommand("storage").setTabCompleter(storageCommand);
+
+        TradeManager tradeManager = TradeManager.getInstance();
+        TradeCommand tradeCommand = new TradeCommand(tradeManager);
+        getCommand("trade").setExecutor(tradeCommand);
+        getCommand("trade").setTabCompleter(tradeCommand);
 
         IslandManager.getInstance();
         getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));
