@@ -5,6 +5,7 @@ import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionManager;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.combat.StatManager;
+import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.commands.SkyBlockCommand;
 import com.skyblock.core.economy.EconomyManager;
@@ -77,7 +78,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WarpManager.getInstance();
         FishingManager fishingManager = FishingManager.getInstance();
 
-        getCommand("skyblock").setExecutor(new SkyBlockCommand(playerDataManager));
+        getCommand("skyblock").setExecutor(new SkyBlockMenuCommand(MenuManager.getInstance()));
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
