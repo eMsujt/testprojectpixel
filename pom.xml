@@ -66,6 +66,7 @@
         <module>alchemy</module>
         <module>collection</module>
         <module>skills</module>
+        <module>bestiary</module>
         <module>plugin</module>
     </modules>
 
