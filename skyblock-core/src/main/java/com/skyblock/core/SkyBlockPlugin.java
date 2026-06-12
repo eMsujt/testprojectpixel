@@ -1,7 +1,9 @@
 package com.skyblock.core;
 
+import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.commands.SkyBlockCommand;
 import com.skyblock.core.listeners.SkyBlockEventListener;
+import com.skyblock.core.menu.MenuManager;
 import com.skyblock.farming.FarmingManager;
 import com.skyblock.foraging.ForagingManager;
 import com.skyblock.mining.MiningManager;
@@ -11,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Main entry point for the SkyBlock core plugin.
  *
  * <p>Initialises the singleton managers, registers the {@code /skyblock}
- * command, and registers the block-break event listener.</p>
+ * command, and registers all event listeners.</p>
  */
 public final class SkyBlockPlugin extends JavaPlugin {
 
@@ -42,6 +44,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("skyblock").setExecutor(new SkyBlockCommand(playerDataManager));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
+        getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(MenuManager.getInstance(), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
