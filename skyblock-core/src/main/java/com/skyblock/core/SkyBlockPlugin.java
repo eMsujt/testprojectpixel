@@ -56,10 +56,11 @@ import com.skyblock.core.storage.YamlPlayerStorage;
 import com.skyblock.core.talisman.TalismanCommand;
 import com.skyblock.core.talisman.TalismanManager;
 import com.skyblock.core.warps.WarpManager;
-import com.skyblock.farming.FarmingManager;
-import com.skyblock.foraging.ForagingManager;
+import com.skyblock.core.foraging.ForagingListener;
+import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.mining.MiningListener;
 import com.skyblock.core.mining.MiningManager;
+import com.skyblock.farming.FarmingManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -92,7 +93,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         PlayerDataManager playerDataManager = PlayerDataManager.getInstance();
         MiningManager miningManager = MiningManager.getInstance();
         FarmingManager farmingManager = new FarmingManager();
-        ForagingManager foragingManager = new ForagingManager();
+        ForagingManager foragingManager = ForagingManager.getInstance();
 
         // initialise all singletons so they are ready before commands fire
         EconomyManager economyManager = EconomyManager.getInstance();
@@ -150,8 +151,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("shop").setExecutor(new ShopCommand(shopManager, economyManager));
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(leaderboardManager));
         getServer().getPluginManager().registerEvents(new MiningListener(miningManager), this);
+        getServer().getPluginManager().registerEvents(new ForagingListener(foragingManager), this);
         getServer().getPluginManager().registerEvents(
-                new SkyBlockEventListener(farmingManager, foragingManager), this);
+                new SkyBlockEventListener(farmingManager), this);
         getServer().getPluginManager().registerEvents(new AlchemyListener(alchemyManager), this);
         getServer().getPluginManager().registerEvents(new CombatListener(CombatManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);

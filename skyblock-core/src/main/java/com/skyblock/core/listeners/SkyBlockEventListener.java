@@ -2,7 +2,6 @@ package com.skyblock.core.listeners;
 
 import com.skyblock.farming.CropType;
 import com.skyblock.farming.FarmingManager;
-import com.skyblock.foraging.ForagingManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,11 +14,11 @@ import java.util.UUID;
 
 /**
  * Bukkit listener that routes {@link BlockBreakEvent} into the per-skill
- * progression managers (farming, foraging).
+ * progression managers (farming).
  *
- * <p>Each broken block is checked against the skill XP maps in order:
- * crops → {@link FarmingManager}, logs → {@link ForagingManager}.
+ * <p>Each broken block is checked against the crop XP map.
  * Mining is handled by {@link com.skyblock.core.mining.MiningListener}.
+ * Foraging is handled by {@link com.skyblock.core.foraging.ForagingListener}.
  * Blocks not in any map are silently ignored.</p>
  */
 public final class SkyBlockEventListener implements Listener {
@@ -43,25 +42,18 @@ public final class SkyBlockEventListener implements Listener {
     }
 
     private final FarmingManager farmingManager;
-    private final ForagingManager foragingManager;
 
     /**
-     * Creates a listener that dispatches block-break events to the given managers.
+     * Creates a listener that dispatches block-break events to the farming manager.
      *
-     * @param farmingManager  the farming manager, must not be null
-     * @param foragingManager the foraging manager, must not be null
-     * @throws IllegalArgumentException if any argument is null
+     * @param farmingManager the farming manager, must not be null
+     * @throws IllegalArgumentException if farmingManager is null
      */
-    public SkyBlockEventListener(FarmingManager farmingManager,
-                                  ForagingManager foragingManager) {
+    public SkyBlockEventListener(FarmingManager farmingManager) {
         if (farmingManager == null) {
             throw new IllegalArgumentException("farmingManager must not be null");
         }
-        if (foragingManager == null) {
-            throw new IllegalArgumentException("foragingManager must not be null");
-        }
         this.farmingManager = farmingManager;
-        this.foragingManager = foragingManager;
     }
 
     /**
@@ -78,12 +70,6 @@ public final class SkyBlockEventListener implements Listener {
         CropType crop = MATERIAL_TO_CROP.get(material);
         if (crop != null) {
             farmingManager.recordHarvest(playerId, crop, 1);
-            return;
-        }
-
-        Integer foragingXp = ForagingManager.WOOD_XP_MAP.get(material);
-        if (foragingXp != null) {
-            foragingManager.recordChop(playerId, foragingXp);
         }
     }
 }
