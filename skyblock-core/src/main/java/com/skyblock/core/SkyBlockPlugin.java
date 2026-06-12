@@ -21,6 +21,7 @@ import com.skyblock.core.quests.QuestManager;
 import com.skyblock.core.scoreboard.ScoreboardManager;
 import com.skyblock.core.shop.ShopManager;
 import com.skyblock.core.skills.SkillManager;
+import com.skyblock.core.storage.YamlPlayerStorage;
 import com.skyblock.core.warps.WarpManager;
 import com.skyblock.farming.FarmingManager;
 import com.skyblock.foraging.ForagingManager;
@@ -76,6 +77,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         StatManager.getInstance();
         WarpManager.getInstance();
         FishingManager fishingManager = FishingManager.getInstance();
+        YamlPlayerStorage.getInstance();
 
         getCommand("skyblock").setExecutor(new SkyBlockCommand(playerDataManager));
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
