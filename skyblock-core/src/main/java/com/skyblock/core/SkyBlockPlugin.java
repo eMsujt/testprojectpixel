@@ -1,6 +1,8 @@
 package com.skyblock.core;
 
 import com.skyblock.core.auction.AuctionHouseManager;
+import com.skyblock.core.island.IslandCommand;
+import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionManager;
 import com.skyblock.core.combat.CombatManager;
@@ -80,6 +82,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WarpManager.getInstance();
         FishingManager fishingManager = FishingManager.getInstance();
 
+        IslandManager.getInstance();
+        getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));
         getCommand("skyblock").setExecutor(new SkyBlockMenuCommand(MenuManager.getInstance()));
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
         com.skyblock.core.warp.WarpManager warpManager = com.skyblock.core.warp.WarpManager.getInstance();
