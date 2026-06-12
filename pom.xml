@@ -79,6 +79,7 @@
         <module>garden</module>
         <module>trading</module>
         <module>plugin</module>
+        <module>skyblock-core</module>
     </modules>
 
     <properties>
