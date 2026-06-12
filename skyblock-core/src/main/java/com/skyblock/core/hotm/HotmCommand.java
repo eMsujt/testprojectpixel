@@ -1,11 +1,21 @@
 package com.skyblock.core.hotm;
 
+import com.skyblock.core.gui.GuiBuilder;
+import com.skyblock.core.menu.MenuManager;
+import com.skyblock.core.menu.MenuManager.SkyBlockMenu;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,10 +25,11 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /hotm view [perk]}       — show level for one or all perks</li>
- *   <li>{@code /hotm upgrade <perk>}    — (op) upgrade a perk by one level</li>
- *   <li>{@code /hotm set <perk> <level>} — (op) set a perk to an exact level</li>
- *   <li>{@code /hotm reset}             — (op) reset all perks to zero</li>
+ *   <li>{@code /hotm}                      — open the perk tree GUI</li>
+ *   <li>{@code /hotm view [perk]}           — show level for one or all perks</li>
+ *   <li>{@code /hotm upgrade <perk>}        — (op) upgrade a perk by one level</li>
+ *   <li>{@code /hotm set <perk> <level>}    — (op) set a perk to an exact level</li>
+ *   <li>{@code /hotm reset}                 — (op) reset all perks to zero</li>
  * </ul>
  * </p>
  */
@@ -29,10 +40,32 @@ public final class HotmCommand implements TabExecutor {
             .map(p -> p.name().toLowerCase())
             .collect(Collectors.toList());
 
+    /** Perk tree layout: each entry is {slot, perk}. 54-slot (6-row) chest GUI. */
+    private static final int[][] PERK_SLOTS = {
+            {10, 0},  // MINING_SPEED_BOOST
+            {12, 1},  // EFFICIENT_MINER
+            {14, 2},  // QUICK_FORGE
+            {16, 3},  // TITANIUM_INSANIUM
+            {19, 4},  // DAILY_POWDER
+            {21, 5},  // MINING_MADNESS
+            {23, 6},  // SKY_MALL
+            {25, 7},  // GOBLIN_KILLER
+            {28, 8},  // STAR_POWDER
+            {30, 9},  // MOLE
+            {32, 10}, // PROFESSIONAL
+            {34, 11}, // LONESOME_MINER
+            {37, 12}, // GREAT_EXPLORER
+            {39, 13}, // FORTUNATE
+            {41, 14}, // PICKOBULUS
+            {43, 15}, // MINING_EXPERIENCE_BOOST
+    };
+
     private final HotmManager hotmManager;
+    private final MenuManager menuManager;
 
     public HotmCommand(HotmManager hotmManager) {
         this.hotmManager = hotmManager;
+        this.menuManager = MenuManager.getInstance();
     }
 
     @Override
@@ -43,7 +76,7 @@ public final class HotmCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /hotm <view|upgrade|set|reset>");
+            menuManager.openMenu(player, new HotmMenu(player));
             return true;
         }
 
@@ -76,6 +109,82 @@ public final class HotmCommand implements TabExecutor {
         }
         return Collections.emptyList();
     }
+
+    // -------------------------------------------------------------------------
+    // GUI
+    // -------------------------------------------------------------------------
+
+    /** Inner menu class that builds and handles the HOTM perk tree inventory. */
+    private final class HotmMenu extends SkyBlockMenu {
+
+        private final Player owner;
+
+        HotmMenu(Player owner) {
+            this.owner = owner;
+        }
+
+        @Override
+        public void open(Player player) {
+            ItemStack filler = named(Material.GRAY_STAINED_GLASS_PANE, " ", null);
+            GuiBuilder builder = GuiBuilder.create(ChatColor.DARK_AQUA + "Heart of the Mountain", 6);
+
+            HotmManager.HotmPerk[] perks = HotmManager.HotmPerk.values();
+            for (int[] entry : PERK_SLOTS) {
+                int slot = entry[0];
+                HotmManager.HotmPerk perk = perks[entry[1]];
+                int level = hotmManager.getLevel(player.getUniqueId(), perk);
+                boolean maxed = level >= perk.maxLevel;
+
+                Material mat = level > 0 ? Material.LIME_DYE : Material.GRAY_DYE;
+                String color = maxed ? ChatColor.GOLD.toString()
+                        : (level > 0 ? ChatColor.GREEN.toString() : ChatColor.RED.toString());
+                List<String> lore = new ArrayList<>();
+                lore.add(ChatColor.GRAY + "Level: " + ChatColor.WHITE + level + "/" + perk.maxLevel);
+                if (maxed) {
+                    lore.add(ChatColor.GOLD + "MAXED");
+                } else if (player.isOp()) {
+                    lore.add(ChatColor.YELLOW + "Click to upgrade");
+                }
+
+                ItemStack item = namedWithLore(mat, color + formatPerk(perk), lore);
+                builder.setItem(slot, item, e -> {
+                    if (!e.getWhoClicked().hasPermission("minecraft.command.op")
+                            && !((Player) e.getWhoClicked()).isOp()) {
+                        e.getWhoClicked().sendMessage(ChatColor.RED + "You do not have permission to upgrade perks.");
+                        return;
+                    }
+                    int newLevel = hotmManager.upgrade(owner.getUniqueId(), perk);
+                    if (newLevel == -1) {
+                        e.getWhoClicked().sendMessage(ChatColor.RED + formatPerk(perk) + " is already at max level.");
+                    } else {
+                        e.getWhoClicked().sendMessage(ChatColor.GREEN + "Upgraded " + formatPerk(perk) + " to level " + newLevel + ".");
+                    }
+                    // Reopen to refresh levels
+                    menuManager.openMenu((Player) e.getWhoClicked(), new HotmMenu(owner));
+                });
+            }
+
+            // Close button
+            builder.setItem(49, named(Material.BARRIER, ChatColor.RED + "Close", null),
+                    e -> e.getWhoClicked().closeInventory());
+
+            Inventory inv = builder.fill(filler).build();
+            player.openInventory(inv);
+        }
+
+        @Override
+        public void onClick(InventoryClickEvent event) {
+            event.setCancelled(true);
+            if (event.getClickedInventory() != null
+                    && event.getClickedInventory().getHolder() instanceof GuiBuilder.GuiHolder holder) {
+                holder.handleClick(event);
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Text subcommands
+    // -------------------------------------------------------------------------
 
     private void handleView(Player player, String[] args) {
         if (args.length >= 2) {
@@ -170,5 +279,20 @@ public final class HotmCommand implements TabExecutor {
             cap = c == ' ';
         }
         return sb.toString();
+    }
+
+    private static ItemStack named(Material material, String displayName, List<String> lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(displayName);
+            if (lore != null) meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private static ItemStack namedWithLore(Material material, String displayName, List<String> lore) {
+        return named(material, displayName, lore);
     }
 }
