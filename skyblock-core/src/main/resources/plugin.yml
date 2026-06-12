@@ -150,6 +150,10 @@ commands:
     description: View and manage Heart of the Mountain perk levels.
     usage: /hotm <view [perk]|upgrade <perk>|set <perk> <level>|reset>
     permission: skyblock.hotm
+  crimsonisle:
+    description: View and manage Crimson Isle faction, reputation, and Kuudra keys.
+    usage: /crimsonisle <faction [set <faction>]|reputation [add|remove <faction> <amt>]|kuudra [add|remove <tier> <amt>]>
+    permission: skyblock.crimsonisle
 
 permissions:
   skyblock.warp:
@@ -169,4 +173,7 @@ permissions:
     default: true
   skyblock.essence:
     description: Use the /essence command to view and manage essence balances.
+    default: true
+  skyblock.crimsonisle:
+    description: Use the /crimsonisle command to view and manage Crimson Isle data.
     default: true
