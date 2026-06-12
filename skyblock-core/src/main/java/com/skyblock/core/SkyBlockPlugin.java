@@ -152,6 +152,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("alchemy").setExecutor(new AlchemyCommand(alchemyManager));
         MinionManager minionManager = MinionManager.getInstance();
         getCommand("minion").setExecutor(new MinionCommand(minionManager));
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.minion.MinionListener(minionManager), this);
         PetManager petManager = PetManager.getInstance();
         getCommand("pets").setExecutor(new PetsCommand(petManager));
         ProfileManager profileManager = ProfileManager.getInstance();
