@@ -10,6 +10,7 @@ import com.skyblock.core.commands.SkyBlockCommand;
 import com.skyblock.core.economy.EconomyManager;
 import com.skyblock.core.enchanting.EnchantmentManager;
 import com.skyblock.core.fishing.FishingManager;
+import com.skyblock.core.listener.CoreListeners;
 import com.skyblock.core.listeners.SkyBlockEventListener;
 import com.skyblock.core.magic.FairySoulManager;
 import com.skyblock.core.menu.MenuManager;
@@ -83,6 +84,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(CombatManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(fishingManager, this);
         getServer().getPluginManager().registerEvents(MenuManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(new CoreListeners(playerDataManager), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
