@@ -94,6 +94,8 @@ import com.skyblock.core.reward.DailyRewardCommand;
 import com.skyblock.core.reward.DailyRewardManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeManager;
+import com.skyblock.core.bestiary.BestiaryCommand;
+import com.skyblock.core.bestiary.BestiaryManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -254,6 +256,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.core.talisman.TalismanListener(talismanManager), this);
         NotificationManager notificationManager = NotificationManager.getInstance();
         getServer().getPluginManager().registerEvents(new NotificationListener(notificationManager), this);
+        BestiaryManager bestiaryManager = BestiaryManager.getInstance();
+        BestiaryCommand bestiaryCommand = new BestiaryCommand(bestiaryManager);
+        getCommand("bestiary").setExecutor(bestiaryCommand);
+        getCommand("bestiary").setTabCompleter(bestiaryCommand);
 
         getLogger().info("SkyBlock core enabled.");
     }
