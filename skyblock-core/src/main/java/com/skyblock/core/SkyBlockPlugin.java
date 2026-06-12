@@ -115,6 +115,8 @@ import com.skyblock.core.accessory.AccessoryBagCommand;
 import com.skyblock.core.accessory.AccessoryBagManager;
 import com.skyblock.core.essence.EssenceCommand;
 import com.skyblock.core.essence.EssenceManager;
+import com.skyblock.core.hotm.HotmCommand;
+import com.skyblock.core.hotm.HotmManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -319,6 +321,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
+
+        HotmManager hotmManager = HotmManager.getInstance();
+        HotmCommand hotmCommand = new HotmCommand(hotmManager);
+        getCommand("hotm").setExecutor(hotmCommand);
+        getCommand("hotm").setTabCompleter(hotmCommand);
 
         com.skyblock.core.enchantment.EnchantmentManager.getInstance();
         com.skyblock.core.enchant.EnchantmentManager.getInstance();

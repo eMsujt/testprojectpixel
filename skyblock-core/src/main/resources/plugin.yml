@@ -143,6 +143,10 @@ commands:
   essence:
     description: View and manage your essence balances.
     usage: /essence <balance [type]|add <type> <amount>|remove <type> <amount>>
+  hotm:
+    description: View and manage Heart of the Mountain perk levels.
+    usage: /hotm <view [perk]|upgrade <perk>|set <perk> <level>|reset>
+    permission: skyblock.hotm
 
 permissions:
   skyblock.warp:
