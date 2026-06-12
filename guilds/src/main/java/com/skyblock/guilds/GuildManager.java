@@ -6,14 +6,29 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 /**
- * Manages guilds and their memberships.
+ * Singleton that manages guilds and their memberships.
  *
  * <p>Guilds are identified by their unique name. A player can be a member of
  * at most one guild at a time; the player who creates a guild becomes its
- * owner and first member. Not thread-safe; synchronize externally if accessed
+ * owner and first member. Access the shared instance via
+ * {@link #getInstance()}. Not thread-safe; synchronize externally if accessed
  * from multiple threads.</p>
  */
 public final class GuildManager {
+
+    private static final GuildManager INSTANCE = new GuildManager();
+
+    private GuildManager() {
+    }
+
+    /**
+     * Returns the shared manager instance.
+     *
+     * @return the singleton {@code GuildManager}
+     */
+    public static GuildManager getInstance() {
+        return INSTANCE;
+    }
 
     /** Each member's unique id mapped to the guild they belong to. */
     private final HashMap<UUID, Guild> guilds = new HashMap<>();
