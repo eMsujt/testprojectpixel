@@ -1,6 +1,7 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.dungeon.DungeonManager;
+import com.skyblock.core.dungeon.DungeonManager.DungeonClass;
 import com.skyblock.core.dungeon.DungeonManager.DungeonRun;
 import com.skyblock.core.dungeon.DungeonManager.DungeonType;
 import org.bukkit.command.Command;
@@ -17,10 +18,11 @@ import java.util.List;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /dungeon join <type>} — join a dungeon run of the given type</li>
- *   <li>{@code /dungeon leave}       — abandon the current dungeon run</li>
- *   <li>{@code /dungeon status}      — show the current active run info</li>
- *   <li>{@code /dungeon stats [type]} — show best score and completion count</li>
+ *   <li>{@code /dungeon join <type>}   — join a dungeon run of the given type</li>
+ *   <li>{@code /dungeon leave}         — abandon the current dungeon run</li>
+ *   <li>{@code /dungeon status}        — show the current active run info</li>
+ *   <li>{@code /dungeon stats [type]}  — show best score and completion count</li>
+ *   <li>{@code /dungeon class <class>} — select a dungeon class</li>
  * </ul>
  * </p>
  */
@@ -49,6 +51,7 @@ public final class DungeonCommand implements TabExecutor {
             case "leave" -> handleLeave(player);
             case "status" -> handleStatus(player);
             case "stats" -> handleStats(player, args);
+            case "class" -> handleClass(player, args);
             default -> sendHelp(player);
         }
         return true;
@@ -58,7 +61,14 @@ public final class DungeonCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("join", "leave", "status", "stats").stream()
+            return Arrays.asList("join", "leave", "status", "stats", "class").stream()
+                    .filter(s -> s.startsWith(lower))
+                    .toList();
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("class")) {
+            String lower = args[1].toLowerCase();
+            return Arrays.stream(DungeonClass.values())
+                    .map(c -> c.name().toLowerCase())
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -144,11 +154,30 @@ public final class DungeonCommand implements TabExecutor {
         player.sendMessage("Best score: " + best);
     }
 
+    private void handleClass(Player player, String[] args) {
+        if (args.length < 2) {
+            DungeonClass current = dungeonManager.getClass(player.getUniqueId());
+            player.sendMessage("Current class: " + (current != null ? current.name() : "none"));
+            player.sendMessage("Usage: /dungeon class <HEALER|MAGE|BERSERK|ARCHER|TANK>");
+            return;
+        }
+        DungeonClass dungeonClass;
+        try {
+            dungeonClass = DungeonClass.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown class: " + args[1]);
+            return;
+        }
+        dungeonManager.setClass(player.getUniqueId(), dungeonClass);
+        player.sendMessage("Dungeon class set to: " + dungeonClass.name());
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Dungeon Commands ===");
         player.sendMessage("/dungeon join <type> — join a dungeon run");
         player.sendMessage("/dungeon leave — abandon the current run");
         player.sendMessage("/dungeon status — show current run info");
         player.sendMessage("/dungeon stats [type] — show completion stats");
+        player.sendMessage("/dungeon class <class> — select your dungeon class");
     }
 }
