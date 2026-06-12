@@ -49,6 +49,7 @@
         <module>backpacks</module>
         <module>bank</module>
         <module>talismans</module>
+        <module>profile</module>
         <module>plugin</module>
     </modules>
 
