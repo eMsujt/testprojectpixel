@@ -61,6 +61,7 @@
         <module>calendar</module>
         <module>housing</module>
         <module>shop</module>
+        <module>trades</module>
         <module>achievements</module>
         <module>alchemy</module>
         <module>collection</module>
