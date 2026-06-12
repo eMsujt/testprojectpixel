@@ -90,6 +90,8 @@ import com.skyblock.core.reward.DailyRewardCommand;
 import com.skyblock.core.reward.DailyRewardManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeManager;
+import com.skyblock.core.wardrobe.WardrobeCommand;
+import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -200,6 +202,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         TradeCommand tradeCommand = new TradeCommand(tradeManager);
         getCommand("trade").setExecutor(tradeCommand);
         getCommand("trade").setTabCompleter(tradeCommand);
+
+        WardrobeManager wardrobeManager = WardrobeManager.getInstance();
+        WardrobeCommand wardrobeCommand = new WardrobeCommand(wardrobeManager);
+        getCommand("wardrobe").setExecutor(wardrobeCommand);
+        getCommand("wardrobe").setTabCompleter(wardrobeCommand);
 
         IslandManager.getInstance();
         getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));
