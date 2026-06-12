@@ -55,6 +55,7 @@
         <module>reforging</module>
         <module>leaderboards</module>
         <module>dungeon</module>
+        <module>guild</module>
         <module>plugin</module>
     </modules>
 
