@@ -114,7 +114,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         // initialise all singletons so they are ready before commands fire
         EconomyManager economyManager = EconomyManager.getInstance();
         SkillManager skillManager = SkillManager.getInstance();
-        AuctionHouseManager.getInstance();
+        AuctionHouseManager auctionHouseManager = AuctionHouseManager.getInstance();
+        AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
+        getCommand("auctionhouse").setExecutor(auctionHouseCommand);
+        getCommand("auctionhouse").setTabCompleter(auctionHouseCommand);
         AuctionManager auctionManager = AuctionManager.getInstance();
         getCommand("auction").setExecutor(new AuctionCommand(auctionManager));
         BazaarManager bazaarManager = BazaarManager.getInstance();
