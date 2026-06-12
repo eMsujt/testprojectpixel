@@ -1,5 +1,8 @@
 package com.skyblock.core;
 
+import com.skyblock.core.alchemy.AlchemyCommand;
+import com.skyblock.core.alchemy.AlchemyListener;
+import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.auction.AuctionCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
@@ -101,6 +104,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ForgeManager forgeManager = ForgeManager.getInstance();
         getCommand("forge").setExecutor(new ForgeCommand(forgeManager));
         LeaderboardManager leaderboardManager = LeaderboardManager.getInstance();
+        AlchemyManager alchemyManager = AlchemyManager.getInstance();
+        getCommand("alchemy").setExecutor(new AlchemyCommand(alchemyManager));
         MinionManager minionManager = MinionManager.getInstance();
         getCommand("minion").setExecutor(new MinionCommand(minionManager));
         PetManager petManager = PetManager.getInstance();
@@ -128,6 +133,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(leaderboardManager));
         getServer().getPluginManager().registerEvents(
                 new SkyBlockEventListener(miningManager, farmingManager, foragingManager), this);
+        getServer().getPluginManager().registerEvents(new AlchemyListener(alchemyManager), this);
         getServer().getPluginManager().registerEvents(new CombatListener(CombatManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.fishing.FishingListener(fishingManager), this);
         getServer().getPluginManager().registerEvents(MenuManager.getInstance(), this);
