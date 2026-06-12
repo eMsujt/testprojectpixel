@@ -72,6 +72,8 @@ import com.skyblock.core.mining.MiningListener;
 import com.skyblock.core.mining.MiningManager;
 import com.skyblock.core.farming.FarmingListener;
 import com.skyblock.core.farming.FarmingManager;
+import com.skyblock.core.mob.MobLootListener;
+import com.skyblock.core.mob.MobLootManager;
 import com.skyblock.core.mob.MobManager;
 import com.skyblock.core.reward.DailyRewardCommand;
 import com.skyblock.core.reward.DailyRewardManager;
@@ -199,6 +201,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         CombatStatsManager combatStatsManager = CombatStatsManager.getInstance();
         getServer().getPluginManager().registerEvents(new CombatStatsListener(combatStatsManager), this);
         getServer().getPluginManager().registerEvents(new EnchantmentListener(SkyBlockEnchantManager.getInstance()), this);
+        MobLootManager mobLootManager = MobLootManager.getInstance();
+        getServer().getPluginManager().registerEvents(new MobLootListener(mobLootManager), this);
 
         getLogger().info("SkyBlock core enabled.");
     }
