@@ -1,5 +1,7 @@
 package com.skyblock.farming;
 
+import org.bukkit.Material;
+
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +16,24 @@ import java.util.UUID;
  * threads.</p>
  */
 public final class FarmingManager {
+
+    public static final Map<Material, Integer> CROP_XP_MAP;
+
+    static {
+        Map<Material, Integer> map = new HashMap<>();
+        map.put(Material.WHEAT,        6);
+        map.put(Material.CARROTS,      3);
+        map.put(Material.POTATOES,     3);
+        map.put(Material.PUMPKIN,      4);
+        map.put(Material.MELON,        4);
+        map.put(Material.SUGAR_CANE,   2);
+        map.put(Material.COCOA_BEANS,  3);
+        map.put(Material.CACTUS,       2);
+        map.put(Material.BROWN_MUSHROOM, 6);
+        map.put(Material.RED_MUSHROOM,   6);
+        map.put(Material.NETHER_WART,  3);
+        CROP_XP_MAP = Map.copyOf(map);
+    }
 
     private final Map<UUID, EnumMap<CropType, Integer>> harvests = new HashMap<>();
     private final Map<UUID, Double> experience = new HashMap<>();
