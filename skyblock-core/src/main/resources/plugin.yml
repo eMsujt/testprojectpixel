@@ -116,3 +116,6 @@ commands:
   bestiary:
     description: Track your mob kill counts.
     usage: /bestiary [view <mob>|reset]
+  party:
+    description: Manage your party.
+    usage: /party <invite|accept|decline|kick|leave|list>
