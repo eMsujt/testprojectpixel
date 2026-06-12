@@ -19,6 +19,11 @@
     <dependencies>
         <dependency>
             <groupId>com.skyblock</groupId>
+            <artifactId>skyblock-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.skyblock</groupId>
             <artifactId>skyblock-api</artifactId>
         </dependency>
         <dependency>
