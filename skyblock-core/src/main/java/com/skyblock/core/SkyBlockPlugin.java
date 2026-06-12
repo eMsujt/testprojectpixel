@@ -118,6 +118,8 @@ import com.skyblock.core.essence.EssenceCommand;
 import com.skyblock.core.essence.EssenceManager;
 import com.skyblock.core.crimson.CrimsonIsleCommand;
 import com.skyblock.core.crimson.CrimsonIsleManager;
+import com.skyblock.core.kuudra.KuudraCommand;
+import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.bossbar.BossBarListener;
@@ -343,6 +345,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         CrimsonIsleCommand crimsonIsleCommand = new CrimsonIsleCommand(crimsonIsleManager);
         getCommand("crimsonisle").setExecutor(crimsonIsleCommand);
         getCommand("crimsonisle").setTabCompleter(crimsonIsleCommand);
+
+        KuudraManager kuudraManager = KuudraManager.getInstance();
+        KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
+        getCommand("kuudra").setExecutor(kuudraCommand);
+        getCommand("kuudra").setTabCompleter(kuudraCommand);
 
         GuildManager guildManager = GuildManager.getInstance();
         GuildCommand guildCommand = new GuildCommand(guildManager);
