@@ -17,23 +17,23 @@ import java.util.UUID;
  */
 public final class DungeonManager {
 
-    /** All dungeon floors: Entrance, Catacombs F1–F7, and Master Mode M1–M7. */
+    /** All dungeon floors: Entrance, Catacombs FLOOR_1–FLOOR_7, and Master Mode MASTER_1–MASTER_7. */
     public enum DungeonFloor {
         ENTRANCE("Entrance", "None", 0, false),
-        F1("Floor 1", "Bonzo", 1, false),
-        F2("Floor 2", "Scarf", 5, false),
-        F3("Floor 3", "The Professor", 9, false),
-        F4("Floor 4", "Thorn", 14, false),
-        F5("Floor 5", "Livid", 19, false),
-        F6("Floor 6", "Sadan", 24, false),
-        F7("Floor 7", "Necron", 29, false),
-        M1("Master 1", "Bonzo", 1, true),
-        M2("Master 2", "Scarf", 2, true),
-        M3("Master 3", "The Professor", 3, true),
-        M4("Master 4", "Thorn", 4, true),
-        M5("Master 5", "Livid", 5, true),
-        M6("Master 6", "Sadan", 6, true),
-        M7("Master 7", "Necron", 7, true);
+        FLOOR_1("Floor 1", "Bonzo", 1, false),
+        FLOOR_2("Floor 2", "Scarf", 5, false),
+        FLOOR_3("Floor 3", "The Professor", 9, false),
+        FLOOR_4("Floor 4", "Thorn", 14, false),
+        FLOOR_5("Floor 5", "Livid", 19, false),
+        FLOOR_6("Floor 6", "Sadan", 24, false),
+        FLOOR_7("Floor 7", "Necron", 29, false),
+        MASTER_1("Master 1", "Bonzo", 1, true),
+        MASTER_2("Master 2", "Scarf", 2, true),
+        MASTER_3("Master 3", "The Professor", 3, true),
+        MASTER_4("Master 4", "Thorn", 4, true),
+        MASTER_5("Master 5", "Livid", 5, true),
+        MASTER_6("Master 6", "Sadan", 6, true),
+        MASTER_7("Master 7", "Necron", 7, true);
 
         private final String displayName;
         private final String bossName;
