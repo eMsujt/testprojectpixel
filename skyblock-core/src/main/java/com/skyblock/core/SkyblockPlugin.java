@@ -53,6 +53,8 @@ import com.skyblock.core.collections.CollectionsCommand;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.combat.CombatCommand;
 import com.skyblock.core.combat.CombatManager;
+import com.skyblock.core.coop.CoopCommand;
+import com.skyblock.core.coop.CoopManager;
 import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.forge.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
@@ -223,6 +225,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         ForgeCommand forgeCommand = new ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
+        CoopManager coopManager = CoopManager.getInstance();
+        coopManager.load(getDataFolder());
+        CoopCommand coopCommand = new CoopCommand(coopManager);
+        getCommand("coop").setExecutor(coopCommand);
+        getCommand("coop").setTabCompleter(coopCommand);
     }
 
     @Override
@@ -249,6 +256,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         ForagingManager.getInstance().save(getDataFolder());
         CollectionsManager.getInstance().save(getDataFolder());
         MailManager.getInstance().save(getDataFolder());
+        CoopManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }

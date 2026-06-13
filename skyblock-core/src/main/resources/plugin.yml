@@ -293,6 +293,10 @@ commands:
     description: Send and read player mail messages.
     usage: /mail <inbox|send <player> <message>|clear>
     permission: skyblock.mail
+  coop:
+    description: Manage your co-op island group.
+    usage: /coop <invite|accept|decline|kick|leave|list>
+    permission: skyblock.coop
   repair:
     description: Repair items using coins based on material durability cost.
     usage: /repair <hand|all>
@@ -406,6 +410,9 @@ permissions:
     default: true
   skyblock.mail:
     description: Use the /mail command to send and read player mail.
+    default: true
+  skyblock.coop:
+    description: Use the /coop command to manage your co-op island group.
     default: true
   skyblock.repair:
     description: Use the /repair command to repair items with coins.
