@@ -9,6 +9,9 @@ commands:
     description: Open the SkyBlock main menu.
     usage: /skyblock
     aliases: [sb]
+  menu:
+    description: Open the SkyBlock main menu.
+    usage: /menu
   island:
     description: Manage your SkyBlock island.
     usage: /island <create|home|visit|invite|kick|leave>

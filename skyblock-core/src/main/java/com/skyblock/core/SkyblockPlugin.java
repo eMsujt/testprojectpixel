@@ -78,6 +78,7 @@ import com.skyblock.core.achievement.AchievementCommand;
 import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.level.SkyblockLevelCommand;
 import com.skyblock.core.level.SkyblockLevelManager;
+import com.skyblock.core.menu.SkyblockMenuCommand;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.slayer.SlayerManager;
@@ -297,6 +298,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
         getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
+        SkyblockMenuCommand menuCommand = new SkyblockMenuCommand();
+        getCommand("menu").setExecutor(menuCommand);
+        getCommand("menu").setTabCompleter(menuCommand);
     }
 
     @Override
