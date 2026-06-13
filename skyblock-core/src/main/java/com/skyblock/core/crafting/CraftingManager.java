@@ -169,6 +169,86 @@ public final class CraftingManager {
                 new String[]{"WWW", "W W", "WWW"},
                 Map.of('W', Material.OAK_PLANKS));
 
+        // SkyBlock-specific shaped recipes — diamond gear
+        recipeManager.registerShaped("diamond_sword", Material.DIAMOND_SWORD, 1,
+                new String[]{"D", "D", "S"},
+                Map.of('D', Material.DIAMOND, 'S', Material.STICK));
+
+        recipeManager.registerShaped("diamond_helmet", Material.DIAMOND_HELMET, 1,
+                new String[]{"DDD", "D D"},
+                Map.of('D', Material.DIAMOND));
+
+        recipeManager.registerShaped("diamond_chestplate", Material.DIAMOND_CHESTPLATE, 1,
+                new String[]{"D D", "DDD", "DDD"},
+                Map.of('D', Material.DIAMOND));
+
+        recipeManager.registerShaped("diamond_leggings", Material.DIAMOND_LEGGINGS, 1,
+                new String[]{"DDD", "D D", "D D"},
+                Map.of('D', Material.DIAMOND));
+
+        recipeManager.registerShaped("diamond_boots", Material.DIAMOND_BOOTS, 1,
+                new String[]{"D D", "D D"},
+                Map.of('D', Material.DIAMOND));
+
+        // SkyBlock-specific shaped recipes — diamond tools
+        recipeManager.registerShaped("diamond_pickaxe", Material.DIAMOND_PICKAXE, 1,
+                new String[]{"DDD", " S ", " S "},
+                Map.of('D', Material.DIAMOND, 'S', Material.STICK));
+
+        recipeManager.registerShaped("diamond_axe", Material.DIAMOND_AXE, 1,
+                new String[]{"DD", "DS", " S"},
+                Map.of('D', Material.DIAMOND, 'S', Material.STICK));
+
+        recipeManager.registerShaped("diamond_shovel", Material.DIAMOND_SHOVEL, 1,
+                new String[]{"D", "S", "S"},
+                Map.of('D', Material.DIAMOND, 'S', Material.STICK));
+
+        recipeManager.registerShaped("diamond_hoe", Material.DIAMOND_HOE, 1,
+                new String[]{"DD", " S", " S"},
+                Map.of('D', Material.DIAMOND, 'S', Material.STICK));
+
+        // SkyBlock-specific shaped recipes — utility blocks
+        recipeManager.registerShaped("enchanting_table", Material.ENCHANTING_TABLE, 1,
+                new String[]{" B ", "DOD", "OOO"},
+                Map.of('B', Material.BOOK, 'D', Material.DIAMOND, 'O', Material.OBSIDIAN));
+
+        recipeManager.registerShaped("ender_chest", Material.ENDER_CHEST, 1,
+                new String[]{"OOO", "OEO", "OOO"},
+                Map.of('O', Material.OBSIDIAN, 'E', Material.ENDER_EYE));
+
+        recipeManager.registerShaped("anvil", Material.ANVIL, 1,
+                new String[]{"III", " i ", "iii"},
+                Map.of('I', Material.IRON_BLOCK, 'i', Material.IRON_INGOT));
+
+        recipeManager.registerShaped("brewing_stand", Material.BREWING_STAND, 1,
+                new String[]{" B ", "CCC"},
+                Map.of('B', Material.BLAZE_ROD, 'C', Material.COBBLESTONE));
+
+        recipeManager.registerShaped("beacon", Material.BEACON, 1,
+                new String[]{"GGG", "GSG", "OOO"},
+                Map.of('G', Material.GLASS, 'S', Material.NETHER_STAR, 'O', Material.OBSIDIAN));
+
+        // SkyBlock-specific shaped recipes — compressed resource blocks
+        recipeManager.registerShaped("enchanted_iron_block", Material.IRON_BLOCK, 1,
+                new String[]{"III", "III", "III"},
+                Map.of('I', Material.IRON_INGOT));
+
+        recipeManager.registerShaped("enchanted_gold_block", Material.GOLD_BLOCK, 1,
+                new String[]{"GGG", "GGG", "GGG"},
+                Map.of('G', Material.GOLD_INGOT));
+
+        recipeManager.registerShaped("enchanted_diamond_block", Material.DIAMOND_BLOCK, 1,
+                new String[]{"DDD", "DDD", "DDD"},
+                Map.of('D', Material.DIAMOND));
+
+        recipeManager.registerShaped("enchanted_lapis_block", Material.LAPIS_BLOCK, 1,
+                new String[]{"LLL", "LLL", "LLL"},
+                Map.of('L', Material.LAPIS_LAZULI));
+
+        recipeManager.registerShaped("enchanted_emerald_block", Material.EMERALD_BLOCK, 1,
+                new String[]{"EEE", "EEE", "EEE"},
+                Map.of('E', Material.EMERALD));
+
         // Shapeless recipes
         recipeManager.registerShapeless("torch_x4", Material.TORCH, 4,
                 List.of(Material.COAL, Material.STICK));
