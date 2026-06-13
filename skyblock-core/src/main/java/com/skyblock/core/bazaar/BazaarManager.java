@@ -162,6 +162,7 @@ public final class BazaarManager {
         // Misc
         ICE("ICE", "Ice", "MISC"),
         SNOW_BLOCK("SNOW_BLOCK", "Snow Block", "MISC"),
+        ENCHANTED_BOOK("ENCHANTED_BOOK", "Enchanted Book", "MISC"),
         ENCHANTED_ICE("ENCHANTED_ICE", "Enchanted Ice", "MISC"),
         ENCHANTED_SNOW_BLOCK("ENCHANTED_SNOW_BLOCK", "Enchanted Snow Block", "MISC"),
         ENCHANTED_SEEDS("ENCHANTED_SEEDS", "Enchanted Seeds", "FARMING");
