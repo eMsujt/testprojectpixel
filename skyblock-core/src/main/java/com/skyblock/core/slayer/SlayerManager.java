@@ -232,9 +232,26 @@ public final class SlayerManager {
         slayerExperience.clear();
         killCounts.clear();
         bossActive.clear();
+        activeQuests.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
+                if (cfg.contains(key + ".quest.type")) {
+                    try {
+                        SlayerType type = SlayerType.valueOf(cfg.getString(key + ".quest.type"));
+                        QuestTier tier = QuestTier.valueOf(cfg.getString(key + ".quest.tier", "TIER_1"));
+                        SlayerQuest quest = new SlayerQuest(type, tier);
+                        quest.setBossSpawned(cfg.getBoolean(key + ".quest.bossSpawned", false));
+                        quest.setComplete(cfg.getBoolean(key + ".quest.complete", false));
+                        int questKills = cfg.getInt(key + ".quest.kills", 0);
+                        for (int i = 0; i < questKills; i++) {
+                            quest.incrementKills();
+                        }
+                        activeQuests.put(uuid, quest);
+                    } catch (IllegalArgumentException ignored) {
+                        // skip malformed quest entries
+                    }
+                }
                 if (cfg.isConfigurationSection(key + ".xp")) {
                     Map<SlayerType, Long> xpMap = new EnumMap<>(SlayerType.class);
                     for (String typeName : cfg.getConfigurationSection(key + ".xp").getKeys(false)) {
@@ -275,6 +292,15 @@ public final class SlayerManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "slayer.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, SlayerQuest> entry : activeQuests.entrySet()) {
+            String key = entry.getKey().toString();
+            SlayerQuest quest = entry.getValue();
+            cfg.set(key + ".quest.type", quest.type.name());
+            cfg.set(key + ".quest.tier", quest.tier.name());
+            cfg.set(key + ".quest.kills", quest.getKills());
+            cfg.set(key + ".quest.bossSpawned", quest.isBossSpawned());
+            cfg.set(key + ".quest.complete", quest.isComplete());
+        }
         for (Map.Entry<UUID, Map<SlayerType, Long>> entry : slayerExperience.entrySet()) {
             String key = entry.getKey().toString();
             for (Map.Entry<SlayerType, Long> xp : entry.getValue().entrySet()) {
