@@ -52,7 +52,8 @@ public final class SkyblockHubCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS = Arrays.asList(
             "hub", "bank", "auction", "bazaar", "island", "skills", "pets",
             "profile", "quest", "minion", "fishing", "mining", "slayer",
-            "hotm", "garden", "collection", "backpack", "reforge", "achievement", "dungeon", "stats", "help"
+            "hotm", "garden", "collection", "backpack", "reforge", "achievement",
+            "dungeon", "stats", "enchanting", "help"
     );
 
     private final SkyBlockMenuManager menuManager;
@@ -141,6 +142,12 @@ public final class SkyblockHubCommand implements TabExecutor {
             {"Fishing",    "fishing"},
             {"Mining",     "mining"},
             {"HOTM",       "hotm"},
+            {"Backpack",   "backpack"},
+            {"Reforge",    "reforge"},
+            {"Achievement","achievement"},
+            {"Dungeon",    "dungeon"},
+            {"Stats",      "stats"},
+            {"Enchanting", "enchanting"},
         };
         for (String[] entry : managers) {
             String name = entry[0];
