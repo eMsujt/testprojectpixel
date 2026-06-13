@@ -277,6 +277,10 @@ public final class BazaarManager {
     /** Per-player transaction history. */
     private final Map<UUID, List<String>> playerTransactions = new HashMap<>();
 
+    /** Per-product instant-buy and sell-offer prices. */
+    private final Map<String, Double> instantBuyPrices = new HashMap<>();
+    private final Map<String, Double> sellOfferPrices = new HashMap<>();
+
     private BazaarManager() {}
 
     /**
@@ -529,6 +533,20 @@ public final class BazaarManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 
+        instantBuyPrices.clear();
+        if (cfg.isConfigurationSection("prices.instantBuy")) {
+            for (String itemId : cfg.getConfigurationSection("prices.instantBuy").getKeys(false)) {
+                instantBuyPrices.put(itemId, cfg.getDouble("prices.instantBuy." + itemId));
+            }
+        }
+
+        sellOfferPrices.clear();
+        if (cfg.isConfigurationSection("prices.sellOffer")) {
+            for (String itemId : cfg.getConfigurationSection("prices.sellOffer").getKeys(false)) {
+                sellOfferPrices.put(itemId, cfg.getDouble("prices.sellOffer." + itemId));
+            }
+        }
+
         playerTransactions.clear();
         if (cfg.isConfigurationSection("transactions")) {
             for (String key : cfg.getConfigurationSection("transactions").getKeys(false)) {
@@ -600,6 +618,14 @@ public final class BazaarManager {
         File file = new File(dataFolder, "bazaar.yml");
         YamlConfiguration cfg = new YamlConfiguration();
 
+        for (Map.Entry<String, Double> entry : instantBuyPrices.entrySet()) {
+            cfg.set("prices.instantBuy." + entry.getKey(), entry.getValue());
+        }
+
+        for (Map.Entry<String, Double> entry : sellOfferPrices.entrySet()) {
+            cfg.set("prices.sellOffer." + entry.getKey(), entry.getValue());
+        }
+
         for (Map.Entry<UUID, List<String>> entry : playerTransactions.entrySet()) {
             cfg.set("transactions." + entry.getKey(), entry.getValue());
         }
@@ -635,6 +661,38 @@ public final class BazaarManager {
         } catch (IOException e) {
             throw new RuntimeException("Failed to save bazaar.yml", e);
         }
+    }
+
+    public double getInstantBuyPrice(String itemId) {
+        return instantBuyPrices.getOrDefault(itemId, 0.0);
+    }
+
+    public double getInstantBuyPrice(BazaarProduct product) {
+        return getInstantBuyPrice(product.getItemId());
+    }
+
+    public void setInstantBuyPrice(String itemId, double price) {
+        instantBuyPrices.put(itemId, price);
+    }
+
+    public void setInstantBuyPrice(BazaarProduct product, double price) {
+        setInstantBuyPrice(product.getItemId(), price);
+    }
+
+    public double getSellOfferPrice(String itemId) {
+        return sellOfferPrices.getOrDefault(itemId, 0.0);
+    }
+
+    public double getSellOfferPrice(BazaarProduct product) {
+        return getSellOfferPrice(product.getItemId());
+    }
+
+    public void setSellOfferPrice(String itemId, double price) {
+        sellOfferPrices.put(itemId, price);
+    }
+
+    public void setSellOfferPrice(BazaarProduct product, double price) {
+        setSellOfferPrice(product.getItemId(), price);
     }
 
     /** Removes all stored orders. */
