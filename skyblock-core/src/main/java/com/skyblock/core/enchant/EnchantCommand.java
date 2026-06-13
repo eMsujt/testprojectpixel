@@ -70,7 +70,7 @@ public final class EnchantCommand implements TabExecutor {
             String sub = args[0].toLowerCase();
             if (sub.equals("info") || sub.equals("apply") || sub.equals("remove")) {
                 String prefix = args[1].toLowerCase();
-                return Arrays.stream(EnchantManager.EnchantType.values())
+                return Arrays.stream(EnchantManager.SkyBlockEnchant.values())
                         .map(e -> e.name().toLowerCase())
                         .filter(n -> n.startsWith(prefix))
                         .sorted()
@@ -82,11 +82,11 @@ public final class EnchantCommand implements TabExecutor {
 
     private void handleList(Player player) {
         player.sendMessage("=== SkyBlock Enchants ===");
-        Arrays.stream(EnchantManager.EnchantType.values())
+        Arrays.stream(EnchantManager.SkyBlockEnchant.values())
                 .forEach(e -> player.sendMessage(String.format(
                         "%s (max level: %d)",
-                        e.name().toLowerCase().replace('_', ' '),
-                        enchantManager.getMaxLevel(e))));
+                        e.getDisplayName(),
+                        e.getMaxLevel())));
     }
 
     private void handleInfo(Player player, String[] args) {
@@ -94,15 +94,14 @@ public final class EnchantCommand implements TabExecutor {
             player.sendMessage("Usage: /enchant info <enchant>");
             return;
         }
-        EnchantManager.EnchantType type = parseType(args[1]);
-        if (type == null) {
+        EnchantManager.SkyBlockEnchant enchant = parseEnchant(args[1]);
+        if (enchant == null) {
             player.sendMessage("Unknown enchant: " + args[1] + ". Use /enchant list to see available enchants.");
             return;
         }
-        int currentLevel = enchantManager.getLevel(player.getUniqueId(), type);
-        int maxLevel = enchantManager.getMaxLevel(type);
+        int currentLevel = enchantManager.getLevel(player.getUniqueId(), enchant);
         player.sendMessage(String.format("%s — current level: %d / max level: %d",
-                type.name().toLowerCase().replace('_', ' '), currentLevel, maxLevel));
+                enchant.getDisplayName(), currentLevel, enchant.getMaxLevel()));
     }
 
     private void handleApply(Player player, String[] args) {
@@ -110,8 +109,8 @@ public final class EnchantCommand implements TabExecutor {
             player.sendMessage("Usage: /enchant apply <enchant> <level>");
             return;
         }
-        EnchantManager.EnchantType type = parseType(args[1]);
-        if (type == null) {
+        EnchantManager.SkyBlockEnchant enchant = parseEnchant(args[1]);
+        if (enchant == null) {
             player.sendMessage("Unknown enchant: " + args[1] + ". Use /enchant list to see available enchants.");
             return;
         }
@@ -123,9 +122,8 @@ public final class EnchantCommand implements TabExecutor {
             return;
         }
         try {
-            enchantManager.setEnchant(player.getUniqueId(), type, level);
-            player.sendMessage("Applied " + type.name().toLowerCase().replace('_', ' ')
-                    + " level " + level + ".");
+            enchantManager.setEnchant(player.getUniqueId(), enchant, level);
+            player.sendMessage("Applied " + enchant.getDisplayName() + " level " + level + ".");
         } catch (IllegalArgumentException e) {
             player.sendMessage(e.getMessage());
         }
@@ -136,16 +134,16 @@ public final class EnchantCommand implements TabExecutor {
             player.sendMessage("Usage: /enchant remove <enchant>");
             return;
         }
-        EnchantManager.EnchantType type = parseType(args[1]);
-        if (type == null) {
+        EnchantManager.SkyBlockEnchant enchant = parseEnchant(args[1]);
+        if (enchant == null) {
             player.sendMessage("Unknown enchant: " + args[1] + ". Use /enchant list to see available enchants.");
             return;
         }
-        boolean removed = enchantManager.removeEnchant(player.getUniqueId(), type);
+        boolean removed = enchantManager.removeEnchant(player.getUniqueId(), enchant);
         if (removed) {
-            player.sendMessage("Removed " + type.name().toLowerCase().replace('_', ' ') + ".");
+            player.sendMessage("Removed " + enchant.getDisplayName() + ".");
         } else {
-            player.sendMessage("You do not have " + type.name().toLowerCase().replace('_', ' ') + " applied.");
+            player.sendMessage("You do not have " + enchant.getDisplayName() + " applied.");
         }
     }
 
@@ -163,9 +161,9 @@ public final class EnchantCommand implements TabExecutor {
                         e.getKey().name().toLowerCase().replace('_', ' ') + " " + e.getValue()));
     }
 
-    private static EnchantManager.EnchantType parseType(String name) {
+    private static EnchantManager.SkyBlockEnchant parseEnchant(String name) {
         try {
-            return EnchantManager.EnchantType.valueOf(name.toUpperCase());
+            return EnchantManager.SkyBlockEnchant.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException e) {
             return null;
         }

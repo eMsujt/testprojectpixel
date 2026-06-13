@@ -15,6 +15,78 @@ import java.util.UUID;
  */
 public final class EnchantManager {
 
+    /** Every SkyBlock custom enchant with its display name and maximum level. */
+    public enum SkyBlockEnchant {
+        // Combat
+        SHARPNESS("Sharpness", 7),
+        CRITICAL("Critical", 7),
+        SMITE("Smite", 7),
+        BANE_OF_ARTHROPODS("Bane of Arthropods", 7),
+        FIRST_STRIKE("First Strike", 4),
+        GIANT_KILLER("Giant Killer", 7),
+        ENDER_SLAYER("Ender Slayer", 7),
+        DRAGON_HUNTER("Dragon Hunter", 5),
+        THUNDERLORD("Thunderlord", 7),
+        VAMPIRISM("Vampirism", 6),
+        LIFE_STEAL("Life Steal", 5),
+        LETHALITY("Lethality", 6),
+        EXECUTE("Execute", 5),
+        PROSECUTE("Prosecute", 5),
+        OVERLOAD("Overload", 5),
+        // Utility
+        TELEKINESIS("Telekinesis", 1),
+        LOOTING("Looting", 4),
+        SMELTING_TOUCH("Smelting Touch", 1),
+        MAGNET("Magnet", 1),
+        SILK_TOUCH("Silk Touch", 1),
+        // Fishing
+        LUCK_OF_THE_SEA("Luck of the Sea", 7),
+        ANGLER("Angler", 6),
+        FRAIL("Frail", 5),
+        EXPERTISE("Expertise", 10),
+        // Farming
+        CULTIVATING("Cultivating", 10),
+        GREEN_THUMB("Green Thumb", 5),
+        DEDICATION("Dedication", 4),
+        REPLENISH("Replenish", 1),
+        HARVESTING("Harvesting", 6),
+        TURBO_WHEAT("Turbo-Wheat", 5),
+        TURBO_COCO("Turbo-Coco", 5),
+        TURBO_CACTUS("Turbo-Cactus", 5),
+        TURBO_MELON("Turbo-Melon", 5),
+        TURBO_PUMPKIN("Turbo-Pumpkin", 5),
+        TURBO_WARTS("Turbo-Warts", 5),
+        TURBO_MUSHROOMS("Turbo-Mushrooms", 5),
+        TURBO_POTATO("Turbo-Potato", 5),
+        TURBO_CARROT("Turbo-Carrot", 5),
+        TURBO_SUGAR_CANE("Turbo-Sugar Cane", 5),
+        // Mining / Tool
+        EFFICIENCY("Efficiency", 5),
+        FORTUNE("Fortune", 4),
+        // Armor
+        PROTECTION("Protection", 7),
+        THORNS("Thorns", 3),
+        GROWTH("Growth", 7),
+        FEATHER_FALLING("Feather Falling", 7),
+        SUGAR_RUSH("Sugar Rush", 3),
+        REJUVENATE("Rejuvenate", 5),
+        // Misc
+        LUCK("Luck", 7),
+        CHANCE("Chance", 5),
+        ULTIMATE_WISE("Ultimate Wise", 5);
+
+        private final String displayName;
+        private final int maxLevel;
+
+        SkyBlockEnchant(String displayName, int maxLevel) {
+            this.displayName = displayName;
+            this.maxLevel = maxLevel;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getMaxLevel() { return maxLevel; }
+    }
+
     /** Every SkyBlock custom enchant. */
     public enum EnchantType {
         // Combat
@@ -236,5 +308,49 @@ public final class EnchantManager {
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerEnchants.remove(playerId) != null;
+    }
+
+    // --- SkyBlockEnchant bridge methods ---
+
+    /**
+     * Returns the level of the given enchant for the player, or {@code 0} if not applied.
+     *
+     * @param playerId the player to look up
+     * @param enchant  the enchant to query
+     * @return the enchant level, or {@code 0}
+     */
+    public int getLevel(UUID playerId, SkyBlockEnchant enchant) {
+        Objects.requireNonNull(enchant, "enchant");
+        return getLevel(playerId, EnchantType.valueOf(enchant.name()));
+    }
+
+    /**
+     * Applies an enchant at the given level to the player.
+     *
+     * @param playerId the player to update
+     * @param enchant  the enchant to apply
+     * @param level    the level to set; must be between 1 and the enchant's max level
+     * @throws IllegalArgumentException if the level is out of range
+     */
+    public void setEnchant(UUID playerId, SkyBlockEnchant enchant, int level) {
+        Objects.requireNonNull(enchant, "enchant");
+        if (level < 1 || level > enchant.getMaxLevel()) {
+            throw new IllegalArgumentException(
+                    "Level " + level + " out of range [1, " + enchant.getMaxLevel() + "] for " + enchant);
+        }
+        playerEnchants.computeIfAbsent(playerId, id -> new EnumMap<>(EnchantType.class))
+                .put(EnchantType.valueOf(enchant.name()), level);
+    }
+
+    /**
+     * Removes an enchant from the player.
+     *
+     * @param playerId the player to update
+     * @param enchant  the enchant to remove
+     * @return {@code true} if the enchant was present, {@code false} otherwise
+     */
+    public boolean removeEnchant(UUID playerId, SkyBlockEnchant enchant) {
+        Objects.requireNonNull(enchant, "enchant");
+        return removeEnchant(playerId, EnchantType.valueOf(enchant.name()));
     }
 }
