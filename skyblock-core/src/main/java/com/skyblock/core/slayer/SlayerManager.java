@@ -34,11 +34,11 @@ public final class SlayerManager {
 
     /** Named slayer bosses, each linked to the {@link SlayerType} that spawns them. */
     public enum SlayerBoss {
-        ZOMBIE(SlayerType.ZOMBIE,     "Revenant Horror",       200_000),
-        TARANTULA(SlayerType.TARANTULA, "Tarantula Broodfather", 300_000),
-        WOLF(SlayerType.WOLF,         "Sven Packmaster",       400_000),
-        ENDERMAN(SlayerType.ENDERMAN, "Voidgloom Seraph",      500_000),
-        BLAZE(SlayerType.BLAZE,       "Inferno Demonlord",     600_000);
+        REVENANT_HORROR(SlayerType.ZOMBIE,     "Revenant Horror",       200_000),
+        TARANTULA_BROODFATHER(SlayerType.TARANTULA, "Tarantula Broodfather", 300_000),
+        SVEN_PACKMASTER(SlayerType.WOLF,         "Sven Packmaster",       400_000),
+        VOIDGLOOM_SERAPH(SlayerType.ENDERMAN, "Voidgloom Seraph",      500_000),
+        INFERNO_DEMONLORD(SlayerType.BLAZE,       "Inferno Demonlord",     600_000);
 
         public final SlayerType type;
         public final String displayName;
