@@ -24,6 +24,7 @@ import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.party.PartyManager;
+import com.skyblock.core.pets.PetsCommand;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.profile.ProfileCommand;
 import com.skyblock.core.profile.ProfileManager;
@@ -88,6 +89,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("hotmtree").setTabCompleter(hotmCommand);
         PetsManager petsManager = PetsManager.getInstance();
         petsManager.load(getDataFolder());
+        PetsCommand petsCommand = new PetsCommand(petsManager);
+        getCommand("pets").setExecutor(petsCommand);
+        getCommand("pets").setTabCompleter(petsCommand);
         KuudraManager kuudraManager = KuudraManager.getInstance();
         kuudraManager.load(getDataFolder());
         KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
