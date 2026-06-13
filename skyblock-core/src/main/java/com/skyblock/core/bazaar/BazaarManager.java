@@ -19,6 +19,38 @@ public final class BazaarManager {
 
     private static final BazaarManager INSTANCE = new BazaarManager();
 
+    public enum BazaarOrderType {
+        BUY("Buy Order"),
+        SELL("Sell Order");
+
+        private final String displayName;
+
+        BazaarOrderType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+    /** A unified order record representing either a buy or sell order. */
+    public record BazaarOrder(UUID id, UUID player, String itemId, int quantity, double priceEach, BazaarOrderType type) {
+
+        public BazaarOrder {
+            Objects.requireNonNull(id, "id");
+            Objects.requireNonNull(player, "player");
+            Objects.requireNonNull(itemId, "itemId");
+            Objects.requireNonNull(type, "type");
+            if (quantity <= 0) {
+                throw new IllegalArgumentException("quantity must be positive: " + quantity);
+            }
+            if (priceEach <= 0) {
+                throw new IllegalArgumentException("priceEach must be positive: " + priceEach);
+            }
+        }
+    }
+
     /** A standing buy order: a player willing to buy {@code quantity} of {@code itemId}
      *  at up to {@code priceEach} coins each. */
     public record BuyOrder(UUID id, UUID buyer, String itemId, int quantity, double priceEach) {
@@ -244,6 +276,32 @@ public final class BazaarManager {
      */
     public double getHighestBid(BazaarProduct product) {
         return getHighestBid(product.getItemId());
+    }
+
+    /**
+     * Returns all active orders (buy and sell) placed by the given player as
+     * {@link BazaarOrder} records, buy orders first then sell orders.
+     *
+     * @param playerId the player's UUID
+     * @return unmodifiable list of the player's orders
+     */
+    public List<BazaarOrder> getOrdersForPlayer(UUID playerId) {
+        List<BazaarOrder> result = new ArrayList<>();
+        for (List<BuyOrder> list : buyOrders.values()) {
+            for (BuyOrder o : list) {
+                if (o.buyer().equals(playerId)) {
+                    result.add(new BazaarOrder(o.id(), o.buyer(), o.itemId(), o.quantity(), o.priceEach(), BazaarOrderType.BUY));
+                }
+            }
+        }
+        for (List<SellOrder> list : sellOrders.values()) {
+            for (SellOrder o : list) {
+                if (o.seller().equals(playerId)) {
+                    result.add(new BazaarOrder(o.id(), o.seller(), o.itemId(), o.quantity(), o.priceEach(), BazaarOrderType.SELL));
+                }
+            }
+        }
+        return Collections.unmodifiableList(result);
     }
 
     /** Removes all stored orders. */
