@@ -16,6 +16,7 @@ import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.reforge.ReforgeManager;
+import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -55,6 +56,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         EnchantingManager enchantingManager = EnchantingManager.getInstance();
         enchantingManager.load(getDataFolder());
         ReforgeManager.getInstance();
+        SkillsManager.getInstance();
         AccessoryManager.getInstance();
         ProfileManager profileManager = ProfileManager.getInstance();
         profileManager.load(getDataFolder());
