@@ -4,6 +4,7 @@ import com.skyblock.core.accessory.AccessoryManager;
 import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.auction.AuctionManager;
 import com.skyblock.core.bank.BankManager;
+import com.skyblock.core.bazaar.BazaarCommand;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.dungeon.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingManager;
@@ -41,6 +42,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         auctionHouseManager.load(getDataFolder());
         BazaarManager bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
+        BazaarCommand bazaarCommand = new BazaarCommand(bazaarManager);
+        getCommand("bazaar").setExecutor(bazaarCommand);
+        getCommand("bazaar").setTabCompleter(bazaarCommand);
         DungeonManager dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
         IslandManager.getInstance();
