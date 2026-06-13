@@ -25,9 +25,6 @@ public final class FishingManager {
 
     /** All fish types obtainable through SkyBlock fishing. */
     public enum FishType {
-        RAW_FISH,
-        RAW_SALMON,
-        CLOWNFISH,
         PUFFERFISH,
         SEA_CREATURE,
         FISHING_TREASURE,
