@@ -59,6 +59,12 @@ import com.skyblock.core.crimson.CrimsonCommand;
 import com.skyblock.core.crimson.CrimsonManager;
 import com.skyblock.core.vault.VaultCommand;
 import com.skyblock.core.vault.VaultManager;
+import com.skyblock.core.booster.BoosterCommand;
+import com.skyblock.core.booster.BoosterManager;
+import com.skyblock.core.mailbox.MailboxCommand;
+import com.skyblock.core.mailbox.MailboxManager;
+import com.skyblock.core.friend.FriendCommand;
+import com.skyblock.core.friend.FriendManager;
 import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.forge.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
@@ -244,6 +250,18 @@ public final class SkyblockPlugin extends JavaPlugin {
         VaultCommand vaultCommand = new VaultCommand(vaultManager);
         getCommand("vault").setExecutor(vaultCommand);
         getCommand("vault").setTabCompleter(vaultCommand);
+        FriendManager friendManager = FriendManager.getInstance();
+        FriendCommand friendCommand = new FriendCommand(friendManager);
+        getCommand("friend").setExecutor(friendCommand);
+        getCommand("friend").setTabCompleter(friendCommand);
+        BoosterManager boosterManager = BoosterManager.getInstance();
+        BoosterCommand boosterCommand = new BoosterCommand(boosterManager);
+        getCommand("booster").setExecutor(boosterCommand);
+        getCommand("booster").setTabCompleter(boosterCommand);
+        MailboxManager mailboxManager = MailboxManager.getInstance();
+        MailboxCommand mailboxCommand = new MailboxCommand(mailboxManager);
+        getCommand("mailbox").setExecutor(mailboxCommand);
+        getCommand("mailbox").setTabCompleter(mailboxCommand);
     }
 
     @Override
