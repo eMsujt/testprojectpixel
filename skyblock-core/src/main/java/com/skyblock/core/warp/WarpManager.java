@@ -25,6 +25,8 @@ public final class WarpManager {
     /** Pre-defined SkyBlock warp destinations. */
     public enum WarpLocation {
         HUB("Hub"),
+        VILLAGE("Village"),
+        BAZAAR_ALLEY("Bazaar Alley"),
         FARMING_ISLANDS("Farming Islands"),
         THE_PARK("The Park"),
         THE_SPIDER_DEN("The Spider's Den"),
@@ -42,6 +44,10 @@ public final class WarpManager {
 
         WarpLocation(String displayName) {
             this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
         }
 
         /** Returns the warp key used to look up this location in the registry. */
