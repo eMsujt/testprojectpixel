@@ -296,7 +296,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("wardrobe").setTabCompleter(wardrobeCommand);
 
         IslandManager.getInstance();
-        getCommand("island").setExecutor(new IslandCommand(IslandManager.getInstance()));
+        IslandCommand islandCommand = new IslandCommand(IslandManager.getInstance());
+        getCommand("island").setExecutor(islandCommand);
+        getCommand("island").setTabCompleter(islandCommand);
         IslandUpgradeManager islandUpgradeManager = IslandUpgradeManager.getInstance();
         IslandUpgradeCommand islandUpgradeCommand = new IslandUpgradeCommand(islandUpgradeManager, IslandManager.getInstance(), economyManager);
         getCommand("islandupgrade").setExecutor(islandUpgradeCommand);
