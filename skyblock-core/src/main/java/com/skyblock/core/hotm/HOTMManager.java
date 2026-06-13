@@ -42,6 +42,7 @@ public final class HOTMManager {
         MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost"),
         SEASONED_MINEMAN(100, "Seasoned Mineman"),
         ANOMALOUS_DESIRE(20, "Anomalous Desire"),
+        MANIACAL_MINER(1, "Maniacal Miner"),
         VEIN_SEEKER(1, "Vein Seeker");
 
         /** Maximum level for this perk. */
