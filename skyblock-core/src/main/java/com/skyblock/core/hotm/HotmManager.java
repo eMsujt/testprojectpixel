@@ -17,6 +17,7 @@ public final class HotmManager {
     /** Every upgradeable perk in the Heart of the Mountain tree. */
     public enum HotmPerk {
         MINING_SPEED_BOOST(50, "Mining Speed Boost"),
+        PICKOBULUS(3, "Pickobulus"),
         MINING_FORTUNE(50, "Mining Fortune"),
         DAILY_POWDER(100, "Daily Powder"),
         EFFICIENT_MINER(100, "Efficient Miner"),
@@ -33,7 +34,6 @@ public final class HotmManager {
         LONESOME_MINER(45, "Lonesome Miner"),
         GREAT_EXPLORER(20, "Great Explorer"),
         FORTUNATE(20, "Fortunate"),
-        PICKOBULUS(3, "Pickobulus"),
         MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost");
 
         /** Maximum level for this perk. */
