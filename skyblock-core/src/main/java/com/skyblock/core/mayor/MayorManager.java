@@ -14,11 +14,11 @@ public final class MayorManager {
 
     /** Skyblock mayors that players can vote for. */
     public enum Mayor {
-        DIANA("Diana"),
-        DERPY("Derpy"),
-        JERRY("Jerry"),
         PAUL("Paul"),
-        FINN("Finn");
+        DIANA("Diana"),
+        SCORPIUS("Scorpius"),
+        JERRY("Jerry"),
+        COLE("Cole");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
