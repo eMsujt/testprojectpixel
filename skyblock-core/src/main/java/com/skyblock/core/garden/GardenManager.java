@@ -1,8 +1,10 @@
 package com.skyblock.core.garden;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -11,6 +13,37 @@ import java.util.UUID;
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class GardenManager {
+
+    /** Individual purchasable plots in the Garden. */
+    public enum GardenPlot {
+        CENTER("Center"),
+        NORTH_1("North 1"),
+        NORTH_2("North 2"),
+        SOUTH_1("South 1"),
+        SOUTH_2("South 2"),
+        EAST_1("East 1"),
+        EAST_2("East 2"),
+        WEST_1("West 1"),
+        WEST_2("West 2"),
+        NORTH_EAST_1("North East 1"),
+        NORTH_EAST_2("North East 2"),
+        NORTH_WEST_1("North West 1"),
+        NORTH_WEST_2("North West 2"),
+        SOUTH_EAST_1("South East 1"),
+        SOUTH_EAST_2("South East 2"),
+        SOUTH_WEST_1("South West 1"),
+        SOUTH_WEST_2("South West 2");
+
+        private final String displayName;
+
+        GardenPlot(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
 
     /** Crops that can be upgraded in the Garden. */
     public enum CropType {
@@ -46,6 +79,9 @@ public final class GardenManager {
 
     /** Per-player crop upgrade levels indexed by crop ordinal. */
     private final Map<UUID, int[]> cropUpgrades = new HashMap<>();
+
+    /** Per-player set of unlocked garden plots. */
+    private final Map<UUID, Set<GardenPlot>> unlockedPlots = new HashMap<>();
 
     private GardenManager() {
     }
@@ -189,6 +225,48 @@ public final class GardenManager {
     }
 
     // -------------------------------------------------------------------------
+    // Garden plots
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns whether the given plot is unlocked for the player.
+     *
+     * @param playerId the player to look up
+     * @param plot     the plot to check
+     * @return {@code true} if unlocked
+     */
+    public boolean isPlotUnlocked(UUID playerId, GardenPlot plot) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(plot, "plot");
+        Set<GardenPlot> plots = unlockedPlots.get(playerId);
+        return plots != null && plots.contains(plot);
+    }
+
+    /**
+     * Unlocks a plot for the given player.
+     *
+     * @param playerId the player to update
+     * @param plot     the plot to unlock
+     */
+    public void unlockPlot(UUID playerId, GardenPlot plot) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(plot, "plot");
+        unlockedPlots.computeIfAbsent(playerId, id -> EnumSet.noneOf(GardenPlot.class)).add(plot);
+    }
+
+    /**
+     * Returns an immutable view of the plots unlocked for the given player.
+     *
+     * @param playerId the player to look up
+     * @return the set of unlocked plots (may be empty, never {@code null})
+     */
+    public Set<GardenPlot> getUnlockedPlots(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Set<GardenPlot> plots = unlockedPlots.get(playerId);
+        return plots == null ? java.util.Collections.emptySet() : java.util.Collections.unmodifiableSet(plots);
+    }
+
+    // -------------------------------------------------------------------------
     // Lifecycle
     // -------------------------------------------------------------------------
 
@@ -202,6 +280,7 @@ public final class GardenManager {
         plotLevels.remove(playerId);
         visitorCounts.remove(playerId);
         cropUpgrades.remove(playerId);
+        unlockedPlots.remove(playerId);
     }
 
     /**
@@ -215,6 +294,7 @@ public final class GardenManager {
         boolean had = plotLevels.remove(playerId) != null;
         had |= visitorCounts.remove(playerId) != null;
         had |= cropUpgrades.remove(playerId) != null;
+        had |= unlockedPlots.remove(playerId) != null;
         return had;
     }
 }
