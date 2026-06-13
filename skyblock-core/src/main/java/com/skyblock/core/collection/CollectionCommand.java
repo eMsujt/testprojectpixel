@@ -1,5 +1,6 @@
 package com.skyblock.core.collection;
 
+import com.skyblock.core.collection.CollectionManager.CollectionCategory;
 import com.skyblock.core.collection.CollectionManager.CollectionType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,6 +50,23 @@ public final class CollectionCommand implements TabExecutor {
             return true;
         }
 
+        if (args[0].equalsIgnoreCase("category")) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /collection category <" +
+                        Arrays.stream(CollectionCategory.values())
+                              .map(c -> c.name().toLowerCase())
+                              .reduce((a, b) -> a + "|" + b).orElse("") + ">");
+                return true;
+            }
+            CollectionCategory category = parseCategory(args[1]);
+            if (category == null) {
+                player.sendMessage("Unknown category: " + args[1]);
+                return true;
+            }
+            sendCategoryList(player, category);
+            return true;
+        }
+
         CollectionType type = parseType(args[0]);
         if (type == null) {
             player.sendMessage("Unknown collection: " + args[0] + ". Use /collection to see all collections.");
@@ -69,8 +87,22 @@ public final class CollectionCommand implements TabExecutor {
             if ("reset".startsWith(lower)) {
                 completions.add("reset");
             }
+            if ("category".startsWith(lower)) {
+                completions.add("category");
+            }
             for (CollectionType t : CollectionType.values()) {
                 String name = t.name().toLowerCase();
+                if (name.startsWith(lower)) {
+                    completions.add(name);
+                }
+            }
+            return completions;
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("category")) {
+            String lower = args[1].toLowerCase();
+            List<String> completions = new java.util.ArrayList<>();
+            for (CollectionCategory c : CollectionCategory.values()) {
+                String name = c.name().toLowerCase();
                 if (name.startsWith(lower)) {
                     completions.add(name);
                 }
@@ -90,10 +122,28 @@ public final class CollectionCommand implements TabExecutor {
         player.sendMessage("Use /collection <name> to view a collection.");
     }
 
+    private void sendCategoryList(Player player, CollectionCategory category) {
+        Map<CollectionType, Long> all = collectionManager.getAll(player.getUniqueId());
+        player.sendMessage("=== " + category.getDisplayName() + " Collections ===");
+        for (CollectionType t : category.getTypes()) {
+            long total = all.getOrDefault(t, 0L);
+            player.sendMessage("- " + t.name().toLowerCase() + ": " + total);
+        }
+    }
+
     private static CollectionType parseType(String input) {
         for (CollectionType t : CollectionType.values()) {
             if (t.name().equalsIgnoreCase(input)) {
                 return t;
+            }
+        }
+        return null;
+    }
+
+    private static CollectionCategory parseCategory(String input) {
+        for (CollectionCategory c : CollectionCategory.values()) {
+            if (c.name().equalsIgnoreCase(input)) {
+                return c;
             }
         }
         return null;
