@@ -113,11 +113,11 @@ public final class KuudraCommand implements TabExecutor {
                 if (amount < 0) return;
                 if (op.equals("set")) {
                     kuudraManager.setKeys(player.getUniqueId(), tier, amount);
-                    player.sendMessage(formatName(tier.name()) + " keys set to " + amount + ".");
+                    player.sendMessage(tier.getDisplayName() + " keys set to " + amount + ".");
                 } else {
                     int delta = op.equals("remove") ? -amount : amount;
                     int newCount = kuudraManager.addKeys(player.getUniqueId(), tier, delta);
-                    player.sendMessage(formatName(tier.name()) + " keys: " + newCount + ".");
+                    player.sendMessage(tier.getDisplayName() + " keys: " + newCount + ".");
                 }
                 return;
             }
@@ -125,12 +125,12 @@ public final class KuudraCommand implements TabExecutor {
             KuudraManager.KuudraTier tier = parseTier(player, op);
             if (tier == null) return;
             int count = kuudraManager.getKeys(player.getUniqueId(), tier);
-            player.sendMessage(formatName(tier.name()) + " keys: " + count);
+            player.sendMessage(tier.getDisplayName() + " keys: " + count);
         } else {
             player.sendMessage("=== Kuudra Keys ===");
             for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
                 int count = kuudraManager.getKeys(player.getUniqueId(), tier);
-                player.sendMessage(formatName(tier.name()) + ": " + count);
+                player.sendMessage(tier.getDisplayName() + ": " + count);
             }
         }
     }
@@ -152,19 +152,19 @@ public final class KuudraCommand implements TabExecutor {
                 int amount = parseAmount(player, args[3]);
                 if (amount < 0) return;
                 int newCount = kuudraManager.addCompletions(player.getUniqueId(), tier, amount);
-                player.sendMessage(formatName(tier.name()) + " completions: " + newCount + ".");
+                player.sendMessage(tier.getDisplayName() + " completions: " + newCount + ".");
                 return;
             }
             // treat arg as tier name for view
             KuudraManager.KuudraTier tier = parseTier(player, op);
             if (tier == null) return;
             int count = kuudraManager.getCompletions(player.getUniqueId(), tier);
-            player.sendMessage(formatName(tier.name()) + " completions: " + count);
+            player.sendMessage(tier.getDisplayName() + " completions: " + count);
         } else {
             player.sendMessage("=== Kuudra Completions ===");
             for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
                 int count = kuudraManager.getCompletions(player.getUniqueId(), tier);
-                player.sendMessage(formatName(tier.name()) + ": " + count);
+                player.sendMessage(tier.getDisplayName() + ": " + count);
             }
         }
     }
@@ -196,14 +196,5 @@ public final class KuudraCommand implements TabExecutor {
         }
     }
 
-    private static String formatName(String name) {
-        String spaced = name.replace('_', ' ');
-        StringBuilder sb = new StringBuilder(spaced.length());
-        boolean cap = true;
-        for (char c : spaced.toCharArray()) {
-            sb.append(cap ? Character.toUpperCase(c) : Character.toLowerCase(c));
-            cap = c == ' ';
-        }
-        return sb.toString();
-    }
+
 }
