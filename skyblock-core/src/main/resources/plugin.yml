@@ -56,8 +56,8 @@ commands:
     description: Manage SkyBlock friendships.
     usage: /f <add|remove|list|accept|deny>
   friend:
-    description: Manage SkyBlock friendships.
-    usage: /friend <add|remove|list|accept|decline>
+    description: Manage your SkyBlock friend list.
+    usage: /friend <add|remove|list> [player]
     permission: skyblock.friend
   mailbox:
     description: View and manage your SkyBlock mailbox.
