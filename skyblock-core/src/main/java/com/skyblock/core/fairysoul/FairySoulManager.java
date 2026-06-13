@@ -46,21 +46,21 @@ public final class FairySoulManager {
 
     /** Specific spawn locations of fairy souls, each belonging to a {@link FairySoulArea}. */
     public enum FairySoulLocation {
-        HUB_VILLAGE("Village",            FairySoulArea.HUB),
-        HUB_GRAVEYARD("Graveyard",        FairySoulArea.HUB),
-        HUB_CLIFF("Cliff",                FairySoulArea.HUB),
-        FARMING_BARN("Barn",              FairySoulArea.FARMING_ISLANDS),
-        FARMING_MUSHROOM("Mushroom Desert", FairySoulArea.FARMING_ISLANDS),
-        SPIDERS_TOP("Arachneum Top",      FairySoulArea.SPIDERS_DEN),
-        SPIDERS_BURROW("Burrow",          FairySoulArea.SPIDERS_DEN),
-        END_VOID_EDGE("Void Edge",        FairySoulArea.THE_END),
-        CRIMSON_STRONGHOLD("Stronghold",  FairySoulArea.CRIMSON_ISLE),
-        CRIMSON_LAVA_SHORE("Lava Shore",  FairySoulArea.CRIMSON_ISLE),
-        CAVERNS_LAPIS("Lapis Quarry",     FairySoulArea.DEEP_CAVERNS),
-        CAVERNS_REDSTONE("Redstone Cavern", FairySoulArea.DEEP_CAVERNS),
-        PARK_TREE("Great Elm Tree",       FairySoulArea.PARK),
-        PARK_JUNGLE("Jungle",             FairySoulArea.PARK),
-        DUNGEON_HUB_ENTRANCE("Entrance",  FairySoulArea.DUNGEON_HUB);
+        HUB_1("Village",                  FairySoulArea.HUB),
+        HUB_2("Graveyard",                FairySoulArea.HUB),
+        HUB_3("Cliff",                    FairySoulArea.HUB),
+        FARMING_1("Barn",                 FairySoulArea.FARMING_ISLANDS),
+        FARMING_2("Mushroom Desert",      FairySoulArea.FARMING_ISLANDS),
+        SPIDERS_1("Arachneum Top",        FairySoulArea.SPIDERS_DEN),
+        SPIDERS_2("Burrow",               FairySoulArea.SPIDERS_DEN),
+        END_1("Void Edge",                FairySoulArea.THE_END),
+        CRIMSON_1("Stronghold",           FairySoulArea.CRIMSON_ISLE),
+        CRIMSON_2("Lava Shore",           FairySoulArea.CRIMSON_ISLE),
+        CAVERNS_1("Lapis Quarry",         FairySoulArea.DEEP_CAVERNS),
+        CAVERNS_2("Redstone Cavern",      FairySoulArea.DEEP_CAVERNS),
+        PARK_1("Great Elm Tree",          FairySoulArea.PARK),
+        PARK_2("Jungle",                  FairySoulArea.PARK),
+        DUNGEON_HUB_1("Entrance",         FairySoulArea.DUNGEON_HUB);
 
         /** Human-readable display name shown to players. */
         public final String displayName;
