@@ -14,8 +14,7 @@ public final class KuudraManager {
 
     /** Kuudra tiers, in ascending difficulty order. */
     public enum KuudraTier {
-        NONE("None"),
-        BASIC("Basic"),
+        NORMAL("Normal"),
         HOT("Hot"),
         BURNING("Burning"),
         FIERY("Fiery"),
