@@ -1,7 +1,10 @@
 package com.skyblock.core.crafting;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +22,70 @@ import java.util.UUID;
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class CraftingManager {
+
+    /** Typed SkyBlock-specific enchanted crafting recipes. */
+    public enum SkyblockRecipe {
+        // Farming
+        ENCHANTED_WHEAT("Enchanted Bread", 160),
+        ENCHANTED_SUGAR_CANE("Enchanted Sugar Cane", 160),
+        ENCHANTED_CARROT("Enchanted Carrot", 160),
+        ENCHANTED_POTATO("Enchanted Potato", 160),
+        ENCHANTED_PUMPKIN("Enchanted Pumpkin", 160),
+        ENCHANTED_MELON("Enchanted Melon", 160),
+        ENCHANTED_MUSHROOM("Enchanted Red Mushroom", 160),
+        ENCHANTED_CACTUS("Enchanted Cactus Green", 160),
+        ENCHANTED_NETHER_WART("Enchanted Nether Wart", 160),
+        ENCHANTED_COCOA_BEANS("Enchanted Cookie", 160),
+        // Mining
+        ENCHANTED_COBBLESTONE("Enchanted Cobblestone", 160),
+        ENCHANTED_COAL("Enchanted Coal", 160),
+        ENCHANTED_IRON("Enchanted Iron", 160),
+        ENCHANTED_GOLD("Enchanted Gold", 160),
+        ENCHANTED_DIAMOND("Enchanted Diamond", 160),
+        ENCHANTED_EMERALD("Enchanted Emerald", 160),
+        ENCHANTED_REDSTONE("Enchanted Redstone", 160),
+        ENCHANTED_LAPIS("Enchanted Lapis Lazuli", 160),
+        ENCHANTED_QUARTZ("Enchanted Quartz", 160),
+        ENCHANTED_OBSIDIAN("Enchanted Obsidian", 160),
+        // Foraging
+        ENCHANTED_OAK_LOG("Enchanted Oak Wood", 160),
+        ENCHANTED_SPRUCE_LOG("Enchanted Spruce Wood", 160),
+        ENCHANTED_BIRCH_LOG("Enchanted Birch Wood", 160),
+        ENCHANTED_JUNGLE_LOG("Enchanted Jungle Wood", 160),
+        ENCHANTED_ACACIA_LOG("Enchanted Acacia Wood", 160),
+        ENCHANTED_DARK_OAK_LOG("Enchanted Dark Oak Wood", 160),
+        // Combat
+        ENCHANTED_ROTTEN_FLESH("Enchanted Rotten Flesh", 160),
+        ENCHANTED_BONE("Enchanted Bone", 160),
+        ENCHANTED_SPIDER_EYE("Enchanted Spider Eye", 160),
+        ENCHANTED_STRING("Enchanted String", 160),
+        ENCHANTED_GUNPOWDER("Enchanted Gunpowder", 160),
+        ENCHANTED_ENDER_PEARL("Enchanted Ender Pearl", 160),
+        ENCHANTED_GHAST_TEAR("Enchanted Ghast Tear", 160),
+        ENCHANTED_SLIME_BALL("Enchanted Slime Ball", 160),
+        ENCHANTED_BLAZE_ROD("Enchanted Blaze Rod", 160),
+        ENCHANTED_MAGMA_CREAM("Enchanted Magma Cream", 160),
+        // Fishing
+        ENCHANTED_RAW_FISH("Enchanted Raw Fish", 160),
+        ENCHANTED_RAW_SALMON("Enchanted Raw Salmon", 160),
+        ENCHANTED_INK_SAC("Enchanted Ink Sac", 160);
+
+        private final String displayName;
+        private final int requiredAmount;
+
+        SkyblockRecipe(String displayName, int requiredAmount) {
+            this.displayName = displayName;
+            this.requiredAmount = requiredAmount;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public int getRequiredAmount() {
+            return requiredAmount;
+        }
+    }
 
     private static final CraftingManager INSTANCE = new CraftingManager();
 
@@ -121,6 +188,51 @@ public final class CraftingManager {
     public boolean resetHistory(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return craftHistory.remove(playerId) != null;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Persistence
+    // ---------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "crafting.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        craftHistory.clear();
+        for (String uuidStr : cfg.getKeys(false)) {
+            try {
+                UUID playerId = UUID.fromString(uuidStr);
+                Map<String, Integer> history = new HashMap<>();
+                for (String recipeId : cfg.getConfigurationSection(uuidStr).getKeys(false)) {
+                    history.put(recipeId, cfg.getInt(uuidStr + "." + recipeId, 0));
+                }
+                if (!history.isEmpty()) {
+                    craftHistory.put(playerId, history);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "crafting.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<String, Integer>> playerEntry : craftHistory.entrySet()) {
+            String uuidStr = playerEntry.getKey().toString();
+            for (Map.Entry<String, Integer> recipeEntry : playerEntry.getValue().entrySet()) {
+                if (recipeEntry.getValue() > 0) {
+                    cfg.set(uuidStr + "." + recipeEntry.getKey(), recipeEntry.getValue());
+                }
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save crafting.yml", e);
+        }
     }
 
     // ---------------------------------------------------------------------------

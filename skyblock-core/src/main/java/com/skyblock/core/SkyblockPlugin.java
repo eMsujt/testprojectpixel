@@ -1,6 +1,8 @@
 package com.skyblock.core;
 
 import com.skyblock.core.accessory.AccessoryManager;
+import com.skyblock.core.crafting.CraftingCommand;
+import com.skyblock.core.crafting.CraftingManager;
 import com.skyblock.core.auction.AuctionHouseCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.auction.AuctionManager;
@@ -133,6 +135,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         MinionCommand minionCommand = new MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
         getCommand("minion").setTabCompleter(minionCommand);
+        CraftingManager craftingManager = CraftingManager.getInstance();
+        craftingManager.load(getDataFolder());
+        CraftingCommand craftingCommand = new CraftingCommand(craftingManager);
+        getCommand("crafting").setExecutor(craftingCommand);
+        getCommand("crafting").setTabCompleter(craftingCommand);
     }
 
     @Override
@@ -153,6 +160,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         MinionManager.getInstance().save(getDataFolder());
         SkillsManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
+        CraftingManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public final class CraftingCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("list", "view", "history", "craft");
+            Arrays.asList("list", "view", "history", "craft", "enchanted");
 
     private final CraftingManager craftingManager;
 
@@ -43,16 +43,17 @@ public final class CraftingCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /crafting <list|view|history|craft>");
+            player.sendMessage("Usage: /crafting <list|view|history|craft|enchanted>");
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "list"    -> handleList(player);
-            case "view"    -> handleView(player, args);
-            case "history" -> handleHistory(player);
-            case "craft"   -> handleCraft(player, args);
-            default        -> player.sendMessage("Unknown subcommand. Usage: /crafting <list|view|history|craft>");
+            case "list"      -> handleList(player);
+            case "view"      -> handleView(player, args);
+            case "history"   -> handleHistory(player);
+            case "craft"     -> handleCraft(player, args);
+            case "enchanted" -> handleEnchanted(player);
+            default          -> player.sendMessage("Unknown subcommand. Usage: /crafting <list|view|history|craft|enchanted>");
         }
         return true;
     }
@@ -133,6 +134,14 @@ public final class CraftingCommand implements TabExecutor {
         history.entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .forEach(e -> player.sendMessage(e.getKey() + ": " + e.getValue() + "x"));
+    }
+
+    private void handleEnchanted(Player player) {
+        player.sendMessage("=== SkyBlock Enchanted Recipes ===");
+        for (CraftingManager.SkyblockRecipe recipe : CraftingManager.SkyblockRecipe.values()) {
+            player.sendMessage(String.format("[%s] %s (requires %d)",
+                    recipe.name(), recipe.getDisplayName(), recipe.getRequiredAmount()));
+        }
     }
 
     private void handleCraft(Player player, String[] args) {
