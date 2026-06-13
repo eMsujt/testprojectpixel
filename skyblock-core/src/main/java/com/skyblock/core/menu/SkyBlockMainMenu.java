@@ -65,8 +65,12 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                 // Row 4 — utility
                 .setItem(37, named(Material.ENDER_PEARL,   ChatColor.LIGHT_PURPLE + "Warp"),
                         e -> e.getWhoClicked().sendMessage("Use /warp to teleport to locations."))
+                .setItem(38, named(Material.GOLD_BLOCK,    ChatColor.GREEN        + "Bank"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("bank"))
                 .setItem(39, named(Material.BREWING_STAND, ChatColor.DARK_PURPLE  + "Alchemy"),
                         e -> e.getWhoClicked().sendMessage("Use /alchemy to view your alchemy level."))
+                .setItem(40, named(Material.PAPER,         ChatColor.YELLOW       + "Mayor"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("mayor"))
                 .setItem(41, named(Material.ENCHANTING_TABLE, ChatColor.DARK_AQUA + "Enchanting"),
                         e -> e.getWhoClicked().sendMessage("Use /enchanting to manage enchantments."))
                 .setItem(43, named(Material.DIAMOND,       ChatColor.AQUA       + "Talisman Bag"),
