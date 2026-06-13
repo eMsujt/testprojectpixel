@@ -17,6 +17,12 @@ public final class AchievementManager {
 
     /** All achievement types available in SkyBlock. */
     public enum AchievementType {
+        FIRST_MINE,
+        FIRST_KILL,
+        FIRST_FISH,
+        FIRST_CRAFT,
+        REACH_LEVEL_10,
+        REACH_LEVEL_50,
         KILL_1000_MONSTERS,
         MINE_10000_BLOCKS,
         REACH_SKILL_LEVEL_50,
