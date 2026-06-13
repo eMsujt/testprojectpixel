@@ -69,6 +69,7 @@ import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.pets.PetManager;
 import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.npc.NPCCommand;
 import com.skyblock.core.npc.NPCListener;
 import com.skyblock.core.npc.NPCManager;
 import com.skyblock.core.npc.NpcCommand;
@@ -427,7 +428,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.enchanting.EnchantmentManager.getInstance();
         com.skyblock.core.collections.CollectionManager.getInstance();
         com.skyblock.core.quests.QuestManager.getInstance();
-        NPCManager.getInstance();
+        NPCCommand npcManagerCommand = new NPCCommand(NPCManager.getInstance());
+        getCommand("npcmanager").setExecutor(npcManagerCommand);
+        getCommand("npcmanager").setTabCompleter(npcManagerCommand);
         com.skyblock.core.hud.ScoreboardManager.getInstance();
         com.skyblock.core.minions.MinionManager.getInstance();
         com.skyblock.core.pets.PetsManager.getInstance();
