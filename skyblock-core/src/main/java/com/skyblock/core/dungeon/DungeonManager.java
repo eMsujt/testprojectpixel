@@ -17,34 +17,36 @@ import java.util.UUID;
  */
 public final class DungeonManager {
 
-    /** The seven Catacombs floors (FLOOR_1 through FLOOR_7). */
-    public enum Floor {
-        FLOOR_1("Bonzo", 1),
-        FLOOR_2("Scarf", 5),
-        FLOOR_3("The Professor", 9),
-        FLOOR_4("Thorn", 14),
-        FLOOR_5("Livid", 19),
-        FLOOR_6("Sadan", 24),
-        FLOOR_7("Necron", 29);
+    /** All dungeon floors: Catacombs FLOOR_1–FLOOR_7 and Master Mode MASTER_M1–MASTER_M7. */
+    public enum DungeonFloor {
+        FLOOR_1("Bonzo", 1, false),
+        FLOOR_2("Scarf", 5, false),
+        FLOOR_3("The Professor", 9, false),
+        FLOOR_4("Thorn", 14, false),
+        FLOOR_5("Livid", 19, false),
+        FLOOR_6("Sadan", 24, false),
+        FLOOR_7("Necron", 29, false),
+        MASTER_M1("Bonzo", 1, true),
+        MASTER_M2("Scarf", 2, true),
+        MASTER_M3("The Professor", 3, true),
+        MASTER_M4("Thorn", 4, true),
+        MASTER_M5("Livid", 5, true),
+        MASTER_M6("Sadan", 6, true),
+        MASTER_M7("Necron", 7, true);
 
         private final String bossName;
-        private final int recommendedLevel;
+        private final int floorNumber;
+        private final boolean masterMode;
 
-        Floor(String bossName, int recommendedLevel) {
+        DungeonFloor(String bossName, int floorNumber, boolean masterMode) {
             this.bossName = bossName;
-            this.recommendedLevel = recommendedLevel;
+            this.floorNumber = floorNumber;
+            this.masterMode = masterMode;
         }
 
         public String getBossName() { return bossName; }
-        public int getRecommendedLevel() { return recommendedLevel; }
-        public int getFloorNumber() { return ordinal() + 1; }
-
-        public static Floor fromNumber(int n) {
-            if (n < 1 || n > values().length) {
-                throw new IllegalArgumentException("no such floor: " + n);
-            }
-            return values()[n - 1];
-        }
+        public int getFloorNumber() { return floorNumber; }
+        public boolean isMasterMode() { return masterMode; }
     }
 
     /** Playable dungeon classes. */
