@@ -27,9 +27,12 @@ import java.util.stream.Collectors;
  */
 public final class GardenCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "tier", "reset");
     private static final List<String> MODIFY_OPS = Arrays.asList("set", "add");
     private static final List<String> CROP_OPS = Arrays.asList("set", "add");
+    private static final List<String> TIER_NAMES = Arrays.stream(GardenManager.PlotTier.values())
+            .map(t -> t.name().toLowerCase())
+            .collect(Collectors.toList());
     private static final List<String> CROP_NAMES = Arrays.stream(GardenManager.GardenCrop.values())
             .map(c -> c.name().toLowerCase())
             .collect(Collectors.toList());
@@ -51,7 +54,7 @@ public final class GardenCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|reset>");
+            player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|tier|reset>");
             return true;
         }
 
@@ -61,8 +64,9 @@ public final class GardenCommand implements TabExecutor {
             case "visitors" -> handleVisitors(player, args);
             case "crop"     -> handleCrop(player, args);
             case "plots"    -> handlePlots(player, args);
+            case "tier"     -> handleTier(player, args);
             case "reset"    -> handleReset(player);
-            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|plots|reset>");
+            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|plots|tier|reset>");
         }
         return true;
     }
@@ -87,6 +91,13 @@ public final class GardenCommand implements TabExecutor {
             if (sub.equals("plots")) {
                 return PLOT_NAMES.stream().filter(p -> p.startsWith(prefix)).collect(Collectors.toList());
             }
+            if (sub.equals("tier")) {
+                return CROP_NAMES.stream().filter(c -> c.startsWith(prefix)).collect(Collectors.toList());
+            }
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("tier")) {
+            String prefix = args[2].toLowerCase();
+            return TIER_NAMES.stream().filter(t -> t.startsWith(prefix)).collect(Collectors.toList());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("crop")
                 && CROP_OPS.contains(args[1].toLowerCase())) {
@@ -219,6 +230,42 @@ public final class GardenCommand implements TabExecutor {
         for (GardenManager.GardenPlot plot : GardenManager.GardenPlot.values()) {
             boolean unlocked = gardenManager.isPlotUnlocked(player.getUniqueId(), plot);
             player.sendMessage(plot.getDisplayName() + ": " + (unlocked ? "Unlocked" : "Locked"));
+        }
+    }
+
+    private void handleTier(Player player, String[] args) {
+        if (args.length >= 2) {
+            GardenManager.GardenCrop crop = parseCrop(player, args[1]);
+            if (crop == null) return;
+            if (args.length >= 3) {
+                if (!player.isOp()) {
+                    player.sendMessage("You do not have permission to set plot tiers.");
+                    return;
+                }
+                GardenManager.PlotTier tier;
+                if (args[2].equalsIgnoreCase("upgrade")) {
+                    tier = gardenManager.upgradeCropPlotTier(player.getUniqueId(), crop);
+                    player.sendMessage(crop.getDisplayName() + " plot tier upgraded to " + tier.getDisplayName() + ".");
+                    return;
+                }
+                try {
+                    tier = GardenManager.PlotTier.valueOf(args[2].toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage("Unknown tier: " + args[2] + ". Valid tiers: " + String.join(", ", TIER_NAMES));
+                    return;
+                }
+                gardenManager.setCropPlotTier(player.getUniqueId(), crop, tier);
+                player.sendMessage(crop.getDisplayName() + " plot tier set to " + tier.getDisplayName() + ".");
+                return;
+            }
+            GardenManager.PlotTier tier = gardenManager.getCropPlotTier(player.getUniqueId(), crop);
+            player.sendMessage(crop.getDisplayName() + " plot tier: " + tier.getDisplayName());
+        } else {
+            player.sendMessage("=== Crop Plot Tiers ===");
+            for (GardenManager.GardenCrop crop : GardenManager.GardenCrop.values()) {
+                GardenManager.PlotTier tier = gardenManager.getCropPlotTier(player.getUniqueId(), crop);
+                player.sendMessage(crop.getDisplayName() + ": " + tier.getDisplayName());
+            }
         }
     }
 

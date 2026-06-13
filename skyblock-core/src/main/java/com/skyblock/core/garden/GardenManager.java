@@ -1,5 +1,6 @@
 package com.skyblock.core.garden;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,7 +95,9 @@ public final class GardenManager {
         COCOA_BEANS("Cocoa Beans"),
         CACTUS("Cactus"),
         MUSHROOM("Mushroom"),
-        NETHER_WART("Nether Wart");
+        NETHER_WART("Nether Wart"),
+        CABBAGE("Cabbage"),
+        COARSE_POTATO("Coarse Potato");
 
         private final String displayName;
 
@@ -104,6 +107,38 @@ public final class GardenManager {
 
         public String getDisplayName() {
             return displayName;
+        }
+    }
+
+    /** Upgrade tiers for a crop plot in the Garden. */
+    public enum PlotTier {
+        TIER_1("Tier I",   1),
+        TIER_2("Tier II",  2),
+        TIER_3("Tier III", 3),
+        TIER_4("Tier IV",  4),
+        TIER_5("Tier V",   5);
+
+        private final String displayName;
+        private final int tier;
+
+        PlotTier(String displayName, int tier) {
+            this.displayName = displayName;
+            this.tier = tier;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public int getTier() {
+            return tier;
+        }
+
+        /** Returns the next tier, or {@code null} if already at max. */
+        public PlotTier next() {
+            int next = ordinal() + 1;
+            PlotTier[] values = values();
+            return next < values.length ? values[next] : null;
         }
     }
 
@@ -120,6 +155,9 @@ public final class GardenManager {
 
     /** Per-player set of unlocked garden plots. */
     private final Map<UUID, Set<GardenPlot>> unlockedPlots = new HashMap<>();
+
+    /** Per-player crop plot tiers. */
+    private final Map<UUID, Map<GardenCrop, PlotTier>> cropPlotTiers = new HashMap<>();
 
     private GardenManager() {
     }
@@ -305,6 +343,57 @@ public final class GardenManager {
     }
 
     // -------------------------------------------------------------------------
+    // Crop plot tiers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the {@link PlotTier} for the given player and crop.
+     *
+     * @param playerId the player to look up
+     * @param crop     the crop to check
+     * @return the current tier, {@link PlotTier#TIER_1} if not yet upgraded
+     */
+    public PlotTier getCropPlotTier(UUID playerId, GardenCrop crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        Map<GardenCrop, PlotTier> tiers = cropPlotTiers.get(playerId);
+        return tiers == null ? PlotTier.TIER_1 : tiers.getOrDefault(crop, PlotTier.TIER_1);
+    }
+
+    /**
+     * Sets the {@link PlotTier} for the given player and crop.
+     *
+     * @param playerId the player to update
+     * @param crop     the crop to update
+     * @param tier     the new tier
+     */
+    public void setCropPlotTier(UUID playerId, GardenCrop crop, PlotTier tier) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        Objects.requireNonNull(tier, "tier");
+        cropPlotTiers.computeIfAbsent(playerId, k -> new EnumMap<>(GardenCrop.class)).put(crop, tier);
+    }
+
+    /**
+     * Upgrades the crop plot tier by one step for the given player and crop.
+     *
+     * @param playerId the player to update
+     * @param crop     the crop to upgrade
+     * @return the new {@link PlotTier}, unchanged if already at max
+     */
+    public PlotTier upgradeCropPlotTier(UUID playerId, GardenCrop crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        PlotTier current = getCropPlotTier(playerId, crop);
+        PlotTier next = current.next();
+        if (next == null) {
+            return current;
+        }
+        cropPlotTiers.computeIfAbsent(playerId, k -> new EnumMap<>(GardenCrop.class)).put(crop, next);
+        return next;
+    }
+
+    // -------------------------------------------------------------------------
     // Lifecycle
     // -------------------------------------------------------------------------
 
@@ -319,6 +408,7 @@ public final class GardenManager {
         visitorCounts.remove(playerId);
         cropUpgrades.remove(playerId);
         unlockedPlots.remove(playerId);
+        cropPlotTiers.remove(playerId);
     }
 
     /**
@@ -333,6 +423,7 @@ public final class GardenManager {
         had |= visitorCounts.remove(playerId) != null;
         had |= cropUpgrades.remove(playerId) != null;
         had |= unlockedPlots.remove(playerId) != null;
+        had |= cropPlotTiers.remove(playerId) != null;
         return had;
     }
 }
