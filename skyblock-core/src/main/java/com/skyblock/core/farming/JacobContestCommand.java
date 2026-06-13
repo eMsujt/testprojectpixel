@@ -117,12 +117,12 @@ public final class JacobContestCommand implements TabExecutor {
     }
 
     private void handleMedals(Player player) {
-        Map<JacobContestManager.ContestCrop, JacobContestManager.Medal> allMedals =
+        Map<JacobContestManager.ContestCrop, JacobContestManager.ContestMedal> allMedals =
                 contestManager.getAllMedals(player.getUniqueId());
         player.sendMessage("=== Jacob's Contest Medals ===");
         for (JacobContestManager.ContestCrop crop : JacobContestManager.ContestCrop.values()) {
-            JacobContestManager.Medal medal = allMedals.getOrDefault(crop, JacobContestManager.Medal.NONE);
-            player.sendMessage("  " + crop.getDisplayName() + ": " + medal.name());
+            JacobContestManager.ContestMedal medal = allMedals.getOrDefault(crop, JacobContestManager.ContestMedal.NONE);
+            player.sendMessage("  " + crop.getDisplayName() + ": " + medal.getDisplayName());
         }
     }
 
@@ -135,11 +135,11 @@ public final class JacobContestCommand implements TabExecutor {
     }
 
     private String medalNeededMessage(int score) {
-        for (JacobContestManager.Medal m : JacobContestManager.Medal.values()) {
+        for (JacobContestManager.ContestMedal m : JacobContestManager.ContestMedal.values()) {
             if (score < m.getThreshold()) {
-                return m.name() + " (" + (m.getThreshold() - score) + " more)";
+                return m.getDisplayName() + " (" + (m.getThreshold() - score) + " more)";
             }
         }
-        return JacobContestManager.Medal.DIAMOND.name() + " (max reached)";
+        return JacobContestManager.ContestMedal.DIAMOND.getDisplayName() + " (max reached)";
     }
 }
