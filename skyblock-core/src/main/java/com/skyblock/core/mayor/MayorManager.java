@@ -152,7 +152,7 @@ public final class MayorManager {
         String mayorName = cfg.getString("currentMayor");
         if (mayorName != null) {
             try {
-                currentMayor = Mayor.valueOf(mayorName);
+                currentMayor = MayorCandidate.valueOf(mayorName);
             } catch (IllegalArgumentException ignored) {
                 // skip unknown mayor name
             }
@@ -164,7 +164,7 @@ public final class MayorManager {
                     String voteName = cfg.getString("votes." + key);
                     if (voteName != null) {
                         try {
-                            playerVotes.put(uuid, Mayor.valueOf(voteName));
+                            playerVotes.put(uuid, MayorCandidate.valueOf(voteName));
                         } catch (IllegalArgumentException ignored) {
                             // skip unknown mayor name
                         }
@@ -182,7 +182,7 @@ public final class MayorManager {
         if (currentMayor != null) {
             cfg.set("currentMayor", currentMayor.name());
         }
-        for (Map.Entry<UUID, Mayor> entry : playerVotes.entrySet()) {
+        for (Map.Entry<UUID, MayorCandidate> entry : playerVotes.entrySet()) {
             cfg.set("votes." + entry.getKey().toString(), entry.getValue().name());
         }
         try {
