@@ -168,7 +168,7 @@ public final class BankCommand implements TabExecutor {
     }
 
     private void handleHistory(Player player) {
-        List<BankManager.BankTransaction> history = bankManager.getTransactions(player.getUniqueId());
+        List<String> history = bankManager.getAccount(player.getUniqueId()).transactionHistory();
         if (history.isEmpty()) {
             player.sendMessage("No transactions recorded.");
             return;
@@ -176,8 +176,7 @@ public final class BankCommand implements TabExecutor {
         player.sendMessage("=== Transaction History ===");
         int start = Math.max(0, history.size() - 10);
         for (int i = start; i < history.size(); i++) {
-            BankManager.BankTransaction tx = history.get(i);
-            player.sendMessage(tx.type().getDisplayName() + ": " + tx.amount() + " coins");
+            player.sendMessage(history.get(i));
         }
     }
 

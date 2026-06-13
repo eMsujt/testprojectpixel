@@ -1,46 +1,26 @@
 package com.skyblock.core.bank;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * Holds the persistent bank state for a single player.
+ * Immutable snapshot of a player's bank account.
+ *
+ * @param balance            current coin balance (non-negative)
+ * @param transactionHistory human-readable log of past transactions, oldest first
  */
-public final class BankAccount {
+public record BankAccount(double balance, List<String> transactionHistory) {
 
-    private final UUID playerId;
-    private double balance;
-
-    public BankAccount(UUID playerId) {
-        this.playerId = Objects.requireNonNull(playerId, "playerId");
+    /** Creates a fresh account with zero balance and no history. */
+    public BankAccount(double balance) {
+        this(balance, new ArrayList<>());
     }
 
-    public UUID getPlayerId() {
-        return playerId;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
-    public void deposit(double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("amount must be positive: " + amount);
+    public BankAccount {
+        Objects.requireNonNull(transactionHistory, "transactionHistory");
+        if (balance < 0) {
+            throw new IllegalArgumentException("balance must not be negative: " + balance);
         }
-        this.balance += amount;
-    }
-
-    public void withdraw(double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("amount must be positive: " + amount);
-        }
-        if (amount > this.balance) {
-            throw new IllegalArgumentException("insufficient balance: has " + this.balance + ", requested " + amount);
-        }
-        this.balance -= amount;
     }
 }
