@@ -20,6 +20,33 @@ import java.util.UUID;
  */
 public final class NpcManager {
 
+    /** Canonical SkyBlock NPC role types. */
+    public enum NpcType {
+        BANKER("Banker"),
+        AUCTION_MASTER("Auction Master"),
+        BAZAAR_AGENT("Bazaar Agent"),
+        BUILDER("Builder"),
+        BLACKSMITH("Blacksmith"),
+        LIBRARIAN("Librarian"),
+        MERCHANT("Merchant"),
+        GUIDE("Guide"),
+        CRAFTSMAN("Craftsman"),
+        DUNGEON_GUIDE("Dungeon Guide"),
+        ISLAND_MERCHANT("Island Merchant"),
+        COMMUNITY_SHOP_MERCHANT("Community Shop Merchant");
+
+        public final String displayName;
+
+        NpcType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+
     /**
      * An item sold by an NPC.
      *
