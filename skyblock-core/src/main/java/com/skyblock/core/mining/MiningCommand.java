@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public final class MiningCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("ores", "speedbonus");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("ores", "speedbonus", "zones");
 
     private final MiningManager miningManager;
 
@@ -50,6 +50,7 @@ public final class MiningCommand implements TabExecutor {
         switch (args[0].toLowerCase()) {
             case "ores"       -> handleOres(player);
             case "speedbonus" -> handleSpeedBonus(player);
+            case "zones"      -> handleZones(player);
             default           -> sendHelp(player);
         }
         return true;
@@ -93,10 +94,20 @@ public final class MiningCommand implements TabExecutor {
         }
     }
 
+    private void handleZones(Player player) {
+        int level = miningManager.getLevel(player.getUniqueId());
+        player.sendMessage("=== Mining Zones (your level: " + level + ") ===");
+        for (MiningManager.MiningZone zone : MiningManager.MiningZone.values()) {
+            String status = level >= zone.getMinLevel() ? "Unlocked" : "Requires level " + zone.getMinLevel();
+            player.sendMessage("  " + zone.getDisplayName() + ": " + status);
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Mining Commands ===");
         player.sendMessage("/mining                — show mining level, XP, and speed bonus");
         player.sendMessage("/mining ores           — list ore types and their XP values");
         player.sendMessage("/mining speedbonus     — show the full speed-bonus table");
+        player.sendMessage("/mining zones          — list mining zones and their level requirements");
     }
 }
