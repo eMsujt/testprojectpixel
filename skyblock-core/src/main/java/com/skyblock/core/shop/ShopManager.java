@@ -1,11 +1,14 @@
 package com.skyblock.core.shop;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Singleton managing shop inventory organised by {@link ShopCategory}.
@@ -23,6 +26,27 @@ public final class ShopManager {
         FOOD,
         BLOCKS,
         SEEDS
+    }
+
+    /** Named shop locations, each selling items from a specific set of categories. */
+    public enum ShopType {
+        VILLAGE_MERCHANT("Village Merchant", ShopCategory.FOOD, ShopCategory.SEEDS, ShopCategory.BLOCKS),
+        WEAPONSMITH("Weaponsmith", ShopCategory.WEAPONS),
+        ARMORSMITH("Armorsmith", ShopCategory.ARMOR),
+        TOOLSMITH("Toolsmith", ShopCategory.TOOLS),
+        GENERAL_STORE("General Store", ShopCategory.WEAPONS, ShopCategory.ARMOR, ShopCategory.TOOLS,
+                ShopCategory.FOOD, ShopCategory.BLOCKS, ShopCategory.SEEDS);
+
+        private final String displayName;
+        private final Set<ShopCategory> categories;
+
+        ShopType(String displayName, ShopCategory... categories) {
+            this.displayName = displayName;
+            this.categories = Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(categories)));
+        }
+
+        public String getDisplayName() { return displayName; }
+        public Set<ShopCategory> getCategories() { return categories; }
     }
 
     /**
@@ -99,6 +123,41 @@ public final class ShopManager {
         for (ShopItem item : items.get(category)) {
             if (item.name().equalsIgnoreCase(name)) {
                 return item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns all items sold by the given shop type (union across its categories).
+     *
+     * @param type the shop type to query
+     * @return combined unmodifiable list of items
+     */
+    public List<ShopItem> getItems(ShopType type) {
+        Objects.requireNonNull(type, "type");
+        List<ShopItem> result = new ArrayList<>();
+        for (ShopCategory category : type.getCategories()) {
+            result.addAll(items.get(category));
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    /**
+     * Returns the first item sold by {@code type} whose name matches {@code name}
+     * (case-insensitive), or {@code null} if not found.
+     *
+     * @param type the shop type to search
+     * @param name the display name to look up
+     * @return the matching item, or {@code null}
+     */
+    public ShopItem findByName(ShopType type, String name) {
+        Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(name, "name");
+        for (ShopCategory category : type.getCategories()) {
+            ShopItem found = findByName(category, name);
+            if (found != null) {
+                return found;
             }
         }
         return null;
