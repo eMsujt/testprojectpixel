@@ -27,11 +27,14 @@ import java.util.stream.Collectors;
  */
 public final class GardenCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "reset");
     private static final List<String> MODIFY_OPS = Arrays.asList("set", "add");
     private static final List<String> CROP_OPS = Arrays.asList("set", "add");
     private static final List<String> CROP_NAMES = Arrays.stream(GardenManager.CropType.values())
             .map(c -> c.name().toLowerCase())
+            .collect(Collectors.toList());
+    private static final List<String> PLOT_NAMES = Arrays.stream(GardenManager.GardenPlot.values())
+            .map(p -> p.name().toLowerCase())
             .collect(Collectors.toList());
 
     private final GardenManager gardenManager;
@@ -48,7 +51,7 @@ public final class GardenCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /garden <info|plot|visitors|crop|reset>");
+            player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|reset>");
             return true;
         }
 
@@ -57,8 +60,9 @@ public final class GardenCommand implements TabExecutor {
             case "plot"     -> handlePlot(player, args);
             case "visitors" -> handleVisitors(player, args);
             case "crop"     -> handleCrop(player, args);
+            case "plots"    -> handlePlots(player, args);
             case "reset"    -> handleReset(player);
-            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|reset>");
+            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|plots|reset>");
         }
         return true;
     }
@@ -79,6 +83,9 @@ public final class GardenCommand implements TabExecutor {
                 List<String> opts = new java.util.ArrayList<>(CROP_OPS);
                 opts.addAll(CROP_NAMES);
                 return opts.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (sub.equals("plots")) {
+                return PLOT_NAMES.stream().filter(p -> p.startsWith(prefix)).collect(Collectors.toList());
             }
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("crop")
@@ -196,6 +203,25 @@ public final class GardenCommand implements TabExecutor {
         }
     }
 
+    private void handlePlots(Player player, String[] args) {
+        if (args.length >= 2) {
+            GardenManager.GardenPlot plot = parsePlot(player, args[1]);
+            if (plot == null) return;
+            if (!player.isOp()) {
+                player.sendMessage("You do not have permission to unlock plots.");
+                return;
+            }
+            gardenManager.unlockPlot(player.getUniqueId(), plot);
+            player.sendMessage("Unlocked plot: " + plot.getDisplayName() + ".");
+            return;
+        }
+        player.sendMessage("=== Garden Plots ===");
+        for (GardenManager.GardenPlot plot : GardenManager.GardenPlot.values()) {
+            boolean unlocked = gardenManager.isPlotUnlocked(player.getUniqueId(), plot);
+            player.sendMessage(plot.getDisplayName() + ": " + (unlocked ? "Unlocked" : "Locked"));
+        }
+    }
+
     private void handleReset(Player player) {
         if (!player.isOp()) {
             player.sendMessage("You do not have permission to use this subcommand.");
@@ -208,6 +234,15 @@ public final class GardenCommand implements TabExecutor {
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
+
+    private GardenManager.GardenPlot parsePlot(Player player, String input) {
+        try {
+            return GardenManager.GardenPlot.valueOf(input.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown plot: " + input + ". Valid plots: " + String.join(", ", PLOT_NAMES));
+            return null;
+        }
+    }
 
     private GardenManager.CropType parseCrop(Player player, String input) {
         try {
