@@ -66,7 +66,10 @@ public final class MinionManager {
         SPRUCE("Spruce Minion"),
         DARK_OAK("Dark Oak Minion"),
         JUNGLE("Jungle Minion"),
-        ACACIA("Acacia Minion");
+        ACACIA("Acacia Minion"),
+        MITHRIL("Mithril Minion"),
+        HARD_STONE("Hard Stone Minion"),
+        GEMSTONE("Gemstone Minion");
 
         private final String displayName;
 
