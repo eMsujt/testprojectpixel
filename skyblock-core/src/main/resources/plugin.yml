@@ -289,6 +289,10 @@ commands:
     description: Switch your active chat channel.
     usage: /chat [global|party|guild|trade]
     permission: skyblock.chat
+  mail:
+    description: Send and read player mail messages.
+    usage: /mail <inbox|send <player> <message>|clear>
+    permission: skyblock.mail
 
 permissions:
   skyblock.warp:
@@ -395,4 +399,7 @@ permissions:
     default: true
   skyblock.chat:
     description: Use the /chat command to switch active chat channels.
+    default: true
+  skyblock.mail:
+    description: Use the /mail command to send and read player mail.
     default: true

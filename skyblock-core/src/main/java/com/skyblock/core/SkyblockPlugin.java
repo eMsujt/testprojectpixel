@@ -46,6 +46,8 @@ import com.skyblock.core.chat.ChatCommand;
 import com.skyblock.core.chat.ChatManager;
 import com.skyblock.core.leaderboard.LeaderboardCommand;
 import com.skyblock.core.leaderboard.LeaderboardManager;
+import com.skyblock.core.mail.MailCommand;
+import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.collections.CollectionsCommand;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.combat.CombatCommand;
@@ -206,6 +208,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         LeaderboardCommand leaderboardCommand = new LeaderboardCommand(leaderboardManager);
         getCommand("leaderboard").setExecutor(leaderboardCommand);
         getCommand("leaderboard").setTabCompleter(leaderboardCommand);
+        MailManager mailManager = MailManager.getInstance();
+        mailManager.load(getDataFolder());
+        MailCommand mailCommand = new MailCommand(mailManager);
+        getCommand("mail").setExecutor(mailCommand);
+        getCommand("mail").setTabCompleter(mailCommand);
     }
 
     @Override
@@ -231,6 +238,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         BackpackManager.getInstance().save(getDataFolder());
         ForagingManager.getInstance().save(getDataFolder());
         CollectionsManager.getInstance().save(getDataFolder());
+        MailManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
