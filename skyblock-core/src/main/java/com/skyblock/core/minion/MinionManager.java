@@ -1,5 +1,9 @@
 package com.skyblock.core.minion;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -233,5 +237,48 @@ public final class MinionManager {
             minions.remove(id);
         }
         return list.size();
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "minions.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        minions.clear();
+        ownerIndex.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID id = UUID.fromString(key);
+                String ownerStr = cfg.getString(key + ".owner");
+                String typeName = cfg.getString(key + ".type");
+                String tierName = cfg.getString(key + ".tier");
+                if (ownerStr == null || typeName == null || tierName == null) continue;
+                UUID owner = UUID.fromString(ownerStr);
+                MinionType type = MinionType.valueOf(typeName);
+                MinionTier tier = MinionTier.valueOf(tierName);
+                MinionData data = new MinionData(id, owner, type, tier);
+                minions.put(id, data);
+                ownerIndex.computeIfAbsent(owner, k -> new ArrayList<>()).add(id);
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "minions.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (MinionData data : minions.values()) {
+            String key = data.id.toString();
+            cfg.set(key + ".owner", data.owner.toString());
+            cfg.set(key + ".type", data.type.name());
+            cfg.set(key + ".tier", data.getTier().name());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save minions.yml", e);
+        }
     }
 }
