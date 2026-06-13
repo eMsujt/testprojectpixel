@@ -48,10 +48,16 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                 // Row 3 — island & progress
                 .setItem(28, named(Material.GRASS_BLOCK,   ChatColor.GREEN      + "Island"),
                         e -> e.getWhoClicked().sendMessage("Use /island to manage your island."))
-                .setItem(30, named(Material.PISTON,        ChatColor.GRAY       + "Minions"),
-                        e -> e.getWhoClicked().sendMessage("Use /minion to manage your minions."))
+                .setItem(29, named(Material.SHIELD,        ChatColor.BLUE       + "Guild"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("guild"))
+                .setItem(30, named(Material.WRITTEN_BOOK,  ChatColor.YELLOW     + "Quest"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("quest"))
+                .setItem(31, named(Material.FIREWORK_ROCKET, ChatColor.GOLD     + "Event"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("event"))
                 .setItem(32, named(Material.COMPASS,       ChatColor.YELLOW     + "Quests"),
                         e -> e.getWhoClicked().sendMessage("Use /quest to view your quests."))
+                .setItem(33, named(Material.PISTON,        ChatColor.GRAY       + "Minions"),
+                        e -> e.getWhoClicked().sendMessage("Use /minion to manage your minions."))
                 .setItem(34, named(Material.DIAMOND,       ChatColor.AQUA       + "Achievements"),
                         e -> e.getWhoClicked().sendMessage("Use /achievement to view your achievements."))
                 // Row 4 — utility
