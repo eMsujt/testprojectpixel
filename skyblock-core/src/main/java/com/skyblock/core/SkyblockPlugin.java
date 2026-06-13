@@ -40,6 +40,8 @@ import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
+import com.skyblock.core.cooldown.CooldownCommand;
+import com.skyblock.core.cooldown.CooldownManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
 import com.skyblock.core.trade.TradeManager;
@@ -162,6 +164,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         BackpackCommand backpackCommand = new BackpackCommand(backpackManager);
         getCommand("backpack").setExecutor(backpackCommand);
         getCommand("backpack").setTabCompleter(backpackCommand);
+        CooldownManager cooldownManager = CooldownManager.getInstance();
+        cooldownManager.load(getDataFolder());
+        CooldownCommand cooldownCommand = new CooldownCommand(cooldownManager);
+        getCommand("cooldown").setExecutor(cooldownCommand);
+        getCommand("cooldown").setTabCompleter(cooldownCommand);
     }
 
     @Override
@@ -185,6 +192,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         CraftingManager.getInstance().save(getDataFolder());
         QuestManager.getInstance().save(getDataFolder());
         BackpackManager.getInstance().save(getDataFolder());
+        CooldownManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }

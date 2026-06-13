@@ -277,6 +277,10 @@ commands:
     description: Start dungeon runs and view scores by type.
     usage: /dungeons [start <type>|leave|info|scores <type>]
     permission: skyblock.dungeons
+  cooldown:
+    description: View and manage per-player cooldowns (op-only).
+    usage: /cooldown <list [player]|set <player> <key> <sec>|clear <player> <key>|clearall <player>|check <player> <key>>
+    permission: skyblock.cooldown
 
 permissions:
   skyblock.warp:
@@ -375,3 +379,6 @@ permissions:
   skyblock.dungeons:
     description: Use the /dungeons command to start dungeon runs and view scores.
     default: true
+  skyblock.cooldown:
+    description: Use the /cooldown command to view and manage per-player cooldowns.
+    default: op
