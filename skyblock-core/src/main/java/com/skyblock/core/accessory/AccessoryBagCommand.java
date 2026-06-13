@@ -163,14 +163,14 @@ public final class AccessoryBagCommand implements TabExecutor {
 
     private void handleRarity(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("Usage: /accessorybag rarity <COMMON|UNCOMMON|RARE|EPIC|LEGENDARY>");
+            player.sendMessage("Usage: /accessorybag rarity <COMMON|UNCOMMON|RARE|EPIC|LEGENDARY|MYTHIC|SPECIAL|VERY_SPECIAL>");
             return;
         }
         AccessoryBagManager.AccessoryRarity rarity;
         try {
             rarity = AccessoryBagManager.AccessoryRarity.valueOf(args[1].toUpperCase());
         } catch (IllegalArgumentException e) {
-            player.sendMessage("Unknown rarity: " + args[1] + ". Valid values: COMMON, UNCOMMON, RARE, EPIC, LEGENDARY.");
+            player.sendMessage("Unknown rarity: " + args[1] + ". Valid values: COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, SPECIAL, VERY_SPECIAL.");
             return;
         }
         var contents = accessoryBagManager.getContentsByRarity(player.getUniqueId(), rarity);

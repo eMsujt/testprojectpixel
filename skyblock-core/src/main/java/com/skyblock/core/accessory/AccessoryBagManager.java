@@ -52,11 +52,14 @@ public final class AccessoryBagManager {
 
     /** Rarity tier for accessories, determining the stat multiplier applied to base bonuses. */
     public enum AccessoryRarity {
-        COMMON("Common", 1.0),
-        UNCOMMON("Uncommon", 1.5),
-        RARE("Rare", 2.0),
-        EPIC("Epic", 3.0),
-        LEGENDARY("Legendary", 5.0);
+        COMMON       ("Common",        1.0),
+        UNCOMMON     ("Uncommon",      1.5),
+        RARE         ("Rare",          2.0),
+        EPIC         ("Epic",          3.0),
+        LEGENDARY    ("Legendary",     5.0),
+        MYTHIC       ("Mythic",        8.0),
+        SPECIAL      ("Special",       1.0),
+        VERY_SPECIAL ("Very Special",  2.0);
 
         private final String displayName;
         /** Multiplier applied to the accessory's base stat bonus. */
