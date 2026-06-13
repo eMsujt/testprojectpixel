@@ -71,7 +71,7 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                 .setItem(46, named(Material.CHEST,         ChatColor.GOLD       + "Backpack"),
                         e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("backpack open"))
                 .setItem(47, named(Material.FURNACE,       ChatColor.ORANGE     + "Forge"),
-                        e -> e.getWhoClicked().sendMessage("Use /forge to open the Forge."))
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("forge"))
                 .setItem(48, named(Material.FIRE_CHARGE,   ChatColor.RED        + "Kuudra"),
                         e -> e.getWhoClicked().sendMessage("Use /kuudra to manage your Kuudra kills."))
                 .setItem(49, named(Material.BARRIER,       ChatColor.RED        + "Close"),
