@@ -32,23 +32,46 @@ public final class PetManager {
 
     /** Every pet type available in SkyBlock. */
     public enum PetType {
-        CHICKEN, WOLF, RABBIT, BEE, LION, TIGER, ELEPHANT, HORSE,
-        CAT, PARROT, PENGUIN, TURTLE, SHEEP, PIG, DOLPHIN,
-        BLAZE, ENDERMAN, SKELETON, SPIDER, ZOMBIE, GOLDEN_DRAGON
+        BEE("Bee"), RABBIT("Rabbit"), WOLF("Wolf"), LION("Lion"), TIGER("Tiger"),
+        DOLPHIN("Dolphin"), DOG("Dog"), ELEPHANT("Elephant"), HORSE("Horse"),
+        CAT("Cat"), PARROT("Parrot"), PENGUIN("Penguin"), TURTLE("Turtle"),
+        SHEEP("Sheep"), PIG("Pig"), CHICKEN("Chicken"), BLAZE("Blaze"),
+        ENDERMAN("Enderman"), SKELETON("Skeleton"), SPIDER("Spider"), ZOMBIE("Zombie"),
+        GOLDEN_DRAGON("Golden Dragon");
+
+        private final String displayName;
+
+        PetType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     /** Rarity tiers for pets. */
-    public enum Rarity {
-        COMMON, UNCOMMON, RARE, EPIC, LEGENDARY
+    public enum PetRarity {
+        COMMON("Common"), UNCOMMON("Uncommon"), RARE("Rare"), EPIC("Epic"), LEGENDARY("Legendary");
+
+        private final String displayName;
+
+        PetRarity(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     /** Immutable snapshot of a pet instance. */
     public static final class PetData {
         public final PetType type;
-        public final Rarity rarity;
+        public final PetRarity rarity;
         public final long experience;
 
-        public PetData(PetType type, Rarity rarity, long experience) {
+        public PetData(PetType type, PetRarity rarity, long experience) {
             this.type = Objects.requireNonNull(type, "type");
             this.rarity = Objects.requireNonNull(rarity, "rarity");
             this.experience = experience;
@@ -143,7 +166,7 @@ public final class PetManager {
      * @param type     the pet type to equip
      * @param rarity   the rarity of the pet being equipped
      */
-    public void setActivePet(UUID playerId, PetType type, Rarity rarity) {
+    public void setActivePet(UUID playerId, PetType type, PetRarity rarity) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(rarity, "rarity");
