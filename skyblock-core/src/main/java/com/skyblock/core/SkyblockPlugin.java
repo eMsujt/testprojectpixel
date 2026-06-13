@@ -40,7 +40,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         SlayerManager slayerManager = SlayerManager.getInstance();
         slayerManager.load(getDataFolder());
         FishingManager.getInstance();
-        HOTMManager.getInstance();
+        HOTMManager hotmManager = HOTMManager.getInstance();
+        hotmManager.load(getDataFolder());
         PetsManager petsManager = PetsManager.getInstance();
         petsManager.load(getDataFolder());
         EnchantingManager.getInstance();
@@ -55,6 +56,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         SlayerManager.getInstance().save(getDataFolder());
         PetsManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
+        HOTMManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
