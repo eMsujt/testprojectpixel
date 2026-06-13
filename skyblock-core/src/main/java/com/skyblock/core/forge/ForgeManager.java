@@ -16,26 +16,56 @@ import java.util.UUID;
  */
 public final class ForgeManager {
 
-    /**
-     * A recipe that can be forged at the Forge.
-     *
-     * @param id              unique recipe identifier
-     * @param displayName     human-readable name
-     * @param ingredients     ingredient name → required quantity
-     * @param outputItem      item produced by this recipe
-     * @param outputAmount    quantity produced
-     * @param durationSeconds forge duration in seconds
-     */
-    public record ForgeRecipe(String id, String displayName,
-                              Map<String, Integer> ingredients,
-                              String outputItem, int outputAmount,
-                              int durationSeconds) {
-        public ForgeRecipe {
-            Objects.requireNonNull(id, "id");
-            Objects.requireNonNull(displayName, "displayName");
-            ingredients = Collections.unmodifiableMap(new HashMap<>(ingredients));
-            Objects.requireNonNull(outputItem, "outputItem");
+    public enum ForgeRecipe {
+        REFINED_TITANIUM(    "Refined Titanium",             "REFINED_TITANIUM",             1, 1800,
+                Map.of("TITANIUM", 5)),
+        ENCHANTED_LAPIS_LAZULI_BLOCK("Enchanted Lapis Lazuli Block", "ENCHANTED_LAPIS_LAZULI_BLOCK", 1, 3600,
+                Map.of("LAPIS_LAZULI", 160)),
+        ENCHANTED_IRON_BLOCK("Enchanted Iron Block",         "ENCHANTED_IRON_BLOCK",         1, 7200,
+                Map.of("IRON_INGOT", 160)),
+        ENCHANTED_GOLD_BLOCK("Enchanted Gold Block",         "ENCHANTED_GOLD_BLOCK",         1, 7200,
+                Map.of("GOLD_INGOT", 160)),
+        ENCHANTED_DIAMOND_BLOCK("Enchanted Diamond Block",   "ENCHANTED_DIAMOND_BLOCK",      1, 14400,
+                Map.of("DIAMOND", 160)),
+        MITHRIL_PICKAXE(     "Mithril Pickaxe",              "MITHRIL_PICKAXE",              1, 3600,
+                Map.of("MITHRIL_ORE", 20, "IRON_INGOT", 8)),
+        TITANIUM_DRILL(      "Titanium Drill",               "TITANIUM_DRILL",               1, 14400,
+                Map.of("TITANIUM", 15, "COAL", 64)),
+        REFINED_MITHRIL(     "Refined Mithril",              "REFINED_MITHRIL",              1, 900,
+                Map.of("MITHRIL_ORE", 10)),
+        FUEL_TANK(           "Fuel Tank",                    "FUEL_TANK",                    1, 7200,
+                Map.of("REFINED_MITHRIL", 5, "IRON_INGOT", 16)),
+        MITHRIL_PLATE(       "Mithril Plate",                "MITHRIL_PLATE",                1, 3600,
+                Map.of("REFINED_MITHRIL", 8)),
+        TUNGSTEN_KEY(        "Tungsten Key",                 "TUNGSTEN_KEY",                 1, 600,
+                Map.of("TUNGSTEN", 3, "IRON_INGOT", 4)),
+        GEMSTONE_GAUNTLET(   "Gemstone Gauntlet",            "GEMSTONE_GAUNTLET",            1, 28800,
+                Map.of("RUBY_GEMSTONE", 5, "SAPPHIRE_GEMSTONE", 5, "REFINED_MITHRIL", 4)),
+        DRAGON_SCALE(        "Dragon Scale",                 "DRAGON_SCALE",                 1, 86400,
+                Map.of("DRAGON_FRAGMENT", 12, "REFINED_TITANIUM", 3)),
+        MITHRIL_BLADE(       "Mithril Blade",                "MITHRIL_BLADE",                1, 7200,
+                Map.of("REFINED_MITHRIL", 6, "IRON_INGOT", 5));
+
+        private final String displayName;
+        private final String outputItem;
+        private final int outputAmount;
+        private final int durationSeconds;
+        private final Map<String, Integer> ingredients;
+
+        ForgeRecipe(String displayName, String outputItem, int outputAmount, int durationSeconds,
+                    Map<String, Integer> ingredients) {
+            this.displayName = displayName;
+            this.outputItem = outputItem;
+            this.outputAmount = outputAmount;
+            this.durationSeconds = durationSeconds;
+            this.ingredients = Collections.unmodifiableMap(new HashMap<>(ingredients));
         }
+
+        public String getDisplayName() { return displayName; }
+        public String getOutputItem() { return outputItem; }
+        public int getOutputAmount() { return outputAmount; }
+        public int getDurationSeconds() { return durationSeconds; }
+        public Map<String, Integer> getIngredients() { return ingredients; }
     }
 
     /** An active forge job for a player. */
@@ -58,7 +88,7 @@ public final class ForgeManager {
          * @return {@code true} if the required duration has elapsed
          */
         public boolean isComplete(long nowMillis) {
-            return (nowMillis - startTimeMillis) >= (long) recipe.durationSeconds() * 1000L;
+            return (nowMillis - startTimeMillis) >= (long) recipe.getDurationSeconds() * 1000L;
         }
     }
 
@@ -70,57 +100,9 @@ public final class ForgeManager {
 
     static {
         Map<String, ForgeRecipe> r = new HashMap<>();
-
-        r.put("mithril_pickaxe", new ForgeRecipe(
-                "mithril_pickaxe", "Mithril Pickaxe",
-                Map.of("MITHRIL_ORE", 20, "IRON_INGOT", 8),
-                "MITHRIL_PICKAXE", 1, 3600));
-
-        r.put("titanium_drill", new ForgeRecipe(
-                "titanium_drill", "Titanium Drill",
-                Map.of("TITANIUM", 15, "MITHRIL_PICKAXE", 1, "COAL", 64),
-                "TITANIUM_DRILL", 1, 14400));
-
-        r.put("refined_mithril", new ForgeRecipe(
-                "refined_mithril", "Refined Mithril",
-                Map.of("MITHRIL_ORE", 10),
-                "REFINED_MITHRIL", 1, 900));
-
-        r.put("refined_titanium", new ForgeRecipe(
-                "refined_titanium", "Refined Titanium",
-                Map.of("TITANIUM", 5),
-                "REFINED_TITANIUM", 1, 1800));
-
-        r.put("fuel_tank", new ForgeRecipe(
-                "fuel_tank", "Fuel Tank",
-                Map.of("REFINED_MITHRIL", 5, "IRON_INGOT", 16),
-                "FUEL_TANK", 1, 7200));
-
-        r.put("mithril_plate", new ForgeRecipe(
-                "mithril_plate", "Mithril Plate",
-                Map.of("REFINED_MITHRIL", 8),
-                "MITHRIL_PLATE", 1, 3600));
-
-        r.put("tungsten_key", new ForgeRecipe(
-                "tungsten_key", "Tungsten Key",
-                Map.of("TUNGSTEN", 3, "IRON_INGOT", 4),
-                "TUNGSTEN_KEY", 1, 600));
-
-        r.put("gemstone_gauntlet", new ForgeRecipe(
-                "gemstone_gauntlet", "Gemstone Gauntlet",
-                Map.of("RUBY_GEMSTONE", 5, "SAPPHIRE_GEMSTONE", 5, "REFINED_MITHRIL", 4),
-                "GEMSTONE_GAUNTLET", 1, 28800));
-
-        r.put("dragon_scale", new ForgeRecipe(
-                "dragon_scale", "Dragon Scale",
-                Map.of("DRAGON_FRAGMENT", 12, "REFINED_TITANIUM", 3),
-                "DRAGON_SCALE", 1, 86400));
-
-        r.put("mithril_blade", new ForgeRecipe(
-                "mithril_blade", "Mithril Blade",
-                Map.of("REFINED_MITHRIL", 6, "IRON_INGOT", 5),
-                "MITHRIL_BLADE", 1, 7200));
-
+        for (ForgeRecipe recipe : ForgeRecipe.values()) {
+            r.put(recipe.name().toLowerCase(), recipe);
+        }
         RECIPES = Collections.unmodifiableMap(r);
     }
 
