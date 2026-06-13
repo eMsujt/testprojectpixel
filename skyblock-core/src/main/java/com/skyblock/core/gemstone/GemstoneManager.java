@@ -24,7 +24,11 @@ public final class GemstoneManager {
         JADE("Jade"),
         TOPAZ("Topaz"),
         JASPER("Jasper"),
-        OPAL("Opal");
+        OPAL("Opal"),
+        AQUAMARINE("Aquamarine"),
+        CITRINE("Citrine"),
+        ONYX("Onyx"),
+        PERIDOT("Peridot");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
