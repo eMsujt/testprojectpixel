@@ -25,13 +25,36 @@ public final class PetManager {
     }
 
     public enum PetType {
-        BEE, WOLF, RABBIT, LION, TIGER, ELEPHANT, HORSE,
-        CAT, PARROT, PENGUIN, TURTLE, SHEEP, PIG, DOLPHIN, CHICKEN,
-        BLAZE, ENDERMAN, SKELETON, SPIDER, ZOMBIE, GOLDEN_DRAGON
+        BEE("Bee"), WOLF("Wolf"), RABBIT("Rabbit"), LION("Lion"), TIGER("Tiger"),
+        ELEPHANT("Elephant"), HORSE("Horse"), CAT("Cat"), PARROT("Parrot"),
+        PENGUIN("Penguin"), TURTLE("Turtle"), SHEEP("Sheep"), PIG("Pig"),
+        DOLPHIN("Dolphin"), CHICKEN("Chicken"), BLAZE("Blaze"), ENDERMAN("Enderman"),
+        SKELETON("Skeleton"), SPIDER("Spider"), ZOMBIE("Zombie"), DRAGON("Dragon"),
+        GOLDEN_DRAGON("Golden Dragon");
+
+        private final String displayName;
+
+        PetType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     public enum Rarity {
-        COMMON, UNCOMMON, RARE, EPIC, LEGENDARY
+        COMMON("Common"), UNCOMMON("Uncommon"), RARE("Rare"), EPIC("Epic"), LEGENDARY("Legendary");
+
+        private final String displayName;
+
+        Rarity(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     public static final class PetData {

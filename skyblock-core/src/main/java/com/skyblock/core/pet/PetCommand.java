@@ -90,7 +90,7 @@ public final class PetCommand implements TabExecutor {
             int level = petManager.getLevel(id, type);
             boolean isActive = active != null && active.type == type;
             String suffix = isActive ? " [ACTIVE]" : "";
-            player.sendMessage("  " + capitalize(type.name()) + ": Level " + level + "/" + PetManager.MAX_LEVEL + suffix);
+            player.sendMessage("  " + type.getDisplayName() + ": Level " + level + "/" + PetManager.MAX_LEVEL + suffix);
         }
     }
 
@@ -115,7 +115,7 @@ public final class PetCommand implements TabExecutor {
             }
         }
         petManager.setActivePet(player.getUniqueId(), type, rarity);
-        player.sendMessage("Equipped " + capitalize(type.name()) + " (" + capitalize(rarity.name()) + ").");
+        player.sendMessage("Equipped " + type.getDisplayName() + " (" + rarity.getDisplayName() + ").");
     }
 
     private void handleUnequip(Player player) {
@@ -138,7 +138,7 @@ public final class PetCommand implements TabExecutor {
             }
             int level = petManager.getLevel(id, type);
             long xp = petManager.getExperience(id, type);
-            player.sendMessage("=== " + capitalize(type.name()) + " ===");
+            player.sendMessage("=== " + type.getDisplayName() + " ===");
             player.sendMessage("Level: " + level + "/" + PetManager.MAX_LEVEL);
             player.sendMessage("Total XP: " + xp);
         } else {
@@ -147,8 +147,8 @@ public final class PetCommand implements TabExecutor {
                 player.sendMessage("You have no active pet. Use /pet equip <type> to equip one.");
                 return;
             }
-            player.sendMessage("=== Active Pet: " + capitalize(data.type.name()) + " ===");
-            player.sendMessage("Rarity: " + capitalize(data.rarity.name()));
+            player.sendMessage("=== Active Pet: " + data.type.getDisplayName() + " ===");
+            player.sendMessage("Rarity: " + data.rarity.getDisplayName());
             player.sendMessage("Level: " + data.getLevel() + "/" + PetManager.MAX_LEVEL);
             player.sendMessage("Total XP: " + data.experience);
         }
@@ -162,8 +162,4 @@ public final class PetCommand implements TabExecutor {
         player.sendMessage("/pet info [type]           — show pet details");
     }
 
-    private static String capitalize(String name) {
-        if (name.isEmpty()) return name;
-        return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
-    }
 }
