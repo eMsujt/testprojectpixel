@@ -9,6 +9,7 @@ import com.skyblock.core.auction.AuctionHouseCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.auction.AuctionManager;
 import com.skyblock.core.kuudra.KuudraCommand;
+import com.skyblock.core.bank.BankCommand;
 import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.bazaar.BazaarCommand;
 import com.skyblock.core.bazaar.BazaarManager;
@@ -100,6 +101,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         instance = this;
         BankManager bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
+        BankCommand bankCommand = new BankCommand(bankManager);
+        getCommand("bank").setExecutor(bankCommand);
+        getCommand("bank").setTabCompleter(bankCommand);
         MayorManager mayorManager = MayorManager.getInstance();
         mayorManager.load(getDataFolder());
         MayorCommand mayorCommand = new MayorCommand(mayorManager);
