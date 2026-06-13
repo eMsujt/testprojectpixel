@@ -19,11 +19,32 @@ public final class MinionManager {
 
     /** All minion types available in SkyBlock. */
     public enum MinionType {
-        WHEAT_MINION, CARROT_MINION, POTATO_MINION,
-        MELON_MINION, PUMPKIN_MINION, SUGAR_CANE_MINION,
-        MUSHROOM_MINION, CACTUS_MINION, FLOWER_MINION,
-        COBBLESTONE_MINION, SNOW_MINION, CLAY_MINION,
-        FISHING_MINION, OAK_MINION, LAPIS_MINION, REDSTONE_MINION
+        COBBLESTONE("Cobblestone Minion"),
+        WHEAT("Wheat Minion"),
+        CARROT("Carrot Minion"),
+        POTATO("Potato Minion"),
+        MELON("Melon Minion"),
+        PUMPKIN("Pumpkin Minion"),
+        SUGAR_CANE("Sugar Cane Minion"),
+        MUSHROOM("Mushroom Minion"),
+        CACTUS("Cactus Minion"),
+        FLOWER("Flower Minion"),
+        SNOW("Snow Minion"),
+        CLAY("Clay Minion"),
+        FISHING("Fishing Minion"),
+        OAK("Oak Minion"),
+        LAPIS("Lapis Minion"),
+        REDSTONE("Redstone Minion");
+
+        private final String displayName;
+
+        MinionType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     /** Upgrade tiers a minion can reach. */
