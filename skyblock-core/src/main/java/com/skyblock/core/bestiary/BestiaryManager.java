@@ -55,11 +55,21 @@ public final class BestiaryManager {
         EVOKER("evoker",                   "Evoker"),
         RAVAGER("ravager",                 "Ravager"),
         SILVERFISH("silverfish",           "Silverfish"),
-        SEA_WALKER("sea_walker",           "Sea Walker"),
-        SEA_GUARDIAN("sea_guardian",       "Sea Guardian"),
-        TARANTULA("tarantula",             "Tarantula"),
-        GOBLIN("goblin",                   "Goblin"),
-        AUTOMATON("automaton",             "Automaton");
+        SEA_WALKER("sea_walker",             "Sea Walker"),
+        SEA_GUARDIAN("sea_guardian",         "Sea Guardian"),
+        TARANTULA("tarantula",               "Tarantula"),
+        GOBLIN("goblin",                     "Goblin"),
+        AUTOMATON("automaton",               "Automaton"),
+        ENDER_DRAGON("ender_dragon",         "Ender Dragon"),
+        ZOMBIE_PIGMAN("zombie_pigman",       "Zombie Pigman"),
+        BAT("bat",                           "Bat"),
+        SQUID("squid",                       "Squid"),
+        GLOW_SQUID("glow_squid",             "Glow Squid"),
+        WOLF("wolf",                         "Wolf"),
+        CRYPT_GHOUL("crypt_ghoul",           "Crypt Ghoul"),
+        CRYPT_UNDEAD("crypt_undead",         "Crypt Undead"),
+        REVENANT_HORROR("revenant_horror",   "Revenant Horror"),
+        SVEN_PACKMASTER("sven_packmaster",   "Sven Packmaster");
 
         /** Lower-case mob type key used in kill-count maps. */
         public final String mobKey;
