@@ -91,6 +91,10 @@ public final class BestiaryManager {
             this.displayName = displayName;
             this.mobTypes    = mobTypes;
         }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     private static final BestiaryManager INSTANCE = new BestiaryManager();
