@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public final class ProfileCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "delete");
-    private static final List<String> GAME_MODES = Arrays.asList("normal", "ironman", "stranded");
+    private static final List<String> GAME_MODES = Arrays.asList("normal", "ironman", "bingo");
 
     private final ProfileManager profileManager;
 
@@ -85,16 +85,16 @@ public final class ProfileCommand implements TabExecutor {
 
     private void handleCreate(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("Usage: /profile create <name> [normal|ironman|stranded]");
+            player.sendMessage("Usage: /profile create <name> [normal|ironman|bingo]");
             return;
         }
         String name = args[1];
-        ProfileManager.SkyBlockGameMode gameMode = ProfileManager.SkyBlockGameMode.NORMAL;
+        ProfileManager.GameMode gameMode = ProfileManager.GameMode.NORMAL;
         if (args.length >= 3) {
             try {
-                gameMode = ProfileManager.SkyBlockGameMode.valueOf(args[2].toUpperCase());
+                gameMode = ProfileManager.GameMode.valueOf(args[2].toUpperCase());
             } catch (IllegalArgumentException e) {
-                player.sendMessage("Unknown game mode \"" + args[2] + "\". Valid options: normal, ironman, stranded.");
+                player.sendMessage("Unknown game mode \"" + args[2] + "\". Valid options: normal, ironman, bingo.");
                 return;
             }
         }
