@@ -117,6 +117,9 @@ public final class MinionManager {
         }
     }
 
+    /** Base number of minion slots each player is allowed. */
+    public static final int MAX_SLOTS = 11;
+
     private static final MinionManager INSTANCE = new MinionManager();
 
     /** All minions keyed by their UUID. */
@@ -152,6 +155,10 @@ public final class MinionManager {
         Objects.requireNonNull(owner, "owner");
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(tier, "tier");
+        List<UUID> existing = ownerIndex.getOrDefault(owner, Collections.emptyList());
+        if (existing.size() >= MAX_SLOTS) {
+            throw new IllegalStateException("Minion slot cap reached (" + MAX_SLOTS + ")");
+        }
         UUID id = UUID.randomUUID();
         MinionData data = new MinionData(id, owner, type, tier);
         minions.put(id, data);
