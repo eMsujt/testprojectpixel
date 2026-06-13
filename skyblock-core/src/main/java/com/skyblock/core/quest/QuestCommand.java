@@ -78,7 +78,7 @@ public final class QuestCommand implements TabExecutor {
     private void handleList(Player player) {
         player.sendMessage("=== Quest Types ===");
         for (QuestType type : QuestType.values()) {
-            player.sendMessage("- " + type.name().toLowerCase());
+            player.sendMessage("- " + type.getDisplayName());
         }
     }
 
@@ -131,7 +131,7 @@ public final class QuestCommand implements TabExecutor {
         for (QuestType type : QuestType.values()) {
             QuestData data = questManager.getQuestData(player.getUniqueId(), type);
             if (data != null) {
-                player.sendMessage(type.name() + ": " + data.progress + "/" + data.goal
+                player.sendMessage(type.getDisplayName() + ": " + data.progress + "/" + data.goal
                         + " [" + data.status.name() + "]");
                 any = true;
             }
@@ -147,7 +147,7 @@ public final class QuestCommand implements TabExecutor {
             player.sendMessage("Quest " + type.name() + " has not been started.");
             return;
         }
-        player.sendMessage("=== " + type.name() + " ===");
+        player.sendMessage("=== " + type.getDisplayName() + " ===");
         player.sendMessage("Progress: " + data.progress + "/" + data.goal);
         player.sendMessage("Status: " + data.status.name());
     }
