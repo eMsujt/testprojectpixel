@@ -1,0 +1,99 @@
+package com.skyblock.core.fairysoul;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
+/**
+ * Singleton tracking each player's collected fairy soul IDs.
+ *
+ * <p>Fairy souls are unique collectibles scattered across SkyBlock islands.
+ * Each soul is identified by a stable string ID (e.g. {@code "hub_1"}).
+ * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ */
+public final class FairySoulManager {
+
+    private static final FairySoulManager INSTANCE = new FairySoulManager();
+
+    /** Per-player set of collected fairy soul IDs; absent entries mean no souls collected. */
+    private final Map<UUID, Set<String>> collectedSouls = new HashMap<>();
+
+    private FairySoulManager() {
+    }
+
+    /**
+     * Returns the single shared {@code FairySoulManager} instance.
+     *
+     * @return the singleton instance
+     */
+    public static FairySoulManager getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Returns an unmodifiable view of the soul IDs collected by the given player.
+     *
+     * @param playerId the player to look up
+     * @return an unmodifiable set of soul IDs, never {@code null}
+     */
+    public Set<String> getCollectedSouls(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Set<String> souls = collectedSouls.get(playerId);
+        return souls == null ? Collections.emptySet() : Collections.unmodifiableSet(souls);
+    }
+
+    /**
+     * Returns the number of fairy souls the given player has collected.
+     *
+     * @param playerId the player to look up
+     * @return the count of collected souls, {@code 0} if none
+     */
+    public int getCount(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Set<String> souls = collectedSouls.get(playerId);
+        return souls == null ? 0 : souls.size();
+    }
+
+    /**
+     * Records that the given player collected the fairy soul with the specified ID.
+     *
+     * @param playerId the player
+     * @param soulId   the unique identifier of the fairy soul
+     * @return {@code true} if this soul was newly collected, {@code false} if already collected
+     */
+    public boolean collectSoul(UUID playerId, String soulId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(soulId, "soulId");
+        Set<String> souls = collectedSouls.computeIfAbsent(playerId, id -> new HashSet<>());
+        return souls.add(soulId);
+    }
+
+    /**
+     * Returns whether the given player has already collected the specified soul.
+     *
+     * @param playerId the player
+     * @param soulId   the soul ID to check
+     * @return {@code true} if the soul has been collected
+     */
+    public boolean hasCollected(UUID playerId, String soulId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(soulId, "soulId");
+        Set<String> souls = collectedSouls.get(playerId);
+        return souls != null && souls.contains(soulId);
+    }
+
+    /**
+     * Removes all fairy soul data for the given player (e.g. on quit).
+     *
+     * @param playerId the player to remove
+     * @return {@code true} if the player had data, {@code false} otherwise
+     */
+    public boolean remove(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return collectedSouls.remove(playerId) != null;
+    }
+}
