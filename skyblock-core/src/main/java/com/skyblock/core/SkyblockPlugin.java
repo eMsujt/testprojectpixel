@@ -57,6 +57,8 @@ import com.skyblock.core.coop.CoopCommand;
 import com.skyblock.core.coop.CoopManager;
 import com.skyblock.core.crimson.CrimsonCommand;
 import com.skyblock.core.crimson.CrimsonManager;
+import com.skyblock.core.vault.VaultCommand;
+import com.skyblock.core.vault.VaultManager;
 import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.forge.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
@@ -237,6 +239,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         CrimsonCommand crimsonCommand = new CrimsonCommand(crimsonManager);
         getCommand("crimson").setExecutor(crimsonCommand);
         getCommand("crimson").setTabCompleter(crimsonCommand);
+        VaultManager vaultManager = VaultManager.getInstance();
+        vaultManager.load(getDataFolder());
+        VaultCommand vaultCommand = new VaultCommand(vaultManager);
+        getCommand("vault").setExecutor(vaultCommand);
+        getCommand("vault").setTabCompleter(vaultCommand);
     }
 
     @Override
@@ -265,6 +272,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         MailManager.getInstance().save(getDataFolder());
         CoopManager.getInstance().save(getDataFolder());
         CrimsonManager.getInstance().save(getDataFolder());
+        VaultManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
