@@ -189,6 +189,11 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "quests" -> "quest";
             case "minions" -> "minion";
             case "slayer" -> "slay";
+            case "friend" -> "friend";
+            case "run" -> "run";
+            case "title" -> "title";
+            case "mailbox" -> "mailbox";
+            case "booster" -> "booster";
             default -> sub;
         };
     }
