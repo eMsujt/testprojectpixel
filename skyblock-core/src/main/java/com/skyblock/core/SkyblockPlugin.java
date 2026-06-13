@@ -29,6 +29,7 @@ import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
+import com.skyblock.core.stats.StatsCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -97,6 +98,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkillsManager skillsManager = SkillsManager.getInstance();
         skillsManager.load(getDataFolder());
         AccessoryManager.getInstance();
+        StatsCommand statsCommand = new StatsCommand(skillsManager, slayerManager);
+        getCommand("stats").setExecutor(statsCommand);
+        getCommand("stats").setTabCompleter(statsCommand);
         ProfileManager profileManager = ProfileManager.getInstance();
         profileManager.load(getDataFolder());
         ProfileCommand profileCommand = new ProfileCommand(profileManager);
