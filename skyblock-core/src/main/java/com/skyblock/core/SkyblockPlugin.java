@@ -35,7 +35,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         BazaarManager.getInstance();
         DungeonManager.getInstance();
         IslandManager.getInstance();
-        GardenManager.getInstance();
+        GardenManager gardenManager = GardenManager.getInstance();
+        gardenManager.load(getDataFolder());
         SlayerManager slayerManager = SlayerManager.getInstance();
         slayerManager.load(getDataFolder());
         FishingManager.getInstance();
@@ -53,6 +54,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         BankManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());
         PetsManager.getInstance().save(getDataFolder());
+        GardenManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }

@@ -1,5 +1,9 @@
 package com.skyblock.core.garden;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -476,6 +480,56 @@ public final class GardenManager {
         Objects.requireNonNull(playerId, "playerId");
         Map<CropType, Long> counts = harvestCounts.get(playerId);
         return counts == null ? Collections.emptyMap() : Collections.unmodifiableMap(counts);
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "garden.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        harvestCounts.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".harvests")) {
+                    Map<CropType, Long> counts = new EnumMap<>(CropType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".harvests").getKeys(false)) {
+                        try {
+                            CropType type = CropType.valueOf(typeName);
+                            counts.put(type, cfg.getLong(key + ".harvests." + typeName, 0L));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown crop types
+                        }
+                    }
+                    if (!counts.isEmpty()) {
+                        harvestCounts.put(uuid, counts);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "garden.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<CropType, Long>> entry : harvestCounts.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<CropType, Long> hc : entry.getValue().entrySet()) {
+                cfg.set(key + ".harvests." + hc.getKey().name(), hc.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save garden.yml", e);
+        }
     }
 
     // -------------------------------------------------------------------------
