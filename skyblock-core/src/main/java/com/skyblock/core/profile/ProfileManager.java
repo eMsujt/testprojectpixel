@@ -63,6 +63,23 @@ public final class ProfileManager {
     }
 
     /**
+     * Lightweight snapshot of a player's account-level data.
+     *
+     * @param uuid     the player's unique id
+     * @param username the player's display name
+     * @param coins    the player's current coin balance
+     */
+    public record ProfileData(UUID uuid, String username, double coins) {
+        public ProfileData {
+            Objects.requireNonNull(uuid, "uuid");
+            Objects.requireNonNull(username, "username");
+            if (coins < 0) {
+                throw new IllegalArgumentException("coins must not be negative");
+            }
+        }
+    }
+
+    /**
      * A single SkyBlock profile owned by a player.
      *
      * @param profileId unique identifier for this profile
@@ -91,6 +108,9 @@ public final class ProfileManager {
 
     /** ownerId -> list of profile ids */
     private final Map<UUID, List<UUID>> profilesByOwner = new HashMap<>();
+
+    /** uuid -> player account data */
+    private final Map<UUID, ProfileData> playerData = new HashMap<>();
 
     private ProfileManager() {}
 
@@ -176,9 +196,31 @@ public final class ProfileManager {
         return true;
     }
 
+    /**
+     * Stores or replaces account-level data for a player.
+     *
+     * @param data the data to store; must not be {@code null}
+     */
+    public void setPlayerData(ProfileData data) {
+        Objects.requireNonNull(data, "data");
+        playerData.put(data.uuid(), data);
+    }
+
+    /**
+     * Returns the account-level data for the given player, or {@code null} if not found.
+     *
+     * @param uuid the player's unique id
+     * @return the player's {@link ProfileData}, or {@code null}
+     */
+    public ProfileData getPlayerData(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        return playerData.get(uuid);
+    }
+
     /** Removes all registered profiles. */
     public void clear() {
         profilesById.clear();
         profilesByOwner.clear();
+        playerData.clear();
     }
 }
