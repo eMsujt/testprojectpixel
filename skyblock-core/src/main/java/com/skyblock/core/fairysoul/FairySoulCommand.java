@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public final class FairySoulCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("count", "list", "collect");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("count", "list", "collect", "areas");
 
     private final FairySoulManager fairySoulManager;
 
@@ -40,7 +40,7 @@ public final class FairySoulCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /fairysoul <count|list|collect>");
+            player.sendMessage("Usage: /fairysoul <count|list|collect|areas>");
             return true;
         }
 
@@ -48,7 +48,8 @@ public final class FairySoulCommand implements TabExecutor {
             case "count"   -> handleCount(player);
             case "list"    -> handleList(player);
             case "collect" -> handleCollect(player, args);
-            default        -> player.sendMessage("Unknown subcommand. Usage: /fairysoul <count|list|collect>");
+            case "areas"   -> handleAreas(player);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /fairysoul <count|list|collect|areas>");
         }
         return true;
     }
@@ -77,6 +78,13 @@ public final class FairySoulCommand implements TabExecutor {
         }
         player.sendMessage("=== Collected Fairy Souls (" + souls.size() + ") ===");
         souls.stream().sorted().forEach(player::sendMessage);
+    }
+
+    private void handleAreas(Player player) {
+        player.sendMessage("=== Fairy Soul Areas ===");
+        for (FairySoulManager.FairySoulArea area : FairySoulManager.FairySoulArea.values()) {
+            player.sendMessage(area.getDisplayName() + ": " + area.soulCount + " souls");
+        }
     }
 
     private void handleCollect(Player player, String[] args) {
