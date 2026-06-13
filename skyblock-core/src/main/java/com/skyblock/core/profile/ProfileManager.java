@@ -205,9 +205,10 @@ public final class ProfileManager {
      *
      * @param data the data to store; must not be {@code null}
      */
-    public void setPlayerData(ProfileData data) {
+    public void setPlayerData(UUID uuid, ProfileData data) {
+        Objects.requireNonNull(uuid, "uuid");
         Objects.requireNonNull(data, "data");
-        playerData.put(data.uuid(), data);
+        playerData.put(uuid, data);
     }
 
     /**
