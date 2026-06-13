@@ -16,14 +16,24 @@ public final class EssenceManager {
 
     /** Every essence type available in SkyBlock. */
     public enum EssenceType {
-        WITHER,
-        SPIDER,
-        DRAGON,
-        GOLD,
-        DIAMOND,
-        ICE,
-        UNDEAD,
-        CRIMSON
+        WITHER("Wither"),
+        SPIDER("Spider"),
+        DRAGON("Dragon"),
+        GOLD("Gold"),
+        DIAMOND("Diamond"),
+        ICE("Ice"),
+        UNDEAD("Undead"),
+        CRIMSON("Crimson");
+
+        private final String displayName;
+
+        EssenceType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     private static final EssenceManager INSTANCE = new EssenceManager();

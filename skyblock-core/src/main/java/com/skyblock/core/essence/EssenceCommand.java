@@ -80,12 +80,12 @@ public final class EssenceCommand implements TabExecutor {
             EssenceManager.EssenceType type = parseType(player, args[1]);
             if (type == null) return;
             int balance = essenceManager.getBalance(player.getUniqueId(), type);
-            player.sendMessage(capitalize(type.name()) + " Essence: " + balance);
+            player.sendMessage(type.getDisplayName() + " Essence: " + balance);
         } else {
             player.sendMessage("=== Essence Balances ===");
             for (EssenceManager.EssenceType type : EssenceManager.EssenceType.values()) {
                 int balance = essenceManager.getBalance(player.getUniqueId(), type);
-                player.sendMessage(capitalize(type.name()) + " Essence: " + balance);
+                player.sendMessage(type.getDisplayName() + " Essence: " + balance);
             }
         }
     }
@@ -104,7 +104,7 @@ public final class EssenceCommand implements TabExecutor {
         int amount = parseAmount(player, args[2]);
         if (amount <= 0) return;
         int newBalance = essenceManager.addEssence(player.getUniqueId(), type, amount);
-        player.sendMessage("Added " + amount + " " + capitalize(type.name())
+        player.sendMessage("Added " + amount + " " + type.getDisplayName()
                 + " Essence. New balance: " + newBalance);
     }
 
@@ -124,10 +124,10 @@ public final class EssenceCommand implements TabExecutor {
         boolean success = essenceManager.removeEssence(player.getUniqueId(), type, amount);
         if (success) {
             int remaining = essenceManager.getBalance(player.getUniqueId(), type);
-            player.sendMessage("Removed " + amount + " " + capitalize(type.name())
+            player.sendMessage("Removed " + amount + " " + type.getDisplayName()
                     + " Essence. Remaining: " + remaining);
         } else {
-            player.sendMessage("Insufficient " + capitalize(type.name()) + " Essence.");
+            player.sendMessage("Insufficient " + type.getDisplayName() + " Essence.");
         }
     }
 
@@ -157,8 +157,4 @@ public final class EssenceCommand implements TabExecutor {
         }
     }
 
-    private static String capitalize(String name) {
-        if (name == null || name.isEmpty()) return name;
-        return name.charAt(0) + name.substring(1).toLowerCase();
-    }
 }
