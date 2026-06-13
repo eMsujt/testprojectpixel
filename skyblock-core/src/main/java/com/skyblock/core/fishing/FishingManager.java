@@ -62,9 +62,8 @@ public final class FishingManager {
 
     /** Sea creatures that can be summoned while fishing. */
     public enum SeaCreature {
-        SQUID(1,  0.30),
-        SEA_WALKER(5,  0.25),
-        NIGHT_SQUID(10, 0.18),
+        SEA_WALKER(1,  0.30),
+        NIGHT_SQUID(5,  0.25),
         SEA_GUARDIAN(15, 0.14),
         SEA_WITCH(20, 0.10),
         SEA_ARCHER(25, 0.08),
