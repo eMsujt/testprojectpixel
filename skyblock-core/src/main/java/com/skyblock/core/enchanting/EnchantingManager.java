@@ -37,6 +37,7 @@ public final class EnchantingManager {
         // Utility / Special
         TELEKINESIS(      "Telekinesis",        1),
         LOOTING(          "Looting",            4),
+        POWER(            "Power",              5),
         SMELTING_TOUCH(   "Smelting Touch",     1),
         MAGNET(           "Magnet",             1),
         LIFE_STEAL(       "Life Steal",         5),
