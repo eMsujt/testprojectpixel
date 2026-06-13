@@ -88,7 +88,7 @@ public final class TrophyFishingCommand implements TabExecutor {
         player.sendMessage("=== Trophy Fishing (" + all.size() + " types) ===");
         all.entrySet().stream()
            .sorted(Map.Entry.<TrophyFishingManager.TrophyFish, Integer>comparingByValue().reversed())
-           .forEach(e -> player.sendMessage("  " + e.getKey().name() + ": " + e.getValue()));
+           .forEach(e -> player.sendMessage("  " + e.getKey().getDisplayName() + ": " + e.getValue()));
     }
 
     private void handleInfo(Player player, String[] args) {
@@ -102,7 +102,7 @@ public final class TrophyFishingCommand implements TabExecutor {
             return;
         }
         int count = trophyFishingManager.getCatchCount(player.getUniqueId(), fish);
-        player.sendMessage(fish.name() + " catches: " + count + "  (min level: " + fish.minLevel + ")");
+        player.sendMessage(fish.getDisplayName() + " catches: " + count + "  (min level: " + fish.minLevel + ")");
     }
 
     private void handleReset(Player player) {

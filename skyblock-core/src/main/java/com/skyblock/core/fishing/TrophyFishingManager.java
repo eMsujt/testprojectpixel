@@ -18,26 +18,34 @@ public final class TrophyFishingManager {
 
     /** All trophy fish types obtainable through SkyBlock trophy fishing. */
     public enum TrophyFish {
-        SULPHUR_SKITTER(1),
-        OBFUSCATED_FISH_1(1),
-        OBFUSCATED_FISH_2(10),
-        OBFUSCATED_FISH_3(20),
-        STEAMING_HOT_FLOUNDER(5),
-        GUSHER(5),
-        BLOBFISH(10),
-        SLUGFISH(10),
-        FLYFISH(15),
-        LAVA_HORSE(20),
-        MANA_RAY(20),
-        VOLCANIC_STONEFISH(25),
-        VANILLE(25),
-        SKELETON_FISH(30);
+        MAHI_MAHI(1,  "Mahi Mahi"),
+        SULPHUR_SKITTER(1,  "Sulphur Skitter"),
+        OBFUSCATED_FISH_1(1,  "Obfuscated Fish 1"),
+        OBFUSCATED_FISH_2(10, "Obfuscated Fish 2"),
+        OBFUSCATED_FISH_3(20, "Obfuscated Fish 3"),
+        STEAMING_HOT_FLOUNDER(5,  "Steaming-Hot Flounder"),
+        GUSHER(5,  "Gusher"),
+        BLOBFISH(10, "Blobfish"),
+        SLUGFISH(10, "Slugfish"),
+        FLYFISH(15, "Flyfish"),
+        LAVA_HORSE(20, "Lava Horse"),
+        MANA_RAY(20, "Mana Ray"),
+        VOLCANIC_STONEFISH(25, "Volcanic Stonefish"),
+        VANILLE(25, "Vanille"),
+        SKELETON_FISH(30, "Skeleton Fish");
 
         /** Minimum fishing level required for this trophy fish to drop. */
         public final int minLevel;
+        /** Human-readable display name. */
+        public final String displayName;
 
-        TrophyFish(int minLevel) {
+        TrophyFish(int minLevel, String displayName) {
             this.minLevel = minLevel;
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
         }
     }
 
