@@ -61,7 +61,11 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                         e -> e.getWhoClicked().sendMessage("Use /alchemy to view your alchemy level."))
                 .setItem(41, named(Material.ENCHANTING_TABLE, ChatColor.DARK_AQUA + "Enchanting"),
                         e -> e.getWhoClicked().sendMessage("Use /enchanting to manage enchantments."))
-                .setItem(43, named(Material.PLAYER_HEAD,   ChatColor.AQUA       + "Profile"),
+                .setItem(43, named(Material.DIAMOND,       ChatColor.AQUA       + "Talisman Bag"),
+                        e -> e.getWhoClicked().sendMessage("Use /talisman bag to open your talisman bag."))
+                .setItem(44, named(Material.WRITTEN_BOOK,  ChatColor.YELLOW     + "Quest"),
+                        e -> e.getWhoClicked().sendMessage("Use /quest to view your active quests."))
+                .setItem(45, named(Material.PLAYER_HEAD,   ChatColor.AQUA       + "Profile"),
                         e -> e.getWhoClicked().sendMessage("Use /profile to view your SkyBlock profile."))
                 // Row 5 — extras & close
                 .setItem(46, named(Material.FIRE_CHARGE,   ChatColor.RED        + "Kuudra"),
