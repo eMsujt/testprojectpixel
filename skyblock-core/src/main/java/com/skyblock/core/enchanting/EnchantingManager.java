@@ -16,7 +16,7 @@ import java.util.UUID;
 public final class EnchantingManager {
 
     /** Every SkyBlock enchant type with display name and maximum level. */
-    public enum EnchantType {
+    public enum SkyBlockEnchantment {
         // Combat
         SHARPNESS("Sharpness", 7),
         CRITICAL("Critical", 7),
@@ -78,7 +78,7 @@ public final class EnchantingManager {
         private final String displayName;
         private final int maxLevel;
 
-        EnchantType(String displayName, int maxLevel) {
+        SkyBlockEnchantment(String displayName, int maxLevel) {
             this.displayName = displayName;
             this.maxLevel = maxLevel;
         }
@@ -95,7 +95,7 @@ public final class EnchantingManager {
     private static final EnchantingManager INSTANCE = new EnchantingManager();
 
     /** Per-player enchantment levels; absent entries mean the enchantment is not applied. */
-    private final Map<UUID, Map<EnchantType, Integer>> playerEnchantments = new HashMap<>();
+    private final Map<UUID, Map<SkyBlockEnchantment, Integer>> playerEnchantments = new HashMap<>();
 
     private EnchantingManager() {
     }
@@ -108,7 +108,7 @@ public final class EnchantingManager {
      * Returns the level of the given enchant type for the given player, or
      * {@code 0} if the enchantment is not applied.
      */
-    public int getLevel(UUID playerId, EnchantType type) {
+    public int getLevel(UUID playerId, SkyBlockEnchantment type) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
@@ -120,7 +120,7 @@ public final class EnchantingManager {
      *
      * @throws IllegalArgumentException if the level is out of range
      */
-    public void setEnchantment(UUID playerId, EnchantType type, int level) {
+    public void setEnchantment(UUID playerId, SkyBlockEnchantment type, int level) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         int max = type.getMaxLevel();
@@ -128,7 +128,7 @@ public final class EnchantingManager {
             throw new IllegalArgumentException(
                     "Level " + level + " out of range [1, " + max + "] for " + type);
         }
-        playerEnchantments.computeIfAbsent(playerId, id -> new EnumMap<>(EnchantType.class))
+        playerEnchantments.computeIfAbsent(playerId, id -> new EnumMap<>(SkyBlockEnchantment.class))
                 .put(type, level);
     }
 
@@ -137,7 +137,7 @@ public final class EnchantingManager {
      *
      * @return {@code true} if the enchantment was present, {@code false} otherwise
      */
-    public boolean removeEnchantment(UUID playerId, EnchantType type) {
+    public boolean removeEnchantment(UUID playerId, SkyBlockEnchantment type) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
@@ -154,7 +154,7 @@ public final class EnchantingManager {
     /**
      * Returns an unmodifiable view of all enchantments currently applied to the player.
      */
-    public Map<EnchantType, Integer> getEnchantments(UUID playerId) {
+    public Map<SkyBlockEnchantment, Integer> getEnchantments(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
         return enchants == null ? Collections.emptyMap() : Collections.unmodifiableMap(enchants);
@@ -163,7 +163,7 @@ public final class EnchantingManager {
     /**
      * Returns the maximum allowed level for the given enchant type.
      */
-    public int getMaxLevel(EnchantType type) {
+    public int getMaxLevel(SkyBlockEnchantment type) {
         Objects.requireNonNull(type, "type");
         return type.getMaxLevel();
     }
