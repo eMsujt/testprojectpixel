@@ -175,10 +175,10 @@ public final class GardenCommand implements TabExecutor {
                 if (amount < 0) return;
                 if (op.equals("set")) {
                     gardenManager.setCropUpgrade(player.getUniqueId(), crop, amount);
-                    player.sendMessage(formatName(crop.name()) + " upgrade set to " + amount + ".");
+                    player.sendMessage(crop.getDisplayName() + " upgrade set to " + amount + ".");
                 } else {
                     int newLevel = gardenManager.addCropUpgrade(player.getUniqueId(), crop, amount);
-                    player.sendMessage(formatName(crop.name()) + " upgrade: " + newLevel + ".");
+                    player.sendMessage(crop.getDisplayName() + " upgrade: " + newLevel + ".");
                 }
                 return;
             }
@@ -186,12 +186,12 @@ public final class GardenCommand implements TabExecutor {
             GardenManager.GardenCrop crop = parseCrop(player, op);
             if (crop == null) return;
             int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
-            player.sendMessage(formatName(crop.name()) + " upgrade level: " + level);
+            player.sendMessage(crop.getDisplayName() + " upgrade level: " + level);
         } else {
             player.sendMessage("=== Crop Upgrades ===");
             for (GardenManager.GardenCrop crop : GardenManager.GardenCrop.values()) {
                 int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
-                player.sendMessage(formatName(crop.name()) + ": " + level);
+                player.sendMessage(crop.getDisplayName() + ": " + level);
             }
         }
     }
@@ -232,14 +232,4 @@ public final class GardenCommand implements TabExecutor {
         }
     }
 
-    private static String formatName(String name) {
-        String spaced = name.replace('_', ' ');
-        StringBuilder sb = new StringBuilder(spaced.length());
-        boolean cap = true;
-        for (char c : spaced.toCharArray()) {
-            sb.append(cap ? Character.toUpperCase(c) : Character.toLowerCase(c));
-            cap = c == ' ';
-        }
-        return sb.toString();
-    }
 }
