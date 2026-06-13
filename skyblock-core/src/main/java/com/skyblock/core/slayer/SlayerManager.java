@@ -18,6 +18,32 @@ public final class SlayerManager {
         REVENANT_HORROR, TARANTULA_BROODFATHER, SVEN_PACKMASTER, VOIDGLOOM_SERAPH, INFERNO_DEMONLORD
     }
 
+    public enum SlayerBoss {
+        REVENANT_HORROR("Revenant Horror", SlayerType.REVENANT_HORROR),
+        TARANTULA_BROODFATHER("Tarantula Broodfather", SlayerType.TARANTULA_BROODFATHER),
+        SVEN_PACKMASTER("Sven Packmaster", SlayerType.SVEN_PACKMASTER),
+        VOIDGLOOM_SERAPH("Voidgloom Seraph", SlayerType.VOIDGLOOM_SERAPH),
+        INFERNO_DEMONLORD("Inferno Demonlord", SlayerType.INFERNO_DEMONLORD);
+
+        private final String displayName;
+        private final SlayerType slayerType;
+
+        SlayerBoss(String displayName, SlayerType slayerType) {
+            this.displayName = displayName;
+            this.slayerType = slayerType;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public SlayerType getSlayerType() { return slayerType; }
+
+        public static SlayerBoss forType(SlayerType type) {
+            for (SlayerBoss b : values()) {
+                if (b.slayerType == type) return b;
+            }
+            return null;
+        }
+    }
+
     public enum QuestTier {
         TIER_1, TIER_2, TIER_3, TIER_4
     }

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public final class SlayerCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "start", "type");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "start", "type", "boss");
 
     private final SlayerManager slayerManager;
 
@@ -36,6 +36,7 @@ public final class SlayerCommand implements TabExecutor {
             case "info"  -> handleInfo(player);
             case "start" -> handleStart(player, args);
             case "type"  -> handleType(player, args);
+            case "boss"  -> handleBoss(player, args);
             default      -> sendHelp(player);
         }
         return true;
@@ -49,7 +50,7 @@ public final class SlayerCommand implements TabExecutor {
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
-        if (args.length == 2 && (args[0].equalsIgnoreCase("start") || args[0].equalsIgnoreCase("type"))) {
+        if (args.length == 2 && (args[0].equalsIgnoreCase("start") || args[0].equalsIgnoreCase("type") || args[0].equalsIgnoreCase("boss"))) {
             String prefix = args[1].toLowerCase();
             return Arrays.stream(SlayerManager.SlayerType.values())
                     .map(t -> t.name().toLowerCase())
@@ -105,10 +106,29 @@ public final class SlayerCommand implements TabExecutor {
         player.sendMessage(type.name() + ": level " + level + " (" + xp + " XP)");
     }
 
+    private void handleBoss(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("=== Slayer Bosses ===");
+            for (SlayerManager.SlayerBoss boss : SlayerManager.SlayerBoss.values()) {
+                player.sendMessage("  " + boss.name() + " — " + boss.getDisplayName());
+            }
+            return;
+        }
+        SlayerManager.SlayerBoss boss;
+        try {
+            boss = SlayerManager.SlayerBoss.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown slayer boss: " + args[1]);
+            return;
+        }
+        player.sendMessage(boss.getDisplayName() + " (" + boss.getSlayerType().name() + ")");
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Slayer Commands ===");
         player.sendMessage("/slay info           — show all slayer levels");
         player.sendMessage("/slay start <type>   — start a slayer quest");
         player.sendMessage("/slay type <type>    — show XP for one type");
+        player.sendMessage("/slay boss [type]    — list bosses or show one");
     }
 }
