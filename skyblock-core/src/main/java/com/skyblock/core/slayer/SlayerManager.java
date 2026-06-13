@@ -15,11 +15,11 @@ public final class SlayerManager {
     };
 
     public enum SlayerType {
-        ZOMBIE("Revenant Horror"),
-        SPIDER("Tarantula Broodfather"),
-        WOLF("Sven Packmaster"),
-        ENDERMAN("Voidgloom Seraph"),
-        BLAZE("Inferno Demonlord");
+        REVENANT_HORROR("Revenant Horror"),
+        TARANTULA_BROODFATHER("Tarantula Broodfather"),
+        SVEN_PACKMASTER("Sven Packmaster"),
+        VOIDGLOOM_SERAPH("Voidgloom Seraph"),
+        INFERNO_DEMONLORD("Inferno Demonlord");
 
         private final String displayName;
 
@@ -34,11 +34,11 @@ public final class SlayerManager {
 
     /** Named slayer bosses, each linked to the {@link SlayerType} that spawns them. */
     public enum SlayerBoss {
-        REVENANT_HORROR(SlayerType.ZOMBIE,   "Revenant Horror",       200_000),
-        TARANTULA_BROODFATHER(SlayerType.SPIDER, "Tarantula Broodfather", 300_000),
-        SVEN_PACKMASTER(SlayerType.WOLF,     "Sven Packmaster",       400_000),
-        VOIDGLOOM_SERAPH(SlayerType.ENDERMAN,"Voidgloom Seraph",      500_000),
-        INFERNO_DEMONLORD(SlayerType.BLAZE,  "Inferno Demonlord",     600_000);
+        REVENANT_HORROR(SlayerType.REVENANT_HORROR,         "Revenant Horror",       200_000),
+        TARANTULA_BROODFATHER(SlayerType.TARANTULA_BROODFATHER, "Tarantula Broodfather", 300_000),
+        SVEN_PACKMASTER(SlayerType.SVEN_PACKMASTER,         "Sven Packmaster",       400_000),
+        VOIDGLOOM_SERAPH(SlayerType.VOIDGLOOM_SERAPH,       "Voidgloom Seraph",      500_000),
+        INFERNO_DEMONLORD(SlayerType.INFERNO_DEMONLORD,     "Inferno Demonlord",     600_000);
 
         public final SlayerType type;
         public final String displayName;
