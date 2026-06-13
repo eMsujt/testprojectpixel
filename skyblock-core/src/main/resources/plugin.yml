@@ -277,6 +277,10 @@ commands:
     description: Start dungeon runs and view scores by type.
     usage: /dungeons [start <type>|leave|info|scores <type>]
     permission: skyblock.dungeons
+  network:
+    description: View and manage your network session and playtime.
+    usage: /network <info|total|add|reset>
+    permission: skyblock.network
 
 permissions:
   skyblock.warp:
@@ -374,4 +378,7 @@ permissions:
     default: true
   skyblock.dungeons:
     description: Use the /dungeons command to start dungeon runs and view scores.
+    default: true
+  skyblock.network:
+    description: Use the /network command to view and manage network session and playtime.
     default: true

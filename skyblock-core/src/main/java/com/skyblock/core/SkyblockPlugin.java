@@ -40,6 +40,9 @@ import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
+import com.skyblock.core.network.NetworkCommand;
+import com.skyblock.core.network.NetworkListener;
+import com.skyblock.core.network.NetworkManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
 import com.skyblock.core.trade.TradeManager;
@@ -162,6 +165,12 @@ public final class SkyblockPlugin extends JavaPlugin {
         BackpackCommand backpackCommand = new BackpackCommand(backpackManager);
         getCommand("backpack").setExecutor(backpackCommand);
         getCommand("backpack").setTabCompleter(backpackCommand);
+        NetworkManager networkManager = NetworkManager.getInstance();
+        networkManager.load(getDataFolder());
+        NetworkCommand networkCommand = new NetworkCommand(networkManager);
+        getCommand("network").setExecutor(networkCommand);
+        getCommand("network").setTabCompleter(networkCommand);
+        getServer().getPluginManager().registerEvents(new NetworkListener(networkManager), this);
     }
 
     @Override
@@ -185,6 +194,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         CraftingManager.getInstance().save(getDataFolder());
         QuestManager.getInstance().save(getDataFolder());
         BackpackManager.getInstance().save(getDataFolder());
+        NetworkManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
