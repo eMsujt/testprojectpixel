@@ -344,6 +344,7 @@ public final class AuctionHouseManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         items.clear();
         for (String key : cfg.getKeys(false)) {
+            if (key.equals("listings")) continue;
             try {
                 UUID id = UUID.fromString(key);
                 String itemName = cfg.getString(key + ".itemName");
@@ -354,6 +355,36 @@ public final class AuctionHouseManager {
                 items.put(id, new AuctionItem(itemName, seller, price, endEpoch));
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
+            }
+        }
+        listings.clear();
+        if (cfg.isConfigurationSection("listings")) {
+            for (String key : cfg.getConfigurationSection("listings").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(key);
+                    UUID seller = UUID.fromString(cfg.getString("listings." + key + ".seller", ""));
+                    String itemName = cfg.getString("listings." + key + ".itemName");
+                    if (itemName == null) continue;
+                    AuctionCategory category = AuctionCategory.valueOf(
+                            cfg.getString("listings." + key + ".category", "MISC"));
+                    double startingBid = cfg.getDouble("listings." + key + ".startingBid", 0.0);
+                    AuctionType type = AuctionType.valueOf(
+                            cfg.getString("listings." + key + ".type", "BIN"));
+                    org.bukkit.inventory.ItemStack stack =
+                            cfg.getItemStack("listings." + key + ".item");
+                    if (stack == null) continue;
+                    AuctionListing listing = new AuctionListing(
+                            id, seller, stack, itemName, category, startingBid, type);
+                    ListingState state = new ListingState(listing);
+                    state.highestBid = cfg.getDouble("listings." + key + ".highestBid", startingBid);
+                    String bidderStr = cfg.getString("listings." + key + ".highestBidder");
+                    if (bidderStr != null && !bidderStr.isEmpty()) {
+                        state.highestBidder = UUID.fromString(bidderStr);
+                    }
+                    listings.put(id, state);
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
             }
         }
     }
@@ -368,6 +399,21 @@ public final class AuctionHouseManager {
             cfg.set(key + ".seller", item.seller().toString());
             cfg.set(key + ".price", item.price());
             cfg.set(key + ".endEpoch", item.endEpoch());
+        }
+        for (Map.Entry<UUID, ListingState> entry : listings.entrySet()) {
+            String key = "listings." + entry.getKey().toString();
+            ListingState state = entry.getValue();
+            AuctionListing listing = state.listing;
+            cfg.set(key + ".seller", listing.seller().toString());
+            cfg.set(key + ".itemName", listing.itemName());
+            cfg.set(key + ".category", listing.category().name());
+            cfg.set(key + ".startingBid", listing.startingBid());
+            cfg.set(key + ".type", listing.type().name());
+            cfg.set(key + ".item", listing.item());
+            cfg.set(key + ".highestBid", state.highestBid);
+            if (state.highestBidder != null) {
+                cfg.set(key + ".highestBidder", state.highestBidder.toString());
+            }
         }
         try {
             cfg.save(file);
