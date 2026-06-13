@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * <p>Subcommands:
  * <ul>
  *   <li>{@code /auctionhouse list}               — list all active listings</li>
- *   <li>{@code /auctionhouse create <price> [bin]} — list held item</li>
+ *   <li>{@code /auctionhouse create <price> <category> [bin]} — list held item</li>
  *   <li>{@code /auctionhouse bid <id> <amount>}   — place a bid or buy BIN</li>
  *   <li>{@code /auctionhouse view <id>}           — view a specific listing</li>
  *   <li>{@code /auctionhouse cancel <id>}         — cancel your own listing</li>
@@ -30,6 +30,9 @@ public final class AuctionHouseCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
             Arrays.asList("list", "create", "bid", "view", "cancel", "mine");
+    private static final List<String> CATEGORY_NAMES = Arrays.stream(AuctionHouseManager.AuctionCategory.values())
+            .map(c -> c.name().toLowerCase())
+            .collect(Collectors.toList());
 
     private final AuctionHouseManager manager;
 
@@ -50,13 +53,13 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "list"   -> handleList(player);
+            case "list"   -> handleList(player, args);
             case "create" -> handleCreate(player, args);
             case "bid"    -> handleBid(player, args);
             case "view"   -> handleView(player, args);
             case "cancel" -> handleCancel(player, args);
             case "mine"   -> handleMine(player);
-            default       -> player.sendMessage(
+            default        -> player.sendMessage(
                     "Unknown subcommand. Usage: /auctionhouse <list|create|bid|view|cancel|mine>");
         }
         return true;
@@ -70,34 +73,57 @@ public final class AuctionHouseCommand implements TabExecutor {
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
+        if (args.length == 2 && args[0].equalsIgnoreCase("list")) {
+            String prefix = args[1].toLowerCase();
+            return CATEGORY_NAMES.stream()
+                    .filter(c -> c.startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
         if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
+            String prefix = args[2].toLowerCase();
+            return CATEGORY_NAMES.stream()
+                    .filter(c -> c.startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 4 && args[0].equalsIgnoreCase("create")) {
             return Arrays.asList("bin", "bid");
         }
         return Collections.emptyList();
     }
 
-    private void handleList(Player player) {
-        List<AuctionHouseManager.AuctionListing> active = manager.getActiveListings().stream()
-                .map(manager::getListing)
-                .collect(Collectors.toList());
+    private void handleList(Player player, String[] args) {
+        List<AuctionHouseManager.AuctionListing> active;
+        String header;
+        if (args.length >= 2) {
+            AuctionHouseManager.AuctionCategory category = parseCategory(player, args[1]);
+            if (category == null) return;
+            active = manager.getListingsByCategory(category);
+            header = "=== Auction House: " + category.getDisplayName() + " (" + active.size() + " listings) ===";
+        } else {
+            active = manager.getActiveListings().stream()
+                    .map(manager::getListing)
+                    .collect(Collectors.toList());
+            header = "=== Auction House (" + active.size() + " listings) ===";
+        }
         if (active.isEmpty()) {
             player.sendMessage("No active auction house listings.");
             return;
         }
-        player.sendMessage("=== Auction House (" + active.size() + " listings) ===");
+        player.sendMessage(header);
         active.stream()
                 .sorted((a, b) -> a.itemName().compareToIgnoreCase(b.itemName()))
                 .forEach(e -> player.sendMessage(String.format(
-                        "[%s] %s — %.1f coins (%s)",
+                        "[%s] %s [%s] — %.1f coins (%s)",
                         e.id().toString().substring(0, 8),
                         e.itemName(),
+                        e.category().getDisplayName(),
                         e.startingBid(),
                         e.binListing() ? "BIN" : "BID")));
     }
 
     private void handleCreate(Player player, String[] args) {
-        if (args.length < 2) {
-            player.sendMessage("Usage: /auctionhouse create <price> [bin]");
+        if (args.length < 3) {
+            player.sendMessage("Usage: /auctionhouse create <price> <category> [bin]");
             return;
         }
         ItemStack held = player.getInventory().getItemInMainHand();
@@ -116,14 +142,17 @@ public final class AuctionHouseCommand implements TabExecutor {
             player.sendMessage("Price must not be negative.");
             return;
         }
-        boolean bin = args.length >= 3 && args[2].equalsIgnoreCase("bin");
+        AuctionHouseManager.AuctionCategory category = parseCategory(player, args[2]);
+        if (category == null) return;
+        boolean bin = args.length >= 4 && args[3].equalsIgnoreCase("bin");
         String itemName = held.hasItemMeta() && held.getItemMeta().hasDisplayName()
                 ? held.getItemMeta().getDisplayName()
                 : held.getType().name();
-        UUID listingId = manager.createListing(player.getUniqueId(), held.clone(), itemName, price, bin);
+        UUID listingId = manager.createListing(player.getUniqueId(), held.clone(), itemName,
+                category, price, bin);
         player.sendMessage(String.format(
-                "Listed '%s' for %.1f coins as a %s listing. ID: %s",
-                itemName, price, bin ? "BIN" : "bid-based",
+                "Listed '%s' [%s] for %.1f coins as a %s listing. ID: %s",
+                itemName, category.getDisplayName(), price, bin ? "BIN" : "bid-based",
                 listingId.toString().substring(0, 8)));
     }
 
@@ -164,9 +193,10 @@ public final class AuctionHouseCommand implements TabExecutor {
         double highestBid = manager.getHighestBid(listingId);
         UUID highestBidder = manager.getHighestBidder(listingId);
         player.sendMessage("=== Listing: " + listing.itemName() + " ===");
-        player.sendMessage("ID:    " + listing.id());
-        player.sendMessage("Type:  " + (listing.binListing() ? "Buy It Now" : "Bid-based"));
-        player.sendMessage("Price: " + listing.startingBid() + " coins");
+        player.sendMessage("ID:       " + listing.id());
+        player.sendMessage("Category: " + listing.category().getDisplayName());
+        player.sendMessage("Type:     " + (listing.binListing() ? "Buy It Now" : "Bid-based"));
+        player.sendMessage("Price:    " + listing.startingBid() + " coins");
         if (!listing.binListing()) {
             player.sendMessage("Highest bid: " + highestBid + " coins"
                     + (highestBidder != null ? " (by " + highestBidder + ")" : " (no bids yet)"));
@@ -204,6 +234,17 @@ public final class AuctionHouseCommand implements TabExecutor {
                 l.itemName(),
                 l.startingBid(),
                 l.binListing() ? "BIN" : "BID")));
+    }
+
+    /** Parses an auction category name, sending an error to the player on failure. */
+    private AuctionHouseManager.AuctionCategory parseCategory(Player player, String input) {
+        try {
+            return AuctionHouseManager.AuctionCategory.valueOf(input.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown category: " + input
+                    + ". Valid categories: " + String.join(", ", CATEGORY_NAMES));
+            return null;
+        }
     }
 
     /** Matches a short (8-char prefix) or full UUID against active listings. */
