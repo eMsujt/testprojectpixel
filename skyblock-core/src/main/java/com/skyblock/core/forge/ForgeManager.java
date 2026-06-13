@@ -44,7 +44,23 @@ public final class ForgeManager {
         DRAGON_SCALE(        "Dragon Scale",                 "DRAGON_SCALE",                 1, 86400,
                 Map.of("DRAGON_FRAGMENT", 12, "REFINED_TITANIUM", 3)),
         MITHRIL_BLADE(       "Mithril Blade",                "MITHRIL_BLADE",                1, 7200,
-                Map.of("REFINED_MITHRIL", 6, "IRON_INGOT", 5));
+                Map.of("REFINED_MITHRIL", 6, "IRON_INGOT", 5)),
+        REFINED_TUNGSTEN(    "Refined Tungsten",             "REFINED_TUNGSTEN",             1, 900,
+                Map.of("TUNGSTEN", 10)),
+        REFINED_UMBER(       "Refined Umber",                "REFINED_UMBER",                1, 900,
+                Map.of("UMBER", 10)),
+        BEJEWELED_HANDLE(    "Bejeweled Handle",             "BEJEWELED_HANDLE",             1, 14400,
+                Map.of("RUBY_GEMSTONE", 3, "SAPPHIRE_GEMSTONE", 3, "REFINED_TUNGSTEN", 4)),
+        SEARING_STONE(       "Searing Stone",                "SEARING_STONE",                1, 21600,
+                Map.of("REFINED_UMBER", 8, "COAL", 128)),
+        PETRIFIED_STARFALL(  "Petrified Starfall",           "PETRIFIED_STARFALL",           1, 43200,
+                Map.of("STARFALL", 20, "REFINED_MITHRIL", 5)),
+        GLACIAL_FRAGMENT(    "Glacial Fragment",             "GLACIAL_FRAGMENT",             1, 10800,
+                Map.of("ICE", 512, "REFINED_MITHRIL", 3)),
+        POWER_CRYSTAL(       "Power Crystal",                "POWER_CRYSTAL",                1, 86400,
+                Map.of("RUBY_GEMSTONE", 8, "SAPPHIRE_GEMSTONE", 8, "JADE_GEMSTONE", 8, "REFINED_TITANIUM", 4)),
+        MITHRIL_GOLEM_KIT(   "Mithril Golem Kit",           "MITHRIL_GOLEM_KIT",            1, 57600,
+                Map.of("REFINED_MITHRIL", 12, "IRON_INGOT", 64, "COAL", 32));
 
         private final String displayName;
         private final String outputItem;
