@@ -80,7 +80,8 @@ commands:
     aliases: [lb]
   bank:
     description: Manage your SkyBlock bank account.
-    usage: /bank [deposit|withdraw|balance]
+    usage: /bank <balance|deposit|withdraw>
+    permission: skyblock.bank
   banking:
     description: Manage your SkyBlock banking account.
     usage: /banking [deposit|withdraw|balance]
@@ -468,6 +469,9 @@ permissions:
     default: true
   skyblock.skyblock-level:
     description: Use the /skyblock-level command to view and manage SkyBlock level.
+    default: true
+  skyblock.bank:
+    description: Use the /bank command to manage your SkyBlock bank account.
     default: true
   skyblock.friend:
     description: Use the /friend command to manage SkyBlock friendships.
