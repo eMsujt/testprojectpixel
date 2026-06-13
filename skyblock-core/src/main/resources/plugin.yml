@@ -79,7 +79,7 @@ commands:
     usage: /leaderboard [category]
     aliases: [lb]
   bank:
-    description: Manage your SkyBlock bank account.
+    description: Bank system
     usage: /bank <balance|deposit|withdraw>
     permission: skyblock.bank
   banking:
