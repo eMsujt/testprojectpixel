@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
  * <p>Usage:
  * <ul>
  *   <li>{@code /npc list}                         — list all registered NPCs</li>
+ *   <li>{@code /npc shops}                        — list built-in NpcShop types</li>
  *   <li>{@code /npc shop <npc>}                   — view an NPC's shop items</li>
  *   <li>{@code /npc buy <npc> <item>}             — purchase one item from an NPC</li>
  *   <li>{@code /npc type}                         — list all NPC role types</li>
@@ -48,8 +49,9 @@ public final class NpcCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "list" -> listNpcs(player);
-            case "shop" -> {
+            case "list"  -> listNpcs(player);
+            case "shops" -> listShops(player);
+            case "shop"  -> {
                 if (args.length < 2) {
                     player.sendMessage("Usage: /npc shop <npc>");
                 } else {
@@ -73,7 +75,7 @@ public final class NpcCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return List.of("list", "shop", "buy", "type").stream()
+            return List.of("list", "shops", "shop", "buy", "type").stream()
                     .filter(s -> s.startsWith(lower))
                     .collect(Collectors.toList());
         }
@@ -94,6 +96,15 @@ public final class NpcCommand implements TabExecutor {
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    private void listShops(Player player) {
+        player.sendMessage("=== NPC Shops ===");
+        for (NpcManager.NpcShop shop : NpcManager.NpcShop.values()) {
+            player.sendMessage("- " + shop.name().toLowerCase() + " (" + shop.getDisplayName()
+                    + ", " + shop.getPrices().size() + " items)");
+        }
+        player.sendMessage("Use /npc shop <id> to view a shop's items.");
     }
 
     private void listNpcs(Player player) {
@@ -152,6 +163,6 @@ public final class NpcCommand implements TabExecutor {
     }
 
     private void sendUsage(Player player) {
-        player.sendMessage("Usage: /npc <list|shop <npc>|buy <npc> <item>|type>");
+        player.sendMessage("Usage: /npc <list|shops|shop <npc>|buy <npc> <item>|type>");
     }
 }
