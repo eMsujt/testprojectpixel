@@ -29,7 +29,7 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                 .setItem(16, named(Material.BONE,          ChatColor.AQUA       + "Pets"),
                         e -> e.getWhoClicked().sendMessage("Use /pets to manage your pets."))
                 // Row 2 — economy
-                .setItem(19, named(Material.EMERALD,       ChatColor.GREEN      + "Bazaar"),
+                .setItem(19, named(Material.GOLD_INGOT,    ChatColor.GREEN      + "Bazaar"),
                         e -> e.getWhoClicked().sendMessage("Use /bazaar to open the Bazaar."))
                 .setItem(21, named(Material.GOLD_INGOT,    ChatColor.GOLD       + "Auction House"),
                         e -> e.getWhoClicked().sendMessage("Use /auction to open the Auction House."))
@@ -55,7 +55,9 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                         e -> e.getWhoClicked().sendMessage("Use /enchanting to manage enchantments."))
                 .setItem(43, named(Material.PLAYER_HEAD,   ChatColor.AQUA       + "Profile"),
                         e -> e.getWhoClicked().sendMessage("Use /profile to view your SkyBlock profile."))
-                // Row 5 — close
+                // Row 5 — extras & close
+                .setItem(46, named(Material.FIRE_CHARGE,   ChatColor.RED        + "Kuudra"),
+                        e -> e.getWhoClicked().sendMessage("Use /kuudra to manage your Kuudra kills."))
                 .setItem(49, named(Material.BARRIER,       ChatColor.RED        + "Close"),
                         e -> e.getWhoClicked().closeInventory())
                 .fill(filler)
