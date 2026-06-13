@@ -41,18 +41,24 @@ public final class JacobContestManager {
     }
 
     /** Medal tiers awarded at the end of a contest. */
-    public enum Medal {
-        NONE(0),
-        BRONZE(100),
-        SILVER(500),
-        GOLD(2000),
-        PLATINUM(9000),
-        DIAMOND(25000);
+    public enum ContestMedal {
+        NONE("None", 0),
+        BRONZE("Bronze", 100),
+        SILVER("Silver", 500),
+        GOLD("Gold", 2000),
+        PLATINUM("Platinum", 9000),
+        DIAMOND("Diamond", 25000);
 
+        private final String displayName;
         private final int threshold;
 
-        Medal(int threshold) {
+        ContestMedal(String displayName, int threshold) {
+            this.displayName = displayName;
             this.threshold = threshold;
+        }
+
+        public String getDisplayName() {
+            return displayName;
         }
 
         /** Minimum contest score required to earn this medal. */
@@ -61,9 +67,9 @@ public final class JacobContestManager {
         }
 
         /** Resolves the highest medal a player with {@code score} earns. */
-        public static Medal forScore(int score) {
-            Medal result = NONE;
-            for (Medal m : values()) {
+        public static ContestMedal forScore(int score) {
+            ContestMedal result = NONE;
+            for (ContestMedal m : values()) {
                 if (score >= m.threshold) {
                     result = m;
                 }
@@ -81,7 +87,7 @@ public final class JacobContestManager {
     /** Personal-best scores per player per crop. */
     private final Map<UUID, Map<ContestCrop, Integer>> personalBests = new HashMap<>();
     /** Medals earned per player per crop. */
-    private final Map<UUID, Map<ContestCrop, Medal>> medals = new HashMap<>();
+    private final Map<UUID, Map<ContestCrop, ContestMedal>> medals = new HashMap<>();
 
     private JacobContestManager() {}
 
@@ -162,17 +168,17 @@ public final class JacobContestManager {
      * best if the score beats it, and clears the active entry.
      *
      * @param playerId the player's UUID
-     * @return the {@link Medal} the player earned, or {@link Medal#NONE} if not entered
+     * @return the {@link ContestMedal} the player earned, or {@link ContestMedal#NONE} if not entered
      */
-    public Medal finalizeContest(UUID playerId) {
+    public ContestMedal finalizeContest(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         ContestCrop crop = activeCrop.remove(playerId);
         if (crop == null) {
-            return Medal.NONE;
+            return ContestMedal.NONE;
         }
         Map<ContestCrop, Integer> scores = activeScores.get(playerId);
         int score = scores == null ? 0 : scores.getOrDefault(crop, 0);
-        Medal earned = Medal.forScore(score);
+        ContestMedal earned = ContestMedal.forScore(score);
         // Update personal best
         Map<ContestCrop, Integer> pb =
                 personalBests.computeIfAbsent(playerId, k -> new EnumMap<>(ContestCrop.class));
@@ -180,9 +186,9 @@ public final class JacobContestManager {
             pb.put(crop, score);
         }
         // Store best medal
-        Map<ContestCrop, Medal> playerMedals =
+        Map<ContestCrop, ContestMedal> playerMedals =
                 medals.computeIfAbsent(playerId, k -> new EnumMap<>(ContestCrop.class));
-        Medal existing = playerMedals.getOrDefault(crop, Medal.NONE);
+        ContestMedal existing = playerMedals.getOrDefault(crop, ContestMedal.NONE);
         if (earned.ordinal() > existing.ordinal()) {
             playerMedals.put(crop, earned);
         }
@@ -220,13 +226,13 @@ public final class JacobContestManager {
      *
      * @param playerId the player's UUID
      * @param crop     the crop to look up
-     * @return best medal, or {@link Medal#NONE} if none earned
+     * @return best medal, or {@link ContestMedal#NONE} if none earned
      */
-    public Medal getBestMedal(UUID playerId, ContestCrop crop) {
+    public ContestMedal getBestMedal(UUID playerId, ContestCrop crop) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(crop, "crop");
-        Map<ContestCrop, Medal> playerMedals = medals.get(playerId);
-        return playerMedals == null ? Medal.NONE : playerMedals.getOrDefault(crop, Medal.NONE);
+        Map<ContestCrop, ContestMedal> playerMedals = medals.get(playerId);
+        return playerMedals == null ? ContestMedal.NONE : playerMedals.getOrDefault(crop, ContestMedal.NONE);
     }
 
     /**
@@ -235,9 +241,9 @@ public final class JacobContestManager {
      * @param playerId the player's UUID
      * @return a copy of the medal map; empty if none earned
      */
-    public Map<ContestCrop, Medal> getAllMedals(UUID playerId) {
+    public Map<ContestCrop, ContestMedal> getAllMedals(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Map<ContestCrop, Medal> playerMedals = medals.get(playerId);
+        Map<ContestCrop, ContestMedal> playerMedals = medals.get(playerId);
         return playerMedals == null ? new EnumMap<>(ContestCrop.class) : new EnumMap<>(playerMedals);
     }
 
