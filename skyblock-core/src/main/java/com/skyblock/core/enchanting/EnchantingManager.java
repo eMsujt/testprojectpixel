@@ -1,8 +1,10 @@
 package com.skyblock.core.enchanting;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -173,10 +175,31 @@ public final class EnchantingManager {
         }
     }
 
+    /**
+     * Represents an enchantment book: a named item that holds one enchantment at a specific level.
+     *
+     * @param name        display name of the book (e.g. "Sharpness Book V")
+     * @param enchantment the enchantment stored in this book
+     * @param level       the enchantment level; must be between 1 and {@code enchantment.getMaxLevel()}
+     */
+    public record EnchantmentBook(String name, SkyBlockEnchantment enchantment, int level) {
+        public EnchantmentBook {
+            Objects.requireNonNull(name, "name");
+            Objects.requireNonNull(enchantment, "enchantment");
+            if (level < 1 || level > enchantment.getMaxLevel()) {
+                throw new IllegalArgumentException(
+                        "Level " + level + " out of range [1, " + enchantment.getMaxLevel() + "] for " + enchantment);
+            }
+        }
+    }
+
     private static final EnchantingManager INSTANCE = new EnchantingManager();
 
     /** Per-player enchantment levels; absent entries mean the enchantment is not applied. */
     private final Map<UUID, Map<SkyBlockEnchantment, Integer>> playerEnchantments = new HashMap<>();
+
+    /** Per-player enchantment book inventories. */
+    private final Map<UUID, List<EnchantmentBook>> playerBooks = new HashMap<>();
 
     private EnchantingManager() {
     }
@@ -256,6 +279,54 @@ public final class EnchantingManager {
      */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        playerBooks.remove(playerId);
         return playerEnchantments.remove(playerId) != null;
+    }
+
+    /**
+     * Adds an enchantment book to the player's book inventory.
+     *
+     * @param playerId the player to update
+     * @param book     the book to add
+     */
+    public void addBook(UUID playerId, EnchantmentBook book) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(book, "book");
+        playerBooks.computeIfAbsent(playerId, id -> new ArrayList<>()).add(book);
+    }
+
+    /**
+     * Returns an unmodifiable view of all enchantment books held by the player.
+     *
+     * @param playerId the player to look up
+     * @return list of books; empty if the player holds none
+     */
+    public List<EnchantmentBook> getBooks(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        List<EnchantmentBook> books = playerBooks.get(playerId);
+        return books == null ? Collections.emptyList() : Collections.unmodifiableList(books);
+    }
+
+    /**
+     * Removes the book at the given index from the player's book inventory and applies
+     * its enchantment to the player, provided it is within level bounds.
+     *
+     * @param playerId  the player to update
+     * @param bookIndex 0-based index into the player's book list
+     * @return the book that was applied
+     * @throws IndexOutOfBoundsException if {@code bookIndex} is out of range
+     */
+    public EnchantmentBook applyBook(UUID playerId, int bookIndex) {
+        Objects.requireNonNull(playerId, "playerId");
+        List<EnchantmentBook> books = playerBooks.get(playerId);
+        if (books == null || bookIndex < 0 || bookIndex >= books.size()) {
+            throw new IndexOutOfBoundsException("No book at index " + bookIndex);
+        }
+        EnchantmentBook book = books.remove(bookIndex);
+        if (books.isEmpty()) {
+            playerBooks.remove(playerId);
+        }
+        setEnchantment(playerId, book.enchantment(), book.level());
+        return book;
     }
 }
