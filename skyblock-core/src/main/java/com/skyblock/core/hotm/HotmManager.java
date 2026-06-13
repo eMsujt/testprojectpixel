@@ -1,5 +1,9 @@
 package com.skyblock.core.hotm;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -160,5 +164,54 @@ public final class HotmManager {
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerPerks.remove(playerId) != null;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "hotm.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerPerks.clear();
+        HotmPerk[] perks = HotmPerk.values();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                int[] levels = new int[perks.length];
+                boolean hasData = false;
+                for (HotmPerk perk : perks) {
+                    String path = key + "." + perk.name();
+                    if (cfg.contains(path)) {
+                        levels[perk.ordinal()] = cfg.getInt(path, 0);
+                        hasData = true;
+                    }
+                }
+                if (hasData) {
+                    playerPerks.put(uuid, levels);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "hotm.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, int[]> entry : playerPerks.entrySet()) {
+            String key = entry.getKey().toString();
+            int[] levels = entry.getValue();
+            for (HotmPerk perk : HotmPerk.values()) {
+                int level = levels[perk.ordinal()];
+                if (level != 0) {
+                    cfg.set(key + "." + perk.name(), level);
+                }
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save hotm.yml", e);
+        }
     }
 }
