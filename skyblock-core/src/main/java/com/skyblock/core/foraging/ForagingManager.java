@@ -1,7 +1,10 @@
 package com.skyblock.core.foraging;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +21,18 @@ import java.util.UUID;
  * <p>Not thread-safe; synchronize externally if needed.</p>
  */
 public final class ForagingManager {
+
+    /** Wood types that contribute to the Foraging skill, used for per-player tracking. */
+    public enum ForagingType {
+        OAK,
+        BIRCH,
+        SPRUCE,
+        JUNGLE,
+        ACACIA,
+        DARK_OAK,
+        MANGROVE,
+        CHERRY
+    }
 
     /** Foraging zones in The Park and other SkyBlock foraging areas. */
     public enum ForagingZone {
@@ -285,6 +300,65 @@ public final class ForagingManager {
         chops.remove(playerId);
         foragingXp.remove(playerId);
         foragingLevel.remove(playerId);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Persistence
+    // ---------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "foraging.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        foragingXp.clear();
+        foragingLevel.clear();
+        chops.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID id = UUID.fromString(key);
+                double xp = cfg.getDouble(key + ".xp", 0.0);
+                foragingXp.put(id, xp);
+                foragingLevel.put(id, computeLevel(xp));
+                if (cfg.isConfigurationSection(key + ".chops")) {
+                    EnumMap<TreeType, Integer> playerChops = new EnumMap<>(TreeType.class);
+                    for (String treeName : cfg.getConfigurationSection(key + ".chops").getKeys(false)) {
+                        try {
+                            TreeType tree = TreeType.valueOf(treeName);
+                            playerChops.put(tree, cfg.getInt(key + ".chops." + treeName, 0));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown tree types
+                        }
+                    }
+                    if (!playerChops.isEmpty()) {
+                        chops.put(id, playerChops);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed UUIDs
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "foraging.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Double> entry : foragingXp.entrySet()) {
+            String key = entry.getKey().toString();
+            cfg.set(key + ".xp", entry.getValue());
+            EnumMap<TreeType, Integer> playerChops = chops.get(entry.getKey());
+            if (playerChops != null) {
+                for (Map.Entry<TreeType, Integer> chop : playerChops.entrySet()) {
+                    cfg.set(key + ".chops." + chop.getKey().name(), chop.getValue());
+                }
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save foraging.yml", e);
+        }
     }
 
     // ---------------------------------------------------------------------------

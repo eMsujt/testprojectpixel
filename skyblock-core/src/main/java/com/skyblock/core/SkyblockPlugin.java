@@ -42,6 +42,8 @@ import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.event.EventCommand;
 import com.skyblock.core.event.EventManager;
+import com.skyblock.core.foraging.ForagingCommand;
+import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
 import com.skyblock.core.trade.TradeManager;
@@ -168,6 +170,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         EventCommand eventCommand = new EventCommand(eventManager);
         getCommand("event").setExecutor(eventCommand);
         getCommand("event").setTabCompleter(eventCommand);
+        ForagingManager foragingManager = ForagingManager.getInstance();
+        foragingManager.load(getDataFolder());
+        ForagingCommand foragingCommand = new ForagingCommand(foragingManager);
+        getCommand("foraging").setExecutor(foragingCommand);
+        getCommand("foraging").setTabCompleter(foragingCommand);
     }
 
     @Override
@@ -191,6 +198,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         CraftingManager.getInstance().save(getDataFolder());
         QuestManager.getInstance().save(getDataFolder());
         BackpackManager.getInstance().save(getDataFolder());
+        ForagingManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
