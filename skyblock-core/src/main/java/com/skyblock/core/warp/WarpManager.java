@@ -22,6 +22,30 @@ import java.util.Set;
  */
 public final class WarpManager {
 
+    /** Pre-defined SkyBlock warp destinations. */
+    public enum WarpLocation {
+        HUB("Hub"),
+        FARMING_ISLANDS("Farming Islands"),
+        THE_PARK("The Park"),
+        THE_SPIDER_DEN("The Spider's Den"),
+        THE_END("The End"),
+        DEEP_CAVERNS("Deep Caverns"),
+        DWARVEN_MINES("Dwarven Mines"),
+        CRYSTAL_HOLLOWS("Crystal Hollows");
+
+        /** Human-readable display name shown to players. */
+        public final String displayName;
+
+        WarpLocation(String displayName) {
+            this.displayName = displayName;
+        }
+
+        /** Returns the warp key used to look up this location in the registry. */
+        public String warpKey() {
+            return name().toLowerCase();
+        }
+    }
+
     private static final WarpManager INSTANCE = new WarpManager();
 
     private final Map<String, Warp> warps = new HashMap<>();
@@ -54,6 +78,17 @@ public final class WarpManager {
     public Optional<Warp> getWarp(String name) {
         Objects.requireNonNull(name, "name");
         return Optional.ofNullable(warps.get(name.toLowerCase()));
+    }
+
+    /**
+     * Returns the {@link Warp} registered for the given {@link WarpLocation}, if present.
+     *
+     * @param location the pre-defined warp location
+     * @return the {@link Warp}, or empty
+     */
+    public Optional<Warp> getWarp(WarpLocation location) {
+        Objects.requireNonNull(location, "location");
+        return getWarp(location.warpKey());
     }
 
     /**
