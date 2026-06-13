@@ -1,6 +1,7 @@
 package com.skyblock.core;
 
 import com.skyblock.core.accessory.AccessoryManager;
+import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.auction.AuctionManager;
 import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.bazaar.BazaarManager;
@@ -42,6 +43,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         HOTMManager.getInstance();
         PetsManager petsManager = PetsManager.getInstance();
         petsManager.load(getDataFolder());
+        CollectionsManager collectionsManager = CollectionsManager.getInstance();
+        collectionsManager.load(getDataFolder());
         EnchantingManager.getInstance();
         ReforgeManager.getInstance();
         AccessoryManager.getInstance();
@@ -53,6 +56,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         BankManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());
         PetsManager.getInstance().save(getDataFolder());
+        CollectionsManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }

@@ -1,5 +1,9 @@
 package com.skyblock.core.collections;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -179,5 +183,52 @@ public final class CollectionManager {
     public boolean reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerCollections.remove(playerId) != null;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "collections.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerCollections.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (!cfg.isConfigurationSection(key)) {
+                    continue;
+                }
+                Map<Collection, Long> totals = new EnumMap<>(Collection.class);
+                for (String colName : cfg.getConfigurationSection(key).getKeys(false)) {
+                    try {
+                        Collection col = Collection.valueOf(colName);
+                        totals.put(col, cfg.getLong(key + "." + colName, 0L));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip unknown collection types
+                    }
+                }
+                if (!totals.isEmpty()) {
+                    playerCollections.put(uuid, totals);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "collections.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<Collection, Long>> entry : playerCollections.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<Collection, Long> col : entry.getValue().entrySet()) {
+                cfg.set(key + "." + col.getKey().name(), col.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save collections.yml", e);
+        }
     }
 }

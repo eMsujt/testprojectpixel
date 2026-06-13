@@ -1,5 +1,6 @@
 package com.skyblock.core.collections;
 
+import java.io.File;
 import java.util.UUID;
 
 /**
@@ -65,5 +66,13 @@ public final class CollectionsManager {
 
     public boolean reset(UUID playerId) {
         return delegate.reset(playerId);
+    }
+
+    public void load(File dataFolder) {
+        delegate.load(dataFolder);
+    }
+
+    public void save(File dataFolder) {
+        delegate.save(dataFolder);
     }
 }
