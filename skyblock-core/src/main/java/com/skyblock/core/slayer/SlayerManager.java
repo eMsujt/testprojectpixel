@@ -1,5 +1,9 @@
 package com.skyblock.core.slayer;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,6 +117,8 @@ public final class SlayerManager {
 
     private final Map<UUID, Map<SlayerType, Long>> slayerExperience = new HashMap<>();
     private final Map<UUID, SlayerQuest> activeQuests = new HashMap<>();
+    private final Map<UUID, Map<SlayerType, Integer>> killCounts = new HashMap<>();
+    private final Map<UUID, Boolean> bossActive = new HashMap<>();
 
     private SlayerManager() {}
 
@@ -181,10 +187,92 @@ public final class SlayerManager {
         return level;
     }
 
+    public int addKill(UUID playerId, SlayerType type) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        Map<SlayerType, Integer> counts = killCounts.computeIfAbsent(
+                playerId, id -> new EnumMap<>(SlayerType.class));
+        int total = counts.getOrDefault(type, 0) + 1;
+        counts.put(type, total);
+        return total;
+    }
+
+    public int getKillCount(UUID playerId, SlayerType type) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        Map<SlayerType, Integer> counts = killCounts.get(playerId);
+        return counts == null ? 0 : counts.getOrDefault(type, 0);
+    }
+
+    public void setBossActive(UUID playerId, boolean active) {
+        Objects.requireNonNull(playerId, "playerId");
+        bossActive.put(playerId, active);
+    }
+
+    public boolean isBossActive(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return Boolean.TRUE.equals(bossActive.get(playerId));
+    }
+
     public boolean reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         boolean hadData = slayerExperience.remove(playerId) != null;
         hadData |= activeQuests.remove(playerId) != null;
+        hadData |= killCounts.remove(playerId) != null;
+        bossActive.remove(playerId);
         return hadData;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "slayer.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        killCounts.clear();
+        bossActive.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".kills")) {
+                    Map<SlayerType, Integer> counts = new EnumMap<>(SlayerType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".kills").getKeys(false)) {
+                        try {
+                            SlayerType type = SlayerType.valueOf(typeName);
+                            counts.put(type, cfg.getInt(key + ".kills." + typeName, 0));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown slayer types
+                        }
+                    }
+                    if (!counts.isEmpty()) {
+                        killCounts.put(uuid, counts);
+                    }
+                }
+                if (cfg.contains(key + ".bossActive")) {
+                    bossActive.put(uuid, cfg.getBoolean(key + ".bossActive", false));
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "slayer.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<SlayerType, Integer>> entry : killCounts.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<SlayerType, Integer> kc : entry.getValue().entrySet()) {
+                cfg.set(key + ".kills." + kc.getKey().name(), kc.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Boolean> entry : bossActive.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".bossActive", entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save slayer.yml", e);
+        }
     }
 }
