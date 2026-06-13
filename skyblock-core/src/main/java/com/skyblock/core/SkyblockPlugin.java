@@ -1,6 +1,7 @@
 package com.skyblock.core;
 
 import com.skyblock.core.accessory.AccessoryManager;
+import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.auction.AuctionManager;
 import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.bazaar.BazaarManager;
@@ -33,6 +34,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         bankManager.load(getDataFolder());
         MayorManager.getInstance();
         AuctionManager.getInstance();
+        AuctionHouseManager auctionHouseManager = AuctionHouseManager.getInstance();
+        auctionHouseManager.load(getDataFolder());
         BazaarManager.getInstance();
         DungeonManager dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
@@ -57,6 +60,7 @@ public final class SkyblockPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        AuctionHouseManager.getInstance().save(getDataFolder());
         BankManager.getInstance().save(getDataFolder());
         DungeonManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());

@@ -1,7 +1,10 @@
 package com.skyblock.core.auction;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,6 +62,22 @@ public final class AuctionHouseManager {
 
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
 
+    /**
+     * Lightweight persistent auction item.
+     *
+     * @param itemName  display name of the item
+     * @param seller    UUID of the selling player
+     * @param price     buy-it-now price in coins
+     * @param endEpoch  unix epoch milliseconds when the listing expires
+     */
+    public record AuctionItem(String itemName, UUID seller, long price, long endEpoch) {
+        public AuctionItem {
+            Objects.requireNonNull(itemName, "itemName");
+            Objects.requireNonNull(seller, "seller");
+            if (price < 0) throw new IllegalArgumentException("price must not be negative: " + price);
+        }
+    }
+
     /** A single active auction house listing. */
     public record AuctionListing(UUID id, UUID seller, ItemStack item, String itemName,
                                  AuctionCategory category, double startingBid, AuctionType type) {
@@ -88,6 +107,7 @@ public final class AuctionHouseManager {
     }
 
     private final Map<UUID, ListingState> listings = new HashMap<>();
+    private final Map<UUID, AuctionItem> items = new HashMap<>();
 
     private AuctionHouseManager() {}
 
@@ -262,9 +282,104 @@ public final class AuctionHouseManager {
         return Collections.unmodifiableSet(listings.keySet());
     }
 
+    // -------------------------------------------------------------------------
+    // AuctionItem storage
+    // -------------------------------------------------------------------------
+
+    /**
+     * Lists a new {@link AuctionItem} in the auction house.
+     *
+     * @param seller    the selling player's UUID
+     * @param itemName  display name of the item
+     * @param price     buy-it-now price in coins (must be ≥ 0)
+     * @param endEpoch  unix epoch milliseconds when the listing expires
+     * @return the UUID assigned to the new listing
+     */
+    public UUID addItem(UUID seller, String itemName, long price, long endEpoch) {
+        UUID id = UUID.randomUUID();
+        items.put(id, new AuctionItem(itemName, seller, price, endEpoch));
+        return id;
+    }
+
+    /**
+     * Returns the {@link AuctionItem} for the given id, or {@code null} if not found.
+     *
+     * @param id the listing UUID
+     * @return the item, or {@code null}
+     */
+    public AuctionItem getItem(UUID id) {
+        return items.get(id);
+    }
+
+    /**
+     * Cancels a listing. Only the original seller may cancel.
+     *
+     * @param id     the listing UUID
+     * @param seller the cancelling player's UUID
+     * @throws IllegalArgumentException if the listing does not exist or the caller is not the seller
+     */
+    public void cancelItem(UUID id, UUID seller) {
+        AuctionItem item = items.get(id);
+        if (item == null) throw new IllegalArgumentException("no listing with id: " + id);
+        if (!item.seller().equals(seller)) throw new IllegalArgumentException("only the seller can cancel their listing");
+        items.remove(id);
+    }
+
+    /**
+     * Returns an unmodifiable snapshot of all stored {@link AuctionItem} listings.
+     *
+     * @return list of all items; never null
+     */
+    public List<AuctionItem> getActiveItems() {
+        return Collections.unmodifiableList(new ArrayList<>(items.values()));
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        items.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID id = UUID.fromString(key);
+                String itemName = cfg.getString(key + ".itemName");
+                if (itemName == null) continue;
+                UUID seller = UUID.fromString(cfg.getString(key + ".seller", ""));
+                long price = cfg.getLong(key + ".price", 0L);
+                long endEpoch = cfg.getLong(key + ".endEpoch", 0L);
+                items.put(id, new AuctionItem(itemName, seller, price, endEpoch));
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, AuctionItem> entry : items.entrySet()) {
+            String key = entry.getKey().toString();
+            AuctionItem item = entry.getValue();
+            cfg.set(key + ".itemName", item.itemName());
+            cfg.set(key + ".seller", item.seller().toString());
+            cfg.set(key + ".price", item.price());
+            cfg.set(key + ".endEpoch", item.endEpoch());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save auctionhouse.yml", e);
+        }
+    }
+
     /** Removes all stored listings. */
     public void clear() {
         listings.clear();
+        items.clear();
     }
 
     private ListingState requireListing(UUID listingId) {
