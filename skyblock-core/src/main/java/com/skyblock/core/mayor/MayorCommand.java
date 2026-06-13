@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public final class MayorCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("vote", "set");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("current", "perks", "vote", "set");
     private static final List<String> MAYOR_NAMES = Arrays.stream(MayorManager.MayorCandidate.values())
             .map(m -> m.name().toLowerCase())
             .collect(Collectors.toList());
@@ -47,9 +47,11 @@ public final class MayorCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "vote" -> handleVote(player, args);
-            case "set"  -> handleSet(player, args);
-            default     -> player.sendMessage("Unknown subcommand. Usage: /mayor <vote|set>");
+            case "current" -> handleCurrent(player);
+            case "perks"   -> handlePerks(player);
+            case "vote"    -> handleVote(player, args);
+            case "set"     -> handleSet(player, args);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /mayor <current|perks|vote|set>");
         }
         return true;
     }
@@ -73,6 +75,24 @@ public final class MayorCommand implements TabExecutor {
     // -------------------------------------------------------------------------
     // Subcommand handlers
     // -------------------------------------------------------------------------
+
+    private void handleCurrent(Player player) {
+        MayorManager.MayorCandidate current = mayorManager.getCurrentMayor();
+        player.sendMessage("=== Current Mayor ===");
+        player.sendMessage("Active mayor: " + (current != null ? current.getDisplayName() : "None"));
+    }
+
+    private void handlePerks(Player player) {
+        MayorManager.MayorCandidate current = mayorManager.getCurrentMayor();
+        if (current == null) {
+            player.sendMessage("There is no active mayor.");
+            return;
+        }
+        player.sendMessage("=== " + current.getDisplayName() + "'s Perks ===");
+        for (String perk : current.getPerks()) {
+            player.sendMessage("- " + perk);
+        }
+    }
 
     private void handleInfo(Player player) {
         MayorManager.MayorCandidate current = mayorManager.getCurrentMayor();

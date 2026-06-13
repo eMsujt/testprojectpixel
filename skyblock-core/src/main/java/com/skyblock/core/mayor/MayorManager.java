@@ -4,7 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -18,27 +21,34 @@ public final class MayorManager {
 
     /** Skyblock mayors that players can vote for. */
     public enum MayorCandidate {
-        PAUL("Paul"),
-        DIANA("Diana"),
-        JERRY("Jerry"),
-        SCORPIUS("Scorpius"),
-        COLE("Cole"),
-        FINNEGAN("Finnegan"),
-        BARRY("Barry"),
-        MARINA("Marina"),
-        FOXY("Foxy"),
-        AATROX("Aatrox"),
-        DIAZ("Diaz");
+        PAUL("Paul", "Marauder", "Goblin Raid", "Supply Drop", "Show Off"),
+        DIANA("Diana", "Great Spook", "Mythological Ritual", "Lucky!"),
+        JERRY("Jerry", "Jerrypocalypse", "Jerry's Gifts", "Gift Hunt"),
+        SCORPIUS("Scorpius", "Bribe", "Scorched", "Plague"),
+        COLE("Cole", "Prospection", "Mining Fiesta", "Molten Forge"),
+        FINNEGAN("Finnegan", "Cultivation", "Shining Armor", "Stead Fast", "Blooming Business"),
+        BARRY("Barry", "Bail Out", "Catch of the Day", "Crime Wave"),
+        MARINA("Marina", "Fishing Festival", "Luck of the Sea", "Quiver", "Water Breathing"),
+        FOXY("Foxy", "What the Dog Doin?", "Extra Pets", "Good Doggy"),
+        AATROX("Aatrox", "Slayer XP Buff", "Slayer Quest Limit", "Slayer's Will", "Blood Thirst"),
+        DIAZ("Diaz", "Free Samples", "Barrier Street", "Inflation");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
+        /** List of perk names this mayor provides. */
+        public final List<String> perks;
 
-        MayorCandidate(String displayName) {
+        MayorCandidate(String displayName, String... perks) {
             this.displayName = displayName;
+            this.perks = Collections.unmodifiableList(Arrays.asList(perks));
         }
 
         public String getDisplayName() {
             return displayName;
+        }
+
+        public List<String> getPerks() {
+            return perks;
         }
     }
 
