@@ -14,13 +14,16 @@ import java.util.List;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /bank balance}           — show your current balance</li>
- *   <li>{@code /bank deposit <amount>}  — deposit coins</li>
- *   <li>{@code /bank withdraw <amount>} — withdraw coins</li>
- *   <li>{@code /bank tier [tier]}       — view or set your bank tier</li>
- *   <li>{@code /bank type [type]}       — view or set your bank type</li>
- *   <li>{@code /bank history}           — view recent transactions</li>
- *   <li>{@code /bank interest}          — apply interest to your balance</li>
+ *   <li>{@code /bank balance}                           — show your current balance</li>
+ *   <li>{@code /bank deposit <amount>}                  — deposit coins</li>
+ *   <li>{@code /bank withdraw <amount>}                 — withdraw coins</li>
+ *   <li>{@code /bank tier [tier]}                       — view or set your bank tier</li>
+ *   <li>{@code /bank type [type]}                       — view or set your bank type</li>
+ *   <li>{@code /bank history}                           — view recent transactions</li>
+ *   <li>{@code /bank interest}                          — apply interest to your balance</li>
+ *   <li>{@code /bank coop balance <coopName>}           — show co-op bank balance</li>
+ *   <li>{@code /bank coop deposit <coopName> <amount>}  — deposit into co-op bank</li>
+ *   <li>{@code /bank coop withdraw <coopName> <amount>} — withdraw from co-op bank</li>
  * </ul>
  * </p>
  */
@@ -45,14 +48,15 @@ public final class BankCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "balance" -> handleBalance(player);
+            case "balance"  -> handleBalance(player);
             case "deposit"  -> handleDeposit(player, args);
             case "withdraw" -> handleWithdraw(player, args);
             case "tier"     -> handleTier(player, args);
             case "type"     -> handleType(player, args);
             case "history"  -> handleHistory(player);
             case "interest" -> handleInterest(player);
-            default -> sendHelp(player);
+            case "coop"     -> handleCoop(player, args);
+            default         -> sendHelp(player);
         }
         return true;
     }
@@ -61,7 +65,13 @@ public final class BankCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("balance", "deposit", "withdraw", "tier", "type", "history", "interest").stream()
+            return Arrays.asList("balance", "deposit", "withdraw", "tier", "type", "history", "interest", "coop").stream()
+                    .filter(s -> s.startsWith(lower))
+                    .toList();
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("coop")) {
+            String lower = args[1].toLowerCase();
+            return Arrays.asList("balance", "deposit", "withdraw").stream()
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -181,6 +191,66 @@ public final class BankCommand implements TabExecutor {
         }
     }
 
+    private void handleCoop(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage("Usage: /bank coop <balance|deposit|withdraw> <coopName> [amount]");
+            return;
+        }
+        String sub = args[1].toLowerCase();
+        String coopName = args[2];
+        switch (sub) {
+            case "balance" -> {
+                double balance = bankManager.getCoopBalance(coopName);
+                player.sendMessage("Co-op bank balance (" + coopName + "): " + balance + " coins");
+            }
+            case "deposit" -> {
+                if (args.length < 4) {
+                    player.sendMessage("Usage: /bank coop deposit <coopName> <amount>");
+                    return;
+                }
+                double amount = parseAmount(player, args[3]);
+                if (amount <= 0) return;
+                try {
+                    bankManager.depositCoop(coopName, amount);
+                    player.sendMessage("Deposited " + amount + " coins into co-op bank (" + coopName
+                            + "). New balance: " + bankManager.getCoopBalance(coopName));
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage(e.getMessage());
+                }
+            }
+            case "withdraw" -> {
+                if (args.length < 4) {
+                    player.sendMessage("Usage: /bank coop withdraw <coopName> <amount>");
+                    return;
+                }
+                double amount = parseAmount(player, args[3]);
+                if (amount <= 0) return;
+                try {
+                    bankManager.withdrawCoop(coopName, amount);
+                    player.sendMessage("Withdrew " + amount + " coins from co-op bank (" + coopName
+                            + "). New balance: " + bankManager.getCoopBalance(coopName));
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage(e.getMessage());
+                }
+            }
+            default -> player.sendMessage("Usage: /bank coop <balance|deposit|withdraw> <coopName> [amount]");
+        }
+    }
+
+    private double parseAmount(Player player, String input) {
+        try {
+            double amount = Double.parseDouble(input);
+            if (amount <= 0) {
+                player.sendMessage("Amount must be a positive number.");
+                return 0;
+            }
+            return amount;
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid amount: " + input);
+            return 0;
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bank Commands ===");
         player.sendMessage("/bank balance — view your balance");
@@ -190,5 +260,6 @@ public final class BankCommand implements TabExecutor {
         player.sendMessage("/bank type [type] — view or set your bank type");
         player.sendMessage("/bank history — view recent transactions");
         player.sendMessage("/bank interest — apply interest to your balance");
+        player.sendMessage("/bank coop <balance|deposit|withdraw> <coopName> [amount] — manage co-op bank");
     }
 }

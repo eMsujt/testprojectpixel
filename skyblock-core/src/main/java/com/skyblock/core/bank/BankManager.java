@@ -101,6 +101,8 @@ public final class BankManager {
     private final Map<UUID, BankTier> tiers = new HashMap<>();
     private final Map<UUID, BankType> bankTypes = new HashMap<>();
     private final Map<UUID, List<BankTransaction>> transactions = new HashMap<>();
+    /** Shared co-op balances keyed by co-op name; absent entries default to zero. */
+    private final Map<String, Double> coopBalances = new HashMap<>();
 
     private BankManager() {}
 
@@ -287,16 +289,73 @@ public final class BankManager {
         return interest;
     }
 
+    /**
+     * Returns the shared co-op bank balance for the given co-op.
+     *
+     * @param coopName the co-op identifier, must not be null
+     * @return the current balance; 0 if no co-op account exists
+     */
+    public double getCoopBalance(String coopName) {
+        Objects.requireNonNull(coopName, "coopName");
+        return coopBalances.getOrDefault(coopName, 0.0);
+    }
+
+    /**
+     * Deposits coins into the co-op's shared bank account.
+     *
+     * @param coopName the co-op identifier, must not be null
+     * @param amount   the amount to deposit, must be positive
+     * @throws IllegalArgumentException if {@code amount} is not positive
+     */
+    public void depositCoop(String coopName, double amount) {
+        Objects.requireNonNull(coopName, "coopName");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive");
+        }
+        coopBalances.merge(coopName, amount, Double::sum);
+    }
+
+    /**
+     * Withdraws coins from the co-op's shared bank account.
+     *
+     * @param coopName the co-op identifier, must not be null
+     * @param amount   the amount to withdraw, must be positive
+     * @throws IllegalArgumentException if {@code amount} is not positive or exceeds the co-op balance
+     */
+    public void withdrawCoop(String coopName, double amount) {
+        Objects.requireNonNull(coopName, "coopName");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive");
+        }
+        double current = coopBalances.getOrDefault(coopName, 0.0);
+        if (amount > current) {
+            throw new IllegalArgumentException("insufficient co-op balance: has " + current + ", requested " + amount);
+        }
+        coopBalances.put(coopName, current - amount);
+    }
+
+    /**
+     * Removes all stored co-op balance data for the given co-op (e.g. on disband).
+     *
+     * @param coopName the co-op to remove
+     * @return {@code true} if the co-op had data, {@code false} otherwise
+     */
+    public boolean removeCoop(String coopName) {
+        Objects.requireNonNull(coopName, "coopName");
+        return coopBalances.remove(coopName) != null;
+    }
+
     private void record(UUID playerId, BankTransactionType type, double amount) {
         transactions.computeIfAbsent(playerId, k -> new ArrayList<>())
                 .add(new BankTransaction(UUID.randomUUID(), playerId, type, amount, System.currentTimeMillis()));
     }
 
-    /** Removes all stored accounts, tiers, bank types, and transaction history. */
+    /** Removes all stored accounts, tiers, bank types, transaction history, and co-op balances. */
     public void clear() {
         accounts.clear();
         tiers.clear();
         bankTypes.clear();
         transactions.clear();
+        coopBalances.clear();
     }
 }
