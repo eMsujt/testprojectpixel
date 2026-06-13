@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 public final class ProfileManager {
 
-    public enum GameMode {
+    public enum SkyBlockGameMode {
         NORMAL("Normal"),
         IRONMAN("Ironman"),
         STRANDED("Stranded");
@@ -38,7 +38,7 @@ public final class ProfileManager {
      * @param name      display name for the profile (e.g. "Mango", "Strawberry")
      * @param gameMode  game mode for this profile
      */
-    public record SkyBlockProfile(UUID profileId, UUID ownerId, String name, GameMode gameMode) {
+    public record SkyBlockProfile(UUID profileId, UUID ownerId, String name, SkyBlockGameMode gameMode) {
         public SkyBlockProfile {
             Objects.requireNonNull(profileId, "profileId");
             Objects.requireNonNull(ownerId, "ownerId");
@@ -81,7 +81,7 @@ public final class ProfileManager {
      * @return the newly created {@link SkyBlockProfile}, or {@code null} if the player
      *         already holds {@value #MAX_PROFILES} profiles
      */
-    public SkyBlockProfile createProfile(UUID ownerId, String name, GameMode gameMode) {
+    public SkyBlockProfile createProfile(UUID ownerId, String name, SkyBlockGameMode gameMode) {
         Objects.requireNonNull(ownerId, "ownerId");
         Objects.requireNonNull(name, "name");
         Objects.requireNonNull(gameMode, "gameMode");
