@@ -16,9 +16,9 @@ public final class EventManager {
     public enum SkyBlockEvent {
         SPOOKY_FESTIVAL("Spooky Festival"),
         TRAVELING_ZOO("Traveling Zoo"),
-        NEW_YEAR("New Year Celebration"),
-        WINTER("Winter Festival"),
-        MAYOR_ELECTION("Mayor Election");
+        NEW_YEAR_CELEBRATION("New Year Celebration"),
+        JERRY_WORKSHOP("Jerry's Workshop"),
+        DARK_AUCTION("Dark Auction");
 
         private final String displayName;
 
