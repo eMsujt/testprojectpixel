@@ -111,7 +111,7 @@ public final class EnchantingManager {
     public int getLevel(UUID playerId, SkyBlockEnchantment type) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
-        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        Map<SkyBlockEnchantment, Integer> enchants = playerEnchantments.get(playerId);
         return enchants == null ? 0 : enchants.getOrDefault(type, 0);
     }
 
@@ -140,7 +140,7 @@ public final class EnchantingManager {
     public boolean removeEnchantment(UUID playerId, SkyBlockEnchantment type) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
-        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        Map<SkyBlockEnchantment, Integer> enchants = playerEnchantments.get(playerId);
         if (enchants == null) {
             return false;
         }
@@ -156,7 +156,7 @@ public final class EnchantingManager {
      */
     public Map<SkyBlockEnchantment, Integer> getEnchantments(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        Map<SkyBlockEnchantment, Integer> enchants = playerEnchantments.get(playerId);
         return enchants == null ? Collections.emptyMap() : Collections.unmodifiableMap(enchants);
     }
 
