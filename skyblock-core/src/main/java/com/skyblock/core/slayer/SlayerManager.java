@@ -15,11 +15,11 @@ public final class SlayerManager {
     };
 
     public enum SlayerType {
-        ZOMBIE_SLAYER("Zombie"),
-        SPIDER_SLAYER("Spider"),
-        WOLF_SLAYER("Wolf"),
-        ENDERMAN_SLAYER("Enderman"),
-        BLAZE_SLAYER("Blaze");
+        ZOMBIE("Zombie"),
+        SPIDER("Spider"),
+        WOLF("Wolf"),
+        ENDERMAN("Enderman"),
+        BLAZE("Blaze");
 
         private final String displayName;
 
@@ -34,11 +34,11 @@ public final class SlayerManager {
 
     /** Named slayer bosses, each linked to the {@link SlayerType} that spawns them. */
     public enum SlayerBoss {
-        ZOMBIE(SlayerType.ZOMBIE_SLAYER,     "Revenant Horror",       200_000),
-        SPIDER(SlayerType.SPIDER_SLAYER,     "Tarantula Broodfather", 300_000),
-        WOLF(SlayerType.WOLF_SLAYER,         "Sven Packmaster",       400_000),
-        ENDERMAN(SlayerType.ENDERMAN_SLAYER, "Voidgloom Seraph",      500_000),
-        BLAZE(SlayerType.BLAZE_SLAYER,       "Inferno Demonlord",     600_000);
+        ZOMBIE(SlayerType.ZOMBIE,     "Revenant Horror",       200_000),
+        SPIDER(SlayerType.SPIDER,     "Tarantula Broodfather", 300_000),
+        WOLF(SlayerType.WOLF,         "Sven Packmaster",       400_000),
+        ENDERMAN(SlayerType.ENDERMAN, "Voidgloom Seraph",      500_000),
+        BLAZE(SlayerType.BLAZE,       "Inferno Demonlord",     600_000);
 
         public final SlayerType type;
         public final String displayName;
