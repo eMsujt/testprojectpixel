@@ -42,22 +42,23 @@ public final class HotmCommand implements TabExecutor {
 
     /** Perk tree layout: each entry is {slot, perk}. 54-slot (6-row) chest GUI. */
     private static final int[][] PERK_SLOTS = {
-            {10, 0},  // MINING_SPEED_BOOST
-            {12, 4},  // EFFICIENT_MINER
-            {14, 5},  // QUICK_FORGE
-            {16, 6},  // TITANIUM_INSANITY
-            {19, 3},  // DAILY_POWDER
-            {21, 9},  // MINING_MADNESS
-            {23, 10}, // SKY_MALL
-            {25, 11}, // GOBLIN_KILLER
-            {28, 12}, // STAR_POWDER
-            {30, 13}, // MOLE
-            {32, 14}, // PROFESSIONAL
-            {34, 15}, // LONESOME_MINER
-            {37, 16}, // GREAT_EXPLORER
-            {39, 17}, // FORTUNATE
-            {41, 1},  // PICKOBULUS
-            {43, 18}, // MINING_EXPERIENCE_BOOST
+            {10, 0},  // MINING_SPEED
+            {11, 1},  // MINING_SPEED_BOOST
+            {12, 5},  // EFFICIENT_MINER
+            {14, 6},  // QUICK_FORGE
+            {16, 7},  // TITANIUM_INSANITY
+            {19, 4},  // DAILY_POWDER
+            {21, 10}, // MINING_MADNESS
+            {23, 11}, // SKY_MALL
+            {25, 12}, // GOBLIN_KILLER
+            {28, 13}, // STAR_POWDER
+            {30, 14}, // MOLE
+            {32, 15}, // PROFESSIONAL
+            {34, 16}, // LONESOME_MINER
+            {37, 17}, // GREAT_EXPLORER
+            {39, 18}, // FORTUNATE
+            {41, 2},  // PICKOBULUS
+            {43, 19}, // MINING_EXPERIENCE_BOOST
     };
 
     private final HotmManager hotmManager;
