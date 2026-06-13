@@ -25,10 +25,7 @@ public final class FishingManager {
 
     static {
         Map<String, Integer> map = new HashMap<>();
-        map.put("RAW_COD",        10);
-        map.put("RAW_SALMON",     10);
         map.put("PUFFERFISH",     15);
-        map.put("TROPICAL_FISH",  15);
         map.put("INK_SAC",         5);
         map.put("LILY_PAD",        5);
         map.put("BONE",            5);
