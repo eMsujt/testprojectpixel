@@ -16,6 +16,8 @@ public final class PartyManager {
 
     private static final PartyManager INSTANCE = new PartyManager();
 
+    public static final int MAX_SIZE = 5;
+
     /** Maps every party member (including leader) to their Party object. */
     private final Map<UUID, Party> partyByMember = new HashMap<>();
 
@@ -77,6 +79,9 @@ public final class PartyManager {
         }
         if (partyByMember.containsKey(player)) {
             throw new IllegalStateException("Player is already in a party.");
+        }
+        if (party.getAllMembers().size() >= MAX_SIZE) {
+            throw new IllegalStateException("Party is full (max " + MAX_SIZE + " players).");
         }
         party.addMember(player);
         partyByMember.put(player, party);
