@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public final class ReforgeCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "info", "apply", "clear", "stone");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "info", "apply", "clear", "stone", "itemtype");
     private static final List<String> STONE_SUBCOMMANDS = Arrays.asList("list", "info");
 
     private final ReforgeManager reforgeManager;
@@ -55,8 +55,9 @@ public final class ReforgeCommand implements TabExecutor {
             case "info"  -> handleInfo(player, args);
             case "apply" -> handleApply(player, args);
             case "clear" -> handleClear(player);
-            case "stone" -> handleStone(player, args);
-            default      -> sendHelp(player);
+            case "stone"    -> handleStone(player, args);
+            case "itemtype" -> handleItemType(player);
+            default         -> sendHelp(player);
         }
         return true;
     }
@@ -173,6 +174,13 @@ public final class ReforgeCommand implements TabExecutor {
         player.sendMessage("Usage: /reforge stone [list|info <stone>]");
     }
 
+    private void handleItemType(Player player) {
+        player.sendMessage("=== Reforgeable Item Types ===");
+        for (ReforgeManager.ReforgeItemType type : ReforgeManager.ReforgeItemType.values()) {
+            player.sendMessage("  " + type.getDisplayName());
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Reforge Commands ===");
         player.sendMessage("/reforge                       — show current reforge and bonuses");
@@ -182,6 +190,7 @@ public final class ReforgeCommand implements TabExecutor {
         player.sendMessage("/reforge clear                 — remove the current reforge");
         player.sendMessage("/reforge stone [list]          — list all reforge stones");
         player.sendMessage("/reforge stone info <stone>    — show which reforge a stone applies");
+        player.sendMessage("/reforge itemtype              — list reforgeable item categories");
     }
 
     private static void printBonuses(Player player, ReforgeManager.ReforgeType reforge) {

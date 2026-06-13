@@ -67,6 +67,35 @@ public final class ReforgeManager {
         }
     }
 
+    /** Item categories that can be reforged at the Blacksmith. */
+    public enum ReforgeItemType {
+        SWORD("Sword"),
+        BOW("Bow"),
+        ARMOR("Armor"),
+        AXE("Axe"),
+        PICKAXE("Pickaxe"),
+        ROD("Fishing Rod"),
+        WAND("Wand");
+
+        /** Human-readable display name shown to players. */
+        public final String displayName;
+
+        ReforgeItemType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
+
+        public static ReforgeItemType fromName(String name) {
+            for (ReforgeItemType t : values()) {
+                if (t.displayName.equalsIgnoreCase(name) || t.name().equalsIgnoreCase(name)) {
+                    return t;
+                }
+            }
+            return null;
+        }
+    }
+
     /** A reforge stone item that applies a specific reforge when used. */
     public enum ReforgeStone {
         ROUGH_RUBY("Rough Ruby", "Odd"),
