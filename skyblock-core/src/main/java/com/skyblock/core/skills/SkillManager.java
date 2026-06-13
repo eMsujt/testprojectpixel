@@ -27,7 +27,8 @@ public final class SkillManager {
         ALCHEMY("Alchemy"),
         TAMING("Taming"),
         CARPENTRY("Carpentry"),
-        RUNECRAFTING("Runecrafting");
+        RUNECRAFTING("Runecrafting"),
+        SOCIAL("Social");
 
         /** Human-readable display name. */
         public final String displayName;

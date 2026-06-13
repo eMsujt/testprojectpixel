@@ -12,7 +12,7 @@ import java.util.UUID;
 public final class SkillsManager {
 
     /** Canonical skill list used by this facade. */
-    public enum SkyBlockSkill {
+    public enum SkillType {
         FARMING("Farming"),
         MINING("Mining"),
         COMBAT("Combat"),
@@ -22,11 +22,12 @@ public final class SkillsManager {
         ALCHEMY("Alchemy"),
         TAMING("Taming"),
         CARPENTRY("Carpentry"),
-        RUNECRAFTING("Runecrafting");
+        RUNECRAFTING("Runecrafting"),
+        SOCIAL("Social");
 
         private final String displayName;
 
-        SkyBlockSkill(String displayName) {
+        SkillType(String displayName) {
             this.displayName = displayName;
         }
 
@@ -51,15 +52,15 @@ public final class SkillsManager {
         return INSTANCE;
     }
 
-    public double addXp(UUID playerId, SkyBlockSkill skill, double amount) {
+    public double addXp(UUID playerId, SkillType skill, double amount) {
         return delegate.addXp(playerId, skill.toSkillType(), amount);
     }
 
-    public double getXp(UUID playerId, SkyBlockSkill skill) {
+    public double getXp(UUID playerId, SkillType skill) {
         return delegate.getXp(playerId, skill.toSkillType());
     }
 
-    public int getLevel(UUID playerId, SkyBlockSkill skill) {
+    public int getLevel(UUID playerId, SkillType skill) {
         return delegate.getLevel(playerId, skill.toSkillType());
     }
 }
