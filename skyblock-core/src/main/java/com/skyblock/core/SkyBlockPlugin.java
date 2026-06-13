@@ -122,6 +122,8 @@ import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.accessory.AccessoryBagCommand;
 import com.skyblock.core.accessory.AccessoryBagManager;
+import com.skyblock.core.accessory.AccessoryCommand;
+import com.skyblock.core.accessory.AccessoryManager;
 import com.skyblock.core.essence.EssenceCommand;
 import com.skyblock.core.essence.EssenceManager;
 import com.skyblock.core.crimson.CrimsonIsleCommand;
@@ -373,6 +375,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         AccessoryBagCommand accessoryBagCommand = new AccessoryBagCommand(accessoryBagManager);
         getCommand("accessorybag").setExecutor(accessoryBagCommand);
         getCommand("accessorybag").setTabCompleter(accessoryBagCommand);
+
+        AccessoryManager accessoryManager = AccessoryManager.getInstance();
+        AccessoryCommand accessoryCommand = new AccessoryCommand(accessoryManager);
+        getCommand("accessory").setExecutor(accessoryCommand);
+        getCommand("accessory").setTabCompleter(accessoryCommand);
 
         SlayerManager slayerManager = SlayerManager.getInstance();
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
