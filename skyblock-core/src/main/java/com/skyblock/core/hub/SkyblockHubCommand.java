@@ -50,10 +50,11 @@ import java.util.stream.Collectors;
 public final class SkyblockHubCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
-            "hub", "bank", "auction", "bazaar", "island", "skills", "pets",
+            "hub", "bank", "mayor", "auction", "bazaar", "island", "skills", "pets",
             "profile", "quest", "minion", "fishing", "mining", "slayer",
             "hotm", "garden", "collection", "backpack", "reforge", "achievement",
-            "dungeon", "stats", "enchanting", "help"
+            "dungeon", "stats", "enchanting", "kuudra", "crafting", "trade",
+            "event", "foraging", "help"
     );
 
     private final SkyBlockMenuManager menuManager;
@@ -133,6 +134,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             {"Skills",     "skills"},
             {"Collection", "collection"},
             {"Bank",       "bank"},
+            {"Mayor",      "mayor"},
             {"Auction",    "auction"},
             {"Bazaar",     "bazaar"},
             {"Island",     "island"},
@@ -148,6 +150,11 @@ public final class SkyblockHubCommand implements TabExecutor {
             {"Dungeon",    "dungeon"},
             {"Stats",      "stats"},
             {"Enchanting", "enchanting"},
+            {"Kuudra",     "kuudra"},
+            {"Crafting",   "crafting"},
+            {"Trade",      "trade"},
+            {"Event",      "event"},
+            {"Foraging",   "foraging"},
         };
         for (String[] entry : managers) {
             String name = entry[0];
