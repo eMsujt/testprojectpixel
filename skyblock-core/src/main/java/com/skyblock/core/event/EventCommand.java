@@ -1,6 +1,7 @@
 package com.skyblock.core.event;
 
 import com.skyblock.core.event.EventManager.EventStatus;
+import com.skyblock.core.event.EventManager.EventType;
 import com.skyblock.core.event.EventManager.SkyBlockEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -48,6 +49,9 @@ public final class EventCommand implements TabExecutor {
             case "join"   -> handleJoin(player, args);
             case "status" -> handleStatus(player, args);
             case "reset"  -> handleReset(player);
+            case "start"  -> handleStart(player, args);
+            case "stop"   -> handleStop(player);
+            case "active" -> handleActive(player);
             default       -> sendHelp(player);
         }
         return true;
@@ -57,7 +61,7 @@ public final class EventCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("list", "join", "status", "reset").stream()
+            return Arrays.asList("list", "join", "status", "reset", "start", "stop", "active").stream()
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -66,6 +70,13 @@ public final class EventCommand implements TabExecutor {
             if (sub.equals("join") || sub.equals("status")) {
                 String lower = args[1].toLowerCase();
                 return Arrays.stream(SkyBlockEvent.values())
+                        .map(e -> e.name().toLowerCase())
+                        .filter(s -> s.startsWith(lower))
+                        .toList();
+            }
+            if (sub.equals("start")) {
+                String lower = args[1].toLowerCase();
+                return Arrays.stream(EventType.values())
                         .map(e -> e.name().toLowerCase())
                         .filter(s -> s.startsWith(lower))
                         .toList();
@@ -146,11 +157,47 @@ public final class EventCommand implements TabExecutor {
         player.sendMessage("All event data has been reset.");
     }
 
+    private void handleStart(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /event start <type>");
+            return;
+        }
+        EventType type;
+        try {
+            type = EventType.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown event type: " + args[1]);
+            return;
+        }
+        eventManager.startEvent(type);
+        player.sendMessage("Server event started: " + type.getDisplayName());
+    }
+
+    private void handleStop(Player player) {
+        if (eventManager.getActiveEvent().isEmpty()) {
+            player.sendMessage("No event is currently active.");
+            return;
+        }
+        String name = eventManager.getActiveEvent().get().getDisplayName();
+        eventManager.stopEvent();
+        player.sendMessage("Server event stopped: " + name);
+    }
+
+    private void handleActive(Player player) {
+        eventManager.getActiveEvent().ifPresentOrElse(
+                type -> player.sendMessage("Active event: " + type.getDisplayName()),
+                () -> player.sendMessage("No event is currently active.")
+        );
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Event Commands ===");
         player.sendMessage("/event list — list all SkyBlock events");
         player.sendMessage("/event join <event> — join an event");
         player.sendMessage("/event status [event] — show event status and score");
         player.sendMessage("/event reset — reset all event data");
+        player.sendMessage("/event start <type> — start a server-wide bonus event");
+        player.sendMessage("/event stop — stop the active server-wide event");
+        player.sendMessage("/event active — show the currently active event");
     }
 }

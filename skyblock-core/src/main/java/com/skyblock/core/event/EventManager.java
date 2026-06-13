@@ -3,6 +3,7 @@ package com.skyblock.core.event;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -11,6 +12,22 @@ import java.util.UUID;
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class EventManager {
+
+    /** Server-wide bonus event types. */
+    public enum EventType {
+        DOUBLE_XP("Double XP"),
+        DOUBLE_COINS("Double Coins"),
+        FISHING_FRENZY("Fishing Frenzy"),
+        MOB_RUSH("Mob Rush");
+
+        private final String displayName;
+
+        EventType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
+    }
 
     /** All SkyBlock seasonal/special events. */
     public enum SkyBlockEvent {
@@ -36,6 +53,9 @@ public final class EventManager {
 
     private static final EventManager INSTANCE = new EventManager();
 
+    /** Server-wide active bonus event; empty when no event is running. */
+    private Optional<EventType> activeEvent = Optional.empty();
+
     /** Per-player event scores, keyed by event. */
     private final Map<UUID, Map<SkyBlockEvent, Long>> scores = new HashMap<>();
 
@@ -52,6 +72,31 @@ public final class EventManager {
      */
     public static EventManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Starts the given bonus event server-wide, replacing any currently active event.
+     *
+     * @param type the event type to start
+     */
+    public void startEvent(EventType type) {
+        activeEvent = Optional.of(Objects.requireNonNull(type, "type"));
+    }
+
+    /**
+     * Stops the currently active bonus event.
+     */
+    public void stopEvent() {
+        activeEvent = Optional.empty();
+    }
+
+    /**
+     * Returns the currently active bonus event, or empty if none is running.
+     *
+     * @return the active event, or {@link Optional#empty()}
+     */
+    public Optional<EventType> getActiveEvent() {
+        return activeEvent;
     }
 
     /**
