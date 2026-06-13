@@ -1,9 +1,12 @@
 package com.skyblock.core.stat;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -155,6 +158,17 @@ public final class StatManager {
     public void clearBonuses(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         playerBonuses.remove(playerId);
+    }
+
+    /**
+     * Returns an unmodifiable set of all player UUIDs with any tracked stat data.
+     *
+     * @return set of tracked player UUIDs
+     */
+    public Set<UUID> getTrackedPlayers() {
+        Set<UUID> all = new HashSet<>(playerStats.keySet());
+        all.addAll(playerBonuses.keySet());
+        return Collections.unmodifiableSet(all);
     }
 
     /**
