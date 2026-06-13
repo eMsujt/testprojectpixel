@@ -4,14 +4,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Collections;
 
 /**
  * Singleton tracking each player's Garden plot level, visitor count, and crop upgrade levels.
@@ -492,37 +495,117 @@ public final class GardenManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        plotLevels.clear();
+        visitorCounts.clear();
+        cropUpgrades.clear();
+        unlockedPlots.clear();
+        cropPlotTiers.clear();
         harvestCounts.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
+                if (cfg.isSet(key + ".plotLevel")) {
+                    plotLevels.put(uuid, cfg.getInt(key + ".plotLevel", 1));
+                }
+                if (cfg.isSet(key + ".visitorCount")) {
+                    visitorCounts.put(uuid, cfg.getInt(key + ".visitorCount", 0));
+                }
+                if (cfg.isConfigurationSection(key + ".cropUpgrades")) {
+                    int[] upgrades = new int[GardenCrop.values().length];
+                    for (String cropName : cfg.getConfigurationSection(key + ".cropUpgrades").getKeys(false)) {
+                        try {
+                            GardenCrop crop = GardenCrop.valueOf(cropName);
+                            upgrades[crop.ordinal()] = cfg.getInt(key + ".cropUpgrades." + cropName, 0);
+                        } catch (IllegalArgumentException ignored) {}
+                    }
+                    cropUpgrades.put(uuid, upgrades);
+                }
+                if (cfg.isList(key + ".unlockedPlots")) {
+                    Set<GardenPlot> plots = EnumSet.noneOf(GardenPlot.class);
+                    for (String plotName : cfg.getStringList(key + ".unlockedPlots")) {
+                        try {
+                            plots.add(GardenPlot.valueOf(plotName));
+                        } catch (IllegalArgumentException ignored) {}
+                    }
+                    if (!plots.isEmpty()) {
+                        unlockedPlots.put(uuid, plots);
+                    }
+                }
+                if (cfg.isConfigurationSection(key + ".cropTiers")) {
+                    Map<GardenCrop, PlotTier> tiers = new EnumMap<>(GardenCrop.class);
+                    for (String cropName : cfg.getConfigurationSection(key + ".cropTiers").getKeys(false)) {
+                        try {
+                            GardenCrop crop = GardenCrop.valueOf(cropName);
+                            PlotTier tier = PlotTier.valueOf(cfg.getString(key + ".cropTiers." + cropName, "TIER_1"));
+                            tiers.put(crop, tier);
+                        } catch (IllegalArgumentException ignored) {}
+                    }
+                    if (!tiers.isEmpty()) {
+                        cropPlotTiers.put(uuid, tiers);
+                    }
+                }
                 if (cfg.isConfigurationSection(key + ".harvests")) {
                     Map<CropType, Long> counts = new EnumMap<>(CropType.class);
                     for (String typeName : cfg.getConfigurationSection(key + ".harvests").getKeys(false)) {
                         try {
                             CropType type = CropType.valueOf(typeName);
                             counts.put(type, cfg.getLong(key + ".harvests." + typeName, 0L));
-                        } catch (IllegalArgumentException ignored) {
-                            // skip unknown crop types
-                        }
+                        } catch (IllegalArgumentException ignored) {}
                     }
                     if (!counts.isEmpty()) {
                         harvestCounts.put(uuid, counts);
                     }
                 }
-            } catch (IllegalArgumentException ignored) {
-                // skip malformed entries
-            }
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
     public void save(File dataFolder) {
         File file = new File(dataFolder, "garden.yml");
         YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<UUID, Map<CropType, Long>> entry : harvestCounts.entrySet()) {
-            String key = entry.getKey().toString();
-            for (Map.Entry<CropType, Long> hc : entry.getValue().entrySet()) {
-                cfg.set(key + ".harvests." + hc.getKey().name(), hc.getValue());
+        Set<UUID> allUuids = new HashSet<>();
+        allUuids.addAll(plotLevels.keySet());
+        allUuids.addAll(visitorCounts.keySet());
+        allUuids.addAll(cropUpgrades.keySet());
+        allUuids.addAll(unlockedPlots.keySet());
+        allUuids.addAll(cropPlotTiers.keySet());
+        allUuids.addAll(harvestCounts.keySet());
+        for (UUID uuid : allUuids) {
+            String key = uuid.toString();
+            if (plotLevels.containsKey(uuid)) {
+                cfg.set(key + ".plotLevel", plotLevels.get(uuid));
+            }
+            if (visitorCounts.containsKey(uuid)) {
+                cfg.set(key + ".visitorCount", visitorCounts.get(uuid));
+            }
+            int[] upgrades = cropUpgrades.get(uuid);
+            if (upgrades != null) {
+                GardenCrop[] crops = GardenCrop.values();
+                for (int i = 0; i < crops.length; i++) {
+                    if (upgrades[i] != 0) {
+                        cfg.set(key + ".cropUpgrades." + crops[i].name(), upgrades[i]);
+                    }
+                }
+            }
+            Set<GardenPlot> plots = unlockedPlots.get(uuid);
+            if (plots != null && !plots.isEmpty()) {
+                List<String> plotNames = new ArrayList<>();
+                for (GardenPlot plot : plots) {
+                    plotNames.add(plot.name());
+                }
+                cfg.set(key + ".unlockedPlots", plotNames);
+            }
+            Map<GardenCrop, PlotTier> tiers = cropPlotTiers.get(uuid);
+            if (tiers != null) {
+                for (Map.Entry<GardenCrop, PlotTier> e : tiers.entrySet()) {
+                    cfg.set(key + ".cropTiers." + e.getKey().name(), e.getValue().name());
+                }
+            }
+            Map<CropType, Long> counts = harvestCounts.get(uuid);
+            if (counts != null) {
+                for (Map.Entry<CropType, Long> hc : counts.entrySet()) {
+                    cfg.set(key + ".harvests." + hc.getKey().name(), hc.getValue());
+                }
             }
         }
         try {
