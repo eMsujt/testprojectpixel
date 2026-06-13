@@ -16,7 +16,7 @@ public final class RiftManager {
 
     /** Named zones inside the Rift dimension. */
     public enum RiftZone {
-        STILLGORE_CHATEAU, WYLD_WOODS, LIVING_CAVE, MIRRORVERSE, LAGOON, COLOSSEUM
+        DREADFARM, STILLGORE_CHATEAU, WYLD_WOODS, LIVING_CAVE, MIRRORVERSE, LAGOON, COLOSSEUM
     }
 
     /** Mob types that inhabit the Rift. */
