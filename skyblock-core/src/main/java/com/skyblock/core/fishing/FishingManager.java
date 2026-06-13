@@ -25,18 +25,18 @@ public final class FishingManager {
 
     /** All fish types obtainable through SkyBlock fishing. */
     public enum FishType {
-        COD,
-        SALMON,
+        RAW_FISH,
+        RAW_SALMON,
+        CLOWNFISH,
         PUFFERFISH,
-        TROPICAL_FISH,
+        SEA_CREATURE,
+        FISHING_TREASURE,
         INK_SAC,
         LILY_PAD,
-        NAUTILUS_SHELL,
         PRISMARINE_CRYSTALS,
         PRISMARINE_SHARD,
         SPONGE,
-        SEA_LANTERN,
-        TREASURE_MAP
+        SEA_LANTERN
     }
 
     /** Loot entry: a fish type, its material drop, and the minimum fishing level required. */
@@ -55,18 +55,18 @@ public final class FishingManager {
     }
 
     private static final LootEntry[] LOOT_TABLE = {
-        new LootEntry(FishType.COD,                 Material.COD,                  1,  50.0),
-        new LootEntry(FishType.SALMON,              Material.SALMON,               1,  30.0),
-        new LootEntry(FishType.TROPICAL_FISH,       Material.TROPICAL_FISH,        5,  10.0),
+        new LootEntry(FishType.RAW_FISH,            Material.COD,                  1,  50.0),
+        new LootEntry(FishType.RAW_SALMON,          Material.SALMON,               1,  30.0),
+        new LootEntry(FishType.CLOWNFISH,           Material.TROPICAL_FISH,        5,  10.0),
         new LootEntry(FishType.PUFFERFISH,          Material.PUFFERFISH,           5,   8.0),
+        new LootEntry(FishType.SEA_CREATURE,        Material.NAUTILUS_SHELL,      20,   2.0),
+        new LootEntry(FishType.FISHING_TREASURE,    Material.MAP,                 40,   0.5),
         new LootEntry(FishType.INK_SAC,             Material.INK_SAC,             10,   5.0),
         new LootEntry(FishType.LILY_PAD,            Material.LILY_PAD,            15,   4.0),
-        new LootEntry(FishType.NAUTILUS_SHELL,      Material.NAUTILUS_SHELL,      20,   2.0),
         new LootEntry(FishType.PRISMARINE_CRYSTALS, Material.PRISMARINE_CRYSTALS, 30,   1.5),
         new LootEntry(FishType.PRISMARINE_SHARD,    Material.PRISMARINE_SHARD,    25,   2.0),
         new LootEntry(FishType.SPONGE,              Material.SPONGE,              20,   1.0),
         new LootEntry(FishType.SEA_LANTERN,         Material.SEA_LANTERN,         35,   0.8),
-        new LootEntry(FishType.TREASURE_MAP,        Material.MAP,                 40,   0.5),
     };
 
     /** Sea creatures that can be summoned while fishing. */
