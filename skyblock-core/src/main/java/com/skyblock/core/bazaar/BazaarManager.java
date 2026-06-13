@@ -1,5 +1,9 @@
 package com.skyblock.core.bazaar;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -270,6 +274,9 @@ public final class BazaarManager {
     private final Map<String, List<BuyOrder>> buyOrders = new HashMap<>();
     private final Map<String, List<SellOrder>> sellOrders = new HashMap<>();
 
+    /** Per-player transaction history. */
+    private final Map<UUID, List<String>> playerTransactions = new HashMap<>();
+
     private BazaarManager() {}
 
     /**
@@ -483,6 +490,72 @@ public final class BazaarManager {
             }
         }
         return Collections.unmodifiableList(result);
+    }
+
+    /**
+     * Returns an unmodifiable view of the transaction history for the given player.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return unmodifiable list of transaction entries; empty if none recorded
+     */
+    public List<String> getTransactionHistory(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return Collections.unmodifiableList(
+                playerTransactions.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    /**
+     * Appends a transaction entry to the given player's history.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param entry    the transaction string to record, must not be null
+     */
+    public void addTransaction(UUID playerId, String entry) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(entry, "entry");
+        playerTransactions.computeIfAbsent(playerId, k -> new ArrayList<>()).add(entry);
+    }
+
+    /**
+     * Loads per-player transaction histories from {@code bazaar.yml} inside the given data folder.
+     *
+     * @param dataFolder the plugin data folder, must not be null
+     */
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "bazaar.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerTransactions.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                List<String> history = cfg.getStringList(key);
+                playerTransactions.put(uuid, new ArrayList<>(history));
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    /**
+     * Saves per-player transaction histories to {@code bazaar.yml} inside the given data folder.
+     *
+     * @param dataFolder the plugin data folder, must not be null
+     * @throws RuntimeException if the file cannot be written
+     */
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "bazaar.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<String>> entry : playerTransactions.entrySet()) {
+            cfg.set(entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save bazaar.yml", e);
+        }
     }
 
     /** Removes all stored orders. */
