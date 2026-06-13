@@ -26,7 +26,9 @@ public final class TalismanManager {
         RARE("Rare"),
         EPIC("Epic"),
         LEGENDARY("Legendary"),
-        MYTHIC("Mythic");
+        MYTHIC("Mythic"),
+        SPECIAL("Special"),
+        VERY_SPECIAL("Very Special");
 
         private final String displayName;
 
