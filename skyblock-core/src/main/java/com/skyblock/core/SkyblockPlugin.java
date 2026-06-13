@@ -19,8 +19,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
 
+    private static SkyblockPlugin instance;
+
+    public static SkyblockPlugin getInstance() {
+        return instance;
+    }
+
     @Override
     public void onEnable() {
+        instance = this;
         BankManager.getInstance();
         MayorManager.getInstance();
         AuctionManager.getInstance();
@@ -36,5 +43,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         ReforgeManager.getInstance();
         AccessoryManager.getInstance();
         ProfileManager.getInstance();
+    }
+
+    @Override
+    public void onDisable() {
+        instance = null;
     }
 }
