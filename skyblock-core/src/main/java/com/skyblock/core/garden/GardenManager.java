@@ -13,7 +13,7 @@ import java.util.UUID;
 public final class GardenManager {
 
     /** Crops that can be upgraded in the Garden. */
-    public enum GardenCrop {
+    public enum CropType {
         WHEAT("Wheat"),
         CARROT("Carrot"),
         POTATO("Potato"),
@@ -27,7 +27,7 @@ public final class GardenManager {
 
         private final String displayName;
 
-        GardenCrop(String displayName) {
+        CropType(String displayName) {
             this.displayName = displayName;
         }
 
@@ -151,7 +151,7 @@ public final class GardenManager {
      * @param crop     the crop type
      * @return the upgrade level, {@code 0} if not set
      */
-    public int getCropUpgrade(UUID playerId, GardenCrop crop) {
+    public int getCropUpgrade(UUID playerId, CropType crop) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(crop, "crop");
         int[] upgrades = cropUpgrades.get(playerId);
@@ -165,10 +165,10 @@ public final class GardenManager {
      * @param crop     the crop type
      * @param level    the new upgrade level
      */
-    public void setCropUpgrade(UUID playerId, GardenCrop crop, int level) {
+    public void setCropUpgrade(UUID playerId, CropType crop, int level) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(crop, "crop");
-        int[] upgrades = cropUpgrades.computeIfAbsent(playerId, id -> new int[GardenCrop.values().length]);
+        int[] upgrades = cropUpgrades.computeIfAbsent(playerId, id -> new int[CropType.values().length]);
         upgrades[crop.ordinal()] = Math.max(0, level);
     }
 
@@ -180,10 +180,10 @@ public final class GardenManager {
      * @param amount   the amount to add (may be negative)
      * @return the new upgrade level
      */
-    public int addCropUpgrade(UUID playerId, GardenCrop crop, int amount) {
+    public int addCropUpgrade(UUID playerId, CropType crop, int amount) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(crop, "crop");
-        int[] upgrades = cropUpgrades.computeIfAbsent(playerId, id -> new int[GardenCrop.values().length]);
+        int[] upgrades = cropUpgrades.computeIfAbsent(playerId, id -> new int[CropType.values().length]);
         upgrades[crop.ordinal()] = Math.max(0, upgrades[crop.ordinal()] + amount);
         return upgrades[crop.ordinal()];
     }
