@@ -10,6 +10,7 @@ import com.skyblock.core.dungeon.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.fishing.FishingManager;
+import com.skyblock.core.garden.GardenCommand;
 import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.HOTMCommand;
@@ -54,6 +55,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         PartyManager.getInstance();
         GardenManager gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
+        GardenCommand gardenCommand = new GardenCommand(gardenManager);
+        getCommand("garden").setExecutor(gardenCommand);
+        getCommand("garden").setTabCompleter(gardenCommand);
         SlayerManager slayerManager = SlayerManager.getInstance();
         slayerManager.load(getDataFolder());
         FishingManager.getInstance();
