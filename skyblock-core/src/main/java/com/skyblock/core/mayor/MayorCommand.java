@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public final class MayorCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("vote", "set");
-    private static final List<String> MAYOR_NAMES = Arrays.stream(MayorManager.Mayor.values())
+    private static final List<String> MAYOR_NAMES = Arrays.stream(MayorManager.MayorCandidate.values())
             .map(m -> m.name().toLowerCase())
             .collect(Collectors.toList());
 
