@@ -49,6 +49,8 @@ import com.skyblock.core.leaderboard.LeaderboardCommand;
 import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.mail.MailCommand;
 import com.skyblock.core.mail.MailManager;
+import com.skyblock.core.mailbox.MailboxCommand;
+import com.skyblock.core.mailbox.MailboxManager;
 import com.skyblock.core.collections.CollectionsCommand;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.combat.CombatCommand;
@@ -223,6 +225,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         ForgeCommand forgeCommand = new ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
+        MailboxManager mailboxManager = MailboxManager.getInstance();
+        mailboxManager.load(getDataFolder());
+        MailboxCommand mailboxCommand = new MailboxCommand(mailboxManager);
+        getCommand("mailbox").setExecutor(mailboxCommand);
+        getCommand("mailbox").setTabCompleter(mailboxCommand);
     }
 
     @Override
@@ -249,6 +256,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         ForagingManager.getInstance().save(getDataFolder());
         CollectionsManager.getInstance().save(getDataFolder());
         MailManager.getInstance().save(getDataFolder());
+        MailboxManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
