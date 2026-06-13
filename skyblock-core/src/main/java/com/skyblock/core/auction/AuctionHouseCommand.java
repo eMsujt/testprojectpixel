@@ -86,7 +86,7 @@ public final class AuctionHouseCommand implements TabExecutor {
                     .collect(Collectors.toList());
         }
         if (args.length == 4 && args[0].equalsIgnoreCase("create")) {
-            return Arrays.asList("bin", "bid");
+            return Arrays.asList("bin", "auction");
         }
         return Collections.emptyList();
     }
@@ -118,7 +118,7 @@ public final class AuctionHouseCommand implements TabExecutor {
                         e.itemName(),
                         e.category().getDisplayName(),
                         e.startingBid(),
-                        e.binListing() ? "BIN" : "BID")));
+                        e.type().name())));
     }
 
     private void handleCreate(Player player, String[] args) {
@@ -144,15 +144,17 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
         AuctionHouseManager.AuctionCategory category = parseCategory(player, args[2]);
         if (category == null) return;
-        boolean bin = args.length >= 4 && args[3].equalsIgnoreCase("bin");
+        AuctionHouseManager.AuctionType type = (args.length >= 4 && args[3].equalsIgnoreCase("bin"))
+                ? AuctionHouseManager.AuctionType.BIN
+                : AuctionHouseManager.AuctionType.AUCTION;
         String itemName = held.hasItemMeta() && held.getItemMeta().hasDisplayName()
                 ? held.getItemMeta().getDisplayName()
                 : held.getType().name();
         UUID listingId = manager.createListing(player.getUniqueId(), held.clone(), itemName,
-                category, price, bin);
+                category, price, type);
         player.sendMessage(String.format(
                 "Listed '%s' [%s] for %.1f coins as a %s listing. ID: %s",
-                itemName, category.getDisplayName(), price, bin ? "BIN" : "bid-based",
+                itemName, category.getDisplayName(), price, type.getDisplayName(),
                 listingId.toString().substring(0, 8)));
     }
 
@@ -195,9 +197,9 @@ public final class AuctionHouseCommand implements TabExecutor {
         player.sendMessage("=== Listing: " + listing.itemName() + " ===");
         player.sendMessage("ID:       " + listing.id());
         player.sendMessage("Category: " + listing.category().getDisplayName());
-        player.sendMessage("Type:     " + (listing.binListing() ? "Buy It Now" : "Bid-based"));
+        player.sendMessage("Type:     " + listing.type().getDisplayName());
         player.sendMessage("Price:    " + listing.startingBid() + " coins");
-        if (!listing.binListing()) {
+        if (listing.type() == AuctionHouseManager.AuctionType.AUCTION) {
             player.sendMessage("Highest bid: " + highestBid + " coins"
                     + (highestBidder != null ? " (by " + highestBidder + ")" : " (no bids yet)"));
         }
@@ -233,7 +235,7 @@ public final class AuctionHouseCommand implements TabExecutor {
                 l.id().toString().substring(0, 8),
                 l.itemName(),
                 l.startingBid(),
-                l.binListing() ? "BIN" : "BID")));
+                l.type().name())));
     }
 
     /** Parses an auction category name, sending an error to the player on failure. */

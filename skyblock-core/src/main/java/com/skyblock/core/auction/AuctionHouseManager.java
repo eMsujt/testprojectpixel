@@ -20,6 +20,22 @@ import java.util.stream.Collectors;
  */
 public final class AuctionHouseManager {
 
+    /** The two auction modes available in the Auction House. */
+    public enum AuctionType {
+        BIN("Buy It Now"),
+        AUCTION("Bid-based");
+
+        private final String displayName;
+
+        AuctionType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** Every auction category available in the Auction House. */
     public enum AuctionCategory {
         WEAPONS("Weapons"),
@@ -45,7 +61,7 @@ public final class AuctionHouseManager {
 
     /** A single active auction house listing. */
     public record AuctionListing(UUID id, UUID seller, ItemStack item, String itemName,
-                                 AuctionCategory category, double startingBid, boolean binListing) {
+                                 AuctionCategory category, double startingBid, AuctionType type) {
 
         public AuctionListing {
             Objects.requireNonNull(id, "id");
@@ -53,6 +69,7 @@ public final class AuctionHouseManager {
             Objects.requireNonNull(item, "item");
             Objects.requireNonNull(itemName, "itemName");
             Objects.requireNonNull(category, "category");
+            Objects.requireNonNull(type, "type");
             if (startingBid < 0) {
                 throw new IllegalArgumentException("startingBid must not be negative: " + startingBid);
             }
@@ -91,14 +108,16 @@ public final class AuctionHouseManager {
      * @param itemName    the display name of the listed item, must not be null
      * @param category    the auction category, must not be null
      * @param startingBid the minimum bid or BIN price, must not be negative
-     * @param binListing  {@code true} for a buy-it-now listing, {@code false} for bid-based
+     * @param type        the auction type ({@link AuctionType#BIN} or {@link AuctionType#AUCTION})
      * @return the UUID of the newly created listing
      */
     public UUID createListing(UUID seller, ItemStack item, String itemName,
-                              AuctionCategory category, double startingBid, boolean binListing) {
+                              AuctionCategory category, double startingBid, AuctionType type) {
+        Objects.requireNonNull(seller, "seller");
+        Objects.requireNonNull(type, "type");
         UUID listingId = UUID.randomUUID();
         AuctionListing listing = new AuctionListing(listingId, seller, item, itemName,
-                category, startingBid, binListing);
+                category, startingBid, type);
         listings.put(listingId, new ListingState(listing));
         return listingId;
     }
@@ -138,7 +157,7 @@ public final class AuctionHouseManager {
         if (bidder.equals(state.listing.seller())) {
             throw new IllegalArgumentException("seller cannot bid on their own listing");
         }
-        if (state.listing.binListing()) {
+        if (state.listing.type() == AuctionType.BIN) {
             if (amount < state.listing.startingBid()) {
                 throw new IllegalArgumentException(
                         "amount must meet the BIN price " + state.listing.startingBid() + ": " + amount);
@@ -167,7 +186,7 @@ public final class AuctionHouseManager {
      */
     public UUID endAuction(UUID listingId) {
         ListingState state = requireListing(listingId);
-        if (state.listing.binListing()) {
+        if (state.listing.type() == AuctionType.BIN) {
             throw new IllegalArgumentException("cannot end a BIN listing as an auction: " + listingId);
         }
         listings.remove(listingId);
