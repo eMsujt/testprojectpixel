@@ -173,6 +173,10 @@ commands:
     description: Create and manage player guilds.
     usage: /guild <create|invite|accept|decline|kick|leave|disband|info>
     permission: skyblock.guild
+  reforge:
+    description: View and apply item reforges.
+    usage: /reforge [list|info <name>|apply <name>|clear]
+    permission: skyblock.reforge
   rift:
     description: View and manage your Rift dimension state.
     usage: /rift <info|enter [zone]|exit|reset>
@@ -223,6 +227,9 @@ permissions:
     default: true
   skyblock.guild:
     description: Use the /guild command to create and manage guilds.
+    default: true
+  skyblock.reforge:
+    description: Use the /reforge command to view and apply item reforges.
     default: true
   skyblock.rift:
     description: Use the /rift command to manage Rift dimension state.
