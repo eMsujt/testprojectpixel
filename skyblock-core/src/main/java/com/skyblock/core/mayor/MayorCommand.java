@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public final class MayorCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("vote", "set");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("current", "perks", "vote", "set");
     private static final List<String> MAYOR_NAMES = Arrays.stream(MayorManager.MayorCandidate.values())
             .map(m -> m.name().toLowerCase())
             .collect(Collectors.toList());
@@ -47,9 +47,11 @@ public final class MayorCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "vote" -> handleVote(player, args);
-            case "set"  -> handleSet(player, args);
-            default     -> player.sendMessage("Unknown subcommand. Usage: /mayor <vote|set>");
+            case "current" -> handleCurrent(player);
+            case "perks"   -> handlePerks(player);
+            case "vote"    -> handleVote(player, args);
+            case "set"     -> handleSet(player, args);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /mayor <current|perks|vote|set>");
         }
         return true;
     }
@@ -80,6 +82,26 @@ public final class MayorCommand implements TabExecutor {
         player.sendMessage("=== Mayor ===");
         player.sendMessage("Active mayor: " + (current != null ? current.getDisplayName() : "None"));
         player.sendMessage("Your vote: " + (vote != null ? vote.getDisplayName() : "None"));
+    }
+
+    private void handleCurrent(Player player) {
+        MayorManager.MayorCandidate current = mayorManager.getCurrentMayor();
+        if (current == null) {
+            player.sendMessage("There is no active mayor.");
+        } else {
+            player.sendMessage("Current mayor: " + current.getDisplayName());
+        }
+    }
+
+    private void handlePerks(Player player) {
+        MayorManager.MayorCandidate current = mayorManager.getCurrentMayor();
+        if (current == null) {
+            player.sendMessage("There is no active mayor. Candidates: " + String.join(", ", MAYOR_NAMES));
+            return;
+        }
+        player.sendMessage("=== " + current.getDisplayName() + "'s Perks ===");
+        player.sendMessage("Mayor: " + current.getDisplayName());
+        player.sendMessage("Use /mayor vote <mayor> to vote for a candidate.");
     }
 
     private void handleVote(Player player, String[] args) {
