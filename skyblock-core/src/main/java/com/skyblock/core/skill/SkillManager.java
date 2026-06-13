@@ -13,8 +13,8 @@ import java.util.UUID;
 public final class SkillManager {
 
     public enum SkillType {
-        FARMING("Farming"),
         MINING("Mining"),
+        FARMING("Farming"),
         COMBAT("Combat"),
         FORAGING("Foraging"),
         FISHING("Fishing"),
