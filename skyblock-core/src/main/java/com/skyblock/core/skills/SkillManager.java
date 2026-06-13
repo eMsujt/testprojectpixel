@@ -1,5 +1,9 @@
 package com.skyblock.core.skills;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,6 +117,73 @@ public final class SkillManager {
         Objects.requireNonNull(skill, "skill");
         Map<SkillType, Integer> levels = levelMap.get(playerId);
         return levels == null ? 1 : levels.getOrDefault(skill, 1);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "skills.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        xpMap.clear();
+        levelMap.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".xp")) {
+                    Map<SkillType, Double> xp = new EnumMap<>(SkillType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".xp").getKeys(false)) {
+                        try {
+                            SkillType type = SkillType.valueOf(typeName);
+                            xp.put(type, cfg.getDouble(key + ".xp." + typeName, 0.0));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown skill types
+                        }
+                    }
+                    if (!xp.isEmpty()) {
+                        xpMap.put(uuid, xp);
+                    }
+                }
+                if (cfg.isConfigurationSection(key + ".level")) {
+                    Map<SkillType, Integer> levels = new EnumMap<>(SkillType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".level").getKeys(false)) {
+                        try {
+                            SkillType type = SkillType.valueOf(typeName);
+                            levels.put(type, cfg.getInt(key + ".level." + typeName, 1));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown skill types
+                        }
+                    }
+                    if (!levels.isEmpty()) {
+                        levelMap.put(uuid, levels);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "skills.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<SkillType, Double>> entry : xpMap.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<SkillType, Double> xp : entry.getValue().entrySet()) {
+                cfg.set(key + ".xp." + xp.getKey().name(), xp.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<SkillType, Integer>> entry : levelMap.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<SkillType, Integer> lv : entry.getValue().entrySet()) {
+                cfg.set(key + ".level." + lv.getKey().name(), lv.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save skills.yml", e);
+        }
     }
 
     /**
