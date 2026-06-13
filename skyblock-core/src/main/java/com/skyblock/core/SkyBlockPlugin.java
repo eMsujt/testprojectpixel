@@ -431,6 +431,12 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new RiftListener(riftManager), this);
 
         com.skyblock.core.enchantment.EnchantmentManager.getInstance();
+        com.skyblock.core.enchantment.SkyBlockEnchantManager skyBlockEnchantManager =
+                com.skyblock.core.enchantment.SkyBlockEnchantManager.getInstance();
+        com.skyblock.core.enchantment.EnchantCommand enchantmentEnchantCommand =
+                new com.skyblock.core.enchantment.EnchantCommand(skyBlockEnchantManager);
+        getCommand("skyblockenchant").setExecutor(enchantmentEnchantCommand);
+        getCommand("skyblockenchant").setTabCompleter(enchantmentEnchantCommand);
         com.skyblock.core.enchant.EnchantmentManager.getInstance();
         com.skyblock.core.enchanting.EnchantmentManager.getInstance();
         com.skyblock.core.collections.CollectionManager.getInstance();

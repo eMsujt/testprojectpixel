@@ -108,6 +108,9 @@ commands:
   enchant:
     description: View and apply SkyBlock custom enchants.
     usage: /enchant <list|info|apply|remove|view>
+  skyblockenchant:
+    description: View and apply SkyBlock enchants via the SkyBlockEnchantManager.
+    usage: /skyblockenchant <list|info|apply|remove|view>
   talisman:
     description: Manage your equipped talismans and view stat bonuses.
     usage: /talisman <list|equip|unequip|equipped|bonuses>
