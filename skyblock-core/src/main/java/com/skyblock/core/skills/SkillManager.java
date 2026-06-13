@@ -18,17 +18,18 @@ public final class SkillManager {
 
     /** Every skill tracked in SkyBlock. */
     public enum SkillType {
-        COMBAT("Combat"),
-        MINING("Mining"),
         FARMING("Farming"),
-        FISHING("Fishing"),
+        MINING("Mining"),
+        COMBAT("Combat"),
         FORAGING("Foraging"),
+        FISHING("Fishing"),
         ENCHANTING("Enchanting"),
         ALCHEMY("Alchemy"),
         TAMING("Taming"),
         CARPENTRY("Carpentry"),
         RUNECRAFTING("Runecrafting"),
-        SOCIAL("Social");
+        SOCIAL("Social"),
+        DUNGEONEERING("Dungeoneering");
 
         /** Human-readable display name. */
         public final String displayName;
