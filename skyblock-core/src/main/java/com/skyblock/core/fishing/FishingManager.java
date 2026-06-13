@@ -84,6 +84,32 @@ public final class FishingManager {
         }
     }
 
+    /** Rarity tiers assignable to fish catches. */
+    public enum FishRarity {
+        COMMON("Common",      1,  0.55),
+        UNCOMMON("Uncommon",  5,  0.25),
+        RARE("Rare",         15,  0.12),
+        EPIC("Epic",         25,  0.06),
+        LEGENDARY("Legendary", 35, 0.02);
+
+        /** Human-readable display name. */
+        public final String displayName;
+        /** Minimum fishing level required for this rarity to drop. */
+        public final int minLevel;
+        /** Base drop chance (0–1) when the player meets the level requirement. */
+        public final double dropChance;
+
+        FishRarity(String displayName, int minLevel, double dropChance) {
+            this.displayName = displayName;
+            this.minLevel = minLevel;
+            this.dropChance = dropChance;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** Treasure tiers obtainable from fishing at sufficient skill levels. */
     public enum FishingTreasure {
         COMMON_TREASURE(1,  0.40, "Common Treasure"),

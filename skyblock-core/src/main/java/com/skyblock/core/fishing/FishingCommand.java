@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public final class FishingCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("trophy", "treasure");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("trophy", "treasure", "rarity");
     private static final List<String> TROPHY_SUBCOMMANDS = Arrays.asList("reset");
 
     private final FishingManager fishingManager;
@@ -58,6 +58,7 @@ public final class FishingCommand implements TabExecutor {
         switch (args[0].toLowerCase()) {
             case "trophy"   -> handleTrophy(player, args);
             case "treasure" -> handleTreasure(player);
+            case "rarity"   -> handleRarity(player);
             default         -> sendHelp(player);
         }
         return true;
@@ -134,6 +135,17 @@ public final class FishingCommand implements TabExecutor {
         }
     }
 
+    private void handleRarity(Player player) {
+        int level = fishingManager.getLevel(player.getUniqueId());
+        player.sendMessage("=== Fish Rarities (level " + level + ") ===");
+        for (FishingManager.FishRarity rarity : FishingManager.FishRarity.values()) {
+            String status = level >= rarity.minLevel
+                    ? String.format("%.0f%%", rarity.dropChance * 100)
+                    : "Requires level " + rarity.minLevel;
+            player.sendMessage("  " + rarity.getDisplayName() + ": " + status);
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Fishing Commands ===");
         player.sendMessage("/fishing                    — show fishing level and XP");
@@ -141,6 +153,7 @@ public final class FishingCommand implements TabExecutor {
         player.sendMessage("/fishing trophy <fish>      — show catches for a specific trophy fish");
         player.sendMessage("/fishing trophy reset       — reset trophy fish records");
         player.sendMessage("/fishing treasure           — show fishing treasure drop chances");
+        player.sendMessage("/fishing rarity             — show fish rarity drop chances");
     }
 
     private static TrophyFishingManager.TrophyFish parseTrophyFish(String name) {
