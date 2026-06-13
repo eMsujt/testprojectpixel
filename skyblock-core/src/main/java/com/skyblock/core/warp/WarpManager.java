@@ -30,8 +30,12 @@ public final class WarpManager {
         THE_SPIDER_DEN("The Spider's Den"),
         THE_END("The End"),
         DEEP_CAVERNS("Deep Caverns"),
+        GOLD_MINE("Gold Mine"),
         DWARVEN_MINES("Dwarven Mines"),
-        CRYSTAL_HOLLOWS("Crystal Hollows");
+        CRYSTAL_HOLLOWS("Crystal Hollows"),
+        MUSHROOM_DESERT("Mushroom Desert"),
+        CRIMSON_ISLE("Crimson Isle"),
+        THE_RIFT("The Rift");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
