@@ -30,6 +30,9 @@ public final class FishingManager {
         LILY_PAD,
         NAUTILUS_SHELL,
         PRISMARINE_CRYSTALS,
+        PRISMARINE_SHARD,
+        SPONGE,
+        SEA_LANTERN,
         TREASURE_MAP
     }
 
@@ -57,6 +60,9 @@ public final class FishingManager {
         new LootEntry(FishType.LILY_PAD,            Material.LILY_PAD,            15,   4.0),
         new LootEntry(FishType.NAUTILUS_SHELL,      Material.NAUTILUS_SHELL,      20,   2.0),
         new LootEntry(FishType.PRISMARINE_CRYSTALS, Material.PRISMARINE_CRYSTALS, 30,   1.5),
+        new LootEntry(FishType.PRISMARINE_SHARD,    Material.PRISMARINE_SHARD,    25,   2.0),
+        new LootEntry(FishType.SPONGE,              Material.SPONGE,              20,   1.0),
+        new LootEntry(FishType.SEA_LANTERN,         Material.SEA_LANTERN,         35,   0.8),
         new LootEntry(FishType.TREASURE_MAP,        Material.MAP,                 40,   0.5),
     };
 
