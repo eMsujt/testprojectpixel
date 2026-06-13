@@ -14,16 +14,26 @@ public final class GardenManager {
 
     /** Crops that can be upgraded in the Garden. */
     public enum GardenCrop {
-        WHEAT,
-        CARROT,
-        POTATO,
-        MELON,
-        PUMPKIN,
-        SUGAR_CANE,
-        COCOA_BEANS,
-        CACTUS,
-        MUSHROOM,
-        NETHER_WART
+        WHEAT("Wheat"),
+        CARROT("Carrot"),
+        POTATO("Potato"),
+        MELON("Melon"),
+        PUMPKIN("Pumpkin"),
+        SUGAR_CANE("Sugar Cane"),
+        COCOA_BEANS("Cocoa Beans"),
+        CACTUS("Cactus"),
+        MUSHROOM("Mushroom"),
+        NETHER_WART("Nether Wart");
+
+        private final String displayName;
+
+        GardenCrop(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     private static final GardenManager INSTANCE = new GardenManager();
