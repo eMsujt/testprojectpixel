@@ -38,6 +38,9 @@ import com.skyblock.core.profile.ProfileCommand;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
+import com.skyblock.core.trade.TradeCommand;
+import com.skyblock.core.trade.TradeListener;
+import com.skyblock.core.trade.TradeManager;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.stats.StatsCommand;
@@ -147,6 +150,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         QuestCommand questCommand = new QuestCommand(questManager);
         getCommand("quest").setExecutor(questCommand);
         getCommand("quest").setTabCompleter(questCommand);
+        TradeManager tradeManager = TradeManager.getInstance();
+        TradeCommand tradeCommand = new TradeCommand(tradeManager);
+        getCommand("trade").setExecutor(tradeCommand);
+        getCommand("trade").setTabCompleter(tradeCommand);
+        getServer().getPluginManager().registerEvents(new TradeListener(tradeManager), this);
     }
 
     @Override
