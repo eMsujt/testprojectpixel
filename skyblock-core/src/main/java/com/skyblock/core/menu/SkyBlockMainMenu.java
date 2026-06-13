@@ -60,8 +60,8 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                         e -> e.getWhoClicked().sendMessage("Use /minion to manage your minions."))
                 .setItem(34, named(Material.NAME_TAG,      ChatColor.YELLOW     + "Titles"),
                         e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("title"))
-                .setItem(35, named(Material.IRON_PICKAXE, ChatColor.GRAY       + "Minions"),
-                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("minion"))
+                .setItem(35, named(Material.PLAYER_HEAD,  ChatColor.GREEN      + "Friends"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("friend"))
                 // Row 4 — utility
                 .setItem(37, named(Material.ENDER_PEARL,   ChatColor.LIGHT_PURPLE + "Warp"),
                         e -> e.getWhoClicked().sendMessage("Use /warp to teleport to locations."))
