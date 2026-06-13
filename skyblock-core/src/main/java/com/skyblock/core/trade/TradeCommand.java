@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -93,7 +94,10 @@ public final class TradeCommand implements TabExecutor {
             player.sendMessage("You already have an active trade session. Use /trade cancel first.");
             return;
         }
-        tradeManager.sendRequest(player.getUniqueId(), target.getUniqueId());
+        TradeManager.TradeRequest request = new TradeManager.TradeRequest(
+                player.getUniqueId(), target.getUniqueId(),
+                Collections.emptyList(), 0.0);
+        tradeManager.sendRequest(request);
         player.sendMessage("Trade request sent to " + target.getName() + ".");
         target.sendMessage(player.getName() + " has sent you a trade request. Use /trade accept "
                 + player.getName() + " to accept.");

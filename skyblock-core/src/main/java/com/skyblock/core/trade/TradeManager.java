@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -16,10 +17,26 @@ import java.util.UUID;
  */
 public final class TradeManager {
 
+    /** Immutable snapshot of a pending trade request. */
+    public static final class TradeRequest {
+        public final UUID initiator;
+        public final UUID target;
+        public final List<String> offeredItemNames;
+        public final double offeredCoins;
+
+        public TradeRequest(UUID initiator, UUID target, List<String> offeredItemNames, double offeredCoins) {
+            this.initiator = Objects.requireNonNull(initiator, "initiator");
+            this.target = Objects.requireNonNull(target, "target");
+            this.offeredItemNames = Collections.unmodifiableList(
+                    new ArrayList<>(Objects.requireNonNull(offeredItemNames, "offeredItemNames")));
+            this.offeredCoins = offeredCoins;
+        }
+    }
+
     private static final TradeManager INSTANCE = new TradeManager();
 
-    /** Pending trade requests: requester UUID → target UUID. */
-    private final Map<UUID, UUID> pendingRequests = new HashMap<>();
+    /** Pending trade requests: initiator UUID → TradeRequest. */
+    private final Map<UUID, TradeRequest> pendingRequests = new HashMap<>();
 
     /** Active trade sessions keyed by one of the two participant UUIDs. */
     private final Map<UUID, TradeSession> sessions = new HashMap<>();
@@ -35,16 +52,21 @@ public final class TradeManager {
     // -------------------------------------------------------------------------
 
     /**
-     * Records a trade request from {@code from} to {@code to}.
-     * Overwrites any previous pending request from the same player.
+     * Records a trade request. Overwrites any previous pending request from the same initiator.
      */
-    public void sendRequest(UUID from, UUID to) {
-        pendingRequests.put(from, to);
+    public void sendRequest(TradeRequest request) {
+        pendingRequests.put(request.initiator, request);
     }
 
     /** Returns {@code true} if there is a pending request from {@code from} to {@code to}. */
     public boolean hasPendingRequest(UUID from, UUID to) {
-        return to.equals(pendingRequests.get(from));
+        TradeRequest req = pendingRequests.get(from);
+        return req != null && to.equals(req.target);
+    }
+
+    /** Returns the pending {@link TradeRequest} sent by {@code from}, or {@code null} if none. */
+    public TradeRequest getPendingRequest(UUID from) {
+        return pendingRequests.get(from);
     }
 
     /** Removes any pending request sent by {@code from}. */
