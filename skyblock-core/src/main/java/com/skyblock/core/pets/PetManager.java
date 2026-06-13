@@ -37,7 +37,17 @@ public final class PetManager {
         CAT("Cat"), PARROT("Parrot"), PENGUIN("Penguin"), TURTLE("Turtle"),
         SHEEP("Sheep"), PIG("Pig"), CHICKEN("Chicken"), BLAZE("Blaze"),
         ENDERMAN("Enderman"), SKELETON("Skeleton"), SPIDER("Spider"), ZOMBIE("Zombie"),
-        GOLDEN_DRAGON("Golden Dragon");
+        GOLDEN_DRAGON("Golden Dragon"),
+        ROCK("Rock"), SILVERFISH("Silverfish"), FLYING_FISH("Flying Fish"),
+        BAT("Bat"), SQUID("Squid"), JELLYFISH("Jellyfish"), ENDER_DRAGON("Ender Dragon"),
+        BLACK_CAT("Black Cat"), BABY_YETI("Baby Yeti"), PHOENIX("Phoenix"),
+        GHOUL("Ghoul"), JERRY("Jerry"), SLUG("Slug"), ARMADILLO("Armadillo"),
+        DROPLET_WISP("Droplet Wisp"), PIGMAN("Pigman"), HOUND("Hound"),
+        WITHER_SKELETON("Wither Skeleton"), GOLEM("Golem"), OCELOT("Ocelot"),
+        MONKEY("Monkey"), GIRAFFE("Giraffe"), HEDGEHOG("Hedgehog"),
+        GUARDIAN("Guardian"), SNOWMAN("Snowman"), SCARECROW("Scarecrow"),
+        MOOSHROOM_COW("Mooshroom Cow"), MITHRIL_GOLEM("Mithril Golem"),
+        SUMO("Sumo"), ENDERMITE("Endermite");
 
         private final String displayName;
 
