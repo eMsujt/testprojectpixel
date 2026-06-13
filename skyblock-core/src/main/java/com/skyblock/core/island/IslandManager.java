@@ -26,10 +26,29 @@ import org.bukkit.WorldCreator;
  */
 public final class IslandManager {
 
+    public enum IslandUpgrade {
+        MINION_SLOTS(5),
+        ISLAND_SIZE(5),
+        GUESTS(5),
+        CO_OP_SLOTS(3),
+        BEACON_POWER(4);
+
+        private final int maxLevel;
+
+        IslandUpgrade(int maxLevel) {
+            this.maxLevel = maxLevel;
+        }
+
+        public int getMaxLevel() {
+            return maxLevel;
+        }
+    }
+
     public static final class SkyBlockIsland {
 
         private final UUID owner;
         private final List<UUID> members = new ArrayList<>();
+        private final Map<IslandUpgrade, Integer> upgrades = new HashMap<>();
 
         SkyBlockIsland(UUID owner) {
             this.owner = owner;
@@ -41,6 +60,14 @@ public final class IslandManager {
 
         public List<UUID> getMembers() {
             return Collections.unmodifiableList(members);
+        }
+
+        public int getUpgradeLevel(IslandUpgrade upgrade) {
+            return upgrades.getOrDefault(upgrade, 0);
+        }
+
+        public Map<IslandUpgrade, Integer> getUpgrades() {
+            return Collections.unmodifiableMap(upgrades);
         }
     }
 
@@ -168,6 +195,26 @@ public final class IslandManager {
             island.members.remove(member);
         }
         memberIndex.remove(member);
+        return true;
+    }
+
+    /**
+     * Increments the level of {@code upgrade} on {@code owner}'s island by 1.
+     *
+     * @return {@code false} if the island does not exist or the upgrade is already at max level
+     */
+    public boolean applyUpgrade(UUID owner, IslandUpgrade upgrade) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(upgrade, "upgrade");
+        SkyBlockIsland island = islands.get(owner);
+        if (island == null) {
+            return false;
+        }
+        int current = island.upgrades.getOrDefault(upgrade, 0);
+        if (current >= upgrade.getMaxLevel()) {
+            return false;
+        }
+        island.upgrades.put(upgrade, current + 1);
         return true;
     }
 
