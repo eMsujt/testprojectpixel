@@ -122,7 +122,49 @@ public final class BazaarManager {
         // Enchanted Fishing
         ENCHANTED_RAW_FISH("ENCHANTED_RAW_FISH", "Enchanted Raw Fish", "FISHING"),
         ENCHANTED_RAW_SALMON("ENCHANTED_RAW_SALMON", "Enchanted Raw Salmon", "FISHING"),
-        ENCHANTED_INK_SAC("ENCHANTED_INK_SAC", "Enchanted Ink Sac", "FISHING");
+        ENCHANTED_INK_SAC("ENCHANTED_INK_SAC", "Enchanted Ink Sac", "FISHING"),
+        ENCHANTED_CLAY("ENCHANTED_CLAY", "Enchanted Clay Ball", "FISHING"),
+        ENCHANTED_LILY_PAD("ENCHANTED_LILY_PAD", "Enchanted Lily Pad", "FISHING"),
+        ENCHANTED_PRISMARINE_SHARD("ENCHANTED_PRISMARINE_SHARD", "Enchanted Prismarine Shard", "FISHING"),
+        ENCHANTED_PRISMARINE_CRYSTALS("ENCHANTED_PRISMARINE_CRYSTALS", "Enchanted Prismarine Crystals", "FISHING"),
+
+        // More Fishing
+        CLAY("CLAY", "Clay", "FISHING"),
+        LILY_PAD("LILY_PAD", "Lily Pad", "FISHING"),
+        PRISMARINE_SHARD("PRISMARINE_SHARD", "Prismarine Shard", "FISHING"),
+        PRISMARINE_CRYSTALS("PRISMARINE_CRYSTALS", "Prismarine Crystals", "FISHING"),
+
+        // More Mining
+        MITHRIL_ORE("MITHRIL_ORE", "Mithril", "MINING"),
+        TITANIUM_ORE("TITANIUM_ORE", "Titanium", "MINING"),
+        FLINT("FLINT", "Flint", "MINING"),
+        SAND("SAND", "Sand", "MINING"),
+        END_STONE("END_STONE", "End Stone", "MINING"),
+        NETHERRACK("NETHERRACK", "Netherrack", "MINING"),
+
+        // More Enchanted Mining
+        ENCHANTED_GLOWSTONE_DUST("ENCHANTED_GLOWSTONE_DUST", "Enchanted Glowstone Dust", "MINING"),
+        ENCHANTED_FLINT("ENCHANTED_FLINT", "Enchanted Flint", "MINING"),
+        ENCHANTED_SAND("ENCHANTED_SAND", "Enchanted Sand", "MINING"),
+        ENCHANTED_END_STONE("ENCHANTED_END_STONE", "Enchanted End Stone", "MINING"),
+        ENCHANTED_NETHERRACK("ENCHANTED_NETHERRACK", "Enchanted Netherrack", "MINING"),
+
+        // More Combat
+        FEATHER("FEATHER", "Feather", "COMBAT"),
+        LEATHER("LEATHER", "Leather", "COMBAT"),
+        POISONOUS_POTATO("POISONOUS_POTATO", "Poisonous Potato", "COMBAT"),
+
+        // More Enchanted Combat
+        ENCHANTED_FEATHER("ENCHANTED_FEATHER", "Enchanted Feather", "COMBAT"),
+        ENCHANTED_LEATHER("ENCHANTED_LEATHER", "Enchanted Leather", "COMBAT"),
+        ENCHANTED_POISONOUS_POTATO("ENCHANTED_POISONOUS_POTATO", "Enchanted Poisonous Potato", "COMBAT"),
+
+        // Misc
+        ICE("ICE", "Ice", "MISC"),
+        SNOW_BLOCK("SNOW_BLOCK", "Snow Block", "MISC"),
+        ENCHANTED_ICE("ENCHANTED_ICE", "Enchanted Ice", "MISC"),
+        ENCHANTED_SNOW_BLOCK("ENCHANTED_SNOW_BLOCK", "Enchanted Snow Block", "MISC"),
+        ENCHANTED_SEEDS("ENCHANTED_SEEDS", "Enchanted Seeds", "FARMING");
 
         private final String itemId;
         private final String displayName;
