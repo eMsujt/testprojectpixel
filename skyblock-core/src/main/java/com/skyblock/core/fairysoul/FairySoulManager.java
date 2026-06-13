@@ -44,6 +44,40 @@ public final class FairySoulManager {
     }
 
 
+    /** Specific spawn locations of fairy souls, each belonging to a {@link FairySoulArea}. */
+    public enum FairySoulLocation {
+        HUB_VILLAGE("Village",            FairySoulArea.HUB),
+        HUB_GRAVEYARD("Graveyard",        FairySoulArea.HUB),
+        HUB_CLIFF("Cliff",                FairySoulArea.HUB),
+        FARMING_BARN("Barn",              FairySoulArea.FARMING_ISLANDS),
+        FARMING_MUSHROOM("Mushroom Desert", FairySoulArea.FARMING_ISLANDS),
+        SPIDERS_TOP("Arachneum Top",      FairySoulArea.SPIDERS_DEN),
+        SPIDERS_BURROW("Burrow",          FairySoulArea.SPIDERS_DEN),
+        END_VOID_EDGE("Void Edge",        FairySoulArea.THE_END),
+        CRIMSON_STRONGHOLD("Stronghold",  FairySoulArea.CRIMSON_ISLE),
+        CRIMSON_LAVA_SHORE("Lava Shore",  FairySoulArea.CRIMSON_ISLE),
+        CAVERNS_LAPIS("Lapis Quarry",     FairySoulArea.DEEP_CAVERNS),
+        CAVERNS_REDSTONE("Redstone Cavern", FairySoulArea.DEEP_CAVERNS),
+        PARK_TREE("Great Elm Tree",       FairySoulArea.PARK),
+        PARK_JUNGLE("Jungle",             FairySoulArea.PARK),
+        DUNGEON_HUB_ENTRANCE("Entrance",  FairySoulArea.DUNGEON_HUB);
+
+        /** Human-readable display name shown to players. */
+        public final String displayName;
+        /** The area this location belongs to. */
+        public final FairySoulArea area;
+
+        FairySoulLocation(String displayName, FairySoulArea area) {
+            this.displayName = displayName;
+            this.area = area;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+
     private static final FairySoulManager INSTANCE = new FairySoulManager();
 
     /** Per-player set of collected fairy soul IDs; absent entries mean no souls collected. */
