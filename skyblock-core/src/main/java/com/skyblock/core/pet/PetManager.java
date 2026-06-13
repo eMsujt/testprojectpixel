@@ -39,15 +39,17 @@ public final class PetManager {
     }
 
     public enum PetType {
-        LEGENDARY_GRIFFIN(PetRarity.LEGENDARY,   "Griffin"),
-        LEGENDARY_GOLDEN_DRAGON(PetRarity.LEGENDARY, "Golden Dragon"),
-        EPIC_ENDERMAN(PetRarity.EPIC,            "Enderman"),
-        EPIC_BLAZE(PetRarity.EPIC,               "Blaze"),
-        EPIC_WOLF(PetRarity.EPIC,                "Wolf"),
-        RARE_RABBIT(PetRarity.RARE,              "Rabbit"),
-        RARE_BEE(PetRarity.RARE,                 "Bee"),
-        UNCOMMON_PENGUIN(PetRarity.UNCOMMON,     "Penguin"),
-        COMMON_CHICKEN(PetRarity.COMMON,         "Chicken");
+        BEE(PetRarity.RARE,                      "Bee"),
+        ENDERMAN(PetRarity.EPIC,                 "Enderman"),
+        TIGER(PetRarity.LEGENDARY,               "Tiger"),
+        WOLF(PetRarity.EPIC,                     "Wolf"),
+        DOLPHIN(PetRarity.RARE,                  "Dolphin"),
+        GRIFFIN(PetRarity.LEGENDARY,             "Griffin"),
+        GOLDEN_DRAGON(PetRarity.LEGENDARY,       "Golden Dragon"),
+        BLAZE(PetRarity.EPIC,                    "Blaze"),
+        RABBIT(PetRarity.RARE,                   "Rabbit"),
+        PENGUIN(PetRarity.UNCOMMON,              "Penguin"),
+        CHICKEN(PetRarity.COMMON,                "Chicken");
 
         public final PetRarity rarity;
         private final String displayName;
