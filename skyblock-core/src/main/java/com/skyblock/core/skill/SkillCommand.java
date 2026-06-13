@@ -41,6 +41,11 @@ public final class SkillCommand implements TabExecutor {
             return true;
         }
 
+        if ("list".equalsIgnoreCase(args[0])) {
+            sendSkillEnumList(player);
+            return true;
+        }
+
         SkillManager.SkillType skill;
         try {
             skill = SkillManager.SkillType.valueOf(args[0].toUpperCase());
@@ -56,8 +61,11 @@ public final class SkillCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.stream(SkillManager.SkillType.values())
+            List<String> completions = Arrays.stream(SkillManager.SkillType.values())
                     .map(s -> s.name().toLowerCase())
+                    .collect(Collectors.toList());
+            completions.add("list");
+            return completions.stream()
                     .filter(name -> name.startsWith(args[0].toLowerCase()))
                     .collect(Collectors.toList());
         }
@@ -70,6 +78,13 @@ public final class SkillCommand implements TabExecutor {
         for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
             int level = skillManager.getLevel(id, skill);
             player.sendMessage(skill.getDisplayName() + ": Level " + level + "/" + SkillManager.MAX_LEVEL);
+        }
+    }
+
+    private void sendSkillEnumList(Player player) {
+        player.sendMessage("=== SkyBlock Skills ===");
+        for (SkillManager.Skill skill : SkillManager.Skill.values()) {
+            player.sendMessage(skill.getDisplayName() + " (max level: " + skill.getMaxLevel() + ")");
         }
     }
 
