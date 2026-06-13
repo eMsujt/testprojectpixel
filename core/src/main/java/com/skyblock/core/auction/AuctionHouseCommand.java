@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public final class AuctionHouseCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "bid", "cancel");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "bid", "cancel", "search");
 
     private final AuctionHouseManager manager;
 
@@ -39,6 +39,7 @@ public final class AuctionHouseCommand implements TabExecutor {
             case "create" -> handleCreate(player, args);
             case "bid"    -> handleBid(player, args);
             case "cancel" -> handleCancel(player, args);
+            case "search" -> handleSearch(player, args);
             default       -> sendHelp(player);
         }
         return true;
@@ -151,11 +152,36 @@ public final class AuctionHouseCommand implements TabExecutor {
         return null;
     }
 
+    private void handleSearch(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /ah search <query>");
+            return;
+        }
+        String query = String.join(" ", Arrays.copyOfRange(args, 1, args.length)).toLowerCase();
+        List<Map.Entry<UUID, AuctionHouseManager.AuctionItem>> results = manager.getItems().entrySet().stream()
+                .filter(e -> e.getValue().itemName().toLowerCase().contains(query))
+                .sorted((a, b) -> a.getValue().itemName().compareToIgnoreCase(b.getValue().itemName()))
+                .collect(Collectors.toList());
+        if (results.isEmpty()) {
+            player.sendMessage("No listings found matching '" + query + "'.");
+            return;
+        }
+        player.sendMessage("=== Search results for '" + query + "' (" + results.size() + ") ===");
+        for (Map.Entry<UUID, AuctionHouseManager.AuctionItem> e : results) {
+            AuctionHouseManager.AuctionItem item = e.getValue();
+            player.sendMessage(String.format("[%s] %s — %d coins",
+                    e.getKey().toString().substring(0, 8),
+                    item.itemName(),
+                    item.price()));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Auction House Commands ===");
         player.sendMessage("/ah list — show all active listings");
         player.sendMessage("/ah create <price> <itemName> — create a listing");
         player.sendMessage("/ah bid <id> <price> — purchase a listing");
         player.sendMessage("/ah cancel <id> — cancel your listing");
+        player.sendMessage("/ah search <query> — search listings by name");
     }
 }
