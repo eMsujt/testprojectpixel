@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public final class BestiaryCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "reset", "families");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "reset", "families", "categories");
 
     private final BestiaryManager bestiaryManager;
 
@@ -46,10 +46,11 @@ public final class BestiaryCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "view"     -> handleView(player, args);
-            case "reset"    -> handleReset(player);
-            case "families" -> handleFamilies(player);
-            default         -> sendHelp(player);
+            case "view"       -> handleView(player, args);
+            case "reset"      -> handleReset(player);
+            case "families"   -> handleFamilies(player);
+            case "categories" -> handleCategories(player);
+            default           -> sendHelp(player);
         }
         return true;
     }
@@ -115,11 +116,21 @@ public final class BestiaryCommand implements TabExecutor {
         }
     }
 
+    private void handleCategories(Player player) {
+        UUID id = player.getUniqueId();
+        player.sendMessage("=== Bestiary Categories ===");
+        for (BestiaryManager.BestiaryCategory category : BestiaryManager.BestiaryCategory.values()) {
+            int total = bestiaryManager.getKillsForCategory(id, category);
+            player.sendMessage("  " + category.displayName + ": " + total + " kills");
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bestiary Commands ===");
-        player.sendMessage("/bestiary            — show all kill counts");
-        player.sendMessage("/bestiary view <mob> — show kills for a specific mob");
-        player.sendMessage("/bestiary families   — show kills grouped by family");
-        player.sendMessage("/bestiary reset      — reset all kill counts");
+        player.sendMessage("/bestiary              — show all kill counts");
+        player.sendMessage("/bestiary view <mob>   — show kills for a specific mob");
+        player.sendMessage("/bestiary families     — show kills grouped by family");
+        player.sendMessage("/bestiary categories   — show kills grouped by category");
+        player.sendMessage("/bestiary reset        — reset all kill counts");
     }
 }

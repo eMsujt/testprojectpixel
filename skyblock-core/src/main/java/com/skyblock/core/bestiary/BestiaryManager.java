@@ -51,6 +51,25 @@ public final class BestiaryManager {
         }
     }
 
+    /** Broad categories that group bestiary families together. */
+    public enum BestiaryCategory {
+        COMBAT("Combat",  new BestiaryFamily[]{BestiaryFamily.ZOMBIE, BestiaryFamily.SKELETON,
+                                               BestiaryFamily.SPIDER, BestiaryFamily.CREEPER}),
+        SLAYER("Slayer",  new BestiaryFamily[]{BestiaryFamily.ENDERMAN, BestiaryFamily.BLAZE,
+                                               BestiaryFamily.WITCH}),
+        BOSS  ("Boss",    new BestiaryFamily[]{BestiaryFamily.GHAST, BestiaryFamily.SLIME,
+                                               BestiaryFamily.GOLEM});
+
+        public final String displayName;
+        /** Bestiary families that belong to this category. */
+        public final BestiaryFamily[] families;
+
+        BestiaryCategory(String displayName, BestiaryFamily[] families) {
+            this.displayName = displayName;
+            this.families    = families;
+        }
+    }
+
     /** Groupings of related mob types for bestiary milestone tracking. */
     public enum BestiaryFamily {
         ZOMBIE("Zombie",   new String[]{"zombie", "zombie_villager", "drowned", "husk"}),
@@ -177,6 +196,24 @@ public final class BestiaryManager {
         int total = 0;
         for (String mobType : family.mobTypes) {
             total += getKills(playerId, mobType);
+        }
+        return total;
+    }
+
+    /**
+     * Returns the total kills the player has for all families in the given category.
+     *
+     * @param playerId the player's UUID
+     * @param category the bestiary category
+     * @return summed kill count across all families in the category
+     */
+    public int getKillsForCategory(UUID playerId, BestiaryCategory category) {
+        if (playerId == null || category == null) {
+            return 0;
+        }
+        int total = 0;
+        for (BestiaryFamily family : category.families) {
+            total += getKillsForFamily(playerId, family);
         }
         return total;
     }
