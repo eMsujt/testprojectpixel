@@ -268,6 +268,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("vault").setExecutor(vaultCommand);
         getCommand("vault").setTabCompleter(vaultCommand);
         FriendManager friendManager = FriendManager.getInstance();
+        friendManager.load(getDataFolder());
         FriendCommand friendCommand = new FriendCommand(friendManager);
         getCommand("friend").setExecutor(friendCommand);
         getCommand("friend").setTabCompleter(friendCommand);
@@ -326,6 +327,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         CrimsonManager.getInstance().save(getDataFolder());
         VaultManager.getInstance().save(getDataFolder());
         GuildManager.getInstance().save(getDataFolder());
+        FriendManager.getInstance().save(getDataFolder());
         try {
             WarpManager.getInstance().save(getDataFolder());
         } catch (java.io.IOException e) {
