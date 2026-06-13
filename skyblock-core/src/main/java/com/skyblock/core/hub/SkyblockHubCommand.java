@@ -52,7 +52,7 @@ public final class SkyblockHubCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS = Arrays.asList(
             "hub", "bank", "mayor", "auction", "bazaar", "island", "skills", "pets",
             "profile", "quest", "minion", "fishing", "mining", "slayer",
-            "hotm", "garden", "collection", "backpack", "reforge", "achievement",
+            "hotm", "garden", "collections", "backpack", "reforge", "achievement",
             "dungeon", "stats", "enchanting", "kuudra", "crafting", "trade",
             "event", "foraging", "help"
     );
@@ -132,7 +132,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             {"Slayer",     "slayer"},
             {"Pets",       "pets"},
             {"Skills",     "skills"},
-            {"Collection", "collection"},
+            {"Collections", "collections"},
             {"Bank",       "bank"},
             {"Mayor",      "mayor"},
             {"Auction",    "auction"},
