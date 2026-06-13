@@ -15,7 +15,7 @@ public final class SlayerManager {
     };
 
     public enum SlayerType {
-        ZOMBIE, SPIDER, WOLF, ENDERMAN, BLAZE
+        REVENANT_HORROR, TARANTULA_BROODFATHER, SVEN_PACKMASTER, VOIDGLOOM_SERAPH, INFERNO_DEMONLORD
     }
 
     public enum QuestTier {
