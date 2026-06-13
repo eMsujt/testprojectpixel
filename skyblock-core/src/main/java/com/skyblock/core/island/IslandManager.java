@@ -28,6 +28,7 @@ public final class IslandManager {
 
     public enum IslandUpgrade {
         MINION_SLOTS(5),
+        CHEST_SLOTS(5),
         ISLAND_SIZE(5),
         GUESTS(5),
         CO_OP_SLOTS(3),
