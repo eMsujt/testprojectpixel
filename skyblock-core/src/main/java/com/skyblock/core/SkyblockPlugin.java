@@ -42,6 +42,8 @@ import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.event.EventCommand;
 import com.skyblock.core.event.EventManager;
+import com.skyblock.core.combat.CombatCommand;
+import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.trade.TradeCommand;
@@ -175,6 +177,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         ForagingCommand foragingCommand = new ForagingCommand(foragingManager);
         getCommand("foraging").setExecutor(foragingCommand);
         getCommand("foraging").setTabCompleter(foragingCommand);
+        CombatManager combatManager = CombatManager.getInstance();
+        CombatCommand combatCommand = new CombatCommand(combatManager);
+        getCommand("combat").setExecutor(combatCommand);
+        getCommand("combat").setTabCompleter(combatCommand);
     }
 
     @Override
