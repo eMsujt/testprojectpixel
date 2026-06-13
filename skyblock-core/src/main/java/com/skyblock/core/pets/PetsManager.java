@@ -22,7 +22,7 @@ public final class PetsManager {
         BEE, WOLF, ENDERMAN, BLAZE, TIGER, DOLPHIN,
         RABBIT, LION, ELEPHANT, HORSE, CAT, PARROT,
         PENGUIN, TURTLE, SHEEP, PIG, CHICKEN,
-        SKELETON, SPIDER, ZOMBIE
+        SKELETON, SPIDER, ZOMBIE, JELLYFISH
     }
 
     /** Rarity tiers for pets. */
