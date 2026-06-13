@@ -57,9 +57,6 @@ public final class FishingManager {
     }
 
     private static final LootEntry[] LOOT_TABLE = {
-        new LootEntry(FishType.RAW_FISH,            Material.COD,                  1,  50.0),
-        new LootEntry(FishType.RAW_SALMON,          Material.SALMON,               1,  30.0),
-        new LootEntry(FishType.CLOWNFISH,           Material.TROPICAL_FISH,        5,  10.0),
         new LootEntry(FishType.SEA_CREATURE,        Material.NAUTILUS_SHELL,      20,   2.0),
         new LootEntry(FishType.FISHING_TREASURE,    Material.MAP,                 40,   0.5),
         new LootEntry(FishType.PUFFERFISH,          Material.PUFFERFISH,           5,   8.0),
@@ -362,7 +359,7 @@ public final class FishingManager {
         }
 
         // Fallback — should never be reached when LOOT_TABLE is non-empty
-        return new ItemStack(Material.COD, 1);
+        return new ItemStack(Material.INK_SAC, 1);
     }
 
     // ---------------------------------------------------------------------------
