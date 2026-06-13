@@ -17,6 +17,7 @@ import java.util.List;
  *   <li>{@code /bank balance}           — show your current balance</li>
  *   <li>{@code /bank deposit <amount>}  — deposit coins</li>
  *   <li>{@code /bank withdraw <amount>} — withdraw coins</li>
+ *   <li>{@code /bank tier [tier]}       — view or set your bank tier</li>
  * </ul>
  * </p>
  */
@@ -44,6 +45,7 @@ public final class BankCommand implements TabExecutor {
             case "balance" -> handleBalance(player);
             case "deposit"  -> handleDeposit(player, args);
             case "withdraw" -> handleWithdraw(player, args);
+            case "tier"     -> handleTier(player, args);
             default -> sendHelp(player);
         }
         return true;
@@ -53,7 +55,14 @@ public final class BankCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("balance", "deposit", "withdraw").stream()
+            return Arrays.asList("balance", "deposit", "withdraw", "tier").stream()
+                    .filter(s -> s.startsWith(lower))
+                    .toList();
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("tier")) {
+            String lower = args[1].toLowerCase();
+            return Arrays.stream(BankManager.BankTier.values())
+                    .map(t -> t.name().toLowerCase())
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -105,10 +114,26 @@ public final class BankCommand implements TabExecutor {
         }
     }
 
+    private void handleTier(Player player, String[] args) {
+        if (args.length < 2) {
+            BankManager.BankTier tier = bankManager.getTier(player.getUniqueId());
+            player.sendMessage("Your bank tier: " + tier.getDisplayName() + " (max balance: " + tier.getMaxBalance() + " coins)");
+            return;
+        }
+        try {
+            BankManager.BankTier tier = BankManager.BankTier.valueOf(args[1].toUpperCase());
+            bankManager.setTier(player.getUniqueId(), tier);
+            player.sendMessage("Bank tier set to: " + tier.getDisplayName());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown tier. Valid tiers: STARTER, PERSONAL, BOOSTER");
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bank Commands ===");
         player.sendMessage("/bank balance — view your balance");
         player.sendMessage("/bank deposit <amount> — deposit coins");
         player.sendMessage("/bank withdraw <amount> — withdraw coins");
+        player.sendMessage("/bank tier [tier] — view or set your bank tier");
     }
 }
