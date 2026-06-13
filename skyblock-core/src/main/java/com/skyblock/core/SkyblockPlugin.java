@@ -28,6 +28,8 @@ import com.skyblock.core.pets.PetsCommand;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.profile.ProfileCommand;
 import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.fairy.FairyCommand;
+import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
@@ -114,6 +116,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         ProfileCommand profileCommand = new ProfileCommand(profileManager);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
+        FairyManager fairyManager = FairyManager.getInstance();
+        fairyManager.load(getDataFolder());
+        FairyCommand fairyCommand = new FairyCommand(fairyManager);
+        getCommand("fairy").setExecutor(fairyCommand);
+        getCommand("fairy").setTabCompleter(fairyCommand);
     }
 
     @Override
@@ -131,6 +138,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         EnchantingManager.getInstance().save(getDataFolder());
         SkillsManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
+        FairyManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }

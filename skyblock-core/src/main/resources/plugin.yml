@@ -206,6 +206,10 @@ commands:
     description: View and manage your SkyBlock player stats.
     usage: /stats [info|get <stat>|set <stat> <value>|reset]
     permission: skyblock.stats
+  fairy:
+    description: View and manage your fairy soul count.
+    usage: /fairy <count|add|set|reset>
+    permission: skyblock.fairy
   fairysoul:
     description: View and manage your fairy soul collection.
     usage: /fairysoul [info|collect <key>|reset]
@@ -323,6 +327,9 @@ permissions:
     default: true
   skyblock.season:
     description: Use the /season command to view and manage the current SkyBlock season.
+    default: true
+  skyblock.fairy:
+    description: Use the /fairy command to view and manage fairy soul count.
     default: true
   skyblock.fairysoul:
     description: Use the /fairysoul command to view and manage fairy soul collection.
