@@ -229,11 +229,26 @@ public final class SlayerManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        slayerExperience.clear();
         killCounts.clear();
         bossActive.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".xp")) {
+                    Map<SlayerType, Long> xpMap = new EnumMap<>(SlayerType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".xp").getKeys(false)) {
+                        try {
+                            SlayerType type = SlayerType.valueOf(typeName);
+                            xpMap.put(type, cfg.getLong(key + ".xp." + typeName, 0L));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown slayer types
+                        }
+                    }
+                    if (!xpMap.isEmpty()) {
+                        slayerExperience.put(uuid, xpMap);
+                    }
+                }
                 if (cfg.isConfigurationSection(key + ".kills")) {
                     Map<SlayerType, Integer> counts = new EnumMap<>(SlayerType.class);
                     for (String typeName : cfg.getConfigurationSection(key + ".kills").getKeys(false)) {
@@ -260,6 +275,12 @@ public final class SlayerManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "slayer.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<SlayerType, Long>> entry : slayerExperience.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<SlayerType, Long> xp : entry.getValue().entrySet()) {
+                cfg.set(key + ".xp." + xp.getKey().name(), xp.getValue());
+            }
+        }
         for (Map.Entry<UUID, Map<SlayerType, Integer>> entry : killCounts.entrySet()) {
             String key = entry.getKey().toString();
             for (Map.Entry<SlayerType, Integer> kc : entry.getValue().entrySet()) {
