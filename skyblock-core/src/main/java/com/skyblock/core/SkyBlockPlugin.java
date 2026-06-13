@@ -124,6 +124,8 @@ import com.skyblock.core.accessory.AccessoryBagCommand;
 import com.skyblock.core.accessory.AccessoryBagManager;
 import com.skyblock.core.accessory.AccessoryCommand;
 import com.skyblock.core.accessory.AccessoryManager;
+import com.skyblock.core.cooldown.CooldownCommand;
+import com.skyblock.core.cooldown.CooldownManager;
 import com.skyblock.core.essence.EssenceCommand;
 import com.skyblock.core.essence.EssenceManager;
 import com.skyblock.core.crimson.CrimsonIsleCommand;
@@ -467,6 +469,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         SeasonCommand seasonCommand = new SeasonCommand(seasonManager);
         getCommand("season").setExecutor(seasonCommand);
         getCommand("season").setTabCompleter(seasonCommand);
+
+        CooldownManager cooldownManager = CooldownManager.getInstance();
+        CooldownCommand cooldownCommand = new CooldownCommand(cooldownManager);
+        getCommand("cooldown").setExecutor(cooldownCommand);
+        getCommand("cooldown").setTabCompleter(cooldownCommand);
 
         getLogger().info("SkyBlock core enabled.");
     }
