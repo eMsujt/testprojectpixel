@@ -21,29 +21,36 @@ public final class TrophyFishManager {
 
     /** Trophy fish variants obtainable through SkyBlock trophy fishing. */
     public enum TrophyFish {
-        SULPHUR_SKITTER(1, 0.30),
-        OBFUSCATED_FISH_1(1, 0.25),
-        OBFUSCATED_FISH_2(10, 0.15),
-        OBFUSCATED_FISH_3(20, 0.08),
-        STEAMING_HOT_FLOUNDER(5, 0.20),
-        GUSHER(5, 0.18),
-        BLOBFISH(10, 0.12),
-        SLUGFISH(10, 0.10),
-        FLYFISH(15, 0.07),
-        LAVA_HORSE(20, 0.06),
-        MANA_RAY(20, 0.05),
-        VOLCANIC_STONEFISH(25, 0.04),
-        VANILLE(25, 0.03),
-        SKELETON_FISH(30, 0.02);
+        SULPHUR_SKITTER(1, 0.30, "Sulphur Skitter"),
+        OBFUSCATED_FISH_1(1, 0.25, "Obfuscated Fish 1"),
+        OBFUSCATED_FISH_2(10, 0.15, "Obfuscated Fish 2"),
+        OBFUSCATED_FISH_3(20, 0.08, "Obfuscated Fish 3"),
+        STEAMING_HOT_FLOUNDER(5, 0.20, "Steaming-Hot Flounder"),
+        GUSHER(5, 0.18, "Gusher"),
+        BLOBFISH(10, 0.12, "Blobfish"),
+        SLUGFISH(10, 0.10, "Slugfish"),
+        FLYFISH(15, 0.07, "Flyfish"),
+        LAVA_HORSE(20, 0.06, "Lava Horse"),
+        MANA_RAY(20, 0.05, "Mana Ray"),
+        VOLCANIC_STONEFISH(25, 0.04, "Volcanic Stonefish"),
+        VANILLE(25, 0.03, "Vanille"),
+        SKELETON_FISH(30, 0.02, "Skeleton Fish");
 
         /** Minimum fishing level required for this trophy fish to drop. */
         public final int minLevel;
         /** Base drop chance (0–1) when the player meets the level requirement. */
         public final double dropChance;
+        /** Human-readable display name. */
+        public final String displayName;
 
-        TrophyFish(int minLevel, double dropChance) {
+        TrophyFish(int minLevel, double dropChance, String displayName) {
             this.minLevel = minLevel;
             this.dropChance = dropChance;
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
         }
     }
 
