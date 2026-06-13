@@ -21,6 +21,7 @@ public final class MinionManager {
     public enum MinionType {
         COBBLESTONE("Cobblestone Minion"),
         WHEAT("Wheat Minion"),
+        COAL("Coal Minion"),
         CARROT("Carrot Minion"),
         POTATO("Potato Minion"),
         MELON("Melon Minion"),
