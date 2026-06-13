@@ -293,6 +293,10 @@ commands:
     description: Send and read player mail messages.
     usage: /mail <inbox|send <player> <message>|clear>
     permission: skyblock.mail
+  repair:
+    description: Repair items using coins based on material durability cost.
+    usage: /repair <hand|all>
+    permission: skyblock.repair
 
 permissions:
   skyblock.warp:
@@ -402,4 +406,7 @@ permissions:
     default: true
   skyblock.mail:
     description: Use the /mail command to send and read player mail.
+    default: true
+  skyblock.repair:
+    description: Use the /repair command to repair items with coins.
     default: true
