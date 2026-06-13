@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public final class ProfileCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "delete", "mode");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "delete", "mode", "data");
     private static final List<String> GAME_MODES = Arrays.asList("normal", "ironman", "bingo");
     private static final List<String> PROFILE_MODES = Arrays.asList("classic", "ironman", "stranded", "bingo");
 
@@ -42,7 +42,7 @@ public final class ProfileCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /profile <list|create|delete|mode>");
+            player.sendMessage("Usage: /profile <list|create|delete|mode|data>");
             return true;
         }
 
@@ -51,7 +51,8 @@ public final class ProfileCommand implements TabExecutor {
             case "create" -> handleCreate(player, args);
             case "delete" -> handleDelete(player, args);
             case "mode"   -> handleMode(player);
-            default       -> player.sendMessage("Unknown subcommand. Usage: /profile <list|create|delete|mode>");
+            case "data"   -> handleData(player);
+            default       -> player.sendMessage("Unknown subcommand. Usage: /profile <list|create|delete|mode|data>");
         }
         return true;
     }
@@ -122,6 +123,18 @@ public final class ProfileCommand implements TabExecutor {
         for (int i = 0; i < modes.length; i++) {
             player.sendMessage(String.format("%d. %s", i + 1, modes[i].getDisplayName()));
         }
+    }
+
+    private void handleData(Player player) {
+        ProfileManager.ProfileData data = profileManager.getPlayerData(player.getUniqueId());
+        if (data == null) {
+            player.sendMessage("No profile data found for your account.");
+            return;
+        }
+        player.sendMessage("=== Profile Data ===");
+        player.sendMessage("  Username : " + data.username());
+        player.sendMessage("  Coins    : " + String.format("%.0f", data.coins()));
+        player.sendMessage("  UUID     : " + data.uuid());
     }
 
     private void handleDelete(Player player, String[] args) {
