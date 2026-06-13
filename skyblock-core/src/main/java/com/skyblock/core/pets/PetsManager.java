@@ -87,6 +87,9 @@ public final class PetsManager {
     /** Per-player XP data keyed by pet type. */
     private final Map<UUID, Map<PetType, PetData>> petXpData = new HashMap<>();
 
+    /** Currently active (selected) pet type per player; absent means no active pet. */
+    private final Map<UUID, PetType> activePetType = new HashMap<>();
+
     private PetsManager() {
     }
 
@@ -198,6 +201,32 @@ public final class PetsManager {
     }
 
     /**
+     * Returns the currently active pet type for the player, or {@code null} if none.
+     *
+     * @param player the player to look up
+     * @return the active {@link PetType}, or {@code null}
+     */
+    public PetType getActivePetType(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return activePetType.get(player);
+    }
+
+    /**
+     * Sets the active pet type for the player. Pass {@code null} to clear.
+     *
+     * @param player the player to update
+     * @param type   the pet type to activate, or {@code null} to deactivate
+     */
+    public void setActivePetType(UUID player, PetType type) {
+        Objects.requireNonNull(player, "player");
+        if (type == null) {
+            activePetType.remove(player);
+        } else {
+            activePetType.put(player, type);
+        }
+    }
+
+    /**
      * Adds XP to the given pet type for a player, leveling up when thresholds are met.
      *
      * @param player the player gaining XP
@@ -249,14 +278,26 @@ public final class PetsManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         petXpData.clear();
+        activePetType.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
                 if (!cfg.isConfigurationSection(key)) {
                     continue;
                 }
+                String activeStr = cfg.getString(key + ".active");
+                if (activeStr != null) {
+                    try {
+                        activePetType.put(uuid, PetType.valueOf(activeStr));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip unknown active type
+                    }
+                }
                 Map<PetType, PetData> xpMap = new EnumMap<>(PetType.class);
                 for (String typeName : cfg.getConfigurationSection(key).getKeys(false)) {
+                    if ("active".equals(typeName)) {
+                        continue;
+                    }
                     try {
                         PetType type = PetType.valueOf(typeName);
                         double xp = cfg.getDouble(key + "." + typeName + ".xp", 0.0);
@@ -286,6 +327,9 @@ public final class PetsManager {
                 cfg.set(key + "." + typeName + ".level", pd.getValue().level);
             }
         }
+        for (Map.Entry<UUID, PetType> entry : activePetType.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".active", entry.getValue().name());
+        }
         try {
             cfg.save(file);
         } catch (IOException e) {
@@ -304,6 +348,7 @@ public final class PetsManager {
         boolean hadData = playerPets.remove(playerId) != null;
         hadData |= equippedPets.remove(playerId) != null;
         hadData |= petXpData.remove(playerId) != null;
+        activePetType.remove(playerId);
         return hadData;
     }
 }
