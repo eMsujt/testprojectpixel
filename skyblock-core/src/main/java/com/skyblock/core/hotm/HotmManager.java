@@ -16,31 +16,37 @@ public final class HotmManager {
 
     /** Every upgradeable perk in the Heart of the Mountain tree. */
     public enum HotmPerk {
-        MINING_SPEED(50),
-        MINING_FORTUNE(50),
-        DAILY_POWDER(100),
-        EFFICIENT_MINER(100),
-        QUICK_FORGE(20),
-        TITANIUM_INSANITY(50),
-        LUCK_OF_THE_CAVE(45),
-        POWDER_BUFF(50),
-        MINING_MADNESS(1),
-        SKY_MALL(1),
-        GOBLIN_KILLER(1),
-        STAR_POWDER(1),
-        MOLE(200),
-        PROFESSIONAL(140),
-        LONESOME_MINER(45),
-        GREAT_EXPLORER(20),
-        FORTUNATE(20),
-        PICKOBULUS(3),
-        MINING_EXPERIENCE_BOOST(100);
+        MINING_SPEED(50, "Mining Speed"),
+        MINING_FORTUNE(50, "Mining Fortune"),
+        DAILY_POWDER(100, "Daily Powder"),
+        EFFICIENT_MINER(100, "Efficient Miner"),
+        QUICK_FORGE(20, "Quick Forge"),
+        TITANIUM_INSANITY(50, "Titanium Insanity"),
+        LUCK_OF_THE_CAVE(45, "Luck of the Cave"),
+        POWDER_BUFF(50, "Powder Buff"),
+        MINING_MADNESS(1, "Mining Madness"),
+        SKY_MALL(1, "Sky Mall"),
+        GOBLIN_KILLER(1, "Goblin Killer"),
+        STAR_POWDER(1, "Star Powder"),
+        MOLE(200, "Mole"),
+        PROFESSIONAL(140, "Professional"),
+        LONESOME_MINER(45, "Lonesome Miner"),
+        GREAT_EXPLORER(20, "Great Explorer"),
+        FORTUNATE(20, "Fortunate"),
+        PICKOBULUS(3, "Pickobulus"),
+        MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost");
 
         /** Maximum level for this perk. */
         public final int maxLevel;
+        private final String displayName;
 
-        HotmPerk(int maxLevel) {
+        HotmPerk(int maxLevel, String displayName) {
             this.maxLevel = maxLevel;
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
         }
     }
 

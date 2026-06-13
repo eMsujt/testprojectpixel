@@ -146,7 +146,7 @@ public final class HotmCommand implements TabExecutor {
                     lore.add(ChatColor.YELLOW + "Click to upgrade");
                 }
 
-                ItemStack item = namedWithLore(mat, color + formatPerk(perk), lore);
+                ItemStack item = namedWithLore(mat, color + perk.getDisplayName(), lore);
                 builder.setItem(slot, item, e -> {
                     if (!e.getWhoClicked().hasPermission("minecraft.command.op")
                             && !((Player) e.getWhoClicked()).isOp()) {
@@ -155,9 +155,9 @@ public final class HotmCommand implements TabExecutor {
                     }
                     int newLevel = hotmManager.upgrade(owner.getUniqueId(), perk);
                     if (newLevel == -1) {
-                        e.getWhoClicked().sendMessage(ChatColor.RED + formatPerk(perk) + " is already at max level.");
+                        e.getWhoClicked().sendMessage(ChatColor.RED + perk.getDisplayName() + " is already at max level.");
                     } else {
-                        e.getWhoClicked().sendMessage(ChatColor.GREEN + "Upgraded " + formatPerk(perk) + " to level " + newLevel + ".");
+                        e.getWhoClicked().sendMessage(ChatColor.GREEN + "Upgraded " + perk.getDisplayName() + " to level " + newLevel + ".");
                     }
                     // Reopen to refresh levels
                     menuManager.openMenu((Player) e.getWhoClicked(), new HotmMenu(owner));
@@ -191,12 +191,12 @@ public final class HotmCommand implements TabExecutor {
             HotmManager.HotmPerk perk = parsePerk(player, args[1]);
             if (perk == null) return;
             int level = hotmManager.getLevel(player.getUniqueId(), perk);
-            player.sendMessage(formatPerk(perk) + ": " + level + "/" + perk.maxLevel);
+            player.sendMessage(perk.getDisplayName() + ": " + level + "/" + perk.maxLevel);
         } else {
             player.sendMessage("=== Heart of the Mountain ===");
             for (HotmManager.HotmPerk perk : HotmManager.HotmPerk.values()) {
                 int level = hotmManager.getLevel(player.getUniqueId(), perk);
-                player.sendMessage(formatPerk(perk) + ": " + level + "/" + perk.maxLevel);
+                player.sendMessage(perk.getDisplayName() + ": " + level + "/" + perk.maxLevel);
             }
         }
     }
@@ -214,9 +214,9 @@ public final class HotmCommand implements TabExecutor {
         if (perk == null) return;
         int newLevel = hotmManager.upgrade(player.getUniqueId(), perk);
         if (newLevel == -1) {
-            player.sendMessage(formatPerk(perk) + " is already at max level (" + perk.maxLevel + ").");
+            player.sendMessage(perk.getDisplayName() + " is already at max level (" + perk.maxLevel + ").");
         } else {
-            player.sendMessage("Upgraded " + formatPerk(perk) + " to level " + newLevel + ".");
+            player.sendMessage("Upgraded " + perk.getDisplayName() + " to level " + newLevel + ".");
         }
     }
 
@@ -235,7 +235,7 @@ public final class HotmCommand implements TabExecutor {
         if (level < 0) return;
         hotmManager.setLevel(player.getUniqueId(), perk, level);
         int actual = hotmManager.getLevel(player.getUniqueId(), perk);
-        player.sendMessage(formatPerk(perk) + " set to " + actual + ".");
+        player.sendMessage(perk.getDisplayName() + " set to " + actual + ".");
     }
 
     private void handleReset(Player player) {
@@ -268,17 +268,6 @@ public final class HotmCommand implements TabExecutor {
             player.sendMessage("Invalid level: " + input);
             return -1;
         }
-    }
-
-    private static String formatPerk(HotmManager.HotmPerk perk) {
-        String name = perk.name().replace('_', ' ');
-        StringBuilder sb = new StringBuilder(name.length());
-        boolean cap = true;
-        for (char c : name.toCharArray()) {
-            sb.append(cap ? Character.toUpperCase(c) : Character.toLowerCase(c));
-            cap = c == ' ';
-        }
-        return sb.toString();
     }
 
     private static ItemStack named(Material material, String displayName, List<String> lore) {
