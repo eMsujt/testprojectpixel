@@ -25,19 +25,19 @@ public final class WarpManager {
     /** Pre-defined SkyBlock warp destinations. */
     public enum WarpLocation {
         HUB("Hub"),
-        VILLAGE("Village"),
-        BAZAAR_ALLEY("Bazaar Alley"),
-        FARMING_ISLANDS("Farming Islands"),
-        THE_PARK("The Park"),
-        THE_SPIDER_DEN("The Spider's Den"),
-        THE_END("The End"),
-        DEEP_CAVERNS("Deep Caverns"),
-        GOLD_MINE("Gold Mine"),
-        DWARVEN_MINES("Dwarven Mines"),
+        FARMING_1("Barn"),
+        FARMING_2("Mushroom Desert"),
+        MINING_1("Gold Mine"),
+        MINING_2("Deep Caverns"),
+        MINING_3("Dwarven Mines"),
+        FORAGING_1("The Park"),
+        COMBAT_1("Spider's Den"),
+        COMBAT_2("Blazing Fortress"),
+        COMBAT_3("The End"),
         CRYSTAL_HOLLOWS("Crystal Hollows"),
-        MUSHROOM_DESERT("Mushroom Desert"),
         CRIMSON_ISLE("Crimson Isle"),
-        THE_RIFT("The Rift");
+        THE_RIFT("The Rift"),
+        DUNGEON_HUB("Dungeon Hub");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
