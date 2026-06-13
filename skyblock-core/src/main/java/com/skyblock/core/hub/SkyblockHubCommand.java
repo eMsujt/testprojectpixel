@@ -1,6 +1,10 @@
 package com.skyblock.core.hub;
 
 import com.skyblock.core.menu.SkyBlockMenuManager;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -73,12 +77,16 @@ public final class SkyblockHubCommand implements TabExecutor {
         String[] rest = Arrays.copyOfRange(args, 1, args.length);
         switch (sub) {
             case "hub" -> {
-                World hub = Bukkit.getWorld(hubWorldName);
-                if (hub == null) {
-                    player.sendMessage("Hub world is not available.");
+                if (rest.length > 0 && rest[0].equalsIgnoreCase("open")) {
+                    World hub = Bukkit.getWorld(hubWorldName);
+                    if (hub == null) {
+                        player.sendMessage("§cHub world is not available.");
+                    } else {
+                        player.teleport(hub.getSpawnLocation());
+                        player.sendMessage("§aTeleported to the Hub!");
+                    }
                 } else {
-                    player.teleport(hub.getSpawnLocation());
-                    player.sendMessage("Teleported to the hub!");
+                    sendHubMenu(player);
                 }
             }
             case "help" -> {
@@ -102,6 +110,19 @@ public final class SkyblockHubCommand implements TabExecutor {
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    private static void sendHubMenu(Player player) {
+        player.sendMessage("§6§l--- SkyBlock Hub ---");
+
+        TextComponent label = new TextComponent("§7Teleport to the Hub  ");
+        TextComponent open = new TextComponent("§a§l[Open]");
+        open.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skyblock hub open"));
+        open.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                new ComponentBuilder("§eClick to teleport to the Hub").create()));
+        TextComponent line = new TextComponent(label);
+        line.addExtra(open);
+        player.spigot().sendMessage(line);
     }
 
     private static String resolveCommand(String sub) {
