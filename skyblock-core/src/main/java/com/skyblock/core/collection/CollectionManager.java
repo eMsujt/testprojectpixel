@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton tracking each player's collection totals keyed by {@link SkyBlockCollection}.
+ * Singleton tracking each player's collection totals keyed by {@link Collection}.
  *
  * <p>Progress is stored per player as an {@link EnumMap} created lazily on first
  * access. Not thread-safe; synchronize externally if needed.</p>
@@ -16,7 +16,7 @@ import java.util.UUID;
 public final class CollectionManager {
 
     /** Every collection type tracked in SkyBlock. */
-    public enum SkyBlockCollection {
+    public enum Collection {
         // Farming
         WHEAT("wheat",                 "Wheat"),
         CARROT("carrot",               "Carrot"),
@@ -79,44 +79,44 @@ public final class CollectionManager {
         public final String itemKey;
         public final String displayName;
 
-        SkyBlockCollection(String itemKey, String displayName) {
+        Collection(String itemKey, String displayName) {
             this.itemKey     = itemKey;
             this.displayName = displayName;
         }
     }
 
-    /** Groups {@link SkyBlockCollection} values into SkyBlock skill categories. */
+    /** Groups {@link Collection} values into SkyBlock skill categories. */
     public enum CollectionCategory {
         FARMING("Farming",
-                SkyBlockCollection.WHEAT, SkyBlockCollection.CARROT, SkyBlockCollection.POTATO,
-                SkyBlockCollection.PUMPKIN, SkyBlockCollection.MELON, SkyBlockCollection.MUSHROOM,
-                SkyBlockCollection.CACTUS, SkyBlockCollection.SUGAR_CANE,
-                SkyBlockCollection.NETHER_WART, SkyBlockCollection.COCOA_BEANS),
+                Collection.WHEAT, Collection.CARROT, Collection.POTATO,
+                Collection.PUMPKIN, Collection.MELON, Collection.MUSHROOM,
+                Collection.CACTUS, Collection.SUGAR_CANE,
+                Collection.NETHER_WART, Collection.COCOA_BEANS),
         MINING("Mining",
-                SkyBlockCollection.COBBLESTONE, SkyBlockCollection.COAL, SkyBlockCollection.IRON_INGOT,
-                SkyBlockCollection.GOLD_INGOT, SkyBlockCollection.DIAMOND, SkyBlockCollection.EMERALD,
-                SkyBlockCollection.REDSTONE, SkyBlockCollection.LAPIS_LAZULI, SkyBlockCollection.QUARTZ,
-                SkyBlockCollection.OBSIDIAN, SkyBlockCollection.GLOWSTONE, SkyBlockCollection.GRAVEL,
-                SkyBlockCollection.ICE, SkyBlockCollection.NETHERRACK, SkyBlockCollection.SAND,
-                SkyBlockCollection.END_STONE),
+                Collection.COBBLESTONE, Collection.COAL, Collection.IRON_INGOT,
+                Collection.GOLD_INGOT, Collection.DIAMOND, Collection.EMERALD,
+                Collection.REDSTONE, Collection.LAPIS_LAZULI, Collection.QUARTZ,
+                Collection.OBSIDIAN, Collection.GLOWSTONE, Collection.GRAVEL,
+                Collection.ICE, Collection.NETHERRACK, Collection.SAND,
+                Collection.END_STONE),
         FORAGING("Foraging",
-                SkyBlockCollection.OAK_LOG, SkyBlockCollection.SPRUCE_LOG, SkyBlockCollection.BIRCH_LOG,
-                SkyBlockCollection.JUNGLE_LOG, SkyBlockCollection.ACACIA_LOG, SkyBlockCollection.DARK_OAK_LOG),
+                Collection.OAK_LOG, Collection.SPRUCE_LOG, Collection.BIRCH_LOG,
+                Collection.JUNGLE_LOG, Collection.ACACIA_LOG, Collection.DARK_OAK_LOG),
         COMBAT("Combat",
-                SkyBlockCollection.ROTTEN_FLESH, SkyBlockCollection.BONE, SkyBlockCollection.SPIDER_EYE,
-                SkyBlockCollection.STRING, SkyBlockCollection.GUNPOWDER, SkyBlockCollection.ENDER_PEARL,
-                SkyBlockCollection.GHAST_TEAR, SkyBlockCollection.SLIME_BALL, SkyBlockCollection.BLAZE_ROD,
-                SkyBlockCollection.MAGMA_CREAM),
+                Collection.ROTTEN_FLESH, Collection.BONE, Collection.SPIDER_EYE,
+                Collection.STRING, Collection.GUNPOWDER, Collection.ENDER_PEARL,
+                Collection.GHAST_TEAR, Collection.SLIME_BALL, Collection.BLAZE_ROD,
+                Collection.MAGMA_CREAM),
         FISHING("Fishing",
-                SkyBlockCollection.RAW_FISH, SkyBlockCollection.RAW_SALMON, SkyBlockCollection.CLOWNFISH,
-                SkyBlockCollection.PUFFERFISH, SkyBlockCollection.PRISMARINE_SHARD,
-                SkyBlockCollection.PRISMARINE_CRYSTALS, SkyBlockCollection.CLAY, SkyBlockCollection.LILY_PAD,
-                SkyBlockCollection.INK_SAC, SkyBlockCollection.SPONGE);
+                Collection.RAW_FISH, Collection.RAW_SALMON, Collection.CLOWNFISH,
+                Collection.PUFFERFISH, Collection.PRISMARINE_SHARD,
+                Collection.PRISMARINE_CRYSTALS, Collection.CLAY, Collection.LILY_PAD,
+                Collection.INK_SAC, Collection.SPONGE);
 
         private final String displayName;
-        private final SkyBlockCollection[] types;
+        private final Collection[] types;
 
-        CollectionCategory(String displayName, SkyBlockCollection... types) {
+        CollectionCategory(String displayName, Collection... types) {
             this.displayName = displayName;
             this.types = types;
         }
@@ -125,15 +125,15 @@ public final class CollectionManager {
             return displayName;
         }
 
-        public SkyBlockCollection[] getTypes() {
+        public Collection[] getTypes() {
             return types;
         }
     }
 
     private static final CollectionManager INSTANCE = new CollectionManager();
 
-    /** per-player totals: player → (SkyBlockCollection → total gathered) */
-    private final Map<UUID, Map<SkyBlockCollection, Long>> playerCollections = new HashMap<>();
+    /** per-player totals: player → (Collection → total gathered) */
+    private final Map<UUID, Map<Collection, Long>> playerCollections = new HashMap<>();
 
     private CollectionManager() {
     }
@@ -151,14 +151,14 @@ public final class CollectionManager {
      * @return the player's updated total for that collection
      * @throws IllegalArgumentException if {@code amount} is negative
      */
-    public long addItems(UUID playerId, SkyBlockCollection type, long amount) {
+    public long addItems(UUID playerId, Collection type, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
-        Map<SkyBlockCollection, Long> totals = playerCollections.computeIfAbsent(
-                playerId, id -> new EnumMap<>(SkyBlockCollection.class));
+        Map<Collection, Long> totals = playerCollections.computeIfAbsent(
+                playerId, id -> new EnumMap<>(Collection.class));
         long total = totals.getOrDefault(type, 0L) + amount;
         totals.put(type, total);
         return total;
@@ -177,7 +177,7 @@ public final class CollectionManager {
         if (collection == null || collection.isBlank()) {
             throw new IllegalArgumentException("collection must not be null or blank");
         }
-        SkyBlockCollection type = parseType(collection);
+        Collection type = parseType(collection);
         if (type == null) {
             return -1L;
         }
@@ -191,10 +191,10 @@ public final class CollectionManager {
      * @param type     the collection type, must not be null
      * @return the total items gathered, {@code 0} if the player has none
      */
-    public long getItems(UUID playerId, SkyBlockCollection type) {
+    public long getItems(UUID playerId, Collection type) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
-        Map<SkyBlockCollection, Long> totals = playerCollections.get(playerId);
+        Map<Collection, Long> totals = playerCollections.get(playerId);
         return totals == null ? 0L : totals.getOrDefault(type, 0L);
     }
 
@@ -210,7 +210,7 @@ public final class CollectionManager {
         if (collection == null || collection.isBlank()) {
             throw new IllegalArgumentException("collection must not be null or blank");
         }
-        SkyBlockCollection type = parseType(collection);
+        Collection type = parseType(collection);
         return type == null ? 0L : getItems(playerId, type);
     }
 
@@ -218,11 +218,11 @@ public final class CollectionManager {
      * Returns an unmodifiable view of all collection totals for the player.
      *
      * @param playerId the player to look up, must not be null
-     * @return an unmodifiable map of SkyBlockCollection to total, empty if none recorded
+     * @return an unmodifiable map of Collection to total, empty if none recorded
      */
-    public Map<SkyBlockCollection, Long> getAll(UUID playerId) {
+    public Map<Collection, Long> getAll(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Map<SkyBlockCollection, Long> totals = playerCollections.get(playerId);
+        Map<Collection, Long> totals = playerCollections.get(playerId);
         return totals == null ? Collections.emptyMap() : Collections.unmodifiableMap(totals);
     }
 
@@ -248,14 +248,14 @@ public final class CollectionManager {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(category, "category");
         long total = 0L;
-        for (SkyBlockCollection type : category.getTypes()) {
+        for (Collection type : category.getTypes()) {
             total += getItems(playerId, type);
         }
         return total;
     }
 
-    private static SkyBlockCollection parseType(String name) {
-        for (SkyBlockCollection t : SkyBlockCollection.values()) {
+    private static Collection parseType(String name) {
+        for (Collection t : Collection.values()) {
             if (t.name().equalsIgnoreCase(name) || t.itemKey.equalsIgnoreCase(name)) {
                 return t;
             }
