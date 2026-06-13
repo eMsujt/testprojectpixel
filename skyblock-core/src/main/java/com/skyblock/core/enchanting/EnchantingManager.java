@@ -34,7 +34,9 @@ public final class EnchantingManager {
         // Armor
         PROTECTION, THORNS, GROWTH, FEATHER_FALLING, SUGAR_RUSH, REJUVENATE,
         // Misc
-        LUCK, CHANCE, ULTIMATE_WISE
+        LUCK, CHANCE, ULTIMATE_WISE,
+        // Dungeon / Extra
+        SHREDDER, SCAVENGER, SOUL_EATER, VENOMOUS, VICIOUS
     }
 
     /** Every SkyBlock enchant type with display name and maximum level. */
@@ -95,7 +97,13 @@ public final class EnchantingManager {
         // Misc
         LUCK("Luck", 7),
         CHANCE("Chance", 5),
-        ULTIMATE_WISE("Ultimate Wise", 5);
+        ULTIMATE_WISE("Ultimate Wise", 5),
+        // Dungeon / Extra
+        SHREDDER("Shredder", 5),
+        SCAVENGER("Scavenger", 4),
+        SOUL_EATER("Soul Eater", 5),
+        VENOMOUS("Venomous", 5),
+        VICIOUS("Vicious", 5);
 
         private final String displayName;
         private final int maxLevel;
