@@ -136,6 +136,8 @@ import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.HotmCommand;
 import com.skyblock.core.hotm.HotmManager;
+import com.skyblock.core.reforge.ReforgeCommand;
+import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.rift.RiftCommand;
 import com.skyblock.core.rift.RiftListener;
 import com.skyblock.core.rift.RiftManager;
@@ -398,6 +400,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
         BossBarManager bossBarManager = BossBarManager.getInstance();
         getServer().getPluginManager().registerEvents(new BossBarListener(bossBarManager), this);
+
+        ReforgeManager reforgeManager = ReforgeManager.getInstance();
+        ReforgeCommand reforgeCommand = new ReforgeCommand(reforgeManager);
+        getCommand("reforge").setExecutor(reforgeCommand);
+        getCommand("reforge").setTabCompleter(reforgeCommand);
 
         RiftManager riftManager = RiftManager.getInstance();
         RiftCommand riftCommand = new RiftCommand(riftManager);
