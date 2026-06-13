@@ -16,7 +16,7 @@ public final class HotmManager {
 
     /** Every upgradeable perk in the Heart of the Mountain tree. */
     public enum HotmPerk {
-        MINING_SPEED(50, "Mining Speed"),
+        MINING_SPEED_BOOST(50, "Mining Speed Boost"),
         MINING_FORTUNE(50, "Mining Fortune"),
         DAILY_POWDER(100, "Daily Powder"),
         EFFICIENT_MINER(100, "Efficient Miner"),
