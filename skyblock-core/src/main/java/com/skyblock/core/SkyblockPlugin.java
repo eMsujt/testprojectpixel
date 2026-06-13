@@ -1,8 +1,10 @@
 package com.skyblock.core;
 
 import com.skyblock.core.accessory.AccessoryManager;
+import com.skyblock.core.auction.AuctionHouseCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.auction.AuctionManager;
+import com.skyblock.core.kuudra.KuudraCommand;
 import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.bazaar.BazaarCommand;
 import com.skyblock.core.bazaar.BazaarManager;
@@ -42,6 +44,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         AuctionManager.getInstance();
         AuctionHouseManager auctionHouseManager = AuctionHouseManager.getInstance();
         auctionHouseManager.load(getDataFolder());
+        AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
+        getCommand("auctionhouse").setExecutor(auctionHouseCommand);
+        getCommand("auctionhouse").setTabCompleter(auctionHouseCommand);
         BazaarManager bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
         BazaarCommand bazaarCommand = new BazaarCommand(bazaarManager);
@@ -66,6 +71,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         petsManager.load(getDataFolder());
         KuudraManager kuudraManager = KuudraManager.getInstance();
         kuudraManager.load(getDataFolder());
+        KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
+        getCommand("kuudra").setExecutor(kuudraCommand);
+        getCommand("kuudra").setTabCompleter(kuudraCommand);
         EnchantingManager enchantingManager = EnchantingManager.getInstance();
         enchantingManager.load(getDataFolder());
         EnchantingCommand enchantingCommand = new EnchantingCommand(enchantingManager);
