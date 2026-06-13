@@ -4,7 +4,7 @@ import com.skyblock.core.accessory.AccessoryManager;
 import com.skyblock.core.command.QuestCommand;
 import com.skyblock.core.crafting.CraftingCommand;
 import com.skyblock.core.crafting.CraftingManager;
-import com.skyblock.core.quests.QuestManager;
+import com.skyblock.core.quest.QuestManager;
 import com.skyblock.core.auction.AuctionHouseCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.auction.AuctionManager;

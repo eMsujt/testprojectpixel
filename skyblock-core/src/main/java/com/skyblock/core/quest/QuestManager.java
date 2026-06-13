@@ -21,11 +21,11 @@ public final class QuestManager {
 
     /** All quest types available in SkyBlock. */
     public enum QuestType {
-        KILL_ZOMBIES(20, "Kill Zombies"),
-        MINE_COAL(64, "Mine Coal"),
-        FISH_COD(30, "Fish Cod"),
-        HARVEST_WHEAT(50, "Harvest Wheat"),
-        COMPLETE_DUNGEON(1, "Complete Dungeon");
+        KILL_MOBS(20, "Kill Mobs"),
+        MINE_ORES(64, "Mine Ores"),
+        CATCH_FISH(30, "Catch Fish"),
+        EARN_COINS(50, "Earn Coins"),
+        COMPLETE_DUNGEONS(1, "Complete Dungeons");
 
         private final long goal;
         private final String displayName;
@@ -97,6 +97,25 @@ public final class QuestManager {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         questGoals.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class)).put(type, type.getGoal());
+        questProgress.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class)).put(type, 0L);
+        questStatus.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class))
+                .put(type, QuestStatus.IN_PROGRESS);
+    }
+
+    /**
+     * Starts a quest for the given player with a custom goal.
+     *
+     * @param playerId  the player starting the quest
+     * @param type      the quest type to start
+     * @param goal      the custom target goal; must be positive
+     */
+    public void startQuest(UUID playerId, QuestType type, long goal) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        if (goal <= 0) {
+            throw new IllegalArgumentException("goal must be positive, got " + goal);
+        }
+        questGoals.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class)).put(type, goal);
         questProgress.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class)).put(type, 0L);
         questStatus.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class))
                 .put(type, QuestStatus.IN_PROGRESS);
