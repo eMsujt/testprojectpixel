@@ -18,32 +18,40 @@ import java.util.UUID;
  */
 public final class WardrobeManager {
 
+    /**
+     * 18 wardrobe slots arranged as 9 pages × 2 armor sets per page.
+     * Page 1 = slots 1-2, page 2 = slots 3-4, …, page 9 = slots 17-18.
+     */
     public enum WardrobeSlot {
-        SLOT_1(1, "Slot 1"),
-        SLOT_2(2, "Slot 2"),
-        SLOT_3(3, "Slot 3"),
-        SLOT_4(4, "Slot 4"),
-        SLOT_5(5, "Slot 5"),
-        SLOT_6(6, "Slot 6"),
-        SLOT_7(7, "Slot 7"),
-        SLOT_8(8, "Slot 8"),
-        SLOT_9(9, "Slot 9"),
-        SLOT_10(10, "Slot 10"),
-        SLOT_11(11, "Slot 11"),
-        SLOT_12(12, "Slot 12"),
-        SLOT_13(13, "Slot 13"),
-        SLOT_14(14, "Slot 14"),
-        SLOT_15(15, "Slot 15"),
-        SLOT_16(16, "Slot 16"),
-        SLOT_17(17, "Slot 17"),
-        SLOT_18(18, "Slot 18");
+        SLOT_1(1,  "Slot 1",  1, 1),
+        SLOT_2(2,  "Slot 2",  1, 2),
+        SLOT_3(3,  "Slot 3",  2, 1),
+        SLOT_4(4,  "Slot 4",  2, 2),
+        SLOT_5(5,  "Slot 5",  3, 1),
+        SLOT_6(6,  "Slot 6",  3, 2),
+        SLOT_7(7,  "Slot 7",  4, 1),
+        SLOT_8(8,  "Slot 8",  4, 2),
+        SLOT_9(9,  "Slot 9",  5, 1),
+        SLOT_10(10, "Slot 10", 5, 2),
+        SLOT_11(11, "Slot 11", 6, 1),
+        SLOT_12(12, "Slot 12", 6, 2),
+        SLOT_13(13, "Slot 13", 7, 1),
+        SLOT_14(14, "Slot 14", 7, 2),
+        SLOT_15(15, "Slot 15", 8, 1),
+        SLOT_16(16, "Slot 16", 8, 2),
+        SLOT_17(17, "Slot 17", 9, 1),
+        SLOT_18(18, "Slot 18", 9, 2);
 
         private final int slotNumber;
         private final String displayName;
+        private final int page;
+        private final int set;
 
-        WardrobeSlot(int slotNumber, String displayName) {
+        WardrobeSlot(int slotNumber, String displayName, int page, int set) {
             this.slotNumber = slotNumber;
             this.displayName = displayName;
+            this.page = page;
+            this.set = set;
         }
 
         public int getSlotNumber() {
@@ -52,6 +60,16 @@ public final class WardrobeManager {
 
         public String getDisplayName() {
             return displayName;
+        }
+
+        /** Returns the wardrobe page this slot belongs to (1–9). */
+        public int getPage() {
+            return page;
+        }
+
+        /** Returns the set number within its page (1 or 2). */
+        public int getSet() {
+            return set;
         }
     }
 
@@ -192,6 +210,27 @@ public final class WardrobeManager {
     public boolean deleteOutfit(UUID playerId, WardrobeSlot slot) {
         Objects.requireNonNull(slot, "slot");
         return deleteOutfit(playerId, slot.name());
+    }
+
+    /**
+     * Resets all wardrobe data for the given player.
+     *
+     * @param playerId the player to reset
+     */
+    public void reset(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        wardrobes.remove(playerId);
+    }
+
+    /**
+     * Removes all wardrobe data for the given player (e.g. on quit).
+     *
+     * @param playerId the player to remove
+     * @return {@code true} if the player had data, {@code false} otherwise
+     */
+    public boolean remove(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return wardrobes.remove(playerId) != null;
     }
 
     /** Removes all stored wardrobe data. */

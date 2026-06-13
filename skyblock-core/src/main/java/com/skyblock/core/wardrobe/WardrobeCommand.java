@@ -174,7 +174,7 @@ public final class WardrobeCommand implements TabExecutor {
         try {
             slot = WardrobeManager.WardrobeSlot.valueOf(args[2].toUpperCase());
         } catch (IllegalArgumentException e) {
-            player.sendMessage("Unknown slot '" + args[2] + "'. Use SLOT_1 through SLOT_9.");
+            player.sendMessage("Unknown slot '" + args[2] + "'. Use SLOT_1 through SLOT_18.");
             return;
         }
         switch (args[1].toLowerCase()) {
