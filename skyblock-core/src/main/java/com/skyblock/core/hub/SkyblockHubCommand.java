@@ -52,7 +52,7 @@ public final class SkyblockHubCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS = Arrays.asList(
             "hub", "bank", "auction", "bazaar", "island", "skills", "pets",
             "profile", "quest", "minion", "fishing", "mining", "slayer",
-            "hotm", "garden", "backpack", "reforge", "achievement", "dungeon", "help"
+            "hotm", "garden", "collection", "backpack", "reforge", "achievement", "dungeon", "help"
     );
 
     private final SkyBlockMenuManager menuManager;
@@ -115,14 +115,42 @@ public final class SkyblockHubCommand implements TabExecutor {
     private static void sendHubMenu(Player player) {
         player.sendMessage("§6§l--- SkyBlock Hub ---");
 
-        TextComponent label = new TextComponent("§7Teleport to the Hub  ");
-        TextComponent open = new TextComponent("§a§l[Open]");
-        open.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skyblock hub open"));
-        open.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+        TextComponent hubLabel = new TextComponent("§7Teleport to the Hub  ");
+        TextComponent hubOpen = new TextComponent("§a§l[Open]");
+        hubOpen.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skyblock hub open"));
+        hubOpen.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 new ComponentBuilder("§eClick to teleport to the Hub").create()));
-        TextComponent line = new TextComponent(label);
-        line.addExtra(open);
-        player.spigot().sendMessage(line);
+        TextComponent hubLine = new TextComponent(hubLabel);
+        hubLine.addExtra(hubOpen);
+        player.spigot().sendMessage(hubLine);
+
+        player.sendMessage("§e§lManagers:");
+        String[][] managers = {
+            {"Garden",     "garden"},
+            {"Slayer",     "slayer"},
+            {"Pets",       "pets"},
+            {"Skills",     "skills"},
+            {"Collection", "collection"},
+            {"Bank",       "bank"},
+            {"Auction",    "auction"},
+            {"Bazaar",     "bazaar"},
+            {"Island",     "island"},
+            {"Profile",    "profile"},
+            {"Quest",      "quest"},
+            {"Minion",     "minion"},
+            {"Fishing",    "fishing"},
+            {"Mining",     "mining"},
+            {"HOTM",       "hotm"},
+        };
+        for (String[] entry : managers) {
+            String name = entry[0];
+            String sub = entry[1];
+            TextComponent btn = new TextComponent("§b§l[" + name + "]  ");
+            btn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skyblock " + sub));
+            btn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new ComponentBuilder("§eClick to open " + name).create()));
+            player.spigot().sendMessage(btn);
+        }
     }
 
     private static String resolveCommand(String sub) {
