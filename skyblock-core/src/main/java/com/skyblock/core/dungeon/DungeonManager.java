@@ -152,6 +152,8 @@ public final class DungeonManager {
     private final Map<UUID, Map<DungeonType, Integer>> bestScores = new HashMap<>();
     /** Completion count per player per dungeon type. */
     private final Map<UUID, Map<DungeonType, Integer>> completionCounts = new HashMap<>();
+    /** Completion count per player per dungeon floor. */
+    private final Map<UUID, Map<DungeonFloor, Integer>> floorCompletionCounts = new HashMap<>();
     /** Selected dungeon class per player. */
     private final Map<UUID, DungeonClass> playerClasses = new HashMap<>();
 
@@ -279,6 +281,20 @@ public final class DungeonManager {
     }
 
     /**
+     * Returns how many times the player has completed the given dungeon floor.
+     *
+     * @param playerId the player to look up
+     * @param floor    the dungeon floor
+     * @return completion count, {@code 0} if none
+     */
+    public int getFloorCompletionCount(UUID playerId, DungeonFloor floor) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(floor, "floor");
+        Map<DungeonFloor, Integer> counts = floorCompletionCounts.get(playerId);
+        return counts == null ? 0 : counts.getOrDefault(floor, 0);
+    }
+
+    /**
      * Sets the dungeon class for the given player.
      *
      * @param playerId     the player
@@ -313,6 +329,7 @@ public final class DungeonManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         bestScores.clear();
         completionCounts.clear();
+        floorCompletionCounts.clear();
         playerClasses.clear();
         for (String key : cfg.getKeys(false)) {
             try {
@@ -339,6 +356,18 @@ public final class DungeonManager {
                     }
                     if (!counts.isEmpty()) {
                         completionCounts.put(uuid, counts);
+                    }
+                }
+                if (cfg.isConfigurationSection(key + ".floorCounts")) {
+                    Map<DungeonFloor, Integer> floorCounts = new HashMap<>();
+                    for (DungeonFloor floor : DungeonFloor.values()) {
+                        int val = cfg.getInt(key + ".floorCounts." + floor.name(), 0);
+                        if (val > 0) {
+                            floorCounts.put(floor, val);
+                        }
+                    }
+                    if (!floorCounts.isEmpty()) {
+                        floorCompletionCounts.put(uuid, floorCounts);
                     }
                 }
                 String cls = cfg.getString(key + ".class");
@@ -368,6 +397,12 @@ public final class DungeonManager {
             String key = entry.getKey().toString();
             for (Map.Entry<DungeonType, Integer> e : entry.getValue().entrySet()) {
                 cfg.set(key + ".completionCounts." + e.getKey().name(), e.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<DungeonFloor, Integer>> entry : floorCompletionCounts.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<DungeonFloor, Integer> e : entry.getValue().entrySet()) {
+                cfg.set(key + ".floorCounts." + e.getKey().name(), e.getValue());
             }
         }
         for (Map.Entry<UUID, DungeonClass> entry : playerClasses.entrySet()) {
