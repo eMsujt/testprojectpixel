@@ -14,11 +14,23 @@ public final class KuudraManager {
 
     /** Kuudra tiers, in ascending difficulty order. */
     public enum KuudraTier {
-        BASIC,
-        HOT,
-        BURNING,
-        FIERY,
-        INFERNAL
+        NONE("None"),
+        BASIC("Basic"),
+        HOT("Hot"),
+        BURNING("Burning"),
+        FIERY("Fiery"),
+        INFERNAL("Infernal");
+
+        /** Human-readable display name shown to players. */
+        public final String displayName;
+
+        KuudraTier(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     private static final KuudraManager INSTANCE = new KuudraManager();
