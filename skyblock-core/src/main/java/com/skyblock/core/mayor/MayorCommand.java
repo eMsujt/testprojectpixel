@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public final class MayorCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("vote", "set");
-    private static final List<String> MAYOR_NAMES = Arrays.stream(MayorManager.Mayor.values())
+    private static final List<String> MAYOR_NAMES = Arrays.stream(MayorManager.MayorCandidateCandidate.values())
             .map(m -> m.name().toLowerCase())
             .collect(Collectors.toList());
 
@@ -75,8 +75,8 @@ public final class MayorCommand implements TabExecutor {
     // -------------------------------------------------------------------------
 
     private void handleInfo(Player player) {
-        MayorManager.Mayor current = mayorManager.getCurrentMayor();
-        MayorManager.Mayor vote = mayorManager.getVote(player.getUniqueId());
+        MayorManager.MayorCandidate current = mayorManager.getCurrentMayor();
+        MayorManager.MayorCandidate vote = mayorManager.getVote(player.getUniqueId());
         player.sendMessage("=== Mayor ===");
         player.sendMessage("Active mayor: " + (current != null ? current.getDisplayName() : "None"));
         player.sendMessage("Your vote: " + (vote != null ? vote.getDisplayName() : "None"));
@@ -87,7 +87,7 @@ public final class MayorCommand implements TabExecutor {
             player.sendMessage("Usage: /mayor vote <mayor>");
             return;
         }
-        MayorManager.Mayor mayor = parseMayor(player, args[1]);
+        MayorManager.MayorCandidate mayor = parseMayor(player, args[1]);
         if (mayor == null) return;
         mayorManager.vote(player.getUniqueId(), mayor);
         player.sendMessage("You voted for " + mayor.getDisplayName() + ".");
@@ -102,7 +102,7 @@ public final class MayorCommand implements TabExecutor {
             player.sendMessage("Usage: /mayor set <mayor>");
             return;
         }
-        MayorManager.Mayor mayor = parseMayor(player, args[1]);
+        MayorManager.MayorCandidate mayor = parseMayor(player, args[1]);
         if (mayor == null) return;
         mayorManager.setCurrentMayor(mayor);
         player.sendMessage("Active mayor set to " + mayor.getDisplayName() + ".");
@@ -112,9 +112,9 @@ public final class MayorCommand implements TabExecutor {
     // Helpers
     // -------------------------------------------------------------------------
 
-    private MayorManager.Mayor parseMayor(Player player, String input) {
+    private MayorManager.MayorCandidate parseMayor(Player player, String input) {
         try {
-            return MayorManager.Mayor.valueOf(input.toUpperCase());
+            return MayorManager.MayorCandidate.valueOf(input.toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown mayor: " + input + ". Valid mayors: " + String.join(", ", MAYOR_NAMES));
             return null;
