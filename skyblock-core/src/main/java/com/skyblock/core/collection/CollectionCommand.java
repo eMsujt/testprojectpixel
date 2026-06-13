@@ -1,7 +1,7 @@
 package com.skyblock.core.collection;
 
 import com.skyblock.core.collection.CollectionManager.CollectionCategory;
-import com.skyblock.core.collection.CollectionManager.SkyBlockCollection;
+import com.skyblock.core.collection.CollectionManager.Collection;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -67,7 +67,7 @@ public final class CollectionCommand implements TabExecutor {
             return true;
         }
 
-        SkyBlockCollection type = parseType(args[0]);
+        Collection type = parseType(args[0]);
         if (type == null) {
             player.sendMessage("Unknown collection: " + args[0] + ". Use /collection to see all collections.");
             return true;
@@ -90,7 +90,7 @@ public final class CollectionCommand implements TabExecutor {
             if ("category".startsWith(lower)) {
                 completions.add("category");
             }
-            for (SkyBlockCollection t : SkyBlockCollection.values()) {
+            for (Collection t : Collection.values()) {
                 if (t.itemKey.startsWith(lower)) {
                     completions.add(t.itemKey);
                 }
@@ -112,9 +112,9 @@ public final class CollectionCommand implements TabExecutor {
     }
 
     private void sendCollectionList(Player player) {
-        Map<SkyBlockCollection, Long> all = collectionManager.getAll(player.getUniqueId());
+        Map<Collection, Long> all = collectionManager.getAll(player.getUniqueId());
         player.sendMessage("=== Collections ===");
-        for (SkyBlockCollection t : SkyBlockCollection.values()) {
+        for (Collection t : Collection.values()) {
             long total = all.getOrDefault(t, 0L);
             player.sendMessage("- " + t.displayName + ": " + total);
         }
@@ -122,9 +122,9 @@ public final class CollectionCommand implements TabExecutor {
     }
 
     private void sendCategoryList(Player player, CollectionCategory category) {
-        Map<SkyBlockCollection, Long> all = collectionManager.getAll(player.getUniqueId());
+        Map<Collection, Long> all = collectionManager.getAll(player.getUniqueId());
         player.sendMessage("=== " + category.getDisplayName() + " Collections ===");
-        for (SkyBlockCollection t : category.getTypes()) {
+        for (Collection t : category.getTypes()) {
             long total = all.getOrDefault(t, 0L);
             player.sendMessage("- " + t.displayName + ": " + total);
         }
@@ -132,8 +132,8 @@ public final class CollectionCommand implements TabExecutor {
         player.sendMessage("Category total: " + categoryTotal);
     }
 
-    private static SkyBlockCollection parseType(String input) {
-        for (SkyBlockCollection t : SkyBlockCollection.values()) {
+    private static Collection parseType(String input) {
+        for (Collection t : Collection.values()) {
             if (t.name().equalsIgnoreCase(input) || t.itemKey.equalsIgnoreCase(input)) {
                 return t;
             }
