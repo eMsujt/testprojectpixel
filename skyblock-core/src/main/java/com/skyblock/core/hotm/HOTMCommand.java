@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public final class HOTMCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "upgrade", "set", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "upgrade", "set", "reset", "powder");
     private static final List<String> PERK_NAMES = Arrays.stream(HOTMManager.HOTMPerk.values())
             .map(p -> p.name().toLowerCase())
             .collect(Collectors.toList());
@@ -44,7 +44,7 @@ public final class HOTMCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /hotmtree <view|upgrade|set|reset>");
+            player.sendMessage("Usage: /hotmtree <view|upgrade|set|reset|powder>");
             return true;
         }
 
@@ -53,7 +53,8 @@ public final class HOTMCommand implements TabExecutor {
             case "upgrade" -> handleUpgrade(player, args);
             case "set"     -> handleSet(player, args);
             case "reset"   -> handleReset(player);
-            default        -> player.sendMessage("Unknown subcommand. Usage: /hotmtree <view|upgrade|set|reset>");
+            case "powder"  -> handlePowder(player, args);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /hotmtree <view|upgrade|set|reset|powder>");
         }
         return true;
     }
@@ -137,6 +138,44 @@ public final class HOTMCommand implements TabExecutor {
         }
         hotmManager.reset(player.getUniqueId());
         player.sendMessage("All Heart of the Mountain perks have been reset.");
+    }
+
+    private void handlePowder(Player player, String[] args) {
+        if (args.length == 1) {
+            long balance = hotmManager.getMithrilPowder(player.getUniqueId());
+            player.sendMessage("Mithril Powder: " + balance);
+            return;
+        }
+        if (!player.isOp()) {
+            player.sendMessage("You do not have permission to use this subcommand.");
+            return;
+        }
+        if (args.length < 3 || (!args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("spend"))) {
+            player.sendMessage("Usage: /hotmtree powder [add|spend <amount>]");
+            return;
+        }
+        long amount;
+        try {
+            amount = Long.parseLong(args[2]);
+            if (amount < 0) {
+                player.sendMessage("Amount must not be negative.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid amount: " + args[2]);
+            return;
+        }
+        if (args[1].equalsIgnoreCase("add")) {
+            hotmManager.addMithrilPowder(player.getUniqueId(), amount);
+            player.sendMessage("Added " + amount + " Mithril Powder. Balance: " + hotmManager.getMithrilPowder(player.getUniqueId()));
+        } else {
+            boolean success = hotmManager.spendMithrilPowder(player.getUniqueId(), amount);
+            if (success) {
+                player.sendMessage("Spent " + amount + " Mithril Powder. Balance: " + hotmManager.getMithrilPowder(player.getUniqueId()));
+            } else {
+                player.sendMessage("Insufficient Mithril Powder (have " + hotmManager.getMithrilPowder(player.getUniqueId()) + ", need " + amount + ").");
+            }
+        }
     }
 
     private HOTMManager.HOTMPerk parsePerk(Player player, String input) {
