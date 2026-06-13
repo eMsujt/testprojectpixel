@@ -295,6 +295,20 @@ public final class DungeonManager {
     }
 
     /**
+     * Increments the per-player completion count for the given dungeon floor by 1.
+     *
+     * @param player the player's UUID
+     * @param floor  the floor that was completed
+     */
+    public void incrementFloorCompletion(UUID player, DungeonFloor floor) {
+        Objects.requireNonNull(player, "player");
+        Objects.requireNonNull(floor, "floor");
+        floorCompletionCounts
+            .computeIfAbsent(player, k -> new HashMap<>())
+            .merge(floor, 1, Integer::sum);
+    }
+
+    /**
      * Sets the dungeon class for the given player.
      *
      * @param playerId     the player
