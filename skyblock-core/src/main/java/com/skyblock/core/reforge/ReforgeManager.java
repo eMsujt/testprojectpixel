@@ -40,7 +40,17 @@ public final class ReforgeManager {
         HONORED("Honored", 10, 15, 0),
         BEJEWELED("Bejeweled", 15, 15, 0),
         RENOWNED("Renowned", 30, 10, 10),
-        FESTIVE("Festive", 10, 10, 10);
+        FESTIVE("Festive", 10, 10, 10),
+        STORMY("Stormy", 0, 0, 0),
+        ITCHY("Itchy", 5, 0, 0),
+        BLOODY("Bloody", 10, 0, 5),
+        WARPED("Warped", 20, 5, 0),
+        WITHERED("Withered", 25, 15, 0),
+        NECROTIC("Necrotic", 0, 20, 0),
+        SPIRITUAL("Spiritual", 0, 0, 15),
+        SILKY("Silky", 5, 5, 15),
+        TREACHEROUS("Treacherous", 15, 10, 5),
+        TITANIC("Titanic", 0, 30, 0);
 
         private final String displayName;
         private final int strengthBonus;
@@ -123,7 +133,15 @@ public final class ReforgeManager {
         BEJEWELED("Ruby Crystal", "Bejeweled"),
         RENOWNED("Onyx Crystal", "Renowned"),
         FESTIVE("Sapphire Crystal", "Festive"),
-        BIZARRE("Jaderald", "Bizarre");
+        BIZARRE("Jaderald", "Bizarre"),
+        BLOODY("Bloody Reforge Stone", "Bloody"),
+        WARPED("Warped Reforge Stone", "Warped"),
+        WITHERED("Withered Reforge Stone", "Withered"),
+        NECROTIC("Necromancer's Brooch", "Necrotic"),
+        SPIRITUAL("Spiritual Artifact", "Spiritual"),
+        SILKY("Silky Reforge Stone", "Silky"),
+        TREACHEROUS("Treacherous Reforge Stone", "Treacherous"),
+        TITANIC("Titanic Reforge Stone", "Titanic");
 
         private final String displayName;
         private final String reforge;
