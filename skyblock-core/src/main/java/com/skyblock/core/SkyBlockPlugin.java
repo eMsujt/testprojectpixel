@@ -394,6 +394,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("slay").setTabCompleter(slayerCommand);
 
         HotmManager hotmManager = HotmManager.getInstance();
+        hotmManager.load(getDataFolder());
         HotmCommand hotmCommand = new HotmCommand(hotmManager);
         getCommand("hotm").setExecutor(hotmCommand);
         getCommand("hotm").setTabCompleter(hotmCommand);
@@ -478,6 +479,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         } catch (java.io.IOException e) {
             getLogger().warning("Failed to save warps: " + e.getMessage());
         }
+        HotmManager.getInstance().save(getDataFolder());
         ScoreboardManager.getInstance().stop();
         getLogger().info("SkyBlock core disabled.");
         instance = null;
