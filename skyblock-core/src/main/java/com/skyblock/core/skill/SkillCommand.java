@@ -69,7 +69,7 @@ public final class SkillCommand implements TabExecutor {
         player.sendMessage("=== Your Skills ===");
         for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
             int level = skillManager.getLevel(id, skill);
-            player.sendMessage(capitalize(skill.name()) + ": Level " + level + "/" + SkillManager.MAX_LEVEL);
+            player.sendMessage(skill.getDisplayName() + ": Level " + level + "/" + SkillManager.MAX_LEVEL);
         }
     }
 
@@ -78,7 +78,7 @@ public final class SkillCommand implements TabExecutor {
         int level = skillManager.getLevel(id, skill);
         long xp = skillManager.getXp(id, skill);
         SkillLevelManager levelManager = SkillLevelManager.getInstance();
-        player.sendMessage("=== " + capitalize(skill.name()) + " ===");
+        player.sendMessage("=== " + skill.getDisplayName() + " ===");
         player.sendMessage("Level: " + level + "/" + SkillManager.MAX_LEVEL);
         player.sendMessage("Total XP: " + xp);
         long toNext = levelManager.xpToNextLevel(xp);
@@ -87,10 +87,5 @@ public final class SkillCommand implements TabExecutor {
         } else {
             player.sendMessage("Max level reached!");
         }
-    }
-
-    private static String capitalize(String name) {
-        if (name.isEmpty()) return name;
-        return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase();
     }
 }

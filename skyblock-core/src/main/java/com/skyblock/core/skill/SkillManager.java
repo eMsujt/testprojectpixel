@@ -13,8 +13,26 @@ import java.util.UUID;
 public final class SkillManager {
 
     public enum SkillType {
-        FARMING, MINING, COMBAT, FORAGING, FISHING,
-        ENCHANTING, ALCHEMY, TAMING, CARPENTRY, RUNECRAFTING
+        COMBAT("Combat"),
+        FARMING("Farming"),
+        MINING("Mining"),
+        FORAGING("Foraging"),
+        FISHING("Fishing"),
+        ENCHANTING("Enchanting"),
+        ALCHEMY("Alchemy"),
+        TAMING("Taming"),
+        CARPENTRY("Carpentry"),
+        RUNECRAFTING("Runecrafting");
+
+        private final String displayName;
+
+        SkillType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     public static final int MAX_LEVEL = SkillLevelManager.MAX_LEVEL;
