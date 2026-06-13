@@ -20,6 +20,7 @@ import java.util.List;
  *   <li>{@code /bank tier [tier]}       — view or set your bank tier</li>
  *   <li>{@code /bank type [type]}       — view or set your bank type</li>
  *   <li>{@code /bank history}           — view recent transactions</li>
+ *   <li>{@code /bank interest}          — apply interest to your balance</li>
  * </ul>
  * </p>
  */
@@ -50,6 +51,7 @@ public final class BankCommand implements TabExecutor {
             case "tier"     -> handleTier(player, args);
             case "type"     -> handleType(player, args);
             case "history"  -> handleHistory(player);
+            case "interest" -> handleInterest(player);
             default -> sendHelp(player);
         }
         return true;
@@ -59,7 +61,7 @@ public final class BankCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("balance", "deposit", "withdraw", "tier", "type", "history").stream()
+            return Arrays.asList("balance", "deposit", "withdraw", "tier", "type", "history", "interest").stream()
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -169,6 +171,16 @@ public final class BankCommand implements TabExecutor {
         }
     }
 
+    private void handleInterest(Player player) {
+        double interest = bankManager.applyInterest(player.getUniqueId());
+        if (interest <= 0) {
+            player.sendMessage("No interest applied (balance is zero).");
+        } else {
+            player.sendMessage(String.format("Interest applied: +%.2f coins. New balance: %.2f coins",
+                    interest, bankManager.getBalance(player.getUniqueId())));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bank Commands ===");
         player.sendMessage("/bank balance — view your balance");
@@ -177,5 +189,6 @@ public final class BankCommand implements TabExecutor {
         player.sendMessage("/bank tier [tier] — view or set your bank tier");
         player.sendMessage("/bank type [type] — view or set your bank type");
         player.sendMessage("/bank history — view recent transactions");
+        player.sendMessage("/bank interest — apply interest to your balance");
     }
 }
