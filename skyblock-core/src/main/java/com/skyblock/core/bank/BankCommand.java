@@ -128,7 +128,7 @@ public final class BankCommand implements TabExecutor {
     private void handleTier(Player player, String[] args) {
         if (args.length < 2) {
             BankManager.BankTier tier = bankManager.getTier(player.getUniqueId());
-            player.sendMessage("Your bank tier: " + tier.getDisplayName() + " (max balance: " + tier.getMaxBalance() + " coins)");
+            player.sendMessage("Your bank tier: " + tier.getDisplayName() + " (interest rate: " + tier.getInterestRate() + "%)");
             return;
         }
         try {
@@ -136,7 +136,7 @@ public final class BankCommand implements TabExecutor {
             bankManager.setTier(player.getUniqueId(), tier);
             player.sendMessage("Bank tier set to: " + tier.getDisplayName());
         } catch (IllegalArgumentException e) {
-            player.sendMessage("Unknown tier. Valid tiers: PERSONAL_I through PERSONAL_VII");
+            player.sendMessage("Unknown tier. Valid tiers: PERSONAL, COMMUNITY");
         }
     }
 
