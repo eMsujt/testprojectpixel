@@ -301,6 +301,10 @@ commands:
     description: Repair items using coins based on material durability cost.
     usage: /repair <hand|all>
     permission: skyblock.repair
+  crimson:
+    description: View and manage Crimson Isle faction and reputation.
+    usage: /crimson [info|faction <faction>|reputation [faction]]
+    permission: skyblock.crimson
 
 permissions:
   skyblock.warp:
@@ -416,4 +420,7 @@ permissions:
     default: true
   skyblock.repair:
     description: Use the /repair command to repair items with coins.
+    default: true
+  skyblock.crimson:
+    description: Use the /crimson command to view and manage Crimson Isle faction and reputation.
     default: true
