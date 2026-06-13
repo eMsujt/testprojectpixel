@@ -72,6 +72,45 @@ public final class EnchantingManager {
         public int getMaxLevel() { return maxLevel; }
     }
 
+    /** Core enchantment types used for the enchanting table UI. */
+    public enum EnchantmentType {
+        SHARPNESS("Sharpness", 7),
+        POWER("Power", 5),
+        PROTECTION("Protection", 7),
+        EFFICIENCY("Efficiency", 5),
+        FORTUNE("Fortune", 4),
+        LOOTING("Looting", 4),
+        SMITE("Smite", 7),
+        BANE_OF_ARTHROPODS("Bane of Arthropods", 7),
+        SILK_TOUCH("Silk Touch", 1),
+        THORNS("Thorns", 3),
+        FEATHER_FALLING("Feather Falling", 7),
+        FIRE_ASPECT("Fire Aspect", 2),
+        KNOCKBACK("Knockback", 2),
+        PUNCH("Punch", 2),
+        FLAME("Flame", 1);
+
+        private final String displayName;
+        private final int maxLevel;
+
+        EnchantmentType(String displayName, int maxLevel) {
+            this.displayName = displayName;
+            this.maxLevel = maxLevel;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getMaxLevel() { return maxLevel; }
+
+        public static EnchantmentType fromName(String name) {
+            for (EnchantmentType t : values()) {
+                if (t.displayName.equalsIgnoreCase(name) || t.name().equalsIgnoreCase(name)) {
+                    return t;
+                }
+            }
+            return null;
+        }
+    }
+
     /** Simple enchant-name enum for category lookups and tab completion. */
     public enum SkyBlockEnchant {
         // Combat
