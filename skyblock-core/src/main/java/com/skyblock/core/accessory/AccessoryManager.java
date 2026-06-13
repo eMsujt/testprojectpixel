@@ -26,7 +26,8 @@ public final class AccessoryManager {
         EPIC("Epic", 3.0),
         LEGENDARY("Legendary", 4.0),
         MYTHIC("Mythic", 5.0),
-        SPECIAL("Special", 5.0);
+        SPECIAL("Special", 5.0),
+        VERY_SPECIAL("Very Special", 5.0);
 
         private final String displayName;
         private final double statMultiplier;
