@@ -43,12 +43,12 @@ public final class PetManager {
         }
     }
 
-    public enum Rarity {
+    public enum PetRarity {
         COMMON("Common"), UNCOMMON("Uncommon"), RARE("Rare"), EPIC("Epic"), LEGENDARY("Legendary");
 
         private final String displayName;
 
-        Rarity(String displayName) {
+        PetRarity(String displayName) {
             this.displayName = displayName;
         }
 
@@ -59,10 +59,10 @@ public final class PetManager {
 
     public static final class PetData {
         public final PetType type;
-        public final Rarity rarity;
+        public final PetRarity rarity;
         public final long experience;
 
-        public PetData(PetType type, Rarity rarity, long experience) {
+        public PetData(PetType type, PetRarity rarity, long experience) {
             this.type = Objects.requireNonNull(type, "type");
             this.rarity = Objects.requireNonNull(rarity, "rarity");
             this.experience = experience;
@@ -118,7 +118,7 @@ public final class PetManager {
         return level;
     }
 
-    public void setActivePet(UUID playerId, PetType type, Rarity rarity) {
+    public void setActivePet(UUID playerId, PetType type, PetRarity rarity) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(rarity, "rarity");

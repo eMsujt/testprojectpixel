@@ -1,8 +1,8 @@
 package com.skyblock.core.pet;
 
 import com.skyblock.core.pet.PetManager.PetData;
+import com.skyblock.core.pet.PetManager.PetPetRarity;
 import com.skyblock.core.pet.PetManager.PetType;
-import com.skyblock.core.pet.PetManager.Rarity;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -74,7 +74,7 @@ public final class PetCommand implements TabExecutor {
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("equip")) {
             String prefix = args[2].toLowerCase();
-            return Arrays.stream(Rarity.values())
+            return Arrays.stream(PetRarity.values())
                     .map(r -> r.name().toLowerCase())
                     .filter(n -> n.startsWith(prefix))
                     .collect(Collectors.toList());
@@ -106,10 +106,10 @@ public final class PetCommand implements TabExecutor {
             player.sendMessage("Unknown pet type: " + args[1] + ".");
             return;
         }
-        Rarity rarity = Rarity.COMMON;
+        PetRarity rarity = PetRarity.COMMON;
         if (args.length >= 3) {
             try {
-                rarity = Rarity.valueOf(args[2].toUpperCase());
+                rarity = PetRarity.valueOf(args[2].toUpperCase());
             } catch (IllegalArgumentException e) {
                 player.sendMessage("Unknown rarity: " + args[2] + ". Defaulting to COMMON.");
             }
@@ -148,7 +148,7 @@ public final class PetCommand implements TabExecutor {
                 return;
             }
             player.sendMessage("=== Active Pet: " + data.type.getDisplayName() + " ===");
-            player.sendMessage("Rarity: " + data.rarity.getDisplayName());
+            player.sendMessage("PetRarity: " + data.rarity.getDisplayName());
             player.sendMessage("Level: " + data.getLevel() + "/" + PetManager.MAX_LEVEL);
             player.sendMessage("Total XP: " + data.experience);
         }
