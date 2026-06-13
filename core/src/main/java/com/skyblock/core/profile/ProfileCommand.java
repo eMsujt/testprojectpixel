@@ -1,17 +1,25 @@
 package com.skyblock.core.profile;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class ProfileCommand implements TabExecutor {
+
+    private static final List<String> SUBCOMMANDS = Arrays.asList("create", "delete", "view", "list");
+
+    private final ProfileManager manager;
+
+    public ProfileCommand(ProfileManager manager) {
+        this.manager = manager;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -21,15 +29,16 @@ public final class ProfileCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            showProfile(player, player);
-        } else {
-            @SuppressWarnings("deprecation")
-            OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
-            if (!target.hasPlayedBefore() && !target.isOnline()) {
-                player.sendMessage("Player \"" + args[0] + "\" has never joined this server.");
-                return true;
-            }
-            showProfile(player, target);
+            sendHelp(player);
+            return true;
+        }
+
+        switch (args[0].toLowerCase()) {
+            case "create" -> handleCreate(player, args);
+            case "delete" -> handleDelete(player, args);
+            case "view"   -> handleView(player, args);
+            case "list"   -> handleList(player);
+            default       -> sendHelp(player);
         }
         return true;
     }
@@ -38,24 +47,81 @@ public final class ProfileCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String prefix = args[0].toLowerCase();
-            return Bukkit.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .filter(name -> name.toLowerCase().startsWith(prefix))
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 2 && (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("view"))) {
+            if (!(sender instanceof Player player)) {
+                return Collections.emptyList();
+            }
+            String prefix = args[1].toLowerCase();
+            return manager.getProfileNames(player.getUniqueId()).stream()
+                    .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
 
-    private void showProfile(Player viewer, OfflinePlayer target) {
-        String name = target.getName() != null ? target.getName() : target.getUniqueId().toString();
-        viewer.sendMessage("=== Profile: " + name + " ===");
-        viewer.sendMessage("  UUID     : " + target.getUniqueId());
-        viewer.sendMessage("  Online   : " + (target.isOnline() ? "Yes" : "No"));
-        if (target.getLastSeen() > 0) {
-            viewer.sendMessage("  Last seen: " + new java.util.Date(target.getLastSeen()));
+    private void handleCreate(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /profile create <name>");
+            return;
         }
-        if (target.getFirstPlayed() > 0) {
-            viewer.sendMessage("  Joined   : " + new java.util.Date(target.getFirstPlayed()));
+        String name = args[1];
+        if (manager.createProfile(player.getUniqueId(), name)) {
+            player.sendMessage("Profile '" + name + "' created.");
+        } else {
+            player.sendMessage("A profile named '" + name + "' already exists.");
         }
+    }
+
+    private void handleDelete(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /profile delete <name>");
+            return;
+        }
+        String name = args[1];
+        if (manager.deleteProfile(player.getUniqueId(), name)) {
+            player.sendMessage("Profile '" + name + "' deleted.");
+        } else {
+            player.sendMessage("No profile named '" + name + "' found.");
+        }
+    }
+
+    private void handleView(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /profile view <name>");
+            return;
+        }
+        String name = args[1];
+        ProfileManager.ProfileData data = manager.getProfile(player.getUniqueId(), name);
+        if (data == null) {
+            player.sendMessage("No profile named '" + name + "' found.");
+            return;
+        }
+        player.sendMessage("=== Profile: " + data.getName() + " ===");
+        player.sendMessage("  Game Mode: " + data.getGameMode());
+        player.sendMessage("  Coins: " + data.getCoinsBalance());
+    }
+
+    private void handleList(Player player) {
+        Map<String, ProfileManager.ProfileData> profiles = manager.getProfiles(player.getUniqueId());
+        if (profiles.isEmpty()) {
+            player.sendMessage("You have no profiles. Use /profile create <name> to make one.");
+            return;
+        }
+        player.sendMessage("=== Your Profiles ===");
+        for (Map.Entry<String, ProfileManager.ProfileData> entry : profiles.entrySet()) {
+            player.sendMessage("  " + entry.getValue().getName() + " [" + entry.getValue().getGameMode() + "]");
+        }
+    }
+
+    private void sendHelp(Player player) {
+        player.sendMessage("=== Profile Commands ===");
+        player.sendMessage("/profile create <name> — create a new profile");
+        player.sendMessage("/profile delete <name> — delete a profile");
+        player.sendMessage("/profile view <name> — view profile details");
+        player.sendMessage("/profile list — list all your profiles");
     }
 }
