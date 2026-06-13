@@ -84,7 +84,7 @@ public final class FairySoulManager {
     private static final FairySoulManager INSTANCE = new FairySoulManager();
 
     /** Per-player set of collected fairy soul IDs; absent entries mean no souls collected. */
-    private final Map<UUID, Set<String>> collectedSouls = new HashMap<>();
+    private final Map<UUID, Set<Integer>> collectedSouls = new HashMap<>();
 
     private FairySoulManager() {
     }
@@ -104,9 +104,9 @@ public final class FairySoulManager {
      * @param playerId the player to look up
      * @return an unmodifiable set of soul IDs, never {@code null}
      */
-    public Set<String> getCollectedSouls(UUID playerId) {
+    public Set<Integer> getCollectedSouls(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Set<String> souls = collectedSouls.get(playerId);
+        Set<Integer> souls = collectedSouls.get(playerId);
         return souls == null ? Collections.emptySet() : Collections.unmodifiableSet(souls);
     }
 
@@ -118,7 +118,7 @@ public final class FairySoulManager {
      */
     public int getCount(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Set<String> souls = collectedSouls.get(playerId);
+        Set<Integer> souls = collectedSouls.get(playerId);
         return souls == null ? 0 : souls.size();
     }
 
@@ -126,13 +126,12 @@ public final class FairySoulManager {
      * Records that the given player collected the fairy soul with the specified ID.
      *
      * @param playerId the player
-     * @param soulId   the unique identifier of the fairy soul
+     * @param soulId   the unique integer identifier of the fairy soul
      * @return {@code true} if this soul was newly collected, {@code false} if already collected
      */
-    public boolean collectSoul(UUID playerId, String soulId) {
+    public boolean collectSoul(UUID playerId, int soulId) {
         Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(soulId, "soulId");
-        Set<String> souls = collectedSouls.computeIfAbsent(playerId, id -> new HashSet<>());
+        Set<Integer> souls = collectedSouls.computeIfAbsent(playerId, id -> new HashSet<>());
         return souls.add(soulId);
     }
 
@@ -143,10 +142,9 @@ public final class FairySoulManager {
      * @param soulId   the soul ID to check
      * @return {@code true} if the soul has been collected
      */
-    public boolean hasCollected(UUID playerId, String soulId) {
+    public boolean hasCollected(UUID playerId, int soulId) {
         Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(soulId, "soulId");
-        Set<String> souls = collectedSouls.get(playerId);
+        Set<Integer> souls = collectedSouls.get(playerId);
         return souls != null && souls.contains(soulId);
     }
 
