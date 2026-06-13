@@ -22,6 +22,12 @@ public final class MinionManager {
         COBBLESTONE("Cobblestone Minion"),
         WHEAT("Wheat Minion"),
         COAL("Coal Minion"),
+        IRON("Iron Minion"),
+        GOLD("Gold Minion"),
+        DIAMOND("Diamond Minion"),
+        LAPIS("Lapis Minion"),
+        REDSTONE("Redstone Minion"),
+        EMERALD("Emerald Minion"),
         CARROT("Carrot Minion"),
         POTATO("Potato Minion"),
         MELON("Melon Minion"),
@@ -34,8 +40,10 @@ public final class MinionManager {
         CLAY("Clay Minion"),
         FISHING("Fishing Minion"),
         OAK("Oak Minion"),
-        LAPIS("Lapis Minion"),
-        REDSTONE("Redstone Minion");
+        SAND("Sand Minion"),
+        GLOWSTONE("Glowstone Minion"),
+        NETHER_WART("Nether Wart Minion"),
+        QUARTZ("Quartz Minion");
 
         private final String displayName;
 
