@@ -25,6 +25,8 @@ import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.mayor.MayorManager;
+import com.skyblock.core.minion.MinionCommand;
+import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.party.PartyManager;
 import com.skyblock.core.pets.PetsCommand;
 import com.skyblock.core.pets.PetsManager;
@@ -126,6 +128,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         ProfileCommand profileCommand = new ProfileCommand(profileManager);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
+        MinionManager minionManager = MinionManager.getInstance();
+        minionManager.load(getDataFolder());
+        MinionCommand minionCommand = new MinionCommand(minionManager);
+        getCommand("minion").setExecutor(minionCommand);
+        getCommand("minion").setTabCompleter(minionCommand);
     }
 
     @Override
@@ -143,6 +150,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         KuudraManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
         ReforgeManager.getInstance().save(getDataFolder());
+        MinionManager.getInstance().save(getDataFolder());
         SkillsManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
         instance = null;
