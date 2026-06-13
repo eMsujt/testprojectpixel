@@ -28,6 +28,7 @@ import com.skyblock.core.pets.PetsCommand;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.profile.ProfileCommand;
 import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
@@ -102,7 +103,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         EnchantingCommand enchantingCommand = new EnchantingCommand(enchantingManager);
         getCommand("enchanting").setExecutor(enchantingCommand);
         getCommand("enchanting").setTabCompleter(enchantingCommand);
-        ReforgeManager.getInstance();
+        ReforgeManager reforgeManager = ReforgeManager.getInstance();
+        reforgeManager.load(getDataFolder());
+        ReforgeCommand reforgeCommand = new ReforgeCommand(reforgeManager);
+        getCommand("reforge").setExecutor(reforgeCommand);
+        getCommand("reforge").setTabCompleter(reforgeCommand);
         SkillsManager skillsManager = SkillsManager.getInstance();
         skillsManager.load(getDataFolder());
         AccessoryManager.getInstance();
@@ -129,6 +134,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         HOTMManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
+        ReforgeManager.getInstance().save(getDataFolder());
         SkillsManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
         instance = null;
