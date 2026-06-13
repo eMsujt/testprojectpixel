@@ -24,17 +24,12 @@ public final class PetManager {
         }
     }
 
-    public enum PetType {
-        BEE("Bee"), WOLF("Wolf"), RABBIT("Rabbit"), LION("Lion"), TIGER("Tiger"),
-        ELEPHANT("Elephant"), HORSE("Horse"), SKELETON_HORSE("Skeleton Horse"), CAT("Cat"), DOG("Dog"), PARROT("Parrot"),
-        PENGUIN("Penguin"), TURTLE("Turtle"), SHEEP("Sheep"), PIG("Pig"),
-        DOLPHIN("Dolphin"), CHICKEN("Chicken"), BLAZE("Blaze"), ENDERMAN("Enderman"),
-        SKELETON("Skeleton"), SPIDER("Spider"), ZOMBIE("Zombie"), DRAGON("Dragon"),
-        GOLDEN_DRAGON("Golden Dragon");
+    public enum PetRarity {
+        COMMON("Common"), UNCOMMON("Uncommon"), RARE("Rare"), EPIC("Epic"), LEGENDARY("Legendary");
 
         private final String displayName;
 
-        PetType(String displayName) {
+        PetRarity(String displayName) {
             this.displayName = displayName;
         }
 
@@ -43,12 +38,22 @@ public final class PetManager {
         }
     }
 
-    public enum PetRarity {
-        COMMON("Common"), UNCOMMON("Uncommon"), RARE("Rare"), EPIC("Epic"), LEGENDARY("Legendary");
+    public enum PetType {
+        LEGENDARY_GRIFFIN(PetRarity.LEGENDARY,   "Griffin"),
+        LEGENDARY_GOLDEN_DRAGON(PetRarity.LEGENDARY, "Golden Dragon"),
+        EPIC_ENDERMAN(PetRarity.EPIC,            "Enderman"),
+        EPIC_BLAZE(PetRarity.EPIC,               "Blaze"),
+        EPIC_WOLF(PetRarity.EPIC,                "Wolf"),
+        RARE_RABBIT(PetRarity.RARE,              "Rabbit"),
+        RARE_BEE(PetRarity.RARE,                 "Bee"),
+        UNCOMMON_PENGUIN(PetRarity.UNCOMMON,     "Penguin"),
+        COMMON_CHICKEN(PetRarity.COMMON,         "Chicken");
 
+        public final PetRarity rarity;
         private final String displayName;
 
-        PetRarity(String displayName) {
+        PetType(PetRarity rarity, String displayName) {
+            this.rarity = rarity;
             this.displayName = displayName;
         }
 
@@ -118,12 +123,11 @@ public final class PetManager {
         return level;
     }
 
-    public void setActivePet(UUID playerId, PetType type, PetRarity rarity) {
+    public void setActivePet(UUID playerId, PetType type) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
-        Objects.requireNonNull(rarity, "rarity");
         long xp = getExperience(playerId, type);
-        activePets.put(playerId, new PetData(type, rarity, xp));
+        activePets.put(playerId, new PetData(type, type.rarity, xp));
     }
 
     public PetData getActivePet(UUID playerId) {
