@@ -64,7 +64,13 @@ public final class BestiaryCommand implements TabExecutor {
         }
         if (args.length == 2 && sender instanceof Player player && "view".equals(args[0].toLowerCase())) {
             String prefix = args[1].toLowerCase();
-            return bestiaryManager.getAllKills(player.getUniqueId()).keySet().stream()
+            List<String> mobKeys = Arrays.stream(BestiaryManager.BestiaryMob.values())
+                    .map(m -> m.mobKey)
+                    .collect(Collectors.toList());
+            bestiaryManager.getAllKills(player.getUniqueId()).keySet().stream()
+                    .filter(k -> !mobKeys.contains(k))
+                    .forEach(mobKeys::add);
+            return mobKeys.stream()
                     .filter(m -> m.startsWith(prefix))
                     .sorted()
                     .collect(Collectors.toList());

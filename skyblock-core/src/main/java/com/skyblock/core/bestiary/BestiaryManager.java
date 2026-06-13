@@ -15,6 +15,42 @@ import java.util.UUID;
  */
 public final class BestiaryManager {
 
+    /** Individual mob types tracked in the bestiary. */
+    public enum BestiaryMob {
+        ZOMBIE("zombie",           "Zombie"),
+        ZOMBIE_VILLAGER("zombie_villager", "Zombie Villager"),
+        DROWNED("drowned",         "Drowned"),
+        HUSK("husk",               "Husk"),
+        SKELETON("skeleton",       "Skeleton"),
+        STRAY("stray",             "Stray"),
+        WITHER_SKELETON("wither_skeleton", "Wither Skeleton"),
+        BOGGED("bogged",           "Bogged"),
+        SPIDER("spider",           "Spider"),
+        CAVE_SPIDER("cave_spider", "Cave Spider"),
+        JOCKEY("jockey",           "Jockey"),
+        CREEPER("creeper",         "Creeper"),
+        CHARGED_CREEPER("charged_creeper", "Charged Creeper"),
+        ENDERMAN("enderman",       "Enderman"),
+        ENDERMITE("endermite",     "Endermite"),
+        ENDERMAGE("endermage",     "Endermage"),
+        BLAZE("blaze",             "Blaze"),
+        SLIME("slime",             "Slime"),
+        MAGMA_CUBE("magma_cube",   "Magma Cube"),
+        GHAST("ghast",             "Ghast"),
+        WITCH("witch",             "Witch"),
+        IRON_GOLEM("iron_golem",   "Iron Golem"),
+        SNOW_GOLEM("snow_golem",   "Snow Golem");
+
+        /** Lower-case mob type key used in kill-count maps. */
+        public final String mobKey;
+        public final String displayName;
+
+        BestiaryMob(String mobKey, String displayName) {
+            this.mobKey      = mobKey;
+            this.displayName = displayName;
+        }
+    }
+
     /** Groupings of related mob types for bestiary milestone tracking. */
     public enum BestiaryFamily {
         ZOMBIE("Zombie",   new String[]{"zombie", "zombie_villager", "drowned", "husk"}),
@@ -84,6 +120,33 @@ public final class BestiaryManager {
             return 0;
         }
         return entry.getOrDefault(mobType.toLowerCase(), 0);
+    }
+
+    /**
+     * Records one kill of the given {@link BestiaryMob} for {@code playerId}.
+     *
+     * @param playerId the killer's UUID
+     * @param mob      the mob type
+     */
+    public void recordKill(UUID playerId, BestiaryMob mob) {
+        if (mob == null) {
+            return;
+        }
+        recordKill(playerId, mob.mobKey);
+    }
+
+    /**
+     * Returns the number of kills the player has for the given {@link BestiaryMob}.
+     *
+     * @param playerId the player's UUID
+     * @param mob      the mob type
+     * @return kill count, or 0 if none recorded
+     */
+    public int getKills(UUID playerId, BestiaryMob mob) {
+        if (mob == null) {
+            return 0;
+        }
+        return getKills(playerId, mob.mobKey);
     }
 
     /**
