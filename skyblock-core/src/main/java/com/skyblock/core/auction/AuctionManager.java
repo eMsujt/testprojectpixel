@@ -18,14 +18,31 @@ import java.util.UUID;
  */
 public final class AuctionManager {
 
+    /** The two auction modes available in the auction house. */
+    public enum AuctionType {
+        BIN("Buy It Now"),
+        AUCTION("Bid-based");
+
+        private final String displayName;
+
+        AuctionType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** An immutable auction listing snapshot. */
     public record AuctionEntry(UUID id, UUID seller, String itemName,
-                               double startingBid, boolean binListing) {
+                               double startingBid, AuctionType type) {
 
         public AuctionEntry {
             Objects.requireNonNull(id, "id");
             Objects.requireNonNull(seller, "seller");
             Objects.requireNonNull(itemName, "itemName");
+            Objects.requireNonNull(type, "type");
             if (startingBid < 0) {
                 throw new IllegalArgumentException("startingBid must not be negative: " + startingBid);
             }
@@ -68,14 +85,15 @@ public final class AuctionManager {
      * @param seller      the selling player's UUID
      * @param itemName    display name of the item
      * @param startingBid minimum bid or BIN price (must be ≥ 0)
-     * @param binListing  {@code true} for buy-it-now, {@code false} for bid-based
+     * @param type        the auction type ({@link AuctionType#BIN} or {@link AuctionType#AUCTION})
      * @return the new listing's UUID
      */
     public UUID createListing(UUID seller, String itemName,
-                              double startingBid, boolean binListing) {
+                              double startingBid, AuctionType type) {
         Objects.requireNonNull(seller, "seller");
+        Objects.requireNonNull(type, "type");
         UUID id = UUID.randomUUID();
-        listings.put(id, new State(new AuctionEntry(id, seller, itemName, startingBid, binListing)));
+        listings.put(id, new State(new AuctionEntry(id, seller, itemName, startingBid, type)));
         return id;
     }
 
@@ -101,7 +119,7 @@ public final class AuctionManager {
         if (bidder.equals(state.entry.seller())) {
             throw new IllegalArgumentException("seller cannot bid on their own listing");
         }
-        if (state.entry.binListing()) {
+        if (state.entry.type() == AuctionType.BIN) {
             if (amount < state.entry.startingBid()) {
                 throw new IllegalArgumentException(
                         "amount must meet the BIN price " + state.entry.startingBid() + ": " + amount);
@@ -130,7 +148,7 @@ public final class AuctionManager {
      */
     public UUID endAuction(UUID listingId) {
         State state = requireState(listingId);
-        if (state.entry.binListing()) {
+        if (state.entry.type() == AuctionType.BIN) {
             throw new IllegalArgumentException("cannot end a BIN listing as an auction: " + listingId);
         }
         listings.remove(listingId);
