@@ -1,6 +1,5 @@
 package com.skyblock.core.collections;
 
-import com.skyblock.core.collections.CollectionManager.Collection;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -12,25 +11,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Handles the {@code /collections} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /collections}                       — list all collections</li>
- *   <li>{@code /collections <collection>}          — show totals for a collection</li>
- *   <li>{@code /collections category <category>}   — list all collections in a category</li>
- *   <li>{@code /collections reset}                 — reset all collection progress</li>
- * </ul>
- * </p>
- */
 public final class CollectionsCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS;
 
     static {
         List<String> subs = new java.util.ArrayList<>(Arrays.asList("category", "reset"));
-        for (Collection c : Collection.values()) {
+        for (CollectionsManager.CollectionType c : CollectionsManager.CollectionType.values()) {
             subs.add(c.name().toLowerCase());
         }
         SUBCOMMANDS = Collections.unmodifiableList(subs);
@@ -79,13 +66,13 @@ public final class CollectionsCommand implements TabExecutor {
                 handleCategory(player, category);
             }
             default -> {
-                Collection collection = parseCollection(args[0]);
-                if (collection == null) {
+                CollectionsManager.CollectionType type = parseType(args[0]);
+                if (type == null) {
                     player.sendMessage("Unknown collection: " + args[0] +
                             ". Use /collections to see all collections.");
                     return true;
                 }
-                handleCollection(player, collection);
+                handleCollection(player, type);
             }
         }
         return true;
@@ -112,21 +99,20 @@ public final class CollectionsCommand implements TabExecutor {
     private void handleAll(Player player) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== Collections ===");
-        for (Collection c : Collection.values()) {
+        for (CollectionsManager.CollectionType c : CollectionsManager.CollectionType.values()) {
             long total = collectionsManager.getItems(id, c);
             int tier = collectionsManager.getTier(id, c);
-            player.sendMessage(String.format("  %-22s %d  (Tier %d)",
-                    c.name(), total, tier));
+            player.sendMessage(String.format("  %-22s %d  (Tier %d)", c.name(), total, tier));
         }
         player.sendMessage("Use /collections <name> to view a specific collection.");
     }
 
-    private void handleCollection(Player player, Collection collection) {
+    private void handleCollection(Player player, CollectionsManager.CollectionType type) {
         UUID id = player.getUniqueId();
-        long total = collectionsManager.getItems(id, collection);
-        int tier = collectionsManager.getTier(id, collection);
-        long toNext = collectionsManager.getItemsToNextTier(id, collection);
-        player.sendMessage("=== " + collection.name() + " Collection ===");
+        long total = collectionsManager.getItems(id, type);
+        int tier = collectionsManager.getTier(id, type);
+        long toNext = collectionsManager.getItemsToNextTier(id, type);
+        player.sendMessage("=== " + type.getDisplayName() + " Collection ===");
         player.sendMessage("  Total gathered : " + total);
         player.sendMessage("  Tier           : " + tier);
         if (toNext > 0) {
@@ -136,17 +122,16 @@ public final class CollectionsCommand implements TabExecutor {
 
     private void handleCategory(Player player, CollectionsManager.CollectionCategory category) {
         UUID id = player.getUniqueId();
-        CollectionManager.CollectionCategory delegate = category.toCategory();
         player.sendMessage("=== " + category.getDisplayName() + " Collections ===");
-        for (Collection c : delegate.getCollections()) {
+        for (CollectionsManager.CollectionType c : category.getCollections()) {
             long total = collectionsManager.getItems(id, c);
             int tier = collectionsManager.getTier(id, c);
             player.sendMessage(String.format("  %-22s %d  (Tier %d)", c.name(), total, tier));
         }
     }
 
-    private static Collection parseCollection(String input) {
-        for (Collection c : Collection.values()) {
+    private static CollectionsManager.CollectionType parseType(String input) {
+        for (CollectionsManager.CollectionType c : CollectionsManager.CollectionType.values()) {
             if (c.name().equalsIgnoreCase(input)) {
                 return c;
             }
