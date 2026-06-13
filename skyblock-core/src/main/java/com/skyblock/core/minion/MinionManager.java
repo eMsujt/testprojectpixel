@@ -124,6 +124,9 @@ public final class MinionManager {
     /** Index from owner UUID to their list of minion UUIDs. */
     private final Map<UUID, List<UUID>> ownerIndex = new HashMap<>();
 
+    /** Per-player placements: location key "world,x,y,z" → MinionType. */
+    private final Map<UUID, Map<String, MinionType>> placements = new HashMap<>();
+
     private MinionManager() {
     }
 
@@ -239,6 +242,62 @@ public final class MinionManager {
         return list.size();
     }
 
+    /**
+     * Returns the {@link MinionType} placed at the given location key by the player, or {@code null}.
+     *
+     * @param owner    the player
+     * @param location "world,x,y,z" string
+     */
+    public MinionType getPlacement(UUID owner, String location) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(location, "location");
+        Map<String, MinionType> map = placements.get(owner);
+        return map == null ? null : map.get(location);
+    }
+
+    /**
+     * Records that the player placed the given minion type at the location key.
+     *
+     * @param owner    the player
+     * @param location "world,x,y,z" string
+     * @param type     the minion type placed
+     */
+    public void setPlacement(UUID owner, String location, MinionType type) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(location, "location");
+        Objects.requireNonNull(type, "type");
+        placements.computeIfAbsent(owner, k -> new HashMap<>()).put(location, type);
+    }
+
+    /**
+     * Removes the placement record at the given location for the player.
+     *
+     * @param owner    the player
+     * @param location "world,x,y,z" string
+     * @return {@code true} if a record existed and was removed
+     */
+    public boolean removePlacement(UUID owner, String location) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(location, "location");
+        Map<String, MinionType> map = placements.get(owner);
+        if (map == null) return false;
+        boolean removed = map.remove(location) != null;
+        if (map.isEmpty()) placements.remove(owner);
+        return removed;
+    }
+
+    /**
+     * Returns an unmodifiable view of all placement entries for the given player.
+     *
+     * @param owner the player
+     * @return map of "world,x,y,z" → MinionType, empty if none
+     */
+    public Map<String, MinionType> getPlacements(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        Map<String, MinionType> map = placements.get(owner);
+        return map == null ? Collections.emptyMap() : Collections.unmodifiableMap(map);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "minions.yml");
         if (!file.exists()) {
@@ -247,6 +306,7 @@ public final class MinionManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         minions.clear();
         ownerIndex.clear();
+        placements.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID id = UUID.fromString(key);
@@ -264,6 +324,33 @@ public final class MinionManager {
                 // skip malformed entries
             }
         }
+        // load per-player placements
+        if (cfg.isConfigurationSection("placements")) {
+            for (String ownerStr : cfg.getConfigurationSection("placements").getKeys(false)) {
+                try {
+                    UUID owner = UUID.fromString(ownerStr);
+                    Map<String, MinionType> map = new HashMap<>();
+                    String path = "placements." + ownerStr;
+                    if (cfg.isConfigurationSection(path)) {
+                        for (String loc : cfg.getConfigurationSection(path).getKeys(false)) {
+                            String typeName = cfg.getString(path + "." + loc);
+                            if (typeName != null) {
+                                try {
+                                    map.put(loc, MinionType.valueOf(typeName));
+                                } catch (IllegalArgumentException ignored) {
+                                    // skip unknown type
+                                }
+                            }
+                        }
+                    }
+                    if (!map.isEmpty()) {
+                        placements.put(owner, map);
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed owner UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -274,6 +361,12 @@ public final class MinionManager {
             cfg.set(key + ".owner", data.owner.toString());
             cfg.set(key + ".type", data.type.name());
             cfg.set(key + ".tier", data.getTier().name());
+        }
+        for (Map.Entry<UUID, Map<String, MinionType>> entry : placements.entrySet()) {
+            String path = "placements." + entry.getKey().toString();
+            for (Map.Entry<String, MinionType> loc : entry.getValue().entrySet()) {
+                cfg.set(path + "." + loc.getKey(), loc.getValue().name());
+            }
         }
         try {
             cfg.save(file);
