@@ -94,7 +94,7 @@ public final class MinionCommand implements TabExecutor {
             if (data != null) {
                 player.sendMessage(String.format("[%d] %s — Tier %d | ID: %s",
                         i + 1,
-                        data.type.name(),
+                        data.type.getDisplayName(),
                         data.getTier().ordinal() + 1,
                         data.id.toString().substring(0, 8)));
             }
@@ -132,7 +132,7 @@ public final class MinionCommand implements TabExecutor {
         }
 
         MinionManager.MinionData data = minionManager.placeMinion(player.getUniqueId(), type, tier);
-        player.sendMessage("Placed " + type.name() + " Minion at Tier " + (tier.ordinal() + 1)
+        player.sendMessage("Placed " + type.getDisplayName() + " at Tier " + (tier.ordinal() + 1)
                 + " (ID: " + data.id.toString().substring(0, 8) + ").");
     }
 
@@ -150,12 +150,12 @@ public final class MinionCommand implements TabExecutor {
             if (data == null) {
                 player.sendMessage("Minion not found: " + args[1]);
             } else {
-                player.sendMessage(data.type.name() + " Minion is already at max tier ("
+                player.sendMessage(data.type.getDisplayName() + " is already at max tier ("
                         + MinionManager.MinionTier.values().length + ").");
             }
         } else {
             MinionManager.MinionData data = minionManager.getMinion(minionId);
-            player.sendMessage("Upgraded to " + data.type.name() + " Minion Tier "
+            player.sendMessage("Upgraded to " + data.type.getDisplayName() + " Tier "
                     + (data.getTier().ordinal() + 1) + "!");
         }
     }
@@ -174,7 +174,7 @@ public final class MinionCommand implements TabExecutor {
             return;
         }
         minionManager.removeMinion(minionId);
-        player.sendMessage("Removed " + data.type.name() + " Minion (ID: "
+        player.sendMessage("Removed " + data.type.getDisplayName() + " (ID: "
                 + minionId.toString().substring(0, 8) + ").");
     }
 
@@ -192,7 +192,7 @@ public final class MinionCommand implements TabExecutor {
             return;
         }
         player.sendMessage("=== Minion Info ===");
-        player.sendMessage("Type : " + data.type.name());
+        player.sendMessage("Type : " + data.type.getDisplayName());
         player.sendMessage("Tier : " + (data.getTier().ordinal() + 1)
                 + " / " + MinionManager.MinionTier.values().length);
         player.sendMessage("Owner: " + data.owner);
