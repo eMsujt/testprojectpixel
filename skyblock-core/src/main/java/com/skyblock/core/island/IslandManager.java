@@ -56,6 +56,7 @@ public final class IslandManager {
         private final UUID owner;
         private final List<UUID> members = new ArrayList<>();
         private final Map<IslandUpgrade, Integer> upgrades = new HashMap<>();
+        private String warpName;
 
         SkyBlockIsland(UUID owner) {
             this.owner = owner;
@@ -75,6 +76,15 @@ public final class IslandManager {
 
         public Map<IslandUpgrade, Integer> getUpgrades() {
             return Collections.unmodifiableMap(upgrades);
+        }
+
+        /** Returns the public warp name for this island, or {@code null} if none is set. */
+        public String getWarpName() {
+            return warpName;
+        }
+
+        void setWarpName(String warpName) {
+            this.warpName = warpName;
         }
     }
 
@@ -223,6 +233,33 @@ public final class IslandManager {
         }
         island.upgrades.put(upgrade, current + 1);
         return true;
+    }
+
+    /**
+     * Sets a public warp name for {@code owner}'s island.
+     * Pass {@code null} to clear the warp name.
+     *
+     * @return {@code false} if the owner has no island
+     */
+    public boolean setWarpName(UUID owner, String warpName) {
+        Objects.requireNonNull(owner, "owner");
+        SkyBlockIsland island = islands.get(owner);
+        if (island == null) {
+            return false;
+        }
+        island.setWarpName(warpName);
+        return true;
+    }
+
+    /**
+     * Returns the warp name for {@code owner}'s island, or {@code null} if none is set.
+     *
+     * @return warp name or {@code null}
+     */
+    public String getWarpName(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        SkyBlockIsland island = islands.get(owner);
+        return island == null ? null : island.getWarpName();
     }
 
     /**

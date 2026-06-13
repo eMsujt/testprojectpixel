@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public final class IslandCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("create", "home", "visit", "invite", "kick", "leave", "upgrade", "upgrades");
+            Arrays.asList("create", "home", "visit", "invite", "kick", "leave", "upgrade", "upgrades", "warp", "setwarp");
 
     private final IslandManager islandManager;
 
@@ -46,7 +46,7 @@ public final class IslandCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades>");
+            player.sendMessage("Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp>");
             return true;
         }
 
@@ -59,7 +59,9 @@ public final class IslandCommand implements TabExecutor {
             case "leave"    -> handleLeave(player);
             case "upgrade"  -> handleUpgrade(player, args);
             case "upgrades" -> handleUpgrades(player);
-            default         -> player.sendMessage("Unknown subcommand. Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades>");
+            case "setwarp"  -> handleSetWarp(player, args);
+            case "warp"     -> handleWarp(player, args);
+            default         -> player.sendMessage("Unknown subcommand. Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp>");
         }
         return true;
     }
@@ -244,6 +246,48 @@ public final class IslandCommand implements TabExecutor {
             int level = island.getUpgradeLevel(upgrade);
             player.sendMessage(upgrade.getDisplayName() + ": " + level + " / " + upgrade.getMaxLevel());
         }
+    }
+
+    private void handleSetWarp(Player player, String[] args) {
+        if (!islandManager.hasIsland(player.getUniqueId())) {
+            player.sendMessage("You do not have an island. Use /island create first.");
+            return;
+        }
+        if (args.length < 2) {
+            player.sendMessage("Usage: /island setwarp <name>");
+            return;
+        }
+        String name = args[1];
+        islandManager.setWarpName(player.getUniqueId(), name);
+        player.sendMessage("Island warp name set to: " + name);
+    }
+
+    private void handleWarp(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /island warp <player>");
+            return;
+        }
+        Player target = Bukkit.getPlayerExact(args[1]);
+        if (target == null) {
+            player.sendMessage("Player '" + args[1] + "' is not online.");
+            return;
+        }
+        if (!islandManager.hasIsland(target.getUniqueId())) {
+            player.sendMessage(target.getName() + " does not have an island.");
+            return;
+        }
+        String warpName = islandManager.getWarpName(target.getUniqueId());
+        if (warpName == null) {
+            player.sendMessage(target.getName() + " has not set a warp name.");
+            return;
+        }
+        islandManager.getIslandWorld(target.getUniqueId()).ifPresentOrElse(
+                world -> {
+                    player.sendMessage("Warping to " + warpName + "...");
+                    player.teleport(world.getSpawnLocation());
+                },
+                () -> player.sendMessage(target.getName() + "'s island world is not loaded.")
+        );
     }
 
     private void handleLeave(Player player) {
