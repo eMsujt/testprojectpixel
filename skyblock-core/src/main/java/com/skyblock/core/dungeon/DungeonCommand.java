@@ -88,7 +88,7 @@ public final class DungeonCommand implements TabExecutor {
         DungeonManager.DungeonRun run = dungeonManager.getActiveRun(player.getUniqueId());
         DungeonManager.DungeonClass cls = dungeonManager.getClass(player.getUniqueId());
         player.sendMessage("=== Dungeon Info ===");
-        player.sendMessage("  Class      : " + (cls != null ? cls.name() : "none"));
+        player.sendMessage("  Class      : " + (cls != null ? cls.getDisplayName() : "none"));
         if (run != null) {
             player.sendMessage("  Active run : " + run.getType().name());
             player.sendMessage("  Participants: " + run.getParticipants().size());
@@ -139,7 +139,7 @@ public final class DungeonCommand implements TabExecutor {
     private void handleClass(Player player, String[] args) {
         if (args.length < 2) {
             DungeonManager.DungeonClass cls = dungeonManager.getClass(player.getUniqueId());
-            player.sendMessage("Your dungeon class: " + (cls != null ? cls.name() : "none"));
+            player.sendMessage("Your dungeon class: " + (cls != null ? cls.getDisplayName() : "none"));
             return;
         }
         DungeonManager.DungeonClass cls;
@@ -150,7 +150,7 @@ public final class DungeonCommand implements TabExecutor {
             return;
         }
         dungeonManager.setClass(player.getUniqueId(), cls);
-        player.sendMessage("Dungeon class set to: " + cls.name());
+        player.sendMessage("Dungeon class set to: " + cls.getDisplayName());
     }
 
     private void handleScores(Player player, String[] args) {
