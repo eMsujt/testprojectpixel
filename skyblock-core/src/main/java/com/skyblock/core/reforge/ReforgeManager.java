@@ -1,5 +1,6 @@
 package com.skyblock.core.reforge;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -175,6 +176,9 @@ public final class ReforgeManager {
     /** Per-player active reforge. */
     private final Map<UUID, ReforgeType> playerReforges = new HashMap<>();
 
+    /** Per-player, per-slot reforge selections (slot key → ReforgeType). */
+    private final Map<UUID, Map<String, ReforgeType>> slotReforges = new HashMap<>();
+
     private ReforgeManager() {}
 
     public static ReforgeManager getInstance() {
@@ -223,6 +227,40 @@ public final class ReforgeManager {
         return Collections.unmodifiableMap(playerReforges);
     }
 
+    /**
+     * Returns the reforge applied to the given item slot for the player,
+     * or {@link ReforgeType#NONE} if no reforge is set for that slot.
+     */
+    public ReforgeType getSlotReforge(UUID playerId, String slot) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(slot, "slot");
+        Map<String, ReforgeType> slots = slotReforges.get(playerId);
+        return slots == null ? ReforgeType.NONE : slots.getOrDefault(slot, ReforgeType.NONE);
+    }
+
+    /**
+     * Sets the reforge for the given item slot. Use {@link ReforgeType#NONE} to clear.
+     */
+    public void setSlotReforge(UUID playerId, String slot, ReforgeType reforge) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(slot, "slot");
+        Objects.requireNonNull(reforge, "reforge");
+        if (reforge == ReforgeType.NONE) {
+            Map<String, ReforgeType> slots = slotReforges.get(playerId);
+            if (slots != null) slots.remove(slot);
+        } else {
+            slotReforges.computeIfAbsent(playerId, k -> new HashMap<>()).put(slot, reforge);
+        }
+    }
+
+    /**
+     * Removes all slot reforges for the given player.
+     */
+    public void clearSlotReforges(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        slotReforges.remove(playerId);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "reforge.yml");
         if (!file.exists()) {
@@ -230,7 +268,9 @@ public final class ReforgeManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerReforges.clear();
+        slotReforges.clear();
         for (String key : cfg.getKeys(false)) {
+            if (key.equals("slots")) continue;
             try {
                 UUID uuid = UUID.fromString(key);
                 String name = cfg.getString(key);
@@ -243,6 +283,26 @@ public final class ReforgeManager {
                 // skip malformed entries
             }
         }
+        ConfigurationSection slotsSection = cfg.getConfigurationSection("slots");
+        if (slotsSection != null) {
+            for (String uuidKey : slotsSection.getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(uuidKey);
+                    ConfigurationSection playerSection = slotsSection.getConfigurationSection(uuidKey);
+                    if (playerSection == null) continue;
+                    for (String slotKey : playerSection.getKeys(false)) {
+                        String name = playerSection.getString(slotKey);
+                        if (name == null) continue;
+                        ReforgeType type = ReforgeType.fromName(name);
+                        if (type != null && type != ReforgeType.NONE) {
+                            slotReforges.computeIfAbsent(uuid, k -> new HashMap<>()).put(slotKey, type);
+                        }
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -250,6 +310,12 @@ public final class ReforgeManager {
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, ReforgeType> entry : playerReforges.entrySet()) {
             cfg.set(entry.getKey().toString(), entry.getValue().name());
+        }
+        for (Map.Entry<UUID, Map<String, ReforgeType>> playerEntry : slotReforges.entrySet()) {
+            String uuidKey = "slots." + playerEntry.getKey().toString();
+            for (Map.Entry<String, ReforgeType> slotEntry : playerEntry.getValue().entrySet()) {
+                cfg.set(uuidKey + "." + slotEntry.getKey(), slotEntry.getValue().name());
+            }
         }
         try {
             cfg.save(file);
