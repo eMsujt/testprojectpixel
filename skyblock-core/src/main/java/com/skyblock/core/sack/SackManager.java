@@ -16,11 +16,11 @@ public final class SackManager {
 
     /** Sack types available to players, each with a display name. */
     public enum SackType {
-        FARMING_SACK("Farming Sack"),
-        MINING_SACK("Mining Sack"),
-        FORAGING_SACK("Foraging Sack"),
-        COMBAT_SACK("Combat Sack"),
-        FISHING_SACK("Fishing Sack");
+        MINING("Mining Sack"),
+        FARMING("Farming Sack"),
+        FISHING("Fishing Sack"),
+        FORAGING("Foraging Sack"),
+        COMBAT("Combat Sack");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
