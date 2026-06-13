@@ -8,6 +8,7 @@ public enum BazaarProduct {
 
     // Farming
     WHEAT("WHEAT", "Wheat", "FARMING"),
+    SEEDS("SEEDS", "Seeds", "FARMING"),
     CARROT("CARROT", "Carrot", "FARMING"),
     POTATO("POTATO", "Potato", "FARMING"),
     PUMPKIN("PUMPKIN", "Pumpkin", "FARMING"),
