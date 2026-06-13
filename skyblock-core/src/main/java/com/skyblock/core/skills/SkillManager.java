@@ -1,5 +1,10 @@
 package com.skyblock.core.skills;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,6 +118,74 @@ public final class SkillManager {
         Objects.requireNonNull(skill, "skill");
         Map<SkillType, Integer> levels = levelMap.get(playerId);
         return levels == null ? 1 : levels.getOrDefault(skill, 1);
+    }
+
+    /**
+     * Loads per-player XP and level data from {@code skills.yml} inside the given data folder.
+     *
+     * @param dataFolder the plugin data folder, must not be null
+     */
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "skills.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        xpMap.clear();
+        levelMap.clear();
+        for (String uuidKey : cfg.getKeys(false)) {
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(uuidKey);
+            } catch (IllegalArgumentException ignored) {
+                continue;
+            }
+            ConfigurationSection playerSection = cfg.getConfigurationSection(uuidKey);
+            if (playerSection == null) {
+                continue;
+            }
+            Map<SkillType, Double> xp = new EnumMap<>(SkillType.class);
+            Map<SkillType, Integer> levels = new EnumMap<>(SkillType.class);
+            for (SkillType skill : SkillType.values()) {
+                String skillKey = skill.name();
+                if (!playerSection.contains(skillKey)) {
+                    continue;
+                }
+                double skillXp = playerSection.getDouble(skillKey + ".xp", 0.0);
+                int skillLevel = playerSection.getInt(skillKey + ".level", computeLevel(skillXp));
+                xp.put(skill, skillXp);
+                levels.put(skill, skillLevel);
+            }
+            if (!xp.isEmpty()) {
+                xpMap.put(uuid, xp);
+                levelMap.put(uuid, levels);
+            }
+        }
+    }
+
+    /**
+     * Saves per-player XP and level data to {@code skills.yml} inside the given data folder.
+     *
+     * @param dataFolder the plugin data folder, must not be null
+     * @throws RuntimeException if the file cannot be written
+     */
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "skills.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<SkillType, Double>> entry : xpMap.entrySet()) {
+            String uuidKey = entry.getKey().toString();
+            Map<SkillType, Integer> levels = levelMap.getOrDefault(entry.getKey(), new EnumMap<>(SkillType.class));
+            for (Map.Entry<SkillType, Double> skillEntry : entry.getValue().entrySet()) {
+                String skillKey = uuidKey + "." + skillEntry.getKey().name();
+                cfg.set(skillKey + ".xp", skillEntry.getValue());
+                cfg.set(skillKey + ".level", levels.getOrDefault(skillEntry.getKey(), computeLevel(skillEntry.getValue())));
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save skills.yml", e);
+        }
     }
 
     /**
