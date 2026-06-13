@@ -86,8 +86,8 @@ commands:
     description: Manage your SkyBlock banking account.
     usage: /banking [deposit|withdraw|balance]
   dungeon:
-    description: Manage and view dungeon runs.
-    usage: /dungeon [start|leave|info]
+    description: Dungeon system
+    usage: /dungeon <join|leave|stats|shop>
   essence:
     description: View and manage your SkyBlock essence balances.
     usage: /essence <balance|add|remove> [type] [amount]
@@ -191,8 +191,8 @@ commands:
     usage: /backpack <create <name>|delete <name>|list>
     permission: skyblock.backpack
   kuudra:
-    description: View and manage Kuudra key counts and completions per tier.
-    usage: /kuudra <keys [add|remove|set <tier> <amount>]|completions [add <tier> <amount>]>
+    description: Kuudra system
+    usage: /kuudra <join|leave|stats|shop>
     permission: skyblock.kuudra
   garden:
     description: View and manage your Garden plot, visitors, and crop upgrades.
