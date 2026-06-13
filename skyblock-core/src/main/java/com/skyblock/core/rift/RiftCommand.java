@@ -1,8 +1,8 @@
 package com.skyblock.core.rift;
 
+import com.skyblock.core.rift.RiftManager.RiftArea;
 import com.skyblock.core.rift.RiftManager.RiftData;
 import com.skyblock.core.rift.RiftManager.RiftMobType;
-import com.skyblock.core.rift.RiftManager.RiftZone;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -65,7 +65,7 @@ public final class RiftCommand implements TabExecutor {
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("enter")) {
             String lower = args[1].toLowerCase();
-            return Arrays.stream(RiftZone.values())
+            return Arrays.stream(RiftArea.values())
                     .map(z -> z.name().toLowerCase())
                     .filter(s -> s.startsWith(lower))
                     .toList();
@@ -93,10 +93,10 @@ public final class RiftCommand implements TabExecutor {
     }
 
     private void handleEnter(Player player, String[] args) {
-        RiftZone zone = RiftZone.WYLD_WOODS;
+        RiftArea zone = RiftArea.WYLD_WOODS;
         if (args.length >= 2) {
             try {
-                zone = RiftZone.valueOf(args[1].toUpperCase());
+                zone = RiftArea.valueOf(args[1].toUpperCase());
             } catch (IllegalArgumentException e) {
                 player.sendMessage("Unknown zone: " + args[1]);
                 return;

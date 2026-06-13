@@ -9,13 +9,13 @@ import java.util.UUID;
 /**
  * Singleton tracking per-player Rift dimension state.
  *
- * <p>Tracks which zone a player is in, how many seconds of Rift time they have
+ * <p>Tracks which area a player is in, how many seconds of Rift time they have
  * remaining, and how many Rift mobs they have killed. Not thread-safe.</p>
  */
 public final class RiftManager {
 
-    /** Named zones inside the Rift dimension. */
-    public enum RiftZone {
+    /** Named areas inside the Rift dimension. */
+    public enum RiftArea {
         DREADFARM, STILLGORE_CHATEAU, WYLD_WOODS, LIVING_CAVE, MIRRORVERSE, LAGOON, COLOSSEUM
     }
 
@@ -27,11 +27,11 @@ public final class RiftManager {
     /** Immutable snapshot of a player's current Rift state. */
     public static final class RiftData {
         public final boolean inRift;
-        public final RiftZone zone;
+        public final RiftArea zone;
         public final long timeRemainingSeconds;
         public final Map<RiftMobType, Integer> kills;
 
-        public RiftData(boolean inRift, RiftZone zone, long timeRemainingSeconds,
+        public RiftData(boolean inRift, RiftArea zone, long timeRemainingSeconds,
                         Map<RiftMobType, Integer> kills) {
             this.inRift = inRift;
             this.zone = zone;
@@ -45,7 +45,7 @@ public final class RiftManager {
     private static final RiftManager INSTANCE = new RiftManager();
 
     private final Map<UUID, Boolean> inRift = new HashMap<>();
-    private final Map<UUID, RiftZone> currentZone = new HashMap<>();
+    private final Map<UUID, RiftArea> currentZone = new HashMap<>();
     private final Map<UUID, Long> timeRemaining = new HashMap<>();
     private final Map<UUID, Map<RiftMobType, Integer>> mobKills = new HashMap<>();
 
@@ -67,7 +67,7 @@ public final class RiftManager {
      * @param playerId the player entering the Rift
      * @param zone     the starting zone
      */
-    public void enterRift(UUID playerId, RiftZone zone) {
+    public void enterRift(UUID playerId, RiftArea zone) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(zone, "zone");
         inRift.put(playerId, true);
@@ -132,7 +132,7 @@ public final class RiftManager {
     public RiftData getRiftData(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         boolean active = Boolean.TRUE.equals(inRift.get(playerId));
-        RiftZone zone = currentZone.get(playerId);
+        RiftArea zone = currentZone.get(playerId);
         long time = timeRemaining.getOrDefault(playerId, 0L);
         Map<RiftMobType, Integer> kills = mobKills.getOrDefault(
                 playerId, new EnumMap<>(RiftMobType.class));
