@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public final class FishingCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("trophy", "treasure", "rarity");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("trophy", "treasure", "rarity", "fishingtrophy");
     private static final List<String> TROPHY_SUBCOMMANDS = Arrays.asList("reset");
 
     private final FishingManager fishingManager;
@@ -56,10 +56,11 @@ public final class FishingCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "trophy"   -> handleTrophy(player, args);
-            case "treasure" -> handleTreasure(player);
-            case "rarity"   -> handleRarity(player);
-            default         -> sendHelp(player);
+            case "trophy"         -> handleTrophy(player, args);
+            case "treasure"       -> handleTreasure(player);
+            case "rarity"         -> handleRarity(player);
+            case "fishingtrophy"  -> handleFishingTrophy(player, args);
+            default               -> sendHelp(player);
         }
         return true;
     }
@@ -69,6 +70,16 @@ public final class FishingCommand implements TabExecutor {
         if (args.length == 1) {
             String prefix = args[0].toLowerCase();
             return SUBCOMMANDS.stream()
+                    .filter(s -> s.startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 2 && "fishingtrophy".equals(args[0].toLowerCase())) {
+            String prefix = args[1].toLowerCase();
+            List<String> options = new java.util.ArrayList<>();
+            for (FishingManager.FishingTrophy ft : FishingManager.FishingTrophy.values()) {
+                options.add(ft.name().toLowerCase());
+            }
+            return options.stream()
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
@@ -146,14 +157,44 @@ public final class FishingCommand implements TabExecutor {
         }
     }
 
+    private void handleFishingTrophy(Player player, String[] args) {
+        int level = fishingManager.getLevel(player.getUniqueId());
+        if (args.length == 1) {
+            player.sendMessage("=== Fishing Trophies (level " + level + ") ===");
+            for (FishingManager.FishingTrophy ft : FishingManager.FishingTrophy.values()) {
+                String status = level >= ft.minLevel ? "Unlocked" : "Requires level " + ft.minLevel;
+                player.sendMessage("  " + ft.getDisplayName() + ": " + status);
+            }
+            return;
+        }
+        FishingManager.FishingTrophy trophy = parseFishingTrophy(args[1]);
+        if (trophy == null) {
+            player.sendMessage("Unknown fishing trophy: " + args[1]);
+            return;
+        }
+        String status = level >= trophy.minLevel ? "Unlocked" : "Requires level " + trophy.minLevel;
+        player.sendMessage(trophy.getDisplayName() + ": " + status);
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Fishing Commands ===");
-        player.sendMessage("/fishing                    — show fishing level and XP");
-        player.sendMessage("/fishing trophy             — show all trophy fish catches");
-        player.sendMessage("/fishing trophy <fish>      — show catches for a specific trophy fish");
-        player.sendMessage("/fishing trophy reset       — reset trophy fish records");
-        player.sendMessage("/fishing treasure           — show fishing treasure drop chances");
-        player.sendMessage("/fishing rarity             — show fish rarity drop chances");
+        player.sendMessage("/fishing                       — show fishing level and XP");
+        player.sendMessage("/fishing trophy                — show all trophy fish catches");
+        player.sendMessage("/fishing trophy <fish>         — show catches for a specific trophy fish");
+        player.sendMessage("/fishing trophy reset          — reset trophy fish records");
+        player.sendMessage("/fishing treasure              — show fishing treasure drop chances");
+        player.sendMessage("/fishing rarity                — show fish rarity drop chances");
+        player.sendMessage("/fishing fishingtrophy         — show all fishing trophies and unlock status");
+        player.sendMessage("/fishing fishingtrophy <name>  — show unlock status for a specific trophy");
+    }
+
+    private static FishingManager.FishingTrophy parseFishingTrophy(String name) {
+        for (FishingManager.FishingTrophy ft : FishingManager.FishingTrophy.values()) {
+            if (ft.name().equalsIgnoreCase(name)) {
+                return ft;
+            }
+        }
+        return null;
     }
 
     private static FishingManager.TrophyFish parseTrophyFish(String name) {
