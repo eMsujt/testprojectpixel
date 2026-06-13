@@ -28,7 +28,8 @@ public final class SkyblockPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        BankManager.getInstance();
+        BankManager bankManager = BankManager.getInstance();
+        bankManager.load(getDataFolder());
         MayorManager.getInstance();
         AuctionManager.getInstance();
         BazaarManager.getInstance();
@@ -47,6 +48,7 @@ public final class SkyblockPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        BankManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
