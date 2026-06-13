@@ -187,10 +187,14 @@ public final class DungeonCommand implements TabExecutor {
             player.sendMessage("Unknown floor: " + args[1]);
             return;
         }
+        int runs = dungeonManager.getFloorCompletionCount(player.getUniqueId(), floor);
+        long best = dungeonManager.getFloorBestTime(player.getUniqueId(), floor);
         player.sendMessage("=== " + floor.getDisplayName() + " ===");
         player.sendMessage("  Boss       : " + floor.getBossName());
         player.sendMessage("  Floor #    : " + floor.getFloorNumber());
         player.sendMessage("  Master Mode: " + floor.isMasterMode());
+        player.sendMessage("  Runs       : " + runs);
+        player.sendMessage("  Best time  : " + (best == Long.MAX_VALUE ? "N/A" : best + "ms"));
     }
 
     private void sendHelp(Player player) {
