@@ -62,6 +62,8 @@ public final class HOTMManager {
 
     /** Per-player perk levels; absent entries default to all-zeros. */
     private final Map<UUID, int[]> playerPerks = new HashMap<>();
+    /** Per-player Mithril Powder balance. */
+    private final Map<UUID, Long> mithrilPowder = new HashMap<>();
 
     private HOTMManager() {
     }
@@ -156,6 +158,45 @@ public final class HOTMManager {
     }
 
     /**
+     * Returns the player's current Mithril Powder balance.
+     *
+     * @param playerId the player to look up
+     * @return the balance, {@code 0} if none recorded
+     */
+    public long getMithrilPowder(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return mithrilPowder.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Adds Mithril Powder to a player's balance.
+     *
+     * @param playerId the player to credit
+     * @param amount   the amount to add (must be non-negative)
+     */
+    public void addMithrilPowder(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
+        mithrilPowder.merge(playerId, amount, Long::sum);
+    }
+
+    /**
+     * Deducts Mithril Powder from a player's balance.
+     *
+     * @param playerId the player to debit
+     * @param amount   the amount to deduct (must be non-negative)
+     * @return {@code true} if deducted successfully, {@code false} if insufficient balance
+     */
+    public boolean spendMithrilPowder(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
+        long current = getMithrilPowder(playerId);
+        if (current < amount) return false;
+        mithrilPowder.put(playerId, current - amount);
+        return true;
+    }
+
+    /**
      * Removes all HOTM data for the given player (e.g. on quit).
      *
      * @param playerId the player to remove
@@ -163,6 +204,7 @@ public final class HOTMManager {
      */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        mithrilPowder.remove(playerId);
         return playerPerks.remove(playerId) != null;
     }
 
@@ -173,6 +215,7 @@ public final class HOTMManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerPerks.clear();
+        mithrilPowder.clear();
         HOTMPerk[] perks = HOTMPerk.values();
         for (String key : cfg.getKeys(false)) {
             try {
@@ -188,6 +231,10 @@ public final class HOTMManager {
                 }
                 if (hasData) {
                     playerPerks.put(uuid, levels);
+                }
+                String powderPath = key + ".mithril_powder";
+                if (cfg.contains(powderPath)) {
+                    mithrilPowder.put(uuid, cfg.getLong(powderPath, 0L));
                 }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
@@ -206,6 +253,11 @@ public final class HOTMManager {
                 if (level != 0) {
                     cfg.set(key + "." + perk.name(), level);
                 }
+            }
+        }
+        for (Map.Entry<UUID, Long> entry : mithrilPowder.entrySet()) {
+            if (entry.getValue() != 0) {
+                cfg.set(entry.getKey().toString() + ".mithril_powder", entry.getValue());
             }
         }
         try {
