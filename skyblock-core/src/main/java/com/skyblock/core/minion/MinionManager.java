@@ -28,6 +28,7 @@ public final class MinionManager {
         SNOW("Snow Minion"),
         CLAY("Clay Minion"),
         FISHING("Fishing Minion"),
+        LOG("Log Minion"),
         OAK("Oak Minion"),
         COAL("Coal Minion"),
         IRON("Iron Minion"),
