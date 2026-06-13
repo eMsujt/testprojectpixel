@@ -1,0 +1,245 @@
+package com.skyblock.core.garden;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Handles the {@code /garden} command.
+ *
+ * <p>Subcommands:
+ * <ul>
+ *   <li>{@code /garden info}                              — view plot level and visitor count</li>
+ *   <li>{@code /garden plot [set|add] <level>}            — (op) view or modify plot level</li>
+ *   <li>{@code /garden visitors [set|add] <amount>}       — (op) view or modify visitor count</li>
+ *   <li>{@code /garden crop [<crop>]}                     — view crop upgrade levels</li>
+ *   <li>{@code /garden crop set <crop> <level>}           — (op) set a crop upgrade level</li>
+ *   <li>{@code /garden crop add <crop> <amount>}          — (op) add to a crop upgrade level</li>
+ *   <li>{@code /garden reset}                             — (op) reset all garden data</li>
+ * </ul>
+ * </p>
+ */
+public final class GardenCommand implements TabExecutor {
+
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "reset");
+    private static final List<String> MODIFY_OPS = Arrays.asList("set", "add");
+    private static final List<String> CROP_OPS = Arrays.asList("set", "add");
+    private static final List<String> CROP_NAMES = Arrays.stream(GardenManager.GardenCrop.values())
+            .map(c -> c.name().toLowerCase())
+            .collect(Collectors.toList());
+
+    private final GardenManager gardenManager;
+
+    public GardenCommand(GardenManager gardenManager) {
+        this.gardenManager = gardenManager;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("This command can only be used by players.");
+            return true;
+        }
+
+        if (args.length == 0) {
+            player.sendMessage("Usage: /garden <info|plot|visitors|crop|reset>");
+            return true;
+        }
+
+        switch (args[0].toLowerCase()) {
+            case "info"     -> handleInfo(player);
+            case "plot"     -> handlePlot(player, args);
+            case "visitors" -> handleVisitors(player, args);
+            case "crop"     -> handleCrop(player, args);
+            case "reset"    -> handleReset(player);
+            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|reset>");
+        }
+        return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            String prefix = args[0].toLowerCase();
+            return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+        }
+        if (args.length == 2) {
+            String sub = args[0].toLowerCase();
+            String prefix = args[1].toLowerCase();
+            if (sub.equals("plot") || sub.equals("visitors")) {
+                return MODIFY_OPS.stream().filter(o -> o.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (sub.equals("crop")) {
+                List<String> opts = new java.util.ArrayList<>(CROP_OPS);
+                opts.addAll(CROP_NAMES);
+                return opts.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+            }
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("crop")
+                && CROP_OPS.contains(args[1].toLowerCase())) {
+            String prefix = args[2].toLowerCase();
+            return CROP_NAMES.stream().filter(c -> c.startsWith(prefix)).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    // -------------------------------------------------------------------------
+    // Subcommand handlers
+    // -------------------------------------------------------------------------
+
+    private void handleInfo(Player player) {
+        int plotLevel = gardenManager.getPlotLevel(player.getUniqueId());
+        int visitors = gardenManager.getVisitorCount(player.getUniqueId());
+        player.sendMessage("=== Garden Info ===");
+        player.sendMessage("Plot Level: " + plotLevel);
+        player.sendMessage("Total Visitors: " + visitors);
+    }
+
+    private void handlePlot(Player player, String[] args) {
+        if (args.length >= 2) {
+            String op = args[1].toLowerCase();
+            if (op.equals("set") || op.equals("add")) {
+                if (!player.isOp()) {
+                    player.sendMessage("You do not have permission to use this subcommand.");
+                    return;
+                }
+                if (args.length < 3) {
+                    player.sendMessage("Usage: /garden plot " + op + " <level>");
+                    return;
+                }
+                int amount = parseAmount(player, args[2]);
+                if (amount < 0) return;
+                if (op.equals("set")) {
+                    gardenManager.setPlotLevel(player.getUniqueId(), amount);
+                    player.sendMessage("Garden plot level set to " + gardenManager.getPlotLevel(player.getUniqueId()) + ".");
+                } else {
+                    int newLevel = gardenManager.addPlotLevel(player.getUniqueId(), amount);
+                    player.sendMessage("Garden plot level: " + newLevel + ".");
+                }
+                return;
+            }
+        }
+        int plotLevel = gardenManager.getPlotLevel(player.getUniqueId());
+        player.sendMessage("Garden Plot Level: " + plotLevel);
+    }
+
+    private void handleVisitors(Player player, String[] args) {
+        if (args.length >= 2) {
+            String op = args[1].toLowerCase();
+            if (op.equals("set") || op.equals("add")) {
+                if (!player.isOp()) {
+                    player.sendMessage("You do not have permission to use this subcommand.");
+                    return;
+                }
+                if (args.length < 3) {
+                    player.sendMessage("Usage: /garden visitors " + op + " <amount>");
+                    return;
+                }
+                int amount = parseAmount(player, args[2]);
+                if (amount < 0) return;
+                if (op.equals("set")) {
+                    gardenManager.setVisitorCount(player.getUniqueId(), amount);
+                    player.sendMessage("Visitor count set to " + amount + ".");
+                } else {
+                    int newCount = gardenManager.addVisitorCount(player.getUniqueId(), amount);
+                    player.sendMessage("Visitor count: " + newCount + ".");
+                }
+                return;
+            }
+        }
+        int visitors = gardenManager.getVisitorCount(player.getUniqueId());
+        player.sendMessage("Total Visitors: " + visitors);
+    }
+
+    private void handleCrop(Player player, String[] args) {
+        if (args.length >= 2) {
+            String op = args[1].toLowerCase();
+            if (op.equals("set") || op.equals("add")) {
+                if (!player.isOp()) {
+                    player.sendMessage("You do not have permission to use this subcommand.");
+                    return;
+                }
+                if (args.length < 4) {
+                    player.sendMessage("Usage: /garden crop " + op + " <crop> <level>");
+                    return;
+                }
+                GardenManager.GardenCrop crop = parseCrop(player, args[2]);
+                if (crop == null) return;
+                int amount = parseAmount(player, args[3]);
+                if (amount < 0) return;
+                if (op.equals("set")) {
+                    gardenManager.setCropUpgrade(player.getUniqueId(), crop, amount);
+                    player.sendMessage(formatName(crop.name()) + " upgrade set to " + amount + ".");
+                } else {
+                    int newLevel = gardenManager.addCropUpgrade(player.getUniqueId(), crop, amount);
+                    player.sendMessage(formatName(crop.name()) + " upgrade: " + newLevel + ".");
+                }
+                return;
+            }
+            // treat as crop name for view
+            GardenManager.GardenCrop crop = parseCrop(player, op);
+            if (crop == null) return;
+            int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
+            player.sendMessage(formatName(crop.name()) + " upgrade level: " + level);
+        } else {
+            player.sendMessage("=== Crop Upgrades ===");
+            for (GardenManager.GardenCrop crop : GardenManager.GardenCrop.values()) {
+                int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
+                player.sendMessage(formatName(crop.name()) + ": " + level);
+            }
+        }
+    }
+
+    private void handleReset(Player player) {
+        if (!player.isOp()) {
+            player.sendMessage("You do not have permission to use this subcommand.");
+            return;
+        }
+        gardenManager.reset(player.getUniqueId());
+        player.sendMessage("Your garden data has been reset.");
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private GardenManager.GardenCrop parseCrop(Player player, String input) {
+        try {
+            return GardenManager.GardenCrop.valueOf(input.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown crop: " + input + ". Valid crops: " + String.join(", ", CROP_NAMES));
+            return null;
+        }
+    }
+
+    private int parseAmount(Player player, String input) {
+        try {
+            int amount = Integer.parseInt(input);
+            if (amount < 0) {
+                player.sendMessage("Amount must not be negative.");
+                return -1;
+            }
+            return amount;
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid amount: " + input);
+            return -1;
+        }
+    }
+
+    private static String formatName(String name) {
+        String spaced = name.replace('_', ' ');
+        StringBuilder sb = new StringBuilder(spaced.length());
+        boolean cap = true;
+        for (char c : spaced.toCharArray()) {
+            sb.append(cap ? Character.toUpperCase(c) : Character.toLowerCase(c));
+            cap = c == ' ';
+        }
+        return sb.toString();
+    }
+}

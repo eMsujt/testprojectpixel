@@ -165,6 +165,10 @@ commands:
     description: View and manage Kuudra key counts and completions per tier.
     usage: /kuudra <keys [add|remove|set <tier> <amount>]|completions [add <tier> <amount>]>
     permission: skyblock.kuudra
+  garden:
+    description: View and manage your Garden plot, visitors, and crop upgrades.
+    usage: /garden <info|plot [set|add <level>]|visitors [set|add <amount>]|crop [set|add <crop> <level>]|reset>
+    permission: skyblock.garden
   guild:
     description: Create and manage player guilds.
     usage: /guild <create|invite|accept|decline|kick|leave|disband|info>
@@ -209,6 +213,9 @@ permissions:
     default: true
   skyblock.kuudra:
     description: Use the /kuudra command to view and manage Kuudra keys and completions.
+    default: true
+  skyblock.garden:
+    description: Use the /garden command to view and manage Garden plot, visitors, and crop upgrades.
     default: true
   skyblock.guild:
     description: Use the /guild command to create and manage guilds.
