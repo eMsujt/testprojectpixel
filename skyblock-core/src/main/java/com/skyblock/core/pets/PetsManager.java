@@ -2,6 +2,7 @@ package com.skyblock.core.pets;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,34 @@ public final class PetsManager {
         COMMON, UNCOMMON, RARE, EPIC, LEGENDARY
     }
 
+    /** The highest level a pet can reach. */
+    public static final int MAX_LEVEL = 100;
+
+    /** Cumulative XP required to reach each level, indexed by level - 1. */
+    private static final double[] XP_PER_LEVEL;
+
+    static {
+        XP_PER_LEVEL = new double[MAX_LEVEL];
+        double cumulative = 0;
+        for (int i = 0; i < MAX_LEVEL; i++) {
+            cumulative += 100.0 * (i + 1);
+            XP_PER_LEVEL[i] = cumulative;
+        }
+    }
+
+    /** Immutable snapshot of a pet's XP and level. */
+    public static final class PetData {
+        public final PetType type;
+        public final double xp;
+        public final int level;
+
+        public PetData(PetType type, double xp, int level) {
+            this.type = Objects.requireNonNull(type, "type");
+            this.xp = xp;
+            this.level = level;
+        }
+    }
+
     /** A single owned pet instance. */
     public static final class Pet {
         public final UUID id;
@@ -50,6 +79,9 @@ public final class PetsManager {
 
     /** Currently equipped pet per player (pet UUID). */
     private final Map<UUID, UUID> equippedPets = new HashMap<>();
+
+    /** Per-player XP data keyed by pet type. */
+    private final Map<UUID, Map<PetType, PetData>> petXpData = new HashMap<>();
 
     private PetsManager() {
     }
@@ -162,6 +194,51 @@ public final class PetsManager {
     }
 
     /**
+     * Adds XP to the given pet type for a player, leveling up when thresholds are met.
+     *
+     * @param player the player gaining XP
+     * @param pet    the pet type receiving XP
+     * @param amount the amount of XP to add, must not be negative
+     * @return the updated {@link PetData} after the addition
+     * @throws IllegalArgumentException if {@code amount} is negative
+     */
+    public PetData gainXP(UUID player, PetType pet, double amount) {
+        Objects.requireNonNull(player, "player");
+        Objects.requireNonNull(pet, "pet");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        Map<PetType, PetData> xpMap = petXpData.computeIfAbsent(
+                player, id -> new EnumMap<>(PetType.class));
+        PetData current = xpMap.getOrDefault(pet, new PetData(pet, 0.0, 1));
+        double newXp = current.xp + amount;
+        int level = 1;
+        while (level < MAX_LEVEL && newXp >= XP_PER_LEVEL[level - 1]) {
+            level++;
+        }
+        PetData updated = new PetData(pet, newXp, level);
+        xpMap.put(pet, updated);
+        return updated;
+    }
+
+    /**
+     * Returns the {@link PetData} for the given pet type, or a default level-1 entry if none.
+     *
+     * @param player the player to look up
+     * @param pet    the pet type to look up
+     * @return the current {@link PetData}
+     */
+    public PetData getPetData(UUID player, PetType pet) {
+        Objects.requireNonNull(player, "player");
+        Objects.requireNonNull(pet, "pet");
+        Map<PetType, PetData> xpMap = petXpData.get(player);
+        if (xpMap == null) {
+            return new PetData(pet, 0.0, 1);
+        }
+        return xpMap.getOrDefault(pet, new PetData(pet, 0.0, 1));
+    }
+
+    /**
      * Removes all pet data for the given player, including their collection and equipped pet.
      *
      * @param playerId the player to reset
@@ -171,6 +248,7 @@ public final class PetsManager {
         Objects.requireNonNull(playerId, "playerId");
         boolean hadData = playerPets.remove(playerId) != null;
         hadData |= equippedPets.remove(playerId) != null;
+        hadData |= petXpData.remove(playerId) != null;
         return hadData;
     }
 }
