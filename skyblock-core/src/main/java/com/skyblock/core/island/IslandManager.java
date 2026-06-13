@@ -27,12 +27,14 @@ import org.bukkit.WorldCreator;
 public final class IslandManager {
 
     public enum IslandUpgrade {
-        MINION_SLOTS(5, "Minion Slots"),
-        CHEST_SLOTS(5, "Chest Slots"),
-        ISLAND_SIZE(5, "Island Size"),
-        GUEST_SLOTS(5, "Guest Slots"),
-        CO_OP_SLOTS(3, "Co-op Slots"),
-        BEACON_POWER(4, "Beacon Power");
+        MINION_SLOTS(10, "Minion Slots"),
+        ISLAND_SIZE(5,  "Island Size"),
+        CHEST_SIZE(5,   "Chest Size"),
+        GUEST_LIMIT(4,  "Guest Limit"),
+        COOP_SLOTS(4,   "Co-op Slots"),
+        REDSTONE_LIMIT(5, "Redstone Limit"),
+        CROP_GROWTH(5,  "Crop Growth"),
+        MOB_SPAWN_RATE(5, "Mob Spawn Rate");
 
         private final int maxLevel;
         private final String displayName;
