@@ -79,6 +79,8 @@ import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.level.SkyblockLevelCommand;
 import com.skyblock.core.level.SkyblockLevelManager;
 import com.skyblock.core.menu.SkyblockMenuCommand;
+import com.skyblock.core.run.RunCommand;
+import com.skyblock.core.run.RunManager;
 import com.skyblock.core.title.TitleCommand;
 import com.skyblock.core.title.TitleManager;
 import com.skyblock.core.skills.SkillsManager;
@@ -308,6 +310,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         TitleCommand titleCommand = new TitleCommand(titleManager);
         getCommand("title").setExecutor(titleCommand);
         getCommand("title").setTabCompleter(titleCommand);
+        RunManager runManager = RunManager.getInstance();
+        runManager.load(getDataFolder());
+        RunCommand runCommand = new RunCommand(runManager);
+        getCommand("run").setExecutor(runCommand);
+        getCommand("run").setTabCompleter(runCommand);
     }
 
     @Override
@@ -340,6 +347,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         GuildManager.getInstance().save(getDataFolder());
         FriendManager.getInstance().save(getDataFolder());
         TitleManager.getInstance().save(getDataFolder());
+        RunManager.getInstance().save(getDataFolder());
         try {
             WarpManager.getInstance().save(getDataFolder());
         } catch (java.io.IOException e) {
