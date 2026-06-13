@@ -24,6 +24,17 @@ import java.util.UUID;
  */
 public final class CombatManager {
 
+    public static final int MAX_LEVEL = 60;
+
+    private static final double[] XP_PER_LEVEL = {
+            50, 125, 200, 300, 500, 800, 1200, 1700, 2500, 3500,
+            5000, 7500, 10000, 15000, 20000, 30000, 50000, 75000, 100000, 150000,
+            200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1200000,
+            1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000, 5000000, 5500000, 6000000,
+            7000000, 8000000, 9000000, 10000000, 12000000, 14000000, 16000000, 18000000, 20000000, 22000000,
+            24000000, 26000000, 28000000, 30000000, 32000000, 34000000, 36000000, 38000000, 40000000, 42000000
+    };
+
     private static final CombatManager INSTANCE = new CombatManager();
 
     private final StatManager stats = StatManager.getInstance();
@@ -35,10 +46,11 @@ public final class CombatManager {
         WITCH, ENDERMITE, GUARDIAN, ELDER_GUARDIAN
     }
 
-    private final Map<UUID, Integer> playerKills  = new HashMap<>();
+    private final Map<UUID, Integer> killCounts   = new HashMap<>();
     private final Map<UUID, Integer> playerDeaths = new HashMap<>();
     private final Map<UUID, Integer> mobKills     = new HashMap<>();
     private final Map<UUID, Map<MobType, Integer>> mobTypeKills = new HashMap<>();
+    private final Map<UUID, Double>  combatXp     = new HashMap<>();
 
     private CombatManager() {
     }
@@ -113,13 +125,13 @@ public final class CombatManager {
 
     public int getKills(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        return playerKills.getOrDefault(playerId, 0);
+        return killCounts.getOrDefault(playerId, 0);
     }
 
     public int addKill(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        int total = playerKills.getOrDefault(playerId, 0) + 1;
-        playerKills.put(playerId, total);
+        int total = killCounts.getOrDefault(playerId, 0) + 1;
+        killCounts.put(playerId, total);
         return total;
     }
 
@@ -168,12 +180,41 @@ public final class CombatManager {
         return counts != null ? Map.copyOf(counts) : Map.of();
     }
 
+    // ---------------------------------------------------------------------------
+    // Combat XP / skill level
+    // ---------------------------------------------------------------------------
+
+    public double addCombatXp(UUID playerId, double amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        double total = combatXp.getOrDefault(playerId, 0.0) + amount;
+        combatXp.put(playerId, total);
+        return total;
+    }
+
+    public double getCombatXp(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return combatXp.getOrDefault(playerId, 0.0);
+    }
+
+    public int getLevel(UUID playerId) {
+        double xp = getCombatXp(playerId);
+        int level = 0;
+        while (level < MAX_LEVEL && xp >= XP_PER_LEVEL[level]) {
+            level++;
+        }
+        return level;
+    }
+
     public boolean reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        boolean had = playerKills.remove(playerId) != null;
+        boolean had = killCounts.remove(playerId) != null;
         had |= playerDeaths.remove(playerId) != null;
         had |= mobKills.remove(playerId) != null;
         had |= mobTypeKills.remove(playerId) != null;
+        had |= combatXp.remove(playerId) != null;
         return had;
     }
 }
