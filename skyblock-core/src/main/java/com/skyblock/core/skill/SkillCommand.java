@@ -41,9 +41,9 @@ public final class SkillCommand implements TabExecutor {
             return true;
         }
 
-        SkillManager.Skill skill;
+        SkillManager.SkillType skill;
         try {
-            skill = SkillManager.Skill.valueOf(args[0].toUpperCase());
+            skill = SkillManager.SkillType.valueOf(args[0].toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown skill: " + args[0] + ". Use /skill to see all skills.");
             return true;
@@ -56,7 +56,7 @@ public final class SkillCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.stream(SkillManager.Skill.values())
+            return Arrays.stream(SkillManager.SkillType.values())
                     .map(s -> s.name().toLowerCase())
                     .filter(name -> name.startsWith(args[0].toLowerCase()))
                     .collect(Collectors.toList());
@@ -67,13 +67,13 @@ public final class SkillCommand implements TabExecutor {
     private void sendSkillList(Player player) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== Your Skills ===");
-        for (SkillManager.Skill skill : SkillManager.Skill.values()) {
+        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
             int level = skillManager.getLevel(id, skill);
             player.sendMessage(capitalize(skill.name()) + ": Level " + level + "/" + SkillManager.MAX_LEVEL);
         }
     }
 
-    private void sendSkillDetail(Player player, SkillManager.Skill skill) {
+    private void sendSkillDetail(Player player, SkillManager.SkillType skill) {
         UUID id = player.getUniqueId();
         int level = skillManager.getLevel(id, skill);
         long xp = skillManager.getXp(id, skill);

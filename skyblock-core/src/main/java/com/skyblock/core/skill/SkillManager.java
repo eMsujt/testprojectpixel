@@ -12,8 +12,8 @@ import java.util.UUID;
  */
 public final class SkillManager {
 
-    public enum Skill {
-        COMBAT, MINING, FARMING, FISHING, FORAGING,
+    public enum SkillType {
+        FARMING, MINING, COMBAT, FORAGING, FISHING,
         ENCHANTING, ALCHEMY, TAMING, CARPENTRY, RUNECRAFTING
     }
 
@@ -21,7 +21,7 @@ public final class SkillManager {
 
     private static final SkillManager INSTANCE = new SkillManager();
 
-    private final Map<UUID, Map<Skill, Long>> xpMap = new HashMap<>();
+    private final Map<UUID, Map<SkillType, Long>> xpMap = new HashMap<>();
 
     private SkillManager() {}
 
@@ -37,14 +37,14 @@ public final class SkillManager {
      * @param amount   XP to add, must not be negative
      * @return new total XP for the skill
      */
-    public long addXp(UUID playerId, Skill skill, long amount) {
+    public long addXp(UUID playerId, SkillType skill, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(skill, "skill");
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
-        Map<Skill, Long> xp = xpMap.computeIfAbsent(
-                playerId, id -> new EnumMap<>(Skill.class));
+        Map<SkillType, Long> xp = xpMap.computeIfAbsent(
+                playerId, id -> new EnumMap<>(SkillType.class));
         return xp.merge(skill, amount, Long::sum);
     }
 
@@ -55,10 +55,10 @@ public final class SkillManager {
      * @param skill    skill to look up
      * @return total XP, {@code 0} if none recorded
      */
-    public long getXp(UUID playerId, Skill skill) {
+    public long getXp(UUID playerId, SkillType skill) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(skill, "skill");
-        Map<Skill, Long> xp = xpMap.get(playerId);
+        Map<SkillType, Long> xp = xpMap.get(playerId);
         return xp == null ? 0L : xp.getOrDefault(skill, 0L);
     }
 
@@ -69,7 +69,7 @@ public final class SkillManager {
      * @param skill    skill to look up
      * @return skill level
      */
-    public int getLevel(UUID playerId, Skill skill) {
+    public int getLevel(UUID playerId, SkillType skill) {
         return SkillLevelManager.getInstance().levelForXp(getXp(playerId, skill));
     }
 }
