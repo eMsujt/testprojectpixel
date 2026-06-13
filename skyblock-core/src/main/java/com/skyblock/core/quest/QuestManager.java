@@ -1,5 +1,9 @@
 package com.skyblock.core.quest;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,16 +21,21 @@ public final class QuestManager {
 
     /** All quest types available in SkyBlock. */
     public enum QuestType {
-        DAILY("Daily"),
-        WEEKLY("Weekly"),
-        SPECIAL("Special");
+        KILL_ZOMBIES(20, "Kill Zombies"),
+        MINE_COAL(64, "Mine Coal"),
+        FISH_COD(30, "Fish Cod"),
+        HARVEST_WHEAT(50, "Harvest Wheat"),
+        COMPLETE_DUNGEON(1, "Complete Dungeon");
 
+        private final long goal;
         private final String displayName;
 
-        QuestType(String displayName) {
+        QuestType(long goal, String displayName) {
+            this.goal = goal;
             this.displayName = displayName;
         }
 
+        public long getGoal() { return goal; }
         public String getDisplayName() { return displayName; }
     }
 
@@ -79,20 +88,15 @@ public final class QuestManager {
     }
 
     /**
-     * Starts a quest for the given player, setting a target goal.
+     * Starts a quest for the given player using the type's built-in goal.
      *
      * @param playerId  the player starting the quest
      * @param type      the quest type to start
-     * @param goal      the progress amount required to complete the quest
-     * @throws IllegalArgumentException if {@code goal} is not positive
      */
-    public void startQuest(UUID playerId, QuestType type, long goal) {
+    public void startQuest(UUID playerId, QuestType type) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
-        if (goal <= 0) {
-            throw new IllegalArgumentException("goal must be positive, got " + goal);
-        }
-        questGoals.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class)).put(type, goal);
+        questGoals.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class)).put(type, type.getGoal());
         questProgress.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class)).put(type, 0L);
         questStatus.computeIfAbsent(playerId, id -> new EnumMap<>(QuestType.class))
                 .put(type, QuestStatus.IN_PROGRESS);
@@ -193,5 +197,70 @@ public final class QuestManager {
         hadData |= questGoals.remove(playerId) != null;
         hadData |= questStatus.remove(playerId) != null;
         return hadData;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "quest.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        questProgress.clear();
+        questGoals.clear();
+        questStatus.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".progress")) {
+                    Map<QuestType, Long> progressMap = new EnumMap<>(QuestType.class);
+                    Map<QuestType, Long> goalMap = new EnumMap<>(QuestType.class);
+                    Map<QuestType, QuestStatus> statusMap = new EnumMap<>(QuestType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".progress").getKeys(false)) {
+                        try {
+                            QuestType type = QuestType.valueOf(typeName);
+                            progressMap.put(type, cfg.getLong(key + ".progress." + typeName, 0L));
+                            goalMap.put(type, cfg.getLong(key + ".goal." + typeName, type.getGoal()));
+                            String statusStr = cfg.getString(key + ".status." + typeName, QuestStatus.IN_PROGRESS.name());
+                            try {
+                                statusMap.put(type, QuestStatus.valueOf(statusStr));
+                            } catch (IllegalArgumentException ignored) {
+                                statusMap.put(type, QuestStatus.IN_PROGRESS);
+                            }
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown quest types
+                        }
+                    }
+                    if (!progressMap.isEmpty()) {
+                        questProgress.put(uuid, progressMap);
+                        questGoals.put(uuid, goalMap);
+                        questStatus.put(uuid, statusMap);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "quest.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<QuestType, Long>> entry : questProgress.entrySet()) {
+            String key = entry.getKey().toString();
+            Map<QuestType, Long> goalMap = questGoals.getOrDefault(entry.getKey(), new EnumMap<>(QuestType.class));
+            Map<QuestType, QuestStatus> statusMap = questStatus.getOrDefault(entry.getKey(), new EnumMap<>(QuestType.class));
+            for (Map.Entry<QuestType, Long> pe : entry.getValue().entrySet()) {
+                QuestType type = pe.getKey();
+                cfg.set(key + ".progress." + type.name(), pe.getValue());
+                cfg.set(key + ".goal." + type.name(), goalMap.getOrDefault(type, type.getGoal()));
+                QuestStatus status = statusMap.getOrDefault(type, QuestStatus.IN_PROGRESS);
+                cfg.set(key + ".status." + type.name(), status.name());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save quest.yml", e);
+        }
     }
 }
