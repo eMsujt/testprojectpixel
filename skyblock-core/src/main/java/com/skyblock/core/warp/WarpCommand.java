@@ -43,10 +43,11 @@ public final class WarpCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "set"    -> handleSet(player, args);
-            case "remove" -> handleRemove(player, args);
-            case "list"   -> handleList(player);
-            default       -> handleTeleport(player, args[0]);
+            case "set"       -> handleSet(player, args);
+            case "remove"    -> handleRemove(player, args);
+            case "list"      -> handleList(player);
+            case "locations" -> handleLocations(player);
+            default          -> handleTeleport(player, args[0]);
         }
         return true;
     }
@@ -55,7 +56,7 @@ public final class WarpCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            List<String> options = new java.util.ArrayList<>(Arrays.asList("set", "remove", "list"));
+            List<String> options = new java.util.ArrayList<>(Arrays.asList("set", "remove", "list", "locations"));
             warpManager.getWarpNames().forEach(options::add);
             return options.stream().filter(s -> s.startsWith(lower)).toList();
         }
@@ -109,11 +110,19 @@ public final class WarpCommand implements TabExecutor {
         names.stream().sorted().forEach(n -> player.sendMessage("- " + n));
     }
 
+    private void handleLocations(Player player) {
+        player.sendMessage("=== Warp Locations ===");
+        for (WarpManager.WarpLocation loc : WarpManager.WarpLocation.values()) {
+            player.sendMessage("- " + loc.getDisplayName() + " (" + loc.warpKey() + ")");
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Warp Commands ===");
         player.sendMessage("/warp <name>         — teleport to a warp");
         player.sendMessage("/warp set <name>     — create or overwrite a warp");
         player.sendMessage("/warp remove <name>  — delete a warp");
         player.sendMessage("/warp list           — list all warps");
+        player.sendMessage("/warp locations      — list predefined warp locations");
     }
 }
