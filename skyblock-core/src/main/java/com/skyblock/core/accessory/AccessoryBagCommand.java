@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public final class AccessoryBagCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "add", "remove", "bonuses", "rarity");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "add", "remove", "bonuses", "rarity", "tier");
 
     private final AccessoryBagManager accessoryBagManager;
 
@@ -43,7 +43,7 @@ public final class AccessoryBagCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /accessorybag <list|add|remove|bonuses|rarity>");
+            player.sendMessage("Usage: /accessorybag <list|add|remove|bonuses|rarity|tier>");
             return true;
         }
 
@@ -53,7 +53,8 @@ public final class AccessoryBagCommand implements TabExecutor {
             case "remove"  -> handleRemove(player, args);
             case "bonuses" -> handleBonuses(player);
             case "rarity"  -> handleRarity(player, args);
-            default        -> player.sendMessage("Unknown subcommand. Usage: /accessorybag <list|add|remove|bonuses|rarity>");
+            case "tier"    -> handleTier(player, args);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /accessorybag <list|add|remove|bonuses|rarity|tier>");
         }
         return true;
     }
@@ -79,6 +80,14 @@ public final class AccessoryBagCommand implements TabExecutor {
             if (sub.equals("rarity")) {
                 String prefix = args[1].toUpperCase();
                 return Arrays.stream(AccessoryBagManager.AccessoryRarity.values())
+                        .map(Enum::name)
+                        .filter(n -> n.startsWith(prefix))
+                        .sorted()
+                        .collect(Collectors.toList());
+            }
+            if (sub.equals("tier")) {
+                String prefix = args[1].toUpperCase();
+                return Arrays.stream(AccessoryBagManager.AccessoryTier.values())
                         .map(Enum::name)
                         .filter(n -> n.startsWith(prefix))
                         .sorted()
@@ -174,6 +183,25 @@ public final class AccessoryBagCommand implements TabExecutor {
         contents.stream()
                 .sorted((a, b) -> a.name().compareTo(b.name()))
                 .forEach(t -> player.sendMessage(String.format("  %s — +%.1f %s", t.name(), t.bonus, t.stat.name())));
+    }
+
+    private void handleTier(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /accessorybag tier <COMMON|UNCOMMON|RARE|EPIC|LEGENDARY|MYTHIC|SPECIAL>");
+            return;
+        }
+        AccessoryBagManager.AccessoryTier tier;
+        try {
+            tier = AccessoryBagManager.AccessoryTier.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown tier: " + args[1] + ". Valid values: COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, SPECIAL.");
+            return;
+        }
+        int magicPower = accessoryBagManager.getMagicPower(player.getUniqueId(), tier);
+        player.sendMessage(String.format("=== %s Tier (%d magic power each) ===",
+                tier.getDisplayName(), tier.magicPower));
+        player.sendMessage(String.format("Total magic power from %s accessories: %d",
+                tier.getDisplayName(), magicPower));
     }
 
     private static TalismanManager.TalismanType parseType(String name) {

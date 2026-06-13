@@ -23,6 +23,33 @@ import java.util.UUID;
  */
 public final class AccessoryBagManager {
 
+    /**
+     * Upgrade tier for accessories, determining the magic power contributed to the
+     * Accessory Bag's total magic power pool.
+     */
+    public enum AccessoryTier {
+        COMMON("Common", 3),
+        UNCOMMON("Uncommon", 5),
+        RARE("Rare", 8),
+        EPIC("Epic", 12),
+        LEGENDARY("Legendary", 16),
+        MYTHIC("Mythic", 22),
+        SPECIAL("Special", 3);
+
+        private final String displayName;
+        /** Magic power contributed when this tier of accessory is equipped in the bag. */
+        public final int magicPower;
+
+        AccessoryTier(String displayName, int magicPower) {
+            this.displayName = displayName;
+            this.magicPower = magicPower;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** Rarity tier for accessories, determining the stat multiplier applied to base bonuses. */
     public enum AccessoryRarity {
         COMMON("Common", 1.0),
@@ -178,6 +205,30 @@ public final class AccessoryBagManager {
             }
         }
         return Collections.unmodifiableSet(result);
+    }
+
+    /**
+     * Returns the total magic power contributed by accessories in the player's bag
+     * that match the given tier.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param tier     the tier to query, must not be null
+     * @return total magic power for that tier (number of matching accessories × tier magic power)
+     */
+    public int getMagicPower(UUID playerId, AccessoryTier tier) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(tier, "tier");
+        Set<TalismanManager.TalismanType> bag = bags.get(playerId);
+        if (bag == null || bag.isEmpty()) {
+            return 0;
+        }
+        int count = 0;
+        for (TalismanManager.TalismanType t : bag) {
+            if (t.rarity.name().equals(tier.name())) {
+                count++;
+            }
+        }
+        return count * tier.magicPower;
     }
 
     /**
