@@ -53,6 +53,8 @@ import com.skyblock.core.collections.CollectionsCommand;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.combat.CombatCommand;
 import com.skyblock.core.combat.CombatManager;
+import com.skyblock.core.forge.ForgeCommand;
+import com.skyblock.core.forge.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.trade.TradeCommand;
@@ -217,6 +219,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         MailCommand mailCommand = new MailCommand(mailManager);
         getCommand("mail").setExecutor(mailCommand);
         getCommand("mail").setTabCompleter(mailCommand);
+        ForgeManager forgeManager = ForgeManager.getInstance();
+        ForgeCommand forgeCommand = new ForgeCommand(forgeManager);
+        getCommand("forge").setExecutor(forgeCommand);
+        getCommand("forge").setTabCompleter(forgeCommand);
     }
 
     @Override

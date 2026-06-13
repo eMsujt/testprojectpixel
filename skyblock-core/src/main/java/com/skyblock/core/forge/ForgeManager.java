@@ -60,7 +60,15 @@ public final class ForgeManager {
         POWER_CRYSTAL(       "Power Crystal",                "POWER_CRYSTAL",                1, 86400,
                 Map.of("RUBY_GEMSTONE", 8, "SAPPHIRE_GEMSTONE", 8, "JADE_GEMSTONE", 8, "REFINED_TITANIUM", 4)),
         MITHRIL_GOLEM_KIT(   "Mithril Golem Kit",           "MITHRIL_GOLEM_KIT",            1, 57600,
-                Map.of("REFINED_MITHRIL", 12, "IRON_INGOT", 64, "COAL", 32));
+                Map.of("REFINED_MITHRIL", 12, "IRON_INGOT", 64, "COAL", 32)),
+        DIAMOND_SWORD(       "Diamond Sword",                "DIAMOND_SWORD",                1, 1800,
+                Map.of("DIAMOND", 2, "STICK", 1)),
+        IRON_CHESTPLATE(     "Iron Chestplate",              "IRON_CHESTPLATE",              1, 3600,
+                Map.of("IRON_INGOT", 8)),
+        GOLDEN_PICKAXE(      "Golden Pickaxe",               "GOLDEN_PICKAXE",               1, 900,
+                Map.of("GOLD_INGOT", 3, "STICK", 2)),
+        ENCHANTED_BOW(       "Enchanted Bow",                "ENCHANTED_BOW",                1, 1800,
+                Map.of("STRING", 3, "STICK", 3));
 
         private final String displayName;
         private final String outputItem;
