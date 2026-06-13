@@ -64,8 +64,8 @@ commands:
     usage: /mailbox [inbox|read <id>|delete <id>|clear]
     permission: skyblock.mailbox
   booster:
-    description: View and activate SkyBlock boosters.
-    usage: /booster [list|activate <type>]
+    description: Activate XP or coin boosters
+    usage: /booster <status|activate|deactivate|list>
     permission: skyblock.booster
   warp:
     description: Teleport to a named warp point.
