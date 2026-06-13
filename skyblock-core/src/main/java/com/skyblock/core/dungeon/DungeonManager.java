@@ -154,6 +154,8 @@ public final class DungeonManager {
     private final Map<UUID, Map<DungeonType, Integer>> completionCounts = new HashMap<>();
     /** Completion count per player per dungeon floor. */
     private final Map<UUID, Map<DungeonFloor, Integer>> floorCompletionCounts = new HashMap<>();
+    /** Best completion time (ms) per player per dungeon floor. */
+    private final Map<UUID, Map<DungeonFloor, Long>> floorBestTimes = new HashMap<>();
     /** Selected dungeon class per player. */
     private final Map<UUID, DungeonClass> playerClasses = new HashMap<>();
 
@@ -309,6 +311,40 @@ public final class DungeonManager {
     }
 
     /**
+     * Returns the player's best completion time in milliseconds for the given floor,
+     * or {@code Long.MAX_VALUE} if they have never completed it.
+     *
+     * @param playerId the player to look up
+     * @param floor    the dungeon floor
+     * @return best time in ms, or {@code Long.MAX_VALUE} if none
+     */
+    public long getFloorBestTime(UUID playerId, DungeonFloor floor) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(floor, "floor");
+        Map<DungeonFloor, Long> times = floorBestTimes.get(playerId);
+        return times == null ? Long.MAX_VALUE : times.getOrDefault(floor, Long.MAX_VALUE);
+    }
+
+    /**
+     * Updates the player's best completion time for the given floor if the provided
+     * time is strictly better (lower) than the stored value.
+     *
+     * @param playerId  the player's UUID
+     * @param floor     the floor that was completed
+     * @param timeMillis elapsed time in milliseconds
+     */
+    public void updateFloorBestTime(UUID playerId, DungeonFloor floor, long timeMillis) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(floor, "floor");
+        if (timeMillis < 0) {
+            throw new IllegalArgumentException("timeMillis must not be negative, got " + timeMillis);
+        }
+        floorBestTimes
+            .computeIfAbsent(playerId, k -> new HashMap<>())
+            .merge(floor, timeMillis, Math::min);
+    }
+
+    /**
      * Sets the dungeon class for the given player.
      *
      * @param playerId     the player
@@ -344,6 +380,7 @@ public final class DungeonManager {
         bestScores.clear();
         completionCounts.clear();
         floorCompletionCounts.clear();
+        floorBestTimes.clear();
         playerClasses.clear();
         for (String key : cfg.getKeys(false)) {
             try {
@@ -384,6 +421,18 @@ public final class DungeonManager {
                         floorCompletionCounts.put(uuid, floorCounts);
                     }
                 }
+                if (cfg.isConfigurationSection(key + ".floorBestTimes")) {
+                    Map<DungeonFloor, Long> times = new HashMap<>();
+                    for (DungeonFloor floor : DungeonFloor.values()) {
+                        long val = cfg.getLong(key + ".floorBestTimes." + floor.name(), -1L);
+                        if (val >= 0) {
+                            times.put(floor, val);
+                        }
+                    }
+                    if (!times.isEmpty()) {
+                        floorBestTimes.put(uuid, times);
+                    }
+                }
                 String cls = cfg.getString(key + ".class");
                 if (cls != null) {
                     try {
@@ -417,6 +466,12 @@ public final class DungeonManager {
             String key = entry.getKey().toString();
             for (Map.Entry<DungeonFloor, Integer> e : entry.getValue().entrySet()) {
                 cfg.set(key + ".floorCounts." + e.getKey().name(), e.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<DungeonFloor, Long>> entry : floorBestTimes.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<DungeonFloor, Long> e : entry.getValue().entrySet()) {
+                cfg.set(key + ".floorBestTimes." + e.getKey().name(), e.getValue());
             }
         }
         for (Map.Entry<UUID, DungeonClass> entry : playerClasses.entrySet()) {
