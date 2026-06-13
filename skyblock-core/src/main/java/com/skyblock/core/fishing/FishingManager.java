@@ -25,9 +25,14 @@ public final class FishingManager {
 
     /** All fish types obtainable through SkyBlock fishing. */
     public enum FishType {
+        RAW_FISH,
+        RAW_SALMON,
+        CLOWNFISH,
+        PUFFERFISH,
+        SEA_CREATURE,
+        FISHING_TREASURE,
         COD,
         SALMON,
-        PUFFERFISH,
         TROPICAL_FISH,
         INK_SAC,
         LILY_PAD,
@@ -55,6 +60,11 @@ public final class FishingManager {
     }
 
     private static final LootEntry[] LOOT_TABLE = {
+        new LootEntry(FishType.RAW_FISH,            Material.COD,                  1,  50.0),
+        new LootEntry(FishType.RAW_SALMON,          Material.SALMON,               1,  30.0),
+        new LootEntry(FishType.CLOWNFISH,           Material.TROPICAL_FISH,        5,  10.0),
+        new LootEntry(FishType.SEA_CREATURE,        Material.NAUTILUS_SHELL,      20,   2.0),
+        new LootEntry(FishType.FISHING_TREASURE,    Material.MAP,                 40,   0.5),
         new LootEntry(FishType.COD,                 Material.COD,                  1,  50.0),
         new LootEntry(FishType.SALMON,              Material.SALMON,               1,  30.0),
         new LootEntry(FishType.TROPICAL_FISH,       Material.TROPICAL_FISH,        5,  10.0),
