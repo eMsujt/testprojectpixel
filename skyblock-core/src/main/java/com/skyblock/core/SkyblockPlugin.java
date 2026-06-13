@@ -44,6 +44,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         BankManager bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
         MayorManager mayorManager = MayorManager.getInstance();
+        mayorManager.load(getDataFolder());
         MayorCommand mayorCommand = new MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
         getCommand("mayor").setTabCompleter(mayorCommand);
@@ -103,6 +104,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     public void onDisable() {
         AuctionHouseManager.getInstance().save(getDataFolder());
         BankManager.getInstance().save(getDataFolder());
+        MayorManager.getInstance().save(getDataFolder());
         BazaarManager.getInstance().save(getDataFolder());
         DungeonManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());

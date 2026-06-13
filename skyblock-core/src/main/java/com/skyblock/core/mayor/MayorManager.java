@@ -1,5 +1,9 @@
 package com.skyblock.core.mayor;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -131,5 +135,60 @@ public final class MayorManager {
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerVotes.remove(playerId) != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "mayor.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerVotes.clear();
+        currentMayor = null;
+        String mayorName = cfg.getString("currentMayor");
+        if (mayorName != null) {
+            try {
+                currentMayor = Mayor.valueOf(mayorName);
+            } catch (IllegalArgumentException ignored) {
+                // skip unknown mayor name
+            }
+        }
+        if (cfg.isConfigurationSection("votes")) {
+            for (String key : cfg.getConfigurationSection("votes").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    String voteName = cfg.getString("votes." + key);
+                    if (voteName != null) {
+                        try {
+                            playerVotes.put(uuid, Mayor.valueOf(voteName));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown mayor name
+                        }
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "mayor.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        if (currentMayor != null) {
+            cfg.set("currentMayor", currentMayor.name());
+        }
+        for (Map.Entry<UUID, Mayor> entry : playerVotes.entrySet()) {
+            cfg.set("votes." + entry.getKey().toString(), entry.getValue().name());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save mayor.yml", e);
+        }
     }
 }
