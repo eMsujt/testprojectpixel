@@ -65,7 +65,7 @@ public final class SlayerCommand implements TabExecutor {
         for (SlayerManager.SlayerType type : SlayerManager.SlayerType.values()) {
             long xp = slayerManager.getExperience(player.getUniqueId(), type);
             int level = slayerManager.getLevel(player.getUniqueId(), type);
-            player.sendMessage("  " + type.name() + ": level " + level + " (" + xp + " XP)");
+            player.sendMessage("  " + type.getDisplayName() + ": level " + level + " (" + xp + " XP)");
         }
     }
 
@@ -103,7 +103,7 @@ public final class SlayerCommand implements TabExecutor {
         }
         long xp = slayerManager.getExperience(player.getUniqueId(), type);
         int level = slayerManager.getLevel(player.getUniqueId(), type);
-        player.sendMessage(type.name() + ": level " + level + " (" + xp + " XP)");
+        player.sendMessage(type.getDisplayName() + ": level " + level + " (" + xp + " XP)");
     }
 
     private void handleBoss(Player player, String[] args) {
