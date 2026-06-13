@@ -201,6 +201,12 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "menu" -> "menu";
             case "fish", "fishing" -> "fish";
             case "stat", "stats" -> "stats";
+            case "garden" -> "garden";
+            case "pets" -> "pets";
+            case "skills" -> "skills";
+            case "collections" -> "collections";
+            case "enchanting" -> "enchanting";
+            case "hotm" -> "hotm";
             default -> sub;
         };
     }
