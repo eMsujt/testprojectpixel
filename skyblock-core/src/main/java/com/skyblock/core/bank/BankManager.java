@@ -62,13 +62,14 @@ public final class BankManager {
         }
     }
 
-    public enum TransactionType {
+    public enum BankTransactionType {
         DEPOSIT("Deposit"),
-        WITHDRAW("Withdraw");
+        WITHDRAW("Withdraw"),
+        INTEREST("Interest");
 
         private final String displayName;
 
-        TransactionType(String displayName) {
+        BankTransactionType(String displayName) {
             this.displayName = displayName;
         }
 
@@ -82,11 +83,11 @@ public final class BankManager {
      *
      * @param id        unique transaction identifier
      * @param player    the player who performed the transaction
-     * @param type      deposit or withdrawal
+     * @param type      deposit, withdrawal, or interest
      * @param amount    the coin amount involved
      * @param timestamp epoch-millis when the transaction occurred
      */
-    public record BankTransaction(UUID id, UUID player, TransactionType type, double amount, long timestamp) {
+    public record BankTransaction(UUID id, UUID player, BankTransactionType type, double amount, long timestamp) {
         public BankTransaction {
             Objects.requireNonNull(id, "id");
             Objects.requireNonNull(player, "player");
@@ -135,7 +136,7 @@ public final class BankManager {
      */
     public void deposit(UUID playerId, double amount) {
         getOrCreate(playerId).deposit(amount);
-        record(playerId, TransactionType.DEPOSIT, amount);
+        record(playerId, BankTransactionType.DEPOSIT, amount);
     }
 
     /**
@@ -147,7 +148,7 @@ public final class BankManager {
      */
     public void withdraw(UUID playerId, double amount) {
         getOrCreate(playerId).withdraw(amount);
-        record(playerId, TransactionType.WITHDRAW, amount);
+        record(playerId, BankTransactionType.WITHDRAW, amount);
     }
 
     /**
@@ -269,7 +270,24 @@ public final class BankManager {
         return Collections.unmodifiableList(transactions.getOrDefault(playerId, Collections.emptyList()));
     }
 
-    private void record(UUID playerId, TransactionType type, double amount) {
+    /**
+     * Applies the tier's interest rate to the player's balance and records an INTEREST transaction.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return the interest amount credited
+     */
+    public double applyInterest(UUID playerId) {
+        BankAccount account = getOrCreate(playerId);
+        double rate = getTier(playerId).getInterestRate() / 100.0;
+        double interest = account.getBalance() * rate;
+        if (interest > 0) {
+            account.deposit(interest);
+            record(playerId, BankTransactionType.INTEREST, interest);
+        }
+        return interest;
+    }
+
+    private void record(UUID playerId, BankTransactionType type, double amount) {
         transactions.computeIfAbsent(playerId, k -> new ArrayList<>())
                 .add(new BankTransaction(UUID.randomUUID(), playerId, type, amount, System.currentTimeMillis()));
     }
