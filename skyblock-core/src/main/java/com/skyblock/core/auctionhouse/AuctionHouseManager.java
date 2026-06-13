@@ -49,14 +49,41 @@ public final class AuctionHouseManager {
         }
     }
 
+    /**
+     * Immutable snapshot of an auction entry including live bid state and expiry.
+     *
+     * @param seller     the selling player's UUID
+     * @param item       the display name of the listed item
+     * @param startPrice the opening bid price (coins)
+     * @param currentBid the current highest bid (equals startPrice before any bids)
+     * @param topBidder  the current highest bidder, or {@code null} if no bids yet
+     * @param expiry     epoch-millis at which the auction closes (0 means no expiry)
+     */
+    public record AuctionEntry(UUID seller, String item, long startPrice,
+                               long currentBid, UUID topBidder, long expiry) {
+
+        public AuctionEntry {
+            Objects.requireNonNull(seller, "seller");
+            Objects.requireNonNull(item, "item");
+            if (startPrice < 0) {
+                throw new IllegalArgumentException("startPrice must not be negative: " + startPrice);
+            }
+            if (currentBid < startPrice) {
+                throw new IllegalArgumentException("currentBid must not be less than startPrice");
+            }
+        }
+    }
+
     private static final class State {
         final AuctionListing entry;
         double currentBid;
         UUID highestBidder;
+        long expiry;
 
-        State(AuctionListing entry) {
+        State(AuctionListing entry, long expiry) {
             this.entry = entry;
             this.currentBid = entry.startingBid();
+            this.expiry = expiry;
         }
     }
 
@@ -93,8 +120,44 @@ public final class AuctionHouseManager {
         Objects.requireNonNull(seller, "seller");
         Objects.requireNonNull(type, "type");
         UUID id = UUID.randomUUID();
-        listings.put(id, new State(new AuctionListing(id, seller, itemName, startingBid, type)));
+        listings.put(id, new State(new AuctionListing(id, seller, itemName, startingBid, type), 0L));
         return id;
+    }
+
+    /**
+     * Posts a new bid-based auction using the {@link AuctionEntry} shape and returns its id.
+     *
+     * @param seller     the selling player's UUID
+     * @param item       the display name of the item
+     * @param startPrice the opening bid price (must be ≥ 0)
+     * @param expiry     epoch-millis at which the auction closes (0 for no expiry)
+     * @return the new listing's UUID
+     */
+    public UUID postEntry(UUID seller, String item, long startPrice, long expiry) {
+        Objects.requireNonNull(seller, "seller");
+        Objects.requireNonNull(item, "item");
+        UUID id = UUID.randomUUID();
+        listings.put(id, new State(
+                new AuctionListing(id, seller, item, startPrice, AuctionType.AUCTION), expiry));
+        return id;
+    }
+
+    /**
+     * Returns a live {@link AuctionEntry} snapshot for the given listing.
+     *
+     * @param listingId the listing UUID
+     * @return an {@code AuctionEntry} reflecting the current bid state
+     * @throws IllegalArgumentException if the listing does not exist
+     */
+    public AuctionEntry getEntry(UUID listingId) {
+        State s = requireState(listingId);
+        return new AuctionEntry(
+                s.entry.seller(),
+                s.entry.itemName(),
+                (long) s.entry.startingBid(),
+                (long) s.currentBid,
+                s.highestBidder,
+                s.expiry);
     }
 
     /**
