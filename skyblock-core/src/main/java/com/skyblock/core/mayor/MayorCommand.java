@@ -102,26 +102,6 @@ public final class MayorCommand implements TabExecutor {
         player.sendMessage("Your vote: " + (vote != null ? vote.getDisplayName() : "None"));
     }
 
-    private void handleCurrent(Player player) {
-        MayorManager.MayorCandidate current = mayorManager.getCurrentMayor();
-        if (current == null) {
-            player.sendMessage("There is no active mayor.");
-        } else {
-            player.sendMessage("Current mayor: " + current.getDisplayName());
-        }
-    }
-
-    private void handlePerks(Player player) {
-        MayorManager.MayorCandidate current = mayorManager.getCurrentMayor();
-        if (current == null) {
-            player.sendMessage("There is no active mayor. Candidates: " + String.join(", ", MAYOR_NAMES));
-            return;
-        }
-        player.sendMessage("=== " + current.getDisplayName() + "'s Perks ===");
-        player.sendMessage("Mayor: " + current.getDisplayName());
-        player.sendMessage("Use /mayor vote <mayor> to vote for a candidate.");
-    }
-
     private void handleVote(Player player, String[] args) {
         if (args.length < 2) {
             player.sendMessage("Usage: /mayor vote <mayor>");
