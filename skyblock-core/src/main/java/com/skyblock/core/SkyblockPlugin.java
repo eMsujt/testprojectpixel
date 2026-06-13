@@ -122,13 +122,17 @@ public final class SkyblockPlugin extends JavaPlugin {
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
         getCommand("auctionhouse").setExecutor(auctionHouseCommand);
         getCommand("auctionhouse").setTabCompleter(auctionHouseCommand);
-        getCommand("ah").setExecutor(auctionHouseCommand);
-        getCommand("ah").setTabCompleter(auctionHouseCommand);
+        if (getCommand("ah") != null) {
+            getCommand("ah").setExecutor(auctionHouseCommand);
+            getCommand("ah").setTabCompleter(auctionHouseCommand);
+        }
         BazaarManager bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
         BazaarCommand bazaarCommand = new BazaarCommand(bazaarManager);
-        getCommand("bazaar").setExecutor(bazaarCommand);
-        getCommand("bazaar").setTabCompleter(bazaarCommand);
+        if (getCommand("bazaar") != null) {
+            getCommand("bazaar").setExecutor(bazaarCommand);
+            getCommand("bazaar").setTabCompleter(bazaarCommand);
+        }
         DungeonManager dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
         DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
@@ -136,8 +140,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("dungeon").setTabCompleter(dungeonCommand);
         IslandManager islandManager = IslandManager.getInstance();
         IslandCommand islandCommand = new IslandCommand(islandManager);
-        getCommand("island").setExecutor(islandCommand);
-        getCommand("island").setTabCompleter(islandCommand);
+        if (getCommand("island") != null) {
+            getCommand("island").setExecutor(islandCommand);
+            getCommand("island").setTabCompleter(islandCommand);
+        }
         GuildManager guildManager = GuildManager.getInstance();
         guildManager.load(getDataFolder());
         GuildCommand guildCommand = new GuildCommand(guildManager);
@@ -255,8 +261,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         MailManager mailManager = MailManager.getInstance();
         mailManager.load(getDataFolder());
         MailCommand mailCommand = new MailCommand(mailManager);
-        getCommand("mail").setExecutor(mailCommand);
-        getCommand("mail").setTabCompleter(mailCommand);
+        if (getCommand("mail") != null) {
+            getCommand("mail").setExecutor(mailCommand);
+            getCommand("mail").setTabCompleter(mailCommand);
+        }
         ForgeManager forgeManager = ForgeManager.getInstance();
         ForgeCommand forgeCommand = new ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
@@ -307,18 +315,24 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
         getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
         SkyblockMenuCommand menuCommand = new SkyblockMenuCommand();
-        getCommand("menu").setExecutor(menuCommand);
-        getCommand("menu").setTabCompleter(menuCommand);
+        if (getCommand("menu") != null) {
+            getCommand("menu").setExecutor(menuCommand);
+            getCommand("menu").setTabCompleter(menuCommand);
+        }
         TitleManager titleManager = TitleManager.getInstance();
         titleManager.load(getDataFolder());
         TitleCommand titleCommand = new TitleCommand(titleManager);
-        getCommand("title").setExecutor(titleCommand);
-        getCommand("title").setTabCompleter(titleCommand);
+        if (getCommand("title") != null) {
+            getCommand("title").setExecutor(titleCommand);
+            getCommand("title").setTabCompleter(titleCommand);
+        }
         RunManager runManager = RunManager.getInstance();
         runManager.load(getDataFolder());
         RunCommand runCommand = new RunCommand(runManager);
-        getCommand("run").setExecutor(runCommand);
-        getCommand("run").setTabCompleter(runCommand);
+        if (getCommand("run") != null) {
+            getCommand("run").setExecutor(runCommand);
+            getCommand("run").setTabCompleter(runCommand);
+        }
     }
 
     @Override
