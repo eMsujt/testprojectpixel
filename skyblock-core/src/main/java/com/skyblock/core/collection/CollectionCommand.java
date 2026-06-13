@@ -1,11 +1,12 @@
 package com.skyblock.core.collection;
 
+import com.skyblock.core.collection.CollectionManager.CollectionType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +14,10 @@ import java.util.Map;
 /**
  * Handles the {@code /collection} command.
  *
- * <p>Usage:
+ * <p>Subcommands:
  * <ul>
- *   <li>{@code /collection}          — list all tracked collections for the player</li>
- *   <li>{@code /collection <name>}   — show the player's total for that collection</li>
+ *   <li>{@code /collection}          — list all collection types</li>
+ *   <li>{@code /collection <type>}   — show the player's total for that collection</li>
  *   <li>{@code /collection reset}    — reset all collection progress</li>
  * </ul>
  * </p>
@@ -48,9 +49,14 @@ public final class CollectionCommand implements TabExecutor {
             return true;
         }
 
-        String name = args[0].toUpperCase();
-        long total = collectionManager.getItems(player.getUniqueId(), name);
-        player.sendMessage("=== " + name + " Collection ===");
+        CollectionType type = parseType(args[0]);
+        if (type == null) {
+            player.sendMessage("Unknown collection: " + args[0] + ". Use /collection to see all collections.");
+            return true;
+        }
+
+        long total = collectionManager.getItems(player.getUniqueId(), type);
+        player.sendMessage("=== " + type.name().toLowerCase() + " Collection ===");
         player.sendMessage("Total gathered: " + total);
         return true;
     }
@@ -59,32 +65,37 @@ public final class CollectionCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            if (sender instanceof Player player) {
-                List<String> completions = new ArrayList<>();
-                if ("reset".startsWith(lower)) {
-                    completions.add("reset");
-                }
-                for (String col : collectionManager.getAll(player.getUniqueId()).keySet()) {
-                    if (col.toLowerCase().startsWith(lower)) {
-                        completions.add(col.toLowerCase());
-                    }
-                }
-                return completions;
+            List<String> completions = new java.util.ArrayList<>();
+            if ("reset".startsWith(lower)) {
+                completions.add("reset");
             }
+            for (CollectionType t : CollectionType.values()) {
+                String name = t.name().toLowerCase();
+                if (name.startsWith(lower)) {
+                    completions.add(name);
+                }
+            }
+            return completions;
         }
         return Collections.emptyList();
     }
 
     private void sendCollectionList(Player player) {
-        Map<String, Long> all = collectionManager.getAll(player.getUniqueId());
-        if (all.isEmpty()) {
-            player.sendMessage("You have no collection progress yet.");
-            return;
+        Map<CollectionType, Long> all = collectionManager.getAll(player.getUniqueId());
+        player.sendMessage("=== Collections ===");
+        for (CollectionType t : CollectionType.values()) {
+            long total = all.getOrDefault(t, 0L);
+            player.sendMessage("- " + t.name().toLowerCase() + ": " + total);
         }
-        player.sendMessage("=== Your Collections ===");
-        for (Map.Entry<String, Long> entry : all.entrySet()) {
-            player.sendMessage("- " + entry.getKey().toLowerCase() + ": " + entry.getValue());
+        player.sendMessage("Use /collection <name> to view a collection.");
+    }
+
+    private static CollectionType parseType(String input) {
+        for (CollectionType t : CollectionType.values()) {
+            if (t.name().equalsIgnoreCase(input)) {
+                return t;
+            }
         }
-        player.sendMessage("Use /collection <name> to view details.");
+        return null;
     }
 }
