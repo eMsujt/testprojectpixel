@@ -15,9 +15,9 @@ public final class SlayerManager {
     };
 
     public enum SlayerType {
-        ZOMBIE("Zombie"),
-        SPIDER("Spider"),
         WOLF("Wolf"),
+        SPIDER("Spider"),
+        ZOMBIE("Zombie"),
         ENDERMAN("Enderman"),
         BLAZE("Blaze"),
         VAMPIRE("Vampire");
