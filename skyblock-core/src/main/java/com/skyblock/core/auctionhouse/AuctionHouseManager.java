@@ -1,5 +1,9 @@
 package com.skyblock.core.auctionhouse;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -310,6 +314,61 @@ public final class AuctionHouseManager {
             }
         }
         return Collections.unmodifiableList(result);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Persistence
+    // ---------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        listings.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID id = UUID.fromString(key);
+                UUID seller = UUID.fromString(cfg.getString(key + ".seller", ""));
+                String itemName = cfg.getString(key + ".itemName");
+                if (itemName == null) continue;
+                double startingBid = cfg.getDouble(key + ".startingBid", 0.0);
+                AuctionType type = AuctionType.valueOf(cfg.getString(key + ".type", "AUCTION"));
+                long expiry = cfg.getLong(key + ".expiry", 0L);
+                AuctionListing listing = new AuctionListing(id, seller, itemName, startingBid, type);
+                State state = new State(listing, expiry);
+                state.currentBid = cfg.getDouble(key + ".currentBid", startingBid);
+                String bidderStr = cfg.getString(key + ".highestBidder");
+                if (bidderStr != null && !bidderStr.isEmpty()) {
+                    state.highestBidder = UUID.fromString(bidderStr);
+                }
+                listings.put(id, state);
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, State> entry : listings.entrySet()) {
+            String key = entry.getKey().toString();
+            State state = entry.getValue();
+            cfg.set(key + ".seller", state.entry.seller().toString());
+            cfg.set(key + ".itemName", state.entry.itemName());
+            cfg.set(key + ".startingBid", state.entry.startingBid());
+            cfg.set(key + ".type", state.entry.type().name());
+            cfg.set(key + ".expiry", state.expiry);
+            cfg.set(key + ".currentBid", state.currentBid);
+            if (state.highestBidder != null) {
+                cfg.set(key + ".highestBidder", state.highestBidder.toString());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save auctionhouse.yml", e);
+        }
     }
 
     /** Removes all active listings. */
