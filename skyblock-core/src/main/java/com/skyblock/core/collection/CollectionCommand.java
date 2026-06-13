@@ -74,7 +74,7 @@ public final class CollectionCommand implements TabExecutor {
         }
 
         long total = collectionManager.getItems(player.getUniqueId(), type);
-        player.sendMessage("=== " + type.name().toLowerCase() + " Collection ===");
+        player.sendMessage("=== " + type.displayName + " Collection ===");
         player.sendMessage("Total gathered: " + total);
         return true;
     }
@@ -91,9 +91,8 @@ public final class CollectionCommand implements TabExecutor {
                 completions.add("category");
             }
             for (CollectionType t : CollectionType.values()) {
-                String name = t.name().toLowerCase();
-                if (name.startsWith(lower)) {
-                    completions.add(name);
+                if (t.itemKey.startsWith(lower)) {
+                    completions.add(t.itemKey);
                 }
             }
             return completions;
@@ -117,7 +116,7 @@ public final class CollectionCommand implements TabExecutor {
         player.sendMessage("=== Collections ===");
         for (CollectionType t : CollectionType.values()) {
             long total = all.getOrDefault(t, 0L);
-            player.sendMessage("- " + t.name().toLowerCase() + ": " + total);
+            player.sendMessage("- " + t.displayName + ": " + total);
         }
         player.sendMessage("Use /collection <name> to view a collection.");
     }
@@ -127,13 +126,13 @@ public final class CollectionCommand implements TabExecutor {
         player.sendMessage("=== " + category.getDisplayName() + " Collections ===");
         for (CollectionType t : category.getTypes()) {
             long total = all.getOrDefault(t, 0L);
-            player.sendMessage("- " + t.name().toLowerCase() + ": " + total);
+            player.sendMessage("- " + t.displayName + ": " + total);
         }
     }
 
     private static CollectionType parseType(String input) {
         for (CollectionType t : CollectionType.values()) {
-            if (t.name().equalsIgnoreCase(input)) {
+            if (t.name().equalsIgnoreCase(input) || t.itemKey.equalsIgnoreCase(input)) {
                 return t;
             }
         }
