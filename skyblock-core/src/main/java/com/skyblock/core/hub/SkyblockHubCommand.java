@@ -191,7 +191,6 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "quests" -> "quest";
             case "minions" -> "minion";
             case "slayer" -> "slay";
-            case "island" -> "island";
             case "bank" -> "bank";
             case "mayor" -> "mayor";
             case "friend" -> "friend";
@@ -200,7 +199,6 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "mailbox", "mail" -> "mailbox";
             case "booster" -> "booster";
             case "menu" -> "menu";
-            case "island" -> "island";
             default -> sub;
         };
     }
