@@ -84,6 +84,28 @@ public final class FishingManager {
         }
     }
 
+    /** Treasure tiers obtainable from fishing at sufficient skill levels. */
+    public enum FishingTreasure {
+        COMMON_TREASURE(1,  0.40, "Common Treasure"),
+        UNCOMMON_TREASURE(10, 0.25, "Uncommon Treasure"),
+        RARE_TREASURE(20, 0.15, "Rare Treasure"),
+        EPIC_TREASURE(30, 0.10, "Epic Treasure"),
+        LEGENDARY_TREASURE(40, 0.05, "Legendary Treasure");
+
+        /** Minimum fishing level required for this treasure to drop. */
+        public final int minLevel;
+        /** Base drop chance (0–1) when the player meets the level requirement. */
+        public final double dropChance;
+        /** Human-readable display name. */
+        public final String displayName;
+
+        FishingTreasure(int minLevel, double dropChance, String displayName) {
+            this.minLevel = minLevel;
+            this.dropChance = dropChance;
+            this.displayName = displayName;
+        }
+    }
+
     /** Overall chance (0–1) that a fishing catch triggers a sea-creature spawn check. */
     public static final double BASE_SEA_CREATURE_CHANCE = 0.20;
 
