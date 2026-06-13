@@ -70,7 +70,7 @@ public final class AuctionCommand implements TabExecutor {
                     .collect(Collectors.toList());
         }
         if (args.length == 4 && args[0].equalsIgnoreCase("create")) {
-            return Arrays.asList("bin", "bid");
+            return Arrays.asList("bin", "auction");
         }
         return Collections.emptyList();
     }
@@ -89,7 +89,7 @@ public final class AuctionCommand implements TabExecutor {
                         e.id().toString().substring(0, 8),
                         e.itemName(),
                         e.startingBid(),
-                        e.binListing() ? "BIN" : "BID")));
+                        e.type().name())));
     }
 
     private void handleCreate(Player player, String[] args) {
@@ -109,11 +109,13 @@ public final class AuctionCommand implements TabExecutor {
             player.sendMessage("Price must not be negative.");
             return;
         }
-        boolean bin = args.length >= 4 && args[3].equalsIgnoreCase("bin");
-        UUID listingId = auctionManager.createListing(player.getUniqueId(), itemName, price, bin);
+        AuctionManager.AuctionType type = (args.length >= 4 && args[3].equalsIgnoreCase("bin"))
+                ? AuctionManager.AuctionType.BIN
+                : AuctionManager.AuctionType.AUCTION;
+        UUID listingId = auctionManager.createListing(player.getUniqueId(), itemName, price, type);
         player.sendMessage(String.format(
                 "Listed '%s' for %.1f coins as a %s auction. ID: %s",
-                itemName, price, bin ? "BIN" : "bid-based",
+                itemName, price, type.getDisplayName(),
                 listingId.toString().substring(0, 8)));
     }
 
@@ -155,9 +157,9 @@ public final class AuctionCommand implements TabExecutor {
         UUID highestBidder = auctionManager.getHighestBidder(listingId);
         player.sendMessage("=== Auction: " + entry.itemName() + " ===");
         player.sendMessage("ID:      " + entry.id());
-        player.sendMessage("Type:    " + (entry.binListing() ? "Buy It Now" : "Bid-based"));
+        player.sendMessage("Type:    " + entry.type().getDisplayName());
         player.sendMessage("Price:   " + entry.startingBid() + " coins");
-        if (!entry.binListing()) {
+        if (entry.type() == AuctionManager.AuctionType.AUCTION) {
             player.sendMessage("Highest bid: " + highestBid + " coins"
                     + (highestBidder != null ? " (by " + highestBidder + ")" : " (no bids yet)"));
         }
@@ -191,7 +193,7 @@ public final class AuctionCommand implements TabExecutor {
                 e.id().toString().substring(0, 8),
                 e.itemName(),
                 e.startingBid(),
-                e.binListing() ? "BIN" : "BID")));
+                e.type().name())));
     }
 
     /** Parses a short (8-char) or full UUID string; sends an error and returns null on failure. */
