@@ -26,7 +26,7 @@ public final class PetManager {
 
     public enum PetType {
         BEE("Bee"), WOLF("Wolf"), RABBIT("Rabbit"), LION("Lion"), TIGER("Tiger"),
-        ELEPHANT("Elephant"), HORSE("Horse"), CAT("Cat"), PARROT("Parrot"),
+        ELEPHANT("Elephant"), HORSE("Horse"), CAT("Cat"), DOG("Dog"), PARROT("Parrot"),
         PENGUIN("Penguin"), TURTLE("Turtle"), SHEEP("Sheep"), PIG("Pig"),
         DOLPHIN("Dolphin"), CHICKEN("Chicken"), BLAZE("Blaze"), ENDERMAN("Enderman"),
         SKELETON("Skeleton"), SPIDER("Spider"), ZOMBIE("Zombie"), DRAGON("Dragon"),
