@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public final class GuildCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
-            "create", "invite", "accept", "decline", "kick", "leave", "disband", "info", "rank"
+            "create", "invite", "accept", "decline", "kick", "leave", "disband", "info", "rank", "xp"
     );
 
     private final GuildManager guildManager;
@@ -62,6 +62,7 @@ public final class GuildCommand implements TabExecutor {
             case "disband" -> handleDisband(player);
             case "info"    -> handleInfo(player);
             case "rank"    -> handleRank(player, args);
+            case "xp"      -> handleXp(player, args);
             default        -> sendHelp(player);
         }
         return true;
@@ -77,6 +78,11 @@ public final class GuildCommand implements TabExecutor {
         }
         if (args.length == 2) {
             String sub = args[0].toLowerCase();
+            if (sub.equals("xp")) {
+                return Collections.singletonList("add").stream()
+                        .filter(s -> s.startsWith(args[1].toLowerCase()))
+                        .collect(Collectors.toList());
+            }
             if (sub.equals("invite") || sub.equals("kick") || sub.equals("rank")) {
                 String prefix = args[1].toLowerCase();
                 return Bukkit.getOnlinePlayers().stream()
@@ -245,6 +251,37 @@ public final class GuildCommand implements TabExecutor {
         }
     }
 
+    private void handleXp(Player player, String[] args) {
+        GuildManager.Guild guild = guildManager.getGuild(player.getUniqueId());
+        if (guild == null) {
+            player.sendMessage("You are not in a guild.");
+            return;
+        }
+        if (args.length >= 2 && args[1].equalsIgnoreCase("add")) {
+            if (!player.isOp()) {
+                player.sendMessage("You do not have permission to use this subcommand.");
+                return;
+            }
+            if (args.length < 3) {
+                player.sendMessage("Usage: /guild xp add <amount>");
+                return;
+            }
+            long amount;
+            try {
+                amount = Long.parseLong(args[2]);
+                if (amount < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                player.sendMessage("Invalid amount: " + args[2]);
+                return;
+            }
+            guildManager.addXp(guild.name(), amount);
+            player.sendMessage("Added " + amount + " XP to guild '" + guild.name() + "'. Total: " + guildManager.getXp(guild.name()));
+        } else {
+            long xp = guildManager.getXp(guild.name());
+            player.sendMessage("Guild '" + guild.name() + "' XP: " + xp);
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Guild Commands ===");
         player.sendMessage("/guild create <name>   — create a guild");
@@ -256,5 +293,6 @@ public final class GuildCommand implements TabExecutor {
         player.sendMessage("/guild disband         — disband your guild (leader only)");
         player.sendMessage("/guild info            — show guild info");
         player.sendMessage("/guild rank <player> <rank> — set a member's rank (leader only)");
+        player.sendMessage("/guild xp [add <amount>]  — view or add guild XP");
     }
 }

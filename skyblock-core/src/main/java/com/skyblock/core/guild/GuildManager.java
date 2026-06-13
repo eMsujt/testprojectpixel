@@ -1,8 +1,14 @@
 package com.skyblock.core.guild;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -25,6 +31,9 @@ public final class GuildManager {
 
     /** Pending guild invites: invitee UUID → guild name. */
     private final Map<UUID, String> pendingInvites = new HashMap<>();
+
+    /** Per-guild XP, keyed by lower-cased guild name. */
+    private final Map<String, Long> guildXp = new HashMap<>();
 
     private GuildManager() {}
 
@@ -78,7 +87,9 @@ public final class GuildManager {
         if (!guild.leader().equals(leader)) {
             throw new IllegalStateException("Only the guild leader can disband the guild.");
         }
-        guildByName.remove(guild.name().toLowerCase());
+        String key = guild.name().toLowerCase();
+        guildByName.remove(key);
+        guildXp.remove(key);
         guildByMember.remove(leader);
         for (UUID member : guild.members()) {
             guildByMember.remove(member);
@@ -297,6 +308,113 @@ public final class GuildManager {
             throw new IllegalArgumentException("Cannot assign GUILD_MASTER rank; use a leadership-transfer operation.");
         }
         guild.memberRanks().put(target, rank);
+    }
+
+    // -------------------------------------------------------------------------
+    // XP operations
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the XP of the guild with the given name, or 0 if not found.
+     *
+     * @param guildName the guild name (case-insensitive)
+     * @return the guild's XP total
+     */
+    public long getXp(String guildName) {
+        Objects.requireNonNull(guildName, "guildName");
+        return guildXp.getOrDefault(guildName.toLowerCase(), 0L);
+    }
+
+    /**
+     * Adds {@code amount} XP to the named guild.
+     *
+     * @param guildName the guild name (case-insensitive)
+     * @param amount    the amount of XP to add (must be >= 0)
+     * @throws IllegalArgumentException if {@code amount} is negative or the guild does not exist
+     */
+    public void addXp(String guildName, long amount) {
+        Objects.requireNonNull(guildName, "guildName");
+        if (amount < 0) throw new IllegalArgumentException("amount must be >= 0, got " + amount);
+        String key = guildName.toLowerCase();
+        if (!guildByName.containsKey(key)) {
+            throw new IllegalArgumentException("No guild named '" + guildName + "'.");
+        }
+        guildXp.merge(key, amount, Long::sum);
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "guild.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        guildByName.clear();
+        guildByMember.clear();
+        guildXp.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                String name = cfg.getString(key + ".name", key);
+                UUID leader = UUID.fromString(cfg.getString(key + ".leader", ""));
+                long xp = cfg.getLong(key + ".xp", 0L);
+                Set<UUID> members = new HashSet<>();
+                Map<UUID, GuildRank> ranks = new HashMap<>();
+                ranks.put(leader, GuildRank.GUILD_MASTER);
+                List<?> rawMembers = cfg.getList(key + ".members", Collections.emptyList());
+                for (Object o : rawMembers) {
+                    try {
+                        UUID memberId = UUID.fromString(String.valueOf(o));
+                        members.add(memberId);
+                        String rankStr = cfg.getString(key + ".ranks." + memberId, GuildRank.RECRUIT.name());
+                        GuildRank rank;
+                        try {
+                            rank = GuildRank.valueOf(rankStr);
+                        } catch (IllegalArgumentException ignored) {
+                            rank = GuildRank.RECRUIT;
+                        }
+                        ranks.put(memberId, rank);
+                    } catch (IllegalArgumentException ignored) {
+                        // skip malformed member UUIDs
+                    }
+                }
+                Guild guild = new Guild(name, leader, members, ranks);
+                guildByName.put(key, guild);
+                guildByMember.put(leader, guild);
+                for (UUID memberId : members) {
+                    guildByMember.put(memberId, guild);
+                }
+                guildXp.put(key, xp);
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed guild entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "guild.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<String, Guild> entry : guildByName.entrySet()) {
+            String key = entry.getKey();
+            Guild guild = entry.getValue();
+            cfg.set(key + ".name", guild.name());
+            cfg.set(key + ".leader", guild.leader().toString());
+            cfg.set(key + ".xp", guildXp.getOrDefault(key, 0L));
+            List<String> memberStrings = new ArrayList<>();
+            for (UUID memberId : guild.members()) {
+                memberStrings.add(memberId.toString());
+                GuildRank rank = guild.memberRanks().getOrDefault(memberId, GuildRank.RECRUIT);
+                cfg.set(key + ".ranks." + memberId, rank.name());
+            }
+            cfg.set(key + ".members", memberStrings);
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save guild.yml", e);
+        }
     }
 
     // -------------------------------------------------------------------------
