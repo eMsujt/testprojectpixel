@@ -23,6 +23,28 @@ import java.util.UUID;
  */
 public final class AccessoryBagManager {
 
+    /** Rarity tier for accessories, determining the stat multiplier applied to base bonuses. */
+    public enum AccessoryRarity {
+        COMMON("Common", 1.0),
+        UNCOMMON("Uncommon", 1.5),
+        RARE("Rare", 2.0),
+        EPIC("Epic", 3.0),
+        LEGENDARY("Legendary", 5.0);
+
+        private final String displayName;
+        /** Multiplier applied to the accessory's base stat bonus. */
+        public final double statMultiplier;
+
+        AccessoryRarity(String displayName, double statMultiplier) {
+            this.displayName = displayName;
+            this.statMultiplier = statMultiplier;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** Maximum number of accessories a player can hold in the bag. */
     public static final int MAX_SLOTS = 45;
 
@@ -133,6 +155,29 @@ public final class AccessoryBagManager {
             totals.merge(t.stat, t.bonus, Double::sum);
         }
         return totals;
+    }
+
+    /**
+     * Returns an unmodifiable set of accessories in the player's bag matching the given rarity.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param rarity   the rarity to filter by, must not be null
+     * @return an unmodifiable set of matching accessories, empty if none
+     */
+    public Set<TalismanManager.TalismanType> getContentsByRarity(UUID playerId, AccessoryRarity rarity) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(rarity, "rarity");
+        Set<TalismanManager.TalismanType> bag = bags.get(playerId);
+        if (bag == null || bag.isEmpty()) {
+            return Collections.emptySet();
+        }
+        Set<TalismanManager.TalismanType> result = EnumSet.noneOf(TalismanManager.TalismanType.class);
+        for (TalismanManager.TalismanType t : bag) {
+            if (t.rarity.name().equals(rarity.name())) {
+                result.add(t);
+            }
+        }
+        return Collections.unmodifiableSet(result);
     }
 
     /**
