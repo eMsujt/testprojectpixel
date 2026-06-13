@@ -263,6 +263,10 @@ public final class FishingManager {
     private final Map<UUID, Double> fishingXp = new HashMap<>();
     /** Per-player fishing level cache. */
     private final Map<UUID, Integer> fishingLevel = new HashMap<>();
+    /** Per-player total fish caught. */
+    private final Map<UUID, Integer> totalFishCaught = new HashMap<>();
+    /** Per-player per-treasure catch counts. */
+    private final Map<UUID, Map<FishingTreasure, Integer>> treasureCounts = new HashMap<>();
 
     private final Random random = new Random();
 
@@ -424,6 +428,40 @@ public final class FishingManager {
     }
 
     // ---------------------------------------------------------------------------
+    // Catch tracking
+    // ---------------------------------------------------------------------------
+
+    /** Increments the player's total fish caught by one and returns the new total. */
+    public int addFishCaught(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        int total = totalFishCaught.merge(playerId, 1, Integer::sum);
+        return total;
+    }
+
+    /** Returns the player's total fish caught, {@code 0} if none recorded. */
+    public int getTotalFishCaught(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return totalFishCaught.getOrDefault(playerId, 0);
+    }
+
+    /** Increments the player's catch count for a specific treasure by one. */
+    public void addTreasureCatch(UUID playerId, FishingTreasure treasure) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(treasure, "treasure");
+        treasureCounts
+            .computeIfAbsent(playerId, k -> new HashMap<>())
+            .merge(treasure, 1, Integer::sum);
+    }
+
+    /** Returns the player's catch count for a specific treasure, {@code 0} if none recorded. */
+    public int getTreasureCatchCount(UUID playerId, FishingTreasure treasure) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(treasure, "treasure");
+        Map<FishingTreasure, Integer> counts = treasureCounts.get(playerId);
+        return counts == null ? 0 : counts.getOrDefault(treasure, 0);
+    }
+
+    // ---------------------------------------------------------------------------
     // Persistence
     // ---------------------------------------------------------------------------
 
@@ -435,6 +473,8 @@ public final class FishingManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         fishingXp.clear();
         fishingLevel.clear();
+        totalFishCaught.clear();
+        treasureCounts.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -442,6 +482,22 @@ public final class FishingManager {
                 if (xp > 0.0) {
                     fishingXp.put(uuid, xp);
                     fishingLevel.put(uuid, computeLevel(xp));
+                }
+                int caught = cfg.getInt(key + ".totalFishCaught", 0);
+                if (caught > 0) {
+                    totalFishCaught.put(uuid, caught);
+                }
+                if (cfg.isConfigurationSection(key + ".treasure")) {
+                    Map<FishingTreasure, Integer> counts = new HashMap<>();
+                    for (FishingTreasure t : FishingTreasure.values()) {
+                        int count = cfg.getInt(key + ".treasure." + t.name(), 0);
+                        if (count > 0) {
+                            counts.put(t, count);
+                        }
+                    }
+                    if (!counts.isEmpty()) {
+                        treasureCounts.put(uuid, counts);
+                    }
                 }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
@@ -454,6 +510,15 @@ public final class FishingManager {
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, Double> entry : fishingXp.entrySet()) {
             cfg.set(entry.getKey().toString() + ".xp", entry.getValue());
+        }
+        for (Map.Entry<UUID, Integer> entry : totalFishCaught.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".totalFishCaught", entry.getValue());
+        }
+        for (Map.Entry<UUID, Map<FishingTreasure, Integer>> playerEntry : treasureCounts.entrySet()) {
+            String prefix = playerEntry.getKey().toString() + ".treasure.";
+            for (Map.Entry<FishingTreasure, Integer> t : playerEntry.getValue().entrySet()) {
+                cfg.set(prefix + t.getKey().name(), t.getValue());
+            }
         }
         try {
             cfg.save(file);
