@@ -18,6 +18,34 @@ import java.util.UUID;
  */
 public final class WardrobeManager {
 
+    public enum WardrobeSlot {
+        SLOT_1(1, "Slot 1"),
+        SLOT_2(2, "Slot 2"),
+        SLOT_3(3, "Slot 3"),
+        SLOT_4(4, "Slot 4"),
+        SLOT_5(5, "Slot 5"),
+        SLOT_6(6, "Slot 6"),
+        SLOT_7(7, "Slot 7"),
+        SLOT_8(8, "Slot 8"),
+        SLOT_9(9, "Slot 9");
+
+        private final int slotNumber;
+        private final String displayName;
+
+        WardrobeSlot(int slotNumber, String displayName) {
+            this.slotNumber = slotNumber;
+            this.displayName = displayName;
+        }
+
+        public int getSlotNumber() {
+            return slotNumber;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** Maximum named outfits a player may store. */
     public static final int MAX_OUTFITS = 9;
 
@@ -117,6 +145,44 @@ public final class WardrobeManager {
             return Collections.emptySet();
         }
         return Collections.unmodifiableSet(outfits.keySet());
+    }
+
+    /**
+     * Saves the given armor snapshot into the specified wardrobe slot for the player.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param slot     the wardrobe slot, must not be null
+     * @param armor    the four armor slots to snapshot (index 0-3)
+     * @return {@code true} if saved; {@code false} if the player already has
+     *         {@link #MAX_OUTFITS} outfits and the slot is a new entry
+     */
+    public boolean saveOutfit(UUID playerId, WardrobeSlot slot, ItemStack[] armor) {
+        Objects.requireNonNull(slot, "slot");
+        return saveOutfit(playerId, slot.name(), armor);
+    }
+
+    /**
+     * Returns a copy of the outfit stored in the specified slot, or {@code null} if empty.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param slot     the wardrobe slot, must not be null
+     * @return cloned armor array, or {@code null} if the slot is empty
+     */
+    public ItemStack[] getOutfit(UUID playerId, WardrobeSlot slot) {
+        Objects.requireNonNull(slot, "slot");
+        return getOutfit(playerId, slot.name());
+    }
+
+    /**
+     * Clears the outfit stored in the specified slot.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param slot     the wardrobe slot, must not be null
+     * @return {@code true} if the slot was occupied and is now cleared
+     */
+    public boolean deleteOutfit(UUID playerId, WardrobeSlot slot) {
+        Objects.requireNonNull(slot, "slot");
+        return deleteOutfit(playerId, slot.name());
     }
 
     /** Removes all stored wardrobe data. */
