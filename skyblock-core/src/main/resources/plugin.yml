@@ -305,6 +305,10 @@ commands:
     description: View and manage Crimson Isle faction and reputation.
     usage: /crimson [info|faction <faction>|reputation [faction]]
     permission: skyblock.crimson
+  title:
+    description: View and manage your SkyBlock title.
+    usage: /title [list|set <title>|unlock <title>|clear]
+    permission: skyblock.title
 
 permissions:
   skyblock.warp:
@@ -423,4 +427,7 @@ permissions:
     default: true
   skyblock.crimson:
     description: Use the /crimson command to view and manage Crimson Isle faction and reputation.
+    default: true
+  skyblock.title:
+    description: Use the /title command to view and manage your SkyBlock title.
     default: true
