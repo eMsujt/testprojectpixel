@@ -4,9 +4,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 public final class VaultManager {
@@ -69,6 +72,12 @@ public final class VaultManager {
         long newBalance = Math.min(current + amount, cap);
         balances.put(playerId, newBalance);
         return newBalance - current;
+    }
+
+    public Set<UUID> getTrackedPlayers() {
+        Set<UUID> all = new HashSet<>(balances.keySet());
+        all.addAll(tiers.keySet());
+        return Collections.unmodifiableSet(all);
     }
 
     public long withdraw(UUID playerId, long amount) {

@@ -1,8 +1,10 @@
 package com.skyblock.core.level;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -145,6 +147,15 @@ public final class SkyblockLevelManager {
             return 0L;
         }
         return XP_TABLE[level] - totalXP;
+    }
+
+    /**
+     * Returns an unmodifiable view of all player UUIDs with tracked XP.
+     *
+     * @return set of tracked player UUIDs
+     */
+    public Set<UUID> getTrackedPlayers() {
+        return Collections.unmodifiableSet(skyblockXP.keySet());
     }
 
     /**

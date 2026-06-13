@@ -2,6 +2,7 @@ package com.skyblock.core.leaderboard;
 
 import com.skyblock.core.leaderboard.LeaderboardManager.LeaderboardEntry;
 import com.skyblock.core.leaderboard.LeaderboardManager.LeaderboardType;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -9,7 +10,12 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -26,6 +32,10 @@ import java.util.stream.Collectors;
 public final class LeaderboardCommand implements TabExecutor {
 
     private static final int TOP_LIMIT = 10;
+
+    /** Types whose scores are populated live from source managers on each view request. */
+    private static final Set<LeaderboardType> LIVE_TYPES = Collections.unmodifiableSet(
+            EnumSet.of(LeaderboardType.SKYBLOCK_LEVEL, LeaderboardType.VAULT_BALANCE, LeaderboardType.STAT_STRENGTH));
 
     private final LeaderboardManager leaderboardManager;
 
@@ -87,6 +97,9 @@ public final class LeaderboardCommand implements TabExecutor {
     }
 
     private void handleTop(Player player, LeaderboardType type) {
+        if (LIVE_TYPES.contains(type)) {
+            leaderboardManager.syncFromManagers(buildOnlineNameMap());
+        }
         List<LeaderboardEntry> entries = leaderboardManager.getTopEntries(type, TOP_LIMIT);
         player.sendMessage("=== " + type.getDisplayName() + " Top " + TOP_LIMIT + " ===");
         if (entries.isEmpty()) {
@@ -103,6 +116,14 @@ public final class LeaderboardCommand implements TabExecutor {
     private void handleReset(Player player) {
         leaderboardManager.clear();
         player.sendMessage("All leaderboard data has been reset.");
+    }
+
+    private static Map<UUID, String> buildOnlineNameMap() {
+        Map<UUID, String> map = new HashMap<>();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            map.put(p.getUniqueId(), p.getName());
+        }
+        return map;
     }
 
     private static LeaderboardType parseType(String name) {

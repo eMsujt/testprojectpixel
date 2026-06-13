@@ -1,5 +1,9 @@
 package com.skyblock.core.leaderboard;
 
+import com.skyblock.core.level.SkyblockLevelManager;
+import com.skyblock.core.stat.StatManager;
+import com.skyblock.core.vault.VaultManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,7 +27,10 @@ public final class LeaderboardManager {
         SLAYER_XP("Slayer XP"),
         DUNGEON_COMPLETIONS("Dungeon Completions"),
         COIN_BALANCE("Coin Balance"),
-        FISHING_XP("Fishing XP");
+        FISHING_XP("Fishing XP"),
+        SKYBLOCK_LEVEL("SkyBlock Level"),
+        VAULT_BALANCE("Vault Balance"),
+        STAT_STRENGTH("Strength");
 
         private final String displayName;
 
@@ -141,6 +148,44 @@ public final class LeaderboardManager {
         }
         entries.sort(Comparator.comparingDouble(LeaderboardEntry::getScore).reversed());
         return Collections.unmodifiableList(entries.subList(0, Math.min(cap, entries.size())));
+    }
+
+    /**
+     * Refreshes {@link LeaderboardType#SKYBLOCK_LEVEL}, {@link LeaderboardType#VAULT_BALANCE},
+     * and {@link LeaderboardType#STAT_STRENGTH} scores by reading the current state of the
+     * three source managers.
+     *
+     * @param knownNames a map from UUID to display name used to label entries;
+     *                   UUIDs not present in the map fall back to the UUID string
+     */
+    public void syncFromManagers(Map<UUID, String> knownNames) {
+        SkyblockLevelManager levelMgr = SkyblockLevelManager.getInstance();
+        VaultManager vaultMgr = VaultManager.getInstance();
+        StatManager statMgr = StatManager.getInstance();
+
+        Map<UUID, Double> levelScores = scores.computeIfAbsent(LeaderboardType.SKYBLOCK_LEVEL, t -> new HashMap<>());
+        levelScores.clear();
+        for (UUID id : levelMgr.getTrackedPlayers()) {
+            String name = knownNames.getOrDefault(id, id.toString());
+            levelScores.put(id, (double) levelMgr.getLevel(id));
+            playerNames.put(id, name);
+        }
+
+        Map<UUID, Double> vaultScores = scores.computeIfAbsent(LeaderboardType.VAULT_BALANCE, t -> new HashMap<>());
+        vaultScores.clear();
+        for (UUID id : vaultMgr.getTrackedPlayers()) {
+            String name = knownNames.getOrDefault(id, id.toString());
+            vaultScores.put(id, (double) vaultMgr.getBalance(id));
+            playerNames.put(id, name);
+        }
+
+        Map<UUID, Double> strengthScores = scores.computeIfAbsent(LeaderboardType.STAT_STRENGTH, t -> new HashMap<>());
+        strengthScores.clear();
+        for (UUID id : statMgr.getTrackedPlayers()) {
+            String name = knownNames.getOrDefault(id, id.toString());
+            strengthScores.put(id, statMgr.getStat(id, StatManager.StatType.STRENGTH));
+            playerNames.put(id, name);
+        }
     }
 
     /** Removes all stored scores. */
