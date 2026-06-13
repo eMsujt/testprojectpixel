@@ -17,8 +17,9 @@ import java.util.UUID;
  */
 public final class DungeonManager {
 
-    /** All dungeon floors: Catacombs FLOOR_1–FLOOR_7 and Master Mode MASTER_M1–MASTER_M7. */
+    /** All dungeon floors: Entrance, Catacombs FLOOR_1–FLOOR_7, and Master Mode MASTER_M1–MASTER_M7. */
     public enum DungeonFloor {
+        ENTRANCE("None", 0, false),
         FLOOR_1("Bonzo", 1, false),
         FLOOR_2("Scarf", 5, false),
         FLOOR_3("The Professor", 9, false),
