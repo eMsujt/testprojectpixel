@@ -34,7 +34,9 @@ public final class HotmManager {
         LONESOME_MINER(45, "Lonesome Miner"),
         GREAT_EXPLORER(20, "Great Explorer"),
         FORTUNATE(20, "Fortunate"),
-        MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost");
+        MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost"),
+        SEASONED_MINEMAN(       100, "Seasoned Mineman"),
+        ANOMALOUS_DESIRE(        20, "Anomalous Desire");
 
         /** Maximum level for this perk. */
         public final int maxLevel;
