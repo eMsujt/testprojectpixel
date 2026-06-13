@@ -202,6 +202,10 @@ commands:
     description: View and manage the current SkyBlock season.
     usage: /season <current|next|set <season>|advance>
     permission: skyblock.season
+  cooldown:
+    description: View and manage per-player per-key cooldowns.
+    usage: /cooldown <list|check <key>|set <key> <seconds>|clear <key>|clearall>
+    permission: skyblock.cooldown
   stats:
     description: View and manage your SkyBlock player stats.
     usage: /stats [info|get <stat>|set <stat> <value>|reset]
@@ -374,4 +378,7 @@ permissions:
     default: true
   skyblock.dungeons:
     description: Use the /dungeons command to start dungeon runs and view scores.
+    default: true
+  skyblock.cooldown:
+    description: Use the /cooldown command to view and manage per-player cooldowns.
     default: true
