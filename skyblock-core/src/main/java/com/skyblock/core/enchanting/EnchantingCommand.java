@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public final class EnchantingCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("list", "info", "apply", "remove", "view");
+            Arrays.asList("list", "info", "apply", "remove", "view", "type");
 
     private final EnchantingManager enchantingManager;
 
@@ -43,7 +43,7 @@ public final class EnchantingCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /enchanting <list|info|apply|remove|view>");
+            player.sendMessage("Usage: /enchanting <list|info|apply|remove|view|type>");
             return true;
         }
 
@@ -53,7 +53,8 @@ public final class EnchantingCommand implements TabExecutor {
             case "apply"  -> handleApply(player, args);
             case "remove" -> handleRemove(player, args);
             case "view"   -> handleView(player);
-            default       -> player.sendMessage("Unknown subcommand. Usage: /enchanting <list|info|apply|remove|view>");
+            case "type"   -> handleType(player);
+            default       -> player.sendMessage("Unknown subcommand. Usage: /enchanting <list|info|apply|remove|view|type>");
         }
         return true;
     }
@@ -160,6 +161,12 @@ public final class EnchantingCommand implements TabExecutor {
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(e -> player.sendMessage(
                         e.getKey().getDisplayName() + " " + e.getValue()));
+    }
+
+    private void handleType(Player player) {
+        player.sendMessage("=== SkyBlock Enchant Names ===");
+        Arrays.stream(EnchantingManager.SkyBlockEnchant.values())
+                .forEach(e -> player.sendMessage(e.name()));
     }
 
     private static EnchantingManager.SkyBlockEnchantment parseType(String name) {
