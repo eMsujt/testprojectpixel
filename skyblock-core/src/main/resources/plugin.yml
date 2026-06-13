@@ -309,6 +309,15 @@ commands:
     description: Manage your personal vault balance and tier.
     usage: /vault [info|deposit <amount>|withdraw <amount>|upgrade]
     permission: skyblock.vault
+  stat:
+    description: View your effective SkyBlock player stats.
+    usage: /stat [<stat>]
+    permission: skyblock.stat
+  skyblock-level:
+    description: View and manage your SkyBlock level and XP.
+    usage: /skyblock-level [info|addxp <amount>|setxp <amount>]
+    aliases: [sblevel]
+    permission: skyblock.skyblock-level
 
 permissions:
   skyblock.warp:
@@ -430,4 +439,10 @@ permissions:
     default: true
   skyblock.vault:
     description: Use the /vault command to manage vault balance and tier.
+    default: true
+  skyblock.stat:
+    description: Use the /stat command to view effective player stats.
+    default: true
+  skyblock.skyblock-level:
+    description: Use the /skyblock-level command to view and manage SkyBlock level.
     default: true
