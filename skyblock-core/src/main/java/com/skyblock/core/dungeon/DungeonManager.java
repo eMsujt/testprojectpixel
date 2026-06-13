@@ -1,5 +1,9 @@
 package com.skyblock.core.dungeon;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -295,5 +299,84 @@ public final class DungeonManager {
     public DungeonClass getClass(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerClasses.get(playerId);
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "dungeon.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        bestScores.clear();
+        completionCounts.clear();
+        playerClasses.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".bestScores")) {
+                    Map<DungeonType, Integer> scores = new HashMap<>();
+                    for (DungeonType type : DungeonType.values()) {
+                        int val = cfg.getInt(key + ".bestScores." + type.name(), 0);
+                        if (val > 0) {
+                            scores.put(type, val);
+                        }
+                    }
+                    if (!scores.isEmpty()) {
+                        bestScores.put(uuid, scores);
+                    }
+                }
+                if (cfg.isConfigurationSection(key + ".completionCounts")) {
+                    Map<DungeonType, Integer> counts = new HashMap<>();
+                    for (DungeonType type : DungeonType.values()) {
+                        int val = cfg.getInt(key + ".completionCounts." + type.name(), 0);
+                        if (val > 0) {
+                            counts.put(type, val);
+                        }
+                    }
+                    if (!counts.isEmpty()) {
+                        completionCounts.put(uuid, counts);
+                    }
+                }
+                String cls = cfg.getString(key + ".class");
+                if (cls != null) {
+                    try {
+                        playerClasses.put(uuid, DungeonClass.valueOf(cls));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip unknown class
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "dungeon.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<DungeonType, Integer>> entry : bestScores.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<DungeonType, Integer> e : entry.getValue().entrySet()) {
+                cfg.set(key + ".bestScores." + e.getKey().name(), e.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<DungeonType, Integer>> entry : completionCounts.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<DungeonType, Integer> e : entry.getValue().entrySet()) {
+                cfg.set(key + ".completionCounts." + e.getKey().name(), e.getValue());
+            }
+        }
+        for (Map.Entry<UUID, DungeonClass> entry : playerClasses.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".class", entry.getValue().name());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save dungeon.yml", e);
+        }
     }
 }

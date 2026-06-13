@@ -34,7 +34,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         MayorManager.getInstance();
         AuctionManager.getInstance();
         BazaarManager.getInstance();
-        DungeonManager.getInstance();
+        DungeonManager dungeonManager = DungeonManager.getInstance();
+        dungeonManager.load(getDataFolder());
         IslandManager.getInstance();
         GardenManager gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
@@ -56,6 +57,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         BankManager.getInstance().save(getDataFolder());
+        DungeonManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());
         PetsManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
