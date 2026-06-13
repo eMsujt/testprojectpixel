@@ -122,6 +122,8 @@ import com.skyblock.core.essence.EssenceCommand;
 import com.skyblock.core.essence.EssenceManager;
 import com.skyblock.core.crimson.CrimsonIsleCommand;
 import com.skyblock.core.crimson.CrimsonIsleManager;
+import com.skyblock.core.garden.GardenCommand;
+import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.kuudra.KuudraCommand;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.backpack.BackpackCommand;
@@ -373,6 +375,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
         getCommand("kuudra").setExecutor(kuudraCommand);
         getCommand("kuudra").setTabCompleter(kuudraCommand);
+
+        GardenManager gardenManager = GardenManager.getInstance();
+        GardenCommand gardenCommand = new GardenCommand(gardenManager);
+        getCommand("garden").setExecutor(gardenCommand);
+        getCommand("garden").setTabCompleter(gardenCommand);
 
         GuildManager guildManager = GuildManager.getInstance();
         GuildCommand guildCommand = new GuildCommand(guildManager);
