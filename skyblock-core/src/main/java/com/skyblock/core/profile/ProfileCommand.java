@@ -18,13 +18,15 @@ import java.util.stream.Collectors;
  *   <li>{@code /profile list}                      — list your profiles</li>
  *   <li>{@code /profile create <name> [gamemode]}  — create a new profile (max 4)</li>
  *   <li>{@code /profile delete <name>}             — delete a profile by name</li>
+ *   <li>{@code /profile mode}                      — list all available profile modes</li>
  * </ul>
  * </p>
  */
 public final class ProfileCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "delete");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "delete", "mode");
     private static final List<String> GAME_MODES = Arrays.asList("normal", "ironman", "bingo");
+    private static final List<String> PROFILE_MODES = Arrays.asList("classic", "ironman", "stranded", "bingo");
 
     private final ProfileManager profileManager;
 
@@ -40,7 +42,7 @@ public final class ProfileCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /profile <list|create|delete>");
+            player.sendMessage("Usage: /profile <list|create|delete|mode>");
             return true;
         }
 
@@ -48,7 +50,8 @@ public final class ProfileCommand implements TabExecutor {
             case "list"   -> handleList(player);
             case "create" -> handleCreate(player, args);
             case "delete" -> handleDelete(player, args);
-            default       -> player.sendMessage("Unknown subcommand. Usage: /profile <list|create|delete>");
+            case "mode"   -> handleMode(player);
+            default       -> player.sendMessage("Unknown subcommand. Usage: /profile <list|create|delete|mode>");
         }
         return true;
     }
@@ -64,6 +67,12 @@ public final class ProfileCommand implements TabExecutor {
         if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
             String prefix = args[2].toLowerCase();
             return GAME_MODES.stream()
+                    .filter(s -> s.startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("mode")) {
+            String prefix = args[1].toLowerCase();
+            return PROFILE_MODES.stream()
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
@@ -104,6 +113,14 @@ public final class ProfileCommand implements TabExecutor {
         } else {
             player.sendMessage("Profile \"" + profile.name() + "\" (" + profile.gameMode().getDisplayName()
                     + ") created successfully!");
+        }
+    }
+
+    private void handleMode(Player player) {
+        player.sendMessage("=== Profile Modes ===");
+        ProfileManager.ProfileMode[] modes = ProfileManager.ProfileMode.values();
+        for (int i = 0; i < modes.length; i++) {
+            player.sendMessage(String.format("%d. %s", i + 1, modes[i].getDisplayName()));
         }
     }
 
