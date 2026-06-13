@@ -281,6 +281,10 @@ commands:
     description: Start dungeon runs and view scores by type.
     usage: /dungeons [start <type>|leave|info|scores <type>]
     permission: skyblock.dungeons
+  collections:
+    description: View your SkyBlock collection progress.
+    usage: /collections [collection|category <cat>|reset]
+    permission: skyblock.collections
 
 permissions:
   skyblock.warp:
@@ -381,4 +385,7 @@ permissions:
     default: true
   skyblock.cooldown:
     description: Use the /cooldown command to view and manage per-player cooldowns.
+    default: true
+  skyblock.collections:
+    description: Use the /collections command to view collection progress.
     default: true
