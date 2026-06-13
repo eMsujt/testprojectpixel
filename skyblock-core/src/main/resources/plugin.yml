@@ -185,6 +185,10 @@ commands:
     description: View and manage the current SkyBlock season.
     usage: /season <current|next|set <season>|advance>
     permission: skyblock.season
+  stats:
+    description: View and manage your SkyBlock player stats.
+    usage: /stats [info|get <stat>|set <stat> <value>|reset]
+    permission: skyblock.stats
 
 permissions:
   skyblock.warp:
