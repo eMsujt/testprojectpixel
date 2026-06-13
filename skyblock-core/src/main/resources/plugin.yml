@@ -52,6 +52,18 @@ commands:
   f:
     description: Manage SkyBlock friendships.
     usage: /f <add|remove|list|accept|deny>
+  friend:
+    description: Manage SkyBlock friendships.
+    usage: /friend <add|remove|list|accept|decline>
+    permission: skyblock.friend
+  mailbox:
+    description: View and manage your SkyBlock mailbox.
+    usage: /mailbox [inbox|read <id>|delete <id>|clear]
+    permission: skyblock.mailbox
+  booster:
+    description: View and activate SkyBlock boosters.
+    usage: /booster [list|activate <type>]
+    permission: skyblock.booster
   warp:
     description: Teleport to a named warp point.
     usage: /warp [name|set <name>|delete <name>]
@@ -445,4 +457,13 @@ permissions:
     default: true
   skyblock.skyblock-level:
     description: Use the /skyblock-level command to view and manage SkyBlock level.
+    default: true
+  skyblock.friend:
+    description: Use the /friend command to manage SkyBlock friendships.
+    default: true
+  skyblock.mailbox:
+    description: Use the /mailbox command to view and manage your mailbox.
+    default: true
+  skyblock.booster:
+    description: Use the /booster command to view and activate boosters.
     default: true
