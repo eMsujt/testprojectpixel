@@ -81,6 +81,8 @@ import com.skyblock.core.skill.SkillListener;
 import com.skyblock.core.skills.SkillManager;
 import com.skyblock.core.stats.CombatStatsListener;
 import com.skyblock.core.stats.CombatStatsManager;
+import com.skyblock.core.stats.PlayerStatManager;
+import com.skyblock.core.stats.StatsCommand;
 import com.skyblock.core.stats.StatsManager;
 import com.skyblock.core.storage.StorageCommand;
 import com.skyblock.core.storage.StorageManager;
@@ -331,6 +333,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CombatStatsListener(combatStatsManager), this);
         StatsManager statsManager = StatsManager.getInstance();
         getServer().getPluginManager().registerEvents(new com.skyblock.core.stats.StatListener(statsManager), this);
+        StatsCommand statsCommand = new StatsCommand(PlayerStatManager.getInstance());
+        getCommand("stats").setExecutor(statsCommand);
+        getCommand("stats").setTabCompleter(statsCommand);
         getServer().getPluginManager().registerEvents(new EnchantmentListener(SkyBlockEnchantManager.getInstance()), this);
         MobLootManager mobLootManager = MobLootManager.getInstance();
         getServer().getPluginManager().registerEvents(new MobLootListener(mobLootManager), this);
