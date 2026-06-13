@@ -13,44 +13,63 @@ import java.util.UUID;
 
 public class TitleManager {
 
-    private final Map<UUID, List<String>> titles = new HashMap<>();
+    private final Map<UUID, List<String>> playerTitles = new HashMap<>();
+    private final Map<UUID, String> activeTitle = new HashMap<>();
 
     public List<String> getTitles(UUID playerId) {
-        return Collections.unmodifiableList(titles.getOrDefault(playerId, Collections.emptyList()));
+        return Collections.unmodifiableList(playerTitles.getOrDefault(playerId, Collections.emptyList()));
     }
 
     public void addTitle(UUID playerId, String title) {
-        titles.computeIfAbsent(playerId, k -> new ArrayList<>()).add(title);
+        playerTitles.computeIfAbsent(playerId, k -> new ArrayList<>()).add(title);
     }
 
     public boolean removeTitle(UUID playerId, String title) {
-        List<String> list = titles.get(playerId);
+        List<String> list = playerTitles.get(playerId);
         return list != null && list.remove(title);
     }
 
     public boolean hasTitle(UUID playerId, String title) {
-        List<String> list = titles.get(playerId);
+        List<String> list = playerTitles.get(playerId);
         return list != null && list.contains(title);
+    }
+
+    public String getActiveTitle(UUID playerId) {
+        return activeTitle.get(playerId);
+    }
+
+    public void setActiveTitle(UUID playerId, String title) {
+        if (title == null) {
+            activeTitle.remove(playerId);
+        } else {
+            activeTitle.put(playerId, title);
+        }
     }
 
     public void save(File dataFolder) {
         File dir = new File(dataFolder, "data/titles");
         dir.mkdirs();
-        for (Map.Entry<UUID, List<String>> entry : titles.entrySet()) {
-            File file = new File(dir, entry.getKey().toString() + ".yml");
+        for (Map.Entry<UUID, List<String>> entry : playerTitles.entrySet()) {
+            UUID uuid = entry.getKey();
+            File file = new File(dir, uuid.toString() + ".yml");
             YamlConfiguration cfg = new YamlConfiguration();
             cfg.set("titles", entry.getValue());
+            String active = activeTitle.get(uuid);
+            if (active != null) {
+                cfg.set("activeTitle", active);
+            }
             try {
                 cfg.save(file);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to save titles for " + entry.getKey(), e);
+                throw new RuntimeException("Failed to save titles for " + uuid, e);
             }
         }
     }
 
     public void load(File dataFolder) {
         File dir = new File(dataFolder, "data/titles");
-        titles.clear();
+        playerTitles.clear();
+        activeTitle.clear();
         if (!dir.isDirectory()) {
             return;
         }
@@ -65,7 +84,11 @@ public class TitleManager {
                 YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
                 List<String> list = cfg.getStringList("titles");
                 if (!list.isEmpty()) {
-                    titles.put(uuid, new ArrayList<>(list));
+                    playerTitles.put(uuid, new ArrayList<>(list));
+                }
+                String active = cfg.getString("activeTitle");
+                if (active != null) {
+                    activeTitle.put(uuid, active);
                 }
             } catch (IllegalArgumentException ignored) {}
         }
