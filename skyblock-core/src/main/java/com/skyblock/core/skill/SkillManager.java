@@ -63,9 +63,9 @@ public final class SkillManager {
     }
 
     public enum Skill {
+        COMBAT("Combat",        60),
         FARMING("Farming",      60),
         MINING("Mining",        60),
-        COMBAT("Combat",        60),
         FORAGING("Foraging",    50),
         FISHING("Fishing",      50),
         ENCHANTING("Enchanting", 60),
