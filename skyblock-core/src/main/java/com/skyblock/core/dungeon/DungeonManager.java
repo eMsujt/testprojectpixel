@@ -17,6 +17,36 @@ import java.util.UUID;
  */
 public final class DungeonManager {
 
+    /** Floor identifiers using full-word ordinal names (ENTRANCE, FLOOR_ONE … FLOOR_SEVEN, MASTER_ONE … MASTER_SEVEN). */
+    public enum FloorType {
+        ENTRANCE("Entrance", false),
+        FLOOR_ONE("Floor 1", false),
+        FLOOR_TWO("Floor 2", false),
+        FLOOR_THREE("Floor 3", false),
+        FLOOR_FOUR("Floor 4", false),
+        FLOOR_FIVE("Floor 5", false),
+        FLOOR_SIX("Floor 6", false),
+        FLOOR_SEVEN("Floor 7", false),
+        MASTER_ONE("Master 1", true),
+        MASTER_TWO("Master 2", true),
+        MASTER_THREE("Master 3", true),
+        MASTER_FOUR("Master 4", true),
+        MASTER_FIVE("Master 5", true),
+        MASTER_SIX("Master 6", true),
+        MASTER_SEVEN("Master 7", true);
+
+        private final String displayName;
+        private final boolean masterMode;
+
+        FloorType(String displayName, boolean masterMode) {
+            this.displayName = displayName;
+            this.masterMode = masterMode;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public boolean isMasterMode() { return masterMode; }
+    }
+
     /** All dungeon floors: Entrance, Catacombs FLOOR_1–FLOOR_7, and Master Mode MASTER_1–MASTER_7. */
     public enum DungeonFloor {
         ENTRANCE("Entrance", "None", 0, false),
