@@ -110,7 +110,7 @@ public final class BestiaryCommand implements TabExecutor {
     private void handleFamilies(Player player) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== Bestiary Families ===");
-        for (BestiaryManager.BestiaryFamily family : BestiaryManager.BestiaryFamily.values()) {
+        for (BestiaryManager.MobFamily family : BestiaryManager.MobFamily.values()) {
             int total = bestiaryManager.getKillsForFamily(id, family);
             player.sendMessage("  " + family.getDisplayName() + ": " + total + " kills");
         }
