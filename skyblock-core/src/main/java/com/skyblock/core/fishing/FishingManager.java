@@ -6,7 +6,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -336,27 +338,32 @@ public final class FishingManager {
      * @return the chosen loot item
      */
     public ItemStack rollLoot(int level) {
+        List<LootEntry> eligible = eligibleLoot(level);
         double totalWeight = 0.0;
-        for (LootEntry entry : LOOT_TABLE) {
-            if (entry.minLevel <= level) {
-                totalWeight += entry.weight;
-            }
+        for (LootEntry entry : eligible) {
+            totalWeight += entry.weight;
         }
 
         double roll = random.nextDouble() * totalWeight;
         double cumulative = 0.0;
-        for (LootEntry entry : LOOT_TABLE) {
-            if (entry.minLevel > level) {
-                continue;
-            }
+        for (LootEntry entry : eligible) {
             cumulative += entry.weight;
             if (roll < cumulative) {
                 return new ItemStack(entry.material, 1);
             }
         }
 
-        // Fallback — should never be reached when LOOT_TABLE is non-empty
         return new ItemStack(Material.INK_SAC, 1);
+    }
+
+    private List<LootEntry> eligibleLoot(int level) {
+        List<LootEntry> out = new ArrayList<>();
+        for (LootEntry entry : LOOT_TABLE) {
+            if (entry.minLevel <= level) {
+                out.add(entry);
+            }
+        }
+        return out;
     }
 
     // ---------------------------------------------------------------------------
@@ -378,11 +385,10 @@ public final class FishingManager {
             return null;
         }
 
+        List<SeaCreature> eligible = eligibleCreatures(level);
         double totalWeight = 0.0;
-        for (SeaCreature creature : SeaCreature.values()) {
-            if (creature.minLevel <= level) {
-                totalWeight += creature.spawnChance;
-            }
+        for (SeaCreature creature : eligible) {
+            totalWeight += creature.spawnChance;
         }
         if (totalWeight == 0.0) {
             return null;
@@ -390,16 +396,23 @@ public final class FishingManager {
 
         double roll = random.nextDouble() * totalWeight;
         double cumulative = 0.0;
-        for (SeaCreature creature : SeaCreature.values()) {
-            if (creature.minLevel > level) {
-                continue;
-            }
+        for (SeaCreature creature : eligible) {
             cumulative += creature.spawnChance;
             if (roll < cumulative) {
                 return creature;
             }
         }
         return null;
+    }
+
+    private List<SeaCreature> eligibleCreatures(int level) {
+        List<SeaCreature> out = new ArrayList<>();
+        for (SeaCreature creature : SeaCreature.values()) {
+            if (creature.minLevel <= level) {
+                out.add(creature);
+            }
+        }
+        return out;
     }
 
     // ---------------------------------------------------------------------------
