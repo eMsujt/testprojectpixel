@@ -285,6 +285,10 @@ commands:
     description: View your SkyBlock collection progress.
     usage: /collections [collection|category <cat>|reset]
     permission: skyblock.collections
+  booster:
+    description: Manage your active SkyBlock booster.
+    usage: /booster <list|activate <type>|deactivate|info>
+    permission: skyblock.booster
 
 permissions:
   skyblock.warp:
@@ -388,4 +392,7 @@ permissions:
     default: true
   skyblock.collections:
     description: Use the /collections command to view collection progress.
+    default: true
+  skyblock.booster:
+    description: Use the /booster command to manage your active booster.
     default: true

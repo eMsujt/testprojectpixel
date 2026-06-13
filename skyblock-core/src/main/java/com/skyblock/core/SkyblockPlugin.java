@@ -42,6 +42,8 @@ import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.event.EventCommand;
 import com.skyblock.core.event.EventManager;
+import com.skyblock.core.booster.BoosterCommand;
+import com.skyblock.core.booster.BoosterManager;
 import com.skyblock.core.collections.CollectionsCommand;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.combat.CombatCommand;
@@ -194,6 +196,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         CollectionsCommand collectionsCommand = new CollectionsCommand(collectionsManager);
         getCommand("collections").setExecutor(collectionsCommand);
         getCommand("collections").setTabCompleter(collectionsCommand);
+        BoosterManager boosterManager = BoosterManager.getInstance();
+        boosterManager.load(getDataFolder());
+        BoosterCommand boosterCommand = new BoosterCommand(boosterManager);
+        getCommand("booster").setExecutor(boosterCommand);
+        getCommand("booster").setTabCompleter(boosterCommand);
     }
 
     @Override
@@ -219,6 +226,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         BackpackManager.getInstance().save(getDataFolder());
         ForagingManager.getInstance().save(getDataFolder());
         CollectionsManager.getInstance().save(getDataFolder());
+        BoosterManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
