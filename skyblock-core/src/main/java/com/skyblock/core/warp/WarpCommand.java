@@ -47,6 +47,7 @@ public final class WarpCommand implements TabExecutor {
             case "remove"    -> handleRemove(player, args);
             case "list"      -> handleList(player);
             case "locations" -> handleLocations(player);
+            case "zones"     -> handleZones(player);
             default          -> handleTeleport(player, args[0]);
         }
         return true;
@@ -56,7 +57,7 @@ public final class WarpCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            List<String> options = new java.util.ArrayList<>(Arrays.asList("set", "remove", "list", "locations"));
+            List<String> options = new java.util.ArrayList<>(Arrays.asList("set", "remove", "list", "locations", "zones"));
             warpManager.getWarpNames().forEach(options::add);
             return options.stream().filter(s -> s.startsWith(lower)).toList();
         }
@@ -117,6 +118,13 @@ public final class WarpCommand implements TabExecutor {
         }
     }
 
+    private void handleZones(Player player) {
+        player.sendMessage("=== SkyBlock Locations ===");
+        for (WarpManager.SkyBlockLocation loc : WarpManager.SkyBlockLocation.values()) {
+            player.sendMessage("- " + loc.getDisplayName());
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Warp Commands ===");
         player.sendMessage("/warp <name>         — teleport to a warp");
@@ -124,5 +132,6 @@ public final class WarpCommand implements TabExecutor {
         player.sendMessage("/warp remove <name>  — delete a warp");
         player.sendMessage("/warp list           — list all warps");
         player.sendMessage("/warp locations      — list predefined warp locations");
+        player.sendMessage("/warp zones          — list SkyBlock locations");
     }
 }
