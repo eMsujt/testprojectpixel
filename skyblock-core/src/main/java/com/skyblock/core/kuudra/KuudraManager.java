@@ -1,5 +1,9 @@
 package com.skyblock.core.kuudra;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -160,5 +164,62 @@ public final class KuudraManager {
         boolean had = playerKeys.remove(playerId) != null;
         had |= playerCompletions.remove(playerId) != null;
         return had;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "kuudra.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerKeys.clear();
+        playerCompletions.clear();
+        KuudraTier[] tiers = KuudraTier.values();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".keys")) {
+                    int[] keys = new int[tiers.length];
+                    for (KuudraTier tier : tiers) {
+                        keys[tier.ordinal()] = cfg.getInt(key + ".keys." + tier.name(), 0);
+                    }
+                    playerKeys.put(uuid, keys);
+                }
+                if (cfg.isConfigurationSection(key + ".completions")) {
+                    int[] completions = new int[tiers.length];
+                    for (KuudraTier tier : tiers) {
+                        completions[tier.ordinal()] = cfg.getInt(key + ".completions." + tier.name(), 0);
+                    }
+                    playerCompletions.put(uuid, completions);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "kuudra.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        KuudraTier[] tiers = KuudraTier.values();
+        for (Map.Entry<UUID, int[]> entry : playerKeys.entrySet()) {
+            String key = entry.getKey().toString();
+            int[] keys = entry.getValue();
+            for (KuudraTier tier : tiers) {
+                cfg.set(key + ".keys." + tier.name(), keys[tier.ordinal()]);
+            }
+        }
+        for (Map.Entry<UUID, int[]> entry : playerCompletions.entrySet()) {
+            String key = entry.getKey().toString();
+            int[] completions = entry.getValue();
+            for (KuudraTier tier : tiers) {
+                cfg.set(key + ".completions." + tier.name(), completions[tier.ordinal()]);
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save kuudra.yml", e);
+        }
     }
 }

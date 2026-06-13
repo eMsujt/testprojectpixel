@@ -10,6 +10,7 @@ import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.hotm.HOTMManager;
 import com.skyblock.core.island.IslandManager;
+import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.profile.ProfileManager;
@@ -44,6 +45,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         hotmManager.load(getDataFolder());
         PetsManager petsManager = PetsManager.getInstance();
         petsManager.load(getDataFolder());
+        KuudraManager kuudraManager = KuudraManager.getInstance();
+        kuudraManager.load(getDataFolder());
         EnchantingManager.getInstance();
         ReforgeManager.getInstance();
         AccessoryManager.getInstance();
@@ -57,6 +60,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         PetsManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
+        KuudraManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
