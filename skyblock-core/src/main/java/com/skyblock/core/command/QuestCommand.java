@@ -1,9 +1,9 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.quests.QuestManager;
-import com.skyblock.core.quests.QuestManager.QuestData;
-import com.skyblock.core.quests.QuestManager.QuestStatus;
-import com.skyblock.core.quests.QuestManager.QuestType;
+import com.skyblock.core.quest.QuestManager;
+import com.skyblock.core.quest.QuestManager.QuestData;
+import com.skyblock.core.quest.QuestManager.QuestStatus;
+import com.skyblock.core.quest.QuestManager.QuestType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
