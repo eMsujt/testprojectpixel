@@ -25,7 +25,12 @@ public final class QuestManager {
         MINE_ORES(64, "Mine Ores"),
         CATCH_FISH(30, "Catch Fish"),
         EARN_COINS(50, "Earn Coins"),
-        COMPLETE_DUNGEONS(1, "Complete Dungeons");
+        COMPLETE_DUNGEONS(1, "Complete Dungeons"),
+        KILL_100_MOBS(100, "Kill 100 Mobs"),
+        MINE_500_BLOCKS(500, "Mine 500 Blocks"),
+        FISH_50_FISH(50, "Fish 50 Fish"),
+        CRAFT_20_ITEMS(20, "Craft 20 Items"),
+        REACH_LEVEL_25(25, "Reach Level 25");
 
         private final long goal;
         private final String displayName;
