@@ -19,6 +19,26 @@ import java.util.UUID;
  */
 public final class TalismanManager {
 
+    /** Rarity tier for talismans (full tier list including MYTHIC). */
+    public enum TalismanRarity {
+        COMMON("Common"),
+        UNCOMMON("Uncommon"),
+        RARE("Rare"),
+        EPIC("Epic"),
+        LEGENDARY("Legendary"),
+        MYTHIC("Mythic");
+
+        private final String displayName;
+
+        TalismanRarity(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** Rarity tier for accessories, determining the stat multiplier applied to base bonuses. */
     public enum AccessoryRarity {
         COMMON("Common", 1.0),
