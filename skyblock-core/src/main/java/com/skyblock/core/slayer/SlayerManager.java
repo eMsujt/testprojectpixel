@@ -15,11 +15,11 @@ public final class SlayerManager {
     };
 
     public enum SlayerType {
-        ZOMBIE("Revenant"),
-        SPIDER("Tarantula"),
-        WOLF("Sven"),
-        ENDERMAN("Voidgloom"),
-        BLAZE("Inferno");
+        REVENANT_HORROR("Revenant Horror"),
+        TARANTULA_BROODFATHER("Tarantula Broodfather"),
+        SVEN_PACKMASTER("Sven Packmaster"),
+        VOIDGLOOM_SERAPH("Voidgloom Seraph"),
+        INFERNO_DEMONLORD("Inferno Demonlord");
 
         private final String displayName;
 
@@ -29,32 +29,6 @@ public final class SlayerManager {
 
         public String getDisplayName() {
             return displayName;
-        }
-    }
-
-    public enum SlayerBoss {
-        REVENANT_HORROR("Revenant Horror", SlayerType.ZOMBIE),
-        TARANTULA_BROODFATHER("Tarantula Broodfather", SlayerType.SPIDER),
-        SVEN_PACKMASTER("Sven Packmaster", SlayerType.WOLF),
-        VOIDGLOOM_SERAPH("Voidgloom Seraph", SlayerType.ENDERMAN),
-        INFERNO_DEMONLORD("Inferno Demonlord", SlayerType.BLAZE);
-
-        private final String displayName;
-        private final SlayerType slayerType;
-
-        SlayerBoss(String displayName, SlayerType slayerType) {
-            this.displayName = displayName;
-            this.slayerType = slayerType;
-        }
-
-        public String getDisplayName() { return displayName; }
-        public SlayerType getSlayerType() { return slayerType; }
-
-        public static SlayerBoss forType(SlayerType type) {
-            for (SlayerBoss b : values()) {
-                if (b.slayerType == type) return b;
-            }
-            return null;
         }
     }
 
