@@ -15,7 +15,21 @@ public final class SlayerManager {
     };
 
     public enum SlayerType {
-        ZOMBIE, SPIDER, WOLF, ENDERMAN, BLAZE
+        ZOMBIE("Revenant"),
+        SPIDER("Tarantula"),
+        WOLF("Sven"),
+        ENDERMAN("Voidgloom"),
+        BLAZE("Inferno");
+
+        private final String displayName;
+
+        SlayerType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     public enum SlayerBoss {
