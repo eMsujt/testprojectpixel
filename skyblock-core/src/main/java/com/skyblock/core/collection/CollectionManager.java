@@ -16,7 +16,7 @@ import java.util.UUID;
 public final class CollectionManager {
 
     /** Every collection type tracked in SkyBlock. */
-    public enum Collection {
+    public enum CollectionType {
         // Farming
         WHEAT("wheat",                 "Wheat"),
         CARROT("carrot",               "Carrot"),
@@ -79,44 +79,44 @@ public final class CollectionManager {
         public final String itemKey;
         public final String displayName;
 
-        Collection(String itemKey, String displayName) {
+        CollectionType(String itemKey, String displayName) {
             this.itemKey     = itemKey;
             this.displayName = displayName;
         }
     }
 
-    /** Groups {@link Collection} values into SkyBlock skill categories. */
+    /** Groups {@link CollectionType} values into SkyBlock skill categories. */
     public enum CollectionCategory {
         FARMING("Farming",
-                Collection.WHEAT, Collection.CARROT, Collection.POTATO,
-                Collection.PUMPKIN, Collection.MELON, Collection.MUSHROOM,
-                Collection.CACTUS, Collection.SUGAR_CANE,
-                Collection.NETHER_WART, Collection.COCOA_BEANS),
+                CollectionType.WHEAT, CollectionType.CARROT, CollectionType.POTATO,
+                CollectionType.PUMPKIN, CollectionType.MELON, CollectionType.MUSHROOM,
+                CollectionType.CACTUS, CollectionType.SUGAR_CANE,
+                CollectionType.NETHER_WART, CollectionType.COCOA_BEANS),
         MINING("Mining",
-                Collection.COBBLESTONE, Collection.COAL, Collection.IRON_INGOT,
-                Collection.GOLD_INGOT, Collection.DIAMOND, Collection.EMERALD,
-                Collection.REDSTONE, Collection.LAPIS_LAZULI, Collection.QUARTZ,
-                Collection.OBSIDIAN, Collection.GLOWSTONE, Collection.GRAVEL,
-                Collection.ICE, Collection.NETHERRACK, Collection.SAND,
-                Collection.END_STONE),
+                CollectionType.COBBLESTONE, CollectionType.COAL, CollectionType.IRON_INGOT,
+                CollectionType.GOLD_INGOT, CollectionType.DIAMOND, CollectionType.EMERALD,
+                CollectionType.REDSTONE, CollectionType.LAPIS_LAZULI, CollectionType.QUARTZ,
+                CollectionType.OBSIDIAN, CollectionType.GLOWSTONE, CollectionType.GRAVEL,
+                CollectionType.ICE, CollectionType.NETHERRACK, CollectionType.SAND,
+                CollectionType.END_STONE),
         COMBAT("Combat",
-                Collection.ROTTEN_FLESH, Collection.BONE, Collection.SPIDER_EYE,
-                Collection.STRING, Collection.GUNPOWDER, Collection.ENDER_PEARL,
-                Collection.GHAST_TEAR, Collection.SLIME_BALL, Collection.BLAZE_ROD,
-                Collection.MAGMA_CREAM),
+                CollectionType.ROTTEN_FLESH, CollectionType.BONE, CollectionType.SPIDER_EYE,
+                CollectionType.STRING, CollectionType.GUNPOWDER, CollectionType.ENDER_PEARL,
+                CollectionType.GHAST_TEAR, CollectionType.SLIME_BALL, CollectionType.BLAZE_ROD,
+                CollectionType.MAGMA_CREAM),
         FORAGING("Foraging",
-                Collection.OAK_LOG, Collection.SPRUCE_LOG, Collection.BIRCH_LOG,
-                Collection.JUNGLE_LOG, Collection.ACACIA_LOG, Collection.DARK_OAK_LOG),
+                CollectionType.OAK_LOG, CollectionType.SPRUCE_LOG, CollectionType.BIRCH_LOG,
+                CollectionType.JUNGLE_LOG, CollectionType.ACACIA_LOG, CollectionType.DARK_OAK_LOG),
         FISHING("Fishing",
-                Collection.RAW_FISH, Collection.RAW_SALMON, Collection.CLOWNFISH,
-                Collection.PUFFERFISH, Collection.PRISMARINE_SHARD,
-                Collection.PRISMARINE_CRYSTALS, Collection.CLAY, Collection.LILY_PAD,
-                Collection.INK_SAC, Collection.SPONGE);
+                CollectionType.RAW_FISH, CollectionType.RAW_SALMON, CollectionType.CLOWNFISH,
+                CollectionType.PUFFERFISH, CollectionType.PRISMARINE_SHARD,
+                CollectionType.PRISMARINE_CRYSTALS, CollectionType.CLAY, CollectionType.LILY_PAD,
+                CollectionType.INK_SAC, CollectionType.SPONGE);
 
         private final String displayName;
-        private final Collection[] types;
+        private final CollectionType[] types;
 
-        CollectionCategory(String displayName, Collection... types) {
+        CollectionCategory(String displayName, CollectionType... types) {
             this.displayName = displayName;
             this.types = types;
         }
@@ -125,15 +125,15 @@ public final class CollectionManager {
             return displayName;
         }
 
-        public Collection[] getTypes() {
+        public CollectionType[] getTypes() {
             return types;
         }
     }
 
     private static final CollectionManager INSTANCE = new CollectionManager();
 
-    /** per-player totals: player → (Collection → total gathered) */
-    private final Map<UUID, Map<Collection, Long>> playerCollections = new HashMap<>();
+    /** per-player totals: player → (CollectionType → total gathered) */
+    private final Map<UUID, Map<CollectionType, Long>> playerCollections = new HashMap<>();
 
     private CollectionManager() {
     }
@@ -151,14 +151,14 @@ public final class CollectionManager {
      * @return the player's updated total for that collection
      * @throws IllegalArgumentException if {@code amount} is negative
      */
-    public long addItems(UUID playerId, Collection type, long amount) {
+    public long addItems(UUID playerId, CollectionType type, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
-        Map<Collection, Long> totals = playerCollections.computeIfAbsent(
-                playerId, id -> new EnumMap<>(Collection.class));
+        Map<CollectionType, Long> totals = playerCollections.computeIfAbsent(
+                playerId, id -> new EnumMap<>(CollectionType.class));
         long total = totals.getOrDefault(type, 0L) + amount;
         totals.put(type, total);
         return total;
@@ -177,7 +177,7 @@ public final class CollectionManager {
         if (collection == null || collection.isBlank()) {
             throw new IllegalArgumentException("collection must not be null or blank");
         }
-        Collection type = parseType(collection);
+        CollectionType type = parseType(collection);
         if (type == null) {
             return -1L;
         }
@@ -191,10 +191,10 @@ public final class CollectionManager {
      * @param type     the collection type, must not be null
      * @return the total items gathered, {@code 0} if the player has none
      */
-    public long getItems(UUID playerId, Collection type) {
+    public long getItems(UUID playerId, CollectionType type) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
-        Map<Collection, Long> totals = playerCollections.get(playerId);
+        Map<CollectionType, Long> totals = playerCollections.get(playerId);
         return totals == null ? 0L : totals.getOrDefault(type, 0L);
     }
 
@@ -210,7 +210,7 @@ public final class CollectionManager {
         if (collection == null || collection.isBlank()) {
             throw new IllegalArgumentException("collection must not be null or blank");
         }
-        Collection type = parseType(collection);
+        CollectionType type = parseType(collection);
         return type == null ? 0L : getItems(playerId, type);
     }
 
@@ -220,9 +220,9 @@ public final class CollectionManager {
      * @param playerId the player to look up, must not be null
      * @return an unmodifiable map of Collection to total, empty if none recorded
      */
-    public Map<Collection, Long> getAll(UUID playerId) {
+    public Map<CollectionType, Long> getAll(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Map<Collection, Long> totals = playerCollections.get(playerId);
+        Map<CollectionType, Long> totals = playerCollections.get(playerId);
         return totals == null ? Collections.emptyMap() : Collections.unmodifiableMap(totals);
     }
 
@@ -248,14 +248,14 @@ public final class CollectionManager {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(category, "category");
         long total = 0L;
-        for (Collection type : category.getTypes()) {
+        for (CollectionType type : category.getTypes()) {
             total += getItems(playerId, type);
         }
         return total;
     }
 
-    private static Collection parseType(String name) {
-        for (Collection t : Collection.values()) {
+    private static CollectionType parseType(String name) {
+        for (CollectionType t : CollectionType.values()) {
             if (t.name().equalsIgnoreCase(name) || t.itemKey.equalsIgnoreCase(name)) {
                 return t;
             }

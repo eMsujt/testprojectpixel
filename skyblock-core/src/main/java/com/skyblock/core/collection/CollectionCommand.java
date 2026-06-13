@@ -1,7 +1,7 @@
 package com.skyblock.core.collection;
 
 import com.skyblock.core.collection.CollectionManager.CollectionCategory;
-import com.skyblock.core.collection.CollectionManager.Collection;
+import com.skyblock.core.collection.CollectionManager.CollectionType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -67,7 +67,7 @@ public final class CollectionCommand implements TabExecutor {
             return true;
         }
 
-        Collection type = parseType(args[0]);
+        CollectionType type = parseType(args[0]);
         if (type == null) {
             player.sendMessage("Unknown collection: " + args[0] + ". Use /collection to see all collections.");
             return true;
@@ -90,7 +90,7 @@ public final class CollectionCommand implements TabExecutor {
             if ("category".startsWith(lower)) {
                 completions.add("category");
             }
-            for (Collection t : Collection.values()) {
+            for (CollectionType t : CollectionType.values()) {
                 if (t.itemKey.startsWith(lower)) {
                     completions.add(t.itemKey);
                 }
@@ -112,9 +112,9 @@ public final class CollectionCommand implements TabExecutor {
     }
 
     private void sendCollectionList(Player player) {
-        Map<Collection, Long> all = collectionManager.getAll(player.getUniqueId());
+        Map<CollectionType, Long> all = collectionManager.getAll(player.getUniqueId());
         player.sendMessage("=== Collections ===");
-        for (Collection t : Collection.values()) {
+        for (CollectionType t : CollectionType.values()) {
             long total = all.getOrDefault(t, 0L);
             player.sendMessage("- " + t.displayName + ": " + total);
         }
@@ -122,7 +122,7 @@ public final class CollectionCommand implements TabExecutor {
     }
 
     private void sendCategoryList(Player player, CollectionCategory category) {
-        Map<Collection, Long> all = collectionManager.getAll(player.getUniqueId());
+        Map<CollectionType, Long> all = collectionManager.getAll(player.getUniqueId());
         player.sendMessage("=== " + category.getDisplayName() + " Collections ===");
         for (Collection t : category.getTypes()) {
             long total = all.getOrDefault(t, 0L);
@@ -132,8 +132,8 @@ public final class CollectionCommand implements TabExecutor {
         player.sendMessage("Category total: " + categoryTotal);
     }
 
-    private static Collection parseType(String input) {
-        for (Collection t : Collection.values()) {
+    private static CollectionType parseType(String input) {
+        for (CollectionType t : CollectionType.values()) {
             if (t.name().equalsIgnoreCase(input) || t.itemKey.equalsIgnoreCase(input)) {
                 return t;
             }
