@@ -237,6 +237,23 @@ public final class CollectionManager {
         return playerCollections.remove(playerId) != null;
     }
 
+    /**
+     * Returns the sum of all item totals for the given category.
+     *
+     * @param playerId the player to look up, must not be null
+     * @param category the collection category, must not be null
+     * @return the combined total for all types in the category
+     */
+    public long getTotalForCategory(UUID playerId, CollectionCategory category) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(category, "category");
+        long total = 0L;
+        for (CollectionType type : category.getTypes()) {
+            total += getItems(playerId, type);
+        }
+        return total;
+    }
+
     private static CollectionType parseType(String name) {
         for (CollectionType t : CollectionType.values()) {
             if (t.name().equalsIgnoreCase(name) || t.itemKey.equalsIgnoreCase(name)) {
