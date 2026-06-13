@@ -144,6 +144,7 @@ import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.achievement.AchievementCommand;
 import com.skyblock.core.achievement.AchievementManager;
+import com.skyblock.core.hub.SkyblockHubCommand;
 import com.skyblock.core.rift.RiftCommand;
 import com.skyblock.core.rift.RiftListener;
 import com.skyblock.core.rift.RiftManager;
@@ -319,7 +320,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("islandupgrade").setExecutor(islandUpgradeCommand);
         getCommand("islandupgrade").setTabCompleter(islandUpgradeCommand);
         SkyBlockMenuManager skyBlockMenuManager = SkyBlockMenuManager.getInstance();
-        SkyBlockCommand skyBlockCommand = new SkyBlockCommand(skyBlockMenuManager);
+        SkyblockHubCommand skyBlockCommand = new SkyblockHubCommand(skyBlockMenuManager, "hub");
         getCommand("skyblock").setExecutor(skyBlockCommand);
         getCommand("skyblock").setTabCompleter(skyBlockCommand);
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
