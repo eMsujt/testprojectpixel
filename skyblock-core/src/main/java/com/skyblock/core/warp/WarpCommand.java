@@ -1,6 +1,5 @@
 package com.skyblock.core.warp;
 
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -68,12 +67,12 @@ public final class WarpCommand implements TabExecutor {
     }
 
     private void handleTeleport(Player player, String name) {
-        Optional<Location> loc = warpManager.getWarp(name);
-        if (loc.isEmpty()) {
+        Optional<Warp> warp = warpManager.getWarp(name);
+        if (warp.isEmpty()) {
             player.sendMessage("Warp '" + name + "' not found.");
             return;
         }
-        player.teleport(loc.get());
+        player.teleport(warp.get().toLocation());
         player.sendMessage("Warped to " + name + ".");
     }
 

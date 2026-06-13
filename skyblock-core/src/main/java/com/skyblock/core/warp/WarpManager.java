@@ -24,7 +24,7 @@ public final class WarpManager {
 
     private static final WarpManager INSTANCE = new WarpManager();
 
-    private final Map<String, Location> warps = new HashMap<>();
+    private final Map<String, Warp> warps = new HashMap<>();
 
     private WarpManager() {
     }
@@ -37,24 +37,23 @@ public final class WarpManager {
      * Registers or overwrites a named warp at the given location.
      *
      * @param name     warp name (case-insensitive)
-     * @param location target location; a defensive copy is stored
+     * @param location target location
      */
     public void setWarp(String name, Location location) {
         Objects.requireNonNull(name, "name");
         Objects.requireNonNull(location, "location");
-        warps.put(name.toLowerCase(), location.clone());
+        warps.put(name.toLowerCase(), Warp.fromLocation(name.toLowerCase(), location));
     }
 
     /**
-     * Returns the location for the given warp name, if present.
+     * Returns the {@link Warp} for the given name, if present.
      *
      * @param name warp name (case-insensitive)
-     * @return a cloned {@link Location}, or empty
+     * @return the {@link Warp}, or empty
      */
-    public Optional<Location> getWarp(String name) {
+    public Optional<Warp> getWarp(String name) {
         Objects.requireNonNull(name, "name");
-        Location loc = warps.get(name.toLowerCase());
-        return loc == null ? Optional.empty() : Optional.of(loc.clone());
+        return Optional.ofNullable(warps.get(name.toLowerCase()));
     }
 
     /**
@@ -99,7 +98,7 @@ public final class WarpManager {
             float pitch = (float) config.getDouble(name + ".pitch");
             World world = Bukkit.getWorld(worldName);
             if (world != null) {
-                warps.put(name, new Location(world, x, y, z, yaw, pitch));
+                warps.put(name, new Warp(name, world, x, y, z, yaw, pitch));
             }
         }
     }
@@ -113,15 +112,14 @@ public final class WarpManager {
     public void save(File file) throws IOException {
         Objects.requireNonNull(file, "file");
         YamlConfiguration config = new YamlConfiguration();
-        for (Map.Entry<String, Location> entry : warps.entrySet()) {
-            String name = entry.getKey();
-            Location loc = entry.getValue();
-            config.set(name + ".world", loc.getWorld() != null ? loc.getWorld().getName() : "world");
-            config.set(name + ".x", loc.getX());
-            config.set(name + ".y", loc.getY());
-            config.set(name + ".z", loc.getZ());
-            config.set(name + ".yaw", (double) loc.getYaw());
-            config.set(name + ".pitch", (double) loc.getPitch());
+        for (Warp warp : warps.values()) {
+            String name = warp.getName();
+            config.set(name + ".world", warp.getWorld().getName());
+            config.set(name + ".x", warp.getX());
+            config.set(name + ".y", warp.getY());
+            config.set(name + ".z", warp.getZ());
+            config.set(name + ".yaw", (double) warp.getYaw());
+            config.set(name + ".pitch", (double) warp.getPitch());
         }
         config.save(file);
     }
