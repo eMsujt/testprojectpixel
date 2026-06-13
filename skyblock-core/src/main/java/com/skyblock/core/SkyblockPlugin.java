@@ -51,7 +51,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         petsManager.load(getDataFolder());
         KuudraManager kuudraManager = KuudraManager.getInstance();
         kuudraManager.load(getDataFolder());
-        EnchantingManager.getInstance();
+        EnchantingManager enchantingManager = EnchantingManager.getInstance();
+        enchantingManager.load(getDataFolder());
         ReforgeManager.getInstance();
         AccessoryManager.getInstance();
         ProfileManager profileManager = ProfileManager.getInstance();
@@ -68,6 +69,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         GardenManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
+        EnchantingManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
         instance = null;
     }

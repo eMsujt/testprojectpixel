@@ -1,5 +1,9 @@
 package com.skyblock.core.enchanting;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -328,5 +332,49 @@ public final class EnchantingManager {
         }
         setEnchantment(playerId, book.enchantment(), book.level());
         return book;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "enchanting.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerEnchantments.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".enchantments")) {
+                    Map<SkyBlockEnchantment, Integer> enchants = new EnumMap<>(SkyBlockEnchantment.class);
+                    for (SkyBlockEnchantment type : SkyBlockEnchantment.values()) {
+                        int level = cfg.getInt(key + ".enchantments." + type.name(), 0);
+                        if (level > 0) {
+                            enchants.put(type, level);
+                        }
+                    }
+                    if (!enchants.isEmpty()) {
+                        playerEnchantments.put(uuid, enchants);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "enchanting.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<SkyBlockEnchantment, Integer>> entry : playerEnchantments.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<SkyBlockEnchantment, Integer> e : entry.getValue().entrySet()) {
+                cfg.set(key + ".enchantments." + e.getKey().name(), e.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save enchanting.yml", e);
+        }
     }
 }
