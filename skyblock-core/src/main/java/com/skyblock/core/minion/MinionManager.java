@@ -19,8 +19,12 @@ public final class MinionManager {
 
     /** All minion types available in SkyBlock. */
     public enum MinionType {
-        COBBLESTONE("Cobblestone Minion"),
         WHEAT("Wheat Minion"),
+        COBBLESTONE("Cobblestone Minion"),
+        SNOW("Snow Minion"),
+        CLAY("Clay Minion"),
+        FISHING("Fishing Minion"),
+        OAK("Oak Minion"),
         COAL("Coal Minion"),
         IRON("Iron Minion"),
         GOLD("Gold Minion"),
@@ -36,10 +40,6 @@ public final class MinionManager {
         MUSHROOM("Mushroom Minion"),
         CACTUS("Cactus Minion"),
         FLOWER("Flower Minion"),
-        SNOW("Snow Minion"),
-        CLAY("Clay Minion"),
-        FISHING("Fishing Minion"),
-        OAK("Oak Minion"),
         SAND("Sand Minion"),
         GLOWSTONE("Glowstone Minion"),
         NETHER_WART("Nether Wart Minion"),
