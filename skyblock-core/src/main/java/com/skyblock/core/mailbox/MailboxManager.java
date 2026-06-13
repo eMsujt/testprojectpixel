@@ -19,10 +19,17 @@ import java.util.UUID;
  */
 public final class MailboxManager {
 
+    public record MailboxItem(String sender, String message) {
+        public MailboxItem {
+            Objects.requireNonNull(sender, "sender");
+            Objects.requireNonNull(message, "message");
+        }
+    }
+
     private static final MailboxManager INSTANCE = new MailboxManager();
 
-    /** Pending deliveries: recipient UUID → list of item descriptions. */
-    private final Map<UUID, List<String>> deliveries = new HashMap<>();
+    /** Pending deliveries: recipient UUID → ordered list of mail items. */
+    private final Map<UUID, List<MailboxItem>> deliveries = new HashMap<>();
 
     private MailboxManager() {}
 
@@ -30,26 +37,25 @@ public final class MailboxManager {
         return INSTANCE;
     }
 
-    public void addDelivery(UUID recipient, String itemDescription) {
+    public void addDelivery(UUID recipient, String sender, String message) {
         Objects.requireNonNull(recipient, "recipient");
-        Objects.requireNonNull(itemDescription, "itemDescription");
-        deliveries.computeIfAbsent(recipient, k -> new ArrayList<>()).add(itemDescription);
+        deliveries.computeIfAbsent(recipient, k -> new ArrayList<>()).add(new MailboxItem(sender, message));
     }
 
-    public List<String> getDeliveries(UUID player) {
+    public List<MailboxItem> getDeliveries(UUID player) {
         Objects.requireNonNull(player, "player");
         return Collections.unmodifiableList(deliveries.getOrDefault(player, Collections.emptyList()));
     }
 
     public boolean claimAll(UUID player) {
         Objects.requireNonNull(player, "player");
-        List<String> items = deliveries.remove(player);
+        List<MailboxItem> items = deliveries.remove(player);
         return items != null && !items.isEmpty();
     }
 
     public boolean hasDeliveries(UUID player) {
         Objects.requireNonNull(player, "player");
-        List<String> items = deliveries.get(player);
+        List<MailboxItem> items = deliveries.get(player);
         return items != null && !items.isEmpty();
     }
 
@@ -78,9 +84,15 @@ public final class MailboxManager {
             try {
                 UUID uuid = UUID.fromString(uuidStr);
                 YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-                List<String> list = cfg.getStringList("messages");
-                if (!list.isEmpty()) {
-                    deliveries.put(uuid, new ArrayList<>(list));
+                List<Map<?, ?>> rawList = cfg.getMapList("messages");
+                List<MailboxItem> items = new ArrayList<>();
+                for (Map<?, ?> entry : rawList) {
+                    String sender = entry.containsKey("sender") ? String.valueOf(entry.get("sender")) : "";
+                    String message = entry.containsKey("message") ? String.valueOf(entry.get("message")) : "";
+                    items.add(new MailboxItem(sender, message));
+                }
+                if (!items.isEmpty()) {
+                    deliveries.put(uuid, items);
                 }
             } catch (IllegalArgumentException ignored) {}
         }
@@ -95,10 +107,17 @@ public final class MailboxManager {
     public void save(File dataFolder) {
         File mailboxDir = new File(dataFolder, "data/mailbox");
         mailboxDir.mkdirs();
-        for (Map.Entry<UUID, List<String>> entry : deliveries.entrySet()) {
+        for (Map.Entry<UUID, List<MailboxItem>> entry : deliveries.entrySet()) {
             File file = new File(mailboxDir, entry.getKey().toString() + ".yml");
             YamlConfiguration cfg = new YamlConfiguration();
-            cfg.set("messages", new ArrayList<>(entry.getValue()));
+            List<Map<String, String>> rawList = new ArrayList<>();
+            for (MailboxItem item : entry.getValue()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("sender", item.sender());
+                map.put("message", item.message());
+                rawList.add(map);
+            }
+            cfg.set("messages", rawList);
             try {
                 cfg.save(file);
             } catch (IOException e) {
