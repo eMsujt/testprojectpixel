@@ -11,15 +11,29 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton managing per-category leaderboard scores for players.
+ * Singleton managing per-type leaderboard scores for players.
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class LeaderboardManager {
 
     /** Categories tracked by the leaderboard. */
-    public enum LeaderboardCategory {
-        COINS, SKILLS, FARMING, MINING, COMBAT, FISHING, FORAGING, SLAYER
+    public enum LeaderboardType {
+        SKILL_LEVEL("Skill Level"),
+        SLAYER_XP("Slayer XP"),
+        DUNGEON_COMPLETIONS("Dungeon Completions"),
+        COIN_BALANCE("Coin Balance"),
+        FISHING_XP("Fishing XP");
+
+        private final String displayName;
+
+        LeaderboardType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     /** One ranked entry returned by {@link #getTopEntries}. */
@@ -41,8 +55,8 @@ public final class LeaderboardManager {
 
     private static final LeaderboardManager INSTANCE = new LeaderboardManager();
 
-    /** category → (playerId → score) */
-    private final Map<LeaderboardCategory, Map<UUID, Double>> scores = new EnumMap<>(LeaderboardCategory.class);
+    /** type → (playerId → score) */
+    private final Map<LeaderboardType, Map<UUID, Double>> scores = new EnumMap<>(LeaderboardType.class);
     /** playerId → display name */
     private final Map<UUID, String> playerNames = new HashMap<>();
 
@@ -58,70 +72,70 @@ public final class LeaderboardManager {
     }
 
     /**
-     * Sets the score for the given player in the given category.
+     * Sets the score for the given player in the given type.
      *
-     * @param category   the leaderboard category
+     * @param type       the leaderboard type
      * @param playerId   the player's UUID
      * @param playerName the player's display name (used in ranking output)
      * @param score      the score to record; replaces any previous value
      */
-    public void setScore(LeaderboardCategory category, UUID playerId, String playerName, double score) {
-        Objects.requireNonNull(category, "category");
+    public void setScore(LeaderboardType type, UUID playerId, String playerName, double score) {
+        Objects.requireNonNull(type, "type");
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(playerName, "playerName");
-        scores.computeIfAbsent(category, c -> new HashMap<>()).put(playerId, score);
+        scores.computeIfAbsent(type, t -> new HashMap<>()).put(playerId, score);
         playerNames.put(playerId, playerName);
     }
 
     /**
-     * Adds {@code delta} to the player's existing score in the given category.
+     * Adds {@code delta} to the player's existing score in the given type.
      * If no score exists yet it is treated as {@code 0}.
      *
-     * @param category   the leaderboard category
+     * @param type       the leaderboard type
      * @param playerId   the player's UUID
      * @param playerName the player's display name
      * @param delta      the amount to add (may be negative)
      */
-    public void addScore(LeaderboardCategory category, UUID playerId, String playerName, double delta) {
-        Objects.requireNonNull(category, "category");
+    public void addScore(LeaderboardType type, UUID playerId, String playerName, double delta) {
+        Objects.requireNonNull(type, "type");
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(playerName, "playerName");
-        Map<UUID, Double> catScores = scores.computeIfAbsent(category, c -> new HashMap<>());
-        catScores.merge(playerId, delta, Double::sum);
+        Map<UUID, Double> typeScores = scores.computeIfAbsent(type, t -> new HashMap<>());
+        typeScores.merge(playerId, delta, Double::sum);
         playerNames.put(playerId, playerName);
     }
 
     /**
-     * Returns the player's score in the given category, or {@code 0} if unset.
+     * Returns the player's score in the given type, or {@code 0} if unset.
      *
-     * @param category the leaderboard category
+     * @param type     the leaderboard type
      * @param playerId the player's UUID
      * @return the recorded score
      */
-    public double getScore(LeaderboardCategory category, UUID playerId) {
-        Objects.requireNonNull(category, "category");
+    public double getScore(LeaderboardType type, UUID playerId) {
+        Objects.requireNonNull(type, "type");
         Objects.requireNonNull(playerId, "playerId");
-        Map<UUID, Double> catScores = scores.get(category);
-        return catScores == null ? 0.0 : catScores.getOrDefault(playerId, 0.0);
+        Map<UUID, Double> typeScores = scores.get(type);
+        return typeScores == null ? 0.0 : typeScores.getOrDefault(playerId, 0.0);
     }
 
     /**
-     * Returns the top-{@code limit} entries for the given category, sorted
+     * Returns the top-{@code limit} entries for the given type, sorted
      * descending by score.
      *
-     * @param category the leaderboard category
-     * @param limit    the maximum number of entries to return; clamped to [1, 100]
+     * @param type  the leaderboard type
+     * @param limit the maximum number of entries to return; clamped to [1, 100]
      * @return an unmodifiable list of at most {@code limit} entries
      */
-    public List<LeaderboardEntry> getTopEntries(LeaderboardCategory category, int limit) {
-        Objects.requireNonNull(category, "category");
+    public List<LeaderboardEntry> getTopEntries(LeaderboardType type, int limit) {
+        Objects.requireNonNull(type, "type");
         int cap = Math.max(1, Math.min(limit, 100));
-        Map<UUID, Double> catScores = scores.get(category);
-        if (catScores == null || catScores.isEmpty()) {
+        Map<UUID, Double> typeScores = scores.get(type);
+        if (typeScores == null || typeScores.isEmpty()) {
             return Collections.emptyList();
         }
-        List<LeaderboardEntry> entries = new ArrayList<>(catScores.size());
-        for (Map.Entry<UUID, Double> e : catScores.entrySet()) {
+        List<LeaderboardEntry> entries = new ArrayList<>(typeScores.size());
+        for (Map.Entry<UUID, Double> e : typeScores.entrySet()) {
             String name = playerNames.getOrDefault(e.getKey(), e.getKey().toString());
             entries.add(new LeaderboardEntry(e.getKey(), name, e.getValue()));
         }
