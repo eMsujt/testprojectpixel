@@ -17,6 +17,31 @@ import java.util.UUID;
  */
 public final class AlchemyManager {
 
+    /** Brew types categorising potions a player can brew. */
+    public enum BrewType {
+        SPEED("Speed"),
+        STRENGTH("Strength"),
+        CRITICAL("Critical"),
+        HASTE("Haste"),
+        RESISTANCE("Resistance"),
+        REGENERATION("Regeneration"),
+        HEALING("Healing"),
+        FIRE_RESISTANCE("Fire Resistance"),
+        WATER_BREATHING("Water Breathing"),
+        NIGHT_VISION("Night Vision");
+
+        /** Human-readable display name shown to players. */
+        public final String displayName;
+
+        BrewType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** A potion recipe that can be brewed at the Brewing Stand. */
     public static final class PotionRecipe {
         private final String id;
