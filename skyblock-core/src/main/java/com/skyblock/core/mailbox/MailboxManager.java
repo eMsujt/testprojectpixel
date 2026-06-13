@@ -58,46 +58,52 @@ public final class MailboxManager {
     // -------------------------------------------------------------------------
 
     /**
-     * Loads deliveries from {@code mailbox.yml} inside the given data folder.
+     * Loads deliveries from per-player files in {@code data/mailbox/<uuid>.yml}.
      *
      * @param dataFolder the plugin data folder, must not be null
      */
     public void load(File dataFolder) {
-        File file = new File(dataFolder, "mailbox.yml");
-        if (!file.exists()) {
+        File mailboxDir = new File(dataFolder, "data/mailbox");
+        deliveries.clear();
+        if (!mailboxDir.isDirectory()) {
             return;
         }
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        deliveries.clear();
-        if (cfg.isConfigurationSection("deliveries")) {
-            for (String key : cfg.getConfigurationSection("deliveries").getKeys(false)) {
-                try {
-                    UUID uuid = UUID.fromString(key);
-                    List<String> list = cfg.getStringList("deliveries." + key);
-                    if (!list.isEmpty()) {
-                        deliveries.put(uuid, new ArrayList<>(list));
-                    }
-                } catch (IllegalArgumentException ignored) {}
-            }
+        File[] files = mailboxDir.listFiles((d, name) -> name.endsWith(".yml"));
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            String name = file.getName();
+            String uuidStr = name.substring(0, name.length() - 4);
+            try {
+                UUID uuid = UUID.fromString(uuidStr);
+                YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+                List<String> list = cfg.getStringList("messages");
+                if (!list.isEmpty()) {
+                    deliveries.put(uuid, new ArrayList<>(list));
+                }
+            } catch (IllegalArgumentException ignored) {}
         }
     }
 
     /**
-     * Saves all deliveries to {@code mailbox.yml} inside the given data folder.
+     * Saves each player's deliveries to {@code data/mailbox/<uuid>.yml}.
      *
      * @param dataFolder the plugin data folder, must not be null
-     * @throws RuntimeException if the file cannot be written
+     * @throws RuntimeException if a file cannot be written
      */
     public void save(File dataFolder) {
-        File file = new File(dataFolder, "mailbox.yml");
-        YamlConfiguration cfg = new YamlConfiguration();
+        File mailboxDir = new File(dataFolder, "data/mailbox");
+        mailboxDir.mkdirs();
         for (Map.Entry<UUID, List<String>> entry : deliveries.entrySet()) {
-            cfg.set("deliveries." + entry.getKey().toString(), new ArrayList<>(entry.getValue()));
-        }
-        try {
-            cfg.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save mailbox.yml", e);
+            File file = new File(mailboxDir, entry.getKey().toString() + ".yml");
+            YamlConfiguration cfg = new YamlConfiguration();
+            cfg.set("messages", new ArrayList<>(entry.getValue()));
+            try {
+                cfg.save(file);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to save mailbox for " + entry.getKey(), e);
+            }
         }
     }
 }
