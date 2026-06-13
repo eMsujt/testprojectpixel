@@ -201,6 +201,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "menu" -> "menu";
             case "fish", "fishing" -> "fish";
             case "stat", "stats" -> "stats";
+            case "dungeon" -> "dungeon";
             default -> sub;
         };
     }
