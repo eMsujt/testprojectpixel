@@ -178,6 +178,74 @@ public final class BazaarManager {
         return orders.isEmpty() ? 0 : orders.get(0).priceEach();
     }
 
+    // --- BazaarProduct bridge overloads ---
+
+    /**
+     * Adds a buy order using a {@link BazaarProduct} constant as the item identifier.
+     *
+     * @param buyer     the buying player's UUID
+     * @param product   the bazaar product
+     * @param quantity  the number of items to buy, must be positive
+     * @param priceEach the maximum price per item, must be positive
+     * @return the UUID of the newly created buy order
+     */
+    public UUID addBuyOrder(UUID buyer, BazaarProduct product, int quantity, double priceEach) {
+        return addBuyOrder(buyer, product.getItemId(), quantity, priceEach);
+    }
+
+    /**
+     * Adds a sell order using a {@link BazaarProduct} constant as the item identifier.
+     *
+     * @param seller    the selling player's UUID
+     * @param product   the bazaar product
+     * @param quantity  the number of items to sell, must be positive
+     * @param priceEach the minimum price per item, must be positive
+     * @return the UUID of the newly created sell order
+     */
+    public UUID addSellOrder(UUID seller, BazaarProduct product, int quantity, double priceEach) {
+        return addSellOrder(seller, product.getItemId(), quantity, priceEach);
+    }
+
+    /**
+     * Returns buy orders for the given {@link BazaarProduct}, sorted highest price first.
+     *
+     * @param product the bazaar product
+     * @return unmodifiable list of buy orders; empty if none exist
+     */
+    public List<BuyOrder> getBuyOrders(BazaarProduct product) {
+        return getBuyOrders(product.getItemId());
+    }
+
+    /**
+     * Returns sell orders for the given {@link BazaarProduct}, sorted lowest price first.
+     *
+     * @param product the bazaar product
+     * @return unmodifiable list of sell orders; empty if none exist
+     */
+    public List<SellOrder> getSellOrders(BazaarProduct product) {
+        return getSellOrders(product.getItemId());
+    }
+
+    /**
+     * Returns the lowest ask price for the given {@link BazaarProduct}.
+     *
+     * @param product the bazaar product
+     * @return the lowest ask price, or {@code Double.MAX_VALUE} if no sell orders exist
+     */
+    public double getLowestAsk(BazaarProduct product) {
+        return getLowestAsk(product.getItemId());
+    }
+
+    /**
+     * Returns the highest bid price for the given {@link BazaarProduct}.
+     *
+     * @param product the bazaar product
+     * @return the highest bid price, or {@code 0} if no buy orders exist
+     */
+    public double getHighestBid(BazaarProduct product) {
+        return getHighestBid(product.getItemId());
+    }
+
     /** Removes all stored orders. */
     public void clear() {
         buyOrders.clear();
