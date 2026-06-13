@@ -66,7 +66,7 @@ public final class BazaarCommand implements TabExecutor {
         String sub = args[0].toLowerCase();
         if (args.length == 2 && (sub.equals("info") || sub.equals("buy") || sub.equals("sell"))) {
             String lower = args[1].toLowerCase();
-            return Stream.of(BazaarProduct.values())
+            return Stream.of(BazaarManager.BazaarProduct.values())
                     .map(p -> p.getItemId().toLowerCase())
                     .filter(id -> id.startsWith(lower))
                     .toList();
