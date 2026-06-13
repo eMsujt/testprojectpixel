@@ -139,30 +139,72 @@ public final class FishingManager {
 
     /** Trophy fish types obtainable through SkyBlock trophy fishing. */
     public enum TrophyFish {
-        MAHI_MAHI(1,   "Mahi Mahi"),
-        SULPHUR_SKITTER(1,   "Sulphur Skitter"),
-        OBFUSCATED_FISH_1(1,   "Obfuscated Fish 1"),
-        OBFUSCATED_FISH_2(10,  "Obfuscated Fish 2"),
-        OBFUSCATED_FISH_3(20,  "Obfuscated Fish 3"),
-        STEAMING_HOT_FLOUNDER(5,   "Steaming-Hot Flounder"),
-        GUSHER(5,   "Gusher"),
-        BLOBFISH(10,  "Blobfish"),
-        SLUGFISH(10,  "Slugfish"),
-        FLYFISH(15,  "Flyfish"),
-        LAVA_HORSE(20,  "Lava Horse"),
-        MANA_RAY(20,  "Mana Ray"),
-        VOLCANIC_STONEFISH(25,  "Volcanic Stonefish"),
-        VANILLE(25,  "Vanille"),
-        SKELETON_FISH(30,  "Skeleton Fish");
+        // COMMON — level 1–10
+        SULPHUR_SKITTER(1,   "Sulphur Skitter",        FishRarity.COMMON,   0.30),
+        OBFUSCATED_FISH_1(1, "Obfuscated Fish 1",      FishRarity.COMMON,   0.25),
+        MAHI_MAHI(1,         "Mahi Mahi",               FishRarity.COMMON,   0.28),
+        STEAMING_HOT_FLOUNDER(5, "Steaming-Hot Flounder", FishRarity.COMMON, 0.20),
+        GUSHER(5,            "Gusher",                  FishRarity.COMMON,   0.18),
+        SLUGFISH(10,         "Slugfish",                FishRarity.COMMON,   0.16),
+        PUFFERFISH_TROPHY(1, "Trophy Pufferfish",       FishRarity.COMMON,   0.22),
+        INK_BLOB(1,          "Ink Blob",                FishRarity.COMMON,   0.24),
+        SEA_LEECH(5,         "Sea Leech",               FishRarity.COMMON,   0.19),
+        CORAL_GHOST(5,       "Coral Ghost",             FishRarity.COMMON,   0.17),
+        SAND_SKIMMER(10,     "Sand Skimmer",            FishRarity.COMMON,   0.15),
+
+        // UNCOMMON — level 5–20
+        OBFUSCATED_FISH_2(10, "Obfuscated Fish 2",     FishRarity.UNCOMMON,  0.15),
+        BLOBFISH(10,          "Blobfish",               FishRarity.UNCOMMON,  0.12),
+        FLYFISH(15,           "Flyfish",                FishRarity.UNCOMMON,  0.10),
+        LAVA_HORSE(20,        "Lava Horse",             FishRarity.UNCOMMON,  0.08),
+        CRYSTAL_WORM(10,      "Crystal Worm",           FishRarity.UNCOMMON,  0.11),
+        MAGMA_SLUG(15,        "Magma Slug",             FishRarity.UNCOMMON,  0.09),
+        THUNDER_EEL(15,       "Thunder Eel",            FishRarity.UNCOMMON,  0.09),
+        LAVA_CARP(10,         "Lava Carp",              FishRarity.UNCOMMON,  0.13),
+        MOLTEN_BLOWFISH(15,   "Molten Blowfish",        FishRarity.UNCOMMON,  0.10),
+        TOXIC_TOADFISH(20,    "Toxic Toadfish",         FishRarity.UNCOMMON,  0.07),
+
+        // RARE — level 15–30
+        OBFUSCATED_FISH_3(20, "Obfuscated Fish 3",     FishRarity.RARE,      0.08),
+        MANA_RAY(20,          "Mana Ray",               FishRarity.RARE,      0.06),
+        VOLCANIC_STONEFISH(25,"Volcanic Stonefish",     FishRarity.RARE,      0.05),
+        VANILLE(25,           "Vanille",                FishRarity.RARE,      0.04),
+        SKELETON_FISH(30,     "Skeleton Fish",          FishRarity.RARE,      0.03),
+        BLAZING_SHARK(20,     "Blazing Shark",          FishRarity.RARE,      0.05),
+        SCORCHED_PHANTOM(25,  "Scorched Phantom",       FishRarity.RARE,      0.04),
+        VOLCANIC_BASS(15,     "Volcanic Bass",          FishRarity.RARE,      0.06),
+        LAVA_SERPENT(25,      "Lava Serpent",           FishRarity.RARE,      0.04),
+        PYROCLASTIC_DACE(30,  "Pyroclastic Dace",       FishRarity.RARE,      0.03),
+
+        // EPIC — level 25–40
+        CRIMSON_GLOWFISH(30,  "Crimson Glowfish",       FishRarity.EPIC,      0.02),
+        PHANTOM_FISHER(30,    "Phantom Fisher",         FishRarity.EPIC,      0.02),
+        ABYSSAL_MANTA(35,     "Abyssal Manta",          FishRarity.EPIC,      0.015),
+        DEEP_LAVA_EEL(35,     "Deep Lava Eel",          FishRarity.EPIC,      0.015),
+        PYROCLASTIC_FLOUNDER(35, "Pyroclastic Flounder",FishRarity.EPIC,      0.014),
+        INFERNO_PIKE(40,      "Inferno Pike",           FishRarity.EPIC,      0.012),
+        HELLFIRE_BARRACUDA(40,"Hellfire Barracuda",     FishRarity.EPIC,      0.010),
+
+        // LEGENDARY — level 35–50
+        HELLFIRE_TUNA(40,     "Hellfire Tuna",          FishRarity.LEGENDARY, 0.005),
+        LAVA_LEVIATHAN(45,    "Lava Leviathan",         FishRarity.LEGENDARY, 0.004),
+        MAGMATIC_BEHEMOTH(45, "Magmatic Behemoth",      FishRarity.LEGENDARY, 0.003),
+        VOLCANIC_BASILISK(50, "Volcanic Basilisk",      FishRarity.LEGENDARY, 0.002);
 
         /** Minimum fishing level required for this trophy fish to drop. */
         public final int minLevel;
         /** Human-readable display name. */
         public final String displayName;
+        /** Rarity tier of this trophy fish. */
+        public final FishRarity rarity;
+        /** Base drop chance (0–1) when the player meets the level requirement. */
+        public final double dropChance;
 
-        TrophyFish(int minLevel, String displayName) {
+        TrophyFish(int minLevel, String displayName, FishRarity rarity, double dropChance) {
             this.minLevel = minLevel;
             this.displayName = displayName;
+            this.rarity = rarity;
+            this.dropChance = dropChance;
         }
 
         public String getDisplayName() {
