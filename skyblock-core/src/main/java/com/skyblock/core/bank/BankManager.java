@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Singleton managing per-player bank balances.
+ * Singleton managing per-player bank accounts via {@link BankAccount} objects.
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
@@ -17,7 +17,7 @@ public final class BankManager {
 
     private static final BankManager INSTANCE = new BankManager();
 
-    private final Map<UUID, Double> balances = new HashMap<>();
+    private final Map<UUID, BankAccount> accounts = new HashMap<>();
 
     private BankManager() {}
 
@@ -30,14 +30,18 @@ public final class BankManager {
         return INSTANCE;
     }
 
+    private BankAccount getOrCreate(UUID playerId) {
+        return accounts.computeIfAbsent(playerId, BankAccount::new);
+    }
+
     /**
      * Returns the bank balance for the given player.
      *
      * @param playerId the player's UUID, must not be null
-     * @return the current balance; 0 if no balance has been set
+     * @return the current balance; 0 if no account exists
      */
     public double getBalance(UUID playerId) {
-        return balances.getOrDefault(playerId, 0.0);
+        return getOrCreate(playerId).getBalance();
     }
 
     /**
@@ -48,10 +52,7 @@ public final class BankManager {
      * @throws IllegalArgumentException if {@code amount} is not positive
      */
     public void deposit(UUID playerId, double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("amount must be positive: " + amount);
-        }
-        balances.merge(playerId, amount, Double::sum);
+        getOrCreate(playerId).deposit(amount);
     }
 
     /**
@@ -62,18 +63,11 @@ public final class BankManager {
      * @throws IllegalArgumentException if {@code amount} is not positive or exceeds the balance
      */
     public void withdraw(UUID playerId, double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("amount must be positive: " + amount);
-        }
-        double current = getBalance(playerId);
-        if (amount > current) {
-            throw new IllegalArgumentException("insufficient balance: has " + current + ", requested " + amount);
-        }
-        balances.put(playerId, current - amount);
+        getOrCreate(playerId).withdraw(amount);
     }
 
     /**
-     * Loads balances from {@code bank.yml} inside the given data folder.
+     * Loads accounts from {@code bank.yml} inside the given data folder.
      *
      * @param dataFolder the plugin data folder, must not be null
      */
@@ -83,11 +77,13 @@ public final class BankManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        balances.clear();
+        accounts.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
-                balances.put(uuid, cfg.getDouble(key));
+                BankAccount account = new BankAccount(uuid);
+                account.setBalance(cfg.getDouble(key));
+                accounts.put(uuid, account);
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
             }
@@ -95,7 +91,7 @@ public final class BankManager {
     }
 
     /**
-     * Saves all balances to {@code bank.yml} inside the given data folder.
+     * Saves all accounts to {@code bank.yml} inside the given data folder.
      *
      * @param dataFolder the plugin data folder, must not be null
      * @throws RuntimeException if the file cannot be written
@@ -103,8 +99,8 @@ public final class BankManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "bank.yml");
         YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<UUID, Double> entry : balances.entrySet()) {
-            cfg.set(entry.getKey().toString(), entry.getValue());
+        for (Map.Entry<UUID, BankAccount> entry : accounts.entrySet()) {
+            cfg.set(entry.getKey().toString(), entry.getValue().getBalance());
         }
         try {
             cfg.save(file);
@@ -113,8 +109,8 @@ public final class BankManager {
         }
     }
 
-    /** Removes all stored balances. */
+    /** Removes all stored accounts. */
     public void clear() {
-        balances.clear();
+        accounts.clear();
     }
 }
