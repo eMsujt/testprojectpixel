@@ -21,6 +21,7 @@ import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.fishing.TrophyFishingManager;
 import com.skyblock.core.garden.GardenCommand;
 import com.skyblock.core.garden.GardenManager;
+import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.HOTMCommand;
 import com.skyblock.core.hotm.HOTMManager;
@@ -72,10 +73,18 @@ import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
 import com.skyblock.core.trade.TradeManager;
+import com.skyblock.core.achievement.AchievementCommand;
+import com.skyblock.core.achievement.AchievementManager;
+import com.skyblock.core.level.SkyblockLevelCommand;
+import com.skyblock.core.level.SkyblockLevelManager;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.slayer.SlayerManager;
+import com.skyblock.core.stat.StatCommand;
+import com.skyblock.core.stat.StatManager;
 import com.skyblock.core.stats.StatsCommand;
+import com.skyblock.core.warp.WarpCommand;
+import com.skyblock.core.warp.WarpManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -116,7 +125,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         IslandCommand islandCommand = new IslandCommand(islandManager);
         getCommand("island").setExecutor(islandCommand);
         getCommand("island").setTabCompleter(islandCommand);
-        GuildManager.getInstance();
+        GuildManager guildManager = GuildManager.getInstance();
+        guildManager.load(getDataFolder());
+        GuildCommand guildCommand = new GuildCommand(guildManager);
+        getCommand("guild").setExecutor(guildCommand);
+        getCommand("guild").setTabCompleter(guildCommand);
         PartyManager partyManager = PartyManager.getInstance();
         PartyCommand partyCommand = new PartyCommand(partyManager);
         getCommand("party").setExecutor(partyCommand);
@@ -262,6 +275,23 @@ public final class SkyblockPlugin extends JavaPlugin {
         MailboxCommand mailboxCommand = new MailboxCommand(mailboxManager);
         getCommand("mailbox").setExecutor(mailboxCommand);
         getCommand("mailbox").setTabCompleter(mailboxCommand);
+        WarpManager warpManager = WarpManager.getInstance();
+        warpManager.load(getDataFolder());
+        WarpCommand warpCommand = new WarpCommand(warpManager);
+        getCommand("warp").setExecutor(warpCommand);
+        getCommand("warp").setTabCompleter(warpCommand);
+        AchievementManager achievementManager = AchievementManager.getInstance();
+        AchievementCommand achievementCommand = new AchievementCommand(achievementManager);
+        getCommand("achievement").setExecutor(achievementCommand);
+        getCommand("achievement").setTabCompleter(achievementCommand);
+        StatManager statManager = StatManager.getInstance();
+        StatCommand statCommand = new StatCommand(statManager);
+        getCommand("stat").setExecutor(statCommand);
+        getCommand("stat").setTabCompleter(statCommand);
+        SkyblockLevelManager skyblockLevelManager = SkyblockLevelManager.getInstance();
+        SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
+        getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
+        getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
     }
 
     @Override
@@ -291,6 +321,12 @@ public final class SkyblockPlugin extends JavaPlugin {
         CoopManager.getInstance().save(getDataFolder());
         CrimsonManager.getInstance().save(getDataFolder());
         VaultManager.getInstance().save(getDataFolder());
+        GuildManager.getInstance().save(getDataFolder());
+        try {
+            WarpManager.getInstance().save(getDataFolder());
+        } catch (java.io.IOException e) {
+            getLogger().severe("Failed to save warp data: " + e.getMessage());
+        }
         instance = null;
     }
 }
