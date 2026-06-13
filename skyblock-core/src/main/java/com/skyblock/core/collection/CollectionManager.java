@@ -18,20 +18,71 @@ public final class CollectionManager {
     /** Every collection type tracked in SkyBlock. */
     public enum CollectionType {
         // Farming
-        WHEAT, CARROT, POTATO, PUMPKIN, MELON, MUSHROOM, CACTUS,
-        SUGAR_CANE, NETHER_WART, COCOA_BEANS,
+        WHEAT("wheat",                 "Wheat"),
+        CARROT("carrot",               "Carrot"),
+        POTATO("potato",               "Potato"),
+        PUMPKIN("pumpkin",             "Pumpkin"),
+        MELON("melon",                 "Melon"),
+        MUSHROOM("mushroom",           "Mushroom"),
+        CACTUS("cactus",               "Cactus"),
+        SUGAR_CANE("sugar_cane",       "Sugar Cane"),
+        NETHER_WART("nether_wart",     "Nether Wart"),
+        COCOA_BEANS("cocoa_beans",     "Cocoa Beans"),
         // Mining
-        COBBLESTONE, COAL, IRON_INGOT, GOLD_INGOT, DIAMOND, EMERALD,
-        REDSTONE, LAPIS_LAZULI, QUARTZ, OBSIDIAN, GLOWSTONE,
-        GRAVEL, ICE, NETHERRACK, SAND, END_STONE,
+        COBBLESTONE("cobblestone",     "Cobblestone"),
+        COAL("coal",                   "Coal"),
+        IRON_INGOT("iron_ingot",       "Iron Ingot"),
+        GOLD_INGOT("gold_ingot",       "Gold Ingot"),
+        DIAMOND("diamond",             "Diamond"),
+        EMERALD("emerald",             "Emerald"),
+        REDSTONE("redstone",           "Redstone"),
+        LAPIS_LAZULI("lapis_lazuli",   "Lapis Lazuli"),
+        QUARTZ("quartz",               "Quartz"),
+        OBSIDIAN("obsidian",           "Obsidian"),
+        GLOWSTONE("glowstone",         "Glowstone"),
+        GRAVEL("gravel",               "Gravel"),
+        ICE("ice",                     "Ice"),
+        NETHERRACK("netherrack",       "Netherrack"),
+        SAND("sand",                   "Sand"),
+        END_STONE("end_stone",         "End Stone"),
         // Foraging
-        OAK_LOG, SPRUCE_LOG, BIRCH_LOG, JUNGLE_LOG, ACACIA_LOG, DARK_OAK_LOG,
+        OAK_LOG("oak_log",             "Oak Log"),
+        SPRUCE_LOG("spruce_log",       "Spruce Log"),
+        BIRCH_LOG("birch_log",         "Birch Log"),
+        JUNGLE_LOG("jungle_log",       "Jungle Log"),
+        ACACIA_LOG("acacia_log",       "Acacia Log"),
+        DARK_OAK_LOG("dark_oak_log",   "Dark Oak Log"),
         // Combat
-        ROTTEN_FLESH, BONE, SPIDER_EYE, STRING, GUNPOWDER,
-        ENDER_PEARL, GHAST_TEAR, SLIME_BALL, BLAZE_ROD, MAGMA_CREAM,
+        ROTTEN_FLESH("rotten_flesh",   "Rotten Flesh"),
+        BONE("bone",                   "Bone"),
+        SPIDER_EYE("spider_eye",       "Spider Eye"),
+        STRING("string",               "String"),
+        GUNPOWDER("gunpowder",         "Gunpowder"),
+        ENDER_PEARL("ender_pearl",     "Ender Pearl"),
+        GHAST_TEAR("ghast_tear",       "Ghast Tear"),
+        SLIME_BALL("slime_ball",       "Slime Ball"),
+        BLAZE_ROD("blaze_rod",         "Blaze Rod"),
+        MAGMA_CREAM("magma_cream",     "Magma Cream"),
         // Fishing
-        RAW_FISH, RAW_SALMON, CLOWNFISH, PUFFERFISH,
-        PRISMARINE_SHARD, PRISMARINE_CRYSTALS, CLAY, LILY_PAD, INK_SAC, SPONGE
+        RAW_FISH("raw_fish",                       "Raw Fish"),
+        RAW_SALMON("raw_salmon",                   "Raw Salmon"),
+        CLOWNFISH("clownfish",                     "Clownfish"),
+        PUFFERFISH("pufferfish",                   "Pufferfish"),
+        PRISMARINE_SHARD("prismarine_shard",       "Prismarine Shard"),
+        PRISMARINE_CRYSTALS("prismarine_crystals", "Prismarine Crystals"),
+        CLAY("clay",                               "Clay"),
+        LILY_PAD("lily_pad",                       "Lily Pad"),
+        INK_SAC("ink_sac",                         "Ink Sac"),
+        SPONGE("sponge",                           "Sponge");
+
+        /** Lower-case item key used in storage and lookups. */
+        public final String itemKey;
+        public final String displayName;
+
+        CollectionType(String itemKey, String displayName) {
+            this.itemKey     = itemKey;
+            this.displayName = displayName;
+        }
     }
 
     /** Groups {@link CollectionType} values into SkyBlock skill categories. */
@@ -188,7 +239,7 @@ public final class CollectionManager {
 
     private static CollectionType parseType(String name) {
         for (CollectionType t : CollectionType.values()) {
-            if (t.name().equalsIgnoreCase(name)) {
+            if (t.name().equalsIgnoreCase(name) || t.itemKey.equalsIgnoreCase(name)) {
                 return t;
             }
         }
