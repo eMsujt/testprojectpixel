@@ -78,6 +78,9 @@ public final class FairySoulManager {
     }
 
 
+    /** Total number of Fairy Souls available across all SkyBlock islands. */
+    public static final int MAX_SOULS = 227;
+
     private static final FairySoulManager INSTANCE = new FairySoulManager();
 
     /** Per-player set of collected fairy soul IDs; absent entries mean no souls collected. */
