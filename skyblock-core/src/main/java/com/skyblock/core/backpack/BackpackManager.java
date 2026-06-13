@@ -1,35 +1,56 @@
 package com.skyblock.core.backpack;
 
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 /**
  * Singleton managing per-player backpacks (named item storage bags).
  *
- * <p>Each player may own up to {@link #MAX_BACKPACKS} named backpacks. Each
- * backpack holds up to {@link #BACKPACK_SIZE} item stacks.
+ * <p>Each player has a {@link BackpackTier} that determines how many item-name
+ * slots are available.  Tier and items are persisted to
+ * {@code plugins/SkyblockCore/backpack.yml}.
  * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class BackpackManager {
 
-    /** Maximum backpacks a player may store. */
-    public static final int MAX_BACKPACKS = 9;
+    /** Backpack sizes available to players. */
+    public enum BackpackTier {
+        SMALL(9),
+        MEDIUM(18),
+        LARGE(27),
+        JUMBO(36);
 
-    /** Number of slots in each backpack. */
-    public static final int BACKPACK_SIZE = 27;
+        /** Number of item slots provided by this tier. */
+        public final int slots;
+
+        BackpackTier(int slots) {
+            this.slots = slots;
+        }
+
+        public int getSlots() {
+            return slots;
+        }
+    }
 
     private static final BackpackManager INSTANCE = new BackpackManager();
 
-    /** playerId → (backpackName → contents[BACKPACK_SIZE]) */
-    private final Map<UUID, Map<String, ItemStack[]>> backpacks = new HashMap<>();
+    /** Per-player backpack tier; absent entries default to {@link BackpackTier#SMALL}. */
+    private final Map<UUID, BackpackTier> playerTiers = new HashMap<>();
 
-    private BackpackManager() {}
+    /** Per-player list of item names stored in the backpack. */
+    private final Map<UUID, List<String>> playerItems = new HashMap<>();
+
+    private BackpackManager() {
+    }
 
     /**
      * Returns the single shared {@code BackpackManager} instance.
@@ -40,112 +61,141 @@ public final class BackpackManager {
         return INSTANCE;
     }
 
+    // -------------------------------------------------------------------------
+    // Tier
+    // -------------------------------------------------------------------------
+
     /**
-     * Creates a new empty backpack with the given name for the player.
+     * Returns the player's current backpack tier, defaulting to {@link BackpackTier#SMALL}.
      *
      * @param playerId the player's UUID, must not be null
-     * @param name     the backpack name, must not be null or blank
-     * @return {@code true} if created, {@code false} if the player already has
-     *         {@link #MAX_BACKPACKS} backpacks or a backpack with that name exists
+     * @return the player's tier
      */
-    public boolean createBackpack(UUID playerId, String name) {
+    public BackpackTier getTier(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(name, "name");
-        Map<String, ItemStack[]> packs = backpacks.computeIfAbsent(playerId, id -> new HashMap<>());
-        if (packs.containsKey(name)) {
+        return playerTiers.getOrDefault(playerId, BackpackTier.SMALL);
+    }
+
+    /**
+     * Sets the player's backpack tier.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param tier     the tier to set, must not be null
+     */
+    public void setTier(UUID playerId, BackpackTier tier) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(tier, "tier");
+        playerTiers.put(playerId, tier);
+    }
+
+    // -------------------------------------------------------------------------
+    // Items
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns an unmodifiable view of the item names stored in the player's backpack.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return unmodifiable list of item names, never {@code null}
+     */
+    public List<String> getItems(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        List<String> items = playerItems.get(playerId);
+        return items == null ? Collections.emptyList() : Collections.unmodifiableList(items);
+    }
+
+    /**
+     * Adds an item name to the player's backpack if capacity allows.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param itemName the item name to add, must not be null
+     * @return {@code true} if added, {@code false} if the backpack is full
+     */
+    public boolean addItem(UUID playerId, String itemName) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(itemName, "itemName");
+        List<String> items = playerItems.computeIfAbsent(playerId, id -> new ArrayList<>());
+        int capacity = getTier(playerId).slots;
+        if (items.size() >= capacity) {
             return false;
         }
-        if (packs.size() >= MAX_BACKPACKS) {
-            return false;
-        }
-        packs.put(name, new ItemStack[BACKPACK_SIZE]);
+        items.add(itemName);
         return true;
     }
 
     /**
-     * Returns a copy of the contents of the named backpack, or {@code null} if
-     * it does not exist.
+     * Removes the first occurrence of the given item name from the player's backpack.
      *
      * @param playerId the player's UUID, must not be null
-     * @param name     the backpack name, must not be null
-     * @return cloned contents array, or {@code null} if not found
+     * @param itemName the item name to remove, must not be null
+     * @return {@code true} if the item was present and removed
      */
-    public ItemStack[] getContents(UUID playerId, String name) {
+    public boolean removeItem(UUID playerId, String itemName) {
         Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(name, "name");
-        Map<String, ItemStack[]> packs = backpacks.get(playerId);
-        if (packs == null) {
-            return null;
-        }
-        ItemStack[] stored = packs.get(name);
-        if (stored == null) {
-            return null;
-        }
-        ItemStack[] copy = new ItemStack[BACKPACK_SIZE];
-        for (int i = 0; i < BACKPACK_SIZE; i++) {
-            copy[i] = stored[i] != null ? stored[i].clone() : null;
-        }
-        return copy;
+        Objects.requireNonNull(itemName, "itemName");
+        List<String> items = playerItems.get(playerId);
+        return items != null && items.remove(itemName);
     }
 
     /**
-     * Saves (overwrites) the contents of the named backpack.
+     * Removes all item data for the given player (e.g. on quit).
      *
-     * @param playerId the player's UUID, must not be null
-     * @param name     the backpack name, must not be null
-     * @param contents the item stacks to store
-     * @return {@code true} if saved, {@code false} if the backpack does not exist
+     * @param playerId the player to remove
      */
-    public boolean saveContents(UUID playerId, String name, ItemStack[] contents) {
+    public void remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(name, "name");
-        Objects.requireNonNull(contents, "contents");
-        Map<String, ItemStack[]> packs = backpacks.get(playerId);
-        if (packs == null || !packs.containsKey(name)) {
-            return false;
-        }
-        ItemStack[] snapshot = new ItemStack[BACKPACK_SIZE];
-        for (int i = 0; i < BACKPACK_SIZE; i++) {
-            snapshot[i] = (i < contents.length && contents[i] != null) ? contents[i].clone() : null;
-        }
-        packs.put(name, snapshot);
-        return true;
+        playerTiers.remove(playerId);
+        playerItems.remove(playerId);
     }
 
-    /**
-     * Deletes the named backpack for the player.
-     *
-     * @param playerId the player's UUID, must not be null
-     * @param name     the backpack name, must not be null
-     * @return {@code true} if the backpack existed and was removed
-     */
-    public boolean deleteBackpack(UUID playerId, String name) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(name, "name");
-        Map<String, ItemStack[]> packs = backpacks.get(playerId);
-        if (packs == null) {
-            return false;
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "backpack.yml");
+        if (!file.exists()) {
+            return;
         }
-        return packs.remove(name) != null;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerTiers.clear();
+        playerItems.clear();
+        if (cfg.isConfigurationSection("players")) {
+            for (String key : cfg.getConfigurationSection("players").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    String tierName = cfg.getString("players." + key + ".tier");
+                    if (tierName != null) {
+                        try {
+                            playerTiers.put(uuid, BackpackTier.valueOf(tierName));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown tier name
+                        }
+                    }
+                    List<String> items = cfg.getStringList("players." + key + ".items");
+                    if (!items.isEmpty()) {
+                        playerItems.put(uuid, new ArrayList<>(items));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
-    /**
-     * Returns an unmodifiable view of the backpack names owned by the player.
-     *
-     * @param playerId the player's UUID, must not be null
-     * @return set of backpack names; empty if none exist
-     */
-    public Set<String> getBackpackNames(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        Map<String, ItemStack[]> packs = backpacks.get(playerId);
-        if (packs == null) {
-            return Collections.emptySet();
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "backpack.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, BackpackTier> entry : playerTiers.entrySet()) {
+            cfg.set("players." + entry.getKey().toString() + ".tier", entry.getValue().name());
         }
-        return Collections.unmodifiableSet(packs.keySet());
-    }
-
-    /** Removes all stored backpack data. */
-    public void clear() {
-        backpacks.clear();
+        for (Map.Entry<UUID, List<String>> entry : playerItems.entrySet()) {
+            cfg.set("players." + entry.getKey().toString() + ".items", entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save backpack.yml", e);
+        }
     }
 }

@@ -38,6 +38,8 @@ import com.skyblock.core.profile.ProfileCommand;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
+import com.skyblock.core.backpack.BackpackCommand;
+import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
 import com.skyblock.core.trade.TradeManager;
@@ -155,6 +157,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("trade").setExecutor(tradeCommand);
         getCommand("trade").setTabCompleter(tradeCommand);
         getServer().getPluginManager().registerEvents(new TradeListener(tradeManager), this);
+        BackpackManager backpackManager = BackpackManager.getInstance();
+        backpackManager.load(getDataFolder());
+        BackpackCommand backpackCommand = new BackpackCommand(backpackManager);
+        getCommand("backpack").setExecutor(backpackCommand);
+        getCommand("backpack").setTabCompleter(backpackCommand);
     }
 
     @Override
@@ -177,6 +184,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         ProfileManager.getInstance().save(getDataFolder());
         CraftingManager.getInstance().save(getDataFolder());
         QuestManager.getInstance().save(getDataFolder());
+        BackpackManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }

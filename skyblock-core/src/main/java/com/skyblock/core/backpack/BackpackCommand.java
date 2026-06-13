@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -16,15 +15,17 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /backpack create <name>} — create a new empty backpack</li>
- *   <li>{@code /backpack delete <name>} — delete a backpack</li>
- *   <li>{@code /backpack list}          — list all owned backpacks</li>
+ *   <li>{@code /backpack tier}            — show your current tier and capacity</li>
+ *   <li>{@code /backpack upgrade <tier>}  — (op) set your backpack tier</li>
+ *   <li>{@code /backpack add <item>}      — add an item name to your backpack</li>
+ *   <li>{@code /backpack remove <item>}   — remove an item name from your backpack</li>
+ *   <li>{@code /backpack list}            — list items in your backpack</li>
  * </ul>
  * </p>
  */
 public final class BackpackCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("create", "delete", "list");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("tier", "upgrade", "add", "remove", "list");
 
     private final BackpackManager backpackManager;
 
@@ -45,10 +46,12 @@ public final class BackpackCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "create" -> handleCreate(player, args);
-            case "delete" -> handleDelete(player, args);
-            case "list"   -> handleList(player);
-            default       -> sendHelp(player);
+            case "tier"    -> handleTier(player);
+            case "upgrade" -> handleUpgrade(player, args);
+            case "add"     -> handleAdd(player, args);
+            case "remove"  -> handleRemove(player, args);
+            case "list"    -> handleList(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -61,67 +64,90 @@ public final class BackpackCommand implements TabExecutor {
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
-        if (args.length == 2 && sender instanceof Player player) {
-            String sub = args[0].toLowerCase();
-            if (sub.equals("delete")) {
-                String prefix = args[1].toLowerCase();
-                return backpackManager.getBackpackNames(player.getUniqueId()).stream()
-                        .filter(n -> n.toLowerCase().startsWith(prefix))
-                        .collect(Collectors.toList());
-            }
+        if (args.length == 2 && args[0].equalsIgnoreCase("upgrade")) {
+            String prefix = args[1].toUpperCase();
+            return Arrays.stream(BackpackManager.BackpackTier.values())
+                    .map(Enum::name)
+                    .filter(n -> n.startsWith(prefix))
+                    .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
 
-    private void handleCreate(Player player, String[] args) {
-        if (args.length < 2) {
-            player.sendMessage("Usage: /backpack create <name>");
+    private void handleTier(Player player) {
+        BackpackManager.BackpackTier tier = backpackManager.getTier(player.getUniqueId());
+        int used = backpackManager.getItems(player.getUniqueId()).size();
+        player.sendMessage("Backpack tier: " + tier.name() + " (" + used + "/" + tier.slots + " slots used)");
+    }
+
+    private void handleUpgrade(Player player, String[] args) {
+        if (!player.isOp()) {
+            player.sendMessage("You do not have permission to use this subcommand.");
             return;
         }
-        String name = args[1];
-        boolean created = backpackManager.createBackpack(player.getUniqueId(), name);
-        if (created) {
-            player.sendMessage("Backpack '" + name + "' created.");
+        if (args.length < 2) {
+            player.sendMessage("Usage: /backpack upgrade <SMALL|MEDIUM|LARGE|JUMBO>");
+            return;
+        }
+        BackpackManager.BackpackTier tier;
+        try {
+            tier = BackpackManager.BackpackTier.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown tier: " + args[1] + ". Valid: SMALL, MEDIUM, LARGE, JUMBO");
+            return;
+        }
+        backpackManager.setTier(player.getUniqueId(), tier);
+        player.sendMessage("Backpack upgraded to " + tier.name() + " (" + tier.slots + " slots).");
+    }
+
+    private void handleAdd(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /backpack add <item>");
+            return;
+        }
+        String itemName = args[1];
+        boolean added = backpackManager.addItem(player.getUniqueId(), itemName);
+        if (added) {
+            player.sendMessage("Added '" + itemName + "' to your backpack.");
         } else {
-            Set<String> names = backpackManager.getBackpackNames(player.getUniqueId());
-            if (names.contains(name)) {
-                player.sendMessage("A backpack named '" + name + "' already exists.");
-            } else {
-                player.sendMessage("You have reached the maximum of " + BackpackManager.MAX_BACKPACKS + " backpacks.");
-            }
+            BackpackManager.BackpackTier tier = backpackManager.getTier(player.getUniqueId());
+            player.sendMessage("Your backpack is full (" + tier.slots + "/" + tier.slots + " slots).");
         }
     }
 
-    private void handleDelete(Player player, String[] args) {
+    private void handleRemove(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("Usage: /backpack delete <name>");
+            player.sendMessage("Usage: /backpack remove <item>");
             return;
         }
-        String name = args[1];
-        boolean removed = backpackManager.deleteBackpack(player.getUniqueId(), name);
+        String itemName = args[1];
+        boolean removed = backpackManager.removeItem(player.getUniqueId(), itemName);
         if (removed) {
-            player.sendMessage("Backpack '" + name + "' deleted.");
+            player.sendMessage("Removed '" + itemName + "' from your backpack.");
         } else {
-            player.sendMessage("No backpack named '" + name + "' found.");
+            player.sendMessage("Item '" + itemName + "' not found in your backpack.");
         }
     }
 
     private void handleList(Player player) {
-        Set<String> names = backpackManager.getBackpackNames(player.getUniqueId());
-        if (names.isEmpty()) {
-            player.sendMessage("You have no backpacks.");
+        List<String> items = backpackManager.getItems(player.getUniqueId());
+        BackpackManager.BackpackTier tier = backpackManager.getTier(player.getUniqueId());
+        if (items.isEmpty()) {
+            player.sendMessage("Your backpack is empty. (Tier: " + tier.name() + ", Capacity: " + tier.slots + ")");
             return;
         }
-        player.sendMessage("=== Your Backpacks (" + names.size() + "/" + BackpackManager.MAX_BACKPACKS + ") ===");
-        for (String name : names) {
-            player.sendMessage("  - " + name);
+        player.sendMessage("=== Backpack (" + items.size() + "/" + tier.slots + " slots, Tier: " + tier.name() + ") ===");
+        for (int i = 0; i < items.size(); i++) {
+            player.sendMessage("  " + (i + 1) + ". " + items.get(i));
         }
     }
 
     private void sendHelp(Player player) {
         player.sendMessage("=== Backpack Commands ===");
-        player.sendMessage("/backpack create <name> — create a new backpack");
-        player.sendMessage("/backpack delete <name> — delete a backpack");
-        player.sendMessage("/backpack list          — list all your backpacks");
+        player.sendMessage("/backpack tier                    — view your tier and capacity");
+        player.sendMessage("/backpack upgrade <tier>          — (op) set your backpack tier");
+        player.sendMessage("/backpack add <item>              — add an item to your backpack");
+        player.sendMessage("/backpack remove <item>           — remove an item from your backpack");
+        player.sendMessage("/backpack list                    — list items in your backpack");
     }
 }
