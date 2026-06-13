@@ -18,8 +18,27 @@ public final class SkillManager {
 
     /** Every skill tracked in SkyBlock. */
     public enum SkillType {
-        FARMING, MINING, COMBAT, FORAGING, FISHING,
-        ENCHANTING, ALCHEMY, TAMING, CARPENTRY, RUNECRAFTING
+        COMBAT("Combat"),
+        MINING("Mining"),
+        FARMING("Farming"),
+        FISHING("Fishing"),
+        FORAGING("Foraging"),
+        ENCHANTING("Enchanting"),
+        ALCHEMY("Alchemy"),
+        TAMING("Taming"),
+        CARPENTRY("Carpentry"),
+        RUNECRAFTING("Runecrafting");
+
+        /** Human-readable display name. */
+        public final String displayName;
+
+        SkillType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     public static final int MAX_LEVEL = 50;
