@@ -19,10 +19,11 @@ public final class MinionManager {
 
     /** All minion types available in SkyBlock. */
     public enum MinionType {
-        FARMER, MINER, LUMBERJACK, FISHERMAN,
-        COBBLESTONE, SNOW, CLAY, FLOWER,
-        MELON, PUMPKIN, MUSHROOM, CACTUS,
-        SUGAR_CANE, WHEAT, CARROT, POTATO
+        WHEAT_MINION, CARROT_MINION, POTATO_MINION,
+        MELON_MINION, PUMPKIN_MINION, SUGAR_CANE_MINION,
+        MUSHROOM_MINION, CACTUS_MINION, FLOWER_MINION,
+        COBBLESTONE_MINION, SNOW_MINION, CLAY_MINION,
+        FISHING_MINION, OAK_MINION, LAPIS_MINION, REDSTONE_MINION
     }
 
     /** Upgrade tiers a minion can reach. */
