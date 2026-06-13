@@ -517,7 +517,8 @@ public final class BazaarManager {
     }
 
     /**
-     * Loads per-player transaction histories from {@code bazaar.yml} inside the given data folder.
+     * Loads per-player transaction histories and active buy/sell orders from
+     * {@code bazaar.yml} inside the given data folder.
      *
      * @param dataFolder the plugin data folder, must not be null
      */
@@ -527,20 +528,70 @@ public final class BazaarManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+
         playerTransactions.clear();
-        for (String key : cfg.getKeys(false)) {
-            try {
-                UUID uuid = UUID.fromString(key);
-                List<String> history = cfg.getStringList(key);
-                playerTransactions.put(uuid, new ArrayList<>(history));
-            } catch (IllegalArgumentException ignored) {
-                // skip malformed entries
+        if (cfg.isConfigurationSection("transactions")) {
+            for (String key : cfg.getConfigurationSection("transactions").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<String> history = cfg.getStringList("transactions." + key);
+                    playerTransactions.put(uuid, new ArrayList<>(history));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+
+        buyOrders.clear();
+        if (cfg.isConfigurationSection("buyOrders")) {
+            for (String itemId : cfg.getConfigurationSection("buyOrders").getKeys(false)) {
+                List<Map<?, ?>> orders = cfg.getMapList("buyOrders." + itemId);
+                List<BuyOrder> list = new ArrayList<>();
+                for (Map<?, ?> map : orders) {
+                    try {
+                        UUID id = UUID.fromString((String) map.get("id"));
+                        UUID buyer = UUID.fromString((String) map.get("buyer"));
+                        int quantity = ((Number) map.get("quantity")).intValue();
+                        double priceEach = ((Number) map.get("priceEach")).doubleValue();
+                        list.add(new BuyOrder(id, buyer, itemId, quantity, priceEach));
+                    } catch (Exception ignored) {
+                        // skip malformed order entries
+                    }
+                }
+                if (!list.isEmpty()) {
+                    list.sort(Comparator.comparingDouble(BuyOrder::priceEach).reversed());
+                    buyOrders.put(itemId, list);
+                }
+            }
+        }
+
+        sellOrders.clear();
+        if (cfg.isConfigurationSection("sellOrders")) {
+            for (String itemId : cfg.getConfigurationSection("sellOrders").getKeys(false)) {
+                List<Map<?, ?>> orders = cfg.getMapList("sellOrders." + itemId);
+                List<SellOrder> list = new ArrayList<>();
+                for (Map<?, ?> map : orders) {
+                    try {
+                        UUID id = UUID.fromString((String) map.get("id"));
+                        UUID seller = UUID.fromString((String) map.get("seller"));
+                        int quantity = ((Number) map.get("quantity")).intValue();
+                        double priceEach = ((Number) map.get("priceEach")).doubleValue();
+                        list.add(new SellOrder(id, seller, itemId, quantity, priceEach));
+                    } catch (Exception ignored) {
+                        // skip malformed order entries
+                    }
+                }
+                if (!list.isEmpty()) {
+                    list.sort(Comparator.comparingDouble(SellOrder::priceEach));
+                    sellOrders.put(itemId, list);
+                }
             }
         }
     }
 
     /**
-     * Saves per-player transaction histories to {@code bazaar.yml} inside the given data folder.
+     * Saves per-player transaction histories and active buy/sell orders to
+     * {@code bazaar.yml} inside the given data folder.
      *
      * @param dataFolder the plugin data folder, must not be null
      * @throws RuntimeException if the file cannot be written
@@ -548,9 +599,37 @@ public final class BazaarManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "bazaar.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+
         for (Map.Entry<UUID, List<String>> entry : playerTransactions.entrySet()) {
-            cfg.set(entry.getKey().toString(), entry.getValue());
+            cfg.set("transactions." + entry.getKey(), entry.getValue());
         }
+
+        for (Map.Entry<String, List<BuyOrder>> entry : buyOrders.entrySet()) {
+            List<Map<String, Object>> serialized = new ArrayList<>();
+            for (BuyOrder o : entry.getValue()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", o.id().toString());
+                map.put("buyer", o.buyer().toString());
+                map.put("quantity", o.quantity());
+                map.put("priceEach", o.priceEach());
+                serialized.add(map);
+            }
+            cfg.set("buyOrders." + entry.getKey(), serialized);
+        }
+
+        for (Map.Entry<String, List<SellOrder>> entry : sellOrders.entrySet()) {
+            List<Map<String, Object>> serialized = new ArrayList<>();
+            for (SellOrder o : entry.getValue()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", o.id().toString());
+                map.put("seller", o.seller().toString());
+                map.put("quantity", o.quantity());
+                map.put("priceEach", o.priceEach());
+                serialized.add(map);
+            }
+            cfg.set("sellOrders." + entry.getKey(), serialized);
+        }
+
         try {
             cfg.save(file);
         } catch (IOException e) {
