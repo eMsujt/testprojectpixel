@@ -17,6 +17,33 @@ import java.util.UUID;
  */
 public final class FairySoulManager {
 
+    /** SkyBlock areas that contain fairy souls, each with a display name and total soul count. */
+    public enum FairySoulArea {
+        HUB("Hub",                       30),
+        FARMING_ISLANDS("Farming Islands", 10),
+        SPIDERS_DEN("Spider's Den",         6),
+        THE_END("The End",                  2),
+        CRIMSON_ISLE("Crimson Isle",        12),
+        DEEP_CAVERNS("Deep Caverns",         5),
+        PARK("The Park",                     8),
+        DUNGEON_HUB("Dungeon Hub",           2);
+
+        /** Human-readable display name shown to players. */
+        public final String displayName;
+        /** Total number of fairy souls available in this area. */
+        public final int soulCount;
+
+        FairySoulArea(String displayName, int soulCount) {
+            this.displayName = displayName;
+            this.soulCount = soulCount;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+
     private static final FairySoulManager INSTANCE = new FairySoulManager();
 
     /** Per-player set of collected fairy soul IDs; absent entries mean no souls collected. */
