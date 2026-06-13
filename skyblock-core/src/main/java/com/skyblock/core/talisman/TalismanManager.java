@@ -63,21 +63,70 @@ public final class TalismanManager {
 
     /** Every talisman available in SkyBlock with its stat bonuses and rarity. */
     public enum TalismanType {
+        // Speed line
         SPEED_TALISMAN(CombatStat.SPEED, 1.0, AccessoryRarity.COMMON),
+        SPEED_RING(CombatStat.SPEED, 3.0, AccessoryRarity.UNCOMMON),
+        SPEED_ARTIFACT(CombatStat.SPEED, 5.0, AccessoryRarity.RARE),
+        // Strength line
         STRENGTH_TALISMAN(CombatStat.STRENGTH, 5.0, AccessoryRarity.COMMON),
+        STRENGTH_RING(CombatStat.STRENGTH, 10.0, AccessoryRarity.UNCOMMON),
+        STRENGTH_ARTIFACT(CombatStat.STRENGTH, 15.0, AccessoryRarity.RARE),
+        // Crit Chance line
         CRIT_TALISMAN(CombatStat.CRIT_CHANCE, 3.0, AccessoryRarity.COMMON),
         CRIT_RING(CombatStat.CRIT_CHANCE, 5.0, AccessoryRarity.UNCOMMON),
         CRIT_ARTIFACT(CombatStat.CRIT_CHANCE, 8.0, AccessoryRarity.RARE),
+        // Crit Damage line
+        CRIT_DAMAGE_TALISMAN(CombatStat.CRIT_DAMAGE, 5.0, AccessoryRarity.COMMON),
+        CRIT_DAMAGE_RING(CombatStat.CRIT_DAMAGE, 8.0, AccessoryRarity.UNCOMMON),
+        CRIT_DAMAGE_ARTIFACT(CombatStat.CRIT_DAMAGE, 12.0, AccessoryRarity.RARE),
+        // Defense line
         DEFENSE_TALISMAN(CombatStat.DEFENSE, 5.0, AccessoryRarity.COMMON),
         DEFENSE_RING(CombatStat.DEFENSE, 10.0, AccessoryRarity.UNCOMMON),
         DEFENSE_ARTIFACT(CombatStat.DEFENSE, 15.0, AccessoryRarity.RARE),
+        // Health line
         HEALTH_TALISMAN(CombatStat.HEALTH, 10.0, AccessoryRarity.COMMON),
-        FEROCITY_TALISMAN(CombatStat.FEROCITY, 1.0, AccessoryRarity.UNCOMMON),
-        SPEED_RING(CombatStat.SPEED, 3.0, AccessoryRarity.UNCOMMON),
-        SPEED_ARTIFACT(CombatStat.SPEED, 5.0, AccessoryRarity.RARE),
+        HEALTH_RING(CombatStat.HEALTH, 20.0, AccessoryRarity.UNCOMMON),
+        HEALTH_ARTIFACT(CombatStat.HEALTH, 30.0, AccessoryRarity.RARE),
+        // Intelligence line
         INTELLIGENCE_TALISMAN(CombatStat.INTELLIGENCE, 10.0, AccessoryRarity.COMMON),
+        INTELLIGENCE_RING(CombatStat.INTELLIGENCE, 20.0, AccessoryRarity.UNCOMMON),
+        INTELLIGENCE_ARTIFACT(CombatStat.INTELLIGENCE, 30.0, AccessoryRarity.RARE),
+        // Ferocity line
+        FEROCITY_TALISMAN(CombatStat.FEROCITY, 1.0, AccessoryRarity.UNCOMMON),
+        FEROCITY_RING(CombatStat.FEROCITY, 2.0, AccessoryRarity.RARE),
+        FEROCITY_ARTIFACT(CombatStat.FEROCITY, 3.0, AccessoryRarity.EPIC),
+        // Attack Speed line
+        ATTACK_SPEED_TALISMAN(CombatStat.ATTACK_SPEED, 3.0, AccessoryRarity.UNCOMMON),
+        ATTACK_SPEED_RING(CombatStat.ATTACK_SPEED, 5.0, AccessoryRarity.RARE),
+        ATTACK_SPEED_ARTIFACT(CombatStat.ATTACK_SPEED, 8.0, AccessoryRarity.EPIC),
+        // Magic Find line
         MAGIC_FIND_TALISMAN(CombatStat.MAGIC_FIND, 3.0, AccessoryRarity.UNCOMMON),
-        ATTACK_SPEED_TALISMAN(CombatStat.ATTACK_SPEED, 3.0, AccessoryRarity.UNCOMMON);
+        MAGIC_FIND_RING(CombatStat.MAGIC_FIND, 5.0, AccessoryRarity.RARE),
+        MAGIC_FIND_ARTIFACT(CombatStat.MAGIC_FIND, 8.0, AccessoryRarity.EPIC),
+        // True Defense line
+        TRUE_DEFENSE_TALISMAN(CombatStat.TRUE_DEFENSE, 3.0, AccessoryRarity.UNCOMMON),
+        TRUE_DEFENSE_RING(CombatStat.TRUE_DEFENSE, 6.0, AccessoryRarity.RARE),
+        TRUE_DEFENSE_ARTIFACT(CombatStat.TRUE_DEFENSE, 10.0, AccessoryRarity.EPIC),
+        // Vitality line
+        VITALITY_TALISMAN(CombatStat.VITALITY, 3.0, AccessoryRarity.UNCOMMON),
+        VITALITY_RING(CombatStat.VITALITY, 6.0, AccessoryRarity.RARE),
+        VITALITY_ARTIFACT(CombatStat.VITALITY, 10.0, AccessoryRarity.EPIC),
+        // Named SkyBlock accessories
+        JUNGLE_TALISMAN(CombatStat.SPEED, 2.0, AccessoryRarity.COMMON),
+        FARMER_ORB(CombatStat.HEALTH, 5.0, AccessoryRarity.COMMON),
+        HASTE_RING(CombatStat.ATTACK_SPEED, 2.0, AccessoryRarity.COMMON),
+        ZOMBIE_TALISMAN(CombatStat.DEFENSE, 3.0, AccessoryRarity.COMMON),
+        ZOMBIE_RING(CombatStat.DEFENSE, 6.0, AccessoryRarity.UNCOMMON),
+        ZOMBIE_ARTIFACT(CombatStat.DEFENSE, 10.0, AccessoryRarity.RARE),
+        SPIDER_TALISMAN(CombatStat.CRIT_DAMAGE, 3.0, AccessoryRarity.UNCOMMON),
+        CANDY_TALISMAN(CombatStat.SPEED, 1.0, AccessoryRarity.COMMON),
+        WOLF_TALISMAN(CombatStat.SPEED, 2.0, AccessoryRarity.UNCOMMON),
+        WOLF_RING(CombatStat.SPEED, 4.0, AccessoryRarity.RARE),
+        MELODY_HAIR(CombatStat.INTELLIGENCE, 15.0, AccessoryRarity.EPIC),
+        ENDER_ARTIFACT(CombatStat.STRENGTH, 10.0, AccessoryRarity.EPIC),
+        DOMINO_FRAGMENT(CombatStat.INTELLIGENCE, 5.0, AccessoryRarity.RARE),
+        HEGEMONY_ARTIFACT(CombatStat.CRIT_DAMAGE, 20.0, AccessoryRarity.LEGENDARY),
+        BEACON_TALISMAN(CombatStat.MAGIC_FIND, 5.0, AccessoryRarity.RARE);
 
         /** The stat this talisman boosts. */
         public final CombatStat stat;
