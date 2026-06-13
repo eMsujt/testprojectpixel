@@ -71,13 +71,13 @@ public final class FairySoulCommand implements TabExecutor {
     }
 
     private void handleList(Player player) {
-        Set<String> souls = fairySoulManager.getCollectedSouls(player.getUniqueId());
+        Set<Integer> souls = fairySoulManager.getCollectedSouls(player.getUniqueId());
         if (souls.isEmpty()) {
             player.sendMessage("You have not collected any Fairy Souls.");
             return;
         }
         player.sendMessage("=== Collected Fairy Souls (" + souls.size() + ") ===");
-        souls.stream().sorted().forEach(player::sendMessage);
+        souls.stream().sorted().forEach(id -> player.sendMessage(String.valueOf(id)));
     }
 
     private void handleAreas(Player player) {
@@ -96,13 +96,19 @@ public final class FairySoulCommand implements TabExecutor {
             player.sendMessage("Usage: /fairysoul collect <id>");
             return;
         }
-        String soulId = args[1];
+        int soulId;
+        try {
+            soulId = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid soul ID: must be an integer.");
+            return;
+        }
         boolean added = fairySoulManager.collectSoul(player.getUniqueId(), soulId);
         if (added) {
-            player.sendMessage("Fairy Soul \"" + soulId + "\" collected! Total: "
+            player.sendMessage("Fairy Soul " + soulId + " collected! Total: "
                     + fairySoulManager.getCount(player.getUniqueId()));
         } else {
-            player.sendMessage("You have already collected Fairy Soul \"" + soulId + "\".");
+            player.sendMessage("You have already collected Fairy Soul " + soulId + ".");
         }
     }
 }
