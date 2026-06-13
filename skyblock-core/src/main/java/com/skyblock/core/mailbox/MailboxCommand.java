@@ -60,14 +60,15 @@ public final class MailboxCommand implements TabExecutor {
     }
 
     private void handleList(Player player) {
-        List<String> items = mailboxManager.getDeliveries(player.getUniqueId());
+        List<MailboxManager.MailboxItem> items = mailboxManager.getDeliveries(player.getUniqueId());
         if (items.isEmpty()) {
             player.sendMessage("Your mailbox is empty.");
             return;
         }
         player.sendMessage("=== Mailbox (" + items.size() + " item(s)) ===");
         for (int i = 0; i < items.size(); i++) {
-            player.sendMessage("  " + (i + 1) + ". " + items.get(i));
+            MailboxManager.MailboxItem item = items.get(i);
+            player.sendMessage("  " + (i + 1) + ". From " + item.sender() + ": " + item.message());
         }
     }
 
