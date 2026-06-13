@@ -16,18 +16,34 @@ import java.util.UUID;
  */
 public final class ProfileManager {
 
+    public enum GameMode {
+        NORMAL("Normal"),
+        IRONMAN("Ironman"),
+        STRANDED("Stranded");
+
+        private final String displayName;
+
+        GameMode(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
+    }
+
     /**
      * A single SkyBlock profile owned by a player.
      *
      * @param profileId unique identifier for this profile
      * @param ownerId   UUID of the player who created the profile
      * @param name      display name for the profile (e.g. "Mango", "Strawberry")
+     * @param gameMode  game mode for this profile
      */
-    public record SkyBlockProfile(UUID profileId, UUID ownerId, String name) {
+    public record SkyBlockProfile(UUID profileId, UUID ownerId, String name, GameMode gameMode) {
         public SkyBlockProfile {
             Objects.requireNonNull(profileId, "profileId");
             Objects.requireNonNull(ownerId, "ownerId");
             Objects.requireNonNull(name, "name");
+            Objects.requireNonNull(gameMode, "gameMode");
             if (name.isBlank()) {
                 throw new IllegalArgumentException("name must not be blank");
             }
@@ -56,14 +72,16 @@ public final class ProfileManager {
     /**
      * Creates and registers a new profile for the given owner.
      *
-     * @param ownerId UUID of the owning player
-     * @param name    display name for the new profile
+     * @param ownerId  UUID of the owning player
+     * @param name     display name for the new profile
+     * @param gameMode game mode for the new profile
      * @return the newly created {@link SkyBlockProfile}
      */
-    public SkyBlockProfile createProfile(UUID ownerId, String name) {
+    public SkyBlockProfile createProfile(UUID ownerId, String name, GameMode gameMode) {
         Objects.requireNonNull(ownerId, "ownerId");
         Objects.requireNonNull(name, "name");
-        SkyBlockProfile profile = new SkyBlockProfile(UUID.randomUUID(), ownerId, name);
+        Objects.requireNonNull(gameMode, "gameMode");
+        SkyBlockProfile profile = new SkyBlockProfile(UUID.randomUUID(), ownerId, name, gameMode);
         profilesById.put(profile.profileId(), profile);
         profilesByOwner.computeIfAbsent(ownerId, k -> new ArrayList<>()).add(profile.profileId());
         return profile;

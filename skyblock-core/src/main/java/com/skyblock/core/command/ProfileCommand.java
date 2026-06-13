@@ -1,6 +1,7 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.profile.ProfileManager.GameMode;
 import com.skyblock.core.profile.ProfileManager.SkyBlockProfile;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,9 +17,9 @@ import java.util.List;
  *
  * <p>Usage:
  * <ul>
- *   <li>{@code /profile}                       — list your profiles</li>
- *   <li>{@code /profile create <name>}          — create a new profile</li>
- *   <li>{@code /profile delete <name>}          — delete one of your profiles</li>
+ *   <li>{@code /profile}                                    — list your profiles</li>
+ *   <li>{@code /profile create <name> [gamemode]}           — create a new profile</li>
+ *   <li>{@code /profile delete <name>}                      — delete one of your profiles</li>
  * </ul>
  * </p>
  */
@@ -46,12 +47,21 @@ public final class ProfileCommand implements TabExecutor {
         switch (sub) {
             case "create" -> {
                 if (args.length < 2) {
-                    sender.sendMessage("Usage: /profile create <name>");
+                    sender.sendMessage("Usage: /profile create <name> [NORMAL|IRONMAN|STRANDED]");
                     return true;
                 }
                 String name = args[1];
-                SkyBlockProfile created = profileManager.createProfile(player.getUniqueId(), name);
-                sender.sendMessage("Profile \"" + created.name() + "\" created with id " + created.profileId() + ".");
+                GameMode gameMode = GameMode.NORMAL;
+                if (args.length >= 3) {
+                    try {
+                        gameMode = GameMode.valueOf(args[2].toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        sender.sendMessage("Unknown game mode. Use NORMAL, IRONMAN, or STRANDED.");
+                        return true;
+                    }
+                }
+                SkyBlockProfile created = profileManager.createProfile(player.getUniqueId(), name, gameMode);
+                sender.sendMessage("Profile \"" + created.name() + "\" (" + created.gameMode().getDisplayName() + ") created with id " + created.profileId() + ".");
             }
             case "delete" -> {
                 if (args.length < 2) {
@@ -80,6 +90,13 @@ public final class ProfileCommand implements TabExecutor {
                     .filter(s -> s.startsWith(lower))
                     .collect(java.util.stream.Collectors.toList());
         }
+        if (args.length == 3 && args[0].equalsIgnoreCase("create")) {
+            String upper = args[2].toUpperCase();
+            return Arrays.stream(GameMode.values())
+                    .map(Enum::name)
+                    .filter(s -> s.startsWith(upper))
+                    .collect(java.util.stream.Collectors.toList());
+        }
         return Collections.emptyList();
     }
 
@@ -91,7 +108,7 @@ public final class ProfileCommand implements TabExecutor {
         }
         player.sendMessage("=== Your Profiles ===");
         for (SkyBlockProfile p : profiles) {
-            player.sendMessage("- " + p.name() + " (" + p.profileId() + ")");
+            player.sendMessage("- " + p.name() + " [" + p.gameMode().getDisplayName() + "] (" + p.profileId() + ")");
         }
     }
 
