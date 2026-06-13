@@ -1,49 +1,21 @@
 package com.skyblock.core.island;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
 /**
- * Holds the persistent state for a single SkyBlock island.
+ * Immutable snapshot of a player's island statistics.
  */
-public final class IslandData {
+public record IslandData(long blocksPlaced, int islandLevel, int visitorCount) {
 
-    private final UUID owner;
-    private final List<UUID> members = new ArrayList<>();
-    private int level;
+    public static final IslandData EMPTY = new IslandData(0L, 0, 0);
 
-    public IslandData(UUID owner) {
-        this.owner = Objects.requireNonNull(owner, "owner");
+    public IslandData withBlocksPlaced(long blocksPlaced) {
+        return new IslandData(blocksPlaced, islandLevel, visitorCount);
     }
 
-    public UUID getOwner() {
-        return owner;
+    public IslandData withIslandLevel(int islandLevel) {
+        return new IslandData(blocksPlaced, islandLevel, visitorCount);
     }
 
-    public List<UUID> getMembers() {
-        return Collections.unmodifiableList(members);
-    }
-
-    public void addMember(UUID player) {
-        Objects.requireNonNull(player, "player");
-        if (!members.contains(player)) {
-            members.add(player);
-        }
-    }
-
-    public boolean removeMember(UUID player) {
-        Objects.requireNonNull(player, "player");
-        return members.remove(player);
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
+    public IslandData withVisitorCount(int visitorCount) {
+        return new IslandData(blocksPlaced, islandLevel, visitorCount);
     }
 }

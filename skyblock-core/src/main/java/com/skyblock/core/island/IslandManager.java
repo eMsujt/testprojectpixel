@@ -13,6 +13,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Singleton managing per-player SkyBlock islands.
@@ -98,6 +102,9 @@ public final class IslandManager {
     private final Map<UUID, UUID> memberIndex = new HashMap<>();
     /** owner UUID → island world */
     private final Map<UUID, World> islandWorlds = new HashMap<>();
+
+    /** Per-player island statistics. */
+    private final Map<UUID, IslandData> playerData = new HashMap<>();
 
     private IslandManager() {
     }
@@ -262,6 +269,85 @@ public final class IslandManager {
         Objects.requireNonNull(owner, "owner");
         SkyBlockIsland island = islands.get(owner);
         return island == null ? null : island.getWarpName();
+    }
+
+    // -------------------------------------------------------------------------
+    // Per-player IslandData
+    // -------------------------------------------------------------------------
+
+    /** Returns the {@link IslandData} for {@code owner}, defaulting to {@link IslandData#EMPTY}. */
+    public IslandData getIslandData(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return playerData.getOrDefault(owner, IslandData.EMPTY);
+    }
+
+    /** Replaces the {@link IslandData} for {@code owner}. */
+    public void setIslandData(UUID owner, IslandData data) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(data, "data");
+        playerData.put(owner, data);
+    }
+
+    /** Adds {@code amount} to the blocks-placed counter for {@code owner}. */
+    public void addBlocksPlaced(UUID owner, long amount) {
+        Objects.requireNonNull(owner, "owner");
+        IslandData current = playerData.getOrDefault(owner, IslandData.EMPTY);
+        playerData.put(owner, current.withBlocksPlaced(current.blocksPlaced() + amount));
+    }
+
+    /** Sets the island level for {@code owner}. */
+    public void setIslandLevel(UUID owner, int level) {
+        Objects.requireNonNull(owner, "owner");
+        IslandData current = playerData.getOrDefault(owner, IslandData.EMPTY);
+        playerData.put(owner, current.withIslandLevel(level));
+    }
+
+    /** Increments the visitor count for {@code owner} by 1. */
+    public void incrementVisitorCount(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        IslandData current = playerData.getOrDefault(owner, IslandData.EMPTY);
+        playerData.put(owner, current.withVisitorCount(current.visitorCount() + 1));
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "island.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerData.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                long blocksPlaced = cfg.getLong(key + ".blocksPlaced", 0L);
+                int islandLevel   = cfg.getInt(key + ".islandLevel", 0);
+                int visitorCount  = cfg.getInt(key + ".visitorCount", 0);
+                playerData.put(uuid, new IslandData(blocksPlaced, islandLevel, visitorCount));
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "island.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, IslandData> entry : playerData.entrySet()) {
+            String key = entry.getKey().toString();
+            IslandData data = entry.getValue();
+            cfg.set(key + ".blocksPlaced", data.blocksPlaced());
+            cfg.set(key + ".islandLevel",  data.islandLevel());
+            cfg.set(key + ".visitorCount", data.visitorCount());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save island.yml", e);
+        }
     }
 
     /**
