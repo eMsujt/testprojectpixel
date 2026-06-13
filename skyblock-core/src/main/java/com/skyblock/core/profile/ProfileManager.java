@@ -50,6 +50,8 @@ public final class ProfileManager {
         }
     }
 
+    public static final int MAX_PROFILES = 4;
+
     private static final ProfileManager INSTANCE = new ProfileManager();
 
     /** profileId -> profile */
@@ -70,20 +72,26 @@ public final class ProfileManager {
     }
 
     /**
-     * Creates and registers a new profile for the given owner.
+     * Creates and registers a new profile for the given owner, up to a maximum of
+     * {@value #MAX_PROFILES} profiles per player.
      *
      * @param ownerId  UUID of the owning player
      * @param name     display name for the new profile
      * @param gameMode game mode for the new profile
-     * @return the newly created {@link SkyBlockProfile}
+     * @return the newly created {@link SkyBlockProfile}, or {@code null} if the player
+     *         already holds {@value #MAX_PROFILES} profiles
      */
     public SkyBlockProfile createProfile(UUID ownerId, String name, GameMode gameMode) {
         Objects.requireNonNull(ownerId, "ownerId");
         Objects.requireNonNull(name, "name");
         Objects.requireNonNull(gameMode, "gameMode");
+        List<UUID> ownerIds = profilesByOwner.computeIfAbsent(ownerId, k -> new ArrayList<>());
+        if (ownerIds.size() >= MAX_PROFILES) {
+            return null;
+        }
         SkyBlockProfile profile = new SkyBlockProfile(UUID.randomUUID(), ownerId, name, gameMode);
         profilesById.put(profile.profileId(), profile);
-        profilesByOwner.computeIfAbsent(ownerId, k -> new ArrayList<>()).add(profile.profileId());
+        ownerIds.add(profile.profileId());
         return profile;
     }
 
