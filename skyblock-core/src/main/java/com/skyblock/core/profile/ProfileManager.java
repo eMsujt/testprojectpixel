@@ -16,6 +16,22 @@ import java.util.UUID;
  */
 public final class ProfileManager {
 
+    /** Profile mode selected when creating a SkyBlock profile. */
+    public enum ProfileMode {
+        CLASSIC("Classic"),
+        IRONMAN("Ironman"),
+        STRANDED("Stranded"),
+        BINGO("Bingo");
+
+        public final String displayName;
+
+        ProfileMode(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
+    }
+
     public enum GameMode {
         NORMAL("Normal"),
         IRONMAN("Ironman"),
