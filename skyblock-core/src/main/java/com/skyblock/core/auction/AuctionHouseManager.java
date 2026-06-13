@@ -2,12 +2,15 @@ package com.skyblock.core.auction;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Singleton managing auction house listings that support both buy-it-now (BIN)
@@ -17,17 +20,39 @@ import java.util.UUID;
  */
 public final class AuctionHouseManager {
 
+    /** Every auction category available in the Auction House. */
+    public enum AuctionCategory {
+        WEAPONS("Weapons"),
+        ARMOR("Armor"),
+        ACCESSORIES("Accessories"),
+        CONSUMABLES("Consumables"),
+        BLOCKS("Blocks"),
+        MINIONS("Minions"),
+        MISC("Misc");
+
+        private final String displayName;
+
+        AuctionCategory(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
 
     /** A single active auction house listing. */
     public record AuctionListing(UUID id, UUID seller, ItemStack item, String itemName,
-                                 double startingBid, boolean binListing) {
+                                 AuctionCategory category, double startingBid, boolean binListing) {
 
         public AuctionListing {
             Objects.requireNonNull(id, "id");
             Objects.requireNonNull(seller, "seller");
             Objects.requireNonNull(item, "item");
             Objects.requireNonNull(itemName, "itemName");
+            Objects.requireNonNull(category, "category");
             if (startingBid < 0) {
                 throw new IllegalArgumentException("startingBid must not be negative: " + startingBid);
             }
@@ -64,17 +89,32 @@ public final class AuctionHouseManager {
      * @param seller      the selling player's UUID, must not be null
      * @param item        the item being listed, must not be null
      * @param itemName    the display name of the listed item, must not be null
+     * @param category    the auction category, must not be null
      * @param startingBid the minimum bid or BIN price, must not be negative
      * @param binListing  {@code true} for a buy-it-now listing, {@code false} for bid-based
      * @return the UUID of the newly created listing
      */
     public UUID createListing(UUID seller, ItemStack item, String itemName,
-                              double startingBid, boolean binListing) {
+                              AuctionCategory category, double startingBid, boolean binListing) {
         UUID listingId = UUID.randomUUID();
         AuctionListing listing = new AuctionListing(listingId, seller, item, itemName,
-                startingBid, binListing);
+                category, startingBid, binListing);
         listings.put(listingId, new ListingState(listing));
         return listingId;
+    }
+
+    /**
+     * Returns all active listings belonging to the given category.
+     *
+     * @param category the category to filter by, must not be null
+     * @return listings in that category; empty list if none
+     */
+    public List<AuctionListing> getListingsByCategory(AuctionCategory category) {
+        Objects.requireNonNull(category, "category");
+        return listings.values().stream()
+                .map(s -> s.listing)
+                .filter(l -> l.category() == category)
+                .collect(Collectors.toList());
     }
 
     /**
