@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public final class IslandCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("create", "home", "visit", "invite", "kick", "leave", "upgrade", "upgrades", "warp", "setwarp");
+            Arrays.asList("create", "home", "visit", "invite", "kick", "leave", "upgrade", "upgrades", "warp", "setwarp", "info", "trustee", "blocks");
 
     private final IslandManager islandManager;
 
@@ -46,7 +46,7 @@ public final class IslandCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp>");
+            player.sendMessage("Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp|info|trustee|blocks>");
             return true;
         }
 
@@ -61,7 +61,10 @@ public final class IslandCommand implements TabExecutor {
             case "upgrades" -> handleUpgrades(player);
             case "setwarp"  -> handleSetWarp(player, args);
             case "warp"     -> handleWarp(player, args);
-            default         -> player.sendMessage("Unknown subcommand. Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp>");
+            case "info"     -> handleInfo(player);
+            case "trustee"  -> handleTrustee(player, args);
+            case "blocks"   -> handleBlocks(player, args);
+            default         -> player.sendMessage("Unknown subcommand. Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp|info|trustee|blocks>");
         }
         return true;
     }
@@ -88,6 +91,28 @@ public final class IslandCommand implements TabExecutor {
                 return Arrays.stream(IslandManager.IslandUpgrade.values())
                         .map(Enum::name)
                         .filter(name -> name.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (sub.equals("trustee")) {
+                String prefix = args[1].toLowerCase();
+                return Arrays.asList("add", "remove").stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (sub.equals("blocks")) {
+                String prefix = args[1].toLowerCase();
+                return Collections.singletonList("add").stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+        }
+        if (args.length == 3) {
+            String sub = args[0].toLowerCase();
+            if (sub.equals("trustee")) {
+                String prefix = args[2].toLowerCase();
+                return Bukkit.getOnlinePlayers().stream()
+                        .map(Player::getName)
+                        .filter(name -> name.toLowerCase().startsWith(prefix))
                         .collect(Collectors.toList());
             }
         }
@@ -301,5 +326,90 @@ public final class IslandCommand implements TabExecutor {
             return;
         }
         player.sendMessage("You have left the island.");
+    }
+
+    private void handleInfo(Player player) {
+        UUID id = player.getUniqueId();
+        IslandManager.IslandData data = islandManager.getOrCreateIslandData(id);
+        player.sendMessage("=== Island Info ===");
+        player.sendMessage("  Owner: " + player.getName());
+        player.sendMessage("  Level: " + data.level());
+        player.sendMessage("  Blocks Placed: " + data.blocksPlaced());
+        List<UUID> trustees = data.trustees();
+        if (trustees.isEmpty()) {
+            player.sendMessage("  Trustees: none");
+        } else {
+            player.sendMessage("  Trustees (" + trustees.size() + "):");
+            for (UUID t : trustees) {
+                org.bukkit.entity.Player online = Bukkit.getPlayer(t);
+                String name = online != null ? online.getName() : t.toString();
+                player.sendMessage("    - " + name);
+            }
+        }
+    }
+
+    private void handleTrustee(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage("Usage: /island trustee <add|remove> <player>");
+            return;
+        }
+        String op = args[1].toLowerCase();
+        Player target = Bukkit.getPlayerExact(args[2]);
+        if (target == null) {
+            player.sendMessage("Player '" + args[2] + "' is not online.");
+            return;
+        }
+        if (target.getUniqueId().equals(player.getUniqueId())) {
+            player.sendMessage("You cannot trustee yourself.");
+            return;
+        }
+        UUID id = player.getUniqueId();
+        if (op.equals("add")) {
+            boolean added = islandManager.addTrustee(id, target.getUniqueId());
+            if (!added) {
+                player.sendMessage(target.getName() + " is already a trustee.");
+                return;
+            }
+            player.sendMessage(target.getName() + " has been added as a trustee.");
+            target.sendMessage(player.getName() + " has added you as a trustee on their island.");
+        } else if (op.equals("remove")) {
+            boolean removed = islandManager.removeTrustee(id, target.getUniqueId());
+            if (!removed) {
+                player.sendMessage(target.getName() + " is not a trustee.");
+                return;
+            }
+            player.sendMessage(target.getName() + " has been removed as a trustee.");
+            target.sendMessage(player.getName() + " has removed you as a trustee on their island.");
+        } else {
+            player.sendMessage("Usage: /island trustee <add|remove> <player>");
+        }
+    }
+
+    private void handleBlocks(Player player, String[] args) {
+        UUID id = player.getUniqueId();
+        if (args.length >= 2 && args[1].equalsIgnoreCase("add")) {
+            if (!player.isOp()) {
+                player.sendMessage("You do not have permission to use this subcommand.");
+                return;
+            }
+            if (args.length < 3) {
+                player.sendMessage("Usage: /island blocks add <amount>");
+                return;
+            }
+            long amount;
+            try {
+                amount = Long.parseLong(args[2]);
+                if (amount < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                player.sendMessage("Invalid amount: " + args[2]);
+                return;
+            }
+            islandManager.addBlocksPlaced(id, amount);
+            long total = islandManager.getOrCreateIslandData(id).blocksPlaced();
+            player.sendMessage("Blocks placed: " + total + ".");
+        } else {
+            long blocks = islandManager.getOrCreateIslandData(id).blocksPlaced();
+            player.sendMessage("Blocks placed on your island: " + blocks);
+        }
     }
 }
