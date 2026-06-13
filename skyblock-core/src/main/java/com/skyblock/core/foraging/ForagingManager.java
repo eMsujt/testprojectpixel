@@ -19,6 +19,29 @@ import java.util.UUID;
  */
 public final class ForagingManager {
 
+    /** Simple log-type identifiers used for per-player chop tracking. */
+    public enum LogType {
+        OAK("Oak"),
+        SPRUCE("Spruce"),
+        BIRCH("Birch"),
+        JUNGLE("Jungle"),
+        ACACIA("Acacia"),
+        DARK_OAK("Dark Oak"),
+        MANGROVE("Mangrove"),
+        CHERRY("Cherry"),
+        CRIMSON("Crimson Stem"),
+        WARPED("Warped Stem"),
+        MUSHROOM("Mushroom");
+
+        private final String displayName;
+
+        LogType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
+    }
+
     /** All wood types that contribute to the Foraging skill. */
     public enum TreeType {
         OAK(Material.OAK_LOG, "Oak", 6),
