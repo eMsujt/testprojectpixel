@@ -17,9 +17,17 @@ public final class QuestManager {
 
     /** All quest types available in SkyBlock. */
     public enum QuestType {
-        KILL_MONSTERS, COLLECT_ITEMS, MINE_BLOCKS, FISH_ITEMS, CRAFT_ITEMS,
-        EXPLORE_ZONES, COMPLETE_DUNGEONS, EARN_COINS, REACH_SKILL_LEVEL,
-        TRADE_IN_BAZAAR
+        DAILY("Daily"),
+        WEEKLY("Weekly"),
+        SPECIAL("Special");
+
+        private final String displayName;
+
+        QuestType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
     }
 
     /** Completion status for a single quest instance. */
