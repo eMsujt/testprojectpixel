@@ -31,8 +31,12 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                 // Row 2 — economy
                 .setItem(19, named(Material.GOLD_INGOT,    ChatColor.GREEN      + "Bazaar"),
                         e -> e.getWhoClicked().sendMessage("Use /bazaar to open the Bazaar."))
+                .setItem(20, named(Material.SHIELD,        ChatColor.BLUE       + "Guild"),
+                        e -> e.getWhoClicked().sendMessage("Use /guild to manage your guild."))
                 .setItem(21, named(Material.GOLD_INGOT,    ChatColor.GOLD       + "Auction House"),
                         e -> e.getWhoClicked().sendMessage("Use /auction to open the Auction House."))
+                .setItem(22, named(Material.EMERALD,       ChatColor.GREEN      + "Trade"),
+                        e -> e.getWhoClicked().sendMessage("Use /trade to open the trade menu."))
                 .setItem(23, named(Material.GOLD_BLOCK,    ChatColor.YELLOW     + "Bank"),
                         e -> e.getWhoClicked().sendMessage("Use /bank to manage your bank account."))
                 .setItem(25, named(Material.CRAFTING_TABLE,ChatColor.WHITE      + "Crafting"),
@@ -40,7 +44,7 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                 // Row 3 — island & progress
                 .setItem(28, named(Material.GRASS_BLOCK,   ChatColor.GREEN      + "Island"),
                         e -> e.getWhoClicked().sendMessage("Use /island to manage your island."))
-                .setItem(30, named(Material.IRON_PICKAXE,  ChatColor.GRAY       + "Minions"),
+                .setItem(30, named(Material.PISTON,        ChatColor.GRAY       + "Minions"),
                         e -> e.getWhoClicked().sendMessage("Use /minion to manage your minions."))
                 .setItem(32, named(Material.COMPASS,       ChatColor.YELLOW     + "Quests"),
                         e -> e.getWhoClicked().sendMessage("Use /quest to view your quests."))
