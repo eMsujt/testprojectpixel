@@ -1,5 +1,9 @@
 package com.skyblock.core.island;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +29,27 @@ import org.bukkit.WorldCreator;
  * when the island is deleted.</p>
  */
 public final class IslandManager {
+
+    /**
+     * Flat data record for a player's SkyBlock island.
+     *
+     * @param owner        UUID of the island owner
+     * @param trustees     UUIDs of players trusted on the island (mutable copy held internally)
+     * @param level        island upgrade level, at least 0
+     * @param blocksPlaced total blocks placed on the island
+     */
+    public record IslandData(UUID owner, List<UUID> trustees, int level, long blocksPlaced) {
+        public IslandData {
+            Objects.requireNonNull(owner, "owner");
+            Objects.requireNonNull(trustees, "trustees");
+            trustees = new ArrayList<>(trustees);
+        }
+
+        @Override
+        public List<UUID> trustees() {
+            return Collections.unmodifiableList(trustees);
+        }
+    }
 
     public enum IslandUpgrade {
         MINION_SLOTS(10, "Minion Slots"),
@@ -91,6 +116,9 @@ public final class IslandManager {
     }
 
     private static final IslandManager INSTANCE = new IslandManager();
+
+    /** Per-player IslandData records. */
+    private final Map<UUID, IslandData> islandData = new HashMap<>();
 
     /** owner UUID → island */
     private final Map<UUID, SkyBlockIsland> islands = new HashMap<>();
@@ -263,6 +291,147 @@ public final class IslandManager {
         SkyBlockIsland island = islands.get(owner);
         return island == null ? null : island.getWarpName();
     }
+
+    // -------------------------------------------------------------------------
+    // IslandData API
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the {@link IslandData} for the given owner, or empty if none exists.
+     *
+     * @param owner the island owner's UUID
+     * @return the island data, or empty
+     */
+    public Optional<IslandData> getIslandData(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return Optional.ofNullable(islandData.get(owner));
+    }
+
+    /**
+     * Creates a default {@link IslandData} record for the given owner at level 0
+     * if one does not already exist.
+     *
+     * @param owner the island owner's UUID
+     * @return the existing or newly created record
+     */
+    public IslandData getOrCreateIslandData(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return islandData.computeIfAbsent(owner,
+                id -> new IslandData(id, new ArrayList<>(), 0, 0L));
+    }
+
+    /**
+     * Sets the level on the owner's island data record.
+     *
+     * @param owner the island owner's UUID
+     * @param level the new level (must be >= 0)
+     */
+    public void setLevel(UUID owner, int level) {
+        Objects.requireNonNull(owner, "owner");
+        if (level < 0) throw new IllegalArgumentException("level must be >= 0, got " + level);
+        IslandData d = getOrCreateIslandData(owner);
+        islandData.put(owner, new IslandData(d.owner(), d.trustees, level, d.blocksPlaced()));
+    }
+
+    /**
+     * Adds a trustee to the owner's island data, if not already present.
+     *
+     * @param owner   the island owner's UUID
+     * @param trustee the trustee's UUID
+     * @return {@code true} if the trustee was added
+     */
+    public boolean addTrustee(UUID owner, UUID trustee) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(trustee, "trustee");
+        IslandData d = getOrCreateIslandData(owner);
+        if (d.trustees.contains(trustee)) return false;
+        d.trustees.add(trustee);
+        return true;
+    }
+
+    /**
+     * Removes a trustee from the owner's island data.
+     *
+     * @param owner   the island owner's UUID
+     * @param trustee the trustee's UUID
+     * @return {@code true} if the trustee was removed
+     */
+    public boolean removeTrustee(UUID owner, UUID trustee) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(trustee, "trustee");
+        IslandData d = islandData.get(owner);
+        return d != null && d.trustees.remove(trustee);
+    }
+
+    /**
+     * Increments the blocks-placed counter for the owner's island data.
+     *
+     * @param owner  the island owner's UUID
+     * @param amount the number of blocks to add (must be >= 0)
+     */
+    public void addBlocksPlaced(UUID owner, long amount) {
+        Objects.requireNonNull(owner, "owner");
+        if (amount < 0) throw new IllegalArgumentException("amount must be >= 0, got " + amount);
+        IslandData d = getOrCreateIslandData(owner);
+        islandData.put(owner, new IslandData(d.owner(), d.trustees, d.level(), d.blocksPlaced() + amount));
+    }
+
+    // -------------------------------------------------------------------------
+    // IslandData persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "island.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        islandData.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID owner = UUID.fromString(key);
+                int level = cfg.getInt(key + ".level", 0);
+                long blocks = cfg.getLong(key + ".blocksPlaced", 0L);
+                List<UUID> trustees = new ArrayList<>();
+                List<?> raw = cfg.getList(key + ".trustees", Collections.emptyList());
+                for (Object o : raw) {
+                    try {
+                        trustees.add(UUID.fromString(String.valueOf(o)));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip malformed trustee entries
+                    }
+                }
+                islandData.put(owner, new IslandData(owner, trustees, level, blocks));
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed UUID keys
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "island.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, IslandData> entry : islandData.entrySet()) {
+            String key = entry.getKey().toString();
+            IslandData d = entry.getValue();
+            cfg.set(key + ".level", d.level());
+            cfg.set(key + ".blocksPlaced", d.blocksPlaced());
+            List<String> trusteeStrings = new ArrayList<>();
+            for (UUID t : d.trustees) {
+                trusteeStrings.add(t.toString());
+            }
+            cfg.set(key + ".trustees", trusteeStrings);
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save island.yml", e);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // World-based island API
+    // -------------------------------------------------------------------------
 
     /**
      * Deletes the island owned by {@code owner}, removes all its members, and unloads the world.
