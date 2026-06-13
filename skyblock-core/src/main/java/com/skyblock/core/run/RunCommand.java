@@ -12,18 +12,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Handles the {@code /run} command for dungeon run statistics.
+ * Handles the {@code /runs} command for dungeon run statistics.
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /run info [floor]} — show run counts, optionally for one floor</li>
- *   <li>{@code /run reset}        — reset all run counts</li>
+ *   <li>{@code /runs stats [floor]} — show run counts for all floors or a specific floor</li>
+ *   <li>{@code /runs add <floor>}   — increment run count for a floor</li>
+ *   <li>{@code /runs reset}         — reset all run counts</li>
  * </ul>
  * </p>
  */
 public final class RunCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("stats", "add", "reset");
 
     private final RunManager runManager;
 
@@ -38,12 +39,14 @@ public final class RunCommand implements TabExecutor {
             return true;
         }
 
-        if (args.length == 0 || args[0].equalsIgnoreCase("info")) {
-            handleInfo(player, args);
+        if (args.length == 0) {
+            sendHelp(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
+            case "stats" -> handleStats(player, args);
+            case "add"   -> handleAdd(player, args);
             case "reset" -> handleReset(player);
             default      -> sendHelp(player);
         }
@@ -61,7 +64,7 @@ public final class RunCommand implements TabExecutor {
         return Collections.emptyList();
     }
 
-    private void handleInfo(Player player, String[] args) {
+    private void handleStats(Player player, String[] args) {
         if (args.length >= 2) {
             String floor = args[1];
             int count = runManager.getRunCount(player.getUniqueId(), floor);
@@ -78,14 +81,26 @@ public final class RunCommand implements TabExecutor {
         }
     }
 
+    private void handleAdd(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /runs add <floor>");
+            return;
+        }
+        String floor = args[1];
+        runManager.addRun(player.getUniqueId(), floor);
+        player.sendMessage("Run added for floor: " + floor
+                + " (total: " + runManager.getRunCount(player.getUniqueId(), floor) + ")");
+    }
+
     private void handleReset(Player player) {
         runManager.resetRuns(player.getUniqueId());
         player.sendMessage("Your dungeon run statistics have been reset.");
     }
 
     private void sendHelp(Player player) {
-        player.sendMessage("=== Run Commands ===");
-        player.sendMessage("/run info [floor]  — view run statistics");
-        player.sendMessage("/run reset         — reset all run counts");
+        player.sendMessage("=== Runs Commands ===");
+        player.sendMessage("/runs stats [floor] — view run statistics");
+        player.sendMessage("/runs add <floor>   — add a run for a floor");
+        player.sendMessage("/runs reset         — reset all run counts");
     }
 }
