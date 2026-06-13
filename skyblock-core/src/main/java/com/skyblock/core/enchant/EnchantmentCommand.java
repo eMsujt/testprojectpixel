@@ -21,9 +21,9 @@ public final class EnchantmentCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS =
             Arrays.asList("list", "info", "apply", "remove", "view");
 
-    private final SkyBlockEnchantFacade enchantmentManager;
+    private final EnchantmentManager enchantmentManager;
 
-    public EnchantmentCommand(SkyBlockEnchantFacade enchantmentManager) {
+    public EnchantmentCommand(EnchantmentManager enchantmentManager) {
         this.enchantmentManager = enchantmentManager;
     }
 
@@ -62,7 +62,7 @@ public final class EnchantmentCommand implements TabExecutor {
             String sub = args[0].toLowerCase();
             if (sub.equals("info") || sub.equals("apply") || sub.equals("remove")) {
                 String prefix = args[1].toLowerCase();
-                return Arrays.stream(EnchantManager.EnchantType.values())
+                return Arrays.stream(EnchantmentManager.SkyBlockEnchant.values())
                         .map(e -> e.name().toLowerCase())
                         .filter(n -> n.startsWith(prefix))
                         .sorted()
@@ -74,7 +74,7 @@ public final class EnchantmentCommand implements TabExecutor {
 
     private void handleList(Player player) {
         player.sendMessage("=== SkyBlock Enchantments ===");
-        Arrays.stream(EnchantManager.EnchantType.values())
+        Arrays.stream(EnchantmentManager.SkyBlockEnchant.values())
                 .forEach(e -> player.sendMessage(String.format(
                         "%s (max level: %d)",
                         e.name().toLowerCase().replace('_', ' '),
@@ -86,7 +86,7 @@ public final class EnchantmentCommand implements TabExecutor {
             player.sendMessage("Usage: /enchantment info <enchantment>");
             return;
         }
-        EnchantManager.EnchantType type = parseType(args[1]);
+        EnchantmentManager.SkyBlockEnchant type = parseType(args[1]);
         if (type == null) {
             player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchantment list to see available enchantments.");
             return;
@@ -102,7 +102,7 @@ public final class EnchantmentCommand implements TabExecutor {
             player.sendMessage("Usage: /enchantment apply <enchantment> <level>");
             return;
         }
-        EnchantManager.EnchantType type = parseType(args[1]);
+        EnchantmentManager.SkyBlockEnchant type = parseType(args[1]);
         if (type == null) {
             player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchantment list to see available enchantments.");
             return;
@@ -128,7 +128,7 @@ public final class EnchantmentCommand implements TabExecutor {
             player.sendMessage("Usage: /enchantment remove <enchantment>");
             return;
         }
-        EnchantManager.EnchantType type = parseType(args[1]);
+        EnchantmentManager.SkyBlockEnchant type = parseType(args[1]);
         if (type == null) {
             player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchantment list to see available enchantments.");
             return;
@@ -142,7 +142,7 @@ public final class EnchantmentCommand implements TabExecutor {
     }
 
     private void handleView(Player player) {
-        Map<EnchantManager.EnchantType, Integer> enchantments =
+        Map<EnchantmentManager.SkyBlockEnchant, Integer> enchantments =
                 enchantmentManager.getEnchantments(player.getUniqueId());
         if (enchantments.isEmpty()) {
             player.sendMessage("You have no active enchantments.");
@@ -155,9 +155,9 @@ public final class EnchantmentCommand implements TabExecutor {
                         e.getKey().name().toLowerCase().replace('_', ' ') + " " + e.getValue()));
     }
 
-    private static EnchantManager.EnchantType parseType(String name) {
+    private static EnchantmentManager.SkyBlockEnchant parseType(String name) {
         try {
-            return EnchantManager.EnchantType.valueOf(name.toUpperCase());
+            return EnchantmentManager.SkyBlockEnchant.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException e) {
             return null;
         }

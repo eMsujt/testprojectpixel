@@ -224,7 +224,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EnchantCommand enchantCommand = new EnchantCommand(enchantManager);
         getCommand("enchant").setExecutor(enchantCommand);
         getCommand("enchant").setTabCompleter(enchantCommand);
-        SkyBlockEnchantFacade enchantmentManager = SkyBlockEnchantFacade.getInstance();
+        com.skyblock.core.enchant.EnchantmentManager enchantmentManager = com.skyblock.core.enchant.EnchantmentManager.getInstance();
         EnchantmentCommand enchantmentCommand = new EnchantmentCommand(enchantmentManager);
         getCommand("enchantment").setExecutor(enchantmentCommand);
         getCommand("enchantment").setTabCompleter(enchantmentCommand);
