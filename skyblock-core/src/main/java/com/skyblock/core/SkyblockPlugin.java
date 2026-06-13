@@ -40,6 +40,8 @@ import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
+import com.skyblock.core.event.EventCommand;
+import com.skyblock.core.event.EventManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
 import com.skyblock.core.trade.TradeManager;
@@ -162,6 +164,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         BackpackCommand backpackCommand = new BackpackCommand(backpackManager);
         getCommand("backpack").setExecutor(backpackCommand);
         getCommand("backpack").setTabCompleter(backpackCommand);
+        EventManager eventManager = EventManager.getInstance();
+        EventCommand eventCommand = new EventCommand(eventManager);
+        getCommand("event").setExecutor(eventCommand);
+        getCommand("event").setTabCompleter(eventCommand);
     }
 
     @Override
