@@ -14,7 +14,7 @@ import java.util.UUID;
  */
 public final class GardenManager {
 
-    /** Individual purchasable plots in the Garden. */
+    /** Individual purchasable plots in the Garden (15 total). */
     public enum GardenPlot {
         CENTER("Center"),
         NORTH_1("North 1"),
@@ -30,13 +30,42 @@ public final class GardenManager {
         NORTH_WEST_1("North West 1"),
         NORTH_WEST_2("North West 2"),
         SOUTH_EAST_1("South East 1"),
-        SOUTH_EAST_2("South East 2"),
-        SOUTH_WEST_1("South West 1"),
-        SOUTH_WEST_2("South West 2");
+        SOUTH_WEST_1("South West 1");
 
         private final String displayName;
 
         GardenPlot(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+    /** NPC visitors that can arrive at the Garden. */
+    public enum VisitorType {
+        JACOB("Jacob"),
+        GUNTHER("Gunther"),
+        ANITA("Anita"),
+        BAKER("Baker"),
+        BANKER("Banker"),
+        CARPENTER("Carpenter"),
+        DWARVEN_ARTIFICER("Dwarven Artificer"),
+        ELIZABETH("Elizabeth"),
+        FARMING_MERCHANT("Farming Merchant"),
+        GRANDMA_WOLF("Grandma Wolf"),
+        JOYFUL_VILLAGER("Joyful Villager"),
+        LAZY_MINER("Lazy Miner"),
+        PHILLIP("Phillip"),
+        SHADY_VILLAGER("Shady Villager"),
+        TIA_THE_FAIRY("Tia the Fairy"),
+        TOOLSMITH("Toolsmith"),
+        WANDERING_TRADER("Wandering Trader");
+
+        private final String displayName;
+
+        VisitorType(String displayName) {
             this.displayName = displayName;
         }
 
