@@ -41,24 +41,39 @@ public final class BankManager {
     }
 
     public enum BankTier {
-        STARTER(1_000_000, "Starter"),
-        PERSONAL(10_000_000, "Personal"),
-        BOOSTER(100_000_000, "Booster");
+        PERSONAL_I(  "Personal Bank I",    25_000_000),
+        PERSONAL_II( "Personal Bank II",   75_000_000),
+        PERSONAL_III("Personal Bank III",  250_000_000),
+        PERSONAL_IV( "Personal Bank IV",   1_000_000_000),
+        PERSONAL_V(  "Personal Bank V",    5_000_000_000L),
+        PERSONAL_VI( "Personal Bank VI",   25_000_000_000L),
+        PERSONAL_VII("Personal Bank VII",  Long.MAX_VALUE);
 
-        private final double maxBalance;
         private final String displayName;
+        private final long maxBalance;
 
-        BankTier(double maxBalance, String displayName) {
-            this.maxBalance = maxBalance;
+        BankTier(String displayName, long maxBalance) {
             this.displayName = displayName;
-        }
-
-        public double getMaxBalance() {
-            return maxBalance;
+            this.maxBalance = maxBalance;
         }
 
         public String getDisplayName() {
             return displayName;
+        }
+
+        public long getMaxBalance() {
+            return maxBalance;
+        }
+
+        /**
+         * Returns the next tier, or {@code null} if this is already the highest.
+         *
+         * @return the next {@code BankTier}, or {@code null}
+         */
+        public BankTier next() {
+            BankTier[] values = values();
+            int nextOrdinal = ordinal() + 1;
+            return nextOrdinal < values.length ? values[nextOrdinal] : null;
         }
     }
 
@@ -157,7 +172,7 @@ public final class BankManager {
      * @return the player's current tier
      */
     public BankTier getTier(UUID playerId) {
-        return tiers.getOrDefault(playerId, BankTier.STARTER);
+        return tiers.getOrDefault(playerId, BankTier.PERSONAL_I);
     }
 
     /**
