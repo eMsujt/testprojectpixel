@@ -17,41 +17,51 @@ public final class EnchantmentManager {
 
     /** Every SkyBlock enchantment. */
     public enum SkyBlockEnchantment {
-        SHARPNESS,
-        CRITICAL,
-        SMITE,
-        BANE_OF_ARTHROPODS,
-        FIRST_STRIKE,
-        GIANT_KILLER,
-        ENDER_SLAYER,
-        DRAGON_HUNTER,
-        THUNDERLORD,
-        VAMPIRISM,
-        LIFE_STEAL,
-        LETHALITY,
-        EXECUTE,
-        PROSECUTE,
-        TELEKINESIS,
-        LOOTING,
-        LUCK,
-        LUCK_OF_THE_SEA,
-        ANGLER,
-        FRAIL,
-        MAGNET,
-        EXPERTISE,
-        SMELTING_TOUCH,
-        EFFICIENCY,
-        FORTUNE,
-        SILK_TOUCH,
-        PROTECTION,
-        THORNS,
-        GROWTH,
-        FEATHER_FALLING,
-        SUGAR_RUSH,
-        REJUVENATE,
-        CHANCE,
-        OVERLOAD,
-        ULTIMATE_WISE
+        SHARPNESS("Sharpness"),
+        CRITICAL("Critical"),
+        SMITE("Smite"),
+        BANE_OF_ARTHROPODS("Bane of Arthropods"),
+        FIRST_STRIKE("First Strike"),
+        GIANT_KILLER("Giant Killer"),
+        ENDER_SLAYER("Ender Slayer"),
+        DRAGON_HUNTER("Dragon Hunter"),
+        THUNDERLORD("Thunderlord"),
+        VAMPIRISM("Vampirism"),
+        LIFE_STEAL("Life Steal"),
+        LETHALITY("Lethality"),
+        EXECUTE("Execute"),
+        PROSECUTE("Prosecute"),
+        TELEKINESIS("Telekinesis"),
+        LOOTING("Looting"),
+        LUCK("Luck"),
+        LUCK_OF_THE_SEA("Luck of the Sea"),
+        ANGLER("Angler"),
+        FRAIL("Frail"),
+        MAGNET("Magnet"),
+        EXPERTISE("Expertise"),
+        SMELTING_TOUCH("Smelting Touch"),
+        EFFICIENCY("Efficiency"),
+        FORTUNE("Fortune"),
+        SILK_TOUCH("Silk Touch"),
+        PROTECTION("Protection"),
+        THORNS("Thorns"),
+        GROWTH("Growth"),
+        FEATHER_FALLING("Feather Falling"),
+        SUGAR_RUSH("Sugar Rush"),
+        REJUVENATE("Rejuvenate"),
+        CHANCE("Chance"),
+        OVERLOAD("Overload"),
+        ULTIMATE_WISE("Ultimate Wise");
+
+        private final String displayName;
+
+        SkyBlockEnchantment(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     /** Maximum level allowed per enchantment. */

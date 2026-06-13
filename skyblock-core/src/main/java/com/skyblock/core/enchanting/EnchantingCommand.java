@@ -85,7 +85,7 @@ public final class EnchantingCommand implements TabExecutor {
         Arrays.stream(EnchantmentManager.SkyBlockEnchantment.values())
                 .forEach(e -> player.sendMessage(String.format(
                         "%s (max level: %d)",
-                        e.name().toLowerCase().replace('_', ' '),
+                        e.getDisplayName(),
                         enchantingManager.getMaxLevel(e))));
     }
 
@@ -102,7 +102,7 @@ public final class EnchantingCommand implements TabExecutor {
         int currentLevel = enchantingManager.getLevel(player.getUniqueId(), enchantment);
         int maxLevel = enchantingManager.getMaxLevel(enchantment);
         player.sendMessage(String.format("%s — current level: %d / max level: %d",
-                enchantment.name().toLowerCase().replace('_', ' '), currentLevel, maxLevel));
+                enchantment.getDisplayName(), currentLevel, maxLevel));
     }
 
     private void handleApply(Player player, String[] args) {
@@ -124,8 +124,7 @@ public final class EnchantingCommand implements TabExecutor {
         }
         try {
             enchantingManager.setEnchantment(player.getUniqueId(), enchantment, level);
-            player.sendMessage("Applied " + enchantment.name().toLowerCase().replace('_', ' ')
-                    + " level " + level + ".");
+            player.sendMessage("Applied " + enchantment.getDisplayName() + " level " + level + ".");
         } catch (IllegalArgumentException e) {
             player.sendMessage(e.getMessage());
         }
@@ -143,9 +142,9 @@ public final class EnchantingCommand implements TabExecutor {
         }
         boolean removed = enchantingManager.removeEnchantment(player.getUniqueId(), enchantment);
         if (removed) {
-            player.sendMessage("Removed " + enchantment.name().toLowerCase().replace('_', ' ') + ".");
+            player.sendMessage("Removed " + enchantment.getDisplayName() + ".");
         } else {
-            player.sendMessage("You do not have " + enchantment.name().toLowerCase().replace('_', ' ') + " applied.");
+            player.sendMessage("You do not have " + enchantment.getDisplayName() + " applied.");
         }
     }
 
@@ -160,7 +159,7 @@ public final class EnchantingCommand implements TabExecutor {
         enchantments.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(e -> player.sendMessage(
-                        e.getKey().name().toLowerCase().replace('_', ' ') + " " + e.getValue()));
+                        e.getKey().getDisplayName() + " " + e.getValue()));
     }
 
     private static EnchantmentManager.SkyBlockEnchantment parseEnchantment(String name) {
