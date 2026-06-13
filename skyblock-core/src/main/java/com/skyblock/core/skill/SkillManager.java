@@ -35,6 +35,33 @@ public final class SkillManager {
         }
     }
 
+    public enum SkyBlockSkill {
+        FARMING("Farming"),
+        MINING("Mining"),
+        COMBAT("Combat"),
+        FISHING("Fishing"),
+        FORAGING("Foraging"),
+        ENCHANTING("Enchanting"),
+        ALCHEMY("Alchemy"),
+        TAMING("Taming"),
+        CARPENTRY("Carpentry"),
+        RUNECRAFTING("Runecrafting");
+
+        private final String displayName;
+
+        SkyBlockSkill(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public SkillType toSkillType() {
+            return SkillType.valueOf(this.name());
+        }
+    }
+
     public static final int MAX_LEVEL = SkillLevelManager.MAX_LEVEL;
 
     private static final SkillManager INSTANCE = new SkillManager();
