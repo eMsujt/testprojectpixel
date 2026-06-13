@@ -11,21 +11,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Handles the {@code /booster} command.
+ * Handles the {@code /booster} command for managing per-player XP/coin boosters.
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /booster status}                          — show your active booster</li>
- *   <li>{@code /booster activate <xp|coins|drop_rate>}   — activate a booster type</li>
- *   <li>{@code /booster deactivate}                      — deactivate your current booster</li>
- *   <li>{@code /booster list}                            — list all booster types</li>
+ *   <li>{@code /booster status}                    — show your active booster</li>
+ *   <li>{@code /booster set <multiplier> <seconds>} — set a booster (admin)</li>
+ *   <li>{@code /booster remove}                    — remove your booster (admin)</li>
  * </ul>
  * </p>
  */
 public final class BoosterCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS =
-            Arrays.asList("status", "activate", "deactivate", "list");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("status", "set", "remove");
 
     private final BoosterManager boosterManager;
 
@@ -40,18 +38,15 @@ public final class BoosterCommand implements TabExecutor {
             return true;
         }
 
-        if (args.length == 0) {
-            player.sendMessage("Usage: /booster <status|activate|deactivate|list>");
+        if (args.length == 0 || args[0].equalsIgnoreCase("status")) {
+            handleStatus(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "status"     -> handleStatus(player);
-            case "activate"   -> handleActivate(player, args);
-            case "deactivate" -> handleDeactivate(player);
-            case "list"       -> handleList(player);
-            default           -> player.sendMessage(
-                    "Unknown subcommand. Usage: /booster <status|activate|deactivate|list>");
+            case "set"    -> handleSet(player, args);
+            case "remove" -> handleRemove(player);
+            default       -> sendHelp(player);
         }
         return true;
     }
@@ -64,54 +59,58 @@ public final class BoosterCommand implements TabExecutor {
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
-        if (args.length == 2 && args[0].equalsIgnoreCase("activate")) {
-            String prefix = args[1].toLowerCase();
-            return Arrays.stream(BoosterManager.BoosterType.values())
-                    .map(t -> t.name().toLowerCase())
-                    .filter(n -> n.startsWith(prefix))
-                    .collect(Collectors.toList());
-        }
         return Collections.emptyList();
     }
 
     private void handleStatus(Player player) {
-        BoosterManager.BoosterType active = boosterManager.getActiveBooster(player.getUniqueId());
-        if (active == null) {
+        if (!boosterManager.hasBooster(player.getUniqueId())) {
             player.sendMessage("You have no active booster.");
-        } else {
-            player.sendMessage("Active booster: " + active.getDisplayName());
-        }
-    }
-
-    private void handleActivate(Player player, String[] args) {
-        if (args.length < 2) {
-            player.sendMessage("Usage: /booster activate <xp|coins|drop_rate>");
             return;
         }
-        BoosterManager.BoosterType type;
+        double multiplier = boosterManager.getMultiplier(player.getUniqueId());
+        long expiryMs = boosterManager.getExpiry(player.getUniqueId());
+        long remainingSeconds = Math.max(0, (expiryMs - System.currentTimeMillis()) / 1000);
+        player.sendMessage("=== Active Booster ===");
+        player.sendMessage("Multiplier: " + multiplier + "x");
+        player.sendMessage("Expires in: " + remainingSeconds + "s");
+    }
+
+    private void handleSet(Player player, String[] args) {
+        if (!player.hasPermission("skyblock.booster.admin")) {
+            player.sendMessage("You do not have permission to set boosters.");
+            return;
+        }
+        if (args.length < 3) {
+            player.sendMessage("Usage: /booster set <multiplier> <seconds>");
+            return;
+        }
+        double multiplier;
+        long seconds;
         try {
-            type = BoosterManager.BoosterType.valueOf(args[1].toUpperCase());
-        } catch (IllegalArgumentException e) {
-            player.sendMessage("Unknown booster type: " + args[1]);
+            multiplier = Double.parseDouble(args[1]);
+            seconds = Long.parseLong(args[2]);
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid number format. Usage: /booster set <multiplier> <seconds>");
             return;
         }
-        boosterManager.activateBooster(player.getUniqueId(), type);
-        player.sendMessage("Activated " + type.getDisplayName() + ".");
+        long expiryMs = System.currentTimeMillis() + seconds * 1000L;
+        boosterManager.setBooster(player.getUniqueId(), multiplier, expiryMs);
+        player.sendMessage("Booster set: " + multiplier + "x for " + seconds + "s.");
     }
 
-    private void handleDeactivate(Player player) {
-        if (!boosterManager.hasActiveBooster(player.getUniqueId())) {
-            player.sendMessage("You have no active booster to deactivate.");
+    private void handleRemove(Player player) {
+        if (!player.hasPermission("skyblock.booster.admin")) {
+            player.sendMessage("You do not have permission to remove boosters.");
             return;
         }
-        boosterManager.deactivateBooster(player.getUniqueId());
-        player.sendMessage("Booster deactivated.");
+        boosterManager.removeBooster(player.getUniqueId());
+        player.sendMessage("Your booster has been removed.");
     }
 
-    private void handleList(Player player) {
-        player.sendMessage("=== Available Boosters ===");
-        for (BoosterManager.BoosterType type : BoosterManager.BoosterType.values()) {
-            player.sendMessage("- " + type.name().toLowerCase() + ": " + type.getDisplayName());
-        }
+    private void sendHelp(Player player) {
+        player.sendMessage("=== Booster Commands ===");
+        player.sendMessage("/booster status              — view your active booster");
+        player.sendMessage("/booster set <mult> <secs>  — set a booster (admin)");
+        player.sendMessage("/booster remove              — remove your booster (admin)");
     }
 }
