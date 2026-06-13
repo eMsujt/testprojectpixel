@@ -132,6 +132,39 @@ public final class FishingManager {
         }
     }
 
+    /** Trophy fish types obtainable through SkyBlock trophy fishing. */
+    public enum TrophyFish {
+        MAHI_MAHI(1,   "Mahi Mahi"),
+        SULPHUR_SKITTER(1,   "Sulphur Skitter"),
+        OBFUSCATED_FISH_1(1,   "Obfuscated Fish 1"),
+        OBFUSCATED_FISH_2(10,  "Obfuscated Fish 2"),
+        OBFUSCATED_FISH_3(20,  "Obfuscated Fish 3"),
+        STEAMING_HOT_FLOUNDER(5,   "Steaming-Hot Flounder"),
+        GUSHER(5,   "Gusher"),
+        BLOBFISH(10,  "Blobfish"),
+        SLUGFISH(10,  "Slugfish"),
+        FLYFISH(15,  "Flyfish"),
+        LAVA_HORSE(20,  "Lava Horse"),
+        MANA_RAY(20,  "Mana Ray"),
+        VOLCANIC_STONEFISH(25,  "Volcanic Stonefish"),
+        VANILLE(25,  "Vanille"),
+        SKELETON_FISH(30,  "Skeleton Fish");
+
+        /** Minimum fishing level required for this trophy fish to drop. */
+        public final int minLevel;
+        /** Human-readable display name. */
+        public final String displayName;
+
+        TrophyFish(int minLevel, String displayName) {
+            this.minLevel = minLevel;
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** Overall chance (0–1) that a fishing catch triggers a sea-creature spawn check. */
     public static final double BASE_SEA_CREATURE_CHANCE = 0.20;
 

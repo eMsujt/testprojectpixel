@@ -75,7 +75,7 @@ public final class FishingCommand implements TabExecutor {
         if (args.length == 2 && "trophy".equals(args[0].toLowerCase())) {
             String prefix = args[1].toLowerCase();
             List<String> options = new java.util.ArrayList<>(TROPHY_SUBCOMMANDS);
-            for (TrophyFishingManager.TrophyFish fish : TrophyFishingManager.TrophyFish.values()) {
+            for (FishingManager.TrophyFish fish : FishingManager.TrophyFish.values()) {
                 options.add(fish.name().toLowerCase());
             }
             return options.stream()
@@ -97,15 +97,15 @@ public final class FishingCommand implements TabExecutor {
         UUID id = player.getUniqueId();
 
         if (args.length == 1) {
-            Map<TrophyFishingManager.TrophyFish, Integer> all = trophyFishingManager.getAllCatches(id);
+            Map<FishingManager.TrophyFish, Integer> all = trophyFishingManager.getAllCatches(id);
             if (all.isEmpty()) {
                 player.sendMessage("You have not caught any trophy fish yet.");
                 return;
             }
             player.sendMessage("=== Trophy Fishing (" + all.size() + " types) ===");
             all.entrySet().stream()
-               .sorted(Map.Entry.<TrophyFishingManager.TrophyFish, Integer>comparingByValue().reversed())
-               .forEach(e -> player.sendMessage("  " + e.getKey().name() + ": " + e.getValue()));
+               .sorted(Map.Entry.<FishingManager.TrophyFish, Integer>comparingByValue().reversed())
+               .forEach(e -> player.sendMessage("  " + e.getKey().getDisplayName() + ": " + e.getValue()));
             return;
         }
 
@@ -115,13 +115,13 @@ public final class FishingCommand implements TabExecutor {
             return;
         }
 
-        TrophyFishingManager.TrophyFish fish = parseTrophyFish(args[1]);
+        FishingManager.TrophyFish fish = parseTrophyFish(args[1]);
         if (fish == null) {
             player.sendMessage("Unknown trophy fish: " + args[1]);
             return;
         }
         int count = trophyFishingManager.getCatchCount(id, fish);
-        player.sendMessage(fish.name() + " catches: " + count);
+        player.sendMessage(fish.getDisplayName() + " catches: " + count);
     }
 
     private void handleTreasure(Player player) {
@@ -156,8 +156,8 @@ public final class FishingCommand implements TabExecutor {
         player.sendMessage("/fishing rarity             — show fish rarity drop chances");
     }
 
-    private static TrophyFishingManager.TrophyFish parseTrophyFish(String name) {
-        for (TrophyFishingManager.TrophyFish fish : TrophyFishingManager.TrophyFish.values()) {
+    private static FishingManager.TrophyFish parseTrophyFish(String name) {
+        for (FishingManager.TrophyFish fish : FishingManager.TrophyFish.values()) {
             if (fish.name().equalsIgnoreCase(name)) {
                 return fish;
             }

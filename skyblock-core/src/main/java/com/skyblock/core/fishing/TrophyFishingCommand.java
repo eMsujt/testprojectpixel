@@ -68,7 +68,7 @@ public final class TrophyFishingCommand implements TabExecutor {
         if (args.length == 2 && "info".equals(args[0].toLowerCase())) {
             String prefix = args[1].toLowerCase();
             List<String> options = new ArrayList<>();
-            for (TrophyFishingManager.TrophyFish fish : TrophyFishingManager.TrophyFish.values()) {
+            for (FishingManager.TrophyFish fish : FishingManager.TrophyFish.values()) {
                 options.add(fish.name().toLowerCase());
             }
             return options.stream()
@@ -80,14 +80,14 @@ public final class TrophyFishingCommand implements TabExecutor {
 
     private void handleList(Player player) {
         UUID id = player.getUniqueId();
-        Map<TrophyFishingManager.TrophyFish, Integer> all = trophyFishingManager.getAllCatches(id);
+        Map<FishingManager.TrophyFish, Integer> all = trophyFishingManager.getAllCatches(id);
         if (all.isEmpty()) {
             player.sendMessage("You have not caught any trophy fish yet.");
             return;
         }
         player.sendMessage("=== Trophy Fishing (" + all.size() + " types) ===");
         all.entrySet().stream()
-           .sorted(Map.Entry.<TrophyFishingManager.TrophyFish, Integer>comparingByValue().reversed())
+           .sorted(Map.Entry.<FishingManager.TrophyFish, Integer>comparingByValue().reversed())
            .forEach(e -> player.sendMessage("  " + e.getKey().getDisplayName() + ": " + e.getValue()));
     }
 
@@ -96,7 +96,7 @@ public final class TrophyFishingCommand implements TabExecutor {
             player.sendMessage("Usage: /trophyfishing info <fish>");
             return;
         }
-        TrophyFishingManager.TrophyFish fish = parseTrophyFish(args[1]);
+        FishingManager.TrophyFish fish = parseTrophyFish(args[1]);
         if (fish == null) {
             player.sendMessage("Unknown trophy fish: " + args[1]);
             return;
@@ -117,8 +117,8 @@ public final class TrophyFishingCommand implements TabExecutor {
         player.sendMessage("/trophyfishing reset        — reset all trophy fish records");
     }
 
-    private static TrophyFishingManager.TrophyFish parseTrophyFish(String name) {
-        for (TrophyFishingManager.TrophyFish fish : TrophyFishingManager.TrophyFish.values()) {
+    private static FishingManager.TrophyFish parseTrophyFish(String name) {
+        for (FishingManager.TrophyFish fish : FishingManager.TrophyFish.values()) {
             if (fish.name().equalsIgnoreCase(name)) {
                 return fish;
             }
