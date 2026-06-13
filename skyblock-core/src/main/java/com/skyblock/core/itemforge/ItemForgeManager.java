@@ -78,6 +78,49 @@ public final class ItemForgeManager {
     // Recipe catalogue
     // ---------------------------------------------------------------------------
 
+    /** Canonical set of forge recipes available in SkyBlock. */
+    public enum ForgeRecipe {
+        MITHRIL_PICKAXE("Mithril Pickaxe", 3600, CustomItemManager.Rarity.RARE),
+        TITANIUM_DRILL("Titanium Drill", 14400, CustomItemManager.Rarity.EPIC),
+        REFINED_MITHRIL("Refined Mithril", 900, CustomItemManager.Rarity.UNCOMMON),
+        REFINED_TITANIUM("Refined Titanium", 1800, CustomItemManager.Rarity.RARE),
+        FUEL_TANK("Fuel Tank", 7200, CustomItemManager.Rarity.RARE),
+        MITHRIL_PLATE("Mithril Plate", 3600, CustomItemManager.Rarity.UNCOMMON),
+        TUNGSTEN_KEY("Tungsten Key", 600, CustomItemManager.Rarity.UNCOMMON),
+        GEMSTONE_GAUNTLET("Gemstone Gauntlet", 28800, CustomItemManager.Rarity.LEGENDARY),
+        DRAGON_SCALE("Dragon Scale", 86400, CustomItemManager.Rarity.LEGENDARY),
+        MITHRIL_BLADE("Mithril Blade", 7200, CustomItemManager.Rarity.RARE),
+        RUBY_GEMSTONE_RING("Ruby Gemstone Ring", 5400, CustomItemManager.Rarity.RARE),
+        SAPPHIRE_GEMSTONE_RING("Sapphire Gemstone Ring", 5400, CustomItemManager.Rarity.RARE),
+        JADE_GEMSTONE_RING("Jade Gemstone Ring", 5400, CustomItemManager.Rarity.RARE),
+        TOPAZ_GEMSTONE_RING("Topaz Gemstone Ring", 5400, CustomItemManager.Rarity.RARE),
+        JASPER_GEMSTONE_RING("Jasper Gemstone Ring", 5400, CustomItemManager.Rarity.RARE),
+        OPAL_GEMSTONE_RING("Opal Gemstone Ring", 5400, CustomItemManager.Rarity.RARE),
+        MITHRIL_GAUNTLET("Mithril Gauntlet", 14400, CustomItemManager.Rarity.EPIC),
+        REFINED_UMBER("Refined Umber", 1800, CustomItemManager.Rarity.UNCOMMON),
+        REFINED_TUNGSTEN("Refined Tungsten", 1800, CustomItemManager.Rarity.UNCOMMON),
+        GOBLIN_RADAR("Goblin Radar", 10800, CustomItemManager.Rarity.EPIC),
+        BEJEWELED_HANDLE("Bejeweled Handle", 21600, CustomItemManager.Rarity.LEGENDARY),
+        SORROW_HELMET("Sorrow Helmet", 43200, CustomItemManager.Rarity.LEGENDARY);
+
+        private final String displayName;
+        private final int durationSeconds;
+        private final CustomItemManager.Rarity rarity;
+
+        ForgeRecipe(String displayName, int durationSeconds, CustomItemManager.Rarity rarity) {
+            this.displayName = displayName;
+            this.durationSeconds = durationSeconds;
+            this.rarity = rarity;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getDurationSeconds() { return durationSeconds; }
+        public CustomItemManager.Rarity getRarity() { return rarity; }
+
+        /** Returns the recipe ID used as the map key (lowercase enum name). */
+        public String getId() { return name().toLowerCase(); }
+    }
+
     private static final Map<String, ItemForgeRecipe> RECIPES;
 
     static {
@@ -132,6 +175,66 @@ public final class ItemForgeManager {
                 "mithril_blade", "Mithril Blade",
                 Map.of("REFINED_MITHRIL", 6, "IRON_INGOT", 5),
                 new SkyBlockItem("MITHRIL_BLADE", CustomItemManager.Rarity.RARE), 1, 7200));
+
+        r.put("ruby_gemstone_ring", new ItemForgeRecipe(
+                "ruby_gemstone_ring", "Ruby Gemstone Ring",
+                Map.of("RUBY_GEMSTONE", 8, "GOLD_INGOT", 4),
+                new SkyBlockItem("RUBY_GEMSTONE_RING", CustomItemManager.Rarity.RARE), 1, 5400));
+
+        r.put("sapphire_gemstone_ring", new ItemForgeRecipe(
+                "sapphire_gemstone_ring", "Sapphire Gemstone Ring",
+                Map.of("SAPPHIRE_GEMSTONE", 8, "GOLD_INGOT", 4),
+                new SkyBlockItem("SAPPHIRE_GEMSTONE_RING", CustomItemManager.Rarity.RARE), 1, 5400));
+
+        r.put("jade_gemstone_ring", new ItemForgeRecipe(
+                "jade_gemstone_ring", "Jade Gemstone Ring",
+                Map.of("JADE_GEMSTONE", 8, "GOLD_INGOT", 4),
+                new SkyBlockItem("JADE_GEMSTONE_RING", CustomItemManager.Rarity.RARE), 1, 5400));
+
+        r.put("topaz_gemstone_ring", new ItemForgeRecipe(
+                "topaz_gemstone_ring", "Topaz Gemstone Ring",
+                Map.of("TOPAZ_GEMSTONE", 8, "GOLD_INGOT", 4),
+                new SkyBlockItem("TOPAZ_GEMSTONE_RING", CustomItemManager.Rarity.RARE), 1, 5400));
+
+        r.put("jasper_gemstone_ring", new ItemForgeRecipe(
+                "jasper_gemstone_ring", "Jasper Gemstone Ring",
+                Map.of("JASPER_GEMSTONE", 8, "GOLD_INGOT", 4),
+                new SkyBlockItem("JASPER_GEMSTONE_RING", CustomItemManager.Rarity.RARE), 1, 5400));
+
+        r.put("opal_gemstone_ring", new ItemForgeRecipe(
+                "opal_gemstone_ring", "Opal Gemstone Ring",
+                Map.of("OPAL_GEMSTONE", 8, "GOLD_INGOT", 4),
+                new SkyBlockItem("OPAL_GEMSTONE_RING", CustomItemManager.Rarity.RARE), 1, 5400));
+
+        r.put("mithril_gauntlet", new ItemForgeRecipe(
+                "mithril_gauntlet", "Mithril Gauntlet",
+                Map.of("REFINED_MITHRIL", 10, "MITHRIL_PLATE", 2),
+                new SkyBlockItem("MITHRIL_GAUNTLET", CustomItemManager.Rarity.EPIC), 1, 14400));
+
+        r.put("refined_umber", new ItemForgeRecipe(
+                "refined_umber", "Refined Umber",
+                Map.of("UMBER", 10),
+                new SkyBlockItem("REFINED_UMBER", CustomItemManager.Rarity.UNCOMMON), 1, 1800));
+
+        r.put("refined_tungsten", new ItemForgeRecipe(
+                "refined_tungsten", "Refined Tungsten",
+                Map.of("TUNGSTEN", 5),
+                new SkyBlockItem("REFINED_TUNGSTEN", CustomItemManager.Rarity.UNCOMMON), 1, 1800));
+
+        r.put("goblin_radar", new ItemForgeRecipe(
+                "goblin_radar", "Goblin Radar",
+                Map.of("REFINED_MITHRIL", 6, "REFINED_TITANIUM", 2, "GOBLIN_EGG", 1),
+                new SkyBlockItem("GOBLIN_RADAR", CustomItemManager.Rarity.EPIC), 1, 10800));
+
+        r.put("bejeweled_handle", new ItemForgeRecipe(
+                "bejeweled_handle", "Bejeweled Handle",
+                Map.of("RUBY_GEMSTONE", 3, "SAPPHIRE_GEMSTONE", 3, "REFINED_MITHRIL", 5),
+                new SkyBlockItem("BEJEWELED_HANDLE", CustomItemManager.Rarity.LEGENDARY), 1, 21600));
+
+        r.put("sorrow_helmet", new ItemForgeRecipe(
+                "sorrow_helmet", "Sorrow Helmet",
+                Map.of("DRAGON_SCALE", 8, "REFINED_TITANIUM", 5),
+                new SkyBlockItem("SORROW_HELMET", CustomItemManager.Rarity.LEGENDARY), 1, 43200));
 
         RECIPES = Collections.unmodifiableMap(r);
     }
