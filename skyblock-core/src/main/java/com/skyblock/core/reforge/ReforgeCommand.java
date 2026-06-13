@@ -69,8 +69,8 @@ public final class ReforgeCommand implements TabExecutor {
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("apply"))) {
             String prefix = args[1].toLowerCase();
-            return Arrays.stream(ReforgeManager.Reforge.values())
-                    .filter(r -> r != ReforgeManager.Reforge.NONE)
+            return Arrays.stream(ReforgeManager.ReforgeType.values())
+                    .filter(r -> r != ReforgeManager.ReforgeType.NONE)
                     .map(r -> r.getDisplayName())
                     .filter(n -> n.toLowerCase().startsWith(prefix))
                     .collect(Collectors.toList());
@@ -80,18 +80,18 @@ public final class ReforgeCommand implements TabExecutor {
 
     private void handleStatus(Player player) {
         UUID id = player.getUniqueId();
-        ReforgeManager.Reforge reforge = reforgeManager.getReforge(id);
+        ReforgeManager.ReforgeType reforge = reforgeManager.getReforge(id);
         player.sendMessage("=== Reforge ===");
         player.sendMessage("Current: " + reforge.getDisplayName());
-        if (reforge != ReforgeManager.Reforge.NONE) {
+        if (reforge != ReforgeManager.ReforgeType.NONE) {
             printBonuses(player, reforge);
         }
     }
 
     private void handleList(Player player) {
         player.sendMessage("=== Available Reforges ===");
-        for (ReforgeManager.Reforge r : ReforgeManager.Reforge.values()) {
-            if (r == ReforgeManager.Reforge.NONE) continue;
+        for (ReforgeManager.ReforgeType r : ReforgeManager.ReforgeType.values()) {
+            if (r == ReforgeManager.ReforgeType.NONE) continue;
             player.sendMessage("  " + r.getDisplayName()
                     + " [STR+" + r.getStrengthBonus()
                     + " DEF+" + r.getDefenseBonus()
@@ -104,8 +104,8 @@ public final class ReforgeCommand implements TabExecutor {
             player.sendMessage("Usage: /reforge info <name>");
             return;
         }
-        ReforgeManager.Reforge reforge = ReforgeManager.Reforge.fromName(args[1]);
-        if (reforge == null || reforge == ReforgeManager.Reforge.NONE) {
+        ReforgeManager.ReforgeType reforge = ReforgeManager.ReforgeType.fromName(args[1]);
+        if (reforge == null || reforge == ReforgeManager.ReforgeType.NONE) {
             player.sendMessage("Unknown reforge: " + args[1]);
             return;
         }
@@ -118,8 +118,8 @@ public final class ReforgeCommand implements TabExecutor {
             player.sendMessage("Usage: /reforge apply <name>");
             return;
         }
-        ReforgeManager.Reforge reforge = ReforgeManager.Reforge.fromName(args[1]);
-        if (reforge == null || reforge == ReforgeManager.Reforge.NONE) {
+        ReforgeManager.ReforgeType reforge = ReforgeManager.ReforgeType.fromName(args[1]);
+        if (reforge == null || reforge == ReforgeManager.ReforgeType.NONE) {
             player.sendMessage("Unknown reforge: " + args[1]);
             return;
         }
@@ -142,7 +142,7 @@ public final class ReforgeCommand implements TabExecutor {
         player.sendMessage("/reforge clear            — remove the current reforge");
     }
 
-    private static void printBonuses(Player player, ReforgeManager.Reforge reforge) {
+    private static void printBonuses(Player player, ReforgeManager.ReforgeType reforge) {
         player.sendMessage("  Strength: +" + reforge.getStrengthBonus());
         player.sendMessage("  Defense:  +" + reforge.getDefenseBonus());
         player.sendMessage("  Speed:    +" + reforge.getSpeedBonus());

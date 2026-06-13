@@ -17,12 +17,13 @@ import java.util.UUID;
 public final class ReforgeManager {
 
     /** A reforge type with display name and primary stat bonus. */
-    public enum Reforge {
+    public enum ReforgeType {
         NONE("None", 0, 0, 0),
         SHARP("Sharp", 10, 0, 0),
         FIERCE("Fierce", 20, 0, 5),
         GENTLE("Gentle", 0, 10, 0),
         STRONG("Strong", 15, 5, 0),
+        SUPERIOR("Superior", 35, 20, 20),
         LEGENDARY("Legendary", 25, 10, 10),
         ANCIENT("Ancient", 30, 15, 15),
         FORCEFUL("Forceful", 5, 0, 20),
@@ -35,7 +36,7 @@ public final class ReforgeManager {
         private final int defenseBonus;
         private final int speedBonus;
 
-        Reforge(String displayName, int strengthBonus, int defenseBonus, int speedBonus) {
+        ReforgeType(String displayName, int strengthBonus, int defenseBonus, int speedBonus) {
             this.displayName = displayName;
             this.strengthBonus = strengthBonus;
             this.defenseBonus = defenseBonus;
@@ -47,8 +48,8 @@ public final class ReforgeManager {
         public int getDefenseBonus() { return defenseBonus; }
         public int getSpeedBonus() { return speedBonus; }
 
-        public static Reforge fromName(String name) {
-            for (Reforge r : values()) {
+        public static ReforgeType fromName(String name) {
+            for (ReforgeType r : values()) {
                 if (r.displayName.equalsIgnoreCase(name) || r.name().equalsIgnoreCase(name)) {
                     return r;
                 }
@@ -60,7 +61,7 @@ public final class ReforgeManager {
     private static final ReforgeManager INSTANCE = new ReforgeManager();
 
     /** Per-player active reforge. */
-    private final Map<UUID, Reforge> playerReforges = new HashMap<>();
+    private final Map<UUID, ReforgeType> playerReforges = new HashMap<>();
 
     private ReforgeManager() {}
 
@@ -74,18 +75,18 @@ public final class ReforgeManager {
      * @param playerId the player to look up
      * @return the player's current reforge
      */
-    public Reforge getReforge(UUID playerId) {
+    public ReforgeType getReforge(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        return playerReforges.getOrDefault(playerId, Reforge.NONE);
+        return playerReforges.getOrDefault(playerId, ReforgeType.NONE);
     }
 
     /**
      * Sets the active reforge for the given player.
      *
      * @param playerId the player to update
-     * @param reforge  the reforge to apply; use {@link Reforge#NONE} to clear
+     * @param reforge  the reforge to apply; use {@link ReforgeType#NONE} to clear
      */
-    public void setReforge(UUID playerId, Reforge reforge) {
+    public void setReforge(UUID playerId, ReforgeType reforge) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(reforge, "reforge");
         playerReforges.put(playerId, reforge);
@@ -104,9 +105,9 @@ public final class ReforgeManager {
     /**
      * Returns an unmodifiable view of all player reforges.
      *
-     * @return map of player UUID to active {@link Reforge}
+     * @return map of player UUID to active {@link ReforgeType}
      */
-    public Map<UUID, Reforge> getAllReforges() {
+    public Map<UUID, ReforgeType> getAllReforges() {
         return Collections.unmodifiableMap(playerReforges);
     }
 }
