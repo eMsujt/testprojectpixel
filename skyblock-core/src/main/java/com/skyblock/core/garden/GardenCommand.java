@@ -27,7 +27,10 @@ import java.util.stream.Collectors;
  */
 public final class GardenCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "tier", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "tier", "harvest", "reset");
+    private static final List<String> CROP_TYPE_NAMES = Arrays.stream(GardenManager.CropType.values())
+            .map(c -> c.name().toLowerCase())
+            .collect(Collectors.toList());
     private static final List<String> MODIFY_OPS = Arrays.asList("set", "add");
     private static final List<String> CROP_OPS = Arrays.asList("set", "add");
     private static final List<String> TIER_NAMES = Arrays.stream(GardenManager.PlotTier.values())
@@ -54,7 +57,7 @@ public final class GardenCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|tier|reset>");
+            player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|reset>");
             return true;
         }
 
@@ -65,8 +68,9 @@ public final class GardenCommand implements TabExecutor {
             case "crop"     -> handleCrop(player, args);
             case "plots"    -> handlePlots(player, args);
             case "tier"     -> handleTier(player, args);
+            case "harvest"  -> handleHarvest(player, args);
             case "reset"    -> handleReset(player);
-            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|plots|tier|reset>");
+            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|reset>");
         }
         return true;
     }
@@ -93,6 +97,9 @@ public final class GardenCommand implements TabExecutor {
             }
             if (sub.equals("tier")) {
                 return CROP_NAMES.stream().filter(c -> c.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (sub.equals("harvest")) {
+                return CROP_TYPE_NAMES.stream().filter(c -> c.startsWith(prefix)).collect(Collectors.toList());
             }
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("tier")) {
@@ -269,6 +276,22 @@ public final class GardenCommand implements TabExecutor {
         }
     }
 
+    private void handleHarvest(Player player, String[] args) {
+        if (args.length >= 2) {
+            GardenManager.CropType crop = parseCropType(player, args[1]);
+            if (crop == null) return;
+            int yield = gardenManager.harvest(player.getUniqueId(), crop);
+            long total = gardenManager.getHarvestCount(player.getUniqueId(), crop);
+            player.sendMessage("Harvested " + yield + "x " + crop.name() + ". Total: " + total + ".");
+            return;
+        }
+        player.sendMessage("=== Harvest Totals ===");
+        for (GardenManager.CropType crop : GardenManager.CropType.values()) {
+            long total = gardenManager.getHarvestCount(player.getUniqueId(), crop);
+            player.sendMessage(crop.name() + ": " + total);
+        }
+    }
+
     private void handleReset(Player player) {
         if (!player.isOp()) {
             player.sendMessage("You do not have permission to use this subcommand.");
@@ -296,6 +319,15 @@ public final class GardenCommand implements TabExecutor {
             return GardenManager.GardenCrop.valueOf(input.toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown crop: " + input + ". Valid crops: " + String.join(", ", CROP_NAMES));
+            return null;
+        }
+    }
+
+    private GardenManager.CropType parseCropType(Player player, String input) {
+        try {
+            return GardenManager.CropType.valueOf(input.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown crop: " + input + ". Valid crops: " + String.join(", ", CROP_TYPE_NAMES));
             return null;
         }
     }

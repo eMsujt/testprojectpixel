@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Collections;
 
 /**
  * Singleton tracking each player's Garden plot level, visitor count, and crop upgrade levels.
@@ -110,6 +111,37 @@ public final class GardenManager {
         }
     }
 
+    /**
+     * Harvestable crop types with their base yield per harvest action.
+     * Yield is multiplied by {@code (1 + cropUpgradeLevel)} at harvest time.
+     */
+    public enum CropType {
+        WHEAT(1,    GardenCrop.WHEAT),
+        CARROT(3,   GardenCrop.CARROT),
+        POTATO(3,   GardenCrop.POTATO),
+        PUMPKIN(1,  GardenCrop.PUMPKIN),
+        MELON(4,    GardenCrop.MELON),
+        SUGARCANE(2, GardenCrop.SUGAR_CANE),
+        COCOA(3,    GardenCrop.COCOA_BEANS),
+        MUSHROOM(1, GardenCrop.MUSHROOM);
+
+        private final int baseYield;
+        private final GardenCrop gardenCrop;
+
+        CropType(int baseYield, GardenCrop gardenCrop) {
+            this.baseYield = baseYield;
+            this.gardenCrop = gardenCrop;
+        }
+
+        public int getBaseYield() {
+            return baseYield;
+        }
+
+        public GardenCrop getGardenCrop() {
+            return gardenCrop;
+        }
+    }
+
     /** Upgrade tiers for a crop plot in the Garden. */
     public enum PlotTier {
         TIER_1("Tier I",   1),
@@ -158,6 +190,9 @@ public final class GardenManager {
 
     /** Per-player crop plot tiers. */
     private final Map<UUID, Map<GardenCrop, PlotTier>> cropPlotTiers = new HashMap<>();
+
+    /** Per-player total crops harvested per CropType. */
+    private final Map<UUID, Map<CropType, Long>> harvestCounts = new HashMap<>();
 
     private GardenManager() {
     }
@@ -394,6 +429,56 @@ public final class GardenManager {
     }
 
     // -------------------------------------------------------------------------
+    // Crop harvesting
+    // -------------------------------------------------------------------------
+
+    /**
+     * Harvests the given crop for the player.
+     *
+     * <p>Yield = {@code baseYield * (1 + cropUpgradeLevel)}.  The result is
+     * accumulated in the player's harvest totals.</p>
+     *
+     * @param playerId the player harvesting
+     * @param crop     the crop being harvested
+     * @return the number of items yielded this harvest
+     */
+    public int harvest(UUID playerId, CropType crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        int upgradeLevel = getCropUpgrade(playerId, crop.getGardenCrop());
+        int yield = crop.getBaseYield() * (1 + upgradeLevel);
+        harvestCounts.computeIfAbsent(playerId, id -> new EnumMap<>(CropType.class))
+                .merge(crop, (long) yield, Long::sum);
+        return yield;
+    }
+
+    /**
+     * Returns the total number of the given crop this player has harvested.
+     *
+     * @param playerId the player to look up
+     * @param crop     the crop type
+     * @return total harvested, {@code 0} if none
+     */
+    public long getHarvestCount(UUID playerId, CropType crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        Map<CropType, Long> counts = harvestCounts.get(playerId);
+        return counts == null ? 0L : counts.getOrDefault(crop, 0L);
+    }
+
+    /**
+     * Returns an immutable view of all harvest counts for the given player.
+     *
+     * @param playerId the player to look up
+     * @return map of CropType to total harvested (may be empty, never {@code null})
+     */
+    public Map<CropType, Long> getHarvestCounts(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Map<CropType, Long> counts = harvestCounts.get(playerId);
+        return counts == null ? Collections.emptyMap() : Collections.unmodifiableMap(counts);
+    }
+
+    // -------------------------------------------------------------------------
     // Lifecycle
     // -------------------------------------------------------------------------
 
@@ -409,6 +494,7 @@ public final class GardenManager {
         cropUpgrades.remove(playerId);
         unlockedPlots.remove(playerId);
         cropPlotTiers.remove(playerId);
+        harvestCounts.remove(playerId);
     }
 
     /**
@@ -424,6 +510,7 @@ public final class GardenManager {
         had |= cropUpgrades.remove(playerId) != null;
         had |= unlockedPlots.remove(playerId) != null;
         had |= cropPlotTiers.remove(playerId) != null;
+        had |= harvestCounts.remove(playerId) != null;
         return had;
     }
 }
