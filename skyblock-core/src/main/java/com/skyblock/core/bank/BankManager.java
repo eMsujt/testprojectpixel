@@ -5,7 +5,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton managing per-player bank accounts via {@link BankAccount} objects.
+ * Singleton managing per-player bank accounts via {@link BankAccount} records.
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
@@ -62,45 +61,12 @@ public final class BankManager {
         }
     }
 
-    public enum BankTransactionType {
-        DEPOSIT("Deposit"),
-        WITHDRAW("Withdraw"),
-        INTEREST("Interest");
-
-        private final String displayName;
-
-        BankTransactionType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
-    /**
-     * An immutable record of a single bank transaction.
-     *
-     * @param id        unique transaction identifier
-     * @param player    the player who performed the transaction
-     * @param type      deposit, withdrawal, or interest
-     * @param amount    the coin amount involved
-     * @param timestamp epoch-millis when the transaction occurred
-     */
-    public record BankTransaction(UUID id, UUID player, BankTransactionType type, double amount, long timestamp) {
-        public BankTransaction {
-            Objects.requireNonNull(id, "id");
-            Objects.requireNonNull(player, "player");
-            Objects.requireNonNull(type, "type");
-        }
-    }
-
     private static final BankManager INSTANCE = new BankManager();
 
+    /** Per-player bank accounts keyed by UUID. */
     private final Map<UUID, BankAccount> accounts = new HashMap<>();
     private final Map<UUID, BankTier> tiers = new HashMap<>();
     private final Map<UUID, BankType> bankTypes = new HashMap<>();
-    private final Map<UUID, List<BankTransaction>> transactions = new HashMap<>();
     /** Shared co-op balances keyed by co-op name; absent entries default to zero. */
     private final Map<String, Double> coopBalances = new HashMap<>();
 
@@ -116,7 +82,18 @@ public final class BankManager {
     }
 
     private BankAccount getOrCreate(UUID playerId) {
-        return accounts.computeIfAbsent(playerId, BankAccount::new);
+        return accounts.computeIfAbsent(playerId, k -> new BankAccount(0.0));
+    }
+
+    /**
+     * Returns the {@link BankAccount} for the given player, creating one if necessary.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return the player's bank account
+     */
+    public BankAccount getAccount(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return getOrCreate(playerId);
     }
 
     /**
@@ -126,7 +103,7 @@ public final class BankManager {
      * @return the current balance; 0 if no account exists
      */
     public double getBalance(UUID playerId) {
-        return getOrCreate(playerId).getBalance();
+        return getOrCreate(playerId).balance();
     }
 
     /**
@@ -137,8 +114,12 @@ public final class BankManager {
      * @throws IllegalArgumentException if {@code amount} is not positive
      */
     public void deposit(UUID playerId, double amount) {
-        getOrCreate(playerId).deposit(amount);
-        record(playerId, BankTransactionType.DEPOSIT, amount);
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive: " + amount);
+        }
+        BankAccount old = getOrCreate(playerId);
+        old.transactionHistory().add("DEPOSIT +" + amount);
+        accounts.put(playerId, new BankAccount(old.balance() + amount, old.transactionHistory()));
     }
 
     /**
@@ -149,12 +130,19 @@ public final class BankManager {
      * @throws IllegalArgumentException if {@code amount} is not positive or exceeds the balance
      */
     public void withdraw(UUID playerId, double amount) {
-        getOrCreate(playerId).withdraw(amount);
-        record(playerId, BankTransactionType.WITHDRAW, amount);
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive: " + amount);
+        }
+        BankAccount old = getOrCreate(playerId);
+        if (amount > old.balance()) {
+            throw new IllegalArgumentException("insufficient balance: has " + old.balance() + ", requested " + amount);
+        }
+        old.transactionHistory().add("WITHDRAW -" + amount);
+        accounts.put(playerId, new BankAccount(old.balance() - amount, old.transactionHistory()));
     }
 
     /**
-     * Returns the bank tier for the given player (defaults to {@link BankTier#STARTER}).
+     * Returns the bank tier for the given player (defaults to {@link BankTier#PERSONAL}).
      *
      * @param playerId the player's UUID, must not be null
      * @return the player's current tier
@@ -194,97 +182,18 @@ public final class BankManager {
     }
 
     /**
-     * Loads accounts from {@code bank.yml} inside the given data folder.
-     *
-     * @param dataFolder the plugin data folder, must not be null
-     */
-    public void load(File dataFolder) {
-        File file = new File(dataFolder, "bank.yml");
-        if (!file.exists()) {
-            return;
-        }
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        accounts.clear();
-        tiers.clear();
-        for (String key : cfg.getKeys(false)) {
-            try {
-                UUID uuid = UUID.fromString(key);
-                BankAccount account = new BankAccount(uuid);
-                account.setBalance(cfg.getDouble(key + ".balance", cfg.getDouble(key)));
-                accounts.put(uuid, account);
-                String tierName = cfg.getString(key + ".tier");
-                if (tierName != null) {
-                    try {
-                        tiers.put(uuid, BankTier.valueOf(tierName));
-                    } catch (IllegalArgumentException ignored) {
-                        // skip unknown tier names
-                    }
-                }
-                String typeName = cfg.getString(key + ".bankType");
-                if (typeName != null) {
-                    try {
-                        bankTypes.put(uuid, BankType.valueOf(typeName));
-                    } catch (IllegalArgumentException ignored) {
-                        // skip unknown bank type names
-                    }
-                }
-            } catch (IllegalArgumentException ignored) {
-                // skip malformed entries
-            }
-        }
-    }
-
-    /**
-     * Saves all accounts to {@code bank.yml} inside the given data folder.
-     *
-     * @param dataFolder the plugin data folder, must not be null
-     * @throws RuntimeException if the file cannot be written
-     */
-    public void save(File dataFolder) {
-        File file = new File(dataFolder, "bank.yml");
-        YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<UUID, BankAccount> entry : accounts.entrySet()) {
-            String key = entry.getKey().toString();
-            cfg.set(key + ".balance", entry.getValue().getBalance());
-            BankTier tier = tiers.get(entry.getKey());
-            if (tier != null) {
-                cfg.set(key + ".tier", tier.name());
-            }
-            BankType bankType = bankTypes.get(entry.getKey());
-            if (bankType != null) {
-                cfg.set(key + ".bankType", bankType.name());
-            }
-        }
-        try {
-            cfg.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save bank.yml", e);
-        }
-    }
-
-    /**
-     * Returns an unmodifiable view of the transaction history for the given player.
-     *
-     * @param playerId the player's UUID, must not be null
-     * @return list of transactions, oldest first; empty if none recorded
-     */
-    public List<BankTransaction> getTransactions(UUID playerId) {
-        return Collections.unmodifiableList(transactions.getOrDefault(playerId, Collections.emptyList()));
-    }
-
-    /**
-     * Applies the tier's interest rate to the player's balance and records an INTEREST transaction.
+     * Applies the tier's interest rate to the player's balance and appends an INTEREST entry.
      *
      * @param playerId the player's UUID, must not be null
      * @return the interest amount credited
      */
     public double applyInterest(UUID playerId) {
-        BankAccount account = getOrCreate(playerId);
+        BankAccount old = getOrCreate(playerId);
         double rate = getTier(playerId).getInterestRate() / 100.0;
-        double interest = account.getBalance() * rate;
+        double interest = old.balance() * rate;
         if (interest > 0) {
-            account.deposit(interest);
-            record(playerId, BankTransactionType.INTEREST, interest);
+            old.transactionHistory().add("INTEREST +" + interest);
+            accounts.put(playerId, new BankAccount(old.balance() + interest, old.transactionHistory()));
         }
         return interest;
     }
@@ -345,17 +254,83 @@ public final class BankManager {
         return coopBalances.remove(coopName) != null;
     }
 
-    private void record(UUID playerId, BankTransactionType type, double amount) {
-        transactions.computeIfAbsent(playerId, k -> new ArrayList<>())
-                .add(new BankTransaction(UUID.randomUUID(), playerId, type, amount, System.currentTimeMillis()));
+    /**
+     * Loads accounts from {@code bank.yml} inside the given data folder.
+     *
+     * @param dataFolder the plugin data folder, must not be null
+     */
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "bank.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        accounts.clear();
+        tiers.clear();
+        bankTypes.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                double balance = cfg.getDouble(key + ".balance", 0.0);
+                List<String> history = cfg.getStringList(key + ".history");
+                accounts.put(uuid, new BankAccount(balance, new ArrayList<>(history)));
+                String tierName = cfg.getString(key + ".tier");
+                if (tierName != null) {
+                    try {
+                        tiers.put(uuid, BankTier.valueOf(tierName));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip unknown tier names
+                    }
+                }
+                String typeName = cfg.getString(key + ".bankType");
+                if (typeName != null) {
+                    try {
+                        bankTypes.put(uuid, BankType.valueOf(typeName));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip unknown bank type names
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
     }
 
-    /** Removes all stored accounts, tiers, bank types, transaction history, and co-op balances. */
+    /**
+     * Saves all accounts to {@code bank.yml} inside the given data folder.
+     *
+     * @param dataFolder the plugin data folder, must not be null
+     * @throws RuntimeException if the file cannot be written
+     */
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "bank.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, BankAccount> entry : accounts.entrySet()) {
+            String key = entry.getKey().toString();
+            BankAccount account = entry.getValue();
+            cfg.set(key + ".balance", account.balance());
+            cfg.set(key + ".history", account.transactionHistory());
+            BankTier tier = tiers.get(entry.getKey());
+            if (tier != null) {
+                cfg.set(key + ".tier", tier.name());
+            }
+            BankType bankType = bankTypes.get(entry.getKey());
+            if (bankType != null) {
+                cfg.set(key + ".bankType", bankType.name());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save bank.yml", e);
+        }
+    }
+
+    /** Removes all stored accounts, tiers, bank types, and co-op balances. */
     public void clear() {
         accounts.clear();
         tiers.clear();
         bankTypes.clear();
-        transactions.clear();
         coopBalances.clear();
     }
 }
