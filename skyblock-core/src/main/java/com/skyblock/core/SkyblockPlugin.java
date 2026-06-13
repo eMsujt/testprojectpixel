@@ -8,6 +8,7 @@ import com.skyblock.core.kuudra.KuudraCommand;
 import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.bazaar.BazaarCommand;
 import com.skyblock.core.bazaar.BazaarManager;
+import com.skyblock.core.dungeon.DungeonCommand;
 import com.skyblock.core.dungeon.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.enchanting.EnchantingManager;
@@ -63,6 +64,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("bazaar").setTabCompleter(bazaarCommand);
         DungeonManager dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
+        DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
+        getCommand("dungeon").setExecutor(dungeonCommand);
+        getCommand("dungeon").setTabCompleter(dungeonCommand);
         IslandManager islandManager = IslandManager.getInstance();
         IslandCommand islandCommand = new IslandCommand(islandManager);
         getCommand("island").setExecutor(islandCommand);
