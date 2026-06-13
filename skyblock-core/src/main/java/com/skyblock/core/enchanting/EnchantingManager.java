@@ -15,6 +15,28 @@ import java.util.UUID;
  */
 public final class EnchantingManager {
 
+    /** Simple enchant-name enum for category lookups and tab completion. */
+    public enum SkyBlockEnchant {
+        // Combat
+        SHARPNESS, CRITICAL, SMITE, BANE_OF_ARTHROPODS, FIRST_STRIKE,
+        GIANT_KILLER, ENDER_SLAYER, DRAGON_HUNTER, THUNDERLORD, VAMPIRISM,
+        LIFE_STEAL, LETHALITY, EXECUTE, PROSECUTE, OVERLOAD,
+        // Utility / Special
+        TELEKINESIS, LOOTING, SMELTING_TOUCH, MAGNET, SILK_TOUCH,
+        // Fishing
+        LUCK_OF_THE_SEA, ANGLER, FRAIL, EXPERTISE,
+        // Farming
+        CULTIVATING, GREEN_THUMB, DEDICATION, REPLENISH, HARVESTING,
+        TURBO_WHEAT, TURBO_COCO, TURBO_CACTUS, TURBO_MELON, TURBO_PUMPKIN,
+        TURBO_WARTS, TURBO_MUSHROOMS, TURBO_POTATO, TURBO_CARROT, TURBO_SUGAR_CANE,
+        // Mining / Tool
+        EFFICIENCY, FORTUNE,
+        // Armor
+        PROTECTION, THORNS, GROWTH, FEATHER_FALLING, SUGAR_RUSH, REJUVENATE,
+        // Misc
+        LUCK, CHANCE, ULTIMATE_WISE
+    }
+
     /** Every SkyBlock enchant type with display name and maximum level. */
     public enum SkyBlockEnchantment {
         // Combat
