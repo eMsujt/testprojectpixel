@@ -60,6 +60,33 @@ public final class FishingManager {
         new LootEntry(FishType.TREASURE_MAP,        Material.MAP,                 40,   0.5),
     };
 
+    /** Sea creatures that can be summoned while fishing. */
+    public enum SeaCreature {
+        SQUID(1,  0.30),
+        SEA_WALKER(5,  0.25),
+        NIGHT_SQUID(10, 0.18),
+        SEA_GUARDIAN(15, 0.14),
+        SEA_WITCH(20, 0.10),
+        SEA_ARCHER(25, 0.08),
+        MONSTER_OF_THE_DEEP(30, 0.06),
+        CATFISH(35, 0.04),
+        CARROT_KING(40, 0.03),
+        DEEP_SEA_PROTECTOR(45, 0.02);
+
+        /** Minimum fishing level required for this creature to appear. */
+        public final int minLevel;
+        /** Base spawn chance (0–1) when the player meets the level requirement. */
+        public final double spawnChance;
+
+        SeaCreature(int minLevel, double spawnChance) {
+            this.minLevel = minLevel;
+            this.spawnChance = spawnChance;
+        }
+    }
+
+    /** Overall chance (0–1) that a fishing catch triggers a sea-creature spawn check. */
+    public static final double BASE_SEA_CREATURE_CHANCE = 0.20;
+
     private static final int MAX_LEVEL = 50;
     /** Base XP awarded per successful catch. */
     public static final double XP_PER_CATCH = 10.0;
@@ -162,6 +189,49 @@ public final class FishingManager {
 
         // Fallback — should never be reached when LOOT_TABLE is non-empty
         return new ItemStack(Material.COD, 1);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Sea creatures
+    // ---------------------------------------------------------------------------
+
+    /**
+     * Rolls whether a sea creature spawns for the given fishing level.
+     * Returns the chosen {@link SeaCreature}, or {@code null} if none spawns.
+     *
+     * <p>First checks the overall {@link #BASE_SEA_CREATURE_CHANCE}, then selects
+     * a random eligible creature weighted by its {@code spawnChance}.</p>
+     *
+     * @param level the player's fishing level
+     * @return the sea creature to spawn, or {@code null}
+     */
+    public SeaCreature rollSeaCreature(int level) {
+        if (random.nextDouble() >= BASE_SEA_CREATURE_CHANCE) {
+            return null;
+        }
+
+        double totalWeight = 0.0;
+        for (SeaCreature creature : SeaCreature.values()) {
+            if (creature.minLevel <= level) {
+                totalWeight += creature.spawnChance;
+            }
+        }
+        if (totalWeight == 0.0) {
+            return null;
+        }
+
+        double roll = random.nextDouble() * totalWeight;
+        double cumulative = 0.0;
+        for (SeaCreature creature : SeaCreature.values()) {
+            if (creature.minLevel > level) {
+                continue;
+            }
+            cumulative += creature.spawnChance;
+            if (roll < cumulative) {
+                return creature;
+            }
+        }
+        return null;
     }
 
     // ---------------------------------------------------------------------------
