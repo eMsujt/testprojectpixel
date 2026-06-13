@@ -58,6 +58,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         ReforgeManager.getInstance();
         SkillsManager.getInstance();
         AccessoryManager.getInstance();
+        SkillsManager.getInstance();
         ProfileManager profileManager = ProfileManager.getInstance();
         profileManager.load(getDataFolder());
     }
