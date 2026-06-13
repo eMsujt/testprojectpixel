@@ -32,6 +32,40 @@ public final class SlayerManager {
         }
     }
 
+    /** Named slayer bosses, each linked to the {@link SlayerType} that spawns them. */
+    public enum SlayerBoss {
+        REVENANT_HORROR(SlayerType.ZOMBIE,   "Revenant Horror",       200_000),
+        TARANTULA_BROODFATHER(SlayerType.SPIDER, "Tarantula Broodfather", 300_000),
+        SVEN_PACKMASTER(SlayerType.WOLF,     "Sven Packmaster",       400_000),
+        VOIDGLOOM_SERAPH(SlayerType.ENDERMAN,"Voidgloom Seraph",      500_000),
+        INFERNO_DEMONLORD(SlayerType.BLAZE,  "Inferno Demonlord",     600_000);
+
+        public final SlayerType type;
+        public final String displayName;
+        /** Maximum health points of this boss at its highest tier. */
+        public final int maxHealth;
+
+        SlayerBoss(SlayerType type, String displayName, int maxHealth) {
+            this.type = type;
+            this.displayName = displayName;
+            this.maxHealth = maxHealth;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        /** Returns the {@link SlayerBoss} for the given {@link SlayerType}, or {@code null} if none. */
+        public static SlayerBoss forType(SlayerType type) {
+            for (SlayerBoss boss : values()) {
+                if (boss.type == type) {
+                    return boss;
+                }
+            }
+            return null;
+        }
+    }
+
     public enum QuestTier {
         TIER_1, TIER_2, TIER_3, TIER_4
     }
