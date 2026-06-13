@@ -19,6 +19,26 @@ import java.util.UUID;
  */
 public final class ForagingManager {
 
+    /** Foraging zones in The Park and other SkyBlock foraging areas. */
+    public enum ForagingZone {
+        DARK_THICKET("Dark Thicket", TreeType.DARK_OAK),
+        BIRCH_PARK("Birch Park", TreeType.BIRCH),
+        SPRUCE_WOODS("Spruce Woods", TreeType.SPRUCE),
+        SAVANNA_WOODLAND("Savanna Woodland", TreeType.ACACIA),
+        JUNGLE_ISLAND("Jungle Island", TreeType.JUNGLE);
+
+        private final String displayName;
+        private final TreeType primaryTree;
+
+        ForagingZone(String displayName, TreeType primaryTree) {
+            this.displayName = displayName;
+            this.primaryTree = primaryTree;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public TreeType getPrimaryTree() { return primaryTree; }
+    }
+
     /** Simple log-type identifiers used for per-player chop tracking. */
     public enum LogType {
         OAK("Oak"),
