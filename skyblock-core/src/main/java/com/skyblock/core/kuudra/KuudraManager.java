@@ -44,6 +44,9 @@ public final class KuudraManager {
     /** Per-player Kuudra completion counts indexed by tier ordinal. */
     private final Map<UUID, int[]> playerCompletions = new HashMap<>();
 
+    /** Per-player Kuudra kill counts indexed by tier ordinal. */
+    private final Map<UUID, int[]> playerKills = new HashMap<>();
+
     private KuudraManager() {
     }
 
@@ -139,6 +142,54 @@ public final class KuudraManager {
     }
 
     // -------------------------------------------------------------------------
+    // Kill count management
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the number of Kuudra kills the player has for the given tier.
+     *
+     * @param playerId the player to look up
+     * @param tier     the Kuudra tier
+     * @return the kill count, {@code 0} if not set
+     */
+    public int getKillCount(UUID playerId, KuudraTier tier) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(tier, "tier");
+        int[] kills = playerKills.get(playerId);
+        return kills == null ? 0 : kills[tier.ordinal()];
+    }
+
+    /**
+     * Increments the kill count for the given tier by one and returns the new total.
+     *
+     * @param playerId the player to update
+     * @param tier     the Kuudra tier
+     * @return the new kill count
+     */
+    public int addKill(UUID playerId, KuudraTier tier) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(tier, "tier");
+        int[] kills = playerKills.computeIfAbsent(playerId, id -> new int[KuudraTier.values().length]);
+        return ++kills[tier.ordinal()];
+    }
+
+    /**
+     * Adds the given amount to the kill count for the given tier (clamped to {@code >= 0}).
+     *
+     * @param playerId the player to update
+     * @param tier     the Kuudra tier
+     * @param amount   the amount to add (may be negative)
+     * @return the new kill count
+     */
+    public int addKills(UUID playerId, KuudraTier tier, int amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(tier, "tier");
+        int[] kills = playerKills.computeIfAbsent(playerId, id -> new int[KuudraTier.values().length]);
+        kills[tier.ordinal()] = Math.max(0, kills[tier.ordinal()] + amount);
+        return kills[tier.ordinal()];
+    }
+
+    // -------------------------------------------------------------------------
     // Lifecycle
     // -------------------------------------------------------------------------
 
@@ -151,6 +202,7 @@ public final class KuudraManager {
         Objects.requireNonNull(playerId, "playerId");
         playerKeys.remove(playerId);
         playerCompletions.remove(playerId);
+        playerKills.remove(playerId);
     }
 
     /**
@@ -163,6 +215,7 @@ public final class KuudraManager {
         Objects.requireNonNull(playerId, "playerId");
         boolean had = playerKeys.remove(playerId) != null;
         had |= playerCompletions.remove(playerId) != null;
+        had |= playerKills.remove(playerId) != null;
         return had;
     }
 
@@ -174,6 +227,7 @@ public final class KuudraManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerKeys.clear();
         playerCompletions.clear();
+        playerKills.clear();
         KuudraTier[] tiers = KuudraTier.values();
         for (String key : cfg.getKeys(false)) {
             try {
@@ -191,6 +245,13 @@ public final class KuudraManager {
                         completions[tier.ordinal()] = cfg.getInt(key + ".completions." + tier.name(), 0);
                     }
                     playerCompletions.put(uuid, completions);
+                }
+                if (cfg.isConfigurationSection(key + ".kills")) {
+                    int[] kills = new int[tiers.length];
+                    for (KuudraTier tier : tiers) {
+                        kills[tier.ordinal()] = cfg.getInt(key + ".kills." + tier.name(), 0);
+                    }
+                    playerKills.put(uuid, kills);
                 }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
@@ -214,6 +275,13 @@ public final class KuudraManager {
             int[] completions = entry.getValue();
             for (KuudraTier tier : tiers) {
                 cfg.set(key + ".completions." + tier.name(), completions[tier.ordinal()]);
+            }
+        }
+        for (Map.Entry<UUID, int[]> entry : playerKills.entrySet()) {
+            String key = entry.getKey().toString();
+            int[] kills = entry.getValue();
+            for (KuudraTier tier : tiers) {
+                cfg.set(key + ".kills." + tier.name(), kills[tier.ordinal()]);
             }
         }
         try {
