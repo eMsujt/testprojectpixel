@@ -14,19 +14,28 @@ import java.util.UUID;
  */
 public final class GardenManager {
 
-    /** Individual purchasable plots in the Garden (15 total). */
+    /** Individual purchasable plots in the Garden (24 total). */
     public enum GardenPlot {
         CENTER("Center"),
         NORTH_1("North 1"),
         NORTH_2("North 2"),
+        NORTH_3("North 3"),
+        NORTH_4("North 4"),
         SOUTH_1("South 1"),
         SOUTH_2("South 2"),
+        SOUTH_3("South 3"),
+        SOUTH_4("South 4"),
         EAST_1("East 1"),
         EAST_2("East 2"),
+        EAST_3("East 3"),
+        EAST_4("East 4"),
         WEST_1("West 1"),
         WEST_2("West 2"),
+        WEST_3("West 3"),
+        WEST_4("West 4"),
         NORTH_EAST_1("North East 1"),
         NORTH_EAST_2("North East 2"),
+        NORTH_EAST_3("North East 3"),
         NORTH_WEST_1("North West 1"),
         NORTH_WEST_2("North West 2"),
         SOUTH_EAST_1("South East 1"),
@@ -100,7 +109,7 @@ public final class GardenManager {
 
     private static final GardenManager INSTANCE = new GardenManager();
 
-    /** Per-player garden plot level (1–15). */
+    /** Per-player garden plot level (1–24). */
     private final Map<UUID, Integer> plotLevels = new HashMap<>();
 
     /** Per-player total visitor count. */
@@ -140,18 +149,18 @@ public final class GardenManager {
     }
 
     /**
-     * Sets the garden plot level for the given player (clamped to [1, 15]).
+     * Sets the garden plot level for the given player (clamped to [1, 24]).
      *
      * @param playerId the player to update
      * @param level    the new plot level
      */
     public void setPlotLevel(UUID playerId, int level) {
         Objects.requireNonNull(playerId, "playerId");
-        plotLevels.put(playerId, Math.max(1, Math.min(15, level)));
+        plotLevels.put(playerId, Math.max(1, Math.min(24, level)));
     }
 
     /**
-     * Adds to the garden plot level (clamped to [1, 15]).
+     * Adds to the garden plot level (clamped to [1, 24]).
      *
      * @param playerId the player to update
      * @param amount   the amount to add (may be negative)
@@ -160,7 +169,7 @@ public final class GardenManager {
     public int addPlotLevel(UUID playerId, int amount) {
         Objects.requireNonNull(playerId, "playerId");
         int current = getPlotLevel(playerId);
-        int updated = Math.max(1, Math.min(15, current + amount));
+        int updated = Math.max(1, Math.min(24, current + amount));
         plotLevels.put(playerId, updated);
         return updated;
     }
