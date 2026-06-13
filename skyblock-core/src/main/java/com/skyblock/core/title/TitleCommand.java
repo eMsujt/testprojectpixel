@@ -11,20 +11,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Handles the {@code /title} command.
+ * Handles the {@code /title} command for managing per-player cosmetic titles.
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /title list}           — list available titles</li>
- *   <li>{@code /title equip <title>}  — set active cosmetic title</li>
- *   <li>{@code /title unequip}        — clear active title</li>
- *   <li>{@code /title info <title>}   — show info about a title</li>
+ *   <li>{@code /title list}          — show your active title</li>
+ *   <li>{@code /title set <title>}   — set your active title</li>
+ *   <li>{@code /title remove}        — clear your active title</li>
  * </ul>
  * </p>
  */
 public final class TitleCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "equip", "unequip", "info");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "set", "remove");
 
     private final TitleManager titleManager;
 
@@ -45,11 +44,10 @@ public final class TitleCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "list"    -> handleList(player);
-            case "equip"   -> handleEquip(player, args);
-            case "unequip" -> handleUnequip(player);
-            case "info"    -> handleInfo(player, args);
-            default        -> sendHelp(player);
+            case "list"   -> handleList(player);
+            case "set"    -> handleSet(player, args);
+            case "remove" -> handleRemove(player);
+            default       -> sendHelp(player);
         }
         return true;
     }
@@ -66,19 +64,18 @@ public final class TitleCommand implements TabExecutor {
     }
 
     private void handleList(Player player) {
-        player.sendMessage("=== Available Titles ===");
-        player.sendMessage("Use /title equip <title> to equip a title.");
         String current = titleManager.getTitle(player.getUniqueId());
+        player.sendMessage("=== Your Titles ===");
         if (current != null) {
-            player.sendMessage("Current title: " + current);
+            player.sendMessage("Active: " + current);
         } else {
             player.sendMessage("You have no active title.");
         }
     }
 
-    private void handleEquip(Player player, String[] args) {
+    private void handleSet(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("Usage: /title equip <title>");
+            player.sendMessage("Usage: /title set <title>");
             return;
         }
         String title = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
@@ -86,7 +83,7 @@ public final class TitleCommand implements TabExecutor {
         player.sendMessage("Title set to: " + title);
     }
 
-    private void handleUnequip(Player player) {
+    private void handleRemove(Player player) {
         if (!titleManager.hasTitle(player.getUniqueId())) {
             player.sendMessage("You do not have an active title.");
             return;
@@ -95,20 +92,10 @@ public final class TitleCommand implements TabExecutor {
         player.sendMessage("Your title has been removed.");
     }
 
-    private void handleInfo(Player player, String[] args) {
-        if (args.length < 2) {
-            player.sendMessage("Usage: /title info <title>");
-            return;
-        }
-        String title = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-        player.sendMessage("Title: " + title);
-    }
-
     private void sendHelp(Player player) {
         player.sendMessage("=== Title Commands ===");
-        player.sendMessage("/title list           — list available titles");
-        player.sendMessage("/title equip <title>  — equip a cosmetic title");
-        player.sendMessage("/title unequip        — remove your active title");
-        player.sendMessage("/title info <title>   — show info about a title");
+        player.sendMessage("/title list          — view your active title");
+        player.sendMessage("/title set <title>   — set your active title");
+        player.sendMessage("/title remove        — remove your active title");
     }
 }
