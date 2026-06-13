@@ -58,6 +58,44 @@ public final class ReforgeManager {
         }
     }
 
+    /** A reforge stone item that applies a specific reforge when used. */
+    public enum ReforgeStone {
+        ROUGH_RUBY("Rough Ruby", "Odd"),
+        ITCHY("Itchy Reforge Stone", "Itchy"),
+        STORMY("Stormy Reforge Stone", "Stormy"),
+        FORCEFUL("Forceful Reforge Stone", "Forceful"),
+        STRONG("Strong Reforge Stone", "Strong"),
+        LEGENDARY("Legendary Reforge Stone", "Legendary"),
+        ANCIENT("Ancient Reforge Stone", "Ancient"),
+        SUPERIOR("Superior Reforge Stone", "Superior"),
+        CLEAN("Clean Reforge Stone", "Clean"),
+        GENTLE("Gentle Reforge Stone", "Gentle"),
+        FIERCE("Fierce Reforge Stone", "Fierce"),
+        SHARP("Sharp Reforge Stone", "Sharp"),
+        WEIRD("Weird Reforge Stone", "Weird"),
+        UNPLEASANT("Unpleasant Reforge Stone", "Unpleasant");
+
+        private final String displayName;
+        private final String reforge;
+
+        ReforgeStone(String displayName, String reforge) {
+            this.displayName = displayName;
+            this.reforge = reforge;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public String getReforge() { return reforge; }
+
+        public static ReforgeStone fromName(String name) {
+            for (ReforgeStone s : values()) {
+                if (s.displayName.equalsIgnoreCase(name) || s.name().equalsIgnoreCase(name)) {
+                    return s;
+                }
+            }
+            return null;
+        }
+    }
+
     private static final ReforgeManager INSTANCE = new ReforgeManager();
 
     /** Per-player active reforge. */
