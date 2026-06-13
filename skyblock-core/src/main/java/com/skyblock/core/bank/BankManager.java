@@ -19,6 +19,27 @@ import java.util.UUID;
  */
 public final class BankManager {
 
+    public enum BankType {
+        PERSONAL("Personal", false),
+        ISLAND("Island", true);
+
+        private final String displayName;
+        private final boolean shared;
+
+        BankType(String displayName, boolean shared) {
+            this.displayName = displayName;
+            this.shared = shared;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public boolean isShared() {
+            return shared;
+        }
+    }
+
     public enum BankTier {
         STARTER(1_000_000, "Starter"),
         PERSONAL(10_000_000, "Personal"),
@@ -77,6 +98,7 @@ public final class BankManager {
 
     private final Map<UUID, BankAccount> accounts = new HashMap<>();
     private final Map<UUID, BankTier> tiers = new HashMap<>();
+    private final Map<UUID, BankType> bankTypes = new HashMap<>();
     private final Map<UUID, List<BankTransaction>> transactions = new HashMap<>();
 
     private BankManager() {}
@@ -149,6 +171,26 @@ public final class BankManager {
     }
 
     /**
+     * Returns the bank type for the given player (defaults to {@link BankType#PERSONAL}).
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return the player's current bank type
+     */
+    public BankType getBankType(UUID playerId) {
+        return bankTypes.getOrDefault(playerId, BankType.PERSONAL);
+    }
+
+    /**
+     * Sets the bank type for the given player.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param type     the new bank type, must not be null
+     */
+    public void setBankType(UUID playerId, BankType type) {
+        bankTypes.put(playerId, type);
+    }
+
+    /**
      * Loads accounts from {@code bank.yml} inside the given data folder.
      *
      * @param dataFolder the plugin data folder, must not be null
@@ -175,6 +217,14 @@ public final class BankManager {
                         // skip unknown tier names
                     }
                 }
+                String typeName = cfg.getString(key + ".bankType");
+                if (typeName != null) {
+                    try {
+                        bankTypes.put(uuid, BankType.valueOf(typeName));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip unknown bank type names
+                    }
+                }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
             }
@@ -196,6 +246,10 @@ public final class BankManager {
             BankTier tier = tiers.get(entry.getKey());
             if (tier != null) {
                 cfg.set(key + ".tier", tier.name());
+            }
+            BankType bankType = bankTypes.get(entry.getKey());
+            if (bankType != null) {
+                cfg.set(key + ".bankType", bankType.name());
             }
         }
         try {
@@ -220,10 +274,11 @@ public final class BankManager {
                 .add(new BankTransaction(UUID.randomUUID(), playerId, type, amount, System.currentTimeMillis()));
     }
 
-    /** Removes all stored accounts, tiers, and transaction history. */
+    /** Removes all stored accounts, tiers, bank types, and transaction history. */
     public void clear() {
         accounts.clear();
         tiers.clear();
+        bankTypes.clear();
         transactions.clear();
     }
 }
