@@ -18,6 +18,26 @@ import java.util.UUID;
  */
 public final class AuctionManager {
 
+    /** Item categories used to filter auction house listings. */
+    public enum AuctionCategory {
+        WEAPONS("Weapons"),
+        ARMOR("Armor"),
+        ACCESSORIES("Accessories"),
+        CONSUMABLES("Consumables"),
+        BLOCKS("Blocks"),
+        MISC("Misc");
+
+        private final String displayName;
+
+        AuctionCategory(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** The two auction modes available in the auction house. */
     public enum AuctionType {
         BIN("Buy It Now"),
@@ -36,13 +56,14 @@ public final class AuctionManager {
 
     /** An immutable auction listing snapshot. */
     public record AuctionListing(UUID id, UUID seller, String itemName,
-                                 double startingBid, AuctionType type) {
+                                 double startingBid, AuctionType type, AuctionCategory category) {
 
         public AuctionListing {
             Objects.requireNonNull(id, "id");
             Objects.requireNonNull(seller, "seller");
             Objects.requireNonNull(itemName, "itemName");
             Objects.requireNonNull(type, "type");
+            Objects.requireNonNull(category, "category");
             if (startingBid < 0) {
                 throw new IllegalArgumentException("startingBid must not be negative: " + startingBid);
             }
@@ -86,14 +107,16 @@ public final class AuctionManager {
      * @param itemName    display name of the item
      * @param startingBid minimum bid or BIN price (must be ≥ 0)
      * @param type        the auction type ({@link AuctionType#BIN} or {@link AuctionType#AUCTION})
+     * @param category    the item category ({@link AuctionCategory})
      * @return the new listing's UUID
      */
     public UUID createListing(UUID seller, String itemName,
-                              double startingBid, AuctionType type) {
+                              double startingBid, AuctionType type, AuctionCategory category) {
         Objects.requireNonNull(seller, "seller");
         Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(category, "category");
         UUID id = UUID.randomUUID();
-        listings.put(id, new State(new AuctionListing(id, seller, itemName, startingBid, type)));
+        listings.put(id, new State(new AuctionListing(id, seller, itemName, startingBid, type, category)));
         return id;
     }
 
@@ -243,6 +266,23 @@ public final class AuctionManager {
         List<AuctionListing> result = new ArrayList<>();
         for (State s : listings.values()) {
             if (seller.equals(s.entry.seller())) {
+                result.add(s.entry);
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    /**
+     * Returns a snapshot of listings in the given category.
+     *
+     * @param category the category to filter by
+     * @return unmodifiable list of matching {@link AuctionListing} records
+     */
+    public List<AuctionListing> getListingsByCategory(AuctionCategory category) {
+        Objects.requireNonNull(category, "category");
+        List<AuctionListing> result = new ArrayList<>();
+        for (State s : listings.values()) {
+            if (category == s.entry.category()) {
                 result.add(s.entry);
             }
         }

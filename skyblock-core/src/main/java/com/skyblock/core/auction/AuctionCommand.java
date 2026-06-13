@@ -16,19 +16,20 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /auction list}                       — list all active auctions</li>
- *   <li>{@code /auction create <item> <price> [bin]} — create a new listing</li>
- *   <li>{@code /auction bid <id> <amount>}           — place a bid or buy BIN</li>
- *   <li>{@code /auction view <id>}                   — view a specific listing</li>
- *   <li>{@code /auction cancel <id>}                 — cancel your own listing</li>
- *   <li>{@code /auction mine}                        — list your own active auctions</li>
+ *   <li>{@code /auction list}                                    — list all active auctions</li>
+ *   <li>{@code /auction create <item> <price> [bin] [category]}  — create a new listing</li>
+ *   <li>{@code /auction bid <id> <amount>}                       — place a bid or buy BIN</li>
+ *   <li>{@code /auction view <id>}                               — view a specific listing</li>
+ *   <li>{@code /auction cancel <id>}                             — cancel your own listing</li>
+ *   <li>{@code /auction mine}                                    — list your own active auctions</li>
+ *   <li>{@code /auction category <name>}                         — list auctions by category</li>
  * </ul>
  * </p>
  */
 public final class AuctionCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("list", "create", "bid", "view", "cancel", "mine");
+            Arrays.asList("list", "create", "bid", "view", "cancel", "mine", "category");
 
     private final AuctionManager auctionManager;
 
@@ -44,19 +45,20 @@ public final class AuctionCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /auction <list|create|bid|view|cancel|mine>");
+            player.sendMessage("Usage: /auction <list|create|bid|view|cancel|mine|category>");
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "list"   -> handleList(player);
-            case "create" -> handleCreate(player, args);
-            case "bid"    -> handleBid(player, args);
-            case "view"   -> handleView(player, args);
-            case "cancel" -> handleCancel(player, args);
-            case "mine"   -> handleMine(player);
-            default       -> player.sendMessage(
-                    "Unknown subcommand. Usage: /auction <list|create|bid|view|cancel|mine>");
+            case "list"     -> handleList(player);
+            case "create"   -> handleCreate(player, args);
+            case "bid"      -> handleBid(player, args);
+            case "view"     -> handleView(player, args);
+            case "cancel"   -> handleCancel(player, args);
+            case "mine"     -> handleMine(player);
+            case "category" -> handleCategory(player, args);
+            default         -> player.sendMessage(
+                    "Unknown subcommand. Usage: /auction <list|create|bid|view|cancel|mine|category>");
         }
         return true;
     }
@@ -69,8 +71,24 @@ public final class AuctionCommand implements TabExecutor {
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
-        if (args.length == 4 && args[0].equalsIgnoreCase("create")) {
-            return Arrays.asList("bin", "auction");
+        if (args[0].equalsIgnoreCase("create")) {
+            if (args.length == 4) {
+                return Arrays.asList("bin", "auction");
+            }
+            if (args.length == 5) {
+                String prefix = args[4].toLowerCase();
+                return Arrays.stream(AuctionManager.AuctionCategory.values())
+                        .map(c -> c.name().toLowerCase())
+                        .filter(n -> n.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("category")) {
+            String prefix = args[1].toLowerCase();
+            return Arrays.stream(AuctionManager.AuctionCategory.values())
+                    .map(c -> c.name().toLowerCase())
+                    .filter(n -> n.startsWith(prefix))
+                    .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
@@ -94,7 +112,7 @@ public final class AuctionCommand implements TabExecutor {
 
     private void handleCreate(Player player, String[] args) {
         if (args.length < 3) {
-            player.sendMessage("Usage: /auction create <item> <price> [bin]");
+            player.sendMessage("Usage: /auction create <item> <price> [bin] [category]");
             return;
         }
         String itemName = args[1];
@@ -112,10 +130,19 @@ public final class AuctionCommand implements TabExecutor {
         AuctionManager.AuctionType type = (args.length >= 4 && args[3].equalsIgnoreCase("bin"))
                 ? AuctionManager.AuctionType.BIN
                 : AuctionManager.AuctionType.AUCTION;
-        UUID listingId = auctionManager.createListing(player.getUniqueId(), itemName, price, type);
+        AuctionManager.AuctionCategory category = AuctionManager.AuctionCategory.MISC;
+        if (args.length >= 5) {
+            try {
+                category = AuctionManager.AuctionCategory.valueOf(args[4].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown category: " + args[4]);
+                return;
+            }
+        }
+        UUID listingId = auctionManager.createListing(player.getUniqueId(), itemName, price, type, category);
         player.sendMessage(String.format(
-                "Listed '%s' for %.1f coins as a %s auction. ID: %s",
-                itemName, price, type.getDisplayName(),
+                "Listed '%s' for %.1f coins as a %s auction [%s]. ID: %s",
+                itemName, price, type.getDisplayName(), category.getDisplayName(),
                 listingId.toString().substring(0, 8)));
     }
 
@@ -156,9 +183,10 @@ public final class AuctionCommand implements TabExecutor {
         double highestBid = auctionManager.getHighestBid(listingId);
         UUID highestBidder = auctionManager.getHighestBidder(listingId);
         player.sendMessage("=== Auction: " + entry.itemName() + " ===");
-        player.sendMessage("ID:      " + entry.id());
-        player.sendMessage("Type:    " + entry.type().getDisplayName());
-        player.sendMessage("Price:   " + entry.startingBid() + " coins");
+        player.sendMessage("ID:       " + entry.id());
+        player.sendMessage("Type:     " + entry.type().getDisplayName());
+        player.sendMessage("Category: " + entry.category().getDisplayName());
+        player.sendMessage("Price:    " + entry.startingBid() + " coins");
         if (entry.type() == AuctionManager.AuctionType.AUCTION) {
             player.sendMessage("Highest bid: " + highestBid + " coins"
                     + (highestBidder != null ? " (by " + highestBidder + ")" : " (no bids yet)"));
@@ -194,6 +222,41 @@ public final class AuctionCommand implements TabExecutor {
                 e.itemName(),
                 e.startingBid(),
                 e.type().name())));
+    }
+
+    private void handleCategory(Player player, String[] args) {
+        if (args.length < 2) {
+            StringBuilder sb = new StringBuilder("Usage: /auction category <");
+            AuctionManager.AuctionCategory[] cats = AuctionManager.AuctionCategory.values();
+            for (int i = 0; i < cats.length; i++) {
+                if (i > 0) sb.append('|');
+                sb.append(cats[i].name().toLowerCase());
+            }
+            sb.append('>');
+            player.sendMessage(sb.toString());
+            return;
+        }
+        AuctionManager.AuctionCategory category;
+        try {
+            category = AuctionManager.AuctionCategory.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown category: " + args[1]);
+            return;
+        }
+        List<AuctionManager.AuctionListing> listings = auctionManager.getListingsByCategory(category);
+        if (listings.isEmpty()) {
+            player.sendMessage("No active auctions in category: " + category.getDisplayName());
+            return;
+        }
+        player.sendMessage("=== " + category.getDisplayName() + " (" + listings.size() + " listings) ===");
+        listings.stream()
+                .sorted((a, b) -> a.itemName().compareToIgnoreCase(b.itemName()))
+                .forEach(e -> player.sendMessage(String.format(
+                        "[%s] %s — %.1f coins (%s)",
+                        e.id().toString().substring(0, 8),
+                        e.itemName(),
+                        e.startingBid(),
+                        e.type().name())));
     }
 
     /** Parses a short (8-char) or full UUID string; sends an error and returns null on failure. */
