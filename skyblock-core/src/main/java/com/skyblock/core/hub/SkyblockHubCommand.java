@@ -55,7 +55,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             "hotm", "garden", "collections", "backpack", "reforge", "achievement",
             "dungeon", "stats", "enchanting", "kuudra", "crafting", "trade",
             "event", "foraging", "guild", "forge", "coop", "crimson",
-            "booster", "warp", "network", "mailbox", "title", "friend", "help"
+            "booster", "warp", "network", "mailbox", "title", "friend", "run", "help"
     );
 
     private final SkyBlockMenuManager menuManager;
@@ -166,6 +166,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             {"Mailbox",    "mailbox"},
             {"Title",      "title"},
             {"Friend",     "friend"},
+            {"Run",        "run"},
         };
         for (String[] entry : managers) {
             String name = entry[0];
