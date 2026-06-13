@@ -15,6 +15,57 @@ import java.util.UUID;
  */
 public final class EnchantingManager {
 
+    /** Canonical 30-entry enchant catalogue used for enchanting-table interactions. */
+    public enum EnchantType {
+        // Combat
+        SHARPNESS(        "Sharpness",          7),
+        CRITICAL(         "Critical",           7),
+        SMITE(            "Smite",              7),
+        BANE_OF_ARTHROPODS("Bane of Arthropods", 7),
+        FIRST_STRIKE(     "First Strike",       4),
+        GIANT_KILLER(     "Giant Killer",       7),
+        ENDER_SLAYER(     "Ender Slayer",       7),
+        DRAGON_HUNTER(    "Dragon Hunter",      5),
+        THUNDERLORD(      "Thunderlord",        7),
+        EXECUTE(          "Execute",            5),
+        // Utility / Special
+        TELEKINESIS(      "Telekinesis",        1),
+        LOOTING(          "Looting",            4),
+        SMELTING_TOUCH(   "Smelting Touch",     1),
+        MAGNET(           "Magnet",             1),
+        LIFE_STEAL(       "Life Steal",         5),
+        // Fishing
+        LUCK_OF_THE_SEA(  "Luck of the Sea",    7),
+        ANGLER(           "Angler",             6),
+        FRAIL(            "Frail",              5),
+        EXPERTISE(        "Expertise",         10),
+        // Farming
+        CULTIVATING(      "Cultivating",       10),
+        GREEN_THUMB(      "Green Thumb",        5),
+        HARVESTING(       "Harvesting",         6),
+        // Mining / Tool
+        EFFICIENCY(       "Efficiency",         5),
+        FORTUNE(          "Fortune",            4),
+        SILK_TOUCH(       "Silk Touch",         1),
+        // Armor
+        PROTECTION(       "Protection",         7),
+        THORNS(           "Thorns",             3),
+        GROWTH(           "Growth",             7),
+        FEATHER_FALLING(  "Feather Falling",    7),
+        REJUVENATE(       "Rejuvenate",         5);
+
+        private final String displayName;
+        private final int maxLevel;
+
+        EnchantType(String displayName, int maxLevel) {
+            this.displayName = displayName;
+            this.maxLevel = maxLevel;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getMaxLevel() { return maxLevel; }
+    }
+
     /** Simple enchant-name enum for category lookups and tab completion. */
     public enum SkyBlockEnchant {
         // Combat
