@@ -17,7 +17,7 @@ import java.util.UUID;
 public final class MayorManager {
 
     /** Skyblock mayors that players can vote for. */
-    public enum Mayor {
+    public enum MayorCandidate {
         PAUL("Paul"),
         DIANA("Diana"),
         JERRY("Jerry"),
@@ -33,7 +33,7 @@ public final class MayorManager {
         /** Human-readable display name shown to players. */
         public final String displayName;
 
-        Mayor(String displayName) {
+        MayorCandidate(String displayName) {
             this.displayName = displayName;
         }
 
@@ -45,10 +45,10 @@ public final class MayorManager {
     private static final MayorManager INSTANCE = new MayorManager();
 
     /** The currently active mayor (null if none set). */
-    private Mayor currentMayor;
+    private MayorCandidate currentMayor;
 
     /** Per-player vote, keyed by player UUID. */
-    private final Map<UUID, Mayor> playerVotes = new HashMap<>();
+    private final Map<UUID, MayorCandidate> playerVotes = new HashMap<>();
 
     private MayorManager() {
     }
@@ -71,7 +71,7 @@ public final class MayorManager {
      *
      * @return the active mayor
      */
-    public Mayor getCurrentMayor() {
+    public MayorCandidate getCurrentMayor() {
         return currentMayor;
     }
 
@@ -80,7 +80,7 @@ public final class MayorManager {
      *
      * @param mayor the mayor to set (may be {@code null} to clear)
      */
-    public void setCurrentMayor(Mayor mayor) {
+    public void setCurrentMayor(MayorCandidate mayor) {
         this.currentMayor = mayor;
     }
 
@@ -94,7 +94,7 @@ public final class MayorManager {
      * @param playerId the player casting the vote
      * @param mayor    the mayor being voted for
      */
-    public void vote(UUID playerId, Mayor mayor) {
+    public void vote(UUID playerId, MayorCandidate mayor) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(mayor, "mayor");
         playerVotes.put(playerId, mayor);
@@ -106,7 +106,7 @@ public final class MayorManager {
      * @param playerId the player to look up
      * @return the voted-for mayor, or {@code null}
      */
-    public Mayor getVote(UUID playerId) {
+    public MayorCandidate getVote(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerVotes.get(playerId);
     }
