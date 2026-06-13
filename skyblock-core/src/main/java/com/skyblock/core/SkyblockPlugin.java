@@ -78,6 +78,8 @@ import com.skyblock.core.achievement.AchievementCommand;
 import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.level.SkyblockLevelCommand;
 import com.skyblock.core.level.SkyblockLevelManager;
+import com.skyblock.core.run.RunCommand;
+import com.skyblock.core.run.RunManager;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.slayer.SlayerManager;
@@ -296,6 +298,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
         getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
+        RunManager runManager = RunManager.getInstance();
+        runManager.load(getDataFolder());
+        RunCommand runCommand = new RunCommand(runManager);
+        getCommand("run").setExecutor(runCommand);
+        getCommand("run").setTabCompleter(runCommand);
     }
 
     @Override
@@ -331,6 +338,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         } catch (java.io.IOException e) {
             getLogger().severe("Failed to save warp data: " + e.getMessage());
         }
+        RunManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
