@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public final class DungeonCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "start", "leave", "complete", "class", "scores");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "start", "leave", "complete", "class", "scores", "floor");
 
     private final DungeonManager dungeonManager;
 
@@ -39,6 +39,7 @@ public final class DungeonCommand implements TabExecutor {
             case "complete" -> handleComplete(player, args);
             case "class"    -> handleClass(player, args);
             case "scores"   -> handleScores(player, args);
+            case "floor"    -> handleFloor(player, args);
             default         -> sendHelp(player);
         }
         return true;
@@ -69,6 +70,13 @@ public final class DungeonCommand implements TabExecutor {
         if (args.length == 2 && args[0].equalsIgnoreCase("scores")) {
             String prefix = args[1].toUpperCase();
             return Arrays.stream(DungeonManager.DungeonType.values())
+                    .map(Enum::name)
+                    .filter(n -> n.startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("floor")) {
+            String prefix = args[1].toUpperCase();
+            return Arrays.stream(DungeonManager.DungeonFloor.values())
                     .map(Enum::name)
                     .filter(n -> n.startsWith(prefix))
                     .collect(Collectors.toList());
@@ -164,6 +172,27 @@ public final class DungeonCommand implements TabExecutor {
         player.sendMessage("  Completions : " + count);
     }
 
+    private void handleFloor(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("=== Dungeon Floors ===");
+            for (DungeonManager.DungeonFloor floor : DungeonManager.DungeonFloor.values()) {
+                player.sendMessage("  " + floor.getDisplayName() + " — Boss: " + floor.getBossName());
+            }
+            return;
+        }
+        DungeonManager.DungeonFloor floor;
+        try {
+            floor = DungeonManager.DungeonFloor.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown floor: " + args[1]);
+            return;
+        }
+        player.sendMessage("=== " + floor.getDisplayName() + " ===");
+        player.sendMessage("  Boss       : " + floor.getBossName());
+        player.sendMessage("  Floor #    : " + floor.getFloorNumber());
+        player.sendMessage("  Master Mode: " + floor.isMasterMode());
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Dungeon Commands ===");
         player.sendMessage("/dungeon info              — show active run and class");
@@ -172,5 +201,6 @@ public final class DungeonCommand implements TabExecutor {
         player.sendMessage("/dungeon complete [score]  — complete your current run");
         player.sendMessage("/dungeon class [class]     — view or set your dungeon class");
         player.sendMessage("/dungeon scores <type>     — view your scores for a dungeon");
+        player.sendMessage("/dungeon floor [floor]     — list floors or view floor details");
     }
 }

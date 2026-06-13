@@ -19,32 +19,35 @@ public final class DungeonManager {
 
     /** All dungeon floors: Entrance, Catacombs FLOOR_1–FLOOR_7, and Master Mode MASTER_M1–MASTER_M7. */
     public enum DungeonFloor {
-        ENTRANCE("None", 0, false),
-        FLOOR_1("Bonzo", 1, false),
-        FLOOR_2("Scarf", 5, false),
-        FLOOR_3("The Professor", 9, false),
-        FLOOR_4("Thorn", 14, false),
-        FLOOR_5("Livid", 19, false),
-        FLOOR_6("Sadan", 24, false),
-        FLOOR_7("Necron", 29, false),
-        MASTER_M1("Bonzo", 1, true),
-        MASTER_M2("Scarf", 2, true),
-        MASTER_M3("The Professor", 3, true),
-        MASTER_M4("Thorn", 4, true),
-        MASTER_M5("Livid", 5, true),
-        MASTER_M6("Sadan", 6, true),
-        MASTER_M7("Necron", 7, true);
+        ENTRANCE("Entrance", "None", 0, false),
+        FLOOR_1("Floor 1", "Bonzo", 1, false),
+        FLOOR_2("Floor 2", "Scarf", 5, false),
+        FLOOR_3("Floor 3", "The Professor", 9, false),
+        FLOOR_4("Floor 4", "Thorn", 14, false),
+        FLOOR_5("Floor 5", "Livid", 19, false),
+        FLOOR_6("Floor 6", "Sadan", 24, false),
+        FLOOR_7("Floor 7", "Necron", 29, false),
+        MASTER_M1("Master 1", "Bonzo", 1, true),
+        MASTER_M2("Master 2", "Scarf", 2, true),
+        MASTER_M3("Master 3", "The Professor", 3, true),
+        MASTER_M4("Master 4", "Thorn", 4, true),
+        MASTER_M5("Master 5", "Livid", 5, true),
+        MASTER_M6("Master 6", "Sadan", 6, true),
+        MASTER_M7("Master 7", "Necron", 7, true);
 
+        private final String displayName;
         private final String bossName;
         private final int floorNumber;
         private final boolean masterMode;
 
-        DungeonFloor(String bossName, int floorNumber, boolean masterMode) {
+        DungeonFloor(String displayName, String bossName, int floorNumber, boolean masterMode) {
+            this.displayName = displayName;
             this.bossName = bossName;
             this.floorNumber = floorNumber;
             this.masterMode = masterMode;
         }
 
+        public String getDisplayName() { return displayName; }
         public String getBossName() { return bossName; }
         public int getFloorNumber() { return floorNumber; }
         public boolean isMasterMode() { return masterMode; }
