@@ -14,15 +14,15 @@ public final class MayorManager {
 
     /** Skyblock mayors that players can vote for. */
     public enum Mayor {
-        JERRY("Jerry"),
-        DIANA("Diana"),
         PAUL("Paul"),
+        DIANA("Diana"),
+        JERRY("Jerry"),
+        SCORPIUS("Scorpius"),
+        COLE("Cole"),
         FINNEGAN("Finnegan"),
         BARRY("Barry"),
         MARINA("Marina"),
-        SCORPIUS("Scorpius"),
         FOXY("Foxy"),
-        COLE("Cole"),
         AATROX("Aatrox"),
         DIAZ("Diaz");
 
