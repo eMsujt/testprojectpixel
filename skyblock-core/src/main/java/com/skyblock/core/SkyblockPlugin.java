@@ -24,6 +24,7 @@ import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.party.PartyManager;
 import com.skyblock.core.pets.PetsManager;
+import com.skyblock.core.profile.ProfileCommand;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.skills.SkillsManager;
@@ -98,6 +99,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         AccessoryManager.getInstance();
         ProfileManager profileManager = ProfileManager.getInstance();
         profileManager.load(getDataFolder());
+        ProfileCommand profileCommand = new ProfileCommand(profileManager);
+        getCommand("profile").setExecutor(profileCommand);
+        getCommand("profile").setTabCompleter(profileCommand);
     }
 
     @Override
