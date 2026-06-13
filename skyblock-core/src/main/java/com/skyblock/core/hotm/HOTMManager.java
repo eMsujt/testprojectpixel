@@ -37,7 +37,8 @@ public final class HOTMManager {
         FORTUNATE(20, "Fortunate"),
         MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost"),
         SEASONED_MINEMAN(100, "Seasoned Mineman"),
-        ANOMALOUS_DESIRE(20, "Anomalous Desire");
+        ANOMALOUS_DESIRE(20, "Anomalous Desire"),
+        VEIN_SEEKER(1, "Vein Seeker");
 
         /** Maximum level for this perk. */
         public final int maxLevel;
