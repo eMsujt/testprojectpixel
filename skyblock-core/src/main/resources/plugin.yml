@@ -12,6 +12,10 @@ commands:
   menu:
     description: Open the SkyBlock main menu.
     usage: /menu
+  skymenu:
+    description: Open the SkyBlock main menu (54-slot GUI).
+    usage: /skymenu
+    aliases: [smenu]
   island:
     description: Manage your SkyBlock island.
     usage: /island <create|home|visit|invite|kick|leave>
