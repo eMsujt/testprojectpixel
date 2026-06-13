@@ -16,7 +16,7 @@ import java.util.UUID;
 public final class EnchantmentManager {
 
     /** Every SkyBlock enchant type. */
-    public enum SkyBlockEnchantmentment {
+    public enum SkyBlockEnchantment {
         // Combat
         SHARPNESS("Sharpness"),
         CRITICAL("Critical"),
@@ -77,7 +77,7 @@ public final class EnchantmentManager {
 
         private final String displayName;
 
-        SkyBlockEnchantmentment(String displayName) {
+        SkyBlockEnchantment(String displayName) {
             this.displayName = displayName;
         }
 
