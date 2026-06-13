@@ -29,7 +29,7 @@ public final class SkillsCommand implements TabExecutor {
 
     static {
         List<String> subs = new java.util.ArrayList<>(Arrays.asList("info", "reset"));
-        for (SkillsManager.SkyBlockSkill skill : SkillsManager.SkyBlockSkill.values()) {
+        for (SkillsManager.SkillType skill : SkillsManager.SkillType.values()) {
             subs.add(skill.name().toLowerCase());
         }
         SUBCOMMANDS = Collections.unmodifiableList(subs);
@@ -78,7 +78,7 @@ public final class SkillsCommand implements TabExecutor {
     private void handleAll(Player player) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== Skills ===");
-        for (SkillsManager.SkyBlockSkill skill : SkillsManager.SkyBlockSkill.values()) {
+        for (SkillsManager.SkillType skill : SkillsManager.SkillType.values()) {
             int level = skillsManager.getLevel(id, skill);
             double xp = skillsManager.getXp(id, skill);
             player.sendMessage(String.format("  %-14s Level %d  (%.1f XP)",
@@ -88,7 +88,7 @@ public final class SkillsCommand implements TabExecutor {
 
     private void handleInfo(Player player) {
         player.sendMessage("=== Available Skills ===");
-        for (SkillsManager.SkyBlockSkill skill : SkillsManager.SkyBlockSkill.values()) {
+        for (SkillsManager.SkillType skill : SkillsManager.SkillType.values()) {
             player.sendMessage("  " + skill.getDisplayName());
         }
     }
@@ -98,7 +98,7 @@ public final class SkillsCommand implements TabExecutor {
     }
 
     private void handleSkill(Player player, String name) {
-        SkillsManager.SkyBlockSkill skill = parseSkill(name);
+        SkillsManager.SkillType skill = parseSkill(name);
         if (skill == null) {
             player.sendMessage("Unknown skill: " + name);
             sendHelp(player);
@@ -119,8 +119,8 @@ public final class SkillsCommand implements TabExecutor {
         player.sendMessage("/skills info             — list all available skills");
     }
 
-    private static SkillsManager.SkyBlockSkill parseSkill(String name) {
-        for (SkillsManager.SkyBlockSkill skill : SkillsManager.SkyBlockSkill.values()) {
+    private static SkillsManager.SkillType parseSkill(String name) {
+        for (SkillsManager.SkillType skill : SkillsManager.SkillType.values()) {
             if (skill.name().equalsIgnoreCase(name)) {
                 return skill;
             }
