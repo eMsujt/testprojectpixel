@@ -22,6 +22,42 @@ import java.util.Set;
  */
 public final class WarpManager {
 
+    /** Canonical SkyBlock warp destinations used by the /warp command. */
+    public enum Warp {
+        HUB("Hub"),
+        GARDEN("Garden"),
+        DEEP_CAVERNS("Deep Caverns"),
+        DWARVEN_MINES("Dwarven Mines"),
+        CRYSTAL_HOLLOWS("Crystal Hollows"),
+        SPIDER_DEN("Spider's Den"),
+        BLAZING_FORTRESS("Blazing Fortress"),
+        THE_END("The End"),
+        CRIMSON_ISLE("Crimson Isle"),
+        FARMING_ISLANDS("Farming Islands"),
+        THE_PARK("The Park"),
+        GOLD_MINE("Gold Mine"),
+        DARK_AUCTION("Dark Auction"),
+        DUNGEON_HUB("Dungeon Hub"),
+        THE_RIFT("The Rift");
+
+        public final String displayName;
+
+        Warp(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
+
+        public static Warp fromName(String name) {
+            for (Warp w : values()) {
+                if (w.displayName.equalsIgnoreCase(name) || w.name().equalsIgnoreCase(name)) {
+                    return w;
+                }
+            }
+            return null;
+        }
+    }
+
     /** Named SkyBlock zones used for zone-based logic and display. */
     public enum SkyBlockZone {
         HUB("Hub"),

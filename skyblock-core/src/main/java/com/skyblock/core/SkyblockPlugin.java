@@ -43,6 +43,8 @@ import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
 import com.skyblock.core.trade.TradeManager;
+import com.skyblock.core.warp.WarpCommand;
+import com.skyblock.core.warp.WarpManager;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.stats.StatsCommand;
@@ -162,6 +164,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         BackpackCommand backpackCommand = new BackpackCommand(backpackManager);
         getCommand("backpack").setExecutor(backpackCommand);
         getCommand("backpack").setTabCompleter(backpackCommand);
+        WarpManager warpManager = WarpManager.getInstance();
+        warpManager.load(new java.io.File(getDataFolder(), "warps.yml"));
+        WarpCommand warpCommand = new WarpCommand(warpManager);
+        getCommand("warp").setExecutor(warpCommand);
+        getCommand("warp").setTabCompleter(warpCommand);
     }
 
     @Override
@@ -185,6 +192,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         CraftingManager.getInstance().save(getDataFolder());
         QuestManager.getInstance().save(getDataFolder());
         BackpackManager.getInstance().save(getDataFolder());
+        try {
+            WarpManager.getInstance().save(new java.io.File(getDataFolder(), "warps.yml"));
+        } catch (java.io.IOException e) {
+            getLogger().warning("Failed to save warps.yml: " + e.getMessage());
+        }
         instance = null;
     }
 }
