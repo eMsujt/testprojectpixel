@@ -49,6 +49,7 @@ public final class BazaarCommand implements TabExecutor {
             case "buy" -> handleBuy(player, args);
             case "sell" -> handleSell(player, args);
             case "cancel" -> handleCancel(player, args);
+            case "orders" -> handleOrders(player);
             default -> sendHelp(player);
         }
         return true;
@@ -58,7 +59,7 @@ public final class BazaarCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("info", "buy", "sell", "cancel").stream()
+            return Arrays.asList("info", "buy", "sell", "cancel", "orders").stream()
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -171,6 +172,19 @@ public final class BazaarCommand implements TabExecutor {
         }
     }
 
+    private void handleOrders(Player player) {
+        List<BazaarManager.BazaarOrder> orders = bazaarManager.getOrdersForPlayer(player.getUniqueId());
+        if (orders.isEmpty()) {
+            player.sendMessage("You have no active bazaar orders.");
+            return;
+        }
+        player.sendMessage("=== Your Bazaar Orders ===");
+        for (BazaarManager.BazaarOrder order : orders) {
+            player.sendMessage(order.type().getDisplayName() + " | " + order.itemId()
+                    + " x" + order.quantity() + " @ " + order.priceEach() + " coins | ID: " + order.id());
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bazaar Commands ===");
         player.sendMessage("/bazaar info <item> — show best bid/ask");
@@ -178,5 +192,6 @@ public final class BazaarCommand implements TabExecutor {
         player.sendMessage("/bazaar sell <item> <qty> <price> — place a sell order");
         player.sendMessage("/bazaar cancel buy <orderId> — cancel a buy order");
         player.sendMessage("/bazaar cancel sell <orderId> — cancel a sell order");
+        player.sendMessage("/bazaar orders — list your active orders");
     }
 }
