@@ -41,8 +41,8 @@ public final class BankManager {
     }
 
     public enum BankTier {
-        PERSONAL("Personal Bank",   1.5),
-        COMMUNITY("Community Bank", 2.0);
+        PERSONAL("Personal Bank", 1.5),
+        CO_OP("Co-op Bank",       2.0);
 
         private final String displayName;
         /** Annual interest rate as a percentage (e.g. 1.5 means 1.5%). */
