@@ -55,7 +55,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             "hotm", "garden", "collections", "backpack", "reforge", "achievement",
             "dungeon", "stats", "enchanting", "kuudra", "crafting", "trade",
             "event", "foraging", "guild", "forge", "coop", "crimson",
-            "booster", "warp", "network", "mailbox", "mail", "title", "friend", "run", "help"
+            "booster", "warp", "network", "mailbox", "mail", "title", "friend", "run", "menu", "help"
     );
 
     private final SkyBlockMenuManager menuManager;
@@ -199,6 +199,8 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "title" -> "title";
             case "mailbox", "mail" -> "mailbox";
             case "booster" -> "booster";
+            case "menu" -> "menu";
+            case "island" -> "island";
             default -> sub;
         };
     }
