@@ -53,25 +53,25 @@ public final class BestiaryManager {
 
     /** Broad categories that group mob families together. */
     public enum BestiaryCategory {
-        COMBAT("Combat",  new MobFamily[]{MobFamily.ZOMBIE, MobFamily.SKELETON,
-                                          MobFamily.SPIDER, MobFamily.CREEPER}),
-        SLAYER("Slayer",  new MobFamily[]{MobFamily.ENDERMAN, MobFamily.BLAZE,
-                                          MobFamily.WITCH}),
-        BOSS  ("Boss",    new MobFamily[]{MobFamily.GHAST, MobFamily.SLIME,
-                                          MobFamily.GOLEM});
+        COMBAT("Combat",  new BestiaryFamily[]{BestiaryFamily.ZOMBIE, BestiaryFamily.SKELETON,
+                                               BestiaryFamily.SPIDER, BestiaryFamily.CREEPER}),
+        SLAYER("Slayer",  new BestiaryFamily[]{BestiaryFamily.ENDERMAN, BestiaryFamily.BLAZE,
+                                               BestiaryFamily.WITCH}),
+        BOSS  ("Boss",    new BestiaryFamily[]{BestiaryFamily.GHAST, BestiaryFamily.SLIME,
+                                               BestiaryFamily.GOLEM});
 
         public final String displayName;
         /** Mob families that belong to this category. */
-        public final MobFamily[] families;
+        public final BestiaryFamily[] families;
 
-        BestiaryCategory(String displayName, MobFamily[] families) {
+        BestiaryCategory(String displayName, BestiaryFamily[] families) {
             this.displayName = displayName;
             this.families    = families;
         }
     }
 
     /** Groupings of related mob types for bestiary milestone tracking. */
-    public enum MobFamily {
+    public enum BestiaryFamily {
         ZOMBIE("Zombie",   new String[]{"zombie", "zombie_villager", "drowned", "husk"}),
         SKELETON("Skeleton", new String[]{"skeleton", "stray", "wither_skeleton", "bogged"}),
         SPIDER("Spider",   new String[]{"spider", "cave_spider", "jockey"}),
@@ -193,7 +193,7 @@ public final class BestiaryManager {
      * @param family   the bestiary family
      * @return summed kill count across all mob types in the family
      */
-    public int getKillsForFamily(UUID playerId, MobFamily family) {
+    public int getKillsForFamily(UUID playerId, BestiaryFamily family) {
         if (playerId == null || family == null) {
             return 0;
         }
