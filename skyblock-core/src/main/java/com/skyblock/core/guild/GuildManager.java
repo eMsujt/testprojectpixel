@@ -55,7 +55,9 @@ public final class GuildManager {
         if (guildByMember.containsKey(leader)) {
             throw new IllegalStateException("Player is already in a guild.");
         }
-        Guild guild = new Guild(name, leader, new HashSet<>());
+        Map<UUID, GuildRank> ranks = new HashMap<>();
+        ranks.put(leader, GuildRank.GUILD_MASTER);
+        Guild guild = new Guild(name, leader, new HashSet<>(), ranks);
         guildByName.put(key, guild);
         guildByMember.put(leader, guild);
         return guild;
@@ -82,6 +84,7 @@ public final class GuildManager {
             guildByMember.remove(member);
         }
         guild.members().clear();
+        guild.memberRanks().clear();
     }
 
     // -------------------------------------------------------------------------
@@ -144,6 +147,7 @@ public final class GuildManager {
             throw new IllegalStateException("Player is already in a guild.");
         }
         guild.members().add(invitee);
+        guild.memberRanks().put(invitee, GuildRank.RECRUIT);
         guildByMember.put(invitee, guild);
         return guild;
     }
@@ -179,6 +183,7 @@ public final class GuildManager {
             disbandGuild(player);
         } else {
             guild.members().remove(player);
+            guild.memberRanks().remove(player);
             guildByMember.remove(player);
         }
     }
@@ -205,6 +210,7 @@ public final class GuildManager {
             throw new IllegalStateException("That player is not in your guild.");
         }
         guild.members().remove(target);
+        guild.memberRanks().remove(target);
         guildByMember.remove(target);
     }
 
@@ -246,15 +252,86 @@ public final class GuildManager {
     }
 
     // -------------------------------------------------------------------------
+    // Rank operations
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the {@link GuildRank} of {@code player}, or {@code null} if they are not in a guild.
+     *
+     * @param player the player to query
+     * @return their rank, or {@code null}
+     */
+    public GuildRank getRank(UUID player) {
+        Objects.requireNonNull(player, "player");
+        Guild guild = guildByMember.get(player);
+        if (guild == null) return null;
+        return guild.memberRanks().get(player);
+    }
+
+    /**
+     * Sets the rank of {@code target} within the guild led by {@code leader}.
+     *
+     * <p>The leader's own rank ({@code GUILD_MASTER}) cannot be changed via this method.</p>
+     *
+     * @param leader the UUID of the guild leader (must be GUILD_MASTER)
+     * @param target the UUID of the member whose rank is being set
+     * @param rank   the new rank; must not be {@code GUILD_MASTER}
+     * @throws IllegalStateException    if {@code leader} is not a guild leader or {@code target} is not in the same guild
+     * @throws IllegalArgumentException if {@code rank} is {@code GUILD_MASTER}
+     */
+    public void setRank(UUID leader, UUID target, GuildRank rank) {
+        Objects.requireNonNull(leader, "leader");
+        Objects.requireNonNull(target, "target");
+        Objects.requireNonNull(rank, "rank");
+        Guild guild = guildByMember.get(leader);
+        if (guild == null || !guild.leader().equals(leader)) {
+            throw new IllegalStateException("Only the guild leader can change ranks.");
+        }
+        if (guild.leader().equals(target)) {
+            throw new IllegalStateException("Cannot change the guild leader's rank.");
+        }
+        if (!guild.members().contains(target)) {
+            throw new IllegalStateException("That player is not in your guild.");
+        }
+        if (rank == GuildRank.GUILD_MASTER) {
+            throw new IllegalArgumentException("Cannot assign GUILD_MASTER rank; use a leadership-transfer operation.");
+        }
+        guild.memberRanks().put(target, rank);
+    }
+
+    // -------------------------------------------------------------------------
+    // Inner types
+    // -------------------------------------------------------------------------
+
+    /** Rank hierarchy for guild members. */
+    public enum GuildRank {
+        GUILD_MASTER("Guild Master"),
+        OFFICER("Officer"),
+        MEMBER("Member"),
+        RECRUIT("Recruit");
+
+        private final String displayName;
+
+        GuildRank(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String displayName() {
+            return displayName;
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Inner record
     // -------------------------------------------------------------------------
 
     /**
      * Holds the mutable state of one guild.
      *
-     * <p>The {@code members} set contains non-leader members only; the leader is stored separately.</p>
+     * <p>The {@code members} set contains non-leader members only; the leader is stored separately.
+     * {@code memberRanks} maps every member (including the leader) to their {@link GuildRank}.</p>
      */
-    public record Guild(String name, UUID leader, Set<UUID> members) {
+    public record Guild(String name, UUID leader, Set<UUID> members, Map<UUID, GuildRank> memberRanks) {
 
         /** Returns an unmodifiable view of the full member set (leader + non-leader members). */
         public Set<UUID> getAllMembers() {

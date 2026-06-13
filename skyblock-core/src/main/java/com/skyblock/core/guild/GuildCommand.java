@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public final class GuildCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
-            "create", "invite", "accept", "decline", "kick", "leave", "disband", "info"
+            "create", "invite", "accept", "decline", "kick", "leave", "disband", "info", "rank"
     );
 
     private final GuildManager guildManager;
@@ -61,6 +61,7 @@ public final class GuildCommand implements TabExecutor {
             case "leave"   -> handleLeave(player);
             case "disband" -> handleDisband(player);
             case "info"    -> handleInfo(player);
+            case "rank"    -> handleRank(player, args);
             default        -> sendHelp(player);
         }
         return true;
@@ -76,13 +77,21 @@ public final class GuildCommand implements TabExecutor {
         }
         if (args.length == 2) {
             String sub = args[0].toLowerCase();
-            if (sub.equals("invite") || sub.equals("kick")) {
+            if (sub.equals("invite") || sub.equals("kick") || sub.equals("rank")) {
                 String prefix = args[1].toLowerCase();
                 return Bukkit.getOnlinePlayers().stream()
                         .map(Player::getName)
                         .filter(n -> n.toLowerCase().startsWith(prefix))
                         .collect(Collectors.toList());
             }
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("rank")) {
+            String prefix = args[2].toLowerCase();
+            return Arrays.stream(GuildManager.GuildRank.values())
+                    .filter(r -> r != GuildManager.GuildRank.GUILD_MASTER)
+                    .map(r -> r.name().toLowerCase())
+                    .filter(n -> n.startsWith(prefix))
+                    .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
@@ -200,12 +209,39 @@ public final class GuildCommand implements TabExecutor {
         Player leaderPlayer = Bukkit.getPlayer(guild.leader());
         String leaderName = leaderPlayer != null ? leaderPlayer.getName() : guild.leader().toString();
         player.sendMessage("=== Guild: " + guild.name() + " ===");
-        player.sendMessage("Leader: " + leaderName);
+        player.sendMessage("Leader: " + leaderName + " [" + GuildManager.GuildRank.GUILD_MASTER.displayName() + "]");
         player.sendMessage("Members (" + guild.members().size() + "):");
         for (UUID memberId : guild.members()) {
             Player memberPlayer = Bukkit.getPlayer(memberId);
             String memberName = memberPlayer != null ? memberPlayer.getName() : memberId.toString();
-            player.sendMessage("  - " + memberName);
+            GuildManager.GuildRank rank = guild.memberRanks().getOrDefault(memberId, GuildManager.GuildRank.RECRUIT);
+            player.sendMessage("  - " + memberName + " [" + rank.displayName() + "]");
+        }
+    }
+
+    private void handleRank(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage("Usage: /guild rank <player> <rank>");
+            return;
+        }
+        Player target = Bukkit.getPlayerExact(args[1]);
+        if (target == null) {
+            player.sendMessage("Player '" + args[1] + "' is not online.");
+            return;
+        }
+        GuildManager.GuildRank rank;
+        try {
+            rank = GuildManager.GuildRank.valueOf(args[2].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown rank '" + args[2] + "'. Valid ranks: officer, member, recruit");
+            return;
+        }
+        try {
+            guildManager.setRank(player.getUniqueId(), target.getUniqueId(), rank);
+            player.sendMessage("Set " + target.getName() + "'s rank to " + rank.displayName() + ".");
+            target.sendMessage("Your guild rank has been set to " + rank.displayName() + ".");
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            player.sendMessage(e.getMessage());
         }
     }
 
@@ -219,5 +255,6 @@ public final class GuildCommand implements TabExecutor {
         player.sendMessage("/guild leave           — leave your guild");
         player.sendMessage("/guild disband         — disband your guild (leader only)");
         player.sendMessage("/guild info            — show guild info");
+        player.sendMessage("/guild rank <player> <rank> — set a member's rank (leader only)");
     }
 }
