@@ -17,35 +17,26 @@ import java.util.Objects;
  */
 public final class ForgeRecipeManager {
 
-    /** A recipe that can be forged at the Forge. */
-    public static final class ForgeRecipe {
-        private final String id;
-        private final String displayName;
-        /** Ingredient name → required quantity. */
-        private final Map<String, Integer> ingredients;
-        private final String outputItem;
-        private final int outputAmount;
-        /** Forge duration in seconds. */
-        private final int durationSeconds;
-
-        public ForgeRecipe(String id, String displayName,
-                           Map<String, Integer> ingredients,
-                           String outputItem, int outputAmount,
-                           int durationSeconds) {
-            this.id = Objects.requireNonNull(id, "id");
-            this.displayName = Objects.requireNonNull(displayName, "displayName");
-            this.ingredients = Collections.unmodifiableMap(new HashMap<>(ingredients));
-            this.outputItem = Objects.requireNonNull(outputItem, "outputItem");
-            this.outputAmount = outputAmount;
-            this.durationSeconds = durationSeconds;
+    /**
+     * A recipe that can be forged at the Forge.
+     *
+     * @param id              unique recipe identifier
+     * @param displayName     human-readable name
+     * @param ingredients     ingredient name → required quantity
+     * @param outputItem      item produced by this recipe
+     * @param outputAmount    quantity produced
+     * @param durationSeconds forge duration in seconds
+     */
+    public record ForgeRecipe(String id, String displayName,
+                              Map<String, Integer> ingredients,
+                              String outputItem, int outputAmount,
+                              int durationSeconds) {
+        public ForgeRecipe {
+            Objects.requireNonNull(id, "id");
+            Objects.requireNonNull(displayName, "displayName");
+            ingredients = Collections.unmodifiableMap(new HashMap<>(ingredients));
+            Objects.requireNonNull(outputItem, "outputItem");
         }
-
-        public String getId() { return id; }
-        public String getDisplayName() { return displayName; }
-        public Map<String, Integer> getIngredients() { return ingredients; }
-        public String getOutputItem() { return outputItem; }
-        public int getOutputAmount() { return outputAmount; }
-        public int getDurationSeconds() { return durationSeconds; }
     }
 
     // ---------------------------------------------------------------------------
@@ -81,7 +72,7 @@ public final class ForgeRecipeManager {
      */
     public void registerRecipe(ForgeRecipe recipe) {
         Objects.requireNonNull(recipe, "recipe");
-        recipes.put(recipe.getId(), recipe);
+        recipes.put(recipe.id(), recipe);
     }
 
     /**

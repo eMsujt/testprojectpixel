@@ -82,17 +82,17 @@ public final class ForgeCommand implements TabExecutor {
         }
         player.sendMessage("=== Forge Recipes ===");
         forgeManager.getRecipes().values().stream()
-                .sorted((a, b) -> a.getId().compareTo(b.getId()))
+                .sorted((a, b) -> a.id().compareTo(b.id()))
                 .forEach(recipe -> {
-                    String ingredients = recipe.getIngredients().entrySet().stream()
+                    String ingredients = recipe.ingredients().entrySet().stream()
                             .map(e -> e.getValue() + "x " + e.getKey())
                             .collect(Collectors.joining(", "));
                     player.sendMessage(String.format("[%s] %s -> %dx %s (%ds) | Needs: %s",
-                            recipe.getId(),
-                            recipe.getDisplayName(),
-                            recipe.getOutputAmount(),
-                            recipe.getOutputItem(),
-                            recipe.getDurationSeconds(),
+                            recipe.id(),
+                            recipe.displayName(),
+                            recipe.outputAmount(),
+                            recipe.outputItem(),
+                            recipe.durationSeconds(),
                             ingredients));
                 });
     }
@@ -110,8 +110,8 @@ public final class ForgeCommand implements TabExecutor {
         try {
             forgeManager.startForge(player.getUniqueId(), recipeId, System.currentTimeMillis());
             ForgeManager.ForgeRecipe recipe = forgeManager.getRecipe(recipeId);
-            player.sendMessage("Started forging: " + recipe.getDisplayName()
-                    + ". Time remaining: " + formatDuration(recipe.getDurationSeconds()));
+            player.sendMessage("Started forging: " + recipe.displayName()
+                    + ". Time remaining: " + formatDuration(recipe.durationSeconds()));
         } catch (IllegalStateException e) {
             player.sendMessage("You already have an active forge job. Use /forge status to check it.");
         }
@@ -125,12 +125,12 @@ public final class ForgeCommand implements TabExecutor {
         }
         long nowMillis = System.currentTimeMillis();
         if (job.isComplete(nowMillis)) {
-            player.sendMessage("Forge complete: " + job.getRecipe().getDisplayName()
+            player.sendMessage("Forge complete: " + job.getRecipe().displayName()
                     + " is ready! Use /forge collect to claim it.");
         } else {
             long elapsedSeconds = (nowMillis - job.getStartTimeMillis()) / 1000L;
-            long remaining = job.getRecipe().getDurationSeconds() - elapsedSeconds;
-            player.sendMessage("Forging: " + job.getRecipe().getDisplayName()
+            long remaining = job.getRecipe().durationSeconds() - elapsedSeconds;
+            player.sendMessage("Forging: " + job.getRecipe().displayName()
                     + " — " + formatDuration((int) Math.max(0, remaining)) + " remaining.");
         }
     }
@@ -138,9 +138,9 @@ public final class ForgeCommand implements TabExecutor {
     private void handleCollect(Player player) {
         try {
             ForgeManager.ForgeJob job = forgeManager.collectForge(player.getUniqueId(), System.currentTimeMillis());
-            player.sendMessage("Collected " + job.getRecipe().getOutputAmount() + "x "
-                    + job.getRecipe().getOutputItem() + " from forging "
-                    + job.getRecipe().getDisplayName() + "!");
+            player.sendMessage("Collected " + job.getRecipe().outputAmount() + "x "
+                    + job.getRecipe().outputItem() + " from forging "
+                    + job.getRecipe().displayName() + "!");
         } catch (IllegalStateException e) {
             player.sendMessage(e.getMessage().contains("not yet complete")
                     ? "Your forge job is not complete yet. Use /forge status to check progress."
