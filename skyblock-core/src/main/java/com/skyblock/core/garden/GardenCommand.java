@@ -30,7 +30,7 @@ public final class GardenCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "reset");
     private static final List<String> MODIFY_OPS = Arrays.asList("set", "add");
     private static final List<String> CROP_OPS = Arrays.asList("set", "add");
-    private static final List<String> CROP_NAMES = Arrays.stream(GardenManager.GardenCrop.values())
+    private static final List<String> CROP_NAMES = Arrays.stream(GardenManager.CropType.values())
             .map(c -> c.name().toLowerCase())
             .collect(Collectors.toList());
 
@@ -169,7 +169,7 @@ public final class GardenCommand implements TabExecutor {
                     player.sendMessage("Usage: /garden crop " + op + " <crop> <level>");
                     return;
                 }
-                GardenManager.GardenCrop crop = parseCrop(player, args[2]);
+                GardenManager.CropType crop = parseCrop(player, args[2]);
                 if (crop == null) return;
                 int amount = parseAmount(player, args[3]);
                 if (amount < 0) return;
@@ -183,13 +183,13 @@ public final class GardenCommand implements TabExecutor {
                 return;
             }
             // treat as crop name for view
-            GardenManager.GardenCrop crop = parseCrop(player, op);
+            GardenManager.CropType crop = parseCrop(player, op);
             if (crop == null) return;
             int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
             player.sendMessage(crop.getDisplayName() + " upgrade level: " + level);
         } else {
             player.sendMessage("=== Crop Upgrades ===");
-            for (GardenManager.GardenCrop crop : GardenManager.GardenCrop.values()) {
+            for (GardenManager.CropType crop : GardenManager.CropType.values()) {
                 int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
                 player.sendMessage(crop.getDisplayName() + ": " + level);
             }
@@ -209,9 +209,9 @@ public final class GardenCommand implements TabExecutor {
     // Helpers
     // -------------------------------------------------------------------------
 
-    private GardenManager.GardenCrop parseCrop(Player player, String input) {
+    private GardenManager.CropType parseCrop(Player player, String input) {
         try {
-            return GardenManager.GardenCrop.valueOf(input.toUpperCase());
+            return GardenManager.CropType.valueOf(input.toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown crop: " + input + ". Valid crops: " + String.join(", ", CROP_NAMES));
             return null;
