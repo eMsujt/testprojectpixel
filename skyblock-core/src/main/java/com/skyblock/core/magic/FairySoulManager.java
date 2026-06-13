@@ -22,14 +22,31 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class FairySoulManager {
 
     /**
+     * Immutable world-position descriptor for a fairy soul spawn point.
+     *
+     * @param worldName name of the world this location belongs to
+     * @param x         world X coordinate
+     * @param y         world Y coordinate
+     * @param z         world Z coordinate
+     */
+    public record FairySoulLocation(String worldName, double x, double y, double z) {
+
+        /** Validates that {@code worldName} is non-null and non-blank. */
+        public FairySoulLocation {
+            Objects.requireNonNull(worldName, "worldName");
+            if (worldName.isBlank()) {
+                throw new IllegalArgumentException("worldName must not be blank");
+            }
+        }
+    }
+
+    /**
      * Immutable descriptor for a single fairy soul spawn point.
      *
      * @param locationKey unique string identifier for this soul's position
-     * @param x           world X coordinate
-     * @param y           world Y coordinate
-     * @param z           world Z coordinate
+     * @param location    world position of this soul
      */
-    public record FairySoul(String locationKey, double x, double y, double z) {
+    public record FairySoul(String locationKey, FairySoulLocation location) {
 
         /** Validates that {@code locationKey} is non-null and non-blank. */
         public FairySoul {
@@ -37,6 +54,7 @@ public final class FairySoulManager {
             if (locationKey.isBlank()) {
                 throw new IllegalArgumentException("locationKey must not be blank");
             }
+            Objects.requireNonNull(location, "location");
         }
     }
 
