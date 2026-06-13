@@ -1,5 +1,9 @@
 package com.skyblock.core.pets;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -236,6 +240,57 @@ public final class PetsManager {
             return new PetData(pet, 0.0, 1);
         }
         return xpMap.getOrDefault(pet, new PetData(pet, 0.0, 1));
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "pets.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        petXpData.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (!cfg.isConfigurationSection(key)) {
+                    continue;
+                }
+                Map<PetType, PetData> xpMap = new EnumMap<>(PetType.class);
+                for (String typeName : cfg.getConfigurationSection(key).getKeys(false)) {
+                    try {
+                        PetType type = PetType.valueOf(typeName);
+                        double xp = cfg.getDouble(key + "." + typeName + ".xp", 0.0);
+                        int level = cfg.getInt(key + "." + typeName + ".level", 1);
+                        xpMap.put(type, new PetData(type, xp, level));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip unknown pet types
+                    }
+                }
+                if (!xpMap.isEmpty()) {
+                    petXpData.put(uuid, xpMap);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "pets.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<PetType, PetData>> entry : petXpData.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<PetType, PetData> pd : entry.getValue().entrySet()) {
+                String typeName = pd.getKey().name();
+                cfg.set(key + "." + typeName + ".xp", pd.getValue().xp);
+                cfg.set(key + "." + typeName + ".level", pd.getValue().level);
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save pets.yml", e);
+        }
     }
 
     /**
