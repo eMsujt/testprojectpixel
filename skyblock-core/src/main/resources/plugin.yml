@@ -330,6 +330,10 @@ commands:
     usage: /skyblock-level [info|addxp <amount>|setxp <amount>]
     aliases: [sblevel]
     permission: skyblock.skyblock-level
+  run:
+    description: View and record per-player dungeon run statistics.
+    usage: /run [info [floor]|add <floor>|reset]
+    permission: skyblock.run
 
 permissions:
   skyblock.warp:
@@ -466,4 +470,7 @@ permissions:
     default: true
   skyblock.booster:
     description: Use the /booster command to view and activate boosters.
+    default: true
+  skyblock.run:
+    description: Use the /run command to view and record dungeon run statistics.
     default: true
