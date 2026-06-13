@@ -40,6 +40,36 @@ public final class JacobsContestManager {
         }
     }
 
+    /** All crop types that can appear in Jacob's Farming Contests, with their base XP values. */
+    public enum CropType {
+        WHEAT("Wheat", 6.0),
+        CARROT("Carrot", 3.0),
+        POTATO("Potato", 3.0),
+        PUMPKIN("Pumpkin", 4.5),
+        MELON("Melon", 4.0),
+        SUGAR_CANE("Sugar Cane", 2.0),
+        COCOA_BEANS("Cocoa Beans", 3.0),
+        CACTUS("Cactus", 2.0),
+        MUSHROOM("Mushroom", 6.0),
+        NETHER_WART("Nether Wart", 3.0);
+
+        private final String displayName;
+        private final double baseXp;
+
+        CropType(String displayName, double baseXp) {
+            this.displayName = displayName;
+            this.baseXp = baseXp;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public double getBaseXp() {
+            return baseXp;
+        }
+    }
+
     /** Medal tiers awarded at the end of a contest. */
     public enum ContestMedal {
         NONE("None", 0),
