@@ -250,6 +250,9 @@ commands:
     description: View and manage your item sacks.
     usage: /sacks [view <type>|list|reset]
     permission: skyblock.sacks
+  menu:
+    description: Open the SkyBlock main menu.
+    usage: /menu
   hub:
     description: Teleport to the SkyBlock hub world.
     usage: /hub

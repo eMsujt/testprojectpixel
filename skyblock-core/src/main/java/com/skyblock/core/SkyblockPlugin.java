@@ -67,6 +67,7 @@ import com.skyblock.core.mailbox.MailboxCommand;
 import com.skyblock.core.mailbox.MailboxManager;
 import com.skyblock.core.friend.FriendCommand;
 import com.skyblock.core.friend.FriendManager;
+import com.skyblock.core.menu.SkyblockMenuCommand;
 import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.forge.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
@@ -297,6 +298,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
         getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
+        SkyblockMenuCommand skyblockMenuCommand = new SkyblockMenuCommand();
+        getCommand("menu").setExecutor(skyblockMenuCommand);
+        getCommand("menu").setTabCompleter(skyblockMenuCommand);
     }
 
     @Override
