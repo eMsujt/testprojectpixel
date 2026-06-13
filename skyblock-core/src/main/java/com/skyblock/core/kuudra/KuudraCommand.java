@@ -8,31 +8,15 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Handles the {@code /kuudra} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /kuudra keys [<tier>]}              — view key counts</li>
- *   <li>{@code /kuudra keys add <tier> <amount>}   — (op) add keys</li>
- *   <li>{@code /kuudra keys remove <tier> <amount>}— (op) remove keys</li>
- *   <li>{@code /kuudra keys set <tier> <amount>}   — (op) set keys</li>
- *   <li>{@code /kuudra completions [<tier>]}        — view completion counts</li>
- *   <li>{@code /kuudra completions add <tier> <amt>}— (op) add completions</li>
- * </ul>
- * </p>
- */
 public final class KuudraCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("keys", "completions", "kills");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("join", "leave", "stats", "shop");
     private static final List<String> TIER_NAMES = Arrays.stream(KuudraManager.KuudraTier.values())
             .map(t -> t.name().toLowerCase())
             .collect(Collectors.toList());
-    private static final List<String> KEYS_SUB = Arrays.asList("add", "remove", "set");
-    private static final List<String> COMPLETIONS_SUB = Collections.singletonList("add");
-    private static final List<String> KILLS_SUB = Collections.singletonList("add");
 
     private final KuudraManager kuudraManager;
 
@@ -48,15 +32,16 @@ public final class KuudraCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /kuudra <keys|completions|kills>");
+            sendHelp(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "keys"        -> handleKeys(player, args);
-            case "completions" -> handleCompletions(player, args);
-            case "kills"       -> handleKills(player, args);
-            default            -> player.sendMessage("Unknown subcommand. Usage: /kuudra <keys|completions|kills>");
+            case "join"  -> handleJoin(player, args);
+            case "leave" -> handleLeave(player);
+            case "stats" -> handleStats(player, args);
+            case "shop"  -> handleShop(player);
+            default      -> sendHelp(player);
         }
         return true;
     }
@@ -67,176 +52,80 @@ public final class KuudraCommand implements TabExecutor {
             String prefix = args[0].toLowerCase();
             return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
         }
-        if (args.length == 2) {
-            String sub = args[0].toLowerCase();
+        if (args.length == 2 && args[0].equalsIgnoreCase("join")) {
             String prefix = args[1].toLowerCase();
-            if (sub.equals("keys")) {
-                List<String> opts = new java.util.ArrayList<>(KEYS_SUB);
-                opts.addAll(TIER_NAMES);
-                return opts.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
-            }
-            if (sub.equals("completions")) {
-                List<String> opts = new java.util.ArrayList<>(COMPLETIONS_SUB);
-                opts.addAll(TIER_NAMES);
-                return opts.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
-            }
-            if (sub.equals("kills")) {
-                List<String> opts = new java.util.ArrayList<>(KILLS_SUB);
-                opts.addAll(TIER_NAMES);
-                return opts.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
-            }
+            return TIER_NAMES.stream().filter(t -> t.startsWith(prefix)).collect(Collectors.toList());
         }
-        if (args.length == 3) {
-            String sub = args[0].toLowerCase();
-            String op = args[1].toLowerCase();
-            String prefix = args[2].toLowerCase();
-            if ((sub.equals("keys") && KEYS_SUB.contains(op))
-                    || (sub.equals("completions") && COMPLETIONS_SUB.contains(op))
-                    || (sub.equals("kills") && KILLS_SUB.contains(op))) {
-                return TIER_NAMES.stream().filter(t -> t.startsWith(prefix)).collect(Collectors.toList());
-            }
+        if (args.length == 2 && args[0].equalsIgnoreCase("stats")) {
+            String prefix = args[1].toLowerCase();
+            return TIER_NAMES.stream().filter(t -> t.startsWith(prefix)).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
 
-    // -------------------------------------------------------------------------
-    // Subcommand handlers
-    // -------------------------------------------------------------------------
-
-    private void handleKeys(Player player, String[] args) {
-        if (args.length >= 2) {
-            String op = args[1].toLowerCase();
-            if (op.equals("add") || op.equals("remove") || op.equals("set")) {
-                if (!player.isOp()) {
-                    player.sendMessage("You do not have permission to use this subcommand.");
-                    return;
-                }
-                if (args.length < 4) {
-                    player.sendMessage("Usage: /kuudra keys " + op + " <tier> <amount>");
-                    return;
-                }
-                KuudraManager.KuudraTier tier = parseTier(player, args[2]);
-                if (tier == null) return;
-                int amount = parseAmount(player, args[3]);
-                if (amount < 0) return;
-                if (op.equals("set")) {
-                    kuudraManager.setKeys(player.getUniqueId(), tier, amount);
-                    player.sendMessage(tier.getDisplayName() + " keys set to " + amount + ".");
-                } else {
-                    int delta = op.equals("remove") ? -amount : amount;
-                    int newCount = kuudraManager.addKeys(player.getUniqueId(), tier, delta);
-                    player.sendMessage(tier.getDisplayName() + " keys: " + newCount + ".");
-                }
-                return;
-            }
-            // treat arg as tier name for view
-            KuudraManager.KuudraTier tier = parseTier(player, op);
-            if (tier == null) return;
-            int count = kuudraManager.getKeys(player.getUniqueId(), tier);
-            player.sendMessage(tier.getDisplayName() + " keys: " + count);
-        } else {
-            player.sendMessage("=== Kuudra Keys ===");
-            for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
-                int count = kuudraManager.getKeys(player.getUniqueId(), tier);
-                player.sendMessage(tier.getDisplayName() + ": " + count);
-            }
+    private void handleJoin(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /kuudra join <tier>");
+            return;
         }
-    }
-
-    private void handleCompletions(Player player, String[] args) {
-        if (args.length >= 2) {
-            String op = args[1].toLowerCase();
-            if (op.equals("add")) {
-                if (!player.isOp()) {
-                    player.sendMessage("You do not have permission to use this subcommand.");
-                    return;
-                }
-                if (args.length < 4) {
-                    player.sendMessage("Usage: /kuudra completions add <tier> <amount>");
-                    return;
-                }
-                KuudraManager.KuudraTier tier = parseTier(player, args[2]);
-                if (tier == null) return;
-                int amount = parseAmount(player, args[3]);
-                if (amount < 0) return;
-                int newCount = kuudraManager.addCompletions(player.getUniqueId(), tier, amount);
-                player.sendMessage(tier.getDisplayName() + " completions: " + newCount + ".");
-                return;
-            }
-            // treat arg as tier name for view
-            KuudraManager.KuudraTier tier = parseTier(player, op);
-            if (tier == null) return;
-            int count = kuudraManager.getCompletions(player.getUniqueId(), tier);
-            player.sendMessage(tier.getDisplayName() + " completions: " + count);
-        } else {
-            player.sendMessage("=== Kuudra Completions ===");
-            for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
-                int count = kuudraManager.getCompletions(player.getUniqueId(), tier);
-                player.sendMessage(tier.getDisplayName() + ": " + count);
-            }
-        }
-    }
-
-    private void handleKills(Player player, String[] args) {
-        if (args.length >= 2) {
-            String op = args[1].toLowerCase();
-            if (op.equals("add")) {
-                if (!player.isOp()) {
-                    player.sendMessage("You do not have permission to use this subcommand.");
-                    return;
-                }
-                if (args.length < 4) {
-                    player.sendMessage("Usage: /kuudra kills add <tier> <amount>");
-                    return;
-                }
-                KuudraManager.KuudraTier tier = parseTier(player, args[2]);
-                if (tier == null) return;
-                int amount = parseAmount(player, args[3]);
-                if (amount < 0) return;
-                int newCount = kuudraManager.addKills(player.getUniqueId(), tier, amount);
-                player.sendMessage(tier.getDisplayName() + " kills: " + newCount + ".");
-                return;
-            }
-            // treat arg as tier name for view
-            KuudraManager.KuudraTier tier = parseTier(player, op);
-            if (tier == null) return;
-            int count = kuudraManager.getKillCount(player.getUniqueId(), tier);
-            player.sendMessage(tier.getDisplayName() + " kills: " + count);
-        } else {
-            player.sendMessage("=== Kuudra Kills ===");
-            for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
-                int count = kuudraManager.getKillCount(player.getUniqueId(), tier);
-                player.sendMessage(tier.getDisplayName() + ": " + count);
-            }
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private KuudraManager.KuudraTier parseTier(Player player, String input) {
+        KuudraManager.KuudraTier tier;
         try {
-            return KuudraManager.KuudraTier.valueOf(input.toUpperCase());
+            tier = KuudraManager.KuudraTier.valueOf(args[1].toUpperCase());
         } catch (IllegalArgumentException e) {
-            player.sendMessage("Unknown tier: " + input + ". Valid tiers: " + String.join(", ", TIER_NAMES));
-            return null;
+            player.sendMessage("Unknown tier: " + args[1] + ". Valid tiers: " + String.join(", ", TIER_NAMES));
+            return;
         }
+        if (kuudraManager.getActiveRun(player.getUniqueId()) != null) {
+            player.sendMessage("You are already in a Kuudra run. Use /kuudra leave first.");
+            return;
+        }
+        kuudraManager.joinRun(tier, Collections.singletonList(player.getUniqueId()), System.currentTimeMillis());
+        player.sendMessage("Joined a " + tier.getDisplayName() + " Kuudra run.");
     }
 
-    private int parseAmount(Player player, String input) {
-        try {
-            int amount = Integer.parseInt(input);
-            if (amount < 0) {
-                player.sendMessage("Amount must not be negative.");
-                return -1;
+    private void handleLeave(Player player) {
+        if (kuudraManager.getActiveRun(player.getUniqueId()) == null) {
+            player.sendMessage("You are not in a Kuudra run.");
+            return;
+        }
+        kuudraManager.leaveRun(player.getUniqueId());
+        player.sendMessage("You have left the Kuudra run.");
+    }
+
+    private void handleStats(Player player, String[] args) {
+        if (args.length >= 2) {
+            KuudraManager.KuudraTier tier;
+            try {
+                tier = KuudraManager.KuudraTier.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown tier: " + args[1] + ". Valid tiers: " + String.join(", ", TIER_NAMES));
+                return;
             }
-            return amount;
-        } catch (NumberFormatException e) {
-            player.sendMessage("Invalid amount: " + input);
-            return -1;
+            int count = kuudraManager.getCompletionCount(player.getUniqueId(), tier);
+            player.sendMessage("=== Kuudra " + tier.getDisplayName() + " ===");
+            player.sendMessage("  Completions: " + count);
+        } else {
+            player.sendMessage("=== Kuudra Stats ===");
+            Map<KuudraManager.KuudraTier, Integer> all = kuudraManager.getAllCompletions(player.getUniqueId());
+            for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
+                player.sendMessage("  " + tier.getDisplayName() + ": " + all.getOrDefault(tier, 0));
+            }
+            KuudraManager.KuudraRun run = kuudraManager.getActiveRun(player.getUniqueId());
+            if (run != null) {
+                player.sendMessage("  Active run  : " + run.getTier().getDisplayName());
+            }
         }
     }
 
+    private void handleShop(Player player) {
+        player.sendMessage("The Kuudra shop is not yet available.");
+    }
 
+    private void sendHelp(Player player) {
+        player.sendMessage("=== Kuudra Commands ===");
+        player.sendMessage("/kuudra join <tier>  — join a Kuudra run");
+        player.sendMessage("/kuudra leave        — leave your current run");
+        player.sendMessage("/kuudra stats [tier] — view your Kuudra completions");
+        player.sendMessage("/kuudra shop         — open the Kuudra shop");
+    }
 }
