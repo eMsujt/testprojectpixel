@@ -35,14 +35,16 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                         e -> e.getWhoClicked().sendMessage("Use /guild to manage your guild."))
                 .setItem(21, named(Material.GOLD_INGOT,    ChatColor.GOLD       + "Auction House"),
                         e -> e.getWhoClicked().sendMessage("Use /auction to open the Auction House."))
-                .setItem(22, named(Material.EMERALD,       ChatColor.GREEN      + "Trade"),
-                        e -> e.getWhoClicked().sendMessage("Use /trade to open the trade menu."))
+                .setItem(22, named(Material.CHEST,         ChatColor.GOLD       + "Bank"),
+                        e -> e.getWhoClicked().sendMessage("Use /bank to manage your bank account."))
                 .setItem(23, named(Material.POTION,        ChatColor.LIGHT_PURPLE + "Booster"),
                         e -> e.getWhoClicked().sendMessage("Use /booster to manage your active boosters."))
                 .setItem(24, named(Material.FIREWORK_ROCKET, ChatColor.GOLD    + "SkyBlock Events"),
                         e -> e.getWhoClicked().sendMessage("Use /event to view and join SkyBlock events."))
                 .setItem(25, named(Material.CRAFTING_TABLE,ChatColor.WHITE      + "Crafting"),
                         e -> e.getWhoClicked().sendMessage("Use /crafting to open the SkyBlock recipes."))
+                .setItem(26, named(Material.EMERALD,       ChatColor.GREEN      + "Trade"),
+                        e -> e.getWhoClicked().sendMessage("Use /trade to open the trade menu."))
                 // Row 3 — island & progress
                 .setItem(28, named(Material.GRASS_BLOCK,   ChatColor.GREEN      + "Island"),
                         e -> e.getWhoClicked().sendMessage("Use /island to manage your island."))
