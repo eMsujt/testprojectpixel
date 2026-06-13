@@ -222,13 +222,13 @@ public final class IslandCommand implements TabExecutor {
         }
         boolean applied = islandManager.applyUpgrade(player.getUniqueId(), upgrade);
         if (!applied) {
-            player.sendMessage(upgrade.name() + " is already at max level (" + upgrade.getMaxLevel() + ").");
+            player.sendMessage(upgrade.getDisplayName() + " is already at max level (" + upgrade.getMaxLevel() + ").");
             return;
         }
         int newLevel = islandManager.getIsland(player.getUniqueId())
                 .map(i -> i.getUpgradeLevel(upgrade))
                 .orElse(0);
-        player.sendMessage(upgrade.name() + " upgraded to level " + newLevel + " / " + upgrade.getMaxLevel() + ".");
+        player.sendMessage(upgrade.getDisplayName() + " upgraded to level " + newLevel + " / " + upgrade.getMaxLevel() + ".");
     }
 
     private void handleUpgrades(Player player) {
@@ -242,7 +242,7 @@ public final class IslandCommand implements TabExecutor {
         player.sendMessage("=== Island Upgrades ===");
         for (IslandManager.IslandUpgrade upgrade : IslandManager.IslandUpgrade.values()) {
             int level = island.getUpgradeLevel(upgrade);
-            player.sendMessage(upgrade.name() + ": " + level + " / " + upgrade.getMaxLevel());
+            player.sendMessage(upgrade.getDisplayName() + ": " + level + " / " + upgrade.getMaxLevel());
         }
     }
 

@@ -27,21 +27,27 @@ import org.bukkit.WorldCreator;
 public final class IslandManager {
 
     public enum IslandUpgrade {
-        MINION_SLOTS(5),
-        CHEST_SLOTS(5),
-        ISLAND_SIZE(5),
-        GUESTS(5),
-        CO_OP_SLOTS(3),
-        BEACON_POWER(4);
+        MINION_SLOTS(5, "Minion Slots"),
+        CHEST_SLOTS(5, "Chest Slots"),
+        ISLAND_SIZE(5, "Island Size"),
+        GUEST_SLOTS(5, "Guest Slots"),
+        CO_OP_SLOTS(3, "Co-op Slots"),
+        BEACON_POWER(4, "Beacon Power");
 
         private final int maxLevel;
+        private final String displayName;
 
-        IslandUpgrade(int maxLevel) {
+        IslandUpgrade(int maxLevel, String displayName) {
             this.maxLevel = maxLevel;
+            this.displayName = displayName;
         }
 
         public int getMaxLevel() {
             return maxLevel;
+        }
+
+        public String getDisplayName() {
+            return displayName;
         }
     }
 
