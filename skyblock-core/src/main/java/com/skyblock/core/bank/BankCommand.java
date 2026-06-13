@@ -18,6 +18,7 @@ import java.util.List;
  *   <li>{@code /bank deposit <amount>}  — deposit coins</li>
  *   <li>{@code /bank withdraw <amount>} — withdraw coins</li>
  *   <li>{@code /bank tier [tier]}       — view or set your bank tier</li>
+ *   <li>{@code /bank type [type]}       — view or set your bank type</li>
  *   <li>{@code /bank history}           — view recent transactions</li>
  * </ul>
  * </p>
@@ -47,6 +48,7 @@ public final class BankCommand implements TabExecutor {
             case "deposit"  -> handleDeposit(player, args);
             case "withdraw" -> handleWithdraw(player, args);
             case "tier"     -> handleTier(player, args);
+            case "type"     -> handleType(player, args);
             case "history"  -> handleHistory(player);
             default -> sendHelp(player);
         }
@@ -57,7 +59,14 @@ public final class BankCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("balance", "deposit", "withdraw", "tier", "history").stream()
+            return Arrays.asList("balance", "deposit", "withdraw", "tier", "type", "history").stream()
+                    .filter(s -> s.startsWith(lower))
+                    .toList();
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("type")) {
+            String lower = args[1].toLowerCase();
+            return Arrays.stream(BankManager.BankType.values())
+                    .map(t -> t.name().toLowerCase())
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -131,6 +140,21 @@ public final class BankCommand implements TabExecutor {
         }
     }
 
+    private void handleType(Player player, String[] args) {
+        if (args.length < 2) {
+            BankManager.BankType type = bankManager.getBankType(player.getUniqueId());
+            player.sendMessage("Your bank type: " + type.getDisplayName() + (type.isShared() ? " (shared with island)" : ""));
+            return;
+        }
+        try {
+            BankManager.BankType type = BankManager.BankType.valueOf(args[1].toUpperCase());
+            bankManager.setBankType(player.getUniqueId(), type);
+            player.sendMessage("Bank type set to: " + type.getDisplayName());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown type. Valid types: PERSONAL, ISLAND");
+        }
+    }
+
     private void handleHistory(Player player) {
         List<BankManager.BankTransaction> history = bankManager.getTransactions(player.getUniqueId());
         if (history.isEmpty()) {
@@ -151,6 +175,7 @@ public final class BankCommand implements TabExecutor {
         player.sendMessage("/bank deposit <amount> — deposit coins");
         player.sendMessage("/bank withdraw <amount> — withdraw coins");
         player.sendMessage("/bank tier [tier] — view or set your bank tier");
+        player.sendMessage("/bank type [type] — view or set your bank type");
         player.sendMessage("/bank history — view recent transactions");
     }
 }
