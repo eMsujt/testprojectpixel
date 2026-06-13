@@ -19,23 +19,43 @@ import java.util.UUID;
  */
 public final class TalismanManager {
 
-    /** Every talisman available in SkyBlock with its stat bonuses. */
+    /** Rarity tier for accessories, determining the stat multiplier applied to base bonuses. */
+    public enum AccessoryRarity {
+        COMMON("Common", 1.0),
+        UNCOMMON("Uncommon", 1.5),
+        RARE("Rare", 2.0),
+        EPIC("Epic", 3.0),
+        LEGENDARY("Legendary", 5.0);
+
+        private final String displayName;
+        /** Multiplier applied to the talisman's base stat bonus. */
+        public final double statMultiplier;
+
+        AccessoryRarity(String displayName, double statMultiplier) {
+            this.displayName = displayName;
+            this.statMultiplier = statMultiplier;
+        }
+
+        public String getDisplayName() { return displayName; }
+    }
+
+    /** Every talisman available in SkyBlock with its stat bonuses and rarity. */
     public enum TalismanType {
-        SPEED_TALISMAN(CombatStat.SPEED, 1.0),
-        STRENGTH_TALISMAN(CombatStat.STRENGTH, 5.0),
-        CRIT_TALISMAN(CombatStat.CRIT_CHANCE, 3.0),
-        CRIT_RING(CombatStat.CRIT_CHANCE, 5.0),
-        CRIT_ARTIFACT(CombatStat.CRIT_CHANCE, 8.0),
-        DEFENSE_TALISMAN(CombatStat.DEFENSE, 5.0),
-        DEFENSE_RING(CombatStat.DEFENSE, 10.0),
-        DEFENSE_ARTIFACT(CombatStat.DEFENSE, 15.0),
-        HEALTH_TALISMAN(CombatStat.HEALTH, 10.0),
-        FEROCITY_TALISMAN(CombatStat.FEROCITY, 1.0),
-        SPEED_RING(CombatStat.SPEED, 3.0),
-        SPEED_ARTIFACT(CombatStat.SPEED, 5.0),
-        INTELLIGENCE_TALISMAN(CombatStat.INTELLIGENCE, 10.0),
-        MAGIC_FIND_TALISMAN(CombatStat.MAGIC_FIND, 3.0),
-        ATTACK_SPEED_TALISMAN(CombatStat.ATTACK_SPEED, 3.0);
+        SPEED_TALISMAN(CombatStat.SPEED, 1.0, AccessoryRarity.COMMON),
+        STRENGTH_TALISMAN(CombatStat.STRENGTH, 5.0, AccessoryRarity.COMMON),
+        CRIT_TALISMAN(CombatStat.CRIT_CHANCE, 3.0, AccessoryRarity.COMMON),
+        CRIT_RING(CombatStat.CRIT_CHANCE, 5.0, AccessoryRarity.UNCOMMON),
+        CRIT_ARTIFACT(CombatStat.CRIT_CHANCE, 8.0, AccessoryRarity.RARE),
+        DEFENSE_TALISMAN(CombatStat.DEFENSE, 5.0, AccessoryRarity.COMMON),
+        DEFENSE_RING(CombatStat.DEFENSE, 10.0, AccessoryRarity.UNCOMMON),
+        DEFENSE_ARTIFACT(CombatStat.DEFENSE, 15.0, AccessoryRarity.RARE),
+        HEALTH_TALISMAN(CombatStat.HEALTH, 10.0, AccessoryRarity.COMMON),
+        FEROCITY_TALISMAN(CombatStat.FEROCITY, 1.0, AccessoryRarity.UNCOMMON),
+        SPEED_RING(CombatStat.SPEED, 3.0, AccessoryRarity.UNCOMMON),
+        SPEED_ARTIFACT(CombatStat.SPEED, 5.0, AccessoryRarity.RARE),
+        INTELLIGENCE_TALISMAN(CombatStat.INTELLIGENCE, 10.0, AccessoryRarity.COMMON),
+        MAGIC_FIND_TALISMAN(CombatStat.MAGIC_FIND, 3.0, AccessoryRarity.UNCOMMON),
+        ATTACK_SPEED_TALISMAN(CombatStat.ATTACK_SPEED, 3.0, AccessoryRarity.UNCOMMON);
 
         /** The stat this talisman boosts. */
         public final CombatStat stat;
@@ -43,9 +63,13 @@ public final class TalismanManager {
         /** The flat bonus applied to that stat. */
         public final double bonus;
 
-        TalismanType(CombatStat stat, double bonus) {
+        /** The rarity tier of this talisman. */
+        public final AccessoryRarity rarity;
+
+        TalismanType(CombatStat stat, double bonus, AccessoryRarity rarity) {
             this.stat = stat;
             this.bonus = bonus;
+            this.rarity = rarity;
         }
     }
 

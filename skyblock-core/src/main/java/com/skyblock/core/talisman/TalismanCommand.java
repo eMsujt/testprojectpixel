@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public final class TalismanCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("list", "equip", "unequip", "equipped", "bonuses");
+            Arrays.asList("list", "equip", "unequip", "equipped", "bonuses", "rarity");
 
     private final TalismanManager talismanManager;
 
@@ -44,7 +44,7 @@ public final class TalismanCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /talisman <list|equip|unequip|equipped|bonuses>");
+            player.sendMessage("Usage: /talisman <list|equip|unequip|equipped|bonuses|rarity>");
             return true;
         }
 
@@ -54,7 +54,8 @@ public final class TalismanCommand implements TabExecutor {
             case "unequip"  -> handleUnequip(player, args);
             case "equipped" -> handleEquipped(player);
             case "bonuses"  -> handleBonuses(player);
-            default         -> player.sendMessage("Unknown subcommand. Usage: /talisman <list|equip|unequip|equipped|bonuses>");
+            case "rarity"   -> handleRarity(player, args);
+            default         -> player.sendMessage("Unknown subcommand. Usage: /talisman <list|equip|unequip|equipped|bonuses|rarity>");
         }
         return true;
     }
@@ -67,7 +68,8 @@ public final class TalismanCommand implements TabExecutor {
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
-        if (args.length == 2 && (args[0].equalsIgnoreCase("equip") || args[0].equalsIgnoreCase("unequip"))) {
+        if (args.length == 2 && (args[0].equalsIgnoreCase("equip") || args[0].equalsIgnoreCase("unequip")
+                || args[0].equalsIgnoreCase("rarity"))) {
             String prefix = args[1].toUpperCase();
             return Arrays.stream(TalismanManager.TalismanType.values())
                     .map(Enum::name)
@@ -81,8 +83,26 @@ public final class TalismanCommand implements TabExecutor {
     private void handleList(Player player) {
         player.sendMessage("=== Available Talismans ===");
         for (TalismanManager.TalismanType type : TalismanManager.TalismanType.values()) {
-            player.sendMessage(String.format("%s — +%.1f %s", type.name(), type.bonus, type.stat.name()));
+            player.sendMessage(String.format("%s [%s] — +%.1f %s",
+                    type.name(), type.rarity.getDisplayName(), type.bonus, type.stat.name()));
         }
+    }
+
+    private void handleRarity(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("=== Accessory Rarities ===");
+            for (TalismanManager.AccessoryRarity rarity : TalismanManager.AccessoryRarity.values()) {
+                player.sendMessage(String.format("%s — %.1fx stat multiplier", rarity.getDisplayName(), rarity.statMultiplier));
+            }
+            return;
+        }
+        TalismanManager.TalismanType type = parseTalismanType(args[1]);
+        if (type == null) {
+            player.sendMessage("Unknown talisman type: " + args[1] + ". Use /talisman list to see available types.");
+            return;
+        }
+        player.sendMessage(String.format("%s is %s (%.1fx multiplier).",
+                type.name(), type.rarity.getDisplayName(), type.rarity.statMultiplier));
     }
 
     private void handleEquip(Player player, String[] args) {
