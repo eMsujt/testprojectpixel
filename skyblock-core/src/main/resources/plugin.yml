@@ -330,6 +330,14 @@ commands:
     usage: /skyblock-level [info|addxp <amount>|setxp <amount>]
     aliases: [sblevel]
     permission: skyblock.skyblock-level
+  run:
+    description: Track your dungeon run statistics.
+    usage: /run [info [floor]|reset]
+    permission: skyblock.run
+  title:
+    description: Manage your SkyBlock titles.
+    usage: /title [list|equip <title>|unequip|info <title>]
+    permission: skyblock.title
 
 permissions:
   skyblock.warp:
@@ -466,4 +474,10 @@ permissions:
     default: true
   skyblock.booster:
     description: Use the /booster command to view and activate boosters.
+    default: true
+  skyblock.run:
+    description: Use the /run command to track dungeon run statistics.
+    default: true
+  skyblock.title:
+    description: Use the /title command to manage SkyBlock titles.
     default: true
