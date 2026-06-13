@@ -210,6 +210,22 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "mining" -> "mining";
             case "dungeon" -> "dungeon";
             case "foraging" -> "foraging";
+            case "profile" -> "profile";
+            case "quest" -> "quest";
+            case "minion" -> "minion";
+            case "backpack" -> "backpack";
+            case "reforge" -> "reforge";
+            case "achievement" -> "achievement";
+            case "kuudra" -> "kuudra";
+            case "crafting" -> "crafting";
+            case "trade" -> "trade";
+            case "event" -> "event";
+            case "guild" -> "guild";
+            case "forge" -> "forge";
+            case "coop" -> "coop";
+            case "crimson" -> "crimson";
+            case "warp" -> "warp";
+            case "network" -> "network";
             default -> sub;
         };
     }
