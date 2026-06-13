@@ -92,9 +92,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("enchanting").setExecutor(enchantingCommand);
         getCommand("enchanting").setTabCompleter(enchantingCommand);
         ReforgeManager.getInstance();
-        SkillsManager.getInstance();
+        SkillsManager skillsManager = SkillsManager.getInstance();
+        skillsManager.load(getDataFolder());
         AccessoryManager.getInstance();
-        SkillsManager.getInstance();
         ProfileManager profileManager = ProfileManager.getInstance();
         profileManager.load(getDataFolder());
     }
@@ -111,6 +111,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         HOTMManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
+        SkillsManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
         instance = null;
     }

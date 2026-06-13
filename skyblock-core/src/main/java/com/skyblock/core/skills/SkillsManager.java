@@ -1,5 +1,6 @@
 package com.skyblock.core.skills;
 
+import java.io.File;
 import java.util.UUID;
 
 /**
@@ -50,6 +51,14 @@ public final class SkillsManager {
 
     public static SkillsManager getInstance() {
         return INSTANCE;
+    }
+
+    public void load(File dataFolder) {
+        delegate.load(dataFolder);
+    }
+
+    public void save(File dataFolder) {
+        delegate.save(dataFolder);
     }
 
     public double addXp(UUID playerId, SkillType skill, double amount) {
