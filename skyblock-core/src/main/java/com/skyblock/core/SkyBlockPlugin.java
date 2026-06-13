@@ -212,7 +212,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("banking").setExecutor(bankingCommand);
         getCommand("banking").setTabCompleter(bankingCommand);
         CollectionManager collectionManager = CollectionManager.getInstance();
-        getCommand("collection").setExecutor(new CollectionCommand(collectionManager));
+        CollectionCommand collectionCommand = new CollectionCommand(collectionManager);
+        getCommand("collection").setExecutor(collectionCommand);
+        getCommand("collection").setTabCompleter(collectionCommand);
         DungeonManager dungeonManager = DungeonManager.getInstance();
         getCommand("dungeon").setExecutor(new DungeonCommand(dungeonManager));
         SkyBlockEnchantFacade.getInstance();
