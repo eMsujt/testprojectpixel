@@ -89,10 +89,10 @@ public final class ProfileCommand implements TabExecutor {
             return;
         }
         String name = args[1];
-        ProfileManager.GameMode gameMode = ProfileManager.GameMode.NORMAL;
+        ProfileManager.SkyBlockGameMode gameMode = ProfileManager.SkyBlockGameMode.NORMAL;
         if (args.length >= 3) {
             try {
-                gameMode = ProfileManager.GameMode.valueOf(args[2].toUpperCase());
+                gameMode = ProfileManager.SkyBlockGameMode.valueOf(args[2].toUpperCase());
             } catch (IllegalArgumentException e) {
                 player.sendMessage("Unknown game mode \"" + args[2] + "\". Valid options: normal, ironman, stranded.");
                 return;
