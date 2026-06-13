@@ -70,12 +70,16 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
                 // Row 5 — extras & close
                 .setItem(46, named(Material.CHEST,         ChatColor.GOLD       + "Backpack"),
                         e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("backpack open"))
-                .setItem(47, named(Material.FURNACE,       ChatColor.ORANGE     + "Forge"),
-                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("forge"))
-                .setItem(48, named(Material.FIRE_CHARGE,   ChatColor.RED        + "Kuudra"),
-                        e -> e.getWhoClicked().sendMessage("Use /kuudra to manage your Kuudra kills."))
+                .setItem(47, named(Material.ANVIL,         ChatColor.GRAY       + "Reforge"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("reforge"))
+                .setItem(48, named(Material.NETHER_STAR,   ChatColor.YELLOW     + "Stats"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("stats"))
                 .setItem(49, named(Material.BARRIER,       ChatColor.RED        + "Close"),
                         e -> e.getWhoClicked().closeInventory())
+                .setItem(50, named(Material.FURNACE,       ChatColor.ORANGE     + "Forge"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("forge"))
+                .setItem(51, named(Material.FIRE_CHARGE,   ChatColor.RED        + "Kuudra"),
+                        e -> ((org.bukkit.entity.Player) e.getWhoClicked()).performCommand("kuudra"))
                 .fill(filler)
                 .build();
         player.openInventory(inv);
