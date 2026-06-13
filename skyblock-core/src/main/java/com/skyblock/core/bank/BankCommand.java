@@ -18,6 +18,7 @@ import java.util.List;
  *   <li>{@code /bank deposit <amount>}  — deposit coins</li>
  *   <li>{@code /bank withdraw <amount>} — withdraw coins</li>
  *   <li>{@code /bank tier [tier]}       — view or set your bank tier</li>
+ *   <li>{@code /bank history}           — view recent transactions</li>
  * </ul>
  * </p>
  */
@@ -46,6 +47,7 @@ public final class BankCommand implements TabExecutor {
             case "deposit"  -> handleDeposit(player, args);
             case "withdraw" -> handleWithdraw(player, args);
             case "tier"     -> handleTier(player, args);
+            case "history"  -> handleHistory(player);
             default -> sendHelp(player);
         }
         return true;
@@ -55,7 +57,7 @@ public final class BankCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("balance", "deposit", "withdraw", "tier").stream()
+            return Arrays.asList("balance", "deposit", "withdraw", "tier", "history").stream()
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -129,11 +131,26 @@ public final class BankCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        List<BankManager.BankTransaction> history = bankManager.getTransactions(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("No transactions recorded.");
+            return;
+        }
+        player.sendMessage("=== Transaction History ===");
+        int start = Math.max(0, history.size() - 10);
+        for (int i = start; i < history.size(); i++) {
+            BankManager.BankTransaction tx = history.get(i);
+            player.sendMessage(tx.type().getDisplayName() + ": " + tx.amount() + " coins");
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bank Commands ===");
         player.sendMessage("/bank balance — view your balance");
         player.sendMessage("/bank deposit <amount> — deposit coins");
         player.sendMessage("/bank withdraw <amount> — withdraw coins");
         player.sendMessage("/bank tier [tier] — view or set your bank tier");
+        player.sendMessage("/bank history — view recent transactions");
     }
 }

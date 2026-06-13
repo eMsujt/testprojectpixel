@@ -4,8 +4,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -37,10 +41,43 @@ public final class BankManager {
         }
     }
 
+    public enum TransactionType {
+        DEPOSIT("Deposit"),
+        WITHDRAW("Withdraw");
+
+        private final String displayName;
+
+        TransactionType(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
+    /**
+     * An immutable record of a single bank transaction.
+     *
+     * @param id        unique transaction identifier
+     * @param player    the player who performed the transaction
+     * @param type      deposit or withdrawal
+     * @param amount    the coin amount involved
+     * @param timestamp epoch-millis when the transaction occurred
+     */
+    public record BankTransaction(UUID id, UUID player, TransactionType type, double amount, long timestamp) {
+        public BankTransaction {
+            Objects.requireNonNull(id, "id");
+            Objects.requireNonNull(player, "player");
+            Objects.requireNonNull(type, "type");
+        }
+    }
+
     private static final BankManager INSTANCE = new BankManager();
 
     private final Map<UUID, BankAccount> accounts = new HashMap<>();
     private final Map<UUID, BankTier> tiers = new HashMap<>();
+    private final Map<UUID, List<BankTransaction>> transactions = new HashMap<>();
 
     private BankManager() {}
 
@@ -76,6 +113,7 @@ public final class BankManager {
      */
     public void deposit(UUID playerId, double amount) {
         getOrCreate(playerId).deposit(amount);
+        record(playerId, TransactionType.DEPOSIT, amount);
     }
 
     /**
@@ -87,6 +125,7 @@ public final class BankManager {
      */
     public void withdraw(UUID playerId, double amount) {
         getOrCreate(playerId).withdraw(amount);
+        record(playerId, TransactionType.WITHDRAW, amount);
     }
 
     /**
@@ -166,9 +205,25 @@ public final class BankManager {
         }
     }
 
-    /** Removes all stored accounts and tiers. */
+    /**
+     * Returns an unmodifiable view of the transaction history for the given player.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return list of transactions, oldest first; empty if none recorded
+     */
+    public List<BankTransaction> getTransactions(UUID playerId) {
+        return Collections.unmodifiableList(transactions.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    private void record(UUID playerId, TransactionType type, double amount) {
+        transactions.computeIfAbsent(playerId, k -> new ArrayList<>())
+                .add(new BankTransaction(UUID.randomUUID(), playerId, type, amount, System.currentTimeMillis()));
+    }
+
+    /** Removes all stored accounts, tiers, and transaction history. */
     public void clear() {
         accounts.clear();
         tiers.clear();
+        transactions.clear();
     }
 }
