@@ -207,6 +207,9 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "collections" -> "collections";
             case "enchanting" -> "enchanting";
             case "hotm" -> "hotm";
+            case "mining" -> "mining";
+            case "dungeon" -> "dungeon";
+            case "foraging" -> "foraging";
             default -> sub;
         };
     }
