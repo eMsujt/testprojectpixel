@@ -1,5 +1,9 @@
 package com.skyblock.core.reforge;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +46,8 @@ public final class ReforgeManager {
         RENOWNED("Renowned", 30, 10, 10),
         FESTIVE("Festive", 10, 10, 10),
         STORMY("Stormy", 0, 0, 0),
+        SPICY("Spicy", 10, 0, 0),
+        GODLY("Godly", 15, 0, 10),
         ITCHY("Itchy", 5, 0, 0),
         BLOODY("Bloody", 10, 0, 5),
         WARPED("Warped", 20, 5, 0),
@@ -215,5 +221,40 @@ public final class ReforgeManager {
      */
     public Map<UUID, ReforgeType> getAllReforges() {
         return Collections.unmodifiableMap(playerReforges);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "reforge.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerReforges.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                String name = cfg.getString(key);
+                if (name == null) continue;
+                ReforgeType type = ReforgeType.fromName(name);
+                if (type != null && type != ReforgeType.NONE) {
+                    playerReforges.put(uuid, type);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "reforge.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, ReforgeType> entry : playerReforges.entrySet()) {
+            cfg.set(entry.getKey().toString(), entry.getValue().name());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save reforge.yml", e);
+        }
     }
 }
