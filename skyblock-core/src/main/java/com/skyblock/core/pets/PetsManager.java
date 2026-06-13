@@ -279,6 +279,8 @@ public final class PetsManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         petXpData.clear();
         activePetType.clear();
+        playerPets.clear();
+        equippedPets.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -293,9 +295,38 @@ public final class PetsManager {
                         // skip unknown active type
                     }
                 }
+                String equippedStr = cfg.getString(key + ".equipped");
+                if (equippedStr != null) {
+                    try {
+                        equippedPets.put(uuid, UUID.fromString(equippedStr));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip malformed equipped UUID
+                    }
+                }
+                if (cfg.isConfigurationSection(key + ".pets")) {
+                    Map<UUID, Pet> collection = new HashMap<>();
+                    for (String petIdStr : cfg.getConfigurationSection(key + ".pets").getKeys(false)) {
+                        try {
+                            UUID petId = UUID.fromString(petIdStr);
+                            String typeName = cfg.getString(key + ".pets." + petIdStr + ".type");
+                            String rarityName = cfg.getString(key + ".pets." + petIdStr + ".rarity");
+                            if (typeName == null || rarityName == null) {
+                                continue;
+                            }
+                            PetType type = PetType.valueOf(typeName);
+                            PetRarity rarity = PetRarity.valueOf(rarityName);
+                            collection.put(petId, new Pet(petId, type, rarity));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip malformed or unknown pet entries
+                        }
+                    }
+                    if (!collection.isEmpty()) {
+                        playerPets.put(uuid, collection);
+                    }
+                }
                 Map<PetType, PetData> xpMap = new EnumMap<>(PetType.class);
                 for (String typeName : cfg.getConfigurationSection(key).getKeys(false)) {
-                    if ("active".equals(typeName)) {
+                    if ("active".equals(typeName) || "equipped".equals(typeName) || "pets".equals(typeName)) {
                         continue;
                     }
                     try {
@@ -329,6 +360,17 @@ public final class PetsManager {
         }
         for (Map.Entry<UUID, PetType> entry : activePetType.entrySet()) {
             cfg.set(entry.getKey().toString() + ".active", entry.getValue().name());
+        }
+        for (Map.Entry<UUID, UUID> entry : equippedPets.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".equipped", entry.getValue().toString());
+        }
+        for (Map.Entry<UUID, Map<UUID, Pet>> entry : playerPets.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<UUID, Pet> petEntry : entry.getValue().entrySet()) {
+                String petPath = key + ".pets." + petEntry.getKey().toString();
+                cfg.set(petPath + ".type", petEntry.getValue().type.name());
+                cfg.set(petPath + ".rarity", petEntry.getValue().rarity.name());
+            }
         }
         try {
             cfg.save(file);
