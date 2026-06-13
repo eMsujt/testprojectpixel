@@ -167,7 +167,7 @@ public final class WardrobeCommand implements TabExecutor {
 
     private void handleSlot(Player player, String[] args) {
         if (args.length < 3) {
-            player.sendMessage("Usage: /wardrobe slot <save|load|clear> <SLOT_1..SLOT_9>");
+            player.sendMessage("Usage: /wardrobe slot <save|load|clear> <SLOT_1..SLOT_18>");
             return;
         }
         WardrobeManager.WardrobeSlot slot;
@@ -204,7 +204,7 @@ public final class WardrobeCommand implements TabExecutor {
                     player.sendMessage(slot.getDisplayName() + " is already empty.");
                 }
             }
-            default -> player.sendMessage("Usage: /wardrobe slot <save|load|clear> <SLOT_1..SLOT_9>");
+            default -> player.sendMessage("Usage: /wardrobe slot <save|load|clear> <SLOT_1..SLOT_18>");
         }
     }
 

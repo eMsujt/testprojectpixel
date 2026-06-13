@@ -27,7 +27,16 @@ public final class WardrobeManager {
         SLOT_6(6, "Slot 6"),
         SLOT_7(7, "Slot 7"),
         SLOT_8(8, "Slot 8"),
-        SLOT_9(9, "Slot 9");
+        SLOT_9(9, "Slot 9"),
+        SLOT_10(10, "Slot 10"),
+        SLOT_11(11, "Slot 11"),
+        SLOT_12(12, "Slot 12"),
+        SLOT_13(13, "Slot 13"),
+        SLOT_14(14, "Slot 14"),
+        SLOT_15(15, "Slot 15"),
+        SLOT_16(16, "Slot 16"),
+        SLOT_17(17, "Slot 17"),
+        SLOT_18(18, "Slot 18");
 
         private final int slotNumber;
         private final String displayName;
@@ -47,7 +56,7 @@ public final class WardrobeManager {
     }
 
     /** Maximum named outfits a player may store. */
-    public static final int MAX_OUTFITS = 9;
+    public static final int MAX_OUTFITS = 18;
 
     private static final WardrobeManager INSTANCE = new WardrobeManager();
 
