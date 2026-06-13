@@ -34,6 +34,51 @@ public final class CollectionManager {
         PRISMARINE_SHARD, PRISMARINE_CRYSTALS, CLAY, LILY_PAD, INK_SAC, SPONGE
     }
 
+    /** Groups {@link CollectionType} values into SkyBlock skill categories. */
+    public enum CollectionCategory {
+        FARMING("Farming",
+                CollectionType.WHEAT, CollectionType.CARROT, CollectionType.POTATO,
+                CollectionType.PUMPKIN, CollectionType.MELON, CollectionType.MUSHROOM,
+                CollectionType.CACTUS, CollectionType.SUGAR_CANE,
+                CollectionType.NETHER_WART, CollectionType.COCOA_BEANS),
+        MINING("Mining",
+                CollectionType.COBBLESTONE, CollectionType.COAL, CollectionType.IRON_INGOT,
+                CollectionType.GOLD_INGOT, CollectionType.DIAMOND, CollectionType.EMERALD,
+                CollectionType.REDSTONE, CollectionType.LAPIS_LAZULI, CollectionType.QUARTZ,
+                CollectionType.OBSIDIAN, CollectionType.GLOWSTONE, CollectionType.GRAVEL,
+                CollectionType.ICE, CollectionType.NETHERRACK, CollectionType.SAND,
+                CollectionType.END_STONE),
+        FORAGING("Foraging",
+                CollectionType.OAK_LOG, CollectionType.SPRUCE_LOG, CollectionType.BIRCH_LOG,
+                CollectionType.JUNGLE_LOG, CollectionType.ACACIA_LOG, CollectionType.DARK_OAK_LOG),
+        COMBAT("Combat",
+                CollectionType.ROTTEN_FLESH, CollectionType.BONE, CollectionType.SPIDER_EYE,
+                CollectionType.STRING, CollectionType.GUNPOWDER, CollectionType.ENDER_PEARL,
+                CollectionType.GHAST_TEAR, CollectionType.SLIME_BALL, CollectionType.BLAZE_ROD,
+                CollectionType.MAGMA_CREAM),
+        FISHING("Fishing",
+                CollectionType.RAW_FISH, CollectionType.RAW_SALMON, CollectionType.CLOWNFISH,
+                CollectionType.PUFFERFISH, CollectionType.PRISMARINE_SHARD,
+                CollectionType.PRISMARINE_CRYSTALS, CollectionType.CLAY, CollectionType.LILY_PAD,
+                CollectionType.INK_SAC, CollectionType.SPONGE);
+
+        private final String displayName;
+        private final CollectionType[] types;
+
+        CollectionCategory(String displayName, CollectionType... types) {
+            this.displayName = displayName;
+            this.types = types;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public CollectionType[] getTypes() {
+            return types;
+        }
+    }
+
     private static final CollectionManager INSTANCE = new CollectionManager();
 
     /** per-player totals: player → (CollectionType → total gathered) */
