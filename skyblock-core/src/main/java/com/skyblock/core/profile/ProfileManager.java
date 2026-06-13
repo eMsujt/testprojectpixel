@@ -1,5 +1,9 @@
 package com.skyblock.core.profile;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,19 +67,19 @@ public final class ProfileManager {
     }
 
     /**
-     * Lightweight snapshot of a player's account-level data.
+     * Per-player profile data.
      *
-     * @param uuid     the player's unique id
-     * @param username the player's display name
-     * @param coins    the player's current coin balance
+     * @param profileName display name for this profile
+     * @param createdAt   creation timestamp in milliseconds since epoch
+     * @param stats       mutable stat map (stat key → value)
      */
-    public record ProfileData(UUID uuid, String username, double coins) {
+    public record ProfileData(String profileName, long createdAt, Map<String, Double> stats) {
         public ProfileData {
-            Objects.requireNonNull(uuid, "uuid");
-            Objects.requireNonNull(username, "username");
-            if (coins < 0) {
-                throw new IllegalArgumentException("coins must not be negative");
+            Objects.requireNonNull(profileName, "profileName");
+            if (profileName.isBlank()) {
+                throw new IllegalArgumentException("profileName must not be blank");
             }
+            Objects.requireNonNull(stats, "stats");
         }
     }
 
@@ -215,6 +219,57 @@ public final class ProfileManager {
     public ProfileData getPlayerData(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
         return playerData.get(uuid);
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "profile.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        playerData.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                String name = cfg.getString(key + ".profileName");
+                if (name == null) {
+                    continue;
+                }
+                long createdAt = cfg.getLong(key + ".createdAt", 0L);
+                Map<String, Double> stats = new HashMap<>();
+                if (cfg.isConfigurationSection(key + ".stats")) {
+                    for (String stat : cfg.getConfigurationSection(key + ".stats").getKeys(false)) {
+                        stats.put(stat, cfg.getDouble(key + ".stats." + stat));
+                    }
+                }
+                playerData.put(uuid, new ProfileData(name, createdAt, stats));
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "profile.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, ProfileData> entry : playerData.entrySet()) {
+            String key = entry.getKey().toString();
+            ProfileData data = entry.getValue();
+            cfg.set(key + ".profileName", data.profileName());
+            cfg.set(key + ".createdAt", data.createdAt());
+            for (Map.Entry<String, Double> stat : data.stats().entrySet()) {
+                cfg.set(key + ".stats." + stat.getKey(), stat.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save profile.yml", e);
+        }
     }
 
     /** Removes all registered profiles. */

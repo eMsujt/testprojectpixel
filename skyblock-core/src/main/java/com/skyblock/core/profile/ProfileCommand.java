@@ -132,9 +132,16 @@ public final class ProfileCommand implements TabExecutor {
             return;
         }
         player.sendMessage("=== Profile Data ===");
-        player.sendMessage("  Username : " + data.username());
-        player.sendMessage("  Coins    : " + String.format("%.0f", data.coins()));
-        player.sendMessage("  UUID     : " + data.uuid());
+        player.sendMessage("  Name      : " + data.profileName());
+        player.sendMessage("  Created   : " + data.createdAt());
+        if (data.stats().isEmpty()) {
+            player.sendMessage("  Stats     : (none)");
+        } else {
+            player.sendMessage("  Stats:");
+            for (java.util.Map.Entry<String, Double> e : data.stats().entrySet()) {
+                player.sendMessage("    " + e.getKey() + ": " + e.getValue());
+            }
+        }
     }
 
     private void handleDelete(Player player, String[] args) {

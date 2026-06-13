@@ -51,7 +51,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         EnchantingManager.getInstance();
         ReforgeManager.getInstance();
         AccessoryManager.getInstance();
-        ProfileManager.getInstance();
+        ProfileManager profileManager = ProfileManager.getInstance();
+        profileManager.load(getDataFolder());
     }
 
     @Override
@@ -63,6 +64,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         GardenManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
+        ProfileManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
