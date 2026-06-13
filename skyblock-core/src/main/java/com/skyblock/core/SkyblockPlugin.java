@@ -96,6 +96,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class SkyblockPlugin extends JavaPlugin {
 
     private static SkyblockPlugin instance;
+    private BankManager bankManager;
+    private MayorManager mayorManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -104,12 +106,12 @@ public final class SkyblockPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        BankManager bankManager = BankManager.getInstance();
+        bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
         BankCommand bankCommand = new BankCommand(bankManager);
         getCommand("bank").setExecutor(bankCommand);
         getCommand("bank").setTabCompleter(bankCommand);
-        MayorManager mayorManager = MayorManager.getInstance();
+        mayorManager = MayorManager.getInstance();
         mayorManager.load(getDataFolder());
         MayorCommand mayorCommand = new MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
