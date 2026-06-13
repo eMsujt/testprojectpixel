@@ -142,9 +142,13 @@ import com.skyblock.core.hotm.HotmCommand;
 import com.skyblock.core.hotm.HotmManager;
 import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
+import com.skyblock.core.achievement.AchievementCommand;
+import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.rift.RiftCommand;
 import com.skyblock.core.rift.RiftListener;
 import com.skyblock.core.rift.RiftManager;
+import com.skyblock.core.season.SeasonCommand;
+import com.skyblock.core.season.SeasonManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -451,6 +455,16 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.pets.PetsManager.getInstance();
         com.skyblock.core.skills.SkillsManager.getInstance();
         getServer().getPluginManager().registerEvents(new SkyBlockEnchantListener(SkyBlockEnchantManager.getInstance()), this);
+
+        AchievementManager achievementManager = AchievementManager.getInstance();
+        AchievementCommand achievementCommand = new AchievementCommand(achievementManager);
+        getCommand("achievement").setExecutor(achievementCommand);
+        getCommand("achievement").setTabCompleter(achievementCommand);
+
+        SeasonManager seasonManager = SeasonManager.getInstance();
+        SeasonCommand seasonCommand = new SeasonCommand(seasonManager);
+        getCommand("season").setExecutor(seasonCommand);
+        getCommand("season").setTabCompleter(seasonCommand);
 
         getLogger().info("SkyBlock core enabled.");
     }
