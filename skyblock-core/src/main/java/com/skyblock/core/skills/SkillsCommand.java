@@ -29,19 +29,19 @@ public final class SkillsCommand implements TabExecutor {
 
     static {
         List<String> subs = new java.util.ArrayList<>(Arrays.asList("info", "reset"));
-        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
+        for (SkillsManager.SkyBlockSkill skill : SkillsManager.SkyBlockSkill.values()) {
             subs.add(skill.name().toLowerCase());
         }
         SUBCOMMANDS = Collections.unmodifiableList(subs);
     }
 
-    private final SkillManager skillManager;
+    private final SkillsManager skillsManager;
 
-    public SkillsCommand(SkillManager skillManager) {
-        if (skillManager == null) {
-            throw new IllegalArgumentException("skillManager must not be null");
+    public SkillsCommand(SkillsManager skillsManager) {
+        if (skillsManager == null) {
+            throw new IllegalArgumentException("skillsManager must not be null");
         }
-        this.skillManager = skillManager;
+        this.skillsManager = skillsManager;
     }
 
     @Override
@@ -78,9 +78,9 @@ public final class SkillsCommand implements TabExecutor {
     private void handleAll(Player player) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== Skills ===");
-        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
-            int level = skillManager.getLevel(id, skill);
-            double xp = skillManager.getXp(id, skill);
+        for (SkillsManager.SkyBlockSkill skill : SkillsManager.SkyBlockSkill.values()) {
+            int level = skillsManager.getLevel(id, skill);
+            double xp = skillsManager.getXp(id, skill);
             player.sendMessage(String.format("  %-14s Level %d  (%.1f XP)",
                     skill.getDisplayName(), level, xp));
         }
@@ -88,29 +88,25 @@ public final class SkillsCommand implements TabExecutor {
 
     private void handleInfo(Player player) {
         player.sendMessage("=== Available Skills ===");
-        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
+        for (SkillsManager.SkyBlockSkill skill : SkillsManager.SkyBlockSkill.values()) {
             player.sendMessage("  " + skill.getDisplayName());
         }
     }
 
     private void handleReset(Player player) {
-        // delegate to SkillManager directly since SkillsManager facade has no reset
-        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
-            // No-op: SkillManager has no per-skill reset; clear by adding 0
-        }
         player.sendMessage("Skill reset is not currently supported.");
     }
 
     private void handleSkill(Player player, String name) {
-        SkillManager.SkillType skill = parseSkill(name);
+        SkillsManager.SkyBlockSkill skill = parseSkill(name);
         if (skill == null) {
             player.sendMessage("Unknown skill: " + name);
             sendHelp(player);
             return;
         }
         UUID id = player.getUniqueId();
-        int level = skillManager.getLevel(id, skill);
-        double xp = skillManager.getXp(id, skill);
+        int level = skillsManager.getLevel(id, skill);
+        double xp = skillsManager.getXp(id, skill);
         player.sendMessage("=== " + skill.getDisplayName() + " ===");
         player.sendMessage("  Level: " + level);
         player.sendMessage("  XP   : " + String.format("%.1f", xp));
@@ -123,8 +119,8 @@ public final class SkillsCommand implements TabExecutor {
         player.sendMessage("/skills info             — list all available skills");
     }
 
-    private static SkillManager.SkillType parseSkill(String name) {
-        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
+    private static SkillsManager.SkyBlockSkill parseSkill(String name) {
+        for (SkillsManager.SkyBlockSkill skill : SkillsManager.SkyBlockSkill.values()) {
             if (skill.name().equalsIgnoreCase(name)) {
                 return skill;
             }
