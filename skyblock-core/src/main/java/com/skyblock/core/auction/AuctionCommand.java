@@ -76,7 +76,7 @@ public final class AuctionCommand implements TabExecutor {
     }
 
     private void handleList(Player player) {
-        List<AuctionManager.AuctionEntry> active = auctionManager.getActiveListings();
+        List<AuctionManager.AuctionListing> active = auctionManager.getActiveListings();
         if (active.isEmpty()) {
             player.sendMessage("No active auctions.");
             return;
@@ -152,7 +152,7 @@ public final class AuctionCommand implements TabExecutor {
         }
         UUID listingId = resolveId(player, args[1]);
         if (listingId == null) return;
-        AuctionManager.AuctionEntry entry = auctionManager.getListing(listingId);
+        AuctionManager.AuctionListing entry = auctionManager.getListing(listingId);
         double highestBid = auctionManager.getHighestBid(listingId);
         UUID highestBidder = auctionManager.getHighestBidder(listingId);
         player.sendMessage("=== Auction: " + entry.itemName() + " ===");
@@ -181,7 +181,7 @@ public final class AuctionCommand implements TabExecutor {
     }
 
     private void handleMine(Player player) {
-        List<AuctionManager.AuctionEntry> mine =
+        List<AuctionManager.AuctionListing> mine =
                 auctionManager.getListingsBySeller(player.getUniqueId());
         if (mine.isEmpty()) {
             player.sendMessage("You have no active auction listings.");
@@ -199,7 +199,7 @@ public final class AuctionCommand implements TabExecutor {
     /** Parses a short (8-char) or full UUID string; sends an error and returns null on failure. */
     private UUID resolveId(Player player, String input) {
         // Support both full UUIDs and the 8-char short-form shown in /auction list
-        for (AuctionManager.AuctionEntry e : auctionManager.getActiveListings()) {
+        for (AuctionManager.AuctionListing e : auctionManager.getActiveListings()) {
             if (e.id().toString().startsWith(input) || e.id().toString().equals(input)) {
                 return e.id();
             }

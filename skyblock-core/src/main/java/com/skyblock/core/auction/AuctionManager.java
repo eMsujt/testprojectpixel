@@ -35,10 +35,10 @@ public final class AuctionManager {
     }
 
     /** An immutable auction listing snapshot. */
-    public record AuctionEntry(UUID id, UUID seller, String itemName,
-                               double startingBid, AuctionType type) {
+    public record AuctionListing(UUID id, UUID seller, String itemName,
+                                 double startingBid, AuctionType type) {
 
-        public AuctionEntry {
+        public AuctionListing {
             Objects.requireNonNull(id, "id");
             Objects.requireNonNull(seller, "seller");
             Objects.requireNonNull(itemName, "itemName");
@@ -50,11 +50,11 @@ public final class AuctionManager {
     }
 
     private static final class State {
-        final AuctionEntry entry;
+        final AuctionListing entry;
         double currentBid;
         UUID highestBidder;
 
-        State(AuctionEntry entry) {
+        State(AuctionListing entry) {
             this.entry = entry;
             this.currentBid = entry.startingBid();
         }
@@ -93,7 +93,7 @@ public final class AuctionManager {
         Objects.requireNonNull(seller, "seller");
         Objects.requireNonNull(type, "type");
         UUID id = UUID.randomUUID();
-        listings.put(id, new State(new AuctionEntry(id, seller, itemName, startingBid, type)));
+        listings.put(id, new State(new AuctionListing(id, seller, itemName, startingBid, type)));
         return id;
     }
 
@@ -187,13 +187,13 @@ public final class AuctionManager {
     }
 
     /**
-     * Returns the {@link AuctionEntry} for an active listing.
+     * Returns the {@link AuctionListing} for an active listing.
      *
      * @param listingId the listing UUID
      * @return the entry record, never null
      * @throws IllegalArgumentException if the listing does not exist
      */
-    public AuctionEntry getListing(UUID listingId) {
+    public AuctionListing getListing(UUID listingId) {
         return requireState(listingId).entry;
     }
 
@@ -222,10 +222,10 @@ public final class AuctionManager {
     /**
      * Returns a snapshot list of all active listings.
      *
-     * @return unmodifiable list of all active {@link AuctionEntry} records
+     * @return unmodifiable list of all active {@link AuctionListing} records
      */
-    public List<AuctionEntry> getActiveListings() {
-        List<AuctionEntry> result = new ArrayList<>();
+    public List<AuctionListing> getActiveListings() {
+        List<AuctionListing> result = new ArrayList<>();
         for (State s : listings.values()) {
             result.add(s.entry);
         }
@@ -236,11 +236,11 @@ public final class AuctionManager {
      * Returns a snapshot of listings created by the given seller.
      *
      * @param seller the seller's UUID
-     * @return unmodifiable list of the seller's active {@link AuctionEntry} records
+     * @return unmodifiable list of the seller's active {@link AuctionListing} records
      */
-    public List<AuctionEntry> getListingsBySeller(UUID seller) {
+    public List<AuctionListing> getListingsBySeller(UUID seller) {
         Objects.requireNonNull(seller, "seller");
-        List<AuctionEntry> result = new ArrayList<>();
+        List<AuctionListing> result = new ArrayList<>();
         for (State s : listings.values()) {
             if (seller.equals(s.entry.seller())) {
                 result.add(s.entry);
