@@ -15,11 +15,11 @@ public final class SlayerManager {
     };
 
     public enum SlayerType {
-        REVENANT_HORROR("Revenant Horror"),
-        TARANTULA_BROODFATHER("Tarantula Broodfather"),
-        SVEN_PACKMASTER("Sven Packmaster"),
-        VOIDGLOOM_SERAPH("Voidgloom Seraph"),
-        INFERNO_DEMONLORD("Inferno Demonlord");
+        ZOMBIE("Revenant Horror"),
+        SPIDER("Tarantula Broodfather"),
+        WOLF("Sven Packmaster"),
+        ENDERMAN("Voidgloom Seraph"),
+        BLAZE("Inferno Demonlord");
 
         private final String displayName;
 
