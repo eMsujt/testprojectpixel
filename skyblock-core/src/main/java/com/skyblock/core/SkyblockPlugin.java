@@ -290,10 +290,12 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("friend").setExecutor(friendCommand);
         getCommand("friend").setTabCompleter(friendCommand);
         BoosterManager boosterManager = BoosterManager.getInstance();
+        boosterManager.load(getDataFolder());
         BoosterCommand boosterCommand = new BoosterCommand(boosterManager);
         getCommand("booster").setExecutor(boosterCommand);
         getCommand("booster").setTabCompleter(boosterCommand);
         MailboxManager mailboxManager = MailboxManager.getInstance();
+        mailboxManager.load(getDataFolder());
         MailboxCommand mailboxCommand = new MailboxCommand(mailboxManager);
         getCommand("mailbox").setExecutor(mailboxCommand);
         getCommand("mailbox").setTabCompleter(mailboxCommand);
@@ -364,6 +366,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         VaultManager.getInstance().save(getDataFolder());
         GuildManager.getInstance().save(getDataFolder());
         FriendManager.getInstance().save(getDataFolder());
+        BoosterManager.getInstance().save(getDataFolder());
+        MailboxManager.getInstance().save(getDataFolder());
         TitleManager.getInstance().save(getDataFolder());
         RunManager.getInstance().save(getDataFolder());
         try {
