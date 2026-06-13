@@ -55,11 +55,19 @@ public final class DungeonManager {
 
     /** Playable dungeon classes. */
     public enum DungeonClass {
-        HEALER,
-        MAGE,
-        BERSERK,
-        ARCHER,
-        TANK
+        HEALER("Healer"),
+        MAGE("Mage"),
+        BERSERK("Berserk"),
+        ARCHER("Archer"),
+        TANK("Tank");
+
+        private final String displayName;
+
+        DungeonClass(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
     }
 
     /** All dungeon floors available in SkyBlock. */
