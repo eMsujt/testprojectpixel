@@ -1,21 +1,101 @@
 package com.skyblock.core.enchanting;
 
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton facade over {@link EnchantmentManager}.
+ * Singleton managing SkyBlock enchantments for the enchanting skill system.
  *
- * <p>Exposes enchantment read/write operations under the {@code EnchantingManager}
- * name expected by the enchanting skill system, delegating every call to the
- * underlying {@link EnchantmentManager} singleton so there is a single source
- * of truth for enchantment data.</p>
+ * <p>Tracks which enchant types at which levels are active for each player.
+ * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class EnchantingManager {
 
+    /** Every SkyBlock enchant type with display name and maximum level. */
+    public enum EnchantType {
+        // Combat
+        SHARPNESS("Sharpness", 7),
+        CRITICAL("Critical", 7),
+        SMITE("Smite", 7),
+        BANE_OF_ARTHROPODS("Bane of Arthropods", 7),
+        FIRST_STRIKE("First Strike", 4),
+        GIANT_KILLER("Giant Killer", 7),
+        ENDER_SLAYER("Ender Slayer", 7),
+        DRAGON_HUNTER("Dragon Hunter", 5),
+        THUNDERLORD("Thunderlord", 7),
+        VAMPIRISM("Vampirism", 6),
+        LIFE_STEAL("Life Steal", 5),
+        LETHALITY("Lethality", 6),
+        EXECUTE("Execute", 5),
+        PROSECUTE("Prosecute", 5),
+        OVERLOAD("Overload", 5),
+        // Utility / Special
+        TELEKINESIS("Telekinesis", 1),
+        LOOTING("Looting", 4),
+        SMELTING_TOUCH("Smelting Touch", 1),
+        MAGNET("Magnet", 1),
+        SILK_TOUCH("Silk Touch", 1),
+        // Fishing
+        LUCK_OF_THE_SEA("Luck of the Sea", 7),
+        ANGLER("Angler", 6),
+        FRAIL("Frail", 5),
+        EXPERTISE("Expertise", 10),
+        // Farming
+        CULTIVATING("Cultivating", 10),
+        GREEN_THUMB("Green Thumb", 5),
+        DEDICATION("Dedication", 4),
+        REPLENISH("Replenish", 1),
+        HARVESTING("Harvesting", 6),
+        TURBO_WHEAT("Turbo-Wheat", 5),
+        TURBO_COCO("Turbo-Coco", 5),
+        TURBO_CACTUS("Turbo-Cactus", 5),
+        TURBO_MELON("Turbo-Melon", 5),
+        TURBO_PUMPKIN("Turbo-Pumpkin", 5),
+        TURBO_WARTS("Turbo-Warts", 5),
+        TURBO_MUSHROOMS("Turbo-Mushrooms", 5),
+        TURBO_POTATO("Turbo-Potato", 5),
+        TURBO_CARROT("Turbo-Carrot", 5),
+        TURBO_SUGAR_CANE("Turbo-Sugar Cane", 5),
+        // Mining / Tool
+        EFFICIENCY("Efficiency", 5),
+        FORTUNE("Fortune", 4),
+        // Armor
+        PROTECTION("Protection", 7),
+        THORNS("Thorns", 3),
+        GROWTH("Growth", 7),
+        FEATHER_FALLING("Feather Falling", 7),
+        SUGAR_RUSH("Sugar Rush", 3),
+        REJUVENATE("Rejuvenate", 5),
+        // Misc
+        LUCK("Luck", 7),
+        CHANCE("Chance", 5),
+        ULTIMATE_WISE("Ultimate Wise", 5);
+
+        private final String displayName;
+        private final int maxLevel;
+
+        EnchantType(String displayName, int maxLevel) {
+            this.displayName = displayName;
+            this.maxLevel = maxLevel;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public int getMaxLevel() {
+            return maxLevel;
+        }
+    }
+
     private static final EnchantingManager INSTANCE = new EnchantingManager();
 
-    private final EnchantmentManager delegate = EnchantmentManager.getInstance();
+    /** Per-player enchantment levels; absent entries mean the enchantment is not applied. */
+    private final Map<UUID, Map<EnchantType, Integer>> playerEnchantments = new HashMap<>();
 
     private EnchantingManager() {
     }
@@ -24,27 +104,77 @@ public final class EnchantingManager {
         return INSTANCE;
     }
 
-    public int getLevel(UUID playerId, EnchantmentManager.SkyBlockEnchantment enchantment) {
-        return delegate.getLevel(playerId, enchantment);
+    /**
+     * Returns the level of the given enchant type for the given player, or
+     * {@code 0} if the enchantment is not applied.
+     */
+    public int getLevel(UUID playerId, EnchantType type) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        return enchants == null ? 0 : enchants.getOrDefault(type, 0);
     }
 
-    public void setEnchantment(UUID playerId, EnchantmentManager.SkyBlockEnchantment enchantment, int level) {
-        delegate.setEnchantment(playerId, enchantment, level);
+    /**
+     * Applies an enchant type at the given level to the player.
+     *
+     * @throws IllegalArgumentException if the level is out of range
+     */
+    public void setEnchantment(UUID playerId, EnchantType type, int level) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        int max = type.getMaxLevel();
+        if (level < 1 || level > max) {
+            throw new IllegalArgumentException(
+                    "Level " + level + " out of range [1, " + max + "] for " + type);
+        }
+        playerEnchantments.computeIfAbsent(playerId, id -> new EnumMap<>(EnchantType.class))
+                .put(type, level);
     }
 
-    public boolean removeEnchantment(UUID playerId, EnchantmentManager.SkyBlockEnchantment enchantment) {
-        return delegate.removeEnchantment(playerId, enchantment);
+    /**
+     * Removes an enchant type from the player.
+     *
+     * @return {@code true} if the enchantment was present, {@code false} otherwise
+     */
+    public boolean removeEnchantment(UUID playerId, EnchantType type) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        if (enchants == null) {
+            return false;
+        }
+        boolean removed = enchants.remove(type) != null;
+        if (enchants.isEmpty()) {
+            playerEnchantments.remove(playerId);
+        }
+        return removed;
     }
 
-    public Map<EnchantmentManager.SkyBlockEnchantment, Integer> getEnchantments(UUID playerId) {
-        return delegate.getEnchantments(playerId);
+    /**
+     * Returns an unmodifiable view of all enchantments currently applied to the player.
+     */
+    public Map<EnchantType, Integer> getEnchantments(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Map<EnchantType, Integer> enchants = playerEnchantments.get(playerId);
+        return enchants == null ? Collections.emptyMap() : Collections.unmodifiableMap(enchants);
     }
 
-    public int getMaxLevel(EnchantmentManager.SkyBlockEnchantment enchantment) {
-        return delegate.getMaxLevel(enchantment);
+    /**
+     * Returns the maximum allowed level for the given enchant type.
+     */
+    public int getMaxLevel(EnchantType type) {
+        Objects.requireNonNull(type, "type");
+        return type.getMaxLevel();
     }
 
+    /**
+     * Removes all enchantment data for the given player.
+     *
+     * @return {@code true} if the player had data, {@code false} otherwise
+     */
     public boolean remove(UUID playerId) {
-        return delegate.remove(playerId);
+        Objects.requireNonNull(playerId, "playerId");
+        return playerEnchantments.remove(playerId) != null;
     }
 }
