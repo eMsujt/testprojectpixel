@@ -45,13 +45,6 @@ public final class CollectionManager {
         NETHERRACK("netherrack",       "Netherrack"),
         SAND("sand",                   "Sand"),
         END_STONE("end_stone",         "End Stone"),
-        // Foraging
-        OAK_LOG("oak_log",             "Oak Log"),
-        SPRUCE_LOG("spruce_log",       "Spruce Log"),
-        BIRCH_LOG("birch_log",         "Birch Log"),
-        JUNGLE_LOG("jungle_log",       "Jungle Log"),
-        ACACIA_LOG("acacia_log",       "Acacia Log"),
-        DARK_OAK_LOG("dark_oak_log",   "Dark Oak Log"),
         // Combat
         ROTTEN_FLESH("rotten_flesh",   "Rotten Flesh"),
         BONE("bone",                   "Bone"),
@@ -63,6 +56,13 @@ public final class CollectionManager {
         SLIME_BALL("slime_ball",       "Slime Ball"),
         BLAZE_ROD("blaze_rod",         "Blaze Rod"),
         MAGMA_CREAM("magma_cream",     "Magma Cream"),
+        // Foraging
+        OAK_LOG("oak_log",             "Oak Log"),
+        SPRUCE_LOG("spruce_log",       "Spruce Log"),
+        BIRCH_LOG("birch_log",         "Birch Log"),
+        JUNGLE_LOG("jungle_log",       "Jungle Log"),
+        ACACIA_LOG("acacia_log",       "Acacia Log"),
+        DARK_OAK_LOG("dark_oak_log",   "Dark Oak Log"),
         // Fishing
         RAW_FISH("raw_fish",                       "Raw Fish"),
         RAW_SALMON("raw_salmon",                   "Raw Salmon"),
