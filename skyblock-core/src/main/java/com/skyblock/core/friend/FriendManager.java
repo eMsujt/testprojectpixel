@@ -1,8 +1,13 @@
 package com.skyblock.core.friend;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -135,5 +140,84 @@ public final class FriendManager {
         Objects.requireNonNull(recipient, "recipient");
         Objects.requireNonNull(sender, "sender");
         return pendingRequests.getOrDefault(recipient, Collections.emptySet()).contains(sender);
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    /**
+     * Loads friend lists and pending requests from {@code friends.yml} inside the given data folder.
+     *
+     * @param dataFolder the plugin data folder, must not be null
+     */
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "friends.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        friends.clear();
+        pendingRequests.clear();
+        if (cfg.isConfigurationSection("friends")) {
+            for (String key : cfg.getConfigurationSection("friends").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<String> list = cfg.getStringList("friends." + key);
+                    Set<UUID> set = new HashSet<>();
+                    for (String s : list) {
+                        try { set.add(UUID.fromString(s)); } catch (IllegalArgumentException ignored) {}
+                    }
+                    if (!set.isEmpty()) {
+                        friends.put(uuid, set);
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("pending")) {
+            for (String key : cfg.getConfigurationSection("pending").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<String> list = cfg.getStringList("pending." + key);
+                    Set<UUID> set = new HashSet<>();
+                    for (String s : list) {
+                        try { set.add(UUID.fromString(s)); } catch (IllegalArgumentException ignored) {}
+                    }
+                    if (!set.isEmpty()) {
+                        pendingRequests.put(uuid, set);
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    /**
+     * Saves all friend lists and pending requests to {@code friends.yml} inside the given data folder.
+     *
+     * @param dataFolder the plugin data folder, must not be null
+     * @throws RuntimeException if the file cannot be written
+     */
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "friends.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Set<UUID>> entry : friends.entrySet()) {
+            List<String> list = new java.util.ArrayList<>();
+            for (UUID id : entry.getValue()) {
+                list.add(id.toString());
+            }
+            cfg.set("friends." + entry.getKey().toString(), list);
+        }
+        for (Map.Entry<UUID, Set<UUID>> entry : pendingRequests.entrySet()) {
+            List<String> list = new java.util.ArrayList<>();
+            for (UUID id : entry.getValue()) {
+                list.add(id.toString());
+            }
+            cfg.set("pending." + entry.getKey().toString(), list);
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save friends.yml", e);
+        }
     }
 }
