@@ -1,8 +1,11 @@
 package com.skyblock.core.fishing;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -115,13 +118,14 @@ public final class FishingManager {
         }
     }
 
-    /** Treasure tiers obtainable from fishing at sufficient skill levels. */
+    /** Treasure items obtainable from fishing at sufficient skill levels. */
     public enum FishingTreasure {
-        COMMON_TREASURE(1,  0.40, "Common Treasure"),
-        UNCOMMON_TREASURE(10, 0.25, "Uncommon Treasure"),
-        RARE_TREASURE(20, 0.15, "Rare Treasure"),
-        EPIC_TREASURE(30, 0.10, "Epic Treasure"),
-        LEGENDARY_TREASURE(40, 0.05, "Legendary Treasure");
+        COMMON_FISH(1,  0.40, "Common Fish"),
+        ENCHANTED_FISH(10, 0.25, "Enchanted Fish"),
+        SPONGE(15, 0.15, "Sponge"),
+        PRISMARINE(20, 0.10, "Prismarine"),
+        MAGMA_FISH(30, 0.06, "Magma Fish"),
+        SEA_CREATURE_LURE(40, 0.04, "Sea Creature Lure");
 
         /** Minimum fishing level required for this treasure to drop. */
         public final int minLevel;
@@ -417,5 +421,44 @@ public final class FishingManager {
             level++;
         }
         return level;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Persistence
+    // ---------------------------------------------------------------------------
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "fishing.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        fishingXp.clear();
+        fishingLevel.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                double xp = cfg.getDouble(key + ".xp", 0.0);
+                if (xp > 0.0) {
+                    fishingXp.put(uuid, xp);
+                    fishingLevel.put(uuid, computeLevel(xp));
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "fishing.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Double> entry : fishingXp.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".xp", entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save fishing.yml", e);
+        }
     }
 }
