@@ -187,6 +187,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "auction" -> "auction";
             case "ah" -> "ah";
             case "bazaar", "bz" -> "bazaar";
+            case "island" -> "island";
             case "quests" -> "quest";
             case "minions" -> "minion";
             case "slayer" -> "slay";
