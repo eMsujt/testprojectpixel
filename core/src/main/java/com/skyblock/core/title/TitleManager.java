@@ -1,5 +1,9 @@
 package com.skyblock.core.title;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,5 +31,43 @@ public class TitleManager {
     public boolean hasTitle(UUID playerId, String title) {
         List<String> list = titles.get(playerId);
         return list != null && list.contains(title);
+    }
+
+    public void save(File dataFolder) {
+        File dir = new File(dataFolder, "data/titles");
+        dir.mkdirs();
+        for (Map.Entry<UUID, List<String>> entry : titles.entrySet()) {
+            File file = new File(dir, entry.getKey().toString() + ".yml");
+            YamlConfiguration cfg = new YamlConfiguration();
+            cfg.set("titles", entry.getValue());
+            try {
+                cfg.save(file);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to save titles for " + entry.getKey(), e);
+            }
+        }
+    }
+
+    public void load(File dataFolder) {
+        File dir = new File(dataFolder, "data/titles");
+        titles.clear();
+        if (!dir.isDirectory()) {
+            return;
+        }
+        File[] files = dir.listFiles((d, name) -> name.endsWith(".yml"));
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            String name = file.getName();
+            try {
+                UUID uuid = UUID.fromString(name.substring(0, name.length() - 4));
+                YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+                List<String> list = cfg.getStringList("titles");
+                if (!list.isEmpty()) {
+                    titles.put(uuid, new ArrayList<>(list));
+                }
+            } catch (IllegalArgumentException ignored) {}
+        }
     }
 }
