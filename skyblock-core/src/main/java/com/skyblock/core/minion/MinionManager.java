@@ -43,7 +43,30 @@ public final class MinionManager {
         SAND("Sand Minion"),
         GLOWSTONE("Glowstone Minion"),
         NETHER_WART("Nether Wart Minion"),
-        QUARTZ("Quartz Minion");
+        QUARTZ("Quartz Minion"),
+        CHICKEN("Chicken Minion"),
+        COW("Cow Minion"),
+        PIG("Pig Minion"),
+        SHEEP("Sheep Minion"),
+        RABBIT("Rabbit Minion"),
+        ZOMBIE("Zombie Minion"),
+        SKELETON("Skeleton Minion"),
+        SPIDER("Spider Minion"),
+        CREEPER("Creeper Minion"),
+        BLAZE("Blaze Minion"),
+        MAGMA_CUBE("Magma Cube Minion"),
+        ENDERMAN("Enderman Minion"),
+        GHAST("Ghast Minion"),
+        SLIME("Slime Minion"),
+        TARANTULA("Tarantula Minion"),
+        ICE("Ice Minion"),
+        GRAVEL("Gravel Minion"),
+        OBSIDIAN("Obsidian Minion"),
+        BIRCH("Birch Minion"),
+        SPRUCE("Spruce Minion"),
+        DARK_OAK("Dark Oak Minion"),
+        JUNGLE("Jungle Minion"),
+        ACACIA("Acacia Minion");
 
         private final String displayName;
 
