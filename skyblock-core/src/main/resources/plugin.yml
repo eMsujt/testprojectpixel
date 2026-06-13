@@ -149,6 +149,9 @@ commands:
     description: Manage your accessory bag and view stat bonuses.
     usage: /accessorybag <list|add|remove|bonuses>
     aliases: [abag]
+  accessory:
+    description: Manage accessory rarities and view stat multipliers.
+    usage: /accessory <list|info|setrarity|remove>
   essence:
     description: View and manage your essence balances.
     usage: /essence <balance [type]|add <type> <amount>|remove <type> <amount>>
