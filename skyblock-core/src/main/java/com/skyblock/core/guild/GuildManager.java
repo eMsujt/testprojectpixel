@@ -21,6 +21,8 @@ import java.util.UUID;
  */
 public final class GuildManager {
 
+    public static final int MAX_MEMBERS = 20;
+
     private static final GuildManager INSTANCE = new GuildManager();
 
     /** All guilds, keyed by lower-cased name for case-insensitive lookup. */
@@ -156,6 +158,9 @@ public final class GuildManager {
         }
         if (guildByMember.containsKey(invitee)) {
             throw new IllegalStateException("Player is already in a guild.");
+        }
+        if (guild.members().size() >= MAX_MEMBERS) {
+            throw new IllegalStateException("Guild is full (max " + MAX_MEMBERS + " members).");
         }
         guild.members().add(invitee);
         guild.memberRanks().put(invitee, GuildRank.RECRUIT);
