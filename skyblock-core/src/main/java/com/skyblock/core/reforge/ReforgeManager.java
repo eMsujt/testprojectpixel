@@ -29,7 +29,16 @@ public final class ReforgeManager {
         FORCEFUL("Forceful", 5, 0, 20),
         UNPLEASANT("Unpleasant", 0, 0, 5),
         CLEAN("Clean", 0, 5, 0),
-        WEIRD("Weird", 5, 5, 5);
+        WEIRD("Weird", 5, 5, 5),
+        BIZARRE("Bizarre", 25, 0, 10),
+        SPIKED("Spiked", 0, 25, 5),
+        MOIL("Moil", 15, 0, 0),
+        TOIL("Toil", 20, 0, 0),
+        FRUITFUL("Fruitful", 0, 10, 20),
+        HONORED("Honored", 10, 15, 0),
+        BEJEWELED("Bejeweled", 15, 15, 0),
+        RENOWNED("Renowned", 30, 10, 10),
+        FESTIVE("Festive", 10, 10, 10);
 
         private final String displayName;
         private final int strengthBonus;
@@ -73,7 +82,16 @@ public final class ReforgeManager {
         FIERCE("Fierce Reforge Stone", "Fierce"),
         SHARP("Sharp Reforge Stone", "Sharp"),
         WEIRD("Weird Reforge Stone", "Weird"),
-        UNPLEASANT("Unpleasant Reforge Stone", "Unpleasant");
+        UNPLEASANT("Unpleasant Reforge Stone", "Unpleasant"),
+        JADERALD("Jaderald", "Bizarre"),
+        LAPIS_CRYSTAL("Lapis Crystal", "Spiked"),
+        JASPER_CRYSTAL("Jasper Crystal", "Moil"),
+        TOPAZ_CRYSTAL("Topaz Crystal", "Toil"),
+        AMBER_CRYSTAL("Amber Crystal", "Fruitful"),
+        AMETHYST_CRYSTAL("Amethyst Crystal", "Honored"),
+        RUBY_CRYSTAL("Ruby Crystal", "Bejeweled"),
+        ONYX_CRYSTAL("Onyx Crystal", "Renowned"),
+        SAPPHIRE_CRYSTAL("Sapphire Crystal", "Festive");
 
         private final String displayName;
         private final String reforge;
