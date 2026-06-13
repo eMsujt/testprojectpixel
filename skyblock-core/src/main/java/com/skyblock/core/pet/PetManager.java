@@ -48,6 +48,8 @@ public final class PetManager {
         BAT(PetRarity.COMMON,                    "Bat"),
         SNAIL(PetRarity.COMMON,                  "Snail"),
         ROCK(PetRarity.COMMON,                   "Rock"),
+        MOSQUITO(PetRarity.COMMON,               "Mosquito"),
+        SLUG(PetRarity.COMMON,                   "Slug"),
         // Uncommon
         RABBIT(PetRarity.UNCOMMON,               "Rabbit"),
         PENGUIN(PetRarity.UNCOMMON,              "Penguin"),
@@ -58,6 +60,7 @@ public final class PetManager {
         SILVERFISH(PetRarity.UNCOMMON,           "Silverfish"),
         CAVE_SPIDER(PetRarity.UNCOMMON,          "Cave Spider"),
         MUSHROOM_COW(PetRarity.UNCOMMON,         "Mushroom Cow"),
+        HOUND(PetRarity.UNCOMMON,                "Hound"),
         // Rare
         BEE(PetRarity.RARE,                      "Bee"),
         DOLPHIN(PetRarity.RARE,                  "Dolphin"),
@@ -76,6 +79,8 @@ public final class PetManager {
         ZOMBIE(PetRarity.RARE,                   "Zombie"),
         SKELETON(PetRarity.RARE,                 "Skeleton"),
         SPIDER(PetRarity.RARE,                   "Spider"),
+        ENDERMITE(PetRarity.RARE,                "Endermite"),
+        PIGMAN(PetRarity.RARE,                   "Pigman"),
         // Epic
         WOLF(PetRarity.EPIC,                     "Wolf"),
         BLAZE(PetRarity.EPIC,                    "Blaze"),
@@ -100,7 +105,8 @@ public final class PetManager {
         JERRY(PetRarity.LEGENDARY,               "Jerry"),
         BLACK_CAT(PetRarity.LEGENDARY,           "Black Cat"),
         GRANDMA_WOLF(PetRarity.LEGENDARY,        "Grandma Wolf"),
-        ENDER_DRAGON(PetRarity.LEGENDARY,        "Ender Dragon");
+        ENDER_DRAGON(PetRarity.LEGENDARY,        "Ender Dragon"),
+        PHOENIX(PetRarity.LEGENDARY,             "Phoenix");
 
         public final PetRarity rarity;
         private final String displayName;
