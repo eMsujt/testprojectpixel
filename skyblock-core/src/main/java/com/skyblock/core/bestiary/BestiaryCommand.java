@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public final class BestiaryCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "reset", "families");
 
     private final BestiaryManager bestiaryManager;
 
@@ -46,9 +46,10 @@ public final class BestiaryCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "view"  -> handleView(player, args);
-            case "reset" -> handleReset(player);
-            default      -> sendHelp(player);
+            case "view"     -> handleView(player, args);
+            case "reset"    -> handleReset(player);
+            case "families" -> handleFamilies(player);
+            default         -> sendHelp(player);
         }
         return true;
     }
@@ -99,10 +100,20 @@ public final class BestiaryCommand implements TabExecutor {
         player.sendMessage("Your bestiary has been reset.");
     }
 
+    private void handleFamilies(Player player) {
+        UUID id = player.getUniqueId();
+        player.sendMessage("=== Bestiary Families ===");
+        for (BestiaryManager.BestiaryFamily family : BestiaryManager.BestiaryFamily.values()) {
+            int total = bestiaryManager.getKillsForFamily(id, family);
+            player.sendMessage("  " + family.displayName + ": " + total + " kills");
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bestiary Commands ===");
-        player.sendMessage("/bestiary           — show all kill counts");
+        player.sendMessage("/bestiary            — show all kill counts");
         player.sendMessage("/bestiary view <mob> — show kills for a specific mob");
+        player.sendMessage("/bestiary families   — show kills grouped by family");
         player.sendMessage("/bestiary reset      — reset all kill counts");
     }
 }
