@@ -145,11 +145,14 @@ public final class SkyblockHubCommand implements TabExecutor {
         for (String[] entry : managers) {
             String name = entry[0];
             String sub = entry[1];
-            TextComponent btn = new TextComponent("§b§l[" + name + "]  ");
+            TextComponent label = new TextComponent("§7" + name + "  ");
+            TextComponent btn = new TextComponent("§a§l[Open]");
             btn.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/skyblock " + sub));
             btn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                     new ComponentBuilder("§eClick to open " + name).create()));
-            player.spigot().sendMessage(btn);
+            TextComponent line = new TextComponent(label);
+            line.addExtra(btn);
+            player.spigot().sendMessage(line);
         }
     }
 
