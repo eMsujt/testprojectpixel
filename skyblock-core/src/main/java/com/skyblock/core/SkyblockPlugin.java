@@ -44,6 +44,8 @@ import com.skyblock.core.event.EventCommand;
 import com.skyblock.core.event.EventManager;
 import com.skyblock.core.chat.ChatCommand;
 import com.skyblock.core.chat.ChatManager;
+import com.skyblock.core.leaderboard.LeaderboardCommand;
+import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.collections.CollectionsCommand;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.combat.CombatCommand;
@@ -200,6 +202,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         ChatCommand chatCommand = new ChatCommand(chatManager);
         getCommand("chat").setExecutor(chatCommand);
         getCommand("chat").setTabCompleter(chatCommand);
+        LeaderboardManager leaderboardManager = LeaderboardManager.getInstance();
+        LeaderboardCommand leaderboardCommand = new LeaderboardCommand(leaderboardManager);
+        getCommand("leaderboard").setExecutor(leaderboardCommand);
+        getCommand("leaderboard").setTabCompleter(leaderboardCommand);
     }
 
     @Override
