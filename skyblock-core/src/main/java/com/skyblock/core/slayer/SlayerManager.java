@@ -16,7 +16,7 @@ public final class SlayerManager {
 
     public enum SlayerType {
         ZOMBIE("Zombie"),
-        SPIDER("Spider"),
+        TARANTULA("Tarantula"),
         WOLF("Wolf"),
         ENDERMAN("Enderman"),
         BLAZE("Blaze");
@@ -35,7 +35,7 @@ public final class SlayerManager {
     /** Named slayer bosses, each linked to the {@link SlayerType} that spawns them. */
     public enum SlayerBoss {
         ZOMBIE(SlayerType.ZOMBIE,     "Revenant Horror",       200_000),
-        SPIDER(SlayerType.SPIDER,     "Tarantula Broodfather", 300_000),
+        TARANTULA(SlayerType.TARANTULA, "Tarantula Broodfather", 300_000),
         WOLF(SlayerType.WOLF,         "Sven Packmaster",       400_000),
         ENDERMAN(SlayerType.ENDERMAN, "Voidgloom Seraph",      500_000),
         BLAZE(SlayerType.BLAZE,       "Inferno Demonlord",     600_000);
