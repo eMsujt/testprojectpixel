@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public final class IslandCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("create", "home", "visit", "invite", "kick", "leave");
+            Arrays.asList("create", "home", "visit", "invite", "kick", "leave", "upgrade", "upgrades");
 
     private final IslandManager islandManager;
 
@@ -46,18 +46,20 @@ public final class IslandCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /island <create|home|visit|invite|kick|leave>");
+            player.sendMessage("Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades>");
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "create" -> handleCreate(player);
-            case "home"   -> handleHome(player);
-            case "visit"  -> handleVisit(player, args);
-            case "invite" -> handleInvite(player, args);
-            case "kick"   -> handleKick(player, args);
-            case "leave"  -> handleLeave(player);
-            default       -> player.sendMessage("Unknown subcommand. Usage: /island <create|home|visit|invite|kick|leave>");
+            case "create"   -> handleCreate(player);
+            case "home"     -> handleHome(player);
+            case "visit"    -> handleVisit(player, args);
+            case "invite"   -> handleInvite(player, args);
+            case "kick"     -> handleKick(player, args);
+            case "leave"    -> handleLeave(player);
+            case "upgrade"  -> handleUpgrade(player, args);
+            case "upgrades" -> handleUpgrades(player);
+            default         -> player.sendMessage("Unknown subcommand. Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades>");
         }
         return true;
     }
@@ -77,6 +79,13 @@ public final class IslandCommand implements TabExecutor {
                 return Bukkit.getOnlinePlayers().stream()
                         .map(Player::getName)
                         .filter(name -> name.toLowerCase().startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (sub.equals("upgrade")) {
+                String prefix = args[1].toUpperCase();
+                return Arrays.stream(IslandManager.IslandUpgrade.values())
+                        .map(Enum::name)
+                        .filter(name -> name.startsWith(prefix))
                         .collect(Collectors.toList());
             }
         }
@@ -190,6 +199,51 @@ public final class IslandCommand implements TabExecutor {
         }
         player.sendMessage(targetName + " has been removed from your island.");
         target.sendMessage("You have been kicked from " + player.getName() + "'s island.");
+    }
+
+    private void handleUpgrade(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /island upgrade <" +
+                    Arrays.stream(IslandManager.IslandUpgrade.values())
+                            .map(Enum::name)
+                            .collect(Collectors.joining("|")) + ">");
+            return;
+        }
+        if (!islandManager.hasIsland(player.getUniqueId())) {
+            player.sendMessage("You do not have an island. Use /island create first.");
+            return;
+        }
+        IslandManager.IslandUpgrade upgrade;
+        try {
+            upgrade = IslandManager.IslandUpgrade.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown upgrade: " + args[1]);
+            return;
+        }
+        boolean applied = islandManager.applyUpgrade(player.getUniqueId(), upgrade);
+        if (!applied) {
+            player.sendMessage(upgrade.name() + " is already at max level (" + upgrade.getMaxLevel() + ").");
+            return;
+        }
+        int newLevel = islandManager.getIsland(player.getUniqueId())
+                .map(i -> i.getUpgradeLevel(upgrade))
+                .orElse(0);
+        player.sendMessage(upgrade.name() + " upgraded to level " + newLevel + " / " + upgrade.getMaxLevel() + ".");
+    }
+
+    private void handleUpgrades(Player player) {
+        Optional<IslandManager.SkyBlockIsland> islandOpt =
+                islandManager.getIsland(player.getUniqueId());
+        if (islandOpt.isEmpty()) {
+            player.sendMessage("You do not have an island.");
+            return;
+        }
+        IslandManager.SkyBlockIsland island = islandOpt.get();
+        player.sendMessage("=== Island Upgrades ===");
+        for (IslandManager.IslandUpgrade upgrade : IslandManager.IslandUpgrade.values()) {
+            int level = island.getUpgradeLevel(upgrade);
+            player.sendMessage(upgrade.name() + ": " + level + " / " + upgrade.getMaxLevel());
+        }
     }
 
     private void handleLeave(Player player) {
