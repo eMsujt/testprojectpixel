@@ -49,6 +49,27 @@ public final class MiningManager {
         public int getXp() { return xp; }
     }
 
+    /** Mining zones available in SkyBlock, each requiring a minimum mining level. */
+    public enum MiningZone {
+        SPIDER_DEN("Spider's Den",         0),
+        GOLD_MINE("Gold Mine",             1),
+        DEEP_CAVERNS("Deep Caverns",       5),
+        DWARVEN_MINES("Dwarven Mines",    12),
+        CRYSTAL_HOLLOWS("Crystal Hollows", 20),
+        MINESHAFT("Mineshaft",            25);
+
+        private final String displayName;
+        private final int minLevel;
+
+        MiningZone(String displayName, int minLevel) {
+            this.displayName = displayName;
+            this.minLevel = minLevel;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getMinLevel() { return minLevel; }
+    }
+
     /** Lookup from {@link Material} to {@link OreType} for fast block-break dispatch. */
     public static final Map<Material, OreType> MATERIAL_TO_ORE;
 
