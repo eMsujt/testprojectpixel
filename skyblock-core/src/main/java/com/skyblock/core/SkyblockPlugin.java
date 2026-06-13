@@ -42,6 +42,8 @@ import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.event.EventCommand;
 import com.skyblock.core.event.EventManager;
+import com.skyblock.core.chat.ChatCommand;
+import com.skyblock.core.chat.ChatManager;
 import com.skyblock.core.collections.CollectionsCommand;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.combat.CombatCommand;
@@ -194,6 +196,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         CollectionsCommand collectionsCommand = new CollectionsCommand(collectionsManager);
         getCommand("collections").setExecutor(collectionsCommand);
         getCommand("collections").setTabCompleter(collectionsCommand);
+        ChatManager chatManager = ChatManager.getInstance();
+        ChatCommand chatCommand = new ChatCommand(chatManager);
+        getCommand("chat").setExecutor(chatCommand);
+        getCommand("chat").setTabCompleter(chatCommand);
     }
 
     @Override

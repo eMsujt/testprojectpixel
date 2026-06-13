@@ -285,6 +285,10 @@ commands:
     description: View your SkyBlock collection progress.
     usage: /collections [collection|category <cat>|reset]
     permission: skyblock.collections
+  chat:
+    description: Switch your active chat channel.
+    usage: /chat [global|party|guild|trade]
+    permission: skyblock.chat
 
 permissions:
   skyblock.warp:
@@ -388,4 +392,7 @@ permissions:
     default: true
   skyblock.collections:
     description: Use the /collections command to view collection progress.
+    default: true
+  skyblock.chat:
+    description: Use the /chat command to switch active chat channels.
     default: true
