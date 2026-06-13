@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
  */
 public final class ReforgeCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "info", "apply", "clear");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "info", "apply", "clear", "stone");
+    private static final List<String> STONE_SUBCOMMANDS = Arrays.asList("list", "info");
 
     private final ReforgeManager reforgeManager;
 
@@ -54,6 +55,7 @@ public final class ReforgeCommand implements TabExecutor {
             case "info"  -> handleInfo(player, args);
             case "apply" -> handleApply(player, args);
             case "clear" -> handleClear(player);
+            case "stone" -> handleStone(player, args);
             default      -> sendHelp(player);
         }
         return true;
@@ -71,7 +73,20 @@ public final class ReforgeCommand implements TabExecutor {
             String prefix = args[1].toLowerCase();
             return Arrays.stream(ReforgeManager.ReforgeType.values())
                     .filter(r -> r != ReforgeManager.ReforgeType.NONE)
-                    .map(r -> r.getDisplayName())
+                    .map(ReforgeManager.ReforgeType::getDisplayName)
+                    .filter(n -> n.toLowerCase().startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("stone")) {
+            String prefix = args[1].toLowerCase();
+            return STONE_SUBCOMMANDS.stream()
+                    .filter(s -> s.startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("stone") && args[1].equalsIgnoreCase("info")) {
+            String prefix = args[2].toLowerCase();
+            return Arrays.stream(ReforgeManager.ReforgeStone.values())
+                    .map(ReforgeManager.ReforgeStone::getDisplayName)
                     .filter(n -> n.toLowerCase().startsWith(prefix))
                     .collect(Collectors.toList());
         }
@@ -133,13 +148,40 @@ public final class ReforgeCommand implements TabExecutor {
         player.sendMessage("Reforge cleared.");
     }
 
+    private void handleStone(Player player, String[] args) {
+        if (args.length < 2 || args[1].equalsIgnoreCase("list")) {
+            player.sendMessage("=== Reforge Stones ===");
+            for (ReforgeManager.ReforgeStone stone : ReforgeManager.ReforgeStone.values()) {
+                player.sendMessage("  " + stone.getDisplayName() + " → " + stone.getReforge());
+            }
+            return;
+        }
+        if (args[1].equalsIgnoreCase("info")) {
+            if (args.length < 3) {
+                player.sendMessage("Usage: /reforge stone info <stone>");
+                return;
+            }
+            ReforgeManager.ReforgeStone stone = ReforgeManager.ReforgeStone.fromName(args[2]);
+            if (stone == null) {
+                player.sendMessage("Unknown reforge stone: " + args[2]);
+                return;
+            }
+            player.sendMessage("=== " + stone.getDisplayName() + " ===");
+            player.sendMessage("  Applies reforge: " + stone.getReforge());
+            return;
+        }
+        player.sendMessage("Usage: /reforge stone [list|info <stone>]");
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Reforge Commands ===");
-        player.sendMessage("/reforge                  — show current reforge and bonuses");
-        player.sendMessage("/reforge list             — list all available reforges");
-        player.sendMessage("/reforge info <name>      — show stat bonuses for a reforge");
-        player.sendMessage("/reforge apply <name>     — apply a reforge");
-        player.sendMessage("/reforge clear            — remove the current reforge");
+        player.sendMessage("/reforge                       — show current reforge and bonuses");
+        player.sendMessage("/reforge list                  — list all available reforges");
+        player.sendMessage("/reforge info <name>           — show stat bonuses for a reforge");
+        player.sendMessage("/reforge apply <name>          — apply a reforge");
+        player.sendMessage("/reforge clear                 — remove the current reforge");
+        player.sendMessage("/reforge stone [list]          — list all reforge stones");
+        player.sendMessage("/reforge stone info <stone>    — show which reforge a stone applies");
     }
 
     private static void printBonuses(Player player, ReforgeManager.ReforgeType reforge) {
