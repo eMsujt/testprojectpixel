@@ -60,8 +60,8 @@ commands:
     usage: /friend <add|remove|list> [player]
     permission: skyblock.friend
   mailbox:
-    description: View and manage your SkyBlock mailbox.
-    usage: /mailbox [inbox|read <id>|delete <id>|clear]
+    description: Mailbox system
+    usage: /mailbox <list|read|delete|send>
     permission: skyblock.mailbox
   booster:
     description: Activate XP or coin boosters
@@ -339,8 +339,8 @@ commands:
     usage: /run [info [floor]|reset]
     permission: skyblock.run
   title:
-    description: Manage your SkyBlock titles.
-    usage: /title [list|equip <title>|unequip|info <title>]
+    description: Title system
+    usage: /title <list|set|remove>
     permission: skyblock.title
 
 permissions:
