@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public final class CrimsonIsleCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "faction", "reputation");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "faction", "reputation", "kuudra");
 
     private final CrimsonIsleManager crimsonIsleManager;
 
@@ -36,6 +36,7 @@ public final class CrimsonIsleCommand implements TabExecutor {
             case "info"       -> handleInfo(player);
             case "faction"    -> handleFaction(player, args);
             case "reputation" -> handleReputation(player, args);
+            case "kuudra"     -> handleKuudra(player, args);
             default           -> sendHelp(player);
         }
         return true;
@@ -53,6 +54,13 @@ public final class CrimsonIsleCommand implements TabExecutor {
                 || args[0].equalsIgnoreCase("reputation"))) {
             String prefix = args[1].toLowerCase();
             return Arrays.stream(CrimsonIsleManager.CrimsonFaction.values())
+                    .map(f -> f.name().toLowerCase())
+                    .filter(n -> n.startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("kuudra")) {
+            String prefix = args[1].toLowerCase();
+            return Arrays.stream(CrimsonIsleManager.KuudraFaction.values())
                     .map(f -> f.name().toLowerCase())
                     .filter(n -> n.startsWith(prefix))
                     .collect(Collectors.toList());
@@ -102,10 +110,33 @@ public final class CrimsonIsleCommand implements TabExecutor {
         player.sendMessage(faction.getDisplayName() + " reputation: " + rep + " / " + CrimsonIsleManager.MAX_REPUTATION);
     }
 
+    private void handleKuudra(Player player, String[] args) {
+        if (args.length < 2) {
+            CrimsonIsleManager.KuudraFaction current = crimsonIsleManager.getKuudraFaction(player.getUniqueId());
+            player.sendMessage("=== Kuudra Factions ===");
+            player.sendMessage("  Current: " + (current == null ? "None" : current.getDisplayName()));
+            for (CrimsonIsleManager.KuudraFaction f : CrimsonIsleManager.KuudraFaction.values()) {
+                int standing = crimsonIsleManager.getKuudraStanding(player.getUniqueId(), f);
+                player.sendMessage("  " + f.getDisplayName() + ": " + standing + " / " + CrimsonIsleManager.MAX_KUUDRA_STANDING);
+            }
+            return;
+        }
+        CrimsonIsleManager.KuudraFaction faction;
+        try {
+            faction = CrimsonIsleManager.KuudraFaction.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown Kuudra faction: " + args[1]);
+            return;
+        }
+        crimsonIsleManager.setKuudraFaction(player.getUniqueId(), faction);
+        player.sendMessage("Aligned with the " + faction.getDisplayName() + ".");
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Crimson Isle Commands ===");
         player.sendMessage("/crimsonisle info                   — show faction and reputation");
         player.sendMessage("/crimsonisle faction <faction>      — join a faction");
         player.sendMessage("/crimsonisle reputation <faction>   — show reputation for a faction");
+        player.sendMessage("/crimsonisle kuudra [faction]       — show or set Kuudra faction alignment");
     }
 }
