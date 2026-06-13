@@ -128,6 +128,8 @@ public final class CollectionCommand implements TabExecutor {
             long total = all.getOrDefault(t, 0L);
             player.sendMessage("- " + t.displayName + ": " + total);
         }
+        long categoryTotal = collectionManager.getTotalForCategory(player.getUniqueId(), category);
+        player.sendMessage("Category total: " + categoryTotal);
     }
 
     private static CollectionType parseType(String input) {
