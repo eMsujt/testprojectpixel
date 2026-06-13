@@ -34,7 +34,7 @@ public final class PetManager {
     public enum PetType {
         CHICKEN, WOLF, RABBIT, BEE, LION, TIGER, ELEPHANT, HORSE,
         CAT, PARROT, PENGUIN, TURTLE, SHEEP, PIG, DOLPHIN,
-        BLAZE, ENDERMAN, SKELETON, SPIDER, ZOMBIE
+        BLAZE, ENDERMAN, SKELETON, SPIDER, ZOMBIE, GOLDEN_DRAGON
     }
 
     /** Rarity tiers for pets. */
