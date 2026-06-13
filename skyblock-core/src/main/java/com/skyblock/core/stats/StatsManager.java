@@ -1,8 +1,8 @@
 package com.skyblock.core.stats;
 
 import com.skyblock.core.stat.StatManager;
-import com.skyblock.core.stat.StatManager.StatType;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -16,6 +16,41 @@ import java.util.UUID;
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class StatsManager {
+
+    /** Every player stat tracked in SkyBlock. */
+    public enum StatType {
+        MAX_HEALTH,
+        DEFENSE,
+        STRENGTH,
+        SPEED,
+        CRIT_CHANCE,
+        CRIT_DAMAGE,
+        INTELLIGENCE,
+        FEROCITY,
+        ATTACK_SPEED,
+        MAGIC_FIND,
+        TRUE_DEFENSE,
+        VITALITY
+    }
+
+    /** Maps this package's StatType to the backing stat.StatManager.StatType. */
+    private static final Map<StatType, StatManager.StatType> STAT_MAP;
+
+    static {
+        STAT_MAP = new EnumMap<>(StatType.class);
+        STAT_MAP.put(StatType.MAX_HEALTH,   StatManager.StatType.HEALTH);
+        STAT_MAP.put(StatType.DEFENSE,      StatManager.StatType.DEFENSE);
+        STAT_MAP.put(StatType.STRENGTH,     StatManager.StatType.STRENGTH);
+        STAT_MAP.put(StatType.SPEED,        StatManager.StatType.SPEED);
+        STAT_MAP.put(StatType.CRIT_CHANCE,  StatManager.StatType.CRIT_CHANCE);
+        STAT_MAP.put(StatType.CRIT_DAMAGE,  StatManager.StatType.CRIT_DAMAGE);
+        STAT_MAP.put(StatType.INTELLIGENCE, StatManager.StatType.INTELLIGENCE);
+        STAT_MAP.put(StatType.FEROCITY,     StatManager.StatType.FEROCITY);
+        STAT_MAP.put(StatType.ATTACK_SPEED, StatManager.StatType.ATTACK_SPEED);
+        STAT_MAP.put(StatType.MAGIC_FIND,   StatManager.StatType.MAGIC_FIND);
+        STAT_MAP.put(StatType.TRUE_DEFENSE, StatManager.StatType.TRUE_DEFENSE);
+        STAT_MAP.put(StatType.VITALITY,     StatManager.StatType.VITALITY);
+    }
 
     private static final StatsManager INSTANCE = new StatsManager();
 
@@ -77,9 +112,10 @@ public final class StatsManager {
     public PlayerStats getStats(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         StatManager statManager = StatManager.getInstance();
-        Map<StatType, Double> statValues = new HashMap<>();
+        Map<StatType, Double> statValues = new EnumMap<>(StatType.class);
         for (StatType type : StatType.values()) {
-            statValues.put(type, statManager.getStat(playerId, type));
+            StatManager.StatType backing = STAT_MAP.get(type);
+            statValues.put(type, statManager.getStat(playerId, backing));
         }
         CombatStatsManager.CombatStats combat =
                 CombatStatsManager.getInstance().getStats(playerId);
