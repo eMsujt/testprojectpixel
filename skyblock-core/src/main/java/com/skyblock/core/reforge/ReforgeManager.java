@@ -70,6 +70,12 @@ public final class ReforgeManager {
     /** A reforge stone item that applies a specific reforge when used. */
     public enum ReforgeStone {
         ROUGH_RUBY("Rough Ruby", "Odd"),
+        PERFECT_AMETHYST("Perfect Amethyst", "Renowned"),
+        PERFECT_RUBY("Perfect Ruby", "Bejeweled"),
+        PERFECT_TOPAZ("Perfect Topaz", "Toil"),
+        PERFECT_SAPPHIRE("Perfect Sapphire", "Festive"),
+        PERFECT_AMBER("Perfect Amber", "Fruitful"),
+        PERFECT_JADE("Perfect Jade", "Bizarre"),
         ITCHY("Itchy Reforge Stone", "Itchy"),
         STORMY("Stormy Reforge Stone", "Stormy"),
         FORCEFUL("Forceful Reforge Stone", "Forceful"),
