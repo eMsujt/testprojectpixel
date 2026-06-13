@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Handles the {@code /bazaar} command.
@@ -61,7 +62,15 @@ public final class BazaarCommand implements TabExecutor {
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
-        if (args.length == 2 && args[0].equalsIgnoreCase("cancel")) {
+        String sub = args[0].toLowerCase();
+        if (args.length == 2 && (sub.equals("info") || sub.equals("buy") || sub.equals("sell"))) {
+            String lower = args[1].toLowerCase();
+            return Stream.of(BazaarProduct.values())
+                    .map(p -> p.getItemId().toLowerCase())
+                    .filter(id -> id.startsWith(lower))
+                    .toList();
+        }
+        if (args.length == 2 && sub.equals("cancel")) {
             String lower = args[1].toLowerCase();
             return Arrays.asList("buy", "sell").stream()
                     .filter(s -> s.startsWith(lower))
