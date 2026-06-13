@@ -14,6 +14,7 @@ import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.reforge.ReforgeManager;
+import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,6 +31,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         instance = this;
         BankManager bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
+        SkillsManager.getInstance().load(getDataFolder());
         MayorManager.getInstance();
         AuctionManager.getInstance();
         BazaarManager.getInstance();
@@ -49,6 +51,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         BankManager.getInstance().save(getDataFolder());
+        SkillsManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
