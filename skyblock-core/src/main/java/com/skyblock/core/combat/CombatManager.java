@@ -3,6 +3,7 @@ package com.skyblock.core.combat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,9 +29,16 @@ public final class CombatManager {
     private final StatManager stats = StatManager.getInstance();
     final Random random = new Random();
 
+    public enum MobType {
+        ZOMBIE, SKELETON, SPIDER, ENDERMAN, BLAZE, GHAST,
+        SLIME, CREEPER, WITHER_SKELETON, MAGMA_CUBE, CAVE_SPIDER,
+        WITCH, ENDERMITE, GUARDIAN, ELDER_GUARDIAN
+    }
+
     private final Map<UUID, Integer> playerKills  = new HashMap<>();
     private final Map<UUID, Integer> playerDeaths = new HashMap<>();
     private final Map<UUID, Integer> mobKills     = new HashMap<>();
+    private final Map<UUID, Map<MobType, Integer>> mobTypeKills = new HashMap<>();
 
     private CombatManager() {
     }
@@ -139,11 +147,33 @@ public final class CombatManager {
         return total;
     }
 
+    public int addMobKill(UUID playerId, MobType type) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        addMobKill(playerId);
+        return mobTypeKills.computeIfAbsent(playerId, id -> new EnumMap<>(MobType.class))
+                .merge(type, 1, Integer::sum);
+    }
+
+    public int getMobKillCount(UUID playerId, MobType type) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        Map<MobType, Integer> counts = mobTypeKills.get(playerId);
+        return counts != null ? counts.getOrDefault(type, 0) : 0;
+    }
+
+    public Map<MobType, Integer> getMobKillCounts(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Map<MobType, Integer> counts = mobTypeKills.get(playerId);
+        return counts != null ? Map.copyOf(counts) : Map.of();
+    }
+
     public boolean reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         boolean had = playerKills.remove(playerId) != null;
         had |= playerDeaths.remove(playerId) != null;
         had |= mobKills.remove(playerId) != null;
+        had |= mobTypeKills.remove(playerId) != null;
         return had;
     }
 }
