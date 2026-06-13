@@ -1,5 +1,10 @@
 package com.skyblock.core.quests;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,19 +12,18 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton tracking per-player quest progress and completion state.
+ * Singleton tracking per-player daily quest progress and completion state.
  *
  * <p>Progress is stored per player as an {@link EnumMap} of quest type to
- * current progress value. Not thread-safe; synchronize externally if accessed
- * from multiple threads.</p>
+ * current progress value. Daily quests reset when the stored date differs from
+ * today. Not thread-safe; synchronize externally if accessed from multiple
+ * threads.</p>
  */
 public final class QuestManager {
 
-    /** All quest types available in SkyBlock. */
+    /** All daily quest types available in SkyBlock. */
     public enum QuestType {
-        KILL_MONSTERS, COLLECT_ITEMS, MINE_BLOCKS, FISH_ITEMS, CRAFT_ITEMS,
-        EXPLORE_ZONES, COMPLETE_DUNGEONS, EARN_COINS, REACH_SKILL_LEVEL,
-        TRADE_IN_BAZAAR
+        KILL_SLAYER, FISH_ITEMS, MINE_BLOCKS, COLLECT_RESOURCES, EARN_COINS
     }
 
     /** Completion status for a single quest instance. */
@@ -57,6 +61,9 @@ public final class QuestManager {
 
     /** Per-player quest status, keyed by quest type. */
     private final Map<UUID, Map<QuestType, QuestStatus>> questStatus = new HashMap<>();
+
+    /** Last daily-reset date per player (ISO date string, e.g. "2026-06-13"). */
+    private final Map<UUID, String> lastResetDate = new HashMap<>();
 
     private QuestManager() {
     }
@@ -184,6 +191,119 @@ public final class QuestManager {
         boolean hadData = questProgress.remove(playerId) != null;
         hadData |= questGoals.remove(playerId) != null;
         hadData |= questStatus.remove(playerId) != null;
+        lastResetDate.remove(playerId);
         return hadData;
+    }
+
+    /**
+     * Clears all daily quest progress for {@code playerId} if their last reset date
+     * is before today, then records today as the new reset date.
+     *
+     * @param playerId the player to check
+     */
+    public void resetDailyIfNeeded(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        String today = LocalDate.now().toString();
+        if (!today.equals(lastResetDate.get(playerId))) {
+            questProgress.remove(playerId);
+            questGoals.remove(playerId);
+            questStatus.remove(playerId);
+            lastResetDate.put(playerId, today);
+        }
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "quests.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        questProgress.clear();
+        questGoals.clear();
+        questStatus.clear();
+        lastResetDate.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.contains(key + ".lastResetDate")) {
+                    lastResetDate.put(uuid, cfg.getString(key + ".lastResetDate"));
+                }
+                if (cfg.isConfigurationSection(key + ".progress")) {
+                    Map<QuestType, Long> progressMap = new EnumMap<>(QuestType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".progress").getKeys(false)) {
+                        try {
+                            progressMap.put(QuestType.valueOf(typeName),
+                                    cfg.getLong(key + ".progress." + typeName, 0L));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown quest types
+                        }
+                    }
+                    if (!progressMap.isEmpty()) {
+                        questProgress.put(uuid, progressMap);
+                    }
+                }
+                if (cfg.isConfigurationSection(key + ".goals")) {
+                    Map<QuestType, Long> goalMap = new EnumMap<>(QuestType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".goals").getKeys(false)) {
+                        try {
+                            goalMap.put(QuestType.valueOf(typeName),
+                                    cfg.getLong(key + ".goals." + typeName, 0L));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown quest types
+                        }
+                    }
+                    if (!goalMap.isEmpty()) {
+                        questGoals.put(uuid, goalMap);
+                    }
+                }
+                if (cfg.isConfigurationSection(key + ".status")) {
+                    Map<QuestType, QuestStatus> statusMap = new EnumMap<>(QuestType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".status").getKeys(false)) {
+                        try {
+                            statusMap.put(QuestType.valueOf(typeName),
+                                    QuestStatus.valueOf(cfg.getString(key + ".status." + typeName)));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown quest types or status values
+                        }
+                    }
+                    if (!statusMap.isEmpty()) {
+                        questStatus.put(uuid, statusMap);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed UUID keys
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "quests.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, String> entry : lastResetDate.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".lastResetDate", entry.getValue());
+        }
+        for (Map.Entry<UUID, Map<QuestType, Long>> entry : questProgress.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<QuestType, Long> prog : entry.getValue().entrySet()) {
+                cfg.set(key + ".progress." + prog.getKey().name(), prog.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<QuestType, Long>> entry : questGoals.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<QuestType, Long> goal : entry.getValue().entrySet()) {
+                cfg.set(key + ".goals." + goal.getKey().name(), goal.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<QuestType, QuestStatus>> entry : questStatus.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<QuestType, QuestStatus> status : entry.getValue().entrySet()) {
+                cfg.set(key + ".status." + status.getKey().name(), status.getValue().name());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save quests.yml", e);
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.skyblock.core;
 
 import com.skyblock.core.accessory.AccessoryManager;
+import com.skyblock.core.command.QuestCommand;
 import com.skyblock.core.crafting.CraftingCommand;
 import com.skyblock.core.crafting.CraftingManager;
+import com.skyblock.core.quests.QuestManager;
 import com.skyblock.core.auction.AuctionHouseCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.auction.AuctionManager;
@@ -140,6 +142,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         CraftingCommand craftingCommand = new CraftingCommand(craftingManager);
         getCommand("crafting").setExecutor(craftingCommand);
         getCommand("crafting").setTabCompleter(craftingCommand);
+        QuestManager questManager = QuestManager.getInstance();
+        questManager.load(getDataFolder());
+        QuestCommand questCommand = new QuestCommand(questManager);
+        getCommand("quest").setExecutor(questCommand);
+        getCommand("quest").setTabCompleter(questCommand);
     }
 
     @Override
@@ -161,6 +168,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkillsManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
         CraftingManager.getInstance().save(getDataFolder());
+        QuestManager.getInstance().save(getDataFolder());
         instance = null;
     }
 }
