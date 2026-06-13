@@ -122,6 +122,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
         getCommand("auctionhouse").setExecutor(auctionHouseCommand);
         getCommand("auctionhouse").setTabCompleter(auctionHouseCommand);
+        getCommand("ah").setExecutor(auctionHouseCommand);
+        getCommand("ah").setTabCompleter(auctionHouseCommand);
         BazaarManager bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
         BazaarCommand bazaarCommand = new BazaarCommand(bazaarManager);
