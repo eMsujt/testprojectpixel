@@ -62,14 +62,14 @@ public final class SkillsManager {
                 4200000, 4700000, 5200000, 5700000, 6200000, 6700000, 7200000, 7700000, 8200000, 8700000
         };
         Map<String, long[]> m = new LinkedHashMap<>();
-        m.put("Farming",    standard.clone());
-        m.put("Mining",     standard.clone());
-        m.put("Combat",     standard.clone());
-        m.put("Foraging",   standard.clone());
-        m.put("Fishing",    standard.clone());
-        m.put("Enchanting", standard.clone());
-        m.put("Alchemy",    standard.clone());
-        m.put("Taming",     standard.clone());
+        m.put("farming",    standard.clone());
+        m.put("mining",     standard.clone());
+        m.put("combat",     standard.clone());
+        m.put("foraging",   standard.clone());
+        m.put("fishing",    standard.clone());
+        m.put("enchanting", standard.clone());
+        m.put("alchemy",    standard.clone());
+        m.put("taming",     standard.clone());
         SKILL_XP_TABLE = Collections.unmodifiableMap(m);
     }
 
