@@ -16,7 +16,7 @@ public final class AccessoryBagMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public AccessoryBagMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§6Accessory Bag");
+        this.inventory = Bukkit.createInventory(this, 54, "§5Accessory Bag");
         build(player);
     }
 
@@ -34,7 +34,7 @@ public final class AccessoryBagMenu implements InventoryHolder {
 
         // Slots 0–44 (rows 1–5) hold accessory items.
         for (int i = 0; i < accessories.size() && i < 45; i++) {
-            inventory.setItem(i, makeItem(Material.GOLD_NUGGET, "§6" + accessories.get(i)));
+            inventory.setItem(i, makeItem(Material.GOLD_NUGGET, "§5" + accessories.get(i)));
         }
     }
 
