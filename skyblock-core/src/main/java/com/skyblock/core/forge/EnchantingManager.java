@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -67,11 +69,24 @@ public final class EnchantingManager {
 
     /** Per-player enchantment levels keyed by enchantment name (lower-case). */
     private final Map<UUID, Map<String, Integer>> enchantments = new HashMap<>();
+    private final Map<UUID, List<String>> enchantingHistory = new HashMap<>();
 
     private EnchantingManager() {}
 
     public static EnchantingManager getInstance() {
         return INSTANCE;
+    }
+
+    public void recordEnchantingEvent(UUID playerUuid, String summary) {
+        enchantingHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getEnchantingHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(enchantingHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllEnchantingHistory() {
+        return Collections.unmodifiableMap(enchantingHistory);
     }
 
     // -------------------------------------------------------------------------
@@ -152,6 +167,7 @@ public final class EnchantingManager {
      */
     public void remove(UUID playerId) {
         enchantments.remove(playerId);
+        enchantingHistory.remove(playerId);
     }
 
     public void load(File dataFolder) {
@@ -161,6 +177,7 @@ public final class EnchantingManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         enchantments.clear();
+        enchantingHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -180,6 +197,17 @@ public final class EnchantingManager {
                 // skip malformed entries
             }
         }
+        if (cfg.isConfigurationSection("enchantingHistory")) {
+            for (String key : cfg.getConfigurationSection("enchantingHistory").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<String> entries = cfg.getStringList("enchantingHistory." + key);
+                    if (!entries.isEmpty()) {
+                        enchantingHistory.put(uuid, new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -190,6 +218,9 @@ public final class EnchantingManager {
             for (Map.Entry<String, Integer> e : entry.getValue().entrySet()) {
                 cfg.set(key + "." + e.getKey(), e.getValue());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : enchantingHistory.entrySet()) {
+            cfg.set("enchantingHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);

@@ -1,8 +1,10 @@
 package com.skyblock.enchanting;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,6 +62,19 @@ public final class EnchantingManager {
     }
 
     private final Map<UUID, Map<EnchantType, Integer>> itemEnchants = new HashMap<>();
+    private final Map<UUID, List<String>> enchantingHistory = new HashMap<>();
+
+    public void recordEnchantingEvent(UUID playerUuid, String summary) {
+        enchantingHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getEnchantingHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(enchantingHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllEnchantingHistory() {
+        return Collections.unmodifiableMap(enchantingHistory);
+    }
 
     /**
      * Applies an enchant to an item, or upgrades it if already applied.
