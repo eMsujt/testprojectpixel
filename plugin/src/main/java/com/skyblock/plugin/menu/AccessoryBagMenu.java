@@ -25,7 +25,10 @@ public final class AccessoryBagMenu {
     }
 
     private Inventory buildMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 54, "§5Accessory Bag");
+        List<String> accessories = AccessoryBagManager.getInstance().getEquipped(player.getUniqueId());
+
+        int totalPages = Math.max(1, (accessories.size() + SLOTS.length - 1) / SLOTS.length);
+        Inventory inv = Bukkit.createInventory(null, 54, "§5Accessory Bag §7(1/" + totalPages + ")");
 
         ItemStack pane = makeItem(Material.PURPLE_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
@@ -35,7 +38,6 @@ public final class AccessoryBagMenu {
             }
         }
 
-        List<String> accessories = AccessoryBagManager.getInstance().getEquipped(player.getUniqueId());
         for (int i = 0; i < accessories.size() && i < SLOTS.length; i++) {
             inv.setItem(SLOTS[i], makeItem(Material.GOLD_NUGGET, "§6" + accessories.get(i)));
         }
