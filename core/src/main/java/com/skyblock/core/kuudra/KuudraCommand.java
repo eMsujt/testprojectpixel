@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public final class KuudraCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("join", "stats", "tiers");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("join", "stats", "tiers", "history");
     private static final List<String> TIER_NAMES = Arrays.stream(KuudraManager.KuudraTier.values())
             .map(t -> t.name().toLowerCase())
             .collect(Collectors.toList());
@@ -36,10 +36,11 @@ public final class KuudraCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "join"  -> handleJoin(player, args);
-            case "stats" -> handleStats(player);
-            case "tiers" -> handleTiers(player);
-            default      -> sendHelp(player);
+            case "join"    -> handleJoin(player, args);
+            case "stats"   -> handleStats(player);
+            case "tiers"   -> handleTiers(player);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -88,10 +89,23 @@ public final class KuudraCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getKuudraHistory(player.getUniqueId());
+        player.sendMessage("=== Kuudra History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No Kuudra history found.");
+            return;
+        }
+        for (String entry : history) {
+            player.sendMessage(entry);
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Kuudra Commands ===");
         player.sendMessage("/kuudra join <tier> — join a Kuudra instance");
         player.sendMessage("/kuudra stats — view your completion stats");
         player.sendMessage("/kuudra tiers — list available tiers");
+        player.sendMessage("/kuudra history — view your Kuudra history");
     }
 }
