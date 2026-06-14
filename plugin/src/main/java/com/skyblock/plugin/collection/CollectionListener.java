@@ -49,6 +49,7 @@ public final class CollectionListener implements Listener {
     );
 
     private final CollectionManager collectionManager = CollectionManager.getInstance();
+    private final CollectionRewardManager rewardManager = CollectionRewardManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -80,6 +81,7 @@ public final class CollectionListener implements Listener {
             int tier = collectionManager.getTier(player.getUniqueId(), collection);
             player.sendMessage("§a§lCOLLECTION UNLOCKED §7"
                     + collection.name().toLowerCase() + " §eTier " + tier);
+            rewardManager.grantTierUpRewards(player, collection, tier - unlocked, tier);
         }
     }
 }
