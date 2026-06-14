@@ -4,6 +4,7 @@ import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -39,11 +40,13 @@ public class BazaarMenu extends Menu {
     private static final int[] SLOTS = {20, 21, 22, 23, 24};
 
     public BazaarMenu() {
-        super("§8Bazaar", 6);
+        super("§6Bazaar", 6);
     }
 
     @Override
     protected void build() {
+        fillBorder();
+
         Category[] categories = Category.values();
         for (int i = 0; i < categories.length; i++) {
             Category category = categories[i];
@@ -53,6 +56,19 @@ public class BazaarMenu extends Menu {
                             .build(),
                     event -> new BazaarCategoryMenu(category.displayName, category.items)
                             .open((Player) event.getWhoClicked()));
+        }
+    }
+
+    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
+    private void fillBorder() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
         }
     }
 }
