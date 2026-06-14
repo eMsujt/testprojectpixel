@@ -23,6 +23,12 @@ public final class ItemBuilder {
 
     private final ItemStack item;
 
+    /** The uncoloured display name, retained so rarity changes can recolour it. */
+    private String baseName;
+
+    /** The rarity tier, retained so name changes pick up its colour. */
+    private SkyBlockItem.Rarity rarity;
+
     /** Starts a builder from the given material with a stack size of 1. */
     public ItemBuilder(Material material) {
         if (material == null) {
@@ -79,6 +85,26 @@ public final class ItemBuilder {
     /** Sets the display name, coloured by the given rarity. */
     public ItemBuilder displayName(String name, String rarity) {
         return displayName(rarityColor(rarity) + (name != null ? name : ""));
+    }
+
+    /** Sets the display name, coloured by the current {@link #rarity(SkyBlockItem.Rarity) rarity}. */
+    public ItemBuilder name(String name) {
+        this.baseName = name;
+        return applyName();
+    }
+
+    /** Sets the rarity tier and recolours the current display name to match. */
+    public ItemBuilder rarity(SkyBlockItem.Rarity rarity) {
+        this.rarity = rarity;
+        return applyName();
+    }
+
+    /** Re-applies the display name with the colour of the current rarity. */
+    private ItemBuilder applyName() {
+        if (baseName == null) {
+            return this;
+        }
+        return displayName(rarityColor(rarity != null ? rarity.name() : null) + baseName);
     }
 
     /** Replaces the entire lore with the provided lines. */
