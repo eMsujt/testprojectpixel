@@ -18,7 +18,7 @@ public final class BazaarCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            handleList(player);
             return true;
         }
 
