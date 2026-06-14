@@ -41,9 +41,11 @@ public final class HubCommand implements CommandExecutor {
         if (args.length > 0) {
             String[] rest = Arrays.copyOfRange(args, 1, args.length);
             switch (args[0].toLowerCase()) {
-                case "bank"  -> new BankCommand().onCommand(sender, command, label, rest);
-                case "mayor" -> new MayorCommand().onCommand(sender, command, label, rest);
-                default      -> player.sendMessage("Unknown sub-command. Try /hub bank or /hub mayor.");
+                case "bank"   -> new BankCommand().onCommand(sender, command, label, rest);
+                case "mayor"  -> new MayorCommand().onCommand(sender, command, label, rest);
+                case "kuudra" -> new KuudraCommand().onCommand(sender, command, label, rest);
+                case "pets"   -> new PetsCommand().onCommand(sender, command, label, rest);
+                default       -> player.sendMessage("Unknown sub-command. Try /hub bank, /hub mayor, /hub kuudra, or /hub pets.");
             }
             return true;
         }
