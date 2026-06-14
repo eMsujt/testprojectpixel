@@ -32,6 +32,7 @@ public class MayorManager {
     private String currentMayor = null;
     private final Map<String, List<String>> mayorPerks = new HashMap<>(DEFAULT_PERKS);
     private final List<String> candidates = new ArrayList<>(DEFAULT_CANDIDATES);
+    private final List<String> electionHistory = new ArrayList<>();
 
     public String getCurrentMayor() {
         return currentMayor;
@@ -59,5 +60,13 @@ public class MayorManager {
 
     public boolean removeCandidate(String candidate) {
         return candidates.remove(candidate);
+    }
+
+    public void recordElectionEvent(String summary) {
+        electionHistory.add(summary);
+    }
+
+    public List<String> getElectionHistory() {
+        return Collections.unmodifiableList(electionHistory);
     }
 }
