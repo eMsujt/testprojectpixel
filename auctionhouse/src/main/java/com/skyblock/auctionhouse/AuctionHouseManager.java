@@ -1,7 +1,9 @@
 package com.skyblock.auctionhouse;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -61,6 +63,19 @@ public final class AuctionHouseManager {
 
     private final Map<Long, BinListing> listings = new HashMap<>();
     private long nextListingId = 1;
+    private final Map<UUID, List<String>> auctionHistory = new HashMap<>();
+
+    public void recordAuctionEvent(UUID player, String summary) {
+        auctionHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getAuctionHistory(UUID player) {
+        return Collections.unmodifiableList(auctionHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllAuctionHistory() {
+        return Collections.unmodifiableMap(auctionHistory);
+    }
 
     /**
      * Creates a new buy-it-now listing for the given item.
@@ -81,6 +96,7 @@ public final class AuctionHouseManager {
         }
         long listingId = nextListingId++;
         listings.put(listingId, new BinListing(seller, itemName, price));
+        recordAuctionEvent(seller, "Listed " + itemName + " for " + price + " coins");
         return listingId;
     }
 
@@ -102,6 +118,7 @@ public final class AuctionHouseManager {
             throw new IllegalArgumentException("seller cannot buy their own listing");
         }
         listings.remove(listingId);
+        recordAuctionEvent(buyer, "Purchased " + listing.itemName + " for " + listing.price + " coins");
         return listing.price;
     }
 
