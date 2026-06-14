@@ -23,6 +23,7 @@ public final class BazaarManager {
     private final Map<String, Double> sellPrices = new HashMap<>();
     private final Map<String, List<BuyOrder>> buyOrders = new HashMap<>();
     private final Map<String, List<SellOrder>> sellOrders = new HashMap<>();
+    private final Map<String, List<int[]>> sellOrderEntries = new HashMap<>();
     private final Map<String, List<Double>> priceHistory = new HashMap<>();
 
     private BazaarManager() {}
@@ -115,6 +116,24 @@ public final class BazaarManager {
 
     public void addSellOrder(SellOrder order) {
         sellOrders.computeIfAbsent(order.itemName(), k -> new ArrayList<>()).add(order);
+    }
+
+    // Sell order entries (item -> list of [qty, price] pairs)
+
+    public void listSellOrder(String item, int qty, int price) {
+        sellOrderEntries.computeIfAbsent(item, k -> new ArrayList<>()).add(new int[]{qty, price});
+    }
+
+    public List<int[]> getSellOrderEntries(String item) {
+        return Collections.unmodifiableList(sellOrderEntries.computeIfAbsent(item, k -> new ArrayList<>()));
+    }
+
+    public Map<String, List<int[]>> getAllSellOrderEntries() {
+        Map<String, List<int[]>> copy = new HashMap<>();
+        for (Map.Entry<String, List<int[]>> entry : sellOrderEntries.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
     }
 
     public boolean removeSellOrder(String itemName, UUID orderId) {
