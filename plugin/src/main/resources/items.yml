@@ -1,4 +1,92 @@
 items:
+  WOODEN_SWORD:
+    displayName: "Wooden Sword"
+    material: WOODEN_SWORD
+    rarity: COMMON
+    damage: 20.0
+    strength: 0
+    description: "A basic wooden blade given to every new adventurer."
+
+  STONE_SWORD:
+    displayName: "Stone Sword"
+    material: STONE_SWORD
+    rarity: COMMON
+    damage: 30.0
+    strength: 5
+    description: "A sturdy stone blade, a step up from wood."
+
+  IRON_SWORD:
+    displayName: "Iron Sword"
+    material: IRON_SWORD
+    rarity: COMMON
+    damage: 45.0
+    strength: 10
+    description: "A reliable iron blade for early adventurers."
+
+  GOLD_SWORD:
+    displayName: "Gold Sword"
+    material: GOLDEN_SWORD
+    rarity: UNCOMMON
+    damage: 40.0
+    strength: 15
+    description: "Soft but swift — grants a small strength bonus."
+
+  LEAPING_SWORD:
+    displayName: "Leaping Sword"
+    material: IRON_SWORD
+    rarity: RARE
+    damage: 80.0
+    strength: 25
+    description: "Launches you into the air on right-click."
+
+  ZOMBIE_SWORD:
+    displayName: "Zombie Sword"
+    material: ROTTEN_FLESH
+    rarity: UNCOMMON
+    damage: 50.0
+    strength: 15
+    description: "Heals you for a portion of damage dealt to undead."
+
+  SPIDER_SWORD:
+    displayName: "Spider Sword"
+    material: SPIDER_EYE
+    rarity: UNCOMMON
+    damage: 45.0
+    strength: 20
+    description: "Poisons enemies on hit."
+
+  UNDEAD_SWORD:
+    displayName: "Undead Sword"
+    material: BONE
+    rarity: UNCOMMON
+    damage: 55.0
+    strength: 15
+    description: "Deals bonus damage to undead mobs."
+
+  PRISMARINE_BLADE:
+    displayName: "Prismarine Blade"
+    material: PRISMARINE_SHARD
+    rarity: RARE
+    damage: 90.0
+    strength: 20
+    description: "A crystalline blade forged from ocean depths."
+
+  FIGHTERS_SWORD:
+    displayName: "Fighter's Sword"
+    material: IRON_SWORD
+    rarity: RARE
+    damage: 70.0
+    strength: 30
+    description: "A sturdy blade favored by combat trainers."
+
+  INK_WAND:
+    displayName: "Ink Wand"
+    material: BLAZE_ROD
+    rarity: RARE
+    damage: 100.0
+    intelligence: 50
+    description: "Fires a bolt of squid ink, dealing intelligence-scaled damage."
+
   ASPECT_OF_THE_END:
     displayName: "Aspect of the End"
     material: END_STONE
