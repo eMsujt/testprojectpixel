@@ -20,8 +20,8 @@ public final class CombatManager {
      * @param critDamagePercent crit damage bonus as a percentage, e.g. {@code 50} for +50 %
      * @return the final damage dealt, rounded to the nearest int, never negative
      */
-    public static int calculateDamage(int weaponDamage, int strength, int critDamagePercent) {
-        double damage = DamageFormula.calculate(weaponDamage, strength, critDamagePercent);
+    public static int calculateDamage(int weaponDamage, int strength) {
+        double damage = DamageFormula.calculate(weaponDamage, strength);
         return (int) Math.round(damage);
     }
 }
