@@ -1,5 +1,9 @@
 package com.skyblock.core.pets;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,6 +70,12 @@ public final class PetsManager {
             this.type = type;
             this.level = 1;
         }
+
+        Pet(UUID id, PetType type, int level) {
+            this.id = id;
+            this.type = type;
+            this.level = level;
+        }
     }
 
     private final Map<UUID, List<Pet>> pets = new HashMap<>();
@@ -106,5 +116,64 @@ public final class PetsManager {
                 .findFirst()
                 .map(p -> { p.level++; return true; })
                 .orElse(false);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "pets.yml");
+        pets.clear();
+        activePet.clear();
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        for (String playerKey : cfg.getKeys(false)) {
+            try {
+                UUID playerId = UUID.fromString(playerKey);
+                String activeStr = cfg.getString(playerKey + ".active");
+                if (activeStr != null) {
+                    try {
+                        activePet.put(playerId, UUID.fromString(activeStr));
+                    } catch (IllegalArgumentException ignored) {}
+                }
+                if (cfg.isConfigurationSection(playerKey + ".pets")) {
+                    List<Pet> list = new ArrayList<>();
+                    for (String petIdStr : cfg.getConfigurationSection(playerKey + ".pets").getKeys(false)) {
+                        try {
+                            UUID petId = UUID.fromString(petIdStr);
+                            String typeName = cfg.getString(playerKey + ".pets." + petIdStr + ".type");
+                            if (typeName == null) continue;
+                            PetType type = PetType.valueOf(typeName);
+                            int level = cfg.getInt(playerKey + ".pets." + petIdStr + ".level", 1);
+                            list.add(new Pet(petId, type, level));
+                        } catch (IllegalArgumentException ignored) {}
+                    }
+                    if (!list.isEmpty()) {
+                        pets.put(playerId, list);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "pets.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<Pet>> entry : pets.entrySet()) {
+            String playerKey = entry.getKey().toString();
+            UUID active = activePet.get(entry.getKey());
+            if (active != null) {
+                cfg.set(playerKey + ".active", active.toString());
+            }
+            for (Pet pet : entry.getValue()) {
+                String path = playerKey + ".pets." + pet.id.toString();
+                cfg.set(path + ".type", pet.type.name());
+                cfg.set(path + ".level", pet.level);
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save pets.yml", e);
+        }
     }
 }
