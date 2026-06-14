@@ -1,13 +1,18 @@
 package com.skyblock.plugin.pets;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -61,8 +66,28 @@ public final class PetManager implements Listener {
         public void setRarity(String rarity) { this.rarity = rarity; }
     }
 
+    /**
+     * An immutable pet type definition loaded from {@code pets.yml}: its id, its
+     * rarity, the base stats it grants at full level and the cumulative pet-XP
+     * thresholds required to reach each level.
+     *
+     * @param id           the pet type id (e.g. {@code WOLF})
+     * @param rarity       the pet's rarity (e.g. {@code LEGENDARY})
+     * @param baseStats    stat name to base value, in definition order
+     * @param xpThresholds cumulative XP required to reach each level
+     */
+    public record PetDefinition(String id, String rarity, Map<String, Double> baseStats, List<Integer> xpThresholds) {
+        public PetDefinition {
+            Objects.requireNonNull(id, "id");
+            Objects.requireNonNull(rarity, "rarity");
+            baseStats = Collections.unmodifiableMap(new LinkedHashMap<>(baseStats));
+            xpThresholds = Collections.unmodifiableList(new ArrayList<>(xpThresholds));
+        }
+    }
+
     private static final PetManager INSTANCE = new PetManager();
 
+    private final Map<String, PetDefinition> definitions = new LinkedHashMap<>();
     private final Map<UUID, List<PetEntry>> playerPets = new HashMap<>();
     private final Map<UUID, PetEntry> activePets = new HashMap<>();
 
@@ -70,6 +95,59 @@ public final class PetManager implements Listener {
 
     public static PetManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Reads {@code pets.yml} from the plugin data folder, copying the bundled
+     * default out of the jar on first run, then parses every defined pet type.
+     *
+     * @param plugin the owning plugin, used for resource extraction and logging
+     */
+    public void load(JavaPlugin plugin) {
+        File file = new File(plugin.getDataFolder(), "pets.yml");
+        if (!file.exists() && plugin.getResource("pets.yml") != null) {
+            plugin.saveResource("pets.yml", false);
+        }
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        // Support a "pets" wrapper section, falling back to root-level keys.
+        ConfigurationSection root = cfg.isConfigurationSection("pets")
+                ? cfg.getConfigurationSection("pets")
+                : cfg;
+        definitions.clear();
+        for (String id : root.getKeys(false)) {
+            if (!root.isConfigurationSection(id)) {
+                continue;
+            }
+            definitions.put(id, parse(id, root.getConfigurationSection(id)));
+        }
+        plugin.getLogger().info("Loaded " + definitions.size() + " pet definitions.");
+    }
+
+    /** Parses a single pet type section into a {@link PetDefinition}. */
+    private PetDefinition parse(String id, ConfigurationSection section) {
+        String rarity = section.getString("rarity", "COMMON");
+        Map<String, Double> baseStats = new LinkedHashMap<>();
+        ConfigurationSection stats = section.getConfigurationSection("baseStats");
+        if (stats != null) {
+            for (String stat : stats.getKeys(false)) {
+                baseStats.put(stat, stats.getDouble(stat));
+            }
+        }
+        List<Integer> xpThresholds = section.getIntegerList("xpThresholds");
+        return new PetDefinition(id, rarity, baseStats, xpThresholds);
+    }
+
+    /** Returns the loaded pet type definition with the given id, or {@code null} if absent. */
+    public PetDefinition getDefinition(String id) {
+        return id == null ? null : definitions.get(id);
+    }
+
+    /** Returns an unmodifiable view of all loaded pet type definitions keyed by id. */
+    public Map<String, PetDefinition> getDefinitions() {
+        return Collections.unmodifiableMap(definitions);
     }
 
     /** Returns an unmodifiable view of a player's owned pets. */
