@@ -16,10 +16,12 @@ import java.util.Collections;
 
 public final class FastTravelMenu implements InventoryHolder, Listener {
 
+    private static final int SIZE = 27;
+
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§aFast Travel");
+        this.inventory = Bukkit.createInventory(this, SIZE, "§aFast Travel");
         build();
     }
 
@@ -34,8 +36,12 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
 
     private void build() {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
-            inventory.setItem(slot, pane);
+        for (int slot = 0; slot < SIZE; slot++) {
+            int col = slot % 9;
+            int row = slot / 9;
+            if (row == 0 || row == 2 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
         }
 
         inventory.setItem(10, makeItem(Material.COMPASS, "§bHub", "§7Travel to the Hub."));
@@ -45,9 +51,6 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
         inventory.setItem(14, makeItem(Material.END_STONE, "§5The End", "§7Travel to The End."));
         inventory.setItem(15, makeItem(Material.NETHERRACK, "§cCrimson Isle", "§7Travel to the Crimson Isle."));
         inventory.setItem(16, makeItem(Material.GOLD_ORE, "§6Gold Mine", "§7Travel to the Gold Mine."));
-        inventory.setItem(19, makeItem(Material.DIAMOND_ORE, "§bDeep Caverns", "§7Travel to the Deep Caverns."));
-        inventory.setItem(20, makeItem(Material.IRON_ORE, "§7Dwarven Mines", "§7Travel to the Dwarven Mines."));
-        inventory.setItem(21, makeItem(Material.AMETHYST_CLUSTER, "§dCrystal Hollows", "§7Travel to the Crystal Hollows."));
     }
 
     @EventHandler
