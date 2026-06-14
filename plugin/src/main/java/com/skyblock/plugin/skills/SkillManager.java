@@ -4,7 +4,17 @@ import com.skyblock.core.combat.StatManager;
 import com.skyblock.core.combat.StatManager.CombatStat;
 import com.skyblock.plugin.managers.SkillsManager;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,8 +24,10 @@ import java.util.UUID;
  *
  * <p>XP is stored in the shared {@link SkillsManager}, keyed by each skill's
  * lowercase name (e.g. {@link SkillType#FARMING} → {@code "farming"}), so this
- * facade and the existing string-based API stay in lockstep. Levels are derived
- * from the cumulative {@link SkillsConfig#XP_CURVE}.</p>
+ * facade and the existing string-based API stay in lockstep. Per-skill cumulative
+ * XP threshold arrays are loaded from the bundled {@code skills.yml} resource by
+ * {@link #load(JavaPlugin)}; any skill without a configured curve falls back to the
+ * shared {@link SkillsConfig#XP_CURVE}.</p>
  */
 public final class SkillManager {
 
@@ -89,10 +101,54 @@ public final class SkillManager {
 
     private final StatManager statManager = StatManager.getInstance();
 
+    /** Per-skill cumulative XP curves loaded from {@code skills.yml}; empty until {@link #load} runs. */
+    private final Map<SkillType, long[]> xpCurves = new EnumMap<>(SkillType.class);
+
     private SkillManager() {}
 
     public static SkillManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Loads each skill's cumulative XP threshold array from the bundled
+     * {@code skills.yml} resource (read straight from the jar, since the data-folder
+     * {@code skills.yml} is the player-XP save file written by {@link SkillsManager}).
+     * The thresholds live under a {@code curves} section keyed by each skill's
+     * {@link SkillType#key() lowercase name}; any skill left unconfigured keeps using
+     * the shared {@link SkillsConfig#XP_CURVE}.
+     *
+     * @param plugin the owning plugin, used for resource access and logging
+     */
+    public void load(JavaPlugin plugin) {
+        InputStream resource = plugin.getResource("skills.yml");
+        if (resource == null) {
+            return;
+        }
+        YamlConfiguration cfg;
+        try (InputStreamReader reader = new InputStreamReader(resource, StandardCharsets.UTF_8)) {
+            cfg = YamlConfiguration.loadConfiguration(reader);
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to read skills.yml: " + e.getMessage());
+            return;
+        }
+        ConfigurationSection curves = cfg.getConfigurationSection("curves");
+        if (curves == null) {
+            return;
+        }
+        xpCurves.clear();
+        for (SkillType skill : SkillType.values()) {
+            List<Long> values = curves.getLongList(skill.key());
+            if (values.isEmpty()) {
+                continue;
+            }
+            long[] curve = new long[values.size()];
+            for (int i = 0; i < curve.length; i++) {
+                curve[i] = values.get(i);
+            }
+            xpCurves.put(skill, curve);
+        }
+        plugin.getLogger().info("Loaded XP curves for " + xpCurves.size() + " skills.");
     }
 
     /** Total accumulated XP a player holds in the given skill. */
@@ -107,7 +163,13 @@ public final class SkillManager {
 
     /** The player's current level in the given skill. */
     public int getLevel(UUID playerId, SkillType skill) {
-        return levelForXP(getXP(playerId, skill));
+        return levelForXP(skill, getXP(playerId, skill));
+    }
+
+    /** Resolves a total-XP amount to a level using {@code skill}'s loaded curve, or the shared default. */
+    public int levelForXP(SkillType skill, long totalXP) {
+        long[] curve = xpCurves.get(skill);
+        return levelForXP(curve != null ? curve : SkillsConfig.XP_CURVE, totalXP);
     }
 
     /**
@@ -136,10 +198,15 @@ public final class SkillManager {
         }
     }
 
-    /** Resolves a total-XP amount to a skill level using {@link SkillsConfig#XP_CURVE}. */
+    /** Resolves a total-XP amount to a skill level using the shared {@link SkillsConfig#XP_CURVE}. */
     public static int levelForXP(long totalXP) {
+        return levelForXP(SkillsConfig.XP_CURVE, totalXP);
+    }
+
+    /** Resolves a total-XP amount to a level against an arbitrary cumulative threshold curve. */
+    private static int levelForXP(long[] curve, long totalXP) {
         int level = 0;
-        for (long threshold : SkillsConfig.XP_CURVE) {
+        for (long threshold : curve) {
             if (totalXP < threshold) {
                 break;
             }
