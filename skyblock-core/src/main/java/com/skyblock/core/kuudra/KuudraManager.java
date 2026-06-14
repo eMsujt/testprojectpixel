@@ -124,6 +124,15 @@ public final class KuudraManager {
         return Collections.unmodifiableMap(kuudraHistory);
     }
 
+    public String getKuudraStats(UUID playerId) {
+        Map<KuudraTier, Integer> counts = getAllCompletions(playerId);
+        return "Basic: " + counts.getOrDefault(KuudraTier.BASIC, 0)
+                + ", Hot: " + counts.getOrDefault(KuudraTier.HOT, 0)
+                + ", Burning: " + counts.getOrDefault(KuudraTier.BURNING, 0)
+                + ", Fiery: " + counts.getOrDefault(KuudraTier.FIERY, 0)
+                + ", Infernal: " + counts.getOrDefault(KuudraTier.INFERNAL, 0);
+    }
+
     // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------

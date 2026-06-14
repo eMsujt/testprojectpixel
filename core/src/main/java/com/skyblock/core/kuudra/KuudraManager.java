@@ -7,7 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class KuudraManager {
+public final class KuudraManager {
+
+    private static final KuudraManager INSTANCE = new KuudraManager();
+
+    public static KuudraManager getInstance() {
+        return INSTANCE;
+    }
 
     public enum KuudraTier {
         BASIC("Basic"),
@@ -42,6 +48,8 @@ public class KuudraManager {
     private final Map<UUID, int[]> playerCompletions = new HashMap<>();
     private final Map<UUID, List<String>> kuudraHistory = new HashMap<>();
 
+    private KuudraManager() {}
+
     public int getCompletions(UUID playerId, KuudraTier tier) {
         int[] c = playerCompletions.get(playerId);
         return c == null ? 0 : c[tier.ordinal()];
@@ -63,5 +71,15 @@ public class KuudraManager {
 
     public Map<UUID, List<String>> getAllKuudraHistory() {
         return Collections.unmodifiableMap(kuudraHistory);
+    }
+
+    public String getKuudraStats(UUID playerId) {
+        KuudraTier[] tiers = KuudraTier.values();
+        int[] c = playerCompletions.getOrDefault(playerId, new int[tiers.length]);
+        return "Basic: " + c[KuudraTier.BASIC.ordinal()]
+                + ", Hot: " + c[KuudraTier.HOT.ordinal()]
+                + ", Burning: " + c[KuudraTier.BURNING.ordinal()]
+                + ", Fiery: " + c[KuudraTier.FIERY.ordinal()]
+                + ", Infernal: " + c[KuudraTier.INFERNAL.ordinal()];
     }
 }

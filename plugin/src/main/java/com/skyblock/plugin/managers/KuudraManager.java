@@ -91,6 +91,17 @@ public final class KuudraManager {
         return Collections.unmodifiableMap(kuudraHistory);
     }
 
+    public String getKuudraStats(UUID playerId) {
+        Map<String, Integer> tiers = getTierCompletions(playerId);
+        return "Runs: " + getRunsCompleted(playerId)
+                + " | Tier: " + getKuudraTier(playerId)
+                + " | Basic: " + tiers.getOrDefault("BASIC", 0)
+                + ", Hot: " + tiers.getOrDefault("HOT", 0)
+                + ", Burning: " + tiers.getOrDefault("BURNING", 0)
+                + ", Fiery: " + tiers.getOrDefault("FIERY", 0)
+                + ", Infernal: " + tiers.getOrDefault("INFERNAL", 0);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "kuudra.yml");
         if (!file.exists()) {
