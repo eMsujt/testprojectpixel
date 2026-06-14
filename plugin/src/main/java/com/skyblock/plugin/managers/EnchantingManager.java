@@ -54,12 +54,14 @@ public final class EnchantingManager {
         enchantLevels
                 .computeIfAbsent(playerId, k -> new HashMap<>())
                 .merge(enchant, amount, Integer::sum);
+        recordEnchantingEvent(playerId, "Enchanted " + enchant + " +" + amount);
     }
 
     public void setEnchantLevel(UUID playerId, String enchant, int level) {
         enchantLevels
                 .computeIfAbsent(playerId, k -> new HashMap<>())
                 .put(enchant, level);
+        recordEnchantingEvent(playerId, "Set " + enchant + " level to " + level);
     }
 
     public Map<String, Integer> getEnchantLevels(UUID playerId) {

@@ -328,6 +328,7 @@ public final class EnchantingManager {
         }
         playerEnchantments.computeIfAbsent(playerId, id -> new EnumMap<>(SkyBlockEnchantment.class))
                 .put(type, level);
+        recordEnchantingEvent(playerId, "Enchanted " + type.name() + " level " + level);
     }
 
     /**
@@ -345,6 +346,9 @@ public final class EnchantingManager {
         boolean removed = enchants.remove(type) != null;
         if (enchants.isEmpty()) {
             playerEnchantments.remove(playerId);
+        }
+        if (removed) {
+            recordEnchantingEvent(playerId, "Disenchanted " + type.name());
         }
         return removed;
     }
