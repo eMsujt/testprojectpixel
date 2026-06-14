@@ -57,6 +57,7 @@ public final class SkillsMenu implements InventoryHolder, Listener {
         inventory.setItem(30, makeSkillItem(player, sm, Material.ENCHANTED_BOOK,  "enchanting", "§eEnchanting"));
         inventory.setItem(31, makeSkillItem(player, sm, Material.BREWING_STAND,   "alchemy",    "§eAlchemy"));
         inventory.setItem(32, makeSkillItem(player, sm, Material.LEAD,            "taming",     "§eTaming"));
+        inventory.setItem(33, makeSkillItem(player, sm, Material.CRAFTING_TABLE,  "carpentry",  "§eCarpentry"));
     }
 
     @EventHandler
