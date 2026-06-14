@@ -1,5 +1,6 @@
 package com.skyblock.plugin.menu;
 
+import com.skyblock.plugin.pets.PetsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,13 +12,16 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
+import java.util.List;
+
 public final class PetsMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
 
-    public PetsMenu() {
+    public PetsMenu(Player player) {
         this.inventory = Bukkit.createInventory(this, 54, "§dPets");
-        build();
+        build(player);
     }
 
     public void open(Player player) {
@@ -29,8 +33,8 @@ public final class PetsMenu implements InventoryHolder, Listener {
         return inventory;
     }
 
-    private void build() {
-        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+    private void build(Player player) {
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", Arrays.asList());
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
@@ -38,7 +42,17 @@ public final class PetsMenu implements InventoryHolder, Listener {
             }
         }
 
-        inventory.setItem(22, makeItem(Material.BONE, "§aPets"));
+        List<PetsManager.Pet> pets = PetsManager.getInstance().getPets(player.getUniqueId());
+        int index = 0;
+        for (int slot = 10; slot <= 43 && index < pets.size(); slot++) {
+            int col = slot % 9;
+            if (col == 0 || col == 8) {
+                continue;
+            }
+            PetsManager.Pet pet = pets.get(index++);
+            inventory.setItem(slot, makeItem(Material.BONE, "§a" + pet.getName(),
+                    Arrays.asList("§7Rarity: §f" + pet.getRarity(), "§7Level: §f" + pet.getLevel())));
+        }
     }
 
     @EventHandler
@@ -48,11 +62,14 @@ public final class PetsMenu implements InventoryHolder, Listener {
         }
     }
 
-    private ItemStack makeItem(Material material, String name) {
+    private ItemStack makeItem(Material material, String name, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
+            if (!lore.isEmpty()) {
+                meta.setLore(lore);
+            }
             item.setItemMeta(meta);
         }
         return item;
