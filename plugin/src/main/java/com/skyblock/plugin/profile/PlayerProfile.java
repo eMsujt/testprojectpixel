@@ -25,6 +25,7 @@ public final class PlayerProfile {
     private ItemStack[] enderChestContents;
     private ItemStack[] potionBagContents;
     private ItemStack[] quiverContents;
+    private ItemStack[] fishingBagContents;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -224,6 +225,28 @@ public final class PlayerProfile {
      */
     public void setQuiverContents(ItemStack[] quiverContents) {
         this.quiverContents = quiverContents == null ? null : quiverContents.clone();
+    }
+
+    /**
+     * Returns the player's persisted Fishing Bag contents as a per-slot array, or
+     * {@code null} if the Fishing Bag has never been opened. Individual slots may
+     * be {@code null} (empty). The returned array is a defensive copy.
+     *
+     * @return the Fishing Bag contents, or {@code null}
+     */
+    public ItemStack[] getFishingBagContents() {
+        return fishingBagContents == null ? null : fishingBagContents.clone();
+    }
+
+    /**
+     * Sets the player's persisted Fishing Bag contents from a per-slot array. The
+     * array is copied, so later mutations of the live inventory do not leak into
+     * the stored snapshot.
+     *
+     * @param fishingBagContents the Fishing Bag contents, may be {@code null}
+     */
+    public void setFishingBagContents(ItemStack[] fishingBagContents) {
+        this.fishingBagContents = fishingBagContents == null ? null : fishingBagContents.clone();
     }
 
     @Override
