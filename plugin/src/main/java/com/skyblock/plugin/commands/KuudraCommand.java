@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class KuudraCommand implements CommandExecutor {
@@ -25,9 +26,10 @@ public final class KuudraCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "stats" -> handleStats(player);
-            case "join"  -> handleJoin(player, args);
-            default      -> sendHelp(player);
+            case "stats"   -> handleStats(player);
+            case "join"    -> handleJoin(player, args);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -67,10 +69,24 @@ public final class KuudraCommand implements CommandExecutor {
         player.sendMessage("Joined Kuudra T" + tier + " — " + TIER_NAMES[tier] + "!");
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        List<String> history = KuudraManager.getInstance().getKuudraHistory(id);
+        player.sendMessage("=== Kuudra History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No Kuudra runs recorded yet.");
+        } else {
+            for (String entry : history) {
+                player.sendMessage(entry);
+            }
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Kuudra Commands ===");
         player.sendMessage("/kuudra             — show your best Kuudra tier");
         player.sendMessage("/kuudra stats       — show your best Kuudra tier");
         player.sendMessage("/kuudra join <tier> — join a Kuudra run (tier 1-5)");
+        player.sendMessage("/kuudra history     — view your Kuudra run history");
     }
 }
