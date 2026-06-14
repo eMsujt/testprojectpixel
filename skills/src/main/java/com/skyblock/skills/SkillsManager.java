@@ -156,4 +156,15 @@ public final class SkillsManager {
     public Map<UUID, List<String>> getAllSkillsHistory() {
         return Collections.unmodifiableMap(skillsHistory);
     }
+
+    public String getSkillsStats(UUID playerId) {
+        StringBuilder sb = new StringBuilder("Skills Stats:");
+        for (SkillType skill : SkillType.values()) {
+            int level = getLevel(playerId, skill);
+            long xp = (long) getExperience(playerId, skill);
+            String name = skill.name().charAt(0) + skill.name().substring(1).toLowerCase();
+            sb.append(" | ").append(name).append(" Lvl ").append(level).append(" (").append(xp).append(" XP)");
+        }
+        return sb.toString();
+    }
 }
