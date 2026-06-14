@@ -2,7 +2,11 @@ package com.skyblock.plugin.island;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,6 +112,69 @@ public final class IslandManager {
      */
     public Map<UUID, IslandData> getIslands() {
         return Collections.unmodifiableMap(islands);
+    }
+
+    /**
+     * Persists the given player's island metadata to
+     * {@code plugins/SkyBlock/islands/<uuid>.yml}.
+     *
+     * <p>Does nothing if no island is registered for the player. The write runs
+     * on the calling thread; invoke it off the main thread for bulk saves.</p>
+     *
+     * @param plugin the owning plugin, used for the data folder
+     * @param uuid   unique identifier of the player whose island to save
+     */
+    public void save(Plugin plugin, UUID uuid) {
+        Objects.requireNonNull(plugin, "plugin");
+        Objects.requireNonNull(uuid, "uuid");
+
+        IslandData data = islands.get(uuid);
+        if (data == null) {
+            return;
+        }
+
+        YamlConfiguration cfg = new YamlConfiguration();
+        cfg.set("uuid", uuid.toString());
+        cfg.set("worldName", data.getWorldName());
+
+        File dir = new File(plugin.getDataFolder(), "islands");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        try {
+            cfg.save(new File(dir, uuid + ".yml"));
+        } catch (IOException e) {
+            plugin.getLogger().warning(
+                    "Failed to save island for " + uuid + ": " + e.getMessage());
+        }
+    }
+
+    /**
+     * Loads the given player's island metadata from
+     * {@code plugins/SkyBlock/islands/<uuid>.yml}, registering it in memory.
+     *
+     * @param plugin the owning plugin, used for the data folder
+     * @param uuid   unique identifier of the player whose island to load
+     * @return the loaded island, or {@code null} if no file exists yet
+     */
+    public IslandData load(Plugin plugin, UUID uuid) {
+        Objects.requireNonNull(plugin, "plugin");
+        Objects.requireNonNull(uuid, "uuid");
+
+        File file = new File(new File(plugin.getDataFolder(), "islands"), uuid + ".yml");
+        if (!file.exists()) {
+            return null;
+        }
+
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        String worldName = cfg.getString("worldName");
+        if (worldName == null) {
+            return null;
+        }
+
+        IslandData data = new IslandData(uuid, worldName);
+        islands.put(uuid, data);
+        return data;
     }
 
     /**
