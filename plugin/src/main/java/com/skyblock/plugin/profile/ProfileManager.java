@@ -1,6 +1,7 @@
 package com.skyblock.plugin.profile;
 
 import com.skyblock.plugin.SkyBlockPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
@@ -96,30 +97,41 @@ public final class ProfileManager implements Listener {
      * hydrating it from {@code plugins/SkyBlock/profiles/<uuid>.yml} when a
      * persisted snapshot is present.
      *
+     * <p>The YAML file is read off the main thread; the parsed values are then
+     * applied back to the profile on the main thread so the profile map is only
+     * ever mutated there.</p>
+     *
      * @param event the join event
      */
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
-        loadFromDisk(getOrCreate(uuid));
-    }
+        PlayerProfile profile = getOrCreate(uuid);
 
-    /**
-     * Hydrates the given profile from its persisted YAML file, if one exists.
-     * The file layout mirrors what {@link ProfileSaveTask} writes.
-     *
-     * @param profile the profile to populate in place
-     */
-    private void loadFromDisk(PlayerProfile profile) {
         SkyBlockPlugin plugin = SkyBlockPlugin.getInstance();
         if (plugin == null) {
             return;
         }
-        File file = new File(new File(plugin.getDataFolder(), "profiles"), profile.getUuid() + ".yml");
-        if (!file.exists()) {
-            return;
-        }
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        File file = new File(new File(plugin.getDataFolder(), "profiles"), uuid + ".yml");
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (!file.exists()) {
+                return;
+            }
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            Bukkit.getScheduler().runTask(plugin, () -> applyFromDisk(profile, cfg));
+        });
+    }
+
+    /**
+     * Applies a parsed YAML snapshot to the given profile in place. The file
+     * layout mirrors what {@link ProfileSaveTask} writes. Must run on the main
+     * thread.
+     *
+     * @param profile the profile to populate in place
+     * @param cfg     the parsed snapshot
+     */
+    private void applyFromDisk(PlayerProfile profile, YamlConfiguration cfg) {
         profile.setPurse(cfg.getLong("purse", profile.getPurse()));
         profile.setBank(cfg.getLong("bank", profile.getBank()));
 
