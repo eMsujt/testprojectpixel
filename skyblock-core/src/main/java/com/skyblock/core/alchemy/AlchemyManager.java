@@ -310,6 +310,7 @@ public final class AlchemyManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         alchemyXp.clear();
         alchemyLevel.clear();
+        activeJobs.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -317,6 +318,14 @@ public final class AlchemyManager {
                 if (xp > 0) {
                     alchemyXp.put(uuid, xp);
                     alchemyLevel.put(uuid, computeLevel(xp));
+                }
+                String recipeId = cfg.getString(key + ".activeBrew.recipeId");
+                if (recipeId != null) {
+                    PotionRecipe recipe = recipes.get(recipeId);
+                    if (recipe != null) {
+                        long startTime = cfg.getLong(key + ".activeBrew.startTime", 0L);
+                        activeJobs.put(uuid, new BrewJob(recipe, startTime));
+                    }
                 }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
@@ -329,6 +338,11 @@ public final class AlchemyManager {
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, Double> entry : alchemyXp.entrySet()) {
             cfg.set(entry.getKey().toString() + ".xp", entry.getValue());
+        }
+        for (Map.Entry<UUID, BrewJob> entry : activeJobs.entrySet()) {
+            String base = entry.getKey().toString() + ".activeBrew";
+            cfg.set(base + ".recipeId", entry.getValue().getRecipe().getId());
+            cfg.set(base + ".startTime", entry.getValue().getStartTimeMillis());
         }
         try {
             cfg.save(file);
