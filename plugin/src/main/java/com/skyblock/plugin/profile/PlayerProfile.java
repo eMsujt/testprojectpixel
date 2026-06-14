@@ -18,6 +18,8 @@ public final class PlayerProfile {
     private final UUID uuid;
     private final Map<String, Long> skillXp = new HashMap<>();
     private final Map<String, Long> collectionXp = new HashMap<>();
+    private long purse = 0L;
+    private long bank = 0L;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -137,6 +139,20 @@ public final class PlayerProfile {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
         collectionXp.put(collection, amount);
+    }
+
+    public long getPurse() { return purse; }
+
+    public void setPurse(long purse) {
+        if (purse < 0) throw new IllegalArgumentException("purse must not be negative");
+        this.purse = purse;
+    }
+
+    public long getBank() { return bank; }
+
+    public void setBank(long bank) {
+        if (bank < 0) throw new IllegalArgumentException("bank must not be negative");
+        this.bank = bank;
     }
 
     @Override
