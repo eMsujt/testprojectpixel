@@ -269,6 +269,21 @@ public final class BankManager {
         return Collections.unmodifiableMap(bankHistory);
     }
 
+    public String getBankStats(UUID playerId) {
+        double totalDeposited = 0;
+        double totalWithdrawn = 0;
+        for (String entry : getBankHistory(playerId)) {
+            try {
+                if (entry.startsWith("Deposited ")) {
+                    totalDeposited += Double.parseDouble(entry.split(" ")[1]);
+                } else if (entry.startsWith("Withdrew ")) {
+                    totalWithdrawn += Double.parseDouble(entry.split(" ")[1]);
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        return "Bank Stats: Balance: " + getBalance(playerId) + " | Deposited: " + totalDeposited + " | Withdrawn: " + totalWithdrawn;
+    }
+
     /**
      * Loads accounts from {@code bank.yml} inside the given data folder.
      *

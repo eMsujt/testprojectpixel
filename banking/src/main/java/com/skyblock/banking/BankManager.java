@@ -262,6 +262,22 @@ public final class BankManager {
         return Collections.unmodifiableMap(bankHistory);
     }
 
+    public String getBankStats(UUID playerId) {
+        double totalDeposited = 0;
+        double totalWithdrawn = 0;
+        for (String entry : getBankHistory(playerId)) {
+            try {
+                if (entry.startsWith("Deposited ")) {
+                    totalDeposited += Double.parseDouble(entry.split(" ")[1]);
+                } else if (entry.startsWith("Withdrew ")) {
+                    totalWithdrawn += Double.parseDouble(entry.split(" ")[1]);
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        long balance = hasAccount(playerId) ? getBalance(playerId) : 0L;
+        return "Bank Stats: Balance: " + balance + " | Deposited: " + totalDeposited + " | Withdrawn: " + totalWithdrawn;
+    }
+
     private static void requireNonNegative(long amount) {
         if (amount < 0) {
             throw new IllegalArgumentException("amount must be non-negative: " + amount);
