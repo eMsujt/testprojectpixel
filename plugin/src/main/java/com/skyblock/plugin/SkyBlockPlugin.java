@@ -27,6 +27,7 @@ import com.skyblock.plugin.managers.EventManager;
 import com.skyblock.plugin.managers.NetworkManager;
 import com.skyblock.plugin.managers.QuestManager;
 import com.skyblock.plugin.managers.TradingManager;
+import com.skyblock.plugin.managers.WeatherManager;
 import com.skyblock.plugin.command.dungeon.DungeonCommand;
 import com.skyblock.plugin.command.fairy.FairyCommand;
 import com.skyblock.plugin.commands.BankCommand;
@@ -94,6 +95,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EventManager.getInstance().load(getDataFolder());
         QuestManager.getInstance().load(getDataFolder());
         TradingManager.getInstance();
+        WeatherManager.getInstance().load(getDataFolder());
         NetworkManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
@@ -136,6 +138,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         }
         EventManager.getInstance().save(getDataFolder());
         QuestManager.getInstance().save(getDataFolder());
+        WeatherManager.getInstance().save(getDataFolder());
         NetworkManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
