@@ -29,6 +29,15 @@ public final class BazaarMenu implements InventoryHolder, Listener {
     }
 
     private void build(Inventory inventory) {
+        // Border
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                inventory.setItem(slot, pane);
+            }
+        }
+
         // Title item
         inventory.setItem(4, makeItem(Material.GOLD_INGOT, "§6Bazaar"));
 
