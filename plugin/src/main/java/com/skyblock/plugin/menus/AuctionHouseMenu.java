@@ -61,10 +61,10 @@ public class AuctionHouseMenu extends Menu {
         fillBorder();
         fillFooter();
 
-        List<AuctionManager.AuctionListing> listings =
+        List<AuctionManager.AuctionEntry> listings =
                 new ArrayList<>(AuctionManager.getInstance().getListings());
         for (int i = 0; i < listings.size() && i < LISTING_SLOTS; i++) {
-            AuctionManager.AuctionListing listing = listings.get(i);
+            AuctionManager.AuctionEntry listing = listings.get(i);
             setItem(FIRST_LISTING_SLOT + i, new ItemBuilder(Material.PAPER)
                             .displayName("§a" + listing.itemName())
                             .lore(
