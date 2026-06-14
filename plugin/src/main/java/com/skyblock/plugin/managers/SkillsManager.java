@@ -45,6 +45,7 @@ public final class SkillsManager {
     private final Map<String, Integer> skillMaxLevel = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> xpHistory = new HashMap<>();
     private final Map<UUID, List<String>> skillHistory = new HashMap<>();
+    private final Map<UUID, List<String>> skillsHistory = new HashMap<>();
 
     private SkillsManager() {}
 
@@ -136,6 +137,18 @@ public final class SkillsManager {
         return Collections.unmodifiableMap(skillHistory);
     }
 
+    public void recordSkillEvent(UUID playerId, String summary) {
+        skillsHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getSkillsHistory(UUID playerId) {
+        return Collections.unmodifiableList(skillsHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllSkillsHistory() {
+        return Collections.unmodifiableMap(skillsHistory);
+    }
+
     public Map<UUID, Long> getAllSkillXP(String skill) {
         Map<UUID, Long> result = new HashMap<>();
         for (Map.Entry<UUID, Map<String, Long>> entry : skillXP.entrySet()) {
@@ -154,6 +167,7 @@ public final class SkillsManager {
         skillXP.clear();
         xpHistory.clear();
         skillHistory.clear();
+        skillsHistory.clear();
         ConfigurationSection historySection = cfg.getConfigurationSection("xpHistory");
         for (String key : cfg.getKeys(false)) {
             if (key.equals("xpHistory")) continue;
@@ -198,6 +212,18 @@ public final class SkillsManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("skillsHistory")) {
+            for (String uuidKey : cfg.getConfigurationSection("skillsHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("skillsHistory." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        skillsHistory.put(UUID.fromString(uuidKey), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -217,6 +243,9 @@ public final class SkillsManager {
         }
         for (Map.Entry<UUID, List<String>> entry : skillHistory.entrySet()) {
             cfg.set("skillHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : skillsHistory.entrySet()) {
+            cfg.set("skillsHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
