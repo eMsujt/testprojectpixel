@@ -143,6 +143,8 @@ public final class HOTMManager {
 
     /** Per-player perk levels; absent entries default to all-zeros. */
     private final Map<UUID, int[]> playerPerks = new HashMap<>();
+    /** Per-player HOTM tree tier (1–7). */
+    private final Map<UUID, Integer> hotmTier = new HashMap<>();
     /** Per-player Mithril Powder balance. */
     private final Map<UUID, Long> mithrilPowder = new HashMap<>();
     /** Per-player Gemstone Powder balance. */
@@ -319,6 +321,28 @@ public final class HOTMManager {
     }
 
     /**
+     * Returns the player's current HOTM tree tier.
+     *
+     * @param playerId the player to look up
+     * @return the tier (1–7), {@code 1} if not set
+     */
+    public int getHotmTier(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return hotmTier.getOrDefault(playerId, 1);
+    }
+
+    /**
+     * Sets the player's HOTM tree tier.
+     *
+     * @param playerId the player to update
+     * @param tier     the new tier (clamped to {@code [1, 7]})
+     */
+    public void setHotmTier(UUID playerId, int tier) {
+        Objects.requireNonNull(playerId, "playerId");
+        hotmTier.put(playerId, Math.max(1, Math.min(7, tier)));
+    }
+
+    /**
      * Removes all HOTM data for the given player (e.g. on quit).
      *
      * @param playerId the player to remove
@@ -326,6 +350,7 @@ public final class HOTMManager {
      */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        hotmTier.remove(playerId);
         mithrilPowder.remove(playerId);
         gemstonePowder.remove(playerId);
         return playerPerks.remove(playerId) != null;
@@ -338,6 +363,7 @@ public final class HOTMManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerPerks.clear();
+        hotmTier.clear();
         mithrilPowder.clear();
         gemstonePowder.clear();
         HOTMPerk[] perks = HOTMPerk.values();
@@ -355,6 +381,10 @@ public final class HOTMManager {
                 }
                 if (hasData) {
                     playerPerks.put(uuid, levels);
+                }
+                String tierPath = key + ".hotm_tier";
+                if (cfg.contains(tierPath)) {
+                    hotmTier.put(uuid, Math.max(1, Math.min(7, cfg.getInt(tierPath, 1))));
                 }
                 String powderPath = key + ".mithril_powder";
                 if (cfg.contains(powderPath)) {
@@ -382,6 +412,9 @@ public final class HOTMManager {
                     cfg.set(key + "." + perk.name(), level);
                 }
             }
+        }
+        for (Map.Entry<UUID, Integer> entry : hotmTier.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".hotm_tier", entry.getValue());
         }
         for (Map.Entry<UUID, Long> entry : mithrilPowder.entrySet()) {
             if (entry.getValue() != 0) {
