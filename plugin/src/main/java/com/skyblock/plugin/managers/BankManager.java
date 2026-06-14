@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,6 +16,7 @@ public final class BankManager {
     private static final BankManager INSTANCE = new BankManager();
 
     private final Map<UUID, Double> balance = new HashMap<>();
+    private final Map<UUID, List<String>> transactionLedger = new HashMap<>();
 
     private BankManager() {}
 
@@ -41,6 +44,18 @@ public final class BankManager {
         return Collections.unmodifiableMap(balance);
     }
 
+    public void recordTransaction(UUID playerId, String description) {
+        transactionLedger.computeIfAbsent(playerId, k -> new ArrayList<>()).add(0, description);
+    }
+
+    public List<String> getTransactionLedger(UUID playerId) {
+        return Collections.unmodifiableList(transactionLedger.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllTransactionLedgers() {
+        return Collections.unmodifiableMap(transactionLedger);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "bank.yml");
         if (!file.exists()) {
@@ -48,10 +63,23 @@ public final class BankManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         balance.clear();
+        transactionLedger.clear();
         if (cfg.isConfigurationSection("balance")) {
             for (String uuidKey : cfg.getConfigurationSection("balance").getKeys(false)) {
                 try {
                     balance.put(UUID.fromString(uuidKey), cfg.getDouble("balance." + uuidKey));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("transactionLedger")) {
+            for (String uuidKey : cfg.getConfigurationSection("transactionLedger").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("transactionLedger." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        transactionLedger.put(UUID.fromString(uuidKey), new ArrayList<>(entries));
+                    }
                 } catch (IllegalArgumentException ignored) {
                     // skip malformed UUID
                 }
@@ -64,6 +92,9 @@ public final class BankManager {
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, Double> entry : balance.entrySet()) {
             cfg.set("balance." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : transactionLedger.entrySet()) {
+            cfg.set("transactionLedger." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
