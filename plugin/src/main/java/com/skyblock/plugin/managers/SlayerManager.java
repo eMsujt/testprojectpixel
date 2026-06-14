@@ -14,6 +14,7 @@ public final class SlayerManager {
     private static final SlayerManager INSTANCE = new SlayerManager();
 
     private final Map<UUID, Map<String, Long>> killCounts = new HashMap<>();
+    private final Map<UUID, Map<String, Long>> slayerXp = new HashMap<>();
 
     private SlayerManager() {}
 
@@ -41,6 +42,26 @@ public final class SlayerManager {
         return Collections.unmodifiableMap(killCounts);
     }
 
+    public long getSlayerXp(UUID playerId, String bossType) {
+        return slayerXp.getOrDefault(playerId, Collections.emptyMap()).getOrDefault(bossType, 0L);
+    }
+
+    public void setSlayerXp(UUID playerId, String bossType, long amount) {
+        slayerXp.computeIfAbsent(playerId, k -> new HashMap<>()).put(bossType, Math.max(0L, amount));
+    }
+
+    public void addSlayerXp(UUID playerId, String bossType, long amount) {
+        setSlayerXp(playerId, bossType, getSlayerXp(playerId, bossType) + amount);
+    }
+
+    public Map<String, Long> getSlayerXp(UUID playerId) {
+        return Collections.unmodifiableMap(slayerXp.getOrDefault(playerId, Collections.emptyMap()));
+    }
+
+    public Map<UUID, Map<String, Long>> getAllSlayerXp() {
+        return Collections.unmodifiableMap(slayerXp);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "slayer.yml");
         if (!file.exists()) {
@@ -48,6 +69,7 @@ public final class SlayerManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         killCounts.clear();
+        slayerXp.clear();
         if (cfg.isConfigurationSection("kills")) {
             for (String playerKey : cfg.getConfigurationSection("kills").getKeys(false)) {
                 try {
@@ -63,6 +85,21 @@ public final class SlayerManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        if (cfg.isConfigurationSection("slayerXp")) {
+            for (String playerKey : cfg.getConfigurationSection("slayerXp").getKeys(false)) {
+                try {
+                    UUID playerId = UUID.fromString(playerKey);
+                    Map<String, Long> xpMap = new HashMap<>();
+                    String path = "slayerXp." + playerKey;
+                    if (cfg.isConfigurationSection(path)) {
+                        for (String bossType : cfg.getConfigurationSection(path).getKeys(false)) {
+                            xpMap.put(bossType, cfg.getLong(path + "." + bossType));
+                        }
+                    }
+                    slayerXp.put(playerId, xpMap);
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -72,6 +109,12 @@ public final class SlayerManager {
             String path = "kills." + entry.getKey().toString();
             for (Map.Entry<String, Long> kill : entry.getValue().entrySet()) {
                 cfg.set(path + "." + kill.getKey(), kill.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<String, Long>> entry : slayerXp.entrySet()) {
+            String path = "slayerXp." + entry.getKey().toString();
+            for (Map.Entry<String, Long> xp : entry.getValue().entrySet()) {
+                cfg.set(path + "." + xp.getKey(), xp.getValue());
             }
         }
         try {
