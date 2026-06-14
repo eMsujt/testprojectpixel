@@ -22,6 +22,25 @@ public class WardrobeMenu extends Menu {
     /** The seven preset slots displayed across the first inner row. */
     private static final int[] PRESET_SLOTS = {10, 11, 12, 13, 14, 15, 16};
 
+    /** Slots showing the player's currently equipped armour (helmet → boots). */
+    private static final int[] EQUIPPED_SLOTS = {29, 30, 31, 32};
+
+    /** Fallback placeholder materials for each equipped armour slot. */
+    private static final Material[] EQUIPPED_PLACEHOLDERS = {
+            Material.LEATHER_HELMET,
+            Material.LEATHER_CHESTPLATE,
+            Material.LEATHER_LEGGINGS,
+            Material.LEATHER_BOOTS
+    };
+
+    /** Display names for each equipped armour slot. */
+    private static final String[] EQUIPPED_NAMES = {
+            "§6Helmet",
+            "§6Chestplate",
+            "§6Leggings",
+            "§6Boots"
+    };
+
     /** The seven wardrobe presets, one per displayed slot. */
     private static final WardrobeSlot[] PRESETS = {
             WardrobeSlot.SLOT_1,
@@ -74,6 +93,18 @@ public class WardrobeMenu extends Menu {
                             player.closeInventory();
                         }
                     } : null);
+        }
+
+        // Display the player's live equipped armour (helmet → boots).
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        for (int i = 0; i < EQUIPPED_SLOTS.length; i++) {
+            ItemStack piece = armor[armor.length - 1 - i];
+            boolean worn = piece != null && piece.getType() != Material.AIR;
+            setItem(EQUIPPED_SLOTS[i],
+                    new ItemBuilder(worn ? piece : new ItemStack(EQUIPPED_PLACEHOLDERS[i]))
+                            .displayName(EQUIPPED_NAMES[i])
+                            .lore(worn ? "§7Currently equipped" : "§7Empty")
+                            .build());
         }
 
         setItem(INFO_SLOT, new ItemBuilder(Material.BOOK)
