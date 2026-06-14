@@ -152,6 +152,13 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minions.MinionPlacementListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.islands.IslandManager(this), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listeners.EnchantingListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listeners.HubClickListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listeners.QuestProgressListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listeners.TimeListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listeners.WeatherListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minions.MinionListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsXPListener(), this);
         new ActionBarManager().start(this);
         getLogger().info("SkyBlock plugin enabled.");
     }
