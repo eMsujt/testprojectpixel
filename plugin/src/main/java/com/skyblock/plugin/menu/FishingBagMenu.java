@@ -16,7 +16,7 @@ public final class FishingBagMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public FishingBagMenu() {
-        this.inventory = Bukkit.createInventory(this, 45, "§9Fishing Bag");
+        this.inventory = Bukkit.createInventory(this, 54, "§9Fishing Bag");
         build();
     }
 
@@ -30,15 +30,15 @@ public final class FishingBagMenu implements InventoryHolder, Listener {
     }
 
     private void build() {
-        // Rows 1-4 (slots 0-35) hold the player's fishing items and are left empty.
-        // The final row (slots 36-44) is the controls row.
+        // Gray-pane border around the perimeter; inner slots hold the player's fishing items.
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 36; slot < 45; slot++) {
-            inventory.setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int row = slot / 9;
+            int col = slot % 9;
+            if (row == 0 || row == 5 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
         }
-
-        inventory.setItem(36, makeItem(Material.ARROW, "§aGo Back"));
-        inventory.setItem(44, makeItem(Material.BARRIER, "§cClose"));
     }
 
     @EventHandler
