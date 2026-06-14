@@ -122,6 +122,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         TimeManager.getInstance().load(getDataFolder());
         NetworkManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.items.ItemManager.getInstance().load(this);
+        com.skyblock.plugin.economy.ShopManager.getInstance().load(this);
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
         getCommand("mayor").setExecutor(new MayorCommand());
@@ -148,6 +149,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CollectionsListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.profile.ProfileManager(this), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minions.MinionPlacementListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.islands.IslandManager(this), this);
         new ActionBarManager().start(this);
         getLogger().info("SkyBlock plugin enabled.");
     }
