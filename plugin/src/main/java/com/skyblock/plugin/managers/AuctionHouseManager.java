@@ -73,6 +73,31 @@ public final class AuctionHouseManager {
         }
     }
 
+    public boolean placeBid(UUID bidder, String itemId, double amount) {
+        for (List<AuctionListing> listings : active.values()) {
+            for (int i = 0; i < listings.size(); i++) {
+                AuctionListing existing = listings.get(i);
+                if (existing.itemName().equals(itemId)) {
+                    if (amount <= existing.currentBid()) {
+                        return false;
+                    }
+                    listings.set(i, new AuctionListing(
+                            existing.id(),
+                            existing.seller(),
+                            existing.itemName(),
+                            existing.quantity(),
+                            existing.startingBid(),
+                            amount,
+                            bidder,
+                            existing.endTime()
+                    ));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "auction_house.yml");
         if (!file.exists()) {
