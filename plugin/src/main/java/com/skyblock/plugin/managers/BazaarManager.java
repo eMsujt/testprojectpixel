@@ -128,6 +128,7 @@ public final class BazaarManager {
 
     public void addBuyOrder(BuyOrder order) {
         buyOrders.computeIfAbsent(order.itemName(), k -> new ArrayList<>()).add(order);
+        recordBazaarEvent(order.buyer(), "Placed buy order: " + order.quantity() + "x " + order.itemName() + " @ " + order.pricePerUnit());
     }
 
     public boolean removeBuyOrder(String itemName, UUID orderId) {
@@ -154,6 +155,7 @@ public final class BazaarManager {
 
     public void addSellOrder(SellOrder order) {
         sellOrders.computeIfAbsent(order.itemName(), k -> new ArrayList<>()).add(order);
+        recordBazaarEvent(order.seller(), "Placed sell order: " + order.quantity() + "x " + order.itemName() + " @ " + order.pricePerUnit());
     }
 
     // Sell order entries (item -> list of [qty, price] pairs)

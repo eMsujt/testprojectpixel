@@ -473,6 +473,7 @@ public final class BazaarManager {
         BuyOrder order = new BuyOrder(orderId, buyer, itemId, quantity, priceEach);
         buyOrders.computeIfAbsent(itemId, k -> new ArrayList<>()).add(order);
         buyOrders.get(itemId).sort(Comparator.comparingDouble(BuyOrder::priceEach).reversed());
+        recordBazaarEvent(buyer, "Placed buy order: " + quantity + "x " + itemId + " @ " + priceEach);
         return orderId;
     }
 
@@ -490,6 +491,7 @@ public final class BazaarManager {
         SellOrder order = new SellOrder(orderId, seller, itemId, quantity, priceEach);
         sellOrders.computeIfAbsent(itemId, k -> new ArrayList<>()).add(order);
         sellOrders.get(itemId).sort(Comparator.comparingDouble(SellOrder::priceEach));
+        recordBazaarEvent(seller, "Placed sell order: " + quantity + "x " + itemId + " @ " + priceEach);
         return orderId;
     }
 
