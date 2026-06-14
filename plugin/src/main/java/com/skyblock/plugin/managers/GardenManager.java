@@ -16,7 +16,7 @@ public final class GardenManager {
     private final Map<UUID, Integer> gardenLevel = new HashMap<>();
     private final Map<UUID, Integer> gardenPlots = new HashMap<>();
     private final Map<UUID, Integer> unlockedPlots = new HashMap<>();
-    private final Map<UUID, Map<String, Long>> cropHarvests = new HashMap<>();
+    private final Map<UUID, Map<String, Integer>> cropHarvests = new HashMap<>();
     private final Map<UUID, Integer> harvestStreak = new HashMap<>();
 
     private GardenManager() {}
@@ -61,16 +61,16 @@ public final class GardenManager {
         setUnlockedPlots(playerId, getUnlockedPlots(playerId) + amount);
     }
 
-    public void addHarvest(UUID playerId, String crop, long amount) {
+    public void recordHarvest(UUID playerId, String cropType, int amount) {
         cropHarvests.computeIfAbsent(playerId, k -> new HashMap<>())
-                .merge(crop, amount, Long::sum);
+                .merge(cropType, amount, Integer::sum);
     }
 
-    public Map<String, Long> getCropHarvests(UUID playerId) {
+    public Map<String, Integer> getCropHarvests(UUID playerId) {
         return Collections.unmodifiableMap(cropHarvests.getOrDefault(playerId, Collections.emptyMap()));
     }
 
-    public Map<UUID, Map<String, Long>> getAllCropHarvests() {
+    public Map<UUID, Map<String, Integer>> getAllCropHarvests() {
         return Collections.unmodifiableMap(cropHarvests);
     }
 
@@ -126,10 +126,10 @@ public final class GardenManager {
             for (String key : cfg.getConfigurationSection("cropHarvests").getKeys(false)) {
                 try {
                     UUID id = UUID.fromString(key);
-                    Map<String, Long> crops = new HashMap<>();
+                    Map<String, Integer> crops = new HashMap<>();
                     if (cfg.isConfigurationSection("cropHarvests." + key)) {
                         for (String crop : cfg.getConfigurationSection("cropHarvests." + key).getKeys(false)) {
-                            crops.put(crop, cfg.getLong("cropHarvests." + key + "." + crop));
+                            crops.put(crop, cfg.getInt("cropHarvests." + key + "." + crop));
                         }
                     }
                     cropHarvests.put(id, crops);
@@ -157,9 +157,9 @@ public final class GardenManager {
         for (Map.Entry<UUID, Integer> entry : unlockedPlots.entrySet()) {
             cfg.set("unlockedPlots." + entry.getKey().toString(), entry.getValue());
         }
-        for (Map.Entry<UUID, Map<String, Long>> entry : cropHarvests.entrySet()) {
+        for (Map.Entry<UUID, Map<String, Integer>> entry : cropHarvests.entrySet()) {
             String prefix = "cropHarvests." + entry.getKey().toString() + ".";
-            for (Map.Entry<String, Long> crop : entry.getValue().entrySet()) {
+            for (Map.Entry<String, Integer> crop : entry.getValue().entrySet()) {
                 cfg.set(prefix + crop.getKey(), crop.getValue());
             }
         }
