@@ -278,6 +278,23 @@ public final class CollectionsManager {
         return Collections.unmodifiableMap(copy);
     }
 
+    public String getCollectionStats(UUID playerId) {
+        Map<CollectionType, Long> totals = playerCollections.getOrDefault(playerId, new EnumMap<>(CollectionType.class));
+        List<Map.Entry<CollectionType, Long>> sorted = new ArrayList<>(totals.entrySet());
+        sorted.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
+        StringBuilder sb = new StringBuilder("Top Collections:");
+        int limit = Math.min(5, sorted.size());
+        if (limit == 0) {
+            sb.append(" none");
+        } else {
+            for (int i = 0; i < limit; i++) {
+                sb.append(" ").append(sorted.get(i).getKey().getDisplayName())
+                        .append("=").append(sorted.get(i).getValue());
+            }
+        }
+        return sb.toString();
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "collections.yml");
         if (!file.exists()) {
