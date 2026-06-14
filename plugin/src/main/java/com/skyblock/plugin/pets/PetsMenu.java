@@ -36,7 +36,7 @@ public class PetsMenu extends Menu {
     private final UUID playerId;
 
     public PetsMenu(UUID playerId) {
-        super("§dPets", 6);
+        super("§dYour Pets", 6);
         this.playerId = playerId;
     }
 
