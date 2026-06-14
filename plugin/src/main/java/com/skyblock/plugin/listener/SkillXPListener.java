@@ -5,12 +5,15 @@ import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Awards skill XP directly to a player's {@link SkyBlockProfile} in response to
@@ -45,6 +48,13 @@ public final class SkillXPListener implements Listener {
             Material.REDSTONE_ORE,  7L
     );
 
+    private static final Set<Material> COMMON_FISH = Set.of(
+            Material.RAW_COD,
+            Material.RAW_SALMON,
+            Material.TROPICAL_FISH,
+            Material.PUFFERFISH
+    );
+
     private static final Map<Material, Long> FORAGING_XP = Map.ofEntries(
             Map.entry(Material.OAK_LOG,      6L),
             Map.entry(Material.SPRUCE_LOG,   6L),
@@ -74,6 +84,18 @@ public final class SkillXPListener implements Listener {
         if (foragingXp != null) {
             profile.addSkillXp("foraging", foragingXp);
         }
+    }
+
+    @EventHandler
+    public void onPlayerFish(PlayerFishEvent event) {
+        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
+        if (!(event.getCaught() instanceof Item caught)) return;
+
+        Player player = event.getPlayer();
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        Material type = caught.getItemStack().getType();
+        long xp = COMMON_FISH.contains(type) ? 5L : 20L;
+        profile.addSkillXp("fishing", xp);
     }
 
     /**
