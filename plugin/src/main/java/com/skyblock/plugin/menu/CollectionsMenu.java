@@ -14,7 +14,7 @@ public final class CollectionsMenu {
     }
 
     private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§bCollections");
+        Inventory inv = Bukkit.createInventory(null, 54, "§aCollections");
 
         // Top row — the five collection categories, centered in slots 2-6
         inv.setItem(2, makeItem(Material.WHEAT,        "§eFarming"));
