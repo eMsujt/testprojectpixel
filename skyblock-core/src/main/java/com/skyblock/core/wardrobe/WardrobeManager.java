@@ -1,7 +1,10 @@
 package com.skyblock.core.wardrobe;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -277,5 +280,67 @@ public final class WardrobeManager {
     public void clear() {
         wardrobes.clear();
         activeArmorSet.clear();
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "wardrobe.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        wardrobes.clear();
+        activeArmorSet.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                String active = cfg.getString(key + ".active");
+                if (active != null) {
+                    activeArmorSet.put(uuid, active);
+                }
+                if (cfg.isConfigurationSection(key + ".outfits")) {
+                    Map<String, ItemStack[]> outfits = new HashMap<>();
+                    for (String outfitName : cfg.getConfigurationSection(key + ".outfits").getKeys(false)) {
+                        ItemStack[] armor = new ItemStack[4];
+                        for (int i = 0; i < 4; i++) {
+                            armor[i] = cfg.getItemStack(key + ".outfits." + outfitName + "." + i);
+                        }
+                        outfits.put(outfitName, armor);
+                    }
+                    wardrobes.put(uuid, outfits);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "wardrobe.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<String, ItemStack[]>> entry : wardrobes.entrySet()) {
+            String key = entry.getKey().toString();
+            String active = activeArmorSet.get(entry.getKey());
+            if (active != null) {
+                cfg.set(key + ".active", active);
+            }
+            for (Map.Entry<String, ItemStack[]> outfit : entry.getValue().entrySet()) {
+                ItemStack[] armor = outfit.getValue();
+                for (int i = 0; i < armor.length; i++) {
+                    cfg.set(key + ".outfits." + outfit.getKey() + "." + i, armor[i]);
+                }
+            }
+        }
+        // persist active sets for players who have no outfits saved
+        for (Map.Entry<UUID, String> entry : activeArmorSet.entrySet()) {
+            String key = entry.getKey().toString();
+            if (!wardrobes.containsKey(entry.getKey())) {
+                cfg.set(key + ".active", entry.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save wardrobe.yml", e);
+        }
     }
 }
