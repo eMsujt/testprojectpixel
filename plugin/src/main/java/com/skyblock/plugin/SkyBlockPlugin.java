@@ -10,6 +10,13 @@ import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
+import com.skyblock.plugin.command.auctionhouse.AuctionHouseCommand;
+import com.skyblock.plugin.commands.BankCommand;
+import com.skyblock.plugin.commands.BazaarCommand;
+import com.skyblock.plugin.commands.IslandCommand;
+import com.skyblock.plugin.commands.KuudraCommand;
+import com.skyblock.plugin.commands.MayorCommand;
+import com.skyblock.plugin.commands.ProfileCommand;
 import com.skyblock.plugin.menu.SkyblockMenuCommand;
 import com.skyblock.slayers.SlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -57,6 +64,13 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EnchantingManager.getInstance().load(getDataFolder());
         BazaarManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
+        getCommand("bank").setExecutor(new BankCommand());
+        getCommand("mayor").setExecutor(new MayorCommand());
+        getCommand("island").setExecutor(new IslandCommand());
+        getCommand("auctionhouse").setExecutor(new AuctionHouseCommand());
+        getCommand("kuudra").setExecutor(new KuudraCommand());
+        getCommand("bazaar").setExecutor(new BazaarCommand());
+        getCommand("profile").setExecutor(new ProfileCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
