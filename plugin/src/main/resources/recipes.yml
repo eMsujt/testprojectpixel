@@ -1,0 +1,67 @@
+# Starter Hypixel SkyBlock crafting recipes.
+# shape       — three rows describing the 3x3 crafting grid; a space means an empty slot.
+# ingredients — maps each shape character to the Material required in that slot.
+# result      — the Material produced, and how many of it.
+
+recipes:
+  ENCHANTED_WOOD:
+    displayName: "Enchanted Wood"
+    shape:
+      - "AAA"
+      - "AAA"
+      - "AAA"
+    ingredients:
+      A: OAK_LOG
+    result:
+      material: OAK_LOG
+      amount: 1
+
+  ENCHANTED_COBBLESTONE:
+    displayName: "Enchanted Cobblestone"
+    shape:
+      - "AAA"
+      - "AAA"
+      - "AAA"
+    ingredients:
+      A: COBBLESTONE
+    result:
+      material: COBBLESTONE
+      amount: 1
+
+  ENCHANTED_IRON:
+    displayName: "Enchanted Iron"
+    shape:
+      - "AAA"
+      - "AAA"
+      - "AAA"
+    ingredients:
+      A: IRON_INGOT
+    result:
+      material: IRON_INGOT
+      amount: 1
+
+  ENCHANTED_DIAMOND:
+    displayName: "Enchanted Diamond"
+    shape:
+      - "AAA"
+      - "AAA"
+      - "AAA"
+    ingredients:
+      A: DIAMOND
+    result:
+      material: DIAMOND
+      amount: 1
+
+  ASPECT_OF_THE_END:
+    displayName: "Aspect of the End"
+    shape:
+      - "AAA"
+      - "ABA"
+      - "ACA"
+    ingredients:
+      A: ENDER_PEARL
+      B: DIAMOND
+      C: STICK
+    result:
+      material: DIAMOND_SWORD
+      amount: 1
