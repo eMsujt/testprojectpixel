@@ -2,36 +2,43 @@ package com.skyblock.plugin.gui.menus;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.gui.menus.collections.CombatCollectionsMenu;
-import com.skyblock.plugin.gui.menus.collections.FarmingCollectionsMenu;
-import com.skyblock.plugin.gui.menus.collections.FishingCollectionsMenu;
-import com.skyblock.plugin.gui.menus.collections.ForagingCollectionsMenu;
-import com.skyblock.plugin.gui.menus.collections.MiningCollectionsMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * The Collections hub menu.
  *
  * <p>A 54-slot (6-row) menu presenting one icon per collection category. Clicking
- * a category icon opens the corresponding per-category sub-menu.</p>
+ * a category icon opens the corresponding {@link CollectionCategoryMenu}, listing
+ * the collections in that category alongside the player's current counts.</p>
  */
 public class CollectionsMenu extends Menu {
 
-    /** A collection category: its display name and representative icon. */
+    /** A collection category: its display name, icon and the collections it contains. */
     private enum Category {
-        FARMING("Farming", Material.WHEAT),
-        MINING("Mining", Material.COBBLESTONE),
-        COMBAT("Combat", Material.IRON_SWORD),
-        FORAGING("Foraging", Material.OAK_LOG),
-        FISHING("Fishing", Material.COD);
+        FARMING("Farming", Material.WHEAT, List.of(
+                "wheat", "carrot", "potato", "pumpkin", "melon", "sugar_cane",
+                "cocoa_beans", "cactus", "brown_mushroom", "red_mushroom", "nether_wart")),
+        MINING("Mining", Material.COBBLESTONE, List.of(
+                "cobblestone", "coal", "iron_ingot", "gold_ingot", "diamond",
+                "lapis_lazuli", "emerald", "redstone", "quartz", "obsidian")),
+        COMBAT("Combat", Material.IRON_SWORD, List.of(
+                "rotten_flesh", "bone", "string", "gunpowder", "ender_pearl")),
+        FORAGING("Foraging", Material.OAK_LOG, List.of(
+                "oak_wood", "spruce_wood", "birch_wood", "jungle_wood", "acacia_wood", "dark_oak_wood")),
+        FISHING("Fishing", Material.COD, List.of(
+                "cod", "salmon", "pufferfish", "tropical_fish", "prismarine_shard"));
 
         private final String displayName;
         private final Material icon;
+        private final List<String> collections;
 
-        Category(String displayName, Material icon) {
+        Category(String displayName, Material icon, List<String> collections) {
             this.displayName = displayName;
             this.icon = icon;
+            this.collections = collections;
         }
     }
 
@@ -53,28 +60,9 @@ public class CollectionsMenu extends Menu {
                             .build(),
                     event -> {
                         Player player = (Player) event.getWhoClicked();
-                        openSubMenu(category, player);
+                        new CollectionCategoryMenu(category.displayName, category.collections, player.getUniqueId())
+                                .open(player);
                     });
-        }
-    }
-
-    private static void openSubMenu(Category category, Player player) {
-        switch (category) {
-            case FARMING:
-                new FarmingCollectionsMenu().open(player);
-                break;
-            case MINING:
-                new MiningCollectionsMenu().open(player);
-                break;
-            case COMBAT:
-                new CombatCollectionsMenu().open(player);
-                break;
-            case FORAGING:
-                new ForagingCollectionsMenu().open(player);
-                break;
-            case FISHING:
-                new FishingCollectionsMenu().open(player);
-                break;
         }
     }
 }
