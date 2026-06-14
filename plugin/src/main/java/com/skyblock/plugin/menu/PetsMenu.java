@@ -15,7 +15,7 @@ import java.util.UUID;
 public final class PetsMenu implements InventoryHolder {
 
     /** Slot showing the currently equipped pet. */
-    private static final int ACTIVE_SLOT = 22;
+    private static final int ACTIVE_SLOT = 4;
 
     /** Centred selection slots across two rows, one per pet. */
     private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
@@ -23,7 +23,7 @@ public final class PetsMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public PetsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§dPets");
+        this.inventory = Bukkit.createInventory(this, 54, "§6Pets");
         build(player.getUniqueId());
     }
 
@@ -39,15 +39,29 @@ public final class PetsMenu implements InventoryHolder {
     private void build(UUID playerId) {
         PetsManager pets = PetsManager.getInstance();
         PetsManager.Pet active = pets.getActivePet(playerId);
-        if (active != null) {
-            inventory.setItem(ACTIVE_SLOT, makeItem(active, true));
-        }
+        // Slot 4 — header showing the player's active pet
+        inventory.setItem(ACTIVE_SLOT, makeActiveItem(active));
         List<PetsManager.Pet> owned = pets.getPets(playerId);
         for (int i = 0; i < owned.size() && i < SLOTS.length; i++) {
             PetsManager.Pet pet = owned.get(i);
             boolean isActive = active != null && active.getId().equals(pet.getId());
             inventory.setItem(SLOTS[i], makeItem(pet, isActive));
         }
+    }
+
+    private ItemStack makeActiveItem(PetsManager.Pet active) {
+        ItemStack item = new ItemStack(Material.WOLF_SPAWN_EGG);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName("§6Active Pet");
+            meta.setLore(active != null
+                    ? List.of(
+                            "§7[Lvl " + active.getLevel() + "] §f" + active.getName(),
+                            "§7Rarity: §6" + active.getRarity())
+                    : List.of("§7No pet equipped"));
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     private ItemStack makeItem(PetsManager.Pet pet, boolean isActive) {
