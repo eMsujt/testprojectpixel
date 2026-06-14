@@ -3,17 +3,20 @@ package com.skyblock.plugin.menu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public final class CollectionsMenu implements InventoryHolder {
+public final class CollectionsMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
 
     public CollectionsMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§2Collections");
+        this.inventory = Bukkit.createInventory(this, 54, "§aCollections");
         build();
     }
 
@@ -33,6 +36,13 @@ public final class CollectionsMenu implements InventoryHolder {
         inventory.setItem(13, makeItem(Material.ROTTEN_FLESH, "§eCombat"));
         inventory.setItem(14, makeItem(Material.OAK_LOG,      "§eForaging"));
         inventory.setItem(15, makeItem(Material.COD,          "§eFishing"));
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof CollectionsMenu) {
+            event.setCancelled(true);
+        }
     }
 
     private ItemStack makeItem(Material material, String name) {
