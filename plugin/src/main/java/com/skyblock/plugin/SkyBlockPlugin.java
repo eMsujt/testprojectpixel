@@ -112,6 +112,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WeatherManager.getInstance().load(getDataFolder());
         TimeManager.getInstance().load(getDataFolder());
         NetworkManager.getInstance().load(getDataFolder());
+        com.skyblock.plugin.items.ItemManager.getInstance().load(this);
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
         getCommand("mayor").setExecutor(new MayorCommand());
