@@ -4,6 +4,9 @@ import com.skyblock.plugin.managers.SkillsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.List;
 
-public final class SkillsMenu implements InventoryHolder {
+public final class SkillsMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
 
@@ -39,6 +42,12 @@ public final class SkillsMenu implements InventoryHolder {
         inventory.setItem(12, makeSkillItem(player, sm, Material.ROTTEN_FLESH, "combat",   "§eCombat"));
         inventory.setItem(13, makeSkillItem(player, sm, Material.OAK_LOG,      "foraging", "§eForaging"));
         inventory.setItem(14, makeSkillItem(player, sm, Material.COD,          "fishing",  "§eFishing"));
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!(event.getInventory().getHolder() instanceof SkillsMenu)) return;
+        event.setCancelled(true);
     }
 
     private ItemStack makeSkillItem(Player player, SkillsManager sm,
