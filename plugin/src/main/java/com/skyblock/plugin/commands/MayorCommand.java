@@ -6,6 +6,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,8 +31,9 @@ public final class MayorCommand implements CommandExecutor {
             case "vote"   -> handleVote(player, args);
             case "unvote" -> handleUnvote(player);
             case "votes"  -> handleVotes(player);
-            case "list"   -> handleList(player);
-            case "set"    -> handleSet(player, args);
+            case "list"        -> handleList(player);
+            case "leaderboard" -> handleLeaderboard(player);
+            case "set"         -> handleSet(player, args);
             case "setday" -> handleSetDay(player, args);
             default       -> sendHelp(player);
         }
@@ -88,6 +92,22 @@ public final class MayorCommand implements CommandExecutor {
         }
     }
 
+    private void handleLeaderboard(Player player) {
+        Map<String, Integer> votes = MayorManager.getInstance().getMayorVotes();
+        player.sendMessage("=== Mayor Leaderboard ===");
+        if (votes.isEmpty()) {
+            player.sendMessage("No votes cast yet.");
+            return;
+        }
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>(votes.entrySet());
+        entries.sort(Comparator.<Map.Entry<String, Integer>>comparingByValue().reversed());
+        int rank = 1;
+        for (Map.Entry<String, Integer> entry : entries) {
+            player.sendMessage(rank + ". " + entry.getKey() + ": " + entry.getValue() + " votes");
+            rank++;
+        }
+    }
+
     private void handleSet(Player player, String[] args) {
         if (args.length < 2) {
             player.sendMessage("Usage: /mayor set <name>");
@@ -122,6 +142,7 @@ public final class MayorCommand implements CommandExecutor {
         player.sendMessage("/mayor unvote       — clear your vote");
         player.sendMessage("/mayor votes        — list all votes");
         player.sendMessage("/mayor list         — list all candidates with vote counts");
+        player.sendMessage("/mayor leaderboard  — show candidates ranked by vote count");
         player.sendMessage("/mayor set <name>   — set the current mayor");
         player.sendMessage("/mayor setday <day> — set the election day");
     }
