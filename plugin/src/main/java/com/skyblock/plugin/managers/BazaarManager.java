@@ -25,6 +25,7 @@ public final class BazaarManager {
     private final Map<String, List<SellOrder>> sellOrders = new HashMap<>();
     private final Map<String, List<int[]>> sellOrderEntries = new HashMap<>();
     private final Map<String, List<Double>> priceHistory = new HashMap<>();
+    private final Map<UUID, List<String>> orderHistory = new HashMap<>();
 
     private BazaarManager() {}
 
@@ -54,6 +55,24 @@ public final class BazaarManager {
 
     public Map<String, Double> getSellPrices() {
         return Collections.unmodifiableMap(sellPrices);
+    }
+
+    // Order history
+
+    public void recordOrder(UUID playerId, String orderSummary) {
+        orderHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(orderSummary);
+    }
+
+    public List<String> getOrderHistory(UUID playerId) {
+        return Collections.unmodifiableList(orderHistory.getOrDefault(playerId, new ArrayList<>()));
+    }
+
+    public Map<UUID, List<String>> getAllOrderHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : orderHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
     }
 
     // Price history
