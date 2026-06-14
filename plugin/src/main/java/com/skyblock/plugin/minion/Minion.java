@@ -1,6 +1,7 @@
 package com.skyblock.plugin.minion;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -114,6 +115,16 @@ public final class Minion {
 
     /** The resources this minion has collected, awaiting pickup. */
     public List<ItemStack> getStorage() {
-        return storage;
+        return Collections.unmodifiableList(storage);
+    }
+
+    /** Adds a collected resource to this minion's storage. */
+    public void addToStorage(ItemStack item) {
+        storage.add(Objects.requireNonNull(item, "item"));
+    }
+
+    /** Removes all collected resources from this minion's storage. */
+    public void clearStorage() {
+        storage.clear();
     }
 }
