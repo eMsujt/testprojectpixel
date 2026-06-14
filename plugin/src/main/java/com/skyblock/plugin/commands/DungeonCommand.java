@@ -22,10 +22,9 @@ public final class DungeonCommand implements CommandExecutor {
         DungeonManager.DungeonClass dungeonClass = manager.getClass(id);
         player.sendMessage("=== Dungeons ===");
         player.sendMessage("Class: " + (dungeonClass != null ? dungeonClass.getDisplayName() : "None"));
-        for (DungeonManager.DungeonType type : DungeonManager.DungeonType.values()) {
-            int completions = manager.getCompletionCount(id, type);
-            int bestScore = manager.getBestScore(id, type);
-            player.sendMessage(type.name() + " — Completions: " + completions + ", Best Score: " + bestScore);
+        for (DungeonManager.DungeonFloor floor : DungeonManager.DungeonFloor.values()) {
+            int completions = manager.getFloorCompletionCount(id, floor);
+            player.sendMessage(floor.getDisplayName() + " — Completions: " + completions);
         }
         return true;
     }
