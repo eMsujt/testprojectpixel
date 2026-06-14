@@ -5,12 +5,12 @@ import com.skyblock.plugin.skills.SkillManager.SkillType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.UUID;
 
 /**
- * Awards Combat XP through {@link SkillManager} when a player kills an entity
+ * Awards Combat XP through {@link SkillManager} when a player damages an entity
  * and fires level-up rewards when the player's level increases.
  */
 public final class CombatListener implements Listener {
@@ -18,19 +18,18 @@ public final class CombatListener implements Listener {
     private final SkillManager skillManager = SkillManager.getInstance();
 
     @EventHandler
-    public void onEntityDeath(EntityDeathEvent event) {
-        Player killer = event.getEntity().getKiller();
-        if (killer == null) {
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player attacker)) {
             return;
         }
-        long xp = Math.max(1L, Math.round(event.getEntity().getMaxHealth()));
-        UUID id = killer.getUniqueId();
+        long xp = Math.max(1L, Math.round(event.getFinalDamage()));
+        UUID id = attacker.getUniqueId();
         int before = skillManager.getLevel(id, SkillType.COMBAT);
         skillManager.addXP(id, SkillType.COMBAT, xp);
         int after = skillManager.getLevel(id, SkillType.COMBAT);
         if (after > before) {
             skillManager.grantLevelUpRewards(id, SkillType.COMBAT, before, after);
-            killer.sendTitle("§aSkill Level Up!", "§eCombat §a→ §eLVL " + after, 10, 60, 20);
+            attacker.sendTitle("§aSkill Level Up!", "§eCombat §a→ §eLVL " + after, 10, 60, 20);
         }
     }
 }
