@@ -7,12 +7,20 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,11 +33,15 @@ import java.util.UUID;
  * <p>Farming crops only count once mature: {@link Ageable} crops must have reached
  * their maximum age, while non-ageable produce (pumpkins, melons, sugar cane, …)
  * always counts.</p>
+ *
+ * <p>The per-action XP tables are loaded from the bundled {@code skills-xp.yml}
+ * resource (read straight from the jar); when that resource is missing or a section
+ * is unreadable the listener falls back to its built-in {@code DEFAULT_*} tables.</p>
  */
 public final class SkillProgressionListener implements Listener {
 
-    /** Farming XP per crop block, keyed by {@link Material}. */
-    private static final Map<Material, Long> FARMING_XP = Map.ofEntries(
+    /** Built-in fallback Farming XP per crop block, keyed by {@link Material}. */
+    private static final Map<Material, Long> DEFAULT_FARMING_XP = Map.ofEntries(
             Map.entry(Material.WHEAT,                3L),
             Map.entry(Material.POTATOES,             3L),
             Map.entry(Material.CARROTS,              3L),
@@ -45,8 +57,8 @@ public final class SkillProgressionListener implements Listener {
             Map.entry(Material.BROWN_MUSHROOM_BLOCK, 3L)
     );
 
-    /** Mining XP per ore/stone block, keyed by {@link Material}. */
-    private static final Map<Material, Long> MINING_XP = Map.ofEntries(
+    /** Built-in fallback Mining XP per ore/stone block, keyed by {@link Material}. */
+    private static final Map<Material, Long> DEFAULT_MINING_XP = Map.ofEntries(
             Map.entry(Material.STONE,             1L),
             Map.entry(Material.COBBLESTONE,       1L),
             Map.entry(Material.COAL_ORE,          5L),
@@ -59,8 +71,8 @@ public final class SkillProgressionListener implements Listener {
             Map.entry(Material.NETHER_QUARTZ_ORE, 10L)
     );
 
-    /** Foraging XP per log broken, keyed by {@link Material}. */
-    private static final Map<Material, Long> FORAGING_XP = Map.ofEntries(
+    /** Built-in fallback Foraging XP per log broken, keyed by {@link Material}. */
+    private static final Map<Material, Long> DEFAULT_FORAGING_XP = Map.ofEntries(
             Map.entry(Material.OAK_LOG,      6L),
             Map.entry(Material.BIRCH_LOG,    6L),
             Map.entry(Material.SPRUCE_LOG,   6L),
@@ -71,17 +83,74 @@ public final class SkillProgressionListener implements Listener {
             Map.entry(Material.CHERRY_LOG,   6L)
     );
 
-    /** Fishing XP awarded per fish reeled in. */
-    private static final long FISHING_XP = 6L;
+    /** Built-in fallback Fishing XP awarded per fish reeled in. */
+    private static final long DEFAULT_FISHING_XP = 6L;
+
+    /** Farming XP granted per crop block, keyed by {@link Material}. */
+    private final Map<Material, Long> farmingXp;
+
+    /** Mining XP granted per ore/stone block, keyed by {@link Material}. */
+    private final Map<Material, Long> miningXp;
+
+    /** Foraging XP granted per log broken, keyed by {@link Material}. */
+    private final Map<Material, Long> foragingXp;
+
+    /** Fishing XP granted per fish reeled in. */
+    private final long fishingXp;
 
     private final SkillManager skillManager = SkillManager.getInstance();
+
+    /**
+     * Loads the per-action XP tables from {@code skills-xp.yml}, falling back to the
+     * built-in {@code DEFAULT_*} tables for any section that is absent or unreadable.
+     *
+     * @param plugin the owning plugin, used for resource access and logging
+     */
+    public SkillProgressionListener(JavaPlugin plugin) {
+        YamlConfiguration cfg = loadConfig(plugin);
+        this.farmingXp = loadSection(plugin, cfg, "farming", DEFAULT_FARMING_XP);
+        this.miningXp = loadSection(plugin, cfg, "mining", DEFAULT_MINING_XP);
+        this.foragingXp = loadSection(plugin, cfg, "foraging", DEFAULT_FORAGING_XP);
+        this.fishingXp = cfg != null ? cfg.getLong("fishing", DEFAULT_FISHING_XP) : DEFAULT_FISHING_XP;
+    }
+
+    private static YamlConfiguration loadConfig(JavaPlugin plugin) {
+        InputStream resource = plugin.getResource("skills-xp.yml");
+        if (resource == null) {
+            return null;
+        }
+        try (InputStreamReader reader = new InputStreamReader(resource, StandardCharsets.UTF_8)) {
+            return YamlConfiguration.loadConfiguration(reader);
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to read skills-xp.yml: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private static Map<Material, Long> loadSection(JavaPlugin plugin, YamlConfiguration cfg,
+                                                   String name, Map<Material, Long> defaults) {
+        ConfigurationSection section = cfg != null ? cfg.getConfigurationSection(name) : null;
+        if (section == null) {
+            return defaults;
+        }
+        Map<Material, Long> table = new EnumMap<>(Material.class);
+        for (String key : section.getKeys(false)) {
+            Material material = Material.matchMaterial(key);
+            if (material == null) {
+                plugin.getLogger().warning("Unknown material in skills-xp.yml (" + name + "): " + key);
+                continue;
+            }
+            table.put(material, section.getLong(key));
+        }
+        return table.isEmpty() ? defaults : table;
+    }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         Material type = block.getType();
 
-        Long farming = FARMING_XP.get(type);
+        Long farming = farmingXp.get(type);
         if (farming != null) {
             if (isMature(block)) {
                 grantXP(event.getPlayer(), SkillType.FARMING, farming);
@@ -89,13 +158,13 @@ public final class SkillProgressionListener implements Listener {
             return;
         }
 
-        Long mining = MINING_XP.get(type);
+        Long mining = miningXp.get(type);
         if (mining != null) {
             grantXP(event.getPlayer(), SkillType.MINING, mining);
             return;
         }
 
-        Long foraging = FORAGING_XP.get(type);
+        Long foraging = foragingXp.get(type);
         if (foraging != null) {
             grantXP(event.getPlayer(), SkillType.FORAGING, foraging);
         }
@@ -104,7 +173,7 @@ public final class SkillProgressionListener implements Listener {
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-            grantXP(event.getPlayer(), SkillType.FISHING, FISHING_XP);
+            grantXP(event.getPlayer(), SkillType.FISHING, fishingXp);
         }
     }
 
