@@ -13,22 +13,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class StorageMenu implements InventoryHolder, Listener {
 
-    // Slots 0-44 hold storage contents; the bottom row is reserved for navigation.
-    private static final int CONTENT_SIZE = 45;
-    private static final int PREV_SLOT = 45;
-    private static final int NEXT_SLOT = 53;
-
     private final Inventory inventory;
-    private final ItemStack[] contents;
-    private final int pages;
-    private int page;
 
-    public StorageMenu(Player player) {
+    public StorageMenu() {
         this.inventory = Bukkit.createInventory(this, 54, "§aStorage");
-        this.contents = player.getEnderChest().getContents();
-        this.pages = Math.max(1, (int) Math.ceil((double) contents.length / CONTENT_SIZE));
-        this.page = 0;
-        render();
+        build();
     }
 
     public void open(Player player) {
@@ -40,35 +29,22 @@ public final class StorageMenu implements InventoryHolder, Listener {
         return inventory;
     }
 
-    private void render() {
-        inventory.clear();
-        int start = page * CONTENT_SIZE;
-        for (int i = 0; i < CONTENT_SIZE; i++) {
-            int source = start + i;
-            if (source < contents.length) {
-                inventory.setItem(i, contents[source]);
+    private void build() {
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
             }
         }
-        if (page > 0) {
-            inventory.setItem(PREV_SLOT, makeItem(Material.ARROW, "§aPrevious Page"));
-        }
-        if (page < pages - 1) {
-            inventory.setItem(NEXT_SLOT, makeItem(Material.ARROW, "§aNext Page"));
-        }
+
+        inventory.setItem(22, makeItem(Material.CHEST, "§aStorage"));
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof StorageMenu)) return;
-        event.setCancelled(true);
-
-        int slot = event.getRawSlot();
-        if (slot == PREV_SLOT && page > 0) {
-            page--;
-            render();
-        } else if (slot == NEXT_SLOT && page < pages - 1) {
-            page++;
-            render();
+        if (event.getInventory().getHolder() instanceof StorageMenu) {
+            event.setCancelled(true);
         }
     }
 
