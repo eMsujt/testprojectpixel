@@ -3,6 +3,8 @@ package com.skyblock.plugin.listener;
 import com.skyblock.plugin.skills.SkillManager;
 import com.skyblock.plugin.skills.SkillManager.SkillType;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +14,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Awards Farming XP through {@link SkillManager} whenever a player breaks a crop block.
+ * Awards Farming XP through {@link SkillManager} whenever a player breaks a fully
+ * grown crop block. {@link Ageable} crops only count once they reach their maximum
+ * age; non-ageable produce (pumpkins, melons, sugar cane, …) always counts.
  */
 public final class FarmingSkillListener implements Listener {
 
@@ -36,11 +40,23 @@ public final class FarmingSkillListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        Long xp = CROP_XP.get(event.getBlock().getType());
-        if (xp == null) {
+        Block block = event.getBlock();
+        Long xp = CROP_XP.get(block.getType());
+        if (xp == null || !isMature(block)) {
             return;
         }
         grantXP(event.getPlayer(), xp);
+    }
+
+    /**
+     * Returns whether the crop block has finished growing. {@link Ageable} crops
+     * are mature only at their maximum age; all other produce is always mature.
+     */
+    private static boolean isMature(Block block) {
+        if (block.getBlockData() instanceof Ageable ageable) {
+            return ageable.getAge() >= ageable.getMaximumAge();
+        }
+        return true;
     }
 
     private void grantXP(Player player, long amount) {
