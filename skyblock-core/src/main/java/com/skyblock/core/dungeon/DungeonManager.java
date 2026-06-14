@@ -319,6 +319,8 @@ public final class DungeonManager {
             completionCounts
                 .computeIfAbsent(id, k -> new HashMap<>())
                 .merge(run.getType(), 1, Integer::sum);
+
+            recordDungeonEvent(id, "Completed " + run.getType().name() + " with score " + score);
         }
     }
 
@@ -336,6 +338,7 @@ public final class DungeonManager {
         }
         for (UUID id : run.getParticipants()) {
             activeRuns.remove(id);
+            recordDungeonEvent(id, "Abandoned " + run.getType().name());
         }
     }
 
