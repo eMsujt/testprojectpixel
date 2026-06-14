@@ -68,7 +68,9 @@ public final class CollectionsManager {
     public void addAmount(UUID uuid, String collection, long amount) {
         Map<String, Long> amounts = collectionAmounts.computeIfAbsent(uuid, k -> new HashMap<>());
         String key = collection.toLowerCase();
-        amounts.put(key, amounts.getOrDefault(key, 0L) + Math.max(0, amount));
+        long newTotal = amounts.getOrDefault(key, 0L) + Math.max(0, amount);
+        amounts.put(key, newTotal);
+        recordCollectionEvent(uuid, "Added " + Math.max(0, amount) + " " + collection + ": total " + newTotal);
     }
 
     public int getTier(UUID uuid, String collection) {
