@@ -17,10 +17,14 @@ public final class DungeonManager {
 
     private static final DungeonManager INSTANCE = new DungeonManager();
 
+    private static final java.util.Set<String> VALID_CLASSES = new java.util.LinkedHashSet<>(
+            java.util.Arrays.asList("Healer", "Mage", "Berserker", "Archer", "Tank"));
+
     private final Map<UUID, Map<String, Integer>> playerCompletions = new HashMap<>();
     private final Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
     private final Map<UUID, Integer> dungeonFloor = new HashMap<>();
     private final Map<UUID, Integer> highestFloor = new HashMap<>();
+    private final Map<UUID, String> playerClass = new HashMap<>();
 
     private DungeonManager() {}
 
@@ -92,6 +96,21 @@ public final class DungeonManager {
                 playerBestTimes.getOrDefault(playerId, Collections.emptyMap()));
     }
 
+    public String getPlayerClass(UUID playerId) {
+        return playerClass.getOrDefault(playerId, "");
+    }
+
+    public void setPlayerClass(UUID playerId, String playerClassName) {
+        if (!VALID_CLASSES.contains(playerClassName)) {
+            throw new IllegalArgumentException("Invalid class: " + playerClassName + ". Must be one of " + VALID_CLASSES);
+        }
+        playerClass.put(playerId, playerClassName);
+    }
+
+    public Map<UUID, String> getPlayerClasses() {
+        return Collections.unmodifiableMap(playerClass);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "dungeons.yml");
         if (!file.exists()) {
@@ -102,6 +121,17 @@ public final class DungeonManager {
         playerBestTimes.clear();
         dungeonFloor.clear();
         highestFloor.clear();
+        playerClass.clear();
+        if (cfg.isConfigurationSection("playerClass")) {
+            for (String uuidKey : cfg.getConfigurationSection("playerClass").getKeys(false)) {
+                try {
+                    String cls = cfg.getString("playerClass." + uuidKey);
+                    if (VALID_CLASSES.contains(cls)) {
+                        playerClass.put(UUID.fromString(uuidKey), cls);
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
         if (cfg.isConfigurationSection("floor")) {
             for (String uuidKey : cfg.getConfigurationSection("floor").getKeys(false)) {
                 try {
@@ -153,6 +183,9 @@ public final class DungeonManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "dungeons.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, String> entry : playerClass.entrySet()) {
+            cfg.set("playerClass." + entry.getKey().toString(), entry.getValue());
+        }
         for (Map.Entry<UUID, Integer> entry : dungeonFloor.entrySet()) {
             cfg.set("floor." + entry.getKey().toString(), entry.getValue());
         }
