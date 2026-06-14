@@ -112,6 +112,10 @@ public final class MayorManager {
         return mayorPerks.getOrDefault(mayor, Collections.emptyList());
     }
 
+    public void addPerk(String mayor, String perk) {
+        mayorPerks.computeIfAbsent(mayor, k -> new ArrayList<>()).add(perk);
+    }
+
     public void setPerks(String mayor, List<String> perks) {
         mayorPerks.put(mayor, new ArrayList<>(perks));
     }
