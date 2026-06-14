@@ -34,8 +34,8 @@ public class FishingCollectionsMenu extends Menu {
         }
     }
 
-    /** Centred slots across the two middle rows, one per collection. */
-    private static final int[] SLOTS = {20, 21, 22, 23, 24, 29, 30, 31, 32, 33};
+    /** Slots across the two playable rows, one per collection. */
+    private static final int[] SLOTS = {10, 11, 12, 13, 14, 19, 20, 21, 22, 23};
 
     public FishingCollectionsMenu() {
         super("Fishing Collections", 6);
