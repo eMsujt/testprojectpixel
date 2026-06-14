@@ -1,45 +1,41 @@
 package com.skyblock.plugin.minion;
 
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-
-import java.util.UUID;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
- * Listener that opens a {@link MinionMenu} when a player right-clicks the
- * {@link ArmorStand} representing one of their placed minions.
+ * Listener that opens a {@link MinionMenu} when a player right-clicks the block
+ * occupied by one of their placed minions.
  *
- * <p>Minions are rendered as armour stands; interacting with one opens the
- * management menu for the player's minion. The interaction is cancelled so the
- * armour stand's pose is not edited.</p>
+ * <p>Placed minions are tracked by {@link MinionManager} keyed by the block
+ * location they occupy, so the clicked block is resolved straight from that map.
+ * The interaction is cancelled so no block-use side effect occurs.</p>
  */
 public final class MinionListener implements Listener {
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractAtEntityEvent event) {
-        Entity entity = event.getRightClicked();
-        if (!(entity instanceof ArmorStand)) {
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
-        Player player = event.getPlayer();
-        UUID owner = player.getUniqueId();
-        Minion minion = null;
-        for (MinionManager.MinionData data : MinionManager.getInstance().getMinions()) {
-            if (data.getOwner().equals(owner)) {
-                minion = data.getMinion();
-                break;
-            }
+        Block block = event.getClickedBlock();
+        if (block == null) {
+            return;
         }
-        if (minion == null) {
+
+        MinionManager.MinionData data = MinionManager.getInstance().getMinion(block.getLocation());
+        if (data == null) {
             return;
         }
 
         event.setCancelled(true);
-        new MinionMenu(minion).open(player);
+
+        Player player = event.getPlayer();
+        new MinionMenu(data.getMinion()).open(player);
     }
 }
