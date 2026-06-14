@@ -4,6 +4,7 @@ import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * The top-level SkyBlock menu (opened via {@code /sbmenu}).
@@ -27,11 +28,13 @@ public class SkyBlockMenu extends Menu {
     private static final int CALENDAR_SLOT = 33;
 
     public SkyBlockMenu() {
-        super("SkyBlock Menu", 6);
+        super("§6SkyBlock Menu", 6);
     }
 
     @Override
     protected void build() {
+        fillBorder();
+
         setItem(PROFILE_SLOT, new ItemBuilder(Material.PLAYER_HEAD)
                 .displayName("§aYour SkyBlock Profile")
                 .lore("§7View your profile statistics.")
@@ -70,5 +73,18 @@ public class SkyBlockMenu extends Menu {
                 .displayName("§aCalendar and Events")
                 .lore("§7View upcoming events.")
                 .build());
+    }
+
+    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
+    private void fillBorder() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
+        }
     }
 }
