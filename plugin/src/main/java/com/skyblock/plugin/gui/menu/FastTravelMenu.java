@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * The Fast Travel menu.
  *
- * <p>A 54-slot (6-row) menu titled {@code §bFast Travel} listing the available
+ * <p>A 54-slot (6-row) menu titled {@code §9Fast Travel} listing the available
  * warp destinations across the inner slots, framed by a gray glass border. Each
  * destination is rendered as a representative block at its own slot; clicking one
  * closes the menu and runs the destination's warp command, matching Hypixel's
@@ -44,7 +44,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§bFast Travel", 6);
+        super("§9Fast Travel", 6);
     }
 
     @Override
