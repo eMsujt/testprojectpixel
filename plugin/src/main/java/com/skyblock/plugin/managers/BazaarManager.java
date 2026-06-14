@@ -26,6 +26,7 @@ public final class BazaarManager {
     private final Map<String, List<int[]>> sellOrderEntries = new HashMap<>();
     private final Map<String, List<Double>> priceHistory = new HashMap<>();
     private final Map<UUID, List<String>> orderHistory = new HashMap<>();
+    private final Map<UUID, List<String>> bazaarHistory = new HashMap<>();
 
     private BazaarManager() {}
 
@@ -70,6 +71,24 @@ public final class BazaarManager {
     public Map<UUID, List<String>> getAllOrderHistory() {
         Map<UUID, List<String>> copy = new HashMap<>();
         for (Map.Entry<UUID, List<String>> entry : orderHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
+    }
+
+    // Bazaar history
+
+    public void recordBazaarEvent(UUID playerId, String summary) {
+        bazaarHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getBazaarHistory(UUID playerId) {
+        return Collections.unmodifiableList(bazaarHistory.getOrDefault(playerId, new ArrayList<>()));
+    }
+
+    public Map<UUID, List<String>> getAllBazaarHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : bazaarHistory.entrySet()) {
             copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
         }
         return Collections.unmodifiableMap(copy);
@@ -174,6 +193,7 @@ public final class BazaarManager {
         buyOrders.clear();
         sellOrders.clear();
         priceHistory.clear();
+        bazaarHistory.clear();
 
         if (cfg.isConfigurationSection("buy")) {
             for (String key : cfg.getConfigurationSection("buy").getKeys(false)) {
@@ -195,6 +215,15 @@ public final class BazaarManager {
                     }
                 }
                 priceHistory.put(key, history);
+            }
+        }
+
+        if (cfg.isConfigurationSection("bazaarHistory")) {
+            for (String key : cfg.getConfigurationSection("bazaarHistory").getKeys(false)) {
+                try {
+                    bazaarHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("bazaarHistory." + key)));
+                } catch (IllegalArgumentException ignored) {}
             }
         }
 
@@ -252,6 +281,10 @@ public final class BazaarManager {
 
         for (Map.Entry<String, List<Double>> entry : priceHistory.entrySet()) {
             cfg.set("priceHistory." + entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+
+        for (Map.Entry<UUID, List<String>> entry : bazaarHistory.entrySet()) {
+            cfg.set("bazaarHistory." + entry.getKey().toString(), entry.getValue());
         }
 
         for (Map.Entry<String, List<BuyOrder>> entry : buyOrders.entrySet()) {
