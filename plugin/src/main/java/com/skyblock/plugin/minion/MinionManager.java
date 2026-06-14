@@ -7,9 +7,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -18,8 +20,10 @@ import java.util.UUID;
  * Singleton tracking the {@link Minion} instances placed in the world.
  *
  * <p>Backed by a {@code Map<Location, MinionData>} keyed by the block location a
- * minion occupies, so a placed minion can be resolved from its position. Not
- * thread-safe; synchronize externally if accessed from multiple threads.</p>
+ * minion occupies, so a placed minion can be resolved from its position, plus a
+ * {@code Map<UUID, List<Minion>>} index keyed by owner so every minion a player
+ * has placed can be listed. Not thread-safe; synchronize externally if accessed
+ * from multiple threads.</p>
  *
  * <p>Registered as a Bukkit {@link Listener} so that breaking the block a
  * minion occupies stops tracking it.</p>
@@ -51,6 +55,9 @@ public final class MinionManager implements Listener {
 
     /** Placed minions keyed by the location they occupy. */
     private final Map<Location, MinionData> minions = new HashMap<>();
+
+    /** Placed minions keyed by their owner, in placement order. */
+    private final Map<UUID, List<Minion>> minionsByOwner = new HashMap<>();
 
     /** Handle to the repeating production task, {@code null} while not running. */
     private BukkitTask task;
@@ -95,6 +102,7 @@ public final class MinionManager implements Listener {
         Objects.requireNonNull(location, "location");
         Objects.requireNonNull(minion, "minion");
         minions.put(location, new MinionData(minion.owner, minion));
+        minionsByOwner.computeIfAbsent(minion.owner, k -> new ArrayList<>()).add(minion);
     }
 
     /**
@@ -105,7 +113,17 @@ public final class MinionManager implements Listener {
      */
     public MinionData removeMinion(Location location) {
         Objects.requireNonNull(location, "location");
-        return minions.remove(location);
+        MinionData removed = minions.remove(location);
+        if (removed != null) {
+            List<Minion> owned = minionsByOwner.get(removed.getOwner());
+            if (owned != null) {
+                owned.remove(removed.getMinion());
+                if (owned.isEmpty()) {
+                    minionsByOwner.remove(removed.getOwner());
+                }
+            }
+        }
+        return removed;
     }
 
     /**
@@ -132,6 +150,18 @@ public final class MinionManager implements Listener {
     /** Returns an unmodifiable view of every placed minion. */
     public Collection<MinionData> getMinions() {
         return Collections.unmodifiableCollection(minions.values());
+    }
+
+    /**
+     * Returns the minions placed by the given player, in placement order.
+     *
+     * @param owner the owning player's UUID
+     * @return an unmodifiable view of that player's minions, empty if none
+     */
+    public List<Minion> getMinions(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        List<Minion> owned = minionsByOwner.get(owner);
+        return owned == null ? Collections.emptyList() : Collections.unmodifiableList(owned);
     }
 
     /** Returns the number of minions currently placed. */
