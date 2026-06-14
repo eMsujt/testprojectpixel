@@ -111,7 +111,8 @@ public final class SkillManager implements Listener {
             for (int i = 0; i < level; i++) cumulative += table[i];
             long inLevel = total - cumulative;
             long forNext = table[level];
-            msg = "§a+" + xpGained + " " + displayName + " XP §7(§e" + inLevel + "§7/§e" + forNext + "§7)";
+            int pct = forNext <= 0 ? 100 : (int) Math.min(100, Math.floor((double) inLevel / forNext * 100));
+            msg = "§a+" + xpGained + " " + displayName + " XP §7(§e" + inLevel + "§7/§e" + forNext + " §6" + pct + "%§7)";
         }
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(msg));
     }
