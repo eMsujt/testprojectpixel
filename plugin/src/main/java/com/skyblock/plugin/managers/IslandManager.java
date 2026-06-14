@@ -154,6 +154,18 @@ public final class IslandManager {
         return Collections.unmodifiableMap(islandHistory);
     }
 
+    public String getIslandStats(UUID playerId) {
+        int level = islandLevel.getOrDefault(playerId, 1);
+        int visitors = visitorCounts.getOrDefault(playerId, 0);
+        String topCrop = "None";
+        for (String entry : islandHistory.getOrDefault(playerId, Collections.emptyList())) {
+            if (entry.toLowerCase().contains("crop")) {
+                topCrop = entry;
+            }
+        }
+        return "Island Stats: Level: " + level + " | Visitors: " + visitors + " | Top Crop: " + topCrop;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "island.yml");
         if (!file.exists()) {

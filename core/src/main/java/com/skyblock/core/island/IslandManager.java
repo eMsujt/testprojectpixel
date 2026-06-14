@@ -63,6 +63,16 @@ public class IslandManager {
         return Collections.unmodifiableMap(islandHistory);
     }
 
+    public String getIslandStats(UUID playerId) {
+        String topCrop = "None";
+        for (String entry : islandHistory.getOrDefault(playerId, Collections.emptyList())) {
+            if (entry.toLowerCase().contains("crop")) {
+                topCrop = entry;
+            }
+        }
+        return "Island Stats: Level: 0 | Visitors: 0 | Top Crop: " + topCrop;
+    }
+
     public void setHome(UUID player, Location location) {
         Objects.requireNonNull(player, "player");
         Objects.requireNonNull(location, "location");
