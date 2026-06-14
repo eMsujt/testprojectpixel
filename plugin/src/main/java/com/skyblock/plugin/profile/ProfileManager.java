@@ -113,7 +113,7 @@ public final class ProfileManager implements Listener {
             Map<String, Long> loaded = readSkillXp(uuid);
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 SkyBlockProfile profile = getOrCreate(uuid);
-                loaded.forEach(profile::setSkillX);
+                loaded.forEach(profile::setSkillXp);
             });
         });
     }
@@ -132,7 +132,7 @@ public final class ProfileManager implements Listener {
             return;
         }
         UUID uuid = player.getUniqueId();
-        Map<String, Long> snapshot = profile.getSkillsX();
+        Map<String, Long> snapshot = profile.getSkillXp();
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
                 () -> writeSkillXp(uuid, snapshot));
     }

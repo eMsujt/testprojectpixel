@@ -41,7 +41,7 @@ public final class SkyBlockProfile {
      *
      * @return the skill experience totals
      */
-    public Map<String, Long> getSkillsX() {
+    public Map<String, Long> getSkillXp() {
         return Map.copyOf(skillsX);
     }
 
@@ -78,7 +78,7 @@ public final class SkyBlockProfile {
      * @param amount the new experience total, must not be negative
      * @throws IllegalArgumentException if {@code amount} is negative
      */
-    public void setSkillX(String skill, long amount) {
+    public void setSkillXp(String skill, long amount) {
         Objects.requireNonNull(skill, "skill");
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
