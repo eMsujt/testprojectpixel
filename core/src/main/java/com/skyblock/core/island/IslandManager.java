@@ -23,6 +23,25 @@ public class IslandManager {
         UPGRADES = Collections.unmodifiableMap(m);
     }
 
+    public static final Map<String, int[]> UPGRADE_DATA;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("MINION_SLOTS",   new int[]{10, 500});
+        m.put("COOP_SLOTS",     new int[]{4,  1000});
+        m.put("ISLAND_SIZE",    new int[]{5,  2000});
+        m.put("CHEST_SIZE",     new int[]{5,  750});
+        m.put("GUEST_LIMIT",    new int[]{4,  250});
+        m.put("REDSTONE_LIMIT", new int[]{5,  500});
+        m.put("CROP_GROWTH",    new int[]{5,  1500});
+        m.put("MOB_SPAWN_RATE", new int[]{5,  1500});
+        m.put("BEACON_RANGE",   new int[]{3,  2500});
+        m.put("WARP_LIMIT",     new int[]{3,  1000});
+        m.put("BANK_SIZE",      new int[]{5,  3000});
+        m.put("STORAGE",        new int[]{4,  2000});
+        UPGRADE_DATA = Collections.unmodifiableMap(m);
+    }
+
     private final Map<UUID, Location> islandHomes = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> islandUpgrades = new HashMap<>();
 
