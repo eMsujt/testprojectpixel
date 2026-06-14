@@ -26,6 +26,7 @@ public final class KuudraCommand implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
             case "stats" -> handleStats(player);
+            case "join"  -> handleJoin(player, args);
             default      -> sendHelp(player);
         }
         return true;
@@ -40,9 +41,30 @@ public final class KuudraCommand implements CommandExecutor {
         player.sendMessage("Best tier: T" + tier + " — " + TIER_NAMES[tier]);
     }
 
+    private void handleJoin(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /kuudra join <tier> (1-5)");
+            return;
+        }
+        int tier;
+        try {
+            tier = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid tier — must be an integer between 1 and 5.");
+            return;
+        }
+        if (tier < 1 || tier > 5) {
+            player.sendMessage("Invalid tier — must be between 1 and 5.");
+            return;
+        }
+        KuudraManager.getInstance().setKuudraTier(player.getUniqueId(), tier);
+        player.sendMessage("Joined Kuudra T" + tier + " — " + TIER_NAMES[tier] + "!");
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Kuudra Commands ===");
-        player.sendMessage("/kuudra        — show your best Kuudra tier");
-        player.sendMessage("/kuudra stats  — show your best Kuudra tier");
+        player.sendMessage("/kuudra             — show your best Kuudra tier");
+        player.sendMessage("/kuudra stats       — show your best Kuudra tier");
+        player.sendMessage("/kuudra join <tier> — join a Kuudra run (tier 1-5)");
     }
 }
