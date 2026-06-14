@@ -34,8 +34,9 @@ public final class MayorCommand implements CommandExecutor {
             case "list"        -> handleList(player);
             case "leaderboard" -> handleLeaderboard(player);
             case "set"         -> handleSet(player, args);
-            case "setday" -> handleSetDay(player, args);
-            default       -> sendHelp(player);
+            case "setday"   -> handleSetDay(player, args);
+            case "history"  -> handleHistory(player);
+            default         -> sendHelp(player);
         }
         return true;
     }
@@ -134,6 +135,18 @@ public final class MayorCommand implements CommandExecutor {
         player.sendMessage("Election day set to " + day + ".");
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = MayorManager.getInstance().getVoteHistory(player.getUniqueId());
+        player.sendMessage("=== Mayor Vote History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No vote history found.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Mayor Commands ===");
         player.sendMessage("/mayor              — show current mayor info");
@@ -145,5 +158,6 @@ public final class MayorCommand implements CommandExecutor {
         player.sendMessage("/mayor leaderboard  — show candidates ranked by vote count");
         player.sendMessage("/mayor set <name>   — set the current mayor");
         player.sendMessage("/mayor setday <day> — set the election day");
+        player.sendMessage("/mayor history      — show your vote history");
     }
 }
