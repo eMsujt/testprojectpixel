@@ -13,6 +13,7 @@ public final class IslandManager {
 
     private static final IslandManager INSTANCE = new IslandManager();
 
+    private final Map<UUID, String> islandBiome = new HashMap<>();
     private final Map<UUID, Boolean> islandUnlocked = new HashMap<>();
     private final Map<UUID, Integer> islandLevel = new HashMap<>();
     private final Map<UUID, Integer> visitorCounts = new HashMap<>();
@@ -21,6 +22,18 @@ public final class IslandManager {
 
     public static IslandManager getInstance() {
         return INSTANCE;
+    }
+
+    public String getIslandBiome(UUID playerId) {
+        return islandBiome.getOrDefault(playerId, "PLAINS");
+    }
+
+    public void setIslandBiome(UUID playerId, String biome) {
+        islandBiome.put(playerId, biome);
+    }
+
+    public Map<UUID, String> getAllIslandBiomes() {
+        return Collections.unmodifiableMap(islandBiome);
     }
 
     public boolean isIslandUnlocked(UUID playerId) {
@@ -73,9 +86,17 @@ public final class IslandManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        islandBiome.clear();
         islandUnlocked.clear();
         islandLevel.clear();
         visitorCounts.clear();
+        if (cfg.isConfigurationSection("islandBiome")) {
+            for (String key : cfg.getConfigurationSection("islandBiome").getKeys(false)) {
+                try {
+                    islandBiome.put(UUID.fromString(key), cfg.getString("islandBiome." + key, "PLAINS"));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
         if (cfg.isConfigurationSection("islandUnlocked")) {
             for (String key : cfg.getConfigurationSection("islandUnlocked").getKeys(false)) {
                 try {
@@ -102,6 +123,9 @@ public final class IslandManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "island.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, String> entry : islandBiome.entrySet()) {
+            cfg.set("islandBiome." + entry.getKey().toString(), entry.getValue());
+        }
         for (Map.Entry<UUID, Boolean> entry : islandUnlocked.entrySet()) {
             cfg.set("islandUnlocked." + entry.getKey().toString(), entry.getValue());
         }
