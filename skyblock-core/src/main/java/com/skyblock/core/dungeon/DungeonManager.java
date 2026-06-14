@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -252,6 +253,8 @@ public final class DungeonManager {
     private final Map<UUID, DungeonClass> playerClasses = new HashMap<>();
     /** Completion count per player per floor number. */
     private final Map<UUID, Map<Integer, Integer>> floorCompletions = new HashMap<>();
+    /** Run history summaries per player. */
+    private final Map<UUID, List<String>> dungeonHistory = new HashMap<>();
 
     private DungeonManager() {}
 
@@ -495,6 +498,20 @@ public final class DungeonManager {
         return Collections.unmodifiableMap(floorCompletions);
     }
 
+    public void recordDungeonRun(UUID playerId, String summary) {
+        Objects.requireNonNull(playerId, "playerId");
+        dungeonHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getDungeonHistory(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return Collections.unmodifiableList(dungeonHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllDungeonHistory() {
+        return Collections.unmodifiableMap(dungeonHistory);
+    }
+
     // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
@@ -511,6 +528,7 @@ public final class DungeonManager {
         floorBestTimes.clear();
         playerClasses.clear();
         floorCompletions.clear();
+        dungeonHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -587,6 +605,10 @@ public final class DungeonManager {
                         // skip unknown class
                     }
                 }
+                List<String> history = cfg.getStringList(key + ".dungeonHistory");
+                if (!history.isEmpty()) {
+                    dungeonHistory.put(uuid, new ArrayList<>(history));
+                }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
             }
@@ -622,6 +644,9 @@ public final class DungeonManager {
         }
         for (Map.Entry<UUID, DungeonClass> entry : playerClasses.entrySet()) {
             cfg.set(entry.getKey().toString() + ".class", entry.getValue().name());
+        }
+        for (Map.Entry<UUID, List<String>> entry : dungeonHistory.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".dungeonHistory", entry.getValue());
         }
         for (Map.Entry<UUID, Map<Integer, Integer>> entry : floorCompletions.entrySet()) {
             String key = entry.getKey().toString();
