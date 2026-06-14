@@ -99,6 +99,11 @@ public final class MayorManager {
      */
     public void setCurrentMayor(MayorCandidate mayor) {
         this.currentMayor = mayor;
+        if (mayor == null) {
+            recordElectionEvent("Election ended: mayor cleared");
+        } else {
+            recordElectionEvent("Mayor elected: " + mayor.getDisplayName());
+        }
     }
 
     // -------------------------------------------------------------------------

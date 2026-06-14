@@ -40,6 +40,11 @@ public class MayorManager {
 
     public void setCurrentMayor(String mayor) {
         this.currentMayor = mayor;
+        if (mayor == null) {
+            recordElectionEvent("Election ended: mayor cleared");
+        } else {
+            recordElectionEvent("Mayor elected: " + mayor);
+        }
     }
 
     public List<String> getPerks(String mayor) {
