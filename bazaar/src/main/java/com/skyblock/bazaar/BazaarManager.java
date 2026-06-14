@@ -2,9 +2,13 @@ package com.skyblock.bazaar;
 
 import com.skyblock.bazaar.BazaarOrder.OrderType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -21,6 +25,7 @@ public final class BazaarManager {
 
     private final ConcurrentHashMap<String, Deque<BazaarOrder>> buyOrders = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Deque<BazaarOrder>> sellOrders = new ConcurrentHashMap<>();
+    private final Map<UUID, List<String>> bazaarHistory = new HashMap<>();
 
     /**
      * Places a buy order for the given product.
@@ -34,6 +39,7 @@ public final class BazaarManager {
     public BazaarOrder placeBuyOrder(String productId, UUID playerId, int amount, double pricePerUnit) {
         BazaarOrder order = new BazaarOrder(UUID.randomUUID(), playerId, productId, amount, pricePerUnit, OrderType.BUY);
         buyOrders.computeIfAbsent(productId, k -> new ConcurrentLinkedDeque<>()).addLast(order);
+        recordBazaarEvent(playerId, "Placed buy order: " + amount + "x " + productId + " @ " + pricePerUnit);
         return order;
     }
 
@@ -49,6 +55,7 @@ public final class BazaarManager {
     public BazaarOrder placeSellOrder(String productId, UUID playerId, int amount, double pricePerUnit) {
         BazaarOrder order = new BazaarOrder(UUID.randomUUID(), playerId, productId, amount, pricePerUnit, OrderType.SELL);
         sellOrders.computeIfAbsent(productId, k -> new ConcurrentLinkedDeque<>()).addLast(order);
+        recordBazaarEvent(playerId, "Placed sell order: " + amount + "x " + productId + " @ " + pricePerUnit);
         return order;
     }
 
@@ -100,6 +107,22 @@ public final class BazaarManager {
      * @param productId the product id
      * @return the lowest pricePerUnit, or {@link Double#MAX_VALUE} if no sell orders exist
      */
+    public void recordBazaarEvent(UUID player, String summary) {
+        bazaarHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getBazaarHistory(UUID player) {
+        return Collections.unmodifiableList(bazaarHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllBazaarHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : bazaarHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
+    }
+
     public double getBestSellPrice(String productId) {
         Deque<BazaarOrder> deque = sellOrders.get(productId);
         if (deque == null) {

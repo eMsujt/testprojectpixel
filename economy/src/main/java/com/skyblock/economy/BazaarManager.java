@@ -1,11 +1,14 @@
 package com.skyblock.economy;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 
 /**
  * Manages bazaar products available for instant buy/sell and limit order books.
@@ -178,6 +181,7 @@ public final class BazaarManager {
     }
 
     private final Map<String, ProductData> products = new HashMap<>();
+    private final Map<UUID, List<String>> bazaarHistory = new HashMap<>();
 
     /**
      * Registers a new product in the bazaar.
@@ -369,6 +373,22 @@ public final class BazaarManager {
      */
     public Collection<ProductData> getProducts() {
         return Collections.unmodifiableCollection(products.values());
+    }
+
+    public void recordBazaarEvent(UUID player, String summary) {
+        bazaarHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getBazaarHistory(UUID player) {
+        return Collections.unmodifiableList(bazaarHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllBazaarHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : bazaarHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
     }
 
     // -------------------------------------------------------------------------

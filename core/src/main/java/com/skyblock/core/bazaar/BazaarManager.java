@@ -107,6 +107,14 @@ public class BazaarManager {
         return Collections.unmodifiableList(bazaarHistory.getOrDefault(player, Collections.emptyList()));
     }
 
+    public Map<UUID, List<String>> getAllBazaarHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : bazaarHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
+    }
+
     public List<BazaarOrder> getOrdersForPlayer(UUID player) {
         List<BazaarOrder> result = new ArrayList<>();
         buyOrders.values().stream()
