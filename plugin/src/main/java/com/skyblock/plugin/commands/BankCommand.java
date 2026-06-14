@@ -88,11 +88,11 @@ public final class BankCommand implements CommandExecutor {
 
     private void handleHistory(Player player) {
         List<String> history = BankManager.getInstance().getTransactionHistory(player.getUniqueId());
-        player.sendMessage("=== Transaction History ===");
         if (history.isEmpty()) {
             player.sendMessage("No transaction history found.");
             return;
         }
+        player.sendMessage("=== Transaction History ===");
         for (int i = 0; i < history.size(); i++) {
             player.sendMessage((i + 1) + ". " + history.get(i));
         }
