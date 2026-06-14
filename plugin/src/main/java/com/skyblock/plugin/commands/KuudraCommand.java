@@ -20,7 +20,7 @@ public final class KuudraCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            handleTier(player);
             return true;
         }
 
