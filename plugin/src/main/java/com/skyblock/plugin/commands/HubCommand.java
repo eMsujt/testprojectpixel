@@ -25,23 +25,21 @@ public final class HubCommand implements CommandExecutor {
     private Inventory buildMenu() {
         Inventory inv = Bukkit.createInventory(null, 54, "Hub");
 
-        inv.setItem(10, makeItem(Material.GRASS_BLOCK,     "Garden"));
-        inv.setItem(11, makeItem(Material.IRON_SWORD,      "Slayer"));
-        inv.setItem(12, makeItem(Material.COD,             "Fishing"));
-        inv.setItem(13, makeItem(Material.ENDER_EYE,       "Dungeons"));
-        inv.setItem(14, makeItem(Material.BOOK,            "Skills"));
-        inv.setItem(15, makeItem(Material.ENCHANTING_TABLE,"Enchanting"));
-        inv.setItem(16, makeItem(Material.GOLD_INGOT,      "Auction House"));
-
-        inv.setItem(19, makeItem(Material.EMERALD,         "Bazaar"));
-        inv.setItem(20, makeItem(Material.PLAYER_HEAD,     "Profile"));
-        inv.setItem(21, makeItem(Material.BONE,            "Pets"));
-        inv.setItem(22, makeItem(Material.BLAZE_POWDER,    "Kuudra"));
-        inv.setItem(23, makeItem(Material.CHEST,           "Collections"));
-        inv.setItem(24, makeItem(Material.OAK_SAPLING,     "Island"));
-        inv.setItem(25, makeItem(Material.IRON_PICKAXE,    "Heart of the Mountain"));
-
-        inv.setItem(31, makeItem(Material.GOLD_NUGGET,     "Bank"));
+        inv.setItem(0,  makeItem(Material.GRASS_BLOCK,      "Garden"));
+        inv.setItem(1,  makeItem(Material.IRON_SWORD,       "Slayer"));
+        inv.setItem(2,  makeItem(Material.COD,              "Fishing"));
+        inv.setItem(3,  makeItem(Material.ENDER_EYE,        "Dungeons"));
+        inv.setItem(4,  makeItem(Material.BOOK,             "Skills"));
+        inv.setItem(5,  makeItem(Material.ENCHANTING_TABLE, "Enchanting"));
+        inv.setItem(6,  makeItem(Material.GOLD_INGOT,       "Auction House"));
+        inv.setItem(7,  makeItem(Material.EMERALD,          "Bazaar"));
+        inv.setItem(8,  makeItem(Material.PLAYER_HEAD,      "Profile"));
+        inv.setItem(9,  makeItem(Material.BONE,             "Pets"));
+        inv.setItem(10, makeItem(Material.BLAZE_POWDER,     "Kuudra"));
+        inv.setItem(11, makeItem(Material.CHEST,            "Collections"));
+        inv.setItem(12, makeItem(Material.OAK_SAPLING,      "Island"));
+        inv.setItem(13, makeItem(Material.IRON_PICKAXE,     "Heart of the Mountain"));
+        inv.setItem(14, makeItem(Material.GOLD_NUGGET,      "Bank"));
 
         return inv;
     }
