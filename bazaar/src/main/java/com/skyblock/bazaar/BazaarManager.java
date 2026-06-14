@@ -127,6 +127,19 @@ public final class BazaarManager {
         return Collections.unmodifiableMap(copy);
     }
 
+    public String getBazaarStats(UUID player) {
+        long buys = buyOrders.values().stream()
+                .flatMap(d -> d.stream())
+                .filter(o -> o.playerId().equals(player))
+                .count();
+        long sells = sellOrders.values().stream()
+                .flatMap(d -> d.stream())
+                .filter(o -> o.playerId().equals(player))
+                .count();
+        int events = bazaarHistory.getOrDefault(player, Collections.emptyList()).size();
+        return "Bazaar Stats: Buy Orders: " + buys + " | Sell Orders: " + sells + " | Total Events: " + events;
+    }
+
     public double getBestSellPrice(String productId) {
         Deque<BazaarOrder> deque = sellOrders.get(productId);
         if (deque == null) {
