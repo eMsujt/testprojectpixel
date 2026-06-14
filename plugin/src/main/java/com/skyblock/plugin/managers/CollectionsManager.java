@@ -38,9 +38,10 @@ public final class CollectionsManager {
     }
 
     public void addCollectionCount(UUID playerId, String collection, long amount) {
-        collectionCounts
+        long newTotal = collectionCounts
                 .computeIfAbsent(playerId, k -> new HashMap<>())
                 .merge(collection, amount, Long::sum);
+        recordCollectionEvent(playerId, "Added " + amount + " " + collection + ": total " + newTotal);
     }
 
     public void setCollectionCount(UUID playerId, String collection, long amount) {

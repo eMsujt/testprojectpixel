@@ -28,8 +28,10 @@ public final class CollectionsManager {
         if (amount <= 0) {
             throw new IllegalArgumentException("amount must be positive: " + amount);
         }
-        return perPlayerCounts.computeIfAbsent(playerId, id -> new HashMap<>())
+        long newTotal = perPlayerCounts.computeIfAbsent(playerId, id -> new HashMap<>())
                 .merge(collectionId, amount, Long::sum);
+        recordCollectionEvent(playerId, "Added " + amount + " " + collectionId + ": total " + newTotal);
+        return newTotal;
     }
 
     public long getCount(UUID playerId, String collectionId) {

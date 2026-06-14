@@ -220,8 +220,14 @@ public final class CollectionsManager {
         }
         Map<CollectionType, Long> totals = playerCollections.computeIfAbsent(
                 playerId, id -> new EnumMap<>(CollectionType.class));
+        int tierBefore = getTier(playerId, type);
         long total = totals.getOrDefault(type, 0L) + amount;
         totals.put(type, total);
+        recordCollectionEvent(playerId, "Added " + amount + " " + type.getDisplayName() + ": total " + total);
+        int tierAfter = getTier(playerId, type);
+        if (tierAfter > tierBefore) {
+            recordCollectionEvent(playerId, "Reached tier " + tierAfter + " in " + type.getDisplayName());
+        }
         return total;
     }
 
