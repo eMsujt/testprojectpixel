@@ -29,8 +29,9 @@ public final class BazaarCommand implements CommandExecutor {
             case "price"  -> handlePrice(player, args);
             case "buy"    -> handleBuy(player, args);
             case "sell"   -> handleSell(player, args);
-            case "orders" -> handleOrders(player, args);
-            default       -> sendHelp(player);
+            case "orders"  -> handleOrders(player, args);
+            case "history" -> handleHistory(player, args);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -127,6 +128,23 @@ public final class BazaarCommand implements CommandExecutor {
         player.sendMessage("Best buy offer: " + bestBuy + " coins | Best sell offer: " + bestSell + " coins");
     }
 
+    private void handleHistory(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /bazaar history <item>");
+            return;
+        }
+        String item = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        List<Double> history = BazaarManager.getInstance().getPriceHistory(item);
+        if (history.isEmpty()) {
+            player.sendMessage("No price history found for '" + item + "'.");
+            return;
+        }
+        player.sendMessage("=== Price History: " + item + " (" + history.size() + " entries) ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage("#" + (i + 1) + ": " + history.get(i) + " coins");
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bazaar Commands ===");
         player.sendMessage("/bazaar list           — list all items with prices");
@@ -134,5 +152,6 @@ public final class BazaarCommand implements CommandExecutor {
         player.sendMessage("/bazaar buy <item>     — show buy orders for an item");
         player.sendMessage("/bazaar sell <item>    — show sell orders for an item");
         player.sendMessage("/bazaar orders <item>  — show order summary for an item");
+        player.sendMessage("/bazaar history <item> — show price history for an item");
     }
 }
