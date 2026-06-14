@@ -16,7 +16,7 @@ public final class QuestsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public QuestsMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§aQuests");
+        this.inventory = Bukkit.createInventory(this, 54, "§eQuests & Objectives");
         build();
     }
 
@@ -38,7 +38,7 @@ public final class QuestsMenu implements InventoryHolder, Listener {
             }
         }
 
-        inventory.setItem(22, makeItem(Material.WRITABLE_BOOK, "§6Quests & Objectives"));
+        inventory.setItem(4, makeItem(Material.NETHER_STAR, "§eQuests & Objectives"));
     }
 
     @EventHandler
