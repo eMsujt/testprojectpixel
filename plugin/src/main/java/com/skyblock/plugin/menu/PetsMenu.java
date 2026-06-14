@@ -4,6 +4,9 @@ import com.skyblock.plugin.managers.PetsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -12,7 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 import java.util.UUID;
 
-public final class PetsMenu implements InventoryHolder {
+public final class PetsMenu implements InventoryHolder, Listener {
 
     /** Slot showing the currently equipped pet. */
     private static final int ACTIVE_SLOT = 4;
@@ -23,7 +26,7 @@ public final class PetsMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public PetsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§dPets");
+        this.inventory = Bukkit.createInventory(this, 54, "§9Pets");
         build(player.getUniqueId());
     }
 
@@ -36,11 +39,18 @@ public final class PetsMenu implements InventoryHolder {
         return inventory;
     }
 
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof PetsMenu) {
+            event.setCancelled(true);
+        }
+    }
+
     private void build(UUID playerId) {
         PetsManager pets = PetsManager.getInstance();
         PetsManager.Pet active = pets.getActivePet(playerId);
-        // Black-glass border around the edges of the chest
-        ItemStack pane = makeItem(Material.BLACK_STAINED_GLASS_PANE, "§r");
+        // Gray-glass border around the edges of the chest
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
             int column = slot % 9;
             if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
