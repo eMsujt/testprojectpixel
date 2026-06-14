@@ -31,7 +31,7 @@ public final class BazaarCommand implements CommandExecutor {
             case "buy"    -> handleBuy(player, args);
             case "sell"   -> handleSell(player, args);
             case "orders"  -> handleOrders(player, args);
-            case "history" -> handleHistory(player, args);
+            case "history" -> handleHistory(player);
             default        -> sendHelp(player);
         }
         return true;
@@ -129,14 +129,14 @@ public final class BazaarCommand implements CommandExecutor {
         player.sendMessage("Best buy offer: " + bestBuy + " coins | Best sell offer: " + bestSell + " coins");
     }
 
-    private void handleHistory(Player player, String[] args) {
+    private void handleHistory(Player player) {
         UUID uuid = player.getUniqueId();
-        List<String> history = BazaarManager.getInstance().getOrderHistory(uuid);
+        List<String> history = BazaarManager.getInstance().getBazaarHistory(uuid);
         if (history.isEmpty()) {
-            player.sendMessage("You have no bazaar order history.");
+            player.sendMessage("You have no bazaar history.");
             return;
         }
-        player.sendMessage("=== Bazaar Order History ===");
+        player.sendMessage("=== Bazaar History ===");
         for (int i = 0; i < history.size(); i++) {
             player.sendMessage((i + 1) + ". " + history.get(i));
         }
