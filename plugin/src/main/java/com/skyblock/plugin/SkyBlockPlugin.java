@@ -1,5 +1,6 @@
 package com.skyblock.plugin;
 
+import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.menu.SkyblockMenuCommand;
@@ -39,12 +40,14 @@ public final class SkyBlockPlugin extends JavaPlugin {
         coinManager = new CoinManager();
         dungeonManager = new DungeonManager();
         slayerManager = new SlayerManager();
+        CollectionsManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
     @Override
     public void onDisable() {
+        CollectionsManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
