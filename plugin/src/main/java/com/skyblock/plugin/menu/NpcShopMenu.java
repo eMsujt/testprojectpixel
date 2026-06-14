@@ -97,13 +97,14 @@ public final class NpcShopMenu implements InventoryHolder, Listener {
 
     private static void purchase(Player player, ShopEntry entry) {
         CoinManager coins = CoinManager.getInstance();
-        if (coins.withdraw(player.getUniqueId(), entry.price())) {
-            player.getInventory().addItem(new ItemStack(entry.material()));
-            player.sendMessage("§aPurchased §6" + formatName(entry.material())
-                    + " §afor §6" + entry.price() + " coins§a!");
-        } else {
-            player.sendMessage("§cYou don't have enough coins!");
+        if (coins.getBalance(player.getUniqueId()) < entry.price()) {
+            player.sendMessage("§cInsufficient coins!");
+            return;
         }
+        coins.withdraw(player.getUniqueId(), entry.price());
+        player.getInventory().addItem(new ItemStack(entry.material()));
+        player.sendMessage("§aPurchased §6" + formatName(entry.material())
+                + " §afor §6" + entry.price() + " coins§a!");
     }
 
     private static ItemStack buildIcon(ShopEntry entry) {
