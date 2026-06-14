@@ -33,6 +33,8 @@ public final class SkyBlockProfile implements Serializable {
     private final List<ItemStack> potionBagContents = new ArrayList<>();
     private long purse = 0L;
     private long bank = 0L;
+    private boolean showSkillNotifications = true;
+    private boolean showCollectionNotifications = true;
 
     /**
      * Creates a new profile with no accumulated experience.
@@ -214,6 +216,42 @@ public final class SkyBlockProfile implements Serializable {
     public void setBank(long bank) {
         if (bank < 0) throw new IllegalArgumentException("bank must not be negative");
         this.bank = bank;
+    }
+
+    /**
+     * Returns whether skill-progress notifications are shown to the player.
+     *
+     * @return {@code true} if skill notifications are enabled
+     */
+    public boolean isShowSkillNotifications() {
+        return showSkillNotifications;
+    }
+
+    /**
+     * Sets whether skill-progress notifications are shown to the player.
+     *
+     * @param showSkillNotifications the new setting
+     */
+    public void setShowSkillNotifications(boolean showSkillNotifications) {
+        this.showSkillNotifications = showSkillNotifications;
+    }
+
+    /**
+     * Returns whether collection-progress notifications are shown to the player.
+     *
+     * @return {@code true} if collection notifications are enabled
+     */
+    public boolean isShowCollectionNotifications() {
+        return showCollectionNotifications;
+    }
+
+    /**
+     * Sets whether collection-progress notifications are shown to the player.
+     *
+     * @param showCollectionNotifications the new setting
+     */
+    public void setShowCollectionNotifications(boolean showCollectionNotifications) {
+        this.showCollectionNotifications = showCollectionNotifications;
     }
 
     @Override
