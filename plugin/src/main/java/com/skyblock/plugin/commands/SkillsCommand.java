@@ -19,7 +19,7 @@ public final class SkillsCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            handleStats(player);
             return true;
         }
 
