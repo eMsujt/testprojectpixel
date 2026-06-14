@@ -21,10 +21,13 @@ public final class PetsMenu {
     }
 
     private Inventory buildMenu(UUID playerId) {
-        Inventory inv = Bukkit.createInventory(null, 54, "§5Pets §7(1/1)");
+        Inventory inv = Bukkit.createInventory(null, 54, "§5Pets");
 
         PetsManager pets = PetsManager.getInstance();
         PetsManager.Pet active = pets.getActivePet(playerId);
+        if (active != null) {
+            inv.setItem(4, makeItem(active, true));
+        }
         List<PetsManager.Pet> owned = pets.getPets(playerId);
         for (int i = 0; i < owned.size() && i < SLOTS.length; i++) {
             PetsManager.Pet pet = owned.get(i);
