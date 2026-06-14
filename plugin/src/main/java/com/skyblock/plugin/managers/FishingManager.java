@@ -82,6 +82,7 @@ public final class FishingManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         fishingXp.clear();
         fishCounts.clear();
+        catchHistory.clear();
         if (cfg.isConfigurationSection("xp")) {
             for (String key : cfg.getConfigurationSection("xp").getKeys(false)) {
                 try {
@@ -107,6 +108,19 @@ public final class FishingManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("catchHistory")) {
+            for (String key : cfg.getConfigurationSection("catchHistory").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<String> events = cfg.getStringList("catchHistory." + key);
+                    if (!events.isEmpty()) {
+                        catchHistory.put(uuid, new ArrayList<>(events));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -120,6 +134,9 @@ public final class FishingManager {
             for (Map.Entry<String, Long> fish : entry.getValue().entrySet()) {
                 cfg.set("fishCounts." + uuidKey + "." + fish.getKey(), fish.getValue());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : catchHistory.entrySet()) {
+            cfg.set("catchHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);

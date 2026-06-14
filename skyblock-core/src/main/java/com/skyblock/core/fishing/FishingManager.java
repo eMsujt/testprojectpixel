@@ -7,12 +7,14 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Singleton manager for SkyBlock fishing skill progression and loot rolls.
@@ -267,6 +269,8 @@ public final class FishingManager {
     private final Map<UUID, Integer> totalFishCaught = new HashMap<>();
     /** Per-player per-treasure catch counts. */
     private final Map<UUID, Map<FishingTreasure, Integer>> treasureCounts = new HashMap<>();
+    /** Per-player catch event history. */
+    private final Map<UUID, List<String>> catchHistory = new ConcurrentHashMap<>();
 
     private final Random random = new Random();
 
@@ -473,6 +477,26 @@ public final class FishingManager {
     }
 
     // ---------------------------------------------------------------------------
+    // Catch history
+    // ---------------------------------------------------------------------------
+
+    public void recordCatchEvent(UUID playerId, String summary) {
+        catchHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getCatchHistory(UUID playerId) {
+        return Collections.unmodifiableList(catchHistory.getOrDefault(playerId, new ArrayList<>()));
+    }
+
+    public Map<UUID, List<String>> getAllCatchHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : catchHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
+    }
+
+    // ---------------------------------------------------------------------------
     // Persistence
     // ---------------------------------------------------------------------------
 
@@ -486,6 +510,7 @@ public final class FishingManager {
         fishingLevel.clear();
         totalFishCaught.clear();
         treasureCounts.clear();
+        catchHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -510,6 +535,10 @@ public final class FishingManager {
                         treasureCounts.put(uuid, counts);
                     }
                 }
+                List<String> events = cfg.getStringList(key + ".catchHistory");
+                if (!events.isEmpty()) {
+                    catchHistory.put(uuid, new ArrayList<>(events));
+                }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
             }
@@ -530,6 +559,9 @@ public final class FishingManager {
             for (Map.Entry<FishingTreasure, Integer> t : playerEntry.getValue().entrySet()) {
                 cfg.set(prefix + t.getKey().name(), t.getValue());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : catchHistory.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".catchHistory", entry.getValue());
         }
         try {
             cfg.save(file);
