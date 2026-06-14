@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
 /**
  * The management menu for a single placed {@link Minion}.
  *
- * <p>A 27-slot (3-row) menu titled with the minion's name and tier, e.g.
- * {@code §aCobblestone Minion I}, framed by a {@code GRAY_STAINED_GLASS_PANE}
+ * <p>A 27-slot (3-row) menu titled with the minion's name, e.g.
+ * {@code §6Cobblestone Minion}, framed by a {@code GRAY_STAINED_GLASS_PANE}
  * border. Slot 13 shows the current minion and its tier; a close button sits on
  * the bottom row.</p>
  */
@@ -30,7 +30,7 @@ public class MinionMenu extends Menu {
     private final Minion minion;
 
     public MinionMenu(Minion minion) {
-        super("§a" + minion.type.getDisplayName() + " " + ROMAN[minion.getTier().ordinal() + 1], 3);
+        super("§6" + minion.type.getDisplayName(), 3);
         this.minion = minion;
     }
 
