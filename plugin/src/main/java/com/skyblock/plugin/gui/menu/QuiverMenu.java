@@ -1,56 +1,35 @@
 package com.skyblock.plugin.gui.menu;
 
-import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * The Quiver menu.
  *
- * <p>A 36-slot (4-row) menu with a gray glass-pane border. The two centred
- * inner rows hold fourteen {@code ARROW} quiver slots; each is shown as an
- * empty arrow slot that, when clicked, selects that arrow type and refreshes
- * the menu, matching Hypixel's layout.</p>
+ * <p>A 36-slot (4-row) chest titled {@code §eQuiver}. Slots 0–35 are populated
+ * from the owning {@link SkyBlockProfile}'s quiver contents, one stack per slot,
+ * matching Hypixel's layout.</p>
  */
 public class QuiverMenu extends Menu {
 
-    /** The fourteen centred quiver slots. */
-    private static final int[] QUIVER_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25
-    };
+    private final SkyBlockProfile profile;
 
-    public QuiverMenu() {
-        super("§aQuiver", 4);
+    public QuiverMenu(SkyBlockProfile profile) {
+        super("§eQuiver", 4);
+        this.profile = Objects.requireNonNull(profile, "profile");
     }
 
     @Override
     protected void build() {
-        fillBorder();
-
-        for (int i = 0; i < QUIVER_SLOTS.length; i++) {
-            int slotNumber = i + 1;
-            setItem(QUIVER_SLOTS[i], new ItemBuilder(Material.ARROW)
-                            .displayName("§aArrow Slot " + slotNumber)
-                            .lore(
-                                    "§7Empty",
-                                    "§eClick to select!")
-                            .build(),
-                    event -> open((Player) event.getWhoClicked()));
-        }
-    }
-
-    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
-    private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-        for (int slot = 0; slot < 36; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 27 || column == 0 || column == 8) {
-                setItem(slot, pane);
+        List<ItemStack> contents = profile.getQuiverContents();
+        for (int slot = 0; slot < 36 && slot < contents.size(); slot++) {
+            ItemStack item = contents.get(slot);
+            if (item != null) {
+                setItem(slot, item);
             }
         }
     }

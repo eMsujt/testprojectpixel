@@ -1,7 +1,11 @@
 package com.skyblock.plugin.profile;
 
+import org.bukkit.inventory.ItemStack;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,6 +27,7 @@ public final class SkyBlockProfile implements Serializable {
     private final UUID uuid;
     private final Map<String, Long> skillXp = new HashMap<>();
     private final Map<String, Long> collectionXp = new HashMap<>();
+    private final List<ItemStack> quiverContents = new ArrayList<>();
     private long purse = 0L;
     private long bank = 0L;
 
@@ -144,6 +149,15 @@ public final class SkyBlockProfile implements Serializable {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
         collectionXp.put(collection, amount);
+    }
+
+    /**
+     * Returns the player's quiver contents, one stack per slot.
+     *
+     * @return the live, mutable list of quiver arrow stacks
+     */
+    public List<ItemStack> getQuiverContents() {
+        return quiverContents;
     }
 
     public long getPurse() { return purse; }
