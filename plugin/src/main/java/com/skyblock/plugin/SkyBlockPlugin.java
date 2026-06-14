@@ -1,6 +1,7 @@
 package com.skyblock.plugin;
 
 import com.skyblock.plugin.managers.AuctionHouseManager;
+import com.skyblock.plugin.managers.AuctionManager;
 import com.skyblock.plugin.managers.BankManager;
 import com.skyblock.plugin.managers.BazaarManager;
 import com.skyblock.plugin.managers.CollectionsManager;
@@ -33,6 +34,7 @@ import com.skyblock.plugin.managers.QuestManager;
 import com.skyblock.plugin.managers.TradingManager;
 import com.skyblock.plugin.managers.TimeManager;
 import com.skyblock.plugin.managers.WeatherManager;
+import com.skyblock.plugin.collections.CollectionsListener;
 import com.skyblock.plugin.combat.CombatListener;
 import com.skyblock.plugin.hud.ActionBarManager;
 import com.skyblock.plugin.listeners.FarmingListener;
@@ -97,6 +99,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ProfileManager.getInstance().load(getDataFolder());
         EnchantingManager.getInstance().load(getDataFolder());
         BazaarManager.getInstance().load(getDataFolder());
+        AuctionManager.getInstance();
         FairyManager.getInstance().load(getDataFolder());
         MinionManager.getInstance().load(getDataFolder());
         WardrobeManager.getInstance().load(getDataFolder());
@@ -139,6 +142,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("pets").setExecutor(new PetsCommand());
         getServer().getPluginManager().registerEvents(new FarmingListener(), this);
         getServer().getPluginManager().registerEvents(new CombatListener(), this);
+        getServer().getPluginManager().registerEvents(new CollectionsListener(), this);
         new ActionBarManager().start(this);
         getLogger().info("SkyBlock plugin enabled.");
     }
