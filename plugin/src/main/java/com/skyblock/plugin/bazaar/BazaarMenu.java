@@ -37,7 +37,8 @@ public class BazaarMenu extends Menu {
             Product product = products.get(i);
             setItem(CONTENT_SLOTS[i], new ItemBuilder(product.material())
                     .displayName(product.displayName())
-                    .lore("§7Buy: §6" + product.buyPrice() + " coins")
+                    .lore("§7Category: " + product.category().displayName())
+                    .addLore("§7Buy: §6" + product.buyPrice() + " coins")
                     .addLore("§7Sell: §6" + product.sellPrice() + " coins")
                     .build());
         }
