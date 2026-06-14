@@ -69,6 +69,15 @@ public final class SkillsManager {
         return skillXP.getOrDefault(playerId, new HashMap<>());
     }
 
+    public Map<UUID, Long> getAllSkillXP(String skill) {
+        Map<UUID, Long> result = new HashMap<>();
+        for (Map.Entry<UUID, Map<String, Long>> entry : skillXP.entrySet()) {
+            long xp = entry.getValue().getOrDefault(skill, 0L);
+            result.put(entry.getKey(), xp);
+        }
+        return result;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "skills.yml");
         if (!file.exists()) {
