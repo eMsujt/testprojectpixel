@@ -441,6 +441,9 @@ public final class BazaarManager {
     /** Per-player transaction history. */
     private final Map<UUID, List<String>> playerTransactions = new HashMap<>();
 
+    /** Per-player bazaar event history. */
+    private final Map<UUID, List<String>> bazaarHistory = new HashMap<>();
+
     /** Per-product instant-buy and sell-offer prices. */
     private final Map<String, Double> instantBuyPrices = new HashMap<>();
     private final Map<String, Double> sellOfferPrices = new HashMap<>();
@@ -707,6 +710,39 @@ public final class BazaarManager {
     }
 
     /**
+     * Records a bazaar event summary for the given player.
+     *
+     * @param player  the player's UUID, must not be null
+     * @param summary a short description of the event, must not be null
+     */
+    public void recordBazaarEvent(UUID player, String summary) {
+        Objects.requireNonNull(player, "player");
+        Objects.requireNonNull(summary, "summary");
+        bazaarHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    /**
+     * Returns an unmodifiable view of the bazaar history for the given player.
+     *
+     * @param player the player's UUID, must not be null
+     * @return unmodifiable list of history entries; empty if none recorded
+     */
+    public List<String> getBazaarHistory(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return Collections.unmodifiableList(
+                bazaarHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    /**
+     * Returns an unmodifiable view of all players' bazaar histories.
+     *
+     * @return unmodifiable map of UUID to history entries
+     */
+    public Map<UUID, List<String>> getAllBazaarHistory() {
+        return Collections.unmodifiableMap(bazaarHistory);
+    }
+
+    /**
      * Loads per-player transaction histories and active buy/sell orders from
      * {@code bazaar.yml} inside the given data folder.
      *
@@ -740,6 +776,18 @@ public final class BazaarManager {
                     UUID uuid = UUID.fromString(key);
                     List<String> history = cfg.getStringList("transactions." + key);
                     playerTransactions.put(uuid, new ArrayList<>(history));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+
+        bazaarHistory.clear();
+        if (cfg.isConfigurationSection("bazaarHistory")) {
+            for (String key : cfg.getConfigurationSection("bazaarHistory").getKeys(false)) {
+                try {
+                    bazaarHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("bazaarHistory." + key)));
                 } catch (IllegalArgumentException ignored) {
                     // skip malformed entries
                 }
@@ -816,6 +864,10 @@ public final class BazaarManager {
             cfg.set("transactions." + entry.getKey(), entry.getValue());
         }
 
+        for (Map.Entry<UUID, List<String>> entry : bazaarHistory.entrySet()) {
+            cfg.set("bazaarHistory." + entry.getKey().toString(), entry.getValue());
+        }
+
         for (Map.Entry<String, List<BuyOrder>> entry : buyOrders.entrySet()) {
             List<Map<String, Object>> serialized = new ArrayList<>();
             for (BuyOrder o : entry.getValue()) {
@@ -881,9 +933,10 @@ public final class BazaarManager {
         setSellOfferPrice(product.getItemId(), price);
     }
 
-    /** Removes all stored orders. */
+    /** Removes all stored orders and history. */
     public void clear() {
         buyOrders.clear();
         sellOrders.clear();
+        bazaarHistory.clear();
     }
 }
