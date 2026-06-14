@@ -1,6 +1,9 @@
 package com.skyblock.plugin.minion;
 
 import org.bukkit.Location;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -17,8 +20,11 @@ import java.util.UUID;
  * <p>Backed by a {@code Map<Location, MinionData>} keyed by the block location a
  * minion occupies, so a placed minion can be resolved from its position. Not
  * thread-safe; synchronize externally if accessed from multiple threads.</p>
+ *
+ * <p>Registered as a Bukkit {@link Listener} so that breaking the block a
+ * minion occupies stops tracking it.</p>
  */
-public final class MinionManager {
+public final class MinionManager implements Listener {
 
     private static final MinionManager INSTANCE = new MinionManager();
 
@@ -100,6 +106,16 @@ public final class MinionManager {
     public MinionData removeMinion(Location location) {
         Objects.requireNonNull(location, "location");
         return minions.remove(location);
+    }
+
+    /**
+     * Stops tracking a minion when the block it occupies is broken.
+     *
+     * @param event the block break event
+     */
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        removeMinion(event.getBlock().getLocation());
     }
 
     /**
