@@ -3,32 +3,51 @@ package com.skyblock.plugin.menu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public final class BazaarMenu {
+public final class BazaarMenu implements InventoryHolder, Listener {
 
-    public void open(Player player) {
-        player.openInventory(buildMenu());
+    private final Inventory inventory;
+
+    public BazaarMenu() {
+        this.inventory = Bukkit.createInventory(this, 54, "§6Bazaar");
+        build();
     }
 
-    private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§6Bazaar");
+    public void open(Player player) {
+        player.openInventory(inventory);
+    }
 
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    private void build() {
         // Title item
-        inv.setItem(4, makeItem(Material.GOLD_INGOT, "§6Bazaar"));
+        inventory.setItem(4, makeItem(Material.GOLD_INGOT, "§6Bazaar"));
 
         // Category selector — Hypixel's Bazaar groupings
-        inv.setItem(10, makeItem(Material.GOLDEN_HOE,     "§aFarming"));
-        inv.setItem(11, makeItem(Material.STONE_PICKAXE,  "§aMining"));
-        inv.setItem(12, makeItem(Material.IRON_SWORD,     "§aCombat"));
-        inv.setItem(13, makeItem(Material.OAK_SAPLING,    "§aWoods & Fishes"));
-        inv.setItem(14, makeItem(Material.QUARTZ,         "§aOdds & Ends"));
-        inv.setItem(15, makeItem(Material.MAP,            "§aSpecial Items"));
-        inv.setItem(16, makeItem(Material.ENCHANTED_BOOK, "§aEnchantments"));
+        inventory.setItem(10, makeItem(Material.GOLDEN_HOE,     "§aFarming"));
+        inventory.setItem(11, makeItem(Material.STONE_PICKAXE,  "§aMining"));
+        inventory.setItem(12, makeItem(Material.IRON_SWORD,     "§aCombat"));
+        inventory.setItem(13, makeItem(Material.OAK_SAPLING,    "§aWoods & Fishes"));
+        inventory.setItem(14, makeItem(Material.QUARTZ,         "§aOdds & Ends"));
+        inventory.setItem(15, makeItem(Material.MAP,            "§aSpecial Items"));
+        inventory.setItem(16, makeItem(Material.ENCHANTED_BOOK, "§aEnchantments"));
+    }
 
-        return inv;
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof BazaarMenu) {
+            event.setCancelled(true);
+        }
     }
 
     private ItemStack makeItem(Material material, String name) {
