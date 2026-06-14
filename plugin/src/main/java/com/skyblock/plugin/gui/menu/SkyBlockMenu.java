@@ -110,7 +110,7 @@ public class SkyBlockMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new SettingsMenu().open(player);
+                    new SettingsMenu(player).open(player);
                 });
     }
 
