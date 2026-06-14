@@ -18,8 +18,10 @@ public final class HOTMManager {
 
     private static final HOTMManager INSTANCE = new HOTMManager();
 
-    private final Map<UUID, Integer> hotmLevel = new HashMap<>();
-    private final Map<UUID, Double>  hotmXP    = new HashMap<>();
+    private final Map<UUID, Integer> hotmLevel   = new HashMap<>();
+    private final Map<UUID, Double>  hotmXP      = new HashMap<>();
+    private final Map<UUID, Integer> totalPowder = new HashMap<>();
+    private final Map<UUID, Integer> tokensSpent = new HashMap<>();
 
     private HOTMManager() {}
 
@@ -59,6 +61,22 @@ public final class HOTMManager {
         hotmXP.put(playerId, xp);
     }
 
+    public int getTotalPowder(UUID playerId) {
+        return totalPowder.getOrDefault(playerId, 0);
+    }
+
+    public void addTotalPowder(UUID playerId, int amount) {
+        totalPowder.merge(playerId, amount, Integer::sum);
+    }
+
+    public int getTokensSpent(UUID playerId) {
+        return tokensSpent.getOrDefault(playerId, 0);
+    }
+
+    public void addTokensSpent(UUID playerId, int amount) {
+        tokensSpent.merge(playerId, amount, Integer::sum);
+    }
+
     public Map<UUID, Integer> getHotmLevels() {
         return Collections.unmodifiableMap(hotmLevel);
     }
@@ -71,6 +89,8 @@ public final class HOTMManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         hotmLevel.clear();
         hotmXP.clear();
+        totalPowder.clear();
+        tokensSpent.clear();
         if (cfg.isConfigurationSection("hotmLevel")) {
             for (String uuidKey : cfg.getConfigurationSection("hotmLevel").getKeys(false)) {
                 try {
@@ -89,6 +109,24 @@ public final class HOTMManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("totalPowder")) {
+            for (String uuidKey : cfg.getConfigurationSection("totalPowder").getKeys(false)) {
+                try {
+                    totalPowder.put(UUID.fromString(uuidKey), cfg.getInt("totalPowder." + uuidKey));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("tokensSpent")) {
+            for (String uuidKey : cfg.getConfigurationSection("tokensSpent").getKeys(false)) {
+                try {
+                    tokensSpent.put(UUID.fromString(uuidKey), cfg.getInt("tokensSpent." + uuidKey));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -99,6 +137,12 @@ public final class HOTMManager {
         }
         for (Map.Entry<UUID, Double> entry : hotmXP.entrySet()) {
             cfg.set("hotmXP." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Integer> entry : totalPowder.entrySet()) {
+            cfg.set("totalPowder." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Integer> entry : tokensSpent.entrySet()) {
+            cfg.set("tokensSpent." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);

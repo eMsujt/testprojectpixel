@@ -25,6 +25,7 @@ public final class HOTMCommand implements CommandExecutor {
         switch (args[0].toLowerCase()) {
             case "level" -> handleLevel(player);
             case "set"   -> handleSet(player, args);
+            case "stats" -> handleStats(player);
             default      -> sendHelp(player);
         }
         return true;
@@ -51,6 +52,14 @@ public final class HOTMCommand implements CommandExecutor {
         }
         HOTMManager.getInstance().setHotmLevel(player.getUniqueId(), level);
         player.sendMessage("HOTM level set to " + HOTMManager.getInstance().getHotmLevel(player.getUniqueId()) + ".");
+    }
+
+    private void handleStats(Player player) {
+        UUID id = player.getUniqueId();
+        HOTMManager mgr = HOTMManager.getInstance();
+        player.sendMessage("=== HOTM Stats ===");
+        player.sendMessage("Total Powder: " + mgr.getTotalPowder(id));
+        player.sendMessage("Tokens Spent: " + mgr.getTokensSpent(id));
     }
 
     private void sendHelp(Player player) {
