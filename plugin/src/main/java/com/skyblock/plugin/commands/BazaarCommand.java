@@ -129,19 +129,15 @@ public final class BazaarCommand implements CommandExecutor {
     }
 
     private void handleHistory(Player player, String[] args) {
-        if (args.length < 2) {
-            player.sendMessage("Usage: /bazaar history <item>");
-            return;
-        }
-        String item = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-        List<Double> history = BazaarManager.getInstance().getPriceHistory(item);
+        java.util.UUID uuid = player.getUniqueId();
+        List<String> history = BazaarManager.getInstance().getOrderHistory(uuid);
         if (history.isEmpty()) {
-            player.sendMessage("No price history found for '" + item + "'.");
+            player.sendMessage("You have no bazaar order history.");
             return;
         }
-        player.sendMessage("=== Price History: " + item + " (" + history.size() + " entries) ===");
+        player.sendMessage("=== Bazaar Order History (" + history.size() + " entries) ===");
         for (int i = 0; i < history.size(); i++) {
-            player.sendMessage("#" + (i + 1) + ": " + history.get(i) + " coins");
+            player.sendMessage("#" + (i + 1) + ": " + history.get(i));
         }
     }
 
@@ -152,6 +148,6 @@ public final class BazaarCommand implements CommandExecutor {
         player.sendMessage("/bazaar buy <item>     — show buy orders for an item");
         player.sendMessage("/bazaar sell <item>    — show sell orders for an item");
         player.sendMessage("/bazaar orders <item>  — show order summary for an item");
-        player.sendMessage("/bazaar history <item> — show price history for an item");
+        player.sendMessage("/bazaar history        — show your bazaar order history");
     }
 }
