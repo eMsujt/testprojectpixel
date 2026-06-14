@@ -153,6 +153,14 @@ public final class HOTMManager {
         return Collections.unmodifiableMap(hotmLevel);
     }
 
+    public String getMiningStats(UUID playerId) {
+        return "HOTM Level: " + getHOTMLevel(playerId)
+                + " | Mithril Powder: " + getMithrilPowder(playerId)
+                + " | Gemstone Powder: " + getGemstonePowder(playerId)
+                + " | Total Powder: " + getTotalPowder(playerId)
+                + " | Tokens Spent: " + getTokensSpent(playerId);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "hotm.yml");
         if (!file.exists()) {
