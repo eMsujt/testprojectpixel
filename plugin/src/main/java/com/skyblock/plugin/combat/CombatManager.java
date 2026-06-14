@@ -54,16 +54,15 @@ public final class CombatManager implements Listener {
     }
 
     /**
-     * Calculates the melee damage of a hit from the given integer stats.
+     * Calculates the melee damage of a hit from the given combat stats.
      *
      * @param weaponDamage      base weapon damage stat, clamped to &ge; 0
      * @param strength          attacker's strength stat, clamped to &ge; 0
-     * @param critChancePercent chance to land a critical hit as a percentage, e.g. {@code 30} for 30 %
-     * @param critDamagePercent crit damage bonus as a percentage, e.g. {@code 50} for +50 %
-     * @return the final damage dealt, rounded to the nearest int, never negative
+     * @param critChancePercent chance to land a critical hit as a percentage, e.g. {@code 30.0} for 30 %
+     * @param critDamagePercent crit damage bonus as a percentage, e.g. {@code 50.0} for +50 %
+     * @return the final damage dealt, never negative
      */
-    public static int calculateDamage(int weaponDamage, int strength, int critChancePercent, int critDamagePercent) {
-        double damage = DamageFormula.calculate(weaponDamage, strength, critChancePercent, critDamagePercent);
-        return (int) Math.round(damage);
+    public double calculateDamage(double weaponDamage, double strength, double critChancePercent, double critDamagePercent) {
+        return DamageFormula.calculate(weaponDamage, strength, critChancePercent, critDamagePercent);
     }
 }
