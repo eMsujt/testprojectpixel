@@ -33,13 +33,27 @@ public final class CollectionManager implements Listener {
     public void register(JavaPlugin owningPlugin) {
         this.plugin = owningPlugin;
         this.collectionsDir = new File(owningPlugin.getDataFolder(), "collections");
+        CollectionTierManager.getInstance().load(owningPlugin);
         owningPlugin.getServer().getPluginManager().registerEvents(this, owningPlugin);
     }
 
-    public void addCollection(UUID playerId, Material material, long amount) {
-        collections
-                .computeIfAbsent(playerId, k -> new EnumMap<>(Material.class))
-                .merge(material, amount, Long::sum);
+    /**
+     * Adds to a player's collection and returns the number of tiers newly
+     * unlocked by this addition (0 if none, or the collection has no tiers).
+     */
+    public int addCollection(UUID playerId, Material material, long amount) {
+        Map<Material, Long> counts = collections.computeIfAbsent(playerId, k -> new EnumMap<>(Material.class));
+        long before = counts.getOrDefault(material, 0L);
+        long after = before + amount;
+        counts.put(material, after);
+
+        CollectionTierManager tiers = CollectionTierManager.getInstance();
+        return tiers.getTier(material.name(), after) - tiers.getTier(material.name(), before);
+    }
+
+    /** Returns the tier the player has unlocked for the given collection. */
+    public int getTier(UUID playerId, Material material) {
+        return CollectionTierManager.getInstance().getTier(material.name(), getCollection(playerId, material));
     }
 
     public long getCollection(UUID playerId, Material material) {
