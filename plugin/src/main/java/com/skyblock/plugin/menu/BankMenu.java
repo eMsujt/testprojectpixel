@@ -17,17 +17,17 @@ import java.util.List;
 
 public final class BankMenu implements InventoryHolder, Listener {
 
-    private static final String TITLE = "§6Bank";
-    private static final int SIZE = 54;
+    private static final String TITLE = "§6Bank Account";
+    private static final int SIZE = 27;
 
     /** Slot showing the GOLD_INGOT with the current bank balance. */
     private static final int BALANCE_SLOT = 13;
     /** Slot for the Deposit All button. */
-    private static final int DEPOSIT_SLOT = 29;
+    private static final int DEPOSIT_SLOT = 11;
     /** Slot for the Withdraw All button. */
-    private static final int WITHDRAW_SLOT = 33;
+    private static final int WITHDRAW_SLOT = 15;
     /** Slot for the close button. */
-    private static final int CLOSE_SLOT = 49;
+    private static final int CLOSE_SLOT = 16;
 
     private final Inventory inventory;
 
