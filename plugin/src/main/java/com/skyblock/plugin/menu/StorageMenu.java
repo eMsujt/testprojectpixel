@@ -16,7 +16,7 @@ public final class StorageMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public StorageMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§aStorage");
+        this.inventory = Bukkit.createInventory(this, 45, "§aStorage");
         build();
     }
 
@@ -30,15 +30,15 @@ public final class StorageMenu implements InventoryHolder, Listener {
     }
 
     private void build() {
+        // Rows 1-5 (slots 0-35) hold the player's stored items and are left empty.
+        // The final row (slots 36-44) is the controls row.
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                inventory.setItem(slot, pane);
-            }
+        for (int slot = 36; slot < 45; slot++) {
+            inventory.setItem(slot, pane);
         }
 
-        inventory.setItem(22, makeItem(Material.CHEST, "§aStorage"));
+        inventory.setItem(36, makeItem(Material.ARROW, "§aGo Back"));
+        inventory.setItem(44, makeItem(Material.BARRIER, "§cClose"));
     }
 
     @EventHandler
