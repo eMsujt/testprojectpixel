@@ -110,9 +110,11 @@ public final class EnchantingManager {
             if (entry != null) {
                 entry.remove(key);
             }
+            recordEnchantingEvent(playerId, "Disenchanted " + key);
             return;
         }
         enchantments.computeIfAbsent(playerId, k -> new HashMap<>()).put(key, level);
+        recordEnchantingEvent(playerId, "Enchanted " + key + " level " + level);
     }
 
     /**

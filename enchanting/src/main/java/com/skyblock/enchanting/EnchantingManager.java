@@ -94,6 +94,7 @@ public final class EnchantingManager {
         }
         itemEnchants.computeIfAbsent(itemId, id -> new EnumMap<>(EnchantType.class))
                 .put(type, level);
+        recordEnchantingEvent(itemId, "Enchanted " + type.name() + " level " + level);
     }
 
     /**
@@ -111,6 +112,7 @@ public final class EnchantingManager {
         if (enchants.isEmpty()) {
             itemEnchants.remove(itemId);
         }
+        recordEnchantingEvent(itemId, "Disenchanted " + type.name());
         return true;
     }
 
