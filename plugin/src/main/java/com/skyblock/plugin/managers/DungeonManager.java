@@ -18,11 +18,28 @@ public final class DungeonManager {
     private static final DungeonManager INSTANCE = new DungeonManager();
 
     private final Map<UUID, Map<String, Integer>> playerCompletions = new HashMap<>();
+    private final Map<UUID, Integer> dungeonFloor = new HashMap<>();
 
     private DungeonManager() {}
 
     public static DungeonManager getInstance() {
         return INSTANCE;
+    }
+
+    public int getDungeonFloor(UUID playerId) {
+        return dungeonFloor.getOrDefault(playerId, 1);
+    }
+
+    public void setDungeonFloor(UUID playerId, int floor) {
+        dungeonFloor.put(playerId, Math.max(1, Math.min(7, floor)));
+    }
+
+    public void addDungeonFloor(UUID playerId, int amount) {
+        setDungeonFloor(playerId, getDungeonFloor(playerId) + amount);
+    }
+
+    public Map<UUID, Integer> getDungeonFloors() {
+        return Collections.unmodifiableMap(dungeonFloor);
     }
 
     public int getCompletions(UUID playerId, String floor) {
@@ -48,6 +65,16 @@ public final class DungeonManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerCompletions.clear();
+        dungeonFloor.clear();
+        if (cfg.isConfigurationSection("floor")) {
+            for (String uuidKey : cfg.getConfigurationSection("floor").getKeys(false)) {
+                try {
+                    dungeonFloor.put(UUID.fromString(uuidKey), cfg.getInt("floor." + uuidKey));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
         if (cfg.isConfigurationSection("completions")) {
             for (String uuidKey : cfg.getConfigurationSection("completions").getKeys(false)) {
                 try {
@@ -69,6 +96,9 @@ public final class DungeonManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "dungeons.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Integer> entry : dungeonFloor.entrySet()) {
+            cfg.set("floor." + entry.getKey().toString(), entry.getValue());
+        }
         for (Map.Entry<UUID, Map<String, Integer>> playerEntry : playerCompletions.entrySet()) {
             String uuidKey = "completions." + playerEntry.getKey().toString();
             for (Map.Entry<String, Integer> floorEntry : playerEntry.getValue().entrySet()) {
