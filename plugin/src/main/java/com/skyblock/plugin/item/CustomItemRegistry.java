@@ -15,7 +15,7 @@ import java.util.Map;
  * YAML-driven registry of custom {@link ItemRegistry.ItemDefinition custom item}
  * definitions loaded from {@code items.yml} on startup.
  *
- * <p>The bundled {@code items.yml} is copied out of the jar on first run and
+ * <p>The bundled {@code items/custom_items.yml} is copied out of the jar on first run and
  * parsed: every key under the {@code items} section is an item-id mapped to its
  * {@code displayName}, {@link Material}, {@code rarity} and the combat/defensive
  * stats it grants. Loaded definitions are held in memory and looked up by id.</p>
@@ -34,15 +34,15 @@ public final class CustomItemRegistry {
     }
 
     /**
-     * Copies the bundled {@code items.yml} out of the jar on first run, then
+     * Copies the bundled {@code items/custom_items.yml} out of the jar on first run, then
      * parses every item definition into memory.
      *
      * @param plugin the owning plugin, used for resource extraction and logging
      */
     public void load(JavaPlugin plugin) {
-        File file = new File(plugin.getDataFolder(), "items.yml");
-        if (!file.exists() && plugin.getResource("items.yml") != null) {
-            plugin.saveResource("items.yml", false);
+        File file = new File(plugin.getDataFolder(), "items/custom_items.yml");
+        if (!file.exists() && plugin.getResource("items/custom_items.yml") != null) {
+            plugin.saveResource("items/custom_items.yml", false);
         }
         if (!file.exists()) {
             return;
