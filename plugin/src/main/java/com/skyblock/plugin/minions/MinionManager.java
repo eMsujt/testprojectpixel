@@ -1,5 +1,8 @@
 package com.skyblock.plugin.minions;
 
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,11 +85,27 @@ public final class MinionManager {
         }
     }
 
-    /** Upgrade tiers a minion can reach. */
+    /** Upgrade tiers a minion can reach. Higher tiers produce faster. */
     public enum MinionTier {
-        TIER_1, TIER_2, TIER_3, TIER_4, TIER_5,
-        TIER_6, TIER_7, TIER_8, TIER_9, TIER_10,
-        TIER_11
+        TIER_1(30), TIER_2(27), TIER_3(24), TIER_4(22), TIER_5(20),
+        TIER_6(18), TIER_7(16), TIER_8(14), TIER_9(12), TIER_10(10),
+        TIER_11(8);
+
+        private final int intervalSeconds;
+
+        MinionTier(int intervalSeconds) {
+            this.intervalSeconds = intervalSeconds;
+        }
+
+        /** Seconds between each resource this tier produces. */
+        public int getIntervalSeconds() {
+            return intervalSeconds;
+        }
+
+        /** Ticks between each resource this tier produces. */
+        public long getIntervalTicks() {
+            return intervalSeconds * 20L;
+        }
     }
 
     /** Mutable state for a single placed minion. */
@@ -96,12 +115,15 @@ public final class MinionManager {
         public final MinionType type;
         private MinionTier tier;
         private String location;
+        private int stored;
+        private long ticksRemaining;
 
         public PlacedMinion(UUID id, UUID owner, MinionType type, MinionTier tier) {
             this.id = Objects.requireNonNull(id, "id");
             this.owner = Objects.requireNonNull(owner, "owner");
             this.type = Objects.requireNonNull(type, "type");
             this.tier = Objects.requireNonNull(tier, "tier");
+            this.ticksRemaining = tier.getIntervalTicks();
         }
 
         public MinionType getType() {
@@ -124,10 +146,43 @@ public final class MinionManager {
         public void setLocation(String location) {
             this.location = location;
         }
+
+        /** Number of resources this minion has produced and not yet collected. */
+        public int getStored() {
+            return stored;
+        }
+
+        /**
+         * Advances this minion by the given number of elapsed ticks, producing
+         * one resource into storage each time its tier interval is reached.
+         *
+         * @param ticks elapsed ticks since the last advance
+         */
+        void advance(long ticks) {
+            ticksRemaining -= ticks;
+            while (ticksRemaining <= 0) {
+                stored++;
+                ticksRemaining += tier.getIntervalTicks();
+            }
+        }
+
+        /**
+         * Collects all stored resources, resetting the count to zero.
+         *
+         * @return the number of resources collected
+         */
+        public int collect() {
+            int amount = stored;
+            stored = 0;
+            return amount;
+        }
     }
 
     /** Base number of minion slots each player is allowed. */
     public static final int MAX_SLOTS = 11;
+
+    /** Ticks between successive production runs of the global minion task. */
+    private static final long TICK_PERIOD = 20L;
 
     private static final MinionManager INSTANCE = new MinionManager();
 
@@ -139,6 +194,32 @@ public final class MinionManager {
 
     public static MinionManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Starts the repeating production task. Every {@link #TICK_PERIOD} ticks
+     * each placed minion is advanced, producing resources into its storage
+     * once it reaches its tier's production interval.
+     *
+     * @param plugin the plugin used to schedule the task
+     */
+    public void start(JavaPlugin plugin) {
+        Objects.requireNonNull(plugin, "plugin");
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                tick();
+            }
+        }.runTaskTimer(plugin, TICK_PERIOD, TICK_PERIOD);
+    }
+
+    /** Advances every placed minion by one {@link #TICK_PERIOD} production cycle. */
+    void tick() {
+        for (List<PlacedMinion> list : minions.values()) {
+            for (PlacedMinion minion : list) {
+                minion.advance(TICK_PERIOD);
+            }
+        }
     }
 
     /**
