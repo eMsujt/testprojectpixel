@@ -17,7 +17,7 @@ public class BankMenu extends Menu {
     private final Player player;
 
     public BankMenu(Player player) {
-        super("§6Bank Account", 6);
+        super("§6Bank & Purse", 6);
         this.player = player;
     }
 
@@ -34,7 +34,7 @@ public class BankMenu extends Menu {
                 .build());
 
         setItem(BANK_SLOT, new ItemBuilder(Material.GOLD_INGOT)
-                .displayName("§6You")
+                .displayName("§6Bank")
                 .lore("§7Bank Balance: §6" + bank.getBank(id))
                 .build());
     }
