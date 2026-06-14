@@ -76,12 +76,8 @@ public final class BankCommand implements CommandExecutor {
                 return;
             }
             BankManager manager = BankManager.getInstance();
-            boolean success = manager.withdraw(player.getUniqueId(), amount);
-            if (success) {
-                player.sendMessage("Withdrew " + amount + " coins. Balance: " + manager.getBalance(player.getUniqueId()));
-            } else {
-                player.sendMessage("Insufficient funds.");
-            }
+            manager.withdraw(player.getUniqueId(), amount);
+            player.sendMessage("Withdrew " + amount + " coins. Balance: " + manager.getBalance(player.getUniqueId()));
         } catch (NumberFormatException e) {
             player.sendMessage("Invalid amount: " + args[1]);
         } catch (IllegalArgumentException e) {
