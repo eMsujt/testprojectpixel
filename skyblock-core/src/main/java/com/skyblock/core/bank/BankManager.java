@@ -65,6 +65,7 @@ public final class BankManager {
 
     /** Per-player bank accounts keyed by UUID. */
     private final Map<UUID, BankAccount> accounts = new HashMap<>();
+    private final Map<UUID, List<String>> bankHistory = new HashMap<>();
     private final Map<UUID, BankTier> tiers = new HashMap<>();
     private final Map<UUID, BankType> bankTypes = new HashMap<>();
     /** Shared co-op balances keyed by co-op name; absent entries default to zero. */
@@ -252,6 +253,18 @@ public final class BankManager {
     public boolean removeCoop(String coopName) {
         Objects.requireNonNull(coopName, "coopName");
         return coopBalances.remove(coopName) != null;
+    }
+
+    public void recordBankEvent(UUID playerUuid, String summary) {
+        bankHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getBankHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(bankHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllBankHistory() {
+        return Collections.unmodifiableMap(bankHistory);
     }
 
     /**

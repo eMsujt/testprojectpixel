@@ -2,13 +2,17 @@ package com.skyblock.core.bank;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public class BankManager {
 
     private final Map<UUID, Double> balances = new HashMap<>();
+    private final Map<UUID, List<String>> bankHistory = new HashMap<>();
 
     public double getBalance(UUID playerId) {
         return balances.getOrDefault(playerId, 0.0);
@@ -31,6 +35,18 @@ public class BankManager {
         for (Map.Entry<UUID, Double> entry : balances.entrySet()) {
             config.set("banks." + entry.getKey().toString(), entry.getValue());
         }
+    }
+
+    public void recordBankEvent(UUID playerUuid, String summary) {
+        bankHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getBankHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(bankHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllBankHistory() {
+        return Collections.unmodifiableMap(bankHistory);
     }
 
     public void loadBanks(FileConfiguration config) {
