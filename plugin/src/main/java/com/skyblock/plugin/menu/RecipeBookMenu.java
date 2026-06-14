@@ -22,7 +22,7 @@ public final class RecipeBookMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public RecipeBookMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§6Recipe Book");
+        this.inventory = Bukkit.createInventory(this, 54, "§eRecipe Book");
         build();
     }
 
