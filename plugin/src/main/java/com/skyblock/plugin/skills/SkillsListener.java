@@ -29,6 +29,8 @@ public final class SkillsListener implements Listener {
     );
 
     private static final Map<Material, Long> ORE_XP = Map.ofEntries(
+            Map.entry(Material.STONE,          1L),
+            Map.entry(Material.COBBLESTONE,    1L),
             Map.entry(Material.COAL_ORE,       5L),
             Map.entry(Material.IRON_ORE,       8L),
             Map.entry(Material.GOLD_ORE,       12L),
