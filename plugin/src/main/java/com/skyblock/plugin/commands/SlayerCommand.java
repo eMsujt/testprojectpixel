@@ -1,7 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.core.slayer.SlayerManager;
-import com.skyblock.core.slayer.SlayerManager.SlayerType;
+import com.skyblock.plugin.managers.SlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,64 +19,57 @@ public final class SlayerCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            handleSummary(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "stats"  -> handleStats(player);
-            case "types"  -> handleTypes(player);
-            case "cancel" -> handleCancel(player);
-            default       -> sendHelp(player);
+            case "stats" -> handleStats(player);
+            default      -> sendHelp(player);
         }
         return true;
+    }
+
+    private void handleSummary(Player player) {
+        UUID id = player.getUniqueId();
+        SlayerManager manager = SlayerManager.getInstance();
+        Map<String, Long> kills = manager.getKillCounts(id);
+        Map<String, Long> xp = manager.getSlayerXp(id);
+
+        long totalKills = kills.values().stream().mapToLong(Long::longValue).sum();
+        long totalXp = xp.values().stream().mapToLong(Long::longValue).sum();
+
+        player.sendMessage("=== Slayer Summary ===");
+        player.sendMessage("Total kills: " + totalKills + "  |  Total XP: " + totalXp);
+        player.sendMessage("Use /slayer stats for a per-boss breakdown.");
     }
 
     private void handleStats(Player player) {
         UUID id = player.getUniqueId();
         SlayerManager manager = SlayerManager.getInstance();
+        Map<String, Long> kills = manager.getKillCounts(id);
+        Map<String, Long> xp = manager.getSlayerXp(id);
 
         player.sendMessage("=== Slayer Stats ===");
-        for (SlayerType type : SlayerType.values()) {
-            long xp = manager.getExperience(id, type);
-            int level = manager.getLevel(id, type);
-            int kills = manager.getKillCount(id, type);
-            player.sendMessage(type.getDisplayName() + " — Level: " + level
-                    + ", XP: " + xp + ", Kills: " + kills);
+        if (kills.isEmpty() && xp.isEmpty()) {
+            player.sendMessage("You have not defeated any slayer bosses yet.");
+            return;
         }
-
-        SlayerManager.SlayerQuest quest = manager.getActiveQuest(id);
-        if (quest != null) {
-            player.sendMessage("Active quest: " + quest.type.getDisplayName()
-                    + " " + quest.tier.name() + " — Kills: " + quest.getKills()
-                    + ", Boss spawned: " + quest.isBossSpawned());
-        } else {
-            player.sendMessage("No active slayer quest.");
+        for (String boss : kills.keySet()) {
+            long k = kills.getOrDefault(boss, 0L);
+            long x = xp.getOrDefault(boss, 0L);
+            player.sendMessage(boss + " — Kills: " + k + ", XP: " + x);
         }
-    }
-
-    private void handleTypes(Player player) {
-        player.sendMessage("=== Slayer Types ===");
-        for (Map.Entry<String, int[]> entry : SlayerManager.SLAYER_BOSS_DATA.entrySet()) {
-            int[] data = entry.getValue();
-            player.sendMessage(entry.getKey() + " — Max level: " + data[0]
-                    + ", Activation cost: " + data[1] + " coins");
-        }
-    }
-
-    private void handleCancel(Player player) {
-        boolean cancelled = SlayerManager.getInstance().cancelQuest(player.getUniqueId());
-        if (cancelled) {
-            player.sendMessage("Your active slayer quest has been cancelled.");
-        } else {
-            player.sendMessage("You have no active slayer quest to cancel.");
+        for (String boss : xp.keySet()) {
+            if (!kills.containsKey(boss)) {
+                player.sendMessage(boss + " — Kills: 0, XP: " + xp.get(boss));
+            }
         }
     }
 
     private void sendHelp(Player player) {
         player.sendMessage("=== Slayer Commands ===");
-        player.sendMessage("/slayer stats   — show your slayer XP, levels, and active quest");
-        player.sendMessage("/slayer types   — list all slayer types with max level and cost");
-        player.sendMessage("/slayer cancel  — cancel your active slayer quest");
+        player.sendMessage("/slayer        — show your total slayer kills and XP");
+        player.sendMessage("/slayer stats  — show per-boss kills and XP breakdown");
     }
 }
