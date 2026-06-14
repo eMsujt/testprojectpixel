@@ -144,6 +144,22 @@ public final class BankManager {
         return Collections.unmodifiableMap(bankHistory);
     }
 
+    public String getBankStats(UUID playerId) {
+        double totalDeposited = 0;
+        double totalWithdrawn = 0;
+        for (String entry : getBankHistory(playerId)) {
+            try {
+                if (entry.startsWith("Deposited ")) {
+                    totalDeposited += Double.parseDouble(entry.split(" ")[1]);
+                } else if (entry.startsWith("Withdrew ")) {
+                    totalWithdrawn += Double.parseDouble(entry.split(" ")[1]);
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+        long balance = hasAccount(playerId) ? getBalance(playerId) : 0L;
+        return "Bank Stats: Balance: " + balance + " | Deposited: " + totalDeposited + " | Withdrawn: " + totalWithdrawn;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "bank.yml");
         if (!file.exists()) return;
