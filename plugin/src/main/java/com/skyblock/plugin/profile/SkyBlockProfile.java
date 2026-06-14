@@ -29,6 +29,7 @@ public final class SkyBlockProfile implements Serializable {
     private final Map<String, Long> collectionXp = new HashMap<>();
     private final List<ItemStack> quiverContents = new ArrayList<>();
     private final List<ItemStack> fishingBagContents = new ArrayList<>();
+    private final List<ItemStack> potionBagContents = new ArrayList<>();
     private long purse = 0L;
     private long bank = 0L;
 
@@ -168,6 +169,15 @@ public final class SkyBlockProfile implements Serializable {
      */
     public List<ItemStack> getFishingBagContents() {
         return fishingBagContents;
+    }
+
+    /**
+     * Returns the player's potion bag contents, one stack per slot.
+     *
+     * @return the live, mutable list of potion bag stacks
+     */
+    public List<ItemStack> getPotionBagContents() {
+        return potionBagContents;
     }
 
     public long getPurse() { return purse; }
