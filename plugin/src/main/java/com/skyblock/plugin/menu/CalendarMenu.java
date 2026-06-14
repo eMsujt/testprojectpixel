@@ -12,8 +12,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
 public final class CalendarMenu implements InventoryHolder, Listener {
+
+    private final Plugin plugin;
 
     // SkyBlock time: 1 day = 20 real minutes, 1 month = 31 days, 1 year = 12 months.
     private static final long REAL_MS_PER_SB_DAY = 20L * 60L * 1000L;
@@ -29,8 +32,10 @@ public final class CalendarMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
 
-    public CalendarMenu() {
+    public CalendarMenu(Plugin plugin) {
+        this.plugin = plugin;
         this.inventory = Bukkit.createInventory(this, 54, "§aSkyBlock Calendar");
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         build();
     }
 
