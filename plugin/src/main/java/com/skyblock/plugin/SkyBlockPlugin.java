@@ -24,6 +24,7 @@ import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.command.auctionhouse.AuctionHouseCommand;
 import com.skyblock.plugin.managers.CooldownManager;
+import com.skyblock.plugin.managers.CraftingManager;
 import com.skyblock.plugin.managers.EventManager;
 import com.skyblock.plugin.managers.IslandManager;
 import com.skyblock.plugin.managers.NetworkManager;
@@ -96,6 +97,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WarpManager.getInstance().load(getDataFolder());
         SkillsManager.getInstance().load(getDataFolder());
         IslandManager.getInstance().load(getDataFolder());
+        com.skyblock.plugin.managers.DungeonManager.getInstance().load(getDataFolder());
+        CraftingManager.getInstance().registerRecipes(this);
         CooldownManager.getInstance();
         EventManager.getInstance().load(getDataFolder());
         QuestManager.getInstance().load(getDataFolder());
@@ -139,6 +142,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         HOTMManager.getInstance().save(getDataFolder());
         SkillsManager.getInstance().save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
+        com.skyblock.plugin.managers.DungeonManager.getInstance().save(getDataFolder());
         try {
             WarpManager.getInstance().save(getDataFolder());
         } catch (java.io.IOException e) {
