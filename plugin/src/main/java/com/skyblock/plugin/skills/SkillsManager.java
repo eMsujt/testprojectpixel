@@ -98,6 +98,11 @@ public final class SkillsManager {
         xpMap.put(skill, updated);
     }
 
+    /** Grants XP to a player in the given skill (capped at the skill's max-level total). */
+    public void grantSkillXP(UUID playerId, String skill, long amount) {
+        addSkillXP(playerId, skill, amount);
+    }
+
     /** Directly sets XP for a player in the given skill. */
     public void setSkillXP(UUID playerId, String skill, long amount) {
         skillXP.computeIfAbsent(playerId, k -> new HashMap<>()).put(skill, amount);
