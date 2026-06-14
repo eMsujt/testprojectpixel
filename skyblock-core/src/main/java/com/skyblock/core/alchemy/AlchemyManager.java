@@ -1,5 +1,9 @@
 package com.skyblock.core.alchemy;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -296,6 +300,41 @@ public final class AlchemyManager {
     public int getLevel(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return alchemyLevel.getOrDefault(playerId, 1);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "alchemy.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        alchemyXp.clear();
+        alchemyLevel.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                double xp = cfg.getDouble(key + ".xp", 0.0);
+                if (xp > 0) {
+                    alchemyXp.put(uuid, xp);
+                    alchemyLevel.put(uuid, computeLevel(xp));
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "alchemy.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Double> entry : alchemyXp.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".xp", entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save alchemy.yml", e);
+        }
     }
 
     // ---------------------------------------------------------------------------
