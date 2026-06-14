@@ -69,7 +69,7 @@ public class SkyBlockMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new WardrobeMenu().open(player);
+                    new WardrobeMenu(player).open(player);
                 });
 
         setItem(24, new ItemBuilder(Material.ENDER_CHEST)
