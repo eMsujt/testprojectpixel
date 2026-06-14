@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -98,15 +99,15 @@ public final class EnchantingCommand implements CommandExecutor {
 
     private void handleHistory(Player player) {
         UUID id = player.getUniqueId();
-        Map<String, Integer> history = EnchantingManager.getInstance().getEnchantHistory(id);
+        List<String> history = EnchantingManager.getInstance().getEnchantHistory(id);
 
         player.sendMessage("=== Enchanting History ===");
         if (history.isEmpty()) {
             player.sendMessage("You have no enchanting history.");
             return;
         }
-        for (Map.Entry<String, Integer> entry : history.entrySet()) {
-            player.sendMessage("  " + entry.getKey() + " — applied " + entry.getValue() + " time(s)");
+        for (String entry : history) {
+            player.sendMessage("  " + entry);
         }
     }
 
