@@ -13,6 +13,28 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class BazaarMenu implements InventoryHolder, Listener {
 
+    private static final class Category {
+        final int slot;
+        final Material material;
+        final String displayName;
+
+        Category(int slot, Material material, String displayName) {
+            this.slot = slot;
+            this.material = material;
+            this.displayName = displayName;
+        }
+    }
+
+    private static final Category[] CATEGORIES = {
+        new Category(19, Material.WHEAT,          "§aFarming Supplies"),
+        new Category(20, Material.STONE_PICKAXE,  "§aMining Supplies"),
+        new Category(21, Material.IRON_SWORD,     "§aCombat Supplies"),
+        new Category(22, Material.OAK_SAPLING,    "§aForaging Supplies"),
+        new Category(23, Material.COD,            "§aFishing Supplies"),
+        new Category(24, Material.ENCHANTED_BOOK, "§aEnchanting"),
+        new Category(25, Material.NETHER_STAR,    "§aMiscellaneous"),
+    };
+
     private final Inventory inventory = Bukkit.createInventory(this, 54, "§aBazaar");
 
     public BazaarMenu() {
@@ -42,13 +64,9 @@ public final class BazaarMenu implements InventoryHolder, Listener {
         inventory.setItem(4, makeItem(Material.GOLD_INGOT, "§aBazaar"));
 
         // Category selector — Hypixel's Bazaar groupings
-        inventory.setItem(19, makeItem(Material.WHEAT,          "§aFarming"));
-        inventory.setItem(20, makeItem(Material.STONE_PICKAXE,  "§aMining"));
-        inventory.setItem(21, makeItem(Material.IRON_SWORD,     "§aCombat"));
-        inventory.setItem(22, makeItem(Material.OAK_SAPLING,    "§aWoods & Fishes"));
-        inventory.setItem(23, makeItem(Material.QUARTZ,         "§aOdds & Ends"));
-        inventory.setItem(24, makeItem(Material.MAP,            "§aSpecial Items"));
-        inventory.setItem(25, makeItem(Material.ENCHANTED_BOOK, "§aEnchantments"));
+        for (Category cat : CATEGORIES) {
+            inventory.setItem(cat.slot, makeItem(cat.material, cat.displayName));
+        }
     }
 
     @EventHandler
