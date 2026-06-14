@@ -32,10 +32,23 @@ public final class ProfileManager implements Listener {
 
     private final Map<UUID, PlayerProfile> profiles = new HashMap<>();
 
+    private SkyBlockPlugin plugin;
+
     private ProfileManager() {}
 
     public static ProfileManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Initializes the registry with the owning plugin instance used for
+     * scheduling profile I/O. Must be called once during plugin enable before
+     * any profile is loaded or persisted.
+     *
+     * @param plugin the owning plugin instance
+     */
+    public void init(SkyBlockPlugin plugin) {
+        this.plugin = Objects.requireNonNull(plugin, "plugin");
     }
 
     /**
@@ -109,7 +122,7 @@ public final class ProfileManager implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         PlayerProfile profile = getOrCreate(uuid);
 
-        SkyBlockPlugin plugin = SkyBlockPlugin.getInstance();
+        SkyBlockPlugin plugin = this.plugin;
         if (plugin == null) {
             return;
         }
@@ -143,7 +156,7 @@ public final class ProfileManager implements Listener {
             return;
         }
 
-        SkyBlockPlugin plugin = SkyBlockPlugin.getInstance();
+        SkyBlockPlugin plugin = this.plugin;
         if (plugin == null) {
             return;
         }

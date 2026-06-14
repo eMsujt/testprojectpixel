@@ -92,6 +92,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         dungeonManager = new DungeonManager();
         itemManager = new CustomItemManager();
         profileManager = com.skyblock.plugin.profile.ProfileManager.getInstance();
+        profileManager.init(this);
         AuctionHouseManager.getInstance().load(getDataFolder());
         BankManager.getInstance().load(getDataFolder());
         CollectionsManager.getInstance().load(getDataFolder());
