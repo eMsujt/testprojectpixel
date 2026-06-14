@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public final class MayorCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("current", "perks", "candidates");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("current", "perks", "candidates", "history");
 
     private final MayorManager manager;
 
@@ -36,6 +36,7 @@ public final class MayorCommand implements TabExecutor {
             case "current"    -> handleCurrent(player);
             case "perks"      -> handlePerks(player);
             case "candidates" -> handleCandidates(player);
+            case "history"    -> handleHistory(player);
             default           -> sendHelp(player);
         }
         return true;
@@ -85,10 +86,23 @@ public final class MayorCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getElectionHistory();
+        player.sendMessage("=== Mayor History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No mayor history found.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Mayor Commands ===");
         player.sendMessage("/mayor current — show the current mayor");
         player.sendMessage("/mayor perks — show the current mayor's perks");
         player.sendMessage("/mayor candidates — list candidates for the next election");
+        player.sendMessage("/mayor history — show election history");
     }
 }
