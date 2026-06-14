@@ -503,6 +503,11 @@ public final class DungeonManager {
         dungeonHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
     }
 
+    public void recordDungeonEvent(UUID uuid, String summary) {
+        Objects.requireNonNull(uuid, "uuid");
+        dungeonHistory.computeIfAbsent(uuid, k -> new ArrayList<>()).add(summary);
+    }
+
     public List<String> getDungeonHistory(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return Collections.unmodifiableList(dungeonHistory.getOrDefault(playerId, Collections.emptyList()));
