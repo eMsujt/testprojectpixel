@@ -26,6 +26,7 @@ public final class PlayerProfile {
     private ItemStack[] potionBagContents;
     private ItemStack[] quiverContents;
     private ItemStack[] fishingBagContents;
+    private ItemStack[] islandStorageContents;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -247,6 +248,28 @@ public final class PlayerProfile {
      */
     public void setFishingBagContents(ItemStack[] fishingBagContents) {
         this.fishingBagContents = fishingBagContents == null ? null : fishingBagContents.clone();
+    }
+
+    /**
+     * Returns the player's persisted Island Storage contents as a per-slot array,
+     * or {@code null} if the storage has never been opened. Individual slots may
+     * be {@code null} (empty). The returned array is a defensive copy.
+     *
+     * @return the Island Storage contents, or {@code null}
+     */
+    public ItemStack[] getIslandStorageContents() {
+        return islandStorageContents == null ? null : islandStorageContents.clone();
+    }
+
+    /**
+     * Sets the player's persisted Island Storage contents from a per-slot array.
+     * The array is copied, so later mutations of the live inventory do not leak
+     * into the stored snapshot.
+     *
+     * @param islandStorageContents the Island Storage contents, may be {@code null}
+     */
+    public void setIslandStorageContents(ItemStack[] islandStorageContents) {
+        this.islandStorageContents = islandStorageContents == null ? null : islandStorageContents.clone();
     }
 
     @Override
