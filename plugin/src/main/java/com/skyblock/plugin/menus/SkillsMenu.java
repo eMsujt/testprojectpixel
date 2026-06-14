@@ -21,8 +21,7 @@ public class SkillsMenu extends Menu {
         TAMING("Taming", "taming", Material.BONE),
         CARPENTRY("Carpentry", "carpentry", Material.CRAFTING_TABLE),
         RUNECRAFTING("Runecrafting", "runecrafting", Material.MAGMA_CREAM),
-        SOCIAL("Social", "social", Material.EMERALD),
-        DUNGEONEERING("Dungeoneering", "dungeoneering", Material.PLAYER_HEAD);
+        SOCIAL("Social", "social", Material.EMERALD);
 
         private final String displayName;
         private final String key;
@@ -35,12 +34,12 @@ public class SkillsMenu extends Menu {
         }
     }
 
-    private static final int[] SLOTS = {19, 20, 21, 22, 23, 24, 28, 29, 30, 31, 32, 33};
+    private static final int[] SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31};
 
     private final UUID playerId;
 
     public SkillsMenu(UUID playerId) {
-        super("§2Skills", 6);
+        super("§aSkills", 6);
         this.playerId = playerId;
     }
 
