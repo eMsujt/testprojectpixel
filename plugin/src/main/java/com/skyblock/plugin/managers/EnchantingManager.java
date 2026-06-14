@@ -15,6 +15,7 @@ public final class EnchantingManager {
 
     private final Map<UUID, Integer> enchantingXP = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> enchantLevels = new HashMap<>();
+    private final Map<UUID, Integer> bookshelfPower = new HashMap<>();
 
     private EnchantingManager() {}
 
@@ -60,6 +61,18 @@ public final class EnchantingManager {
         return enchantLevels.getOrDefault(playerId, new HashMap<>());
     }
 
+    public int getBookshelfPower(UUID playerId) {
+        return bookshelfPower.getOrDefault(playerId, 0);
+    }
+
+    public void addBookshelfPower(UUID playerId, int slots) {
+        bookshelfPower.merge(playerId, slots, Integer::sum);
+    }
+
+    public Map<UUID, Integer> getAllBookshelfPower() {
+        return bookshelfPower;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "enchanting.yml");
         if (!file.exists()) {
@@ -68,10 +81,18 @@ public final class EnchantingManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         enchantingXP.clear();
         enchantLevels.clear();
+        bookshelfPower.clear();
         if (cfg.isConfigurationSection("enchantingXP")) {
             for (String key : cfg.getConfigurationSection("enchantingXP").getKeys(false)) {
                 try {
                     enchantingXP.put(UUID.fromString(key), cfg.getInt("enchantingXP." + key));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("bookshelfPower")) {
+            for (String key : cfg.getConfigurationSection("bookshelfPower").getKeys(false)) {
+                try {
+                    bookshelfPower.put(UUID.fromString(key), cfg.getInt("bookshelfPower." + key));
                 } catch (IllegalArgumentException ignored) {}
             }
         }
@@ -97,6 +118,9 @@ public final class EnchantingManager {
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, Integer> entry : enchantingXP.entrySet()) {
             cfg.set("enchantingXP." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Integer> entry : bookshelfPower.entrySet()) {
+            cfg.set("bookshelfPower." + entry.getKey().toString(), entry.getValue());
         }
         for (Map.Entry<UUID, Map<String, Integer>> entry : enchantLevels.entrySet()) {
             String path = "enchantLevels." + entry.getKey().toString();
