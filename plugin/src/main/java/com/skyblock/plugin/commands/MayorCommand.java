@@ -37,8 +37,11 @@ public final class MayorCommand implements CommandExecutor {
 
     private void handleInfo(Player player) {
         MayorManager mgr = MayorManager.getInstance();
+        String activeMayor = mgr.getCurrentMayor();
+        java.util.List<String> activePerks = mgr.getPerks(activeMayor);
         player.sendMessage("=== Mayor ===");
-        player.sendMessage("Current mayor: " + mgr.getCurrentMayor());
+        player.sendMessage("Active mayor: " + activeMayor);
+        player.sendMessage("Active perks: " + (activePerks.isEmpty() ? "none" : String.join(", ", activePerks)));
         player.sendMessage("Election day: " + mgr.getElectionDay());
         String vote = mgr.getMayorVote(player.getUniqueId());
         player.sendMessage("Your vote: " + (vote != null ? vote : "none"));
