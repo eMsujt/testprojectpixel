@@ -1,7 +1,9 @@
 package com.skyblock.slayer;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -47,6 +49,20 @@ public final class SlayerManager {
 
     public static SlayerManager getInstance() {
         return INSTANCE;
+    }
+
+    /** Summary data per slayer type: {maxLevel, coinsToActivate}. */
+    public static final Map<String, int[]> SLAYER_BOSS_DATA;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("ZOMBIE",   new int[]{9,  100});
+        m.put("SPIDER",   new int[]{9,  2_000});
+        m.put("WOLF",     new int[]{9,  10_000});
+        m.put("ENDERMAN", new int[]{9,  50_000});
+        m.put("BLAZE",    new int[]{9,  100_000});
+        m.put("VAMPIRE",  new int[]{5,  0});
+        SLAYER_BOSS_DATA = Collections.unmodifiableMap(m);
     }
 
     /** Required mob kills per tier (index 0 = tier 1). */
