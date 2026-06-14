@@ -32,6 +32,7 @@ public final class SkillsMenu implements InventoryHolder {
 
     private void build(Player player) {
         SkillsManager sm = SkillsManager.getInstance();
+        inventory.setItem(4, makeItem(Material.BOOK, "§aSkills", Arrays.asList("§7Your skill progress")));
         // Fixed Hypixel skill slots — first row, one slot per skill (slots 10–14)
         inventory.setItem(10, makeSkillItem(player, sm, Material.WHEAT,        "farming",  "§eFarming"));
         inventory.setItem(11, makeSkillItem(player, sm, Material.COBBLESTONE,  "mining",   "§eMining"));
