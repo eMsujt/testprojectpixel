@@ -20,7 +20,7 @@ public final class AuctionHouseManager {
 
     private final Map<UUID, List<AuctionListing>> active = new HashMap<>();
     private final Map<UUID, List<String>> bidHistory = new HashMap<>();
-    private final Map<String, List<int[]>> bids = new HashMap<>();
+    private final Map<String, List<String[]>> bids = new HashMap<>();
 
     private AuctionHouseManager() {}
 
@@ -103,7 +103,7 @@ public final class AuctionHouseManager {
     public void recordBid(UUID bidder, String itemId, int bidAmount) {
         List<String> history = bidHistory.computeIfAbsent(bidder, k -> new ArrayList<>());
         history.add(0, itemId + ":" + bidAmount);
-        bids.computeIfAbsent(itemId, k -> new ArrayList<>()).add(new int[]{bidder.hashCode(), bidAmount});
+        bids.computeIfAbsent(itemId, k -> new ArrayList<>()).add(new String[]{bidder.toString(), String.valueOf(bidAmount)});
     }
 
     public List<String> getBidHistory(UUID bidder) {
@@ -114,11 +114,11 @@ public final class AuctionHouseManager {
         return Collections.unmodifiableMap(bidHistory);
     }
 
-    public List<int[]> getBids(String itemId) {
+    public List<String[]> getBids(String itemId) {
         return Collections.unmodifiableList(bids.getOrDefault(itemId, Collections.emptyList()));
     }
 
-    public Map<String, List<int[]>> getAllBids() {
+    public Map<String, List<String[]>> getAllBids() {
         return Collections.unmodifiableMap(bids);
     }
 
@@ -142,13 +142,13 @@ public final class AuctionHouseManager {
         }
         if (cfg.isConfigurationSection("bids")) {
             for (String itemId : cfg.getConfigurationSection("bids").getKeys(false)) {
-                List<int[]> pairs = new ArrayList<>();
+                List<String[]> pairs = new ArrayList<>();
                 List<?> raw = cfg.getList("bids." + itemId, Collections.emptyList());
                 for (Object entry : raw) {
                     if (entry instanceof List) {
                         List<?> pair = (List<?>) entry;
-                        if (pair.size() == 2 && pair.get(0) instanceof Number && pair.get(1) instanceof Number) {
-                            pairs.add(new int[]{((Number) pair.get(0)).intValue(), ((Number) pair.get(1)).intValue()});
+                        if (pair.size() == 2) {
+                            pairs.add(new String[]{String.valueOf(pair.get(0)), String.valueOf(pair.get(1))});
                         }
                     }
                 }
@@ -203,10 +203,10 @@ public final class AuctionHouseManager {
         for (Map.Entry<UUID, List<String>> entry : bidHistory.entrySet()) {
             cfg.set("bidHistory." + entry.getKey().toString(), entry.getValue());
         }
-        for (Map.Entry<String, List<int[]>> entry : bids.entrySet()) {
-            List<List<Integer>> pairs = new ArrayList<>();
-            for (int[] pair : entry.getValue()) {
-                List<Integer> p = new ArrayList<>();
+        for (Map.Entry<String, List<String[]>> entry : bids.entrySet()) {
+            List<List<String>> pairs = new ArrayList<>();
+            for (String[] pair : entry.getValue()) {
+                List<String> p = new ArrayList<>();
                 p.add(pair[0]);
                 p.add(pair[1]);
                 pairs.add(p);
