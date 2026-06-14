@@ -55,7 +55,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             "hotm", "garden", "collections", "backpack", "reforge", "achievement",
             "dungeon", "stats", "enchanting", "kuudra", "crafting", "trade",
             "event", "foraging", "guild", "forge", "coop", "crimson",
-            "booster", "warp", "network", "mailbox", "mail", "title", "friend", "run", "menu", "help"
+            "booster", "warp", "network", "mailbox", "mail", "title", "friend", "run", "menu", "auctionhouse", "help"
     );
 
     private final SkyBlockMenuManager menuManager;
@@ -184,7 +184,7 @@ public final class SkyblockHubCommand implements TabExecutor {
 
     private static String resolveCommand(String sub) {
         return switch (sub) {
-            case "auction" -> "auction";
+            case "auction", "auctionhouse" -> "ah";
             case "ah" -> "ah";
             case "bazaar", "bz" -> "bazaar";
             case "island" -> "island";
