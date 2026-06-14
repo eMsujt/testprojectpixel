@@ -1,5 +1,9 @@
 package com.skyblock.core.forge;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,5 +152,49 @@ public final class EnchantingManager {
      */
     public void remove(UUID playerId) {
         enchantments.remove(playerId);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "enchanting.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        enchantments.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key)) {
+                    Map<String, Integer> map = new HashMap<>();
+                    for (String enchantName : cfg.getConfigurationSection(key).getKeys(false)) {
+                        int level = cfg.getInt(key + "." + enchantName, 0);
+                        if (level > 0) {
+                            map.put(enchantName, level);
+                        }
+                    }
+                    if (!map.isEmpty()) {
+                        enchantments.put(uuid, map);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "enchanting.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<String, Integer>> entry : enchantments.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<String, Integer> e : entry.getValue().entrySet()) {
+                cfg.set(key + "." + e.getKey(), e.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save enchanting.yml", e);
+        }
     }
 }
