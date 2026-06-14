@@ -145,6 +145,18 @@ public final class FishingManager {
     }
 
     /**
+     * Returns a formatted summary of the player's fishing statistics.
+     *
+     * @param playerId the player's UUID
+     * @return formatted stats string
+     */
+    public String getFishingStats(UUID playerId) {
+        int total = getCatches(playerId);
+        double xp = getExperience(playerId);
+        return "Fishing Stats: Total Caught: " + total + " | XP: " + xp;
+    }
+
+    /**
      * Removes all drops registered for the given zone.
      *
      * @param zone the fishing zone to clear, must not be null
