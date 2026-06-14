@@ -34,30 +34,34 @@ public final class ItemRegistry {
 
     /**
      * Copies the bundled {@code items.yml} out of the jar on first run, then
-     * parses every item definition into memory.
+     * parses every {@code *.yml} file under {@code plugins/SkyBlock/items} into
+     * memory so item definitions can be split across multiple files.
      *
      * @param plugin the owning plugin, used for resource extraction and logging
      */
     public void load(JavaPlugin plugin) {
-        File file = new File(plugin.getDataFolder(), "items.yml");
-        if (!file.exists() && plugin.getResource("items.yml") != null) {
-            plugin.saveResource("items.yml", false);
+        File dir = new File(plugin.getDataFolder(), "items");
+        if (!dir.exists() && plugin.getResource("items/items.yml") != null) {
+            plugin.saveResource("items/items.yml", false);
         }
-        if (!file.exists()) {
+        items.clear();
+        File[] files = dir.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml"));
+        if (files == null) {
             return;
         }
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection root = cfg.isConfigurationSection("items")
-                ? cfg.getConfigurationSection("items")
-                : cfg;
-        items.clear();
-        for (String id : root.getKeys(false)) {
-            if (!root.isConfigurationSection(id)) {
-                continue;
-            }
-            ItemDefinition item = parse(plugin, id, root.getConfigurationSection(id));
-            if (item != null) {
-                items.put(id, item);
+        for (File file : files) {
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            ConfigurationSection root = cfg.isConfigurationSection("items")
+                    ? cfg.getConfigurationSection("items")
+                    : cfg;
+            for (String id : root.getKeys(false)) {
+                if (!root.isConfigurationSection(id)) {
+                    continue;
+                }
+                ItemDefinition item = parse(plugin, id, root.getConfigurationSection(id));
+                if (item != null) {
+                    items.put(id, item);
+                }
             }
         }
         plugin.getLogger().info("Loaded " + items.size() + " item definitions.");
