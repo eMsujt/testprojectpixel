@@ -1,6 +1,6 @@
 package com.skyblock.plugin.profile;
 
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ public final class PlayerProfile {
     private final Map<String, Long> collectionXp = new HashMap<>();
     private long purse = 0L;
     private long bank = 0L;
-    private Inventory enderChest;
+    private ItemStack[] enderChestContents;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -159,21 +159,26 @@ public final class PlayerProfile {
     }
 
     /**
-     * Returns the player's personal Ender Chest storage inventory, or
-     * {@code null} if one has not been created yet.
+     * Returns the player's persisted Ender Chest contents as a per-slot array,
+     * or {@code null} if the Ender Chest has never been opened. Individual slots
+     * may be {@code null} (empty). The returned array is a defensive copy.
      *
-     * @return the Ender Chest inventory, or {@code null}
+     * @return the Ender Chest contents, or {@code null}
      */
-    public Inventory getEnderChest() { return enderChest; }
+    public ItemStack[] getEnderChestContents() {
+        return enderChestContents == null ? null : enderChestContents.clone();
+    }
 
     /**
-     * Sets the player's personal Ender Chest storage inventory. Items the player
-     * moves into it are mutated in place, so the stored reference persists their
-     * contents across openings.
+     * Sets the player's persisted Ender Chest contents from a per-slot array.
+     * The array is copied, so later mutations of the live inventory do not leak
+     * into the stored snapshot.
      *
-     * @param enderChest the Ender Chest inventory
+     * @param enderChestContents the Ender Chest contents, may be {@code null}
      */
-    public void setEnderChest(Inventory enderChest) { this.enderChest = enderChest; }
+    public void setEnderChestContents(ItemStack[] enderChestContents) {
+        this.enderChestContents = enderChestContents == null ? null : enderChestContents.clone();
+    }
 
     @Override
     public boolean equals(Object obj) {
