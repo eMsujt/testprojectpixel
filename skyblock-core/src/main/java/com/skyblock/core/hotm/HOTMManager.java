@@ -5,7 +5,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -57,6 +59,50 @@ public final class HOTMManager {
         public String getDisplayName() {
             return displayName;
         }
+    }
+
+    /**
+     * Per-level powder cost for each HOTM node.
+     * Index 0 = cost to upgrade to level 1, index N-1 = cost to upgrade to level N.
+     * Single-entry arrays represent one-time unlock costs.
+     */
+    public static final Map<String, int[]> NODE_POWDER_COSTS;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("MINING_SPEED",              buildPowderCosts(50,  3000, 2.0));
+        m.put("MINING_SPEED_BOOST",        new int[]{20000});
+        m.put("PICKOBULUS",                new int[]{1200, 4400, 12000});
+        m.put("MINING_FORTUNE",            buildPowderCosts(50,  3000, 2.0));
+        m.put("DAILY_POWDER",              buildPowderCosts(100, 1200, 1.8));
+        m.put("EFFICIENT_MINER",           buildPowderCosts(100, 1200, 1.8));
+        m.put("QUICK_FORGE",               buildPowderCosts(20,  7500, 2.2));
+        m.put("TITANIUM_INSANITY",         buildPowderCosts(50,  4000, 2.1));
+        m.put("LUCK_OF_THE_CAVE",          buildPowderCosts(45,  2000, 2.0));
+        m.put("POWDER_BUFF",               buildPowderCosts(50,  3000, 2.0));
+        m.put("MINING_MADNESS",            new int[]{2000});
+        m.put("SKY_MALL",                  new int[]{2000});
+        m.put("GOBLIN_KILLER",             new int[]{2000});
+        m.put("STAR_POWDER",               new int[]{2000});
+        m.put("MOLE",                      buildPowderCosts(200, 1000, 1.4));
+        m.put("PROFESSIONAL",              buildPowderCosts(140, 2000, 1.7));
+        m.put("LONESOME_MINER",            buildPowderCosts(45,  3500, 2.0));
+        m.put("GREAT_EXPLORER",            buildPowderCosts(20,  4000, 2.2));
+        m.put("FORTUNATE",                 buildPowderCosts(20,  4000, 2.2));
+        m.put("MINING_EXPERIENCE_BOOST",   buildPowderCosts(100, 2000, 1.8));
+        m.put("SEASONED_MINEMAN",          buildPowderCosts(100, 2000, 1.8));
+        m.put("ANOMALOUS_DESIRE",          buildPowderCosts(20,  4000, 2.2));
+        m.put("MANIACAL_MINER",            new int[]{150000});
+        m.put("VEIN_SEEKER",               new int[]{10000});
+        NODE_POWDER_COSTS = Collections.unmodifiableMap(m);
+    }
+
+    private static int[] buildPowderCosts(int levels, int base, double scale) {
+        int[] costs = new int[levels];
+        for (int i = 0; i < levels; i++) {
+            costs[i] = (int) Math.round(base * Math.pow(i + 1, scale));
+        }
+        return costs;
     }
 
     private static final HOTMManager INSTANCE = new HOTMManager();
