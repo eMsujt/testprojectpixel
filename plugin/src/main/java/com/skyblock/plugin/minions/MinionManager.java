@@ -92,7 +92,10 @@ public final class MinionManager implements Listener {
      * @param plugin the owning plugin used to schedule the task
      */
     public void startProductionLoop(JavaPlugin plugin) {
-        this.plugin = Objects.requireNonNull(plugin, "plugin");
+        Objects.requireNonNull(plugin, "plugin");
+        if (this.plugin == null) {
+            this.plugin = plugin;
+        }
         startTask();
     }
 
