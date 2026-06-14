@@ -104,6 +104,7 @@ public final class DungeonManager {
         playerCompletions
                 .computeIfAbsent(playerId, id -> new HashMap<>())
                 .merge(floor, 1, Integer::sum);
+        recordDungeonEvent(playerId, "Completed floor " + floor);
     }
 
     public Map<String, Integer> getFloorCompletions(UUID playerId) {

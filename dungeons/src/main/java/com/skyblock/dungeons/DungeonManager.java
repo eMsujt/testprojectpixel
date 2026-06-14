@@ -75,6 +75,7 @@ public final class DungeonManager {
         }
         for (UUID playerId : session.getPlayerIds()) {
             playerSessions.remove(playerId);
+            recordDungeonEvent(playerId, "Completed floor " + session.getFloor().name());
         }
         return true;
     }
