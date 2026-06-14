@@ -2,38 +2,40 @@ package com.skyblock.plugin.menus;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.skills.SkillManager;
-import com.skyblock.plugin.skills.SkillManager.SkillType;
+import com.skyblock.plugin.managers.SkillsManager;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-/**
- * The "Your Skills" menu.
- *
- * <p>A 54-slot (6-row) menu titled {@code §aYour Skills} that shows the viewing
- * player's eight main skills (from {@link SkillManager}), one icon per skill in
- * Hypixel's skill order, laid out across two centred rows and framed by a
- * {@code GRAY_STAINED_GLASS_PANE} border. Each icon's lore shows the player's
- * current level and total XP in that skill.</p>
- */
 public class SkillsMenu extends Menu {
 
-    /** Centred layout slots, one per skill, in {@link SkillType} order. */
-    private static final int[] SLOTS = {20, 21, 22, 23, 29, 30, 31, 32};
+    private enum Skill {
+        FARMING("Farming", "farming", Material.GOLDEN_HOE),
+        MINING("Mining", "mining", Material.STONE_PICKAXE),
+        COMBAT("Combat", "combat", Material.STONE_SWORD),
+        FORAGING("Foraging", "foraging", Material.OAK_LOG),
+        FISHING("Fishing", "fishing", Material.FISHING_ROD),
+        ENCHANTING("Enchanting", "enchanting", Material.ENCHANTING_TABLE),
+        ALCHEMY("Alchemy", "alchemy", Material.BREWING_STAND),
+        TAMING("Taming", "taming", Material.BONE),
+        CARPENTRY("Carpentry", "carpentry", Material.CRAFTING_TABLE),
+        RUNECRAFTING("Runecrafting", "runecrafting", Material.MAGMA_CREAM),
+        SOCIAL("Social", "social", Material.EMERALD),
+        DUNGEONEERING("Dungeoneering", "dungeoneering", Material.PLAYER_HEAD);
 
-    /** The display icon for each skill, indexed in {@link SkillType} order. */
-    private static final Material[] ICONS = {
-            Material.GOLDEN_HOE,        // FARMING
-            Material.STONE_PICKAXE,     // MINING
-            Material.STONE_SWORD,       // COMBAT
-            Material.JUNGLE_SAPLING,    // FORAGING
-            Material.FISHING_ROD,       // FISHING
-            Material.ENCHANTING_TABLE,  // ENCHANTING
-            Material.BREWING_STAND,     // ALCHEMY
-            Material.BONE               // TAMING
-    };
+        private final String displayName;
+        private final String key;
+        private final Material icon;
+
+        Skill(String displayName, String key, Material icon) {
+            this.displayName = displayName;
+            this.key = key;
+            this.icon = icon;
+        }
+    }
+
+    private static final int[] SLOTS = {19, 20, 21, 22, 23, 24, 28, 29, 30, 31, 32, 33};
 
     private final UUID playerId;
 
@@ -46,16 +48,17 @@ public class SkillsMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        SkillManager skills = SkillManager.getInstance();
-        SkillType[] types = SkillType.values();
-        for (int i = 0; i < types.length; i++) {
-            SkillType type = types[i];
-            String name = type.name().charAt(0) + type.name().substring(1).toLowerCase();
-            setItem(SLOTS[i], new ItemBuilder(ICONS[i])
-                    .displayName("§a" + name)
+        SkillsManager skills = SkillsManager.getInstance();
+        Skill[] values = Skill.values();
+        for (int i = 0; i < values.length; i++) {
+            Skill skill = values[i];
+            long totalXP = skills.getSkillXP(playerId, skill.key);
+            int level = computeLevel(skill.key, totalXP);
+            setItem(SLOTS[i], new ItemBuilder(skill.icon)
+                    .displayName("§a" + skill.displayName)
                     .lore(
-                            "§7Level: §e" + skills.getLevel(playerId, type),
-                            "§7Total XP: §e" + skills.getXP(playerId, type))
+                            "§7Level: §e" + level,
+                            "§7Total XP: §e" + totalXP)
                     .build());
         }
     }
@@ -70,5 +73,18 @@ public class SkillsMenu extends Menu {
                 setItem(slot, pane);
             }
         }
+    }
+
+    private static int computeLevel(String skill, long totalXP) {
+        long[] table = SkillsManager.SKILL_XP_TABLE.get(skill);
+        if (table == null) return 0;
+        long cumulative = 0;
+        int level = 0;
+        for (long threshold : table) {
+            cumulative += threshold;
+            if (totalXP < cumulative) break;
+            level++;
+        }
+        return level;
     }
 }
