@@ -19,10 +19,16 @@ public final class MinionTickTask extends BukkitRunnable {
     /** One second, expressed in server ticks. */
     public static final long PERIOD_TICKS = 20L;
 
+    private final MinionManager manager;
+
+    public MinionTickTask(MinionManager manager) {
+        this.manager = manager;
+    }
+
     @Override
     public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            List<Minion> minions = MinionManager.getInstance().getMinions(player.getUniqueId());
+            List<Minion> minions = manager.getMinions(player.getUniqueId());
             for (Minion minion : minions) {
                 tick(minion);
             }
