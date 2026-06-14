@@ -15,11 +15,16 @@ public class FastTravelMenu extends Menu {
 
     /** A fast-travel destination: its display name, representative icon, and slot. */
     private enum Destination {
-        HUB("Hub", Material.NETHER_STAR, 20),
-        SPIDERS_DEN("Spider's Den", Material.STRING, 21),
-        THE_END("The End", Material.ENDER_PEARL, 22),
-        CRIMSON_ISLE("Crimson Isle", Material.NETHERRACK, 23),
-        DWARVEN_MINES("Dwarven Mines", Material.IRON_ORE, 24);
+        HUB("Hub Island", Material.OAK_LEAVES, 10),
+        THE_FARMING_ISLANDS("The Farming Islands", Material.HAY_BLOCK, 11),
+        THE_PARK("The Park", Material.JUNGLE_SAPLING, 12),
+        SPIDERS_DEN("Spider's Den", Material.STRING, 13),
+        THE_END("The End", Material.ENDER_PEARL, 14),
+        CRIMSON_ISLE("Crimson Isle", Material.NETHERRACK, 15),
+        DEEP_CAVERNS("Deep Caverns", Material.COBBLESTONE, 16),
+        DWARVEN_MINES("Dwarven Mines", Material.IRON_ORE, 19),
+        CRYSTAL_HOLLOWS("Crystal Hollows", Material.PRISMARINE_CRYSTALS, 20),
+        DUNGEON_HUB("Dungeon Hub", Material.IRON_SWORD, 21);
 
         private final String displayName;
         private final Material icon;
