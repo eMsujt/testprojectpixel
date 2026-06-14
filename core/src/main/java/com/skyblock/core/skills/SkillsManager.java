@@ -59,7 +59,26 @@ public final class SkillsManager {
 
     public void addXp(UUID uuid, String skill, long amount) {
         Map<String, Long> xpMap = skillXp.computeIfAbsent(uuid, k -> new HashMap<>());
-        xpMap.put(skill.toLowerCase(), xpMap.getOrDefault(skill.toLowerCase(), 0L) + Math.max(0, amount));
+        String key = skill.toLowerCase();
+        long before = xpMap.getOrDefault(key, 0L);
+        int levelBefore = levelFromXp(key, before);
+        xpMap.put(key, before + Math.max(0, amount));
+        recordSkillEvent(uuid, "Gained " + amount + " XP in " + skill);
+        int levelAfter = levelFromXp(key, xpMap.get(key));
+        if (levelAfter > levelBefore) {
+            recordSkillEvent(uuid, "Leveled up " + skill + " to level " + levelAfter);
+        }
+    }
+
+    private static int levelFromXp(String skill, long totalXp) {
+        long[] reqs = XP_REQUIREMENTS.get(skill);
+        if (reqs == null) return 0;
+        int level = 0;
+        for (long req : reqs) {
+            if (totalXp >= req) level++;
+            else break;
+        }
+        return level;
     }
 
     public Map<String, Integer> getSkillLevels(UUID uuid) {

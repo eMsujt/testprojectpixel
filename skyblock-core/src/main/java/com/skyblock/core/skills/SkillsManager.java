@@ -170,7 +170,14 @@ public final class SkillsManager {
     }
 
     public double addXp(UUID playerId, SkillType skill, double amount) {
-        return delegate.addXp(playerId, skill.toSkillType(), amount);
+        int levelBefore = delegate.getLevel(playerId, skill.toSkillType());
+        double total = delegate.addXp(playerId, skill.toSkillType(), amount);
+        recordSkillEvent(playerId, "Gained " + amount + " XP in " + skill.getDisplayName());
+        int levelAfter = delegate.getLevel(playerId, skill.toSkillType());
+        if (levelAfter > levelBefore) {
+            recordSkillEvent(playerId, "Leveled up " + skill.getDisplayName() + " to level " + levelAfter);
+        }
+        return total;
     }
 
     public double getXp(UUID playerId, SkillType skill) {

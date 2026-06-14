@@ -92,13 +92,19 @@ public final class SkillsManager {
         Map<String, Long> xpMap = skillXP.computeIfAbsent(playerId, k -> new HashMap<>());
         long current = xpMap.getOrDefault(skill, 0L);
         int maxLevel = getSkillMaxLevel(skill);
-        if (computeLevel(skill, current) >= maxLevel) {
+        int levelBefore = computeLevel(skill, current);
+        if (levelBefore >= maxLevel) {
             return;
         }
         long newXP = current + amount;
         long cap = xpCapForLevel(skill, maxLevel);
         if (newXP > cap) newXP = cap;
         xpMap.put(skill, newXP);
+        recordSkillEvent(playerId, "Gained " + amount + " XP in " + skill);
+        int levelAfter = computeLevel(skill, newXP);
+        if (levelAfter > levelBefore) {
+            recordSkillEvent(playerId, "Leveled up " + skill + " to level " + levelAfter);
+        }
     }
 
     public void setSkillXP(UUID playerId, String skill, long amount) {
