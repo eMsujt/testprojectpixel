@@ -126,6 +126,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         NetworkManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.items.ItemManager.getInstance().load(this);
         com.skyblock.plugin.item.ItemRegistry.getInstance().load(this);
+        com.skyblock.plugin.item.ItemManager.getInstance().load(this);
         com.skyblock.plugin.economy.ShopManager.getInstance().load(this);
         com.skyblock.core.accessory.AccessoryManager.getInstance();
         com.skyblock.plugin.collection.CollectionManager.getInstance().register(this);
