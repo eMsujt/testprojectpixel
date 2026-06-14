@@ -1,5 +1,9 @@
 package com.skyblock.skills;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,5 +112,50 @@ public final class SkillManager {
     public boolean reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return experience.remove(playerId) != null;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "skills.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        experience.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key)) {
+                    Map<SkillType, Double> xp = new EnumMap<>(SkillType.class);
+                    for (String typeName : cfg.getConfigurationSection(key).getKeys(false)) {
+                        try {
+                            xp.put(SkillType.valueOf(typeName), cfg.getDouble(key + "." + typeName, 0.0));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown skill types
+                        }
+                    }
+                    if (!xp.isEmpty()) {
+                        experience.put(uuid, xp);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed UUIDs
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "skills.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<SkillType, Double>> entry : experience.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<SkillType, Double> xp : entry.getValue().entrySet()) {
+                cfg.set(key + "." + xp.getKey().name(), xp.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save skills.yml", e);
+        }
     }
 }
