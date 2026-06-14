@@ -62,6 +62,10 @@ commands:
     description: Teleport to the SkyBlock hub.
     usage: /<command>
     permission: skyblock.command.hub
+  profile:
+    description: View your SkyBlock profile stats.
+    usage: /<command>
+    permission: skyblock.command.profile
   skyblockmenu:
     description: Open the SkyBlock main menu.
     usage: /<command>
@@ -107,6 +111,9 @@ permissions:
     default: true
   skyblock.command.hub:
     description: Allows use of the /hub command.
+    default: true
+  skyblock.command.profile:
+    description: Allows use of the /profile command.
     default: true
   skyblock.command.skyblockmenu:
     description: Allows use of the /skyblockmenu command.
