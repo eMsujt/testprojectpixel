@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -136,6 +137,23 @@ public final class ProfileManager implements Listener {
             YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
             Bukkit.getScheduler().runTask(plugin, () -> applyFromDisk(profile, cfg));
         });
+    }
+
+    /**
+     * Persists the quitting player's profile to disk and discards it from the
+     * in-memory registry.
+     *
+     * <p>The YAML snapshot is built synchronously on the main thread (inside
+     * {@link #saveAsync(UUID)}) before the profile is removed, so the write is
+     * unaffected by the subsequent removal.</p>
+     *
+     * @param event the quit event
+     */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        saveAsync(uuid);
+        removeProfile(uuid);
     }
 
     /**
