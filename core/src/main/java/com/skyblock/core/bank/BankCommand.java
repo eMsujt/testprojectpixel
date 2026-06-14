@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public final class BankCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("balance", "deposit", "withdraw");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("balance", "deposit", "withdraw", "history");
 
     private final BankManager manager;
 
@@ -36,6 +36,7 @@ public final class BankCommand implements TabExecutor {
             case "balance"  -> handleBalance(player);
             case "deposit"  -> handleDeposit(player, args);
             case "withdraw" -> handleWithdraw(player, args);
+            case "history"  -> handleHistory(player);
             default         -> sendHelp(player);
         }
         return true;
@@ -104,10 +105,23 @@ public final class BankCommand implements TabExecutor {
         player.sendMessage("Withdrew " + String.format("%.2f", amount) + ". Balance: " + String.format("%.2f", manager.getBalance(player.getUniqueId())));
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getBankHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("No bank history found.");
+            return;
+        }
+        player.sendMessage("=== Bank History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bank Commands ===");
         player.sendMessage("/bank balance — view your bank balance");
         player.sendMessage("/bank deposit <amount> — deposit coins into your bank");
         player.sendMessage("/bank withdraw <amount> — withdraw coins from your bank");
+        player.sendMessage("/bank history — view your bank history");
     }
 }

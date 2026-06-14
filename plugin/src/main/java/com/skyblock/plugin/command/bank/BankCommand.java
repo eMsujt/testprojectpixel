@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class BankCommand implements CommandExecutor {
@@ -45,6 +46,7 @@ public final class BankCommand implements CommandExecutor {
                     player.sendMessage(e.getMessage());
                 }
             }
+            case "history" -> handleHistory(player);
             case "withdraw" -> {
                 if (args.length < 2) {
                     player.sendMessage("Usage: /bank withdraw <amount>");
@@ -60,9 +62,21 @@ public final class BankCommand implements CommandExecutor {
                     player.sendMessage(e.getMessage());
                 }
             }
-            default -> player.sendMessage("Usage: /bank [deposit|withdraw] <amount>");
+            default -> player.sendMessage("Usage: /bank [deposit|withdraw|history] <amount>");
         }
 
         return true;
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = BankManager.getInstance().getBankHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("No bank history found.");
+            return;
+        }
+        player.sendMessage("=== Bank History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
     }
 }
