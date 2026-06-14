@@ -1,0 +1,42 @@
+# NPC shop item prices for Hypixel SkyBlock.
+# Each key is a Bukkit Material.
+#   buy:  the coin cost to purchase the item from the NPC
+#   sell: the coin price the NPC pays when buying the item back
+
+items:
+  WHEAT:
+    buy: 3
+    sell: 1
+  CARROT:
+    buy: 3
+    sell: 1
+  POTATO:
+    buy: 3
+    sell: 1
+  COAL:
+    buy: 4
+    sell: 1
+  IRON_INGOT:
+    buy: 12
+    sell: 1
+  BONE_MEAL:
+    buy: 4
+    sell: 1
+  WHEAT_SEEDS:
+    buy: 3
+    sell: 1
+  PUMPKIN:
+    buy: 9
+    sell: 1
+  MELON_SLICE:
+    buy: 2
+    sell: 1
+  SUGAR_CANE:
+    buy: 4
+    sell: 1
+  COBBLESTONE:
+    buy: 3
+    sell: 1
+  GOLD_INGOT:
+    buy: 16
+    sell: 1
