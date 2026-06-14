@@ -435,6 +435,7 @@ public final class IslandManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         islandData.clear();
+        islandHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID owner = UUID.fromString(key);
@@ -454,6 +455,14 @@ public final class IslandManager {
                 // skip malformed UUID keys
             }
         }
+        if (cfg.isConfigurationSection("islandHistory")) {
+            for (String key : cfg.getConfigurationSection("islandHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("islandHistory." + key);
+                    islandHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -469,6 +478,9 @@ public final class IslandManager {
                 trusteeStrings.add(t.toString());
             }
             cfg.set(key + ".trustees", trusteeStrings);
+        }
+        for (Map.Entry<UUID, List<String>> entry : islandHistory.entrySet()) {
+            cfg.set("islandHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);

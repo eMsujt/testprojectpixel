@@ -1,5 +1,9 @@
 package com.skyblock.island;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -136,6 +140,36 @@ public final class IslandManager {
             recordIslandEvent(ownerId, "Island deleted");
         }
         return removed;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "island.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        islandHistory.clear();
+        if (cfg.isConfigurationSection("islandHistory")) {
+            for (String key : cfg.getConfigurationSection("islandHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("islandHistory." + key);
+                    islandHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "island.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<String>> entry : islandHistory.entrySet()) {
+            cfg.set("islandHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save island.yml", e);
+        }
     }
 
     private PlayerIsland requireIsland(UUID ownerId) {
