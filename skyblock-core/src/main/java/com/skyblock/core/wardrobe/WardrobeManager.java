@@ -81,6 +81,9 @@ public final class WardrobeManager {
     /** playerId → (outfitName → armor[4]) */
     private final Map<UUID, Map<String, ItemStack[]>> wardrobes = new HashMap<>();
 
+    /** playerId → name of the currently active (equipped) armor set */
+    private final Map<UUID, String> activeArmorSet = new HashMap<>();
+
     private WardrobeManager() {}
 
     /**
@@ -213,6 +216,41 @@ public final class WardrobeManager {
     }
 
     /**
+     * Returns the name of the armor set the player currently has equipped, or
+     * {@code null} if none is active.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return active armor set name, or {@code null}
+     */
+    public String getActiveArmorSet(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return activeArmorSet.get(playerId);
+    }
+
+    /**
+     * Records {@code name} as the player's active armor set.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param name     the outfit name to mark as active, must not be null
+     */
+    public void setActiveArmorSet(UUID playerId, String name) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(name, "name");
+        activeArmorSet.put(playerId, name);
+    }
+
+    /**
+     * Clears the active armor set for the player (e.g. when they unequip).
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return {@code true} if an active set was cleared
+     */
+    public boolean clearActiveArmorSet(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return activeArmorSet.remove(playerId) != null;
+    }
+
+    /**
      * Resets all wardrobe data for the given player.
      *
      * @param playerId the player to reset
@@ -220,6 +258,7 @@ public final class WardrobeManager {
     public void reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         wardrobes.remove(playerId);
+        activeArmorSet.remove(playerId);
     }
 
     /**
@@ -230,11 +269,13 @@ public final class WardrobeManager {
      */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        activeArmorSet.remove(playerId);
         return wardrobes.remove(playerId) != null;
     }
 
     /** Removes all stored wardrobe data. */
     public void clear() {
         wardrobes.clear();
+        activeArmorSet.clear();
     }
 }
