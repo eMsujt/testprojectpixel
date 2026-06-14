@@ -31,19 +31,52 @@ public final class BazaarManager {
     private static final BazaarManager INSTANCE = new BazaarManager();
 
     /**
+     * The Hypixel Bazaar product categories, matching the in-game tabs.
+     */
+    public enum Category {
+        FARMING_SUPPLIES("§eFarming Supplies", Material.GOLDEN_HOE),
+        MINING_SUPPLIES("§eMining Supplies", Material.STONE_PICKAXE),
+        COMBAT_SUPPLIES("§eCombat Supplies", Material.IRON_SWORD),
+        WINTER("§eWinter", Material.SNOWBALL),
+        WOODS_AND_FISHES("§eWoods & Fishes", Material.FISHING_ROD),
+        ODDITIES("§eOddities", Material.ENDER_PEARL);
+
+        private final String displayName;
+        private final Material icon;
+
+        Category(String displayName, Material icon) {
+            this.displayName = displayName;
+            this.icon = icon;
+        }
+
+        /** The category's menu display name (supports colour codes). */
+        public String displayName() {
+            return displayName;
+        }
+
+        /** The item shown for this category in the menu. */
+        public Material icon() {
+            return icon;
+        }
+    }
+
+    /**
      * A single loaded bazaar product.
      *
      * @param id          the product-id
      * @param material    the item shown in the menu
      * @param displayName the menu display name (supports colour codes)
+     * @param category    the Bazaar category this product belongs to
      * @param buyPrice    the instant-buy price in coins
      * @param sellPrice   the instant-sell price in coins
      */
-    public record Product(String id, Material material, String displayName, double buyPrice, double sellPrice) {
+    public record Product(String id, Material material, String displayName, Category category,
+                          double buyPrice, double sellPrice) {
         public Product {
             Objects.requireNonNull(id, "id");
             Objects.requireNonNull(material, "material");
             Objects.requireNonNull(displayName, "displayName");
+            Objects.requireNonNull(category, "category");
         }
     }
 
@@ -114,9 +147,23 @@ public final class BazaarManager {
             return null;
         }
         String displayName = section.getString("name", id);
+        Category category = parseCategory(plugin, id, section.getString("category"));
         double buyPrice = section.getDouble("buy");
         double sellPrice = section.getDouble("sell");
-        return new Product(id, material, displayName, buyPrice, sellPrice);
+        return new Product(id, material, displayName, category, buyPrice, sellPrice);
+    }
+
+    /** Parses a category name, falling back to {@link Category#ODDITIES} if blank or unknown. */
+    private Category parseCategory(JavaPlugin plugin, String id, String name) {
+        if (name == null || name.isBlank()) {
+            return Category.ODDITIES;
+        }
+        try {
+            return Category.valueOf(name.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            plugin.getLogger().warning("Bazaar product '" + id + "' has unknown category '" + name + "'; using ODDITIES.");
+            return Category.ODDITIES;
+        }
     }
 
     /** Returns the loaded product with the given id, or {@code null} if absent. */
