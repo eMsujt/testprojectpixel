@@ -2,6 +2,7 @@ package com.skyblock.plugin;
 
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
+import com.skyblock.plugin.menu.SkyblockMenuCommand;
 import com.skyblock.slayers.SlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,6 +39,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         coinManager = new CoinManager();
         dungeonManager = new DungeonManager();
         slayerManager = new SlayerManager();
+        getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
