@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class BazaarMenu implements InventoryHolder, Listener {
 
-    private final Inventory inventory = Bukkit.createInventory(this, 54, "§6Bazaar");
+    private final Inventory inventory = Bukkit.createInventory(this, 54, "§aBazaar");
 
     public BazaarMenu() {
         build(inventory);
@@ -39,16 +39,16 @@ public final class BazaarMenu implements InventoryHolder, Listener {
         }
 
         // Title item
-        inventory.setItem(4, makeItem(Material.GOLD_INGOT, "§6Bazaar"));
+        inventory.setItem(4, makeItem(Material.GOLD_INGOT, "§aBazaar"));
 
         // Category selector — Hypixel's Bazaar groupings
-        inventory.setItem(10, makeItem(Material.GOLDEN_HOE,     "§aFarming"));
-        inventory.setItem(11, makeItem(Material.STONE_PICKAXE,  "§aMining"));
-        inventory.setItem(12, makeItem(Material.IRON_SWORD,     "§aCombat"));
-        inventory.setItem(13, makeItem(Material.OAK_SAPLING,    "§aWoods & Fishes"));
-        inventory.setItem(14, makeItem(Material.QUARTZ,         "§aOdds & Ends"));
-        inventory.setItem(15, makeItem(Material.MAP,            "§aSpecial Items"));
-        inventory.setItem(16, makeItem(Material.ENCHANTED_BOOK, "§aEnchantments"));
+        inventory.setItem(19, makeItem(Material.WHEAT,          "§aFarming"));
+        inventory.setItem(20, makeItem(Material.STONE_PICKAXE,  "§aMining"));
+        inventory.setItem(21, makeItem(Material.IRON_SWORD,     "§aCombat"));
+        inventory.setItem(22, makeItem(Material.OAK_SAPLING,    "§aWoods & Fishes"));
+        inventory.setItem(23, makeItem(Material.QUARTZ,         "§aOdds & Ends"));
+        inventory.setItem(24, makeItem(Material.MAP,            "§aSpecial Items"));
+        inventory.setItem(25, makeItem(Material.ENCHANTED_BOOK, "§aEnchantments"));
     }
 
     @EventHandler
