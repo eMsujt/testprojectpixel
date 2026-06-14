@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ public final class KuudraManager {
 
     private final Map<UUID, KuudraRun> activeRuns = new HashMap<>();
     private final Map<UUID, Map<KuudraTier, Integer>> completions = new HashMap<>();
+    private final Map<UUID, List<String>> kuudraHistory = new HashMap<>();
 
     private KuudraManager() {}
 
@@ -106,6 +108,19 @@ public final class KuudraManager {
         Objects.requireNonNull(playerId, "playerId");
         Map<KuudraTier, Integer> counts = completions.get(playerId);
         return counts == null ? Collections.emptyMap() : Collections.unmodifiableMap(counts);
+    }
+
+    public void recordKuudraEvent(UUID playerUuid, String summary) {
+        kuudraHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getKuudraHistory(UUID playerUuid) {
+        Objects.requireNonNull(playerUuid, "playerUuid");
+        return Collections.unmodifiableList(kuudraHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllKuudraHistory() {
+        return Collections.unmodifiableMap(kuudraHistory);
     }
 
     // -------------------------------------------------------------------------
