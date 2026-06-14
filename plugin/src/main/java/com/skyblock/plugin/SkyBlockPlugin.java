@@ -4,6 +4,7 @@ import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.kuudra.KuudraManager;
+import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.menu.SkyblockMenuCommand;
@@ -48,6 +49,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         GardenManager.getInstance().load(getDataFolder());
         com.skyblock.slayer.SlayerManager.getInstance().load(getDataFolder());
         KuudraManager.getInstance().load(getDataFolder());
+        ProfileManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
@@ -59,6 +61,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         GardenManager.getInstance().save(getDataFolder());
         com.skyblock.slayer.SlayerManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
+        ProfileManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
