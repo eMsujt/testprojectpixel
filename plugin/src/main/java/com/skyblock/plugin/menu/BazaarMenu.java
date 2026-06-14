@@ -13,18 +13,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class BazaarMenu implements InventoryHolder, Listener {
 
+    private final Inventory inventory = Bukkit.createInventory(this, 54, "§6Bazaar");
+
     public BazaarMenu() {
+        build(inventory);
     }
 
     public void open(Player player) {
-        Inventory inventory = Bukkit.createInventory(this, 54, "§6Bazaar");
-        build(inventory);
         player.openInventory(inventory);
     }
 
     @Override
     public Inventory getInventory() {
-        return Bukkit.createInventory(this, 54, "§6Bazaar");
+        return inventory;
     }
 
     private void build(Inventory inventory) {
