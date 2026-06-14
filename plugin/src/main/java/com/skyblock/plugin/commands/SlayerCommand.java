@@ -6,6 +6,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,6 +28,13 @@ public final class SlayerCommand implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
             case "stats" -> handleStats(player);
+            case "top"   -> {
+                if (args.length < 2) {
+                    player.sendMessage("Usage: /slayer top <type>");
+                } else {
+                    handleTop(player, args[1]);
+                }
+            }
             default      -> sendHelp(player);
         }
         return true;
@@ -67,9 +77,27 @@ public final class SlayerCommand implements CommandExecutor {
         }
     }
 
+    private void handleTop(Player player, String slayerType) {
+        Map<UUID, Long> xpMap = SlayerManager.getInstance().getAllPlayerXpForType(slayerType);
+        if (xpMap.isEmpty()) {
+            player.sendMessage("No players have XP for slayer type: " + slayerType);
+            return;
+        }
+        List<Map.Entry<UUID, Long>> sorted = new ArrayList<>(xpMap.entrySet());
+        sorted.sort(Comparator.comparingLong(Map.Entry<UUID, Long>::getValue).reversed());
+        player.sendMessage("=== Top Slayers (" + slayerType + ") ===");
+        int rank = 1;
+        for (Map.Entry<UUID, Long> entry : sorted) {
+            if (rank > 10) break;
+            player.sendMessage(rank + ". " + entry.getKey() + " — XP: " + entry.getValue());
+            rank++;
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Slayer Commands ===");
         player.sendMessage("/slayer        — show your total slayer kills and XP");
         player.sendMessage("/slayer stats  — show per-boss kills and XP breakdown");
+        player.sendMessage("/slayer top <type>  — show top 10 players by XP for a slayer type");
     }
 }
