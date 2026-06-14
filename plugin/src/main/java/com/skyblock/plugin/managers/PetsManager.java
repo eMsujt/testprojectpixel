@@ -53,6 +53,7 @@ public final class PetsManager {
 
     private final Map<UUID, Pet> activePets = new HashMap<>();
     private final Map<UUID, List<Pet>> playerPets = new HashMap<>();
+    private final Map<UUID, List<String>> petsHistory = new HashMap<>();
 
     private PetsManager() {}
 
@@ -88,6 +89,18 @@ public final class PetsManager {
         playerPets.computeIfAbsent(playerId, k -> new ArrayList<>()).add(pet);
     }
 
+    public void recordPetEvent(UUID playerId, String summary) {
+        petsHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getPetsHistory(UUID playerId) {
+        return Collections.unmodifiableList(petsHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllPetsHistory() {
+        return Collections.unmodifiableMap(petsHistory);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "pets.yml");
         if (!file.exists()) {
@@ -96,6 +109,7 @@ public final class PetsManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         activePets.clear();
         playerPets.clear();
+        petsHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID playerUuid = UUID.fromString(key);
@@ -121,6 +135,19 @@ public final class PetsManager {
                 // skip malformed player UUID
             }
         }
+        if (cfg.isConfigurationSection("petsHistory")) {
+            for (String key : cfg.getConfigurationSection("petsHistory").getKeys(false)) {
+                try {
+                    UUID playerUuid = UUID.fromString(key);
+                    List<String> entries = cfg.getStringList("petsHistory." + key);
+                    if (!entries.isEmpty()) {
+                        petsHistory.put(playerUuid, new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed player UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -138,6 +165,9 @@ public final class PetsManager {
                 cfg.set(prefix + ".rarity", pet.getRarity());
                 cfg.set(prefix + ".level", pet.getLevel());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : petsHistory.entrySet()) {
+            cfg.set("petsHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
