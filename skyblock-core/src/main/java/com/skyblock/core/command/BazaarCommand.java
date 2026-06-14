@@ -50,6 +50,7 @@ public final class BazaarCommand implements TabExecutor {
             case "sell" -> handleSell(player, args);
             case "view" -> handleView(player, args);
             case "cancel" -> handleCancel(player, args);
+            case "history" -> handleHistory(player);
             default -> sendHelp(player);
         }
         return true;
@@ -59,7 +60,7 @@ public final class BazaarCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("buy", "sell", "view", "cancel").stream()
+            return Arrays.asList("buy", "sell", "view", "cancel", "history").stream()
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -168,12 +169,25 @@ public final class BazaarCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = bazaarManager.getBazaarHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("You have no bazaar history.");
+            return;
+        }
+        player.sendMessage("=== Bazaar History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bazaar Commands ===");
         player.sendMessage("/bazaar buy <item> <quantity> <priceEach> — place a buy order");
         player.sendMessage("/bazaar sell <item> <quantity> <priceEach> — place a sell order");
         player.sendMessage("/bazaar view <item> — view current orders");
         player.sendMessage("/bazaar cancel buy|sell <orderId> — cancel a standing order");
+        player.sendMessage("/bazaar history — show your bazaar history");
     }
 
     private static String formatPrice(double price) {
