@@ -13,8 +13,101 @@ commands:
     usage: /<command> [help]
     aliases: [sb]
     permission: skyblock.command.skyblock
+  bank:
+    description: View your SkyBlock bank balance.
+    usage: /<command>
+    permission: skyblock.command.bank
+  bazaar:
+    description: Browse the SkyBlock bazaar.
+    usage: /<command>
+    permission: skyblock.command.bazaar
+  mayor:
+    description: View the current SkyBlock mayor and perks.
+    usage: /<command>
+    permission: skyblock.command.mayor
+  dungeon:
+    description: View your dungeon stats and progress.
+    usage: /<command>
+    permission: skyblock.command.dungeon
+  skills:
+    description: View your SkyBlock skills and XP.
+    usage: /<command>
+    permission: skyblock.command.skills
+  slayer:
+    description: View your slayer quests and progress.
+    usage: /<command>
+    permission: skyblock.command.slayer
+  fairy:
+    description: View your collected fairy souls.
+    usage: /<command>
+    permission: skyblock.command.fairy
+  auctionhouse:
+    description: View your active auction house listings.
+    usage: /<command>
+    aliases: [ah]
+    permission: skyblock.command.auctionhouse
+  enchanting:
+    description: View your active enchantments.
+    usage: /<command>
+    permission: skyblock.command.enchanting
+  kuudra:
+    description: View your Kuudra stats and progress.
+    usage: /<command>
+    permission: skyblock.command.kuudra
+  island:
+    description: Teleport to your private island.
+    usage: /<command>
+    permission: skyblock.command.island
+  hub:
+    description: Teleport to the SkyBlock hub.
+    usage: /<command>
+    permission: skyblock.command.hub
+  skyblockmenu:
+    description: Open the SkyBlock main menu.
+    usage: /<command>
+    aliases: [sbmenu]
+    permission: skyblock.command.skyblockmenu
 
 permissions:
   skyblock.command.skyblock:
     description: Allows use of the /skyblock command.
+    default: true
+  skyblock.command.bank:
+    description: Allows use of the /bank command.
+    default: true
+  skyblock.command.bazaar:
+    description: Allows use of the /bazaar command.
+    default: true
+  skyblock.command.mayor:
+    description: Allows use of the /mayor command.
+    default: true
+  skyblock.command.dungeon:
+    description: Allows use of the /dungeon command.
+    default: true
+  skyblock.command.skills:
+    description: Allows use of the /skills command.
+    default: true
+  skyblock.command.slayer:
+    description: Allows use of the /slayer command.
+    default: true
+  skyblock.command.fairy:
+    description: Allows use of the /fairy command.
+    default: true
+  skyblock.command.auctionhouse:
+    description: Allows use of the /auctionhouse command.
+    default: true
+  skyblock.command.enchanting:
+    description: Allows use of the /enchanting command.
+    default: true
+  skyblock.command.kuudra:
+    description: Allows use of the /kuudra command.
+    default: true
+  skyblock.command.island:
+    description: Allows use of the /island command.
+    default: true
+  skyblock.command.hub:
+    description: Allows use of the /hub command.
+    default: true
+  skyblock.command.skyblockmenu:
+    description: Allows use of the /skyblockmenu command.
     default: true
