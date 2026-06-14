@@ -3,6 +3,16 @@ package com.skyblock.plugin;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
+import com.skyblock.plugin.command.auctionhouse.AuctionHouseCommand;
+import com.skyblock.plugin.command.collections.CollectionsCommand;
+import com.skyblock.plugin.command.fairy.FairyCommand;
+import com.skyblock.plugin.command.hotm.HotmCommand;
+import com.skyblock.plugin.command.island.IslandCommand;
+import com.skyblock.plugin.command.kuudra.KuudraCommand;
+import com.skyblock.plugin.command.mayor.MayorCommand;
+import com.skyblock.plugin.command.pets.PetsCommand;
+import com.skyblock.plugin.command.skills.SkillsCommand;
+import com.skyblock.plugin.command.slayer.SlayerCommand;
 import com.skyblock.plugin.menu.SkyblockMenuCommand;
 import com.skyblock.slayers.SlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,6 +52,24 @@ public final class SkyBlockPlugin extends JavaPlugin {
         slayerManager = new SlayerManager();
         CollectionsManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
+        AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand();
+        getCommand("auctionhouse").setExecutor(auctionHouseCommand);
+        if (getCommand("ah") != null) {
+            getCommand("ah").setExecutor(auctionHouseCommand);
+        }
+        getCommand("collections").setExecutor(new CollectionsCommand());
+        getCommand("fairy").setExecutor(new FairyCommand());
+        getCommand("hotm").setExecutor(new HotmCommand());
+        getCommand("island").setExecutor(new IslandCommand());
+        getCommand("kuudra").setExecutor(new KuudraCommand());
+        getCommand("mayor").setExecutor(new MayorCommand());
+        getCommand("pets").setExecutor(new PetsCommand());
+        getCommand("skills").setExecutor(new SkillsCommand());
+        SlayerCommand slayerCommand = new SlayerCommand();
+        getCommand("slayer").setExecutor(slayerCommand);
+        if (getCommand("slay") != null) {
+            getCommand("slay").setExecutor(slayerCommand);
+        }
         getLogger().info("SkyBlock plugin enabled.");
     }
 

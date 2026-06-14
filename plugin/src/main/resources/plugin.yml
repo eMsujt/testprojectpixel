@@ -13,6 +13,38 @@ commands:
     usage: /<command> [help]
     aliases: [sb]
     permission: skyblock.command.skyblock
+  auctionhouse:
+    description: Open the auction house.
+    usage: /<command>
+    aliases: [ah]
+  collections:
+    description: View your collections.
+    usage: /<command>
+  fairy:
+    description: View fairy soul progress.
+    usage: /<command>
+  hotm:
+    description: View Heart of the Mountain tree.
+    usage: /<command>
+  island:
+    description: Manage your island.
+    usage: /<command>
+  kuudra:
+    description: View Kuudra stats.
+    usage: /<command>
+  mayor:
+    description: View current mayor and perks.
+    usage: /<command>
+  pets:
+    description: Manage your pets.
+    usage: /<command>
+  skills:
+    description: View your skills.
+    usage: /<command>
+  slayer:
+    description: View your slayer quests.
+    usage: /<command>
+    aliases: [slay]
 
 permissions:
   skyblock.command.skyblock:
