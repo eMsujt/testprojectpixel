@@ -11,12 +11,21 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
+
 public final class TradesMenu implements InventoryHolder, Listener {
+
+    private static final List<Trade> TRADES = List.of(
+            new Trade(Material.WHEAT, "§aFarmer John", 32, 40),
+            new Trade(Material.COBBLESTONE, "§7Miner Pete", 64, 96),
+            new Trade(Material.OAK_LOG, "§2Lumberjack Sam", 48, 60),
+            new Trade(Material.COD, "§bFisher Will", 16, 24),
+            new Trade(Material.ROTTEN_FLESH, "§cHunter Greg", 80, 50));
 
     private final Inventory inventory;
 
     public TradesMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§aTrades");
+        this.inventory = Bukkit.createInventory(this, 54, "§eTrades");
         build();
     }
 
@@ -38,7 +47,11 @@ public final class TradesMenu implements InventoryHolder, Listener {
             }
         }
 
-        inventory.setItem(22, makeItem(Material.EMERALD, "§aTrades"));
+        int slot = 20;
+        for (Trade trade : TRADES) {
+            inventory.setItem(slot, buildIcon(trade));
+            slot++;
+        }
     }
 
     @EventHandler
@@ -46,6 +59,19 @@ public final class TradesMenu implements InventoryHolder, Listener {
         if (event.getInventory().getHolder() instanceof TradesMenu) {
             event.setCancelled(true);
         }
+    }
+
+    private static ItemStack buildIcon(Trade trade) {
+        ItemStack item = new ItemStack(trade.material());
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(trade.npc());
+            meta.setLore(List.of(
+                    "§7Gives: §f" + trade.give() + "x " + trade.material().name(),
+                    "§7Receives: §6" + trade.receive() + " coins"));
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     private ItemStack makeItem(Material material, String name) {
@@ -56,5 +82,8 @@ public final class TradesMenu implements InventoryHolder, Listener {
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    private record Trade(Material material, String npc, int give, int receive) {
     }
 }
