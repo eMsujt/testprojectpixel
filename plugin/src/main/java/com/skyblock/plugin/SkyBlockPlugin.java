@@ -22,6 +22,7 @@ import com.skyblock.plugin.managers.SkillsManager;
 import com.skyblock.plugin.managers.WarpManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
+import com.skyblock.core.items.CustomItemManager;
 import com.skyblock.plugin.commands.AuctionHouseCommand;
 import com.skyblock.plugin.managers.CooldownManager;
 import com.skyblock.plugin.managers.CraftingManager;
@@ -65,6 +66,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
     private CoinManager coinManager;
     private DungeonManager dungeonManager;
+    private CustomItemManager itemManager;
 
     /**
      * Returns the active plugin instance.
@@ -84,6 +86,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         instance = this;
         coinManager = new CoinManager();
         dungeonManager = new DungeonManager();
+        itemManager = new CustomItemManager();
         AuctionHouseManager.getInstance().load(getDataFolder());
         BankManager.getInstance().load(getDataFolder());
         CollectionsManager.getInstance().load(getDataFolder());
@@ -182,6 +185,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
     /** Returns the dungeon session service. */
     public DungeonManager getDungeonManager() {
         return dungeonManager;
+    }
+
+    /** Returns the custom item registry. */
+    public CustomItemManager getItemManager() {
+        return itemManager;
     }
 
 }
