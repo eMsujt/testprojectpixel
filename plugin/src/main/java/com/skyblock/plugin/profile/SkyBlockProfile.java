@@ -27,6 +27,7 @@ public final class SkyBlockProfile implements Serializable {
     private final UUID uuid;
     private final Map<String, Long> skillXp = new HashMap<>();
     private final Map<String, Long> collectionXp = new HashMap<>();
+    private final Map<String, Integer> collectionCounts = new HashMap<>();
     private final List<ItemStack> quiverContents = new ArrayList<>();
     private final List<ItemStack> fishingBagContents = new ArrayList<>();
     private final List<ItemStack> potionBagContents = new ArrayList<>();
@@ -151,6 +152,27 @@ public final class SkyBlockProfile implements Serializable {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
         collectionXp.put(collection, amount);
+    }
+
+    /**
+     * Returns the player's per-item collection count for the given item.
+     *
+     * @param item the collection item name
+     * @return the number collected, or 0 if never collected
+     */
+    public int getCollectionCount(String item) {
+        Objects.requireNonNull(item, "item");
+        return collectionCounts.getOrDefault(item, 0);
+    }
+
+    /**
+     * Increments the player's per-item collection count by one.
+     *
+     * @param item the collection item name
+     */
+    public void incrementCollection(String item) {
+        Objects.requireNonNull(item, "item");
+        collectionCounts.merge(item, 1, Integer::sum);
     }
 
     /**
