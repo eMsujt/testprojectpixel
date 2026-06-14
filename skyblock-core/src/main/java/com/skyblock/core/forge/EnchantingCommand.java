@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public final class EnchantingCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "set", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "set", "reset", "history");
 
     private final EnchantingManager enchantingManager;
 
@@ -49,8 +49,9 @@ public final class EnchantingCommand implements TabExecutor {
         switch (args[0].toLowerCase()) {
             case "view"  -> handleView(player, args);
             case "set"   -> handleSet(player, args);
-            case "reset" -> handleReset(player);
-            default      -> sendHelp(player);
+            case "reset"   -> handleReset(player);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -122,6 +123,18 @@ public final class EnchantingCommand implements TabExecutor {
     private void handleReset(Player player) {
         enchantingManager.resetEnchantments(player.getUniqueId());
         player.sendMessage("Your enchantments have been reset.");
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = enchantingManager.getEnchantingHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("You have no enchanting history.");
+            return;
+        }
+        player.sendMessage("=== Your Enchanting History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
     }
 
     private void sendHelp(Player player) {
