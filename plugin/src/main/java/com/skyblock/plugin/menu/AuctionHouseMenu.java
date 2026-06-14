@@ -13,43 +13,45 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class AuctionHouseMenu implements InventoryHolder, Listener {
 
+    private final Inventory inventory = Bukkit.createInventory(this, 54, "§6Auction House");
+
     public void open(Player player) {
         player.openInventory(build());
     }
 
     @Override
     public Inventory getInventory() {
-        return Bukkit.createInventory(this, 54, "§6Auction House");
+        return inventory;
     }
 
     private Inventory build() {
-        Inventory inv = Bukkit.createInventory(this, 54, "§6Auction House");
+        inventory.clear();
 
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                inv.setItem(slot, pane);
+                inventory.setItem(slot, pane);
             }
         }
 
         // Top row — controls
-        inv.setItem(1, makeItem(Material.NAME_TAG,           "§aSearch"));
-        inv.setItem(3, makeItem(Material.GOLD_INGOT,         "§6Manage Auctions"));
-        inv.setItem(4, makeItem(Material.GOLDEN_HORSE_ARMOR, "§eAuctions Browser"));
-        inv.setItem(5, makeItem(Material.HOPPER,             "§eSort: §aHigh Bid"));
-        inv.setItem(7, makeItem(Material.OAK_SIGN,           "§aView Bids"));
+        inventory.setItem(1, makeItem(Material.NAME_TAG,           "§aSearch"));
+        inventory.setItem(3, makeItem(Material.GOLD_INGOT,         "§6Manage Auctions"));
+        inventory.setItem(4, makeItem(Material.GOLDEN_HORSE_ARMOR, "§eAuctions Browser"));
+        inventory.setItem(5, makeItem(Material.HOPPER,             "§eSort: §aHigh Bid"));
+        inventory.setItem(7, makeItem(Material.OAK_SIGN,           "§aView Bids"));
 
         // Category selectors
-        inv.setItem(46, makeItem(Material.GOLDEN_SWORD,      "§cWeapons"));
-        inv.setItem(47, makeItem(Material.GOLDEN_CHESTPLATE, "§bArmor"));
-        inv.setItem(48, makeItem(Material.DIAMOND_PICKAXE,   "§eTools"));
-        inv.setItem(49, makeItem(Material.ENCHANTED_BOOK,    "§dEnchanted Books"));
-        inv.setItem(50, makeItem(Material.WHEAT,             "§aConsumables"));
-        inv.setItem(51, makeItem(Material.DIRT,              "§6Blocks"));
-        inv.setItem(52, makeItem(Material.BARRIER,           "§7Misc"));
+        inventory.setItem(46, makeItem(Material.GOLDEN_SWORD,      "§cWeapons"));
+        inventory.setItem(47, makeItem(Material.GOLDEN_CHESTPLATE, "§bArmor"));
+        inventory.setItem(48, makeItem(Material.DIAMOND_PICKAXE,   "§eTools"));
+        inventory.setItem(49, makeItem(Material.ENCHANTED_BOOK,    "§dEnchanted Books"));
+        inventory.setItem(50, makeItem(Material.WHEAT,             "§aConsumables"));
+        inventory.setItem(51, makeItem(Material.DIRT,              "§6Blocks"));
+        inventory.setItem(52, makeItem(Material.BARRIER,           "§7Misc"));
 
-        return inv;
+        return inventory;
     }
 
     @EventHandler
