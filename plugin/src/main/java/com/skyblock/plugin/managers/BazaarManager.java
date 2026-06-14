@@ -4,8 +4,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public final class BazaarManager {
 
@@ -13,6 +16,7 @@ public final class BazaarManager {
 
     private final Map<String, Double> buyPrices = new HashMap<>();
     private final Map<String, Double> sellPrices = new HashMap<>();
+    private final Map<UUID, List<String>> productWatchlists = new HashMap<>();
 
     private BazaarManager() {}
 
@@ -44,6 +48,18 @@ public final class BazaarManager {
         return sellPrices;
     }
 
+    public List<String> getWatchlist(UUID uuid) {
+        return productWatchlists.computeIfAbsent(uuid, k -> new ArrayList<>());
+    }
+
+    public void watchProduct(UUID uuid, String product) {
+        getWatchlist(uuid).add(product);
+    }
+
+    public void unwatchProduct(UUID uuid, String product) {
+        getWatchlist(uuid).remove(product);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "bazaar.yml");
         if (!file.exists()) {
@@ -62,6 +78,12 @@ public final class BazaarManager {
                 sellPrices.put(key, cfg.getDouble("sellPrices." + key));
             }
         }
+        productWatchlists.clear();
+        if (cfg.isConfigurationSection("watchlists")) {
+            for (String key : cfg.getConfigurationSection("watchlists").getKeys(false)) {
+                productWatchlists.put(UUID.fromString(key), new ArrayList<>(cfg.getStringList("watchlists." + key)));
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -72,6 +94,9 @@ public final class BazaarManager {
         }
         for (Map.Entry<String, Double> entry : sellPrices.entrySet()) {
             cfg.set("sellPrices." + entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : productWatchlists.entrySet()) {
+            cfg.set("watchlists." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
