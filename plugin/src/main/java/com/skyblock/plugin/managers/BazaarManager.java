@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public final class BazaarManager {
     private final Map<String, List<int[]>> sellOrderEntries = new HashMap<>();
     private final Map<String, List<Double>> priceHistory = new HashMap<>();
     private final Map<UUID, List<String>> orderHistory = new HashMap<>();
-    private final Map<UUID, List<String>> bazaarHistory = new HashMap<>();
+    private final Map<UUID, List<String>> bazaarHistory = new ConcurrentHashMap<>();
 
     private BazaarManager() {}
 
