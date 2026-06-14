@@ -25,7 +25,7 @@ public final class PetsManager {
     /** Every pet type available in SkyBlock. */
     public enum PetType {
         BEE, WOLF, ENDERMAN, BLAZE, TIGER, DOLPHIN,
-        RABBIT, LION, ELEPHANT, HORSE, CAT, PARROT,
+        RABBIT, LION, ELEPHANT, HORSE, CAT, DOG, PARROT,
         PENGUIN, TURTLE, SHEEP, PIG, CHICKEN,
         SKELETON, SPIDER, ZOMBIE, JELLYFISH,
         BLUE_WHALE, ARMADILLO, ROCK
@@ -125,6 +125,7 @@ public final class PetsManager {
         m.put("RABBIT",     new int[]{0,  0,  0,  40});
         // UNCOMMON
         m.put("CAT",        new int[]{1,  0, 10,  60});
+        m.put("DOG",        new int[]{1, 10, 15,  70});
         m.put("SHEEP",      new int[]{1,  0,  0,  80});
         m.put("SKELETON",   new int[]{1,  0, 15,  50});
         m.put("SPIDER",     new int[]{1,  0, 20,  50});
