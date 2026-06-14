@@ -42,7 +42,7 @@ public final class PetsCommand implements CommandExecutor {
             return;
         }
         for (Pet pet : pets) {
-            String marker = (active != null && pet.getName().equals(active.getName()) && pet.getRarity().equals(active.getRarity())) ? " (active)" : "";
+            String marker = (active != null && pet.getId().equals(active.getId())) ? " (active)" : "";
             player.sendMessage("  " + pet.getName() + " [" + pet.getRarity() + "] Lv" + pet.getLevel() + marker);
         }
     }
