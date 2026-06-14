@@ -24,9 +24,10 @@ public final class DungeonCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "stats" -> handleStats(player);
-            case "floor" -> handleFloor(player, args);
-            default      -> sendHelp(player);
+            case "stats"  -> handleStats(player);
+            case "floor"  -> handleFloor(player, args);
+            case "class"  -> handleClass(player, args);
+            default       -> sendHelp(player);
         }
         return true;
     }
@@ -82,10 +83,37 @@ public final class DungeonCommand implements CommandExecutor {
         }
     }
 
+    private static final java.util.List<String> VALID_CLASSES =
+            java.util.Arrays.asList("Healer", "Mage", "Berserker", "Archer", "Tank");
+
+    private void handleClass(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /dungeon class <name>");
+            player.sendMessage("Valid classes: " + String.join(", ", VALID_CLASSES));
+            return;
+        }
+        String input = args[1];
+        String matched = null;
+        for (String cls : VALID_CLASSES) {
+            if (cls.equalsIgnoreCase(input)) {
+                matched = cls;
+                break;
+            }
+        }
+        if (matched == null) {
+            player.sendMessage("Invalid class: " + input + ". Valid classes: " + String.join(", ", VALID_CLASSES));
+            return;
+        }
+        UUID id = player.getUniqueId();
+        DungeonManager.getInstance().setPlayerClass(id, matched);
+        player.sendMessage("Your dungeon class has been set to: " + matched);
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Dungeon Commands ===");
         player.sendMessage("/dungeon              — show your dungeon stats");
         player.sendMessage("/dungeon stats        — show current floor, highest floor, and completions");
         player.sendMessage("/dungeon floor <n>    — show completions and best time for floor N (1-7)");
+        player.sendMessage("/dungeon class <name> — set your dungeon class (Healer, Mage, Berserker, Archer, Tank)");
     }
 }
