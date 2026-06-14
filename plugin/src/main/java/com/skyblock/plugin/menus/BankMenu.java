@@ -42,7 +42,7 @@ public class BankMenu extends Menu {
     /** Builds the centred ingot describing the player's bank balance. */
     private ItemStack balanceIngot(CoinManager coins, UUID playerId) {
         return new ItemBuilder(Material.GOLD_INGOT)
-                .displayName("§6Your Account")
+                .displayName("§6You")
                 .lore("§7Balance: §6" + coins.getBank(playerId))
                 .build();
     }
