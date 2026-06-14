@@ -11,19 +11,12 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-
 public final class FastTravelMenu implements InventoryHolder, Listener {
-
-    private static final String TITLE = "§aFast Travel";
-    private static final int SIZE = 27;
-
-    private static final int HUB_SLOT = 13;
 
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, SIZE, TITLE);
+        this.inventory = Bukkit.createInventory(this, 54, "§bFast Travel");
         build();
     }
 
@@ -37,40 +30,29 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
     }
 
     private void build() {
-        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", null);
-        for (int slot = 0; slot < SIZE; slot++) {
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 18 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
 
-        inventory.setItem(HUB_SLOT, makeItem(Material.NETHER_STAR, "§aHub",
-                List.of("§7Teleport to the Hub.")));
+        inventory.setItem(22, makeItem(Material.NETHER_STAR, "§bFast Travel"));
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (!(event.getInventory().getHolder() instanceof FastTravelMenu)) return;
-        event.setCancelled(true);
-
-        if (!(event.getWhoClicked() instanceof Player player)) return;
-        int slot = event.getRawSlot();
-
-        if (slot == HUB_SLOT) {
-            player.closeInventory();
-            player.sendMessage("§aTeleporting to Hub...");
+        if (event.getInventory().getHolder() instanceof FastTravelMenu) {
+            event.setCancelled(true);
         }
     }
 
-    private static ItemStack makeItem(Material material, String name, List<String> lore) {
+    private ItemStack makeItem(Material material, String name) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
-            if (lore != null) {
-                meta.setLore(lore);
-            }
             item.setItemMeta(meta);
         }
         return item;
