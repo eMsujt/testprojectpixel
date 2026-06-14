@@ -1,5 +1,9 @@
 package com.skyblock.plugin.managers;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -51,5 +55,47 @@ public final class CooldownManager {
 
     public void removePlayer(UUID uuid) {
         cooldowns.remove(uuid);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "cooldowns.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        cooldowns.clear();
+        if (cfg.isConfigurationSection("players")) {
+            for (String uuidKey : cfg.getConfigurationSection("players").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(uuidKey);
+                    String prefix = "players." + uuidKey;
+                    if (cfg.isConfigurationSection(prefix)) {
+                        Map<String, Long> playerCooldowns = new HashMap<>();
+                        for (String action : cfg.getConfigurationSection(prefix).getKeys(false)) {
+                            playerCooldowns.put(action, cfg.getLong(prefix + "." + action));
+                        }
+                        cooldowns.put(id, playerCooldowns);
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entry
+                }
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "cooldowns.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<String, Long>> playerEntry : cooldowns.entrySet()) {
+            String prefix = "players." + playerEntry.getKey().toString();
+            for (Map.Entry<String, Long> actionEntry : playerEntry.getValue().entrySet()) {
+                cfg.set(prefix + "." + actionEntry.getKey(), actionEntry.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save cooldowns.yml", e);
+        }
     }
 }
