@@ -3,6 +3,7 @@ package com.skyblock.plugin.gui.menus;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * The Fast Travel menu.
@@ -38,11 +39,13 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("Fast Travel", 6);
+        super("§aFast Travel", 6);
     }
 
     @Override
     protected void build() {
+        fillBorder();
+
         for (Destination destination : Destination.values()) {
             setItem(destination.slot, new ItemBuilder(destination.icon)
                             .displayName("§a" + destination.displayName)
@@ -50,6 +53,19 @@ public class FastTravelMenu extends Menu {
                             .build(),
                     event -> event.getWhoClicked().sendMessage(
                             "§aWarping to " + destination.displayName + "..."));
+        }
+    }
+
+    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
+    private void fillBorder() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
         }
     }
 }
