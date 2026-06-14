@@ -17,19 +17,19 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * In-memory registry of {@link PlayerProfile} instances keyed by player UUID.
+ * In-memory registry of {@link SkyBlockProfile} instances keyed by player UUID.
  *
  * <p>Profiles are persisted to {@code plugins/SkyBlock/profiles/<uuid>.yml}.
  * On {@link PlayerJoinEvent} a player's profile is loaded asynchronously and,
  * on {@link PlayerQuitEvent}, saved asynchronously so file I/O never runs on
  * the server main thread.</p>
  *
- * <p>The {@link PlayerProfile} map is mutated only on the main thread; access
+ * <p>The {@link SkyBlockProfile} map is mutated only on the main thread; access
  * it from the server main thread or guard it externally.</p>
  */
 public final class ProfileManager implements Listener {
 
-    private final Map<UUID, PlayerProfile> profiles = new HashMap<>();
+    private final Map<UUID, SkyBlockProfile> profiles = new HashMap<>();
 
     private final Plugin plugin;
     private final File profilesDir;
@@ -52,9 +52,9 @@ public final class ProfileManager implements Listener {
      * @param uuid unique identifier of the player
      * @return the player's profile, never {@code null}
      */
-    public PlayerProfile getOrCreate(UUID uuid) {
+    public SkyBlockProfile getOrCreate(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
-        return profiles.computeIfAbsent(uuid, PlayerProfile::new);
+        return profiles.computeIfAbsent(uuid, SkyBlockProfile::new);
     }
 
     /**
@@ -64,7 +64,7 @@ public final class ProfileManager implements Listener {
      * @param uuid unique identifier of the player
      * @return the player's profile, or {@code null}
      */
-    public PlayerProfile getProfile(UUID uuid) {
+    public SkyBlockProfile getProfile(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
         return profiles.get(uuid);
     }
@@ -86,7 +86,7 @@ public final class ProfileManager implements Listener {
      * @param uuid unique identifier of the player
      * @return the removed profile, or {@code null} if none existed
      */
-    public PlayerProfile removeProfile(UUID uuid) {
+    public SkyBlockProfile removeProfile(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
         return profiles.remove(uuid);
     }
@@ -96,7 +96,7 @@ public final class ProfileManager implements Listener {
      *
      * @return the registered profiles
      */
-    public Map<UUID, PlayerProfile> getProfiles() {
+    public Map<UUID, SkyBlockProfile> getProfiles() {
         return Collections.unmodifiableMap(profiles);
     }
 
@@ -112,8 +112,8 @@ public final class ProfileManager implements Listener {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             Map<String, Long> loaded = readSkillXp(uuid);
             plugin.getServer().getScheduler().runTask(plugin, () -> {
-                PlayerProfile profile = getOrCreate(uuid);
-                loaded.forEach(profile::setSkillXp);
+                SkyBlockProfile profile = getOrCreate(uuid);
+                loaded.forEach(profile::setSkillX);
             });
         });
     }
@@ -127,12 +127,12 @@ public final class ProfileManager implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        PlayerProfile profile = profiles.get(player.getUniqueId());
+        SkyBlockProfile profile = profiles.get(player.getUniqueId());
         if (profile == null) {
             return;
         }
         UUID uuid = player.getUniqueId();
-        Map<String, Long> snapshot = profile.getSkillXp();
+        Map<String, Long> snapshot = profile.getSkillsX();
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
                 () -> writeSkillXp(uuid, snapshot));
     }
