@@ -212,6 +212,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FishingSkillListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TamingSkillListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.CarpentryListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.SkillProgressionListener(this), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.SkyBlockMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.BazaarMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.AuctionHouseMenu(), this);
