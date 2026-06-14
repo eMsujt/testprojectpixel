@@ -34,8 +34,9 @@ commands:
     usage: /<command>
     permission: skyblock.command.skills
   slayer:
-    description: View your slayer quests and progress.
-    usage: /<command>
+    description: View your Slayer quest progress
+    usage: /<command> [stats]
+    aliases: [slayer, slay]
     permission: skyblock.command.slayer
   fairy:
     description: View your collected fairy souls.
