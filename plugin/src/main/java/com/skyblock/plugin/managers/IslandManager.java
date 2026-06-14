@@ -22,6 +22,7 @@ public final class IslandManager {
     private final Map<UUID, List<String>> islandBuildings = new HashMap<>();
     private final Map<UUID, List<UUID>> islandVisitors = new HashMap<>();
     private final Map<UUID, List<UUID>> islandMembers = new HashMap<>();
+    private final Map<UUID, List<String>> visitLog = new HashMap<>();
 
     private IslandManager() {}
 
@@ -128,6 +129,18 @@ public final class IslandManager {
         return Collections.unmodifiableMap(islandMembers);
     }
 
+    public void recordVisit(UUID visitorId, String islandOwnerName) {
+        visitLog.computeIfAbsent(visitorId, k -> new ArrayList<>()).add(islandOwnerName);
+    }
+
+    public List<String> getVisitLog(UUID visitorId) {
+        return Collections.unmodifiableList(visitLog.getOrDefault(visitorId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllVisitLog() {
+        return Collections.unmodifiableMap(visitLog);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "island.yml");
         if (!file.exists()) {
@@ -141,6 +154,7 @@ public final class IslandManager {
         islandBuildings.clear();
         islandVisitors.clear();
         islandMembers.clear();
+        visitLog.clear();
         if (cfg.isConfigurationSection("islandBiome")) {
             for (String key : cfg.getConfigurationSection("islandBiome").getKeys(false)) {
                 try {
@@ -201,6 +215,14 @@ public final class IslandManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        if (cfg.isConfigurationSection("visitLog")) {
+            for (String key : cfg.getConfigurationSection("visitLog").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("visitLog." + key);
+                    visitLog.put(UUID.fromString(key), new ArrayList<>(entries));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -234,6 +256,9 @@ public final class IslandManager {
                 raw.add(m.toString());
             }
             cfg.set("islandMembers." + entry.getKey().toString(), raw);
+        }
+        for (Map.Entry<UUID, List<String>> entry : visitLog.entrySet()) {
+            cfg.set("visitLog." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
