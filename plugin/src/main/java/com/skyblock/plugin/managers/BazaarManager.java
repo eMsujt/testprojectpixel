@@ -57,7 +57,7 @@ public final class BazaarManager {
     // Buy orders
 
     public List<BuyOrder> getBuyOrders(String itemName) {
-        return buyOrders.computeIfAbsent(itemName, k -> new ArrayList<>());
+        return Collections.unmodifiableList(buyOrders.computeIfAbsent(itemName, k -> new ArrayList<>()));
     }
 
     public List<BuyOrder> getAllBuyOrders() {
@@ -69,7 +69,7 @@ public final class BazaarManager {
     }
 
     public void addBuyOrder(BuyOrder order) {
-        getBuyOrders(order.itemName()).add(order);
+        buyOrders.computeIfAbsent(order.itemName(), k -> new ArrayList<>()).add(order);
     }
 
     public boolean removeBuyOrder(String itemName, UUID orderId) {
@@ -83,7 +83,7 @@ public final class BazaarManager {
     // Sell orders
 
     public List<SellOrder> getSellOrders(String itemName) {
-        return sellOrders.computeIfAbsent(itemName, k -> new ArrayList<>());
+        return Collections.unmodifiableList(sellOrders.computeIfAbsent(itemName, k -> new ArrayList<>()));
     }
 
     public List<SellOrder> getAllSellOrders() {
@@ -95,7 +95,7 @@ public final class BazaarManager {
     }
 
     public void addSellOrder(SellOrder order) {
-        getSellOrders(order.itemName()).add(order);
+        sellOrders.computeIfAbsent(order.itemName(), k -> new ArrayList<>()).add(order);
     }
 
     public boolean removeSellOrder(String itemName, UUID orderId) {
