@@ -1,0 +1,43 @@
+# Starter NPC shop item prices for Hypixel SkyBlock.
+# Each key under "shop-items" is a MATERIAL sold by the starter NPC shops.
+#   buy:  the coin price a player pays to buy one from the NPC.
+#   sell: the coin price a player receives when selling one back to the NPC.
+# sell is always lower than buy to model the NPC margin.
+
+shop-items:
+  WHEAT:
+    buy: 6
+    sell: 3
+  CARROT:
+    buy: 5
+    sell: 3
+  POTATO:
+    buy: 5
+    sell: 3
+  COAL:
+    buy: 5
+    sell: 2
+  IRON_INGOT:
+    buy: 20
+    sell: 10
+  BONE_MEAL:
+    buy: 4
+    sell: 1
+  WHEAT_SEEDS:
+    buy: 3
+    sell: 1
+  PUMPKIN:
+    buy: 8
+    sell: 4
+  MELON_SLICE:
+    buy: 4
+    sell: 2
+  SUGAR_CANE:
+    buy: 9
+    sell: 4
+  COBBLESTONE:
+    buy: 3
+    sell: 1
+  GOLD_INGOT:
+    buy: 30
+    sell: 15
