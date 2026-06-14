@@ -60,6 +60,7 @@ public final class AuctionHouseManager {
             if (existing.id().equals(listingId)) {
                 listings.set(i, new AuctionListing(
                         existing.id(),
+                        existing.seller(),
                         existing.itemName(),
                         existing.quantity(),
                         existing.startingBid(),
