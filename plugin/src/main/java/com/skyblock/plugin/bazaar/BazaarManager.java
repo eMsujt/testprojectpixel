@@ -1,37 +1,51 @@
 package com.skyblock.plugin.bazaar;
 
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * In-memory registry of active bazaar orders.
+ * YAML-driven registry of Bazaar products loaded from {@code bazaar.yml}.
  *
- * <p>Holds the live buy/sell orders in insertion order so menus display them in
- * the order they were placed. An order is added when a player submits a bazaar
- * order and removed when it is filled or cancelled. Not thread-safe; access from
- * the main server thread.</p>
+ * <p>Each key under the {@code products} section defines one product by its
+ * product-id, carrying the {@link Material} shown in the menu, a display name and
+ * its instant buy/sell prices (the sell price is normally slightly lower,
+ * modelling the spread). The bundled default is copied out of the jar on first
+ * run. Loaded products are held in memory in definition order and looked up by
+ * id; {@link #openBazaar} builds a {@link BazaarMenu} on demand and shows it.</p>
  */
 public final class BazaarManager {
 
+    private static final BazaarManager INSTANCE = new BazaarManager();
+
     /**
-     * A single active bazaar order.
+     * A single loaded bazaar product.
      *
-     * @param player the placing player's UUID
-     * @param qty    the number of items in the order
-     * @param price  the price per item in coins
+     * @param id          the product-id
+     * @param material    the item shown in the menu
+     * @param displayName the menu display name (supports colour codes)
+     * @param buyPrice    the instant-buy price in coins
+     * @param sellPrice   the instant-sell price in coins
      */
-    public record BazaarOrder(UUID player, int qty, double price) {
-        public BazaarOrder {
-            Objects.requireNonNull(player, "player");
+    public record Product(String id, Material material, String displayName, double buyPrice, double sellPrice) {
+        public Product {
+            Objects.requireNonNull(id, "id");
+            Objects.requireNonNull(material, "material");
+            Objects.requireNonNull(displayName, "displayName");
         }
     }
 
-    private static final BazaarManager INSTANCE = new BazaarManager();
-
-    private final List<BazaarOrder> orders = new ArrayList<>();
+    private final Map<String, Product> products = new LinkedHashMap<>();
 
     private BazaarManager() {
     }
@@ -41,31 +55,62 @@ public final class BazaarManager {
     }
 
     /**
-     * Adds an order to the active bazaar orders.
+     * Reads {@code bazaar.yml} from the plugin data folder, copying the bundled
+     * default out of the jar on first run, then parses every defined product.
      *
-     * @param order the order to add
+     * @param plugin the owning plugin, used for resource extraction and logging
      */
-    public void addOrder(BazaarOrder order) {
-        Objects.requireNonNull(order, "order");
-        orders.add(order);
+    public void load(JavaPlugin plugin) {
+        File file = new File(plugin.getDataFolder(), "bazaar.yml");
+        if (!file.exists() && plugin.getResource("bazaar.yml") != null) {
+            plugin.saveResource("bazaar.yml", false);
+        }
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection root = cfg.isConfigurationSection("products")
+                ? cfg.getConfigurationSection("products")
+                : cfg;
+        products.clear();
+        for (String id : root.getKeys(false)) {
+            if (!root.isConfigurationSection(id)) {
+                continue;
+            }
+            Product product = parse(plugin, id, root.getConfigurationSection(id));
+            if (product != null) {
+                products.put(id, product);
+            }
+        }
+        plugin.getLogger().info("Loaded " + products.size() + " bazaar products.");
     }
 
-    /**
-     * Removes the given order.
-     *
-     * @param order the order to remove
-     * @return {@code true} if the order was present and removed
-     */
-    public boolean removeOrder(BazaarOrder order) {
-        return orders.remove(order);
+    /** Parses a single product section, or returns {@code null} if it is invalid. */
+    private Product parse(JavaPlugin plugin, String id, ConfigurationSection section) {
+        Material material = Material.matchMaterial(section.getString("material", id));
+        if (material == null) {
+            plugin.getLogger().warning("Skipping bazaar product '" + id + "': unknown material.");
+            return null;
+        }
+        String displayName = section.getString("name", id);
+        double buyPrice = section.getDouble("buy");
+        double sellPrice = section.getDouble("sell");
+        return new Product(id, material, displayName, buyPrice, sellPrice);
     }
 
-    /**
-     * Returns an unmodifiable view of every active order in placement order.
-     *
-     * @return the active orders
-     */
-    public List<BazaarOrder> getOrders() {
-        return Collections.unmodifiableList(orders);
+    /** Returns the loaded product with the given id, or {@code null} if absent. */
+    public Product getProduct(String id) {
+        return products.get(id);
+    }
+
+    /** Returns an unmodifiable view of all loaded products in definition order. */
+    public List<Product> getProducts() {
+        return Collections.unmodifiableList(new ArrayList<>(products.values()));
+    }
+
+    /** Opens the Bazaar menu listing every loaded product for a player. */
+    public void openBazaar(Player player) {
+        Objects.requireNonNull(player, "player");
+        new BazaarMenu(getProducts()).open(player);
     }
 }

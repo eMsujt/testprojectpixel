@@ -1,54 +1,44 @@
 package com.skyblock.plugin.bazaar;
 
+import com.skyblock.plugin.bazaar.BazaarManager.Product;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The Bazaar menu.
  *
- * <p>A 54-slot (6-row) chest GUI titled {@code §6Bazaar} whose first two rows
- * hold the category filter icons, in Hypixel's category order, while the menu's
- * outer edge is framed by a {@code GRAY_STAINED_GLASS_PANE} border ready to
- * display the selected category's product listings.</p>
+ * <p>A 54-slot (6-row) chest GUI titled {@code §6Bazaar} framed by a
+ * {@code GRAY_STAINED_GLASS_PANE} border, listing the {@link BazaarManager}'s
+ * loaded products across the inner slots in definition order. Each product shows
+ * its instant buy and sell prices as lore.</p>
  */
 public class BazaarMenu extends Menu {
 
-    /** A Bazaar category filter: its icon, display name, and slot. */
-    private enum Category {
-        FARMING(10, Material.GOLDEN_HOE, "§aFarming", "§7Crops and farming drops."),
-        MINING(11, Material.STONE_PICKAXE, "§aMining", "§7Ores, gemstones and minerals."),
-        COMBAT(12, Material.STONE_SWORD, "§aCombat", "§7Mob drops and combat loot."),
-        WOODS_AND_FISHES(13, Material.OAK_SAPLING, "§aWoods & Fishes", "§7Logs, fish and sea creatures."),
-        ODDS_AND_ENDS(14, Material.OAK_BOAT, "§aOdds & Ends", "§7Miscellaneous goods."),
-        SPECIAL(15, Material.NETHER_STAR, "§aSpecial", "§7Rare and special items.");
+    /** Inner slots (excluding the border) in left-to-right, top-to-bottom order. */
+    private static final int[] CONTENT_SLOTS = buildContentSlots();
 
-        private final int slot;
-        private final Material icon;
-        private final String displayName;
-        private final String lore;
+    private final List<Product> products;
 
-        Category(int slot, Material icon, String displayName, String lore) {
-            this.slot = slot;
-            this.icon = icon;
-            this.displayName = displayName;
-            this.lore = lore;
-        }
-    }
-
-    public BazaarMenu() {
+    public BazaarMenu(List<Product> products) {
         super("§6Bazaar", 6);
+        this.products = products != null ? new ArrayList<>(products) : new ArrayList<>();
     }
 
     @Override
     protected void build() {
         fillBorder();
 
-        for (Category category : Category.values()) {
-            setItem(category.slot, new ItemBuilder(category.icon)
-                    .displayName(category.displayName)
-                    .lore(category.lore)
+        for (int i = 0; i < products.size() && i < CONTENT_SLOTS.length; i++) {
+            Product product = products.get(i);
+            setItem(CONTENT_SLOTS[i], new ItemBuilder(product.material())
+                    .displayName(product.displayName())
+                    .lore("§7Buy: §6" + product.buyPrice() + " coins")
+                    .addLore("§7Sell: §6" + product.sellPrice() + " coins")
                     .build());
         }
     }
@@ -64,5 +54,21 @@ public class BazaarMenu extends Menu {
                 setItem(slot, pane);
             }
         }
+    }
+
+    /** Computes the inner content slots (every non-border slot of a 6-row menu). */
+    private static int[] buildContentSlots() {
+        List<Integer> slots = new ArrayList<>();
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot >= 9 && slot < 45 && column != 0 && column != 8) {
+                slots.add(slot);
+            }
+        }
+        int[] result = new int[slots.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = slots.get(i);
+        }
+        return result;
     }
 }
