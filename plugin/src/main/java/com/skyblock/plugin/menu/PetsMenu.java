@@ -49,8 +49,18 @@ public final class PetsMenu implements InventoryHolder {
         }
     }
 
+    private static Material getPetMaterial(PetsManager.Pet pet) {
+        if (pet == null) return Material.WOLF_SPAWN_EGG;
+        try {
+            Material m = Material.valueOf(pet.getName().toUpperCase().replace(' ', '_') + "_SPAWN_EGG");
+            return m;
+        } catch (IllegalArgumentException e) {
+            return Material.WOLF_SPAWN_EGG;
+        }
+    }
+
     private ItemStack makeActiveItem(PetsManager.Pet active) {
-        ItemStack item = new ItemStack(Material.WOLF_SPAWN_EGG);
+        ItemStack item = new ItemStack(getPetMaterial(active));
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName("§6Active Pet");
