@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * The Fast Travel menu.
  *
- * <p>A 45-slot (5-row) menu titled {@code §aFast Travel} presenting one icon per
+ * <p>A 54-slot (6-row) menu titled {@code §aFast Travel} presenting one icon per
  * island destination across the centred row, framed by a
  * {@code GRAY_STAINED_GLASS_PANE} border. Clicking a destination icon tells the
  * player where they are warping; the actual teleport is performed by the warp
@@ -38,7 +38,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§aFast Travel", 5);
+        super("§aFast Travel", 6);
     }
 
     @Override
@@ -60,9 +60,9 @@ public class FastTravelMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 45; slot++) {
+        for (int slot = 0; slot < 54; slot++) {
             int column = slot % 9;
-            if (slot < 9 || slot >= 36 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
                 setItem(slot, pane);
             }
         }
