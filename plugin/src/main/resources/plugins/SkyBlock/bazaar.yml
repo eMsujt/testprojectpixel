@@ -1,0 +1,108 @@
+# Default Bazaar products for Hypixel SkyBlock.
+# Each key is a product-id carrying the menu material, display name and prices.
+# buy  — the price players pay when instantly buying (buy order fill price).
+# sell — the price players receive when instantly selling (always slightly
+#        lower than buy to model the spread).
+# Prices follow the Hypixel wiki order-of-magnitude for each item.
+
+products:
+  WHEAT:
+    material: WHEAT
+    name: "Wheat"
+    buy: 2.5
+    sell: 2.0
+  CARROT:
+    material: CARROT
+    name: "Carrot"
+    buy: 1.8
+    sell: 1.5
+  POTATO:
+    material: POTATO
+    name: "Potato"
+    buy: 1.8
+    sell: 1.5
+  PUMPKIN:
+    material: PUMPKIN
+    name: "Pumpkin"
+    buy: 3.0
+    sell: 2.5
+  MELON:
+    material: MELON
+    name: "Melon"
+    buy: 1.2
+    sell: 1.0
+  SUGAR_CANE:
+    material: SUGAR_CANE
+    name: "Sugar Cane"
+    buy: 3.5
+    sell: 3.0
+  COCOA_BEANS:
+    material: COCOA_BEANS
+    name: "Cocoa Beans"
+    buy: 4.0
+    sell: 3.5
+  NETHER_WART:
+    material: NETHER_WART
+    name: "Nether Wart"
+    buy: 2.8
+    sell: 2.4
+  CACTUS:
+    material: CACTUS
+    name: "Cactus"
+    buy: 2.0
+    sell: 1.7
+  COBBLESTONE:
+    material: COBBLESTONE
+    name: "Cobblestone"
+    buy: 1.0
+    sell: 0.8
+  COAL:
+    material: COAL
+    name: "Coal"
+    buy: 2.0
+    sell: 1.7
+  IRON_INGOT:
+    material: IRON_INGOT
+    name: "Iron Ingot"
+    buy: 8.0
+    sell: 7.0
+  GOLD_INGOT:
+    material: GOLD_INGOT
+    name: "Gold Ingot"
+    buy: 12.0
+    sell: 10.5
+  DIAMOND:
+    material: DIAMOND
+    name: "Diamond"
+    buy: 80.0
+    sell: 72.0
+  LAPIS_LAZULI:
+    material: LAPIS_LAZULI
+    name: "Lapis Lazuli"
+    buy: 5.0
+    sell: 4.5
+  EMERALD:
+    material: EMERALD
+    name: "Emerald"
+    buy: 10.0
+    sell: 9.0
+  REDSTONE:
+    material: REDSTONE
+    name: "Redstone"
+    buy: 3.0
+    sell: 2.6
+  OBSIDIAN:
+    material: OBSIDIAN
+    name: "Obsidian"
+    buy: 60.0
+    sell: 54.0
+  STRING:
+    material: STRING
+    name: "String"
+    buy: 3.5
+    sell: 3.0
+  ENDER_PEARL:
+    material: ENDER_PEARL
+    name: "Ender Pearl"
+    buy: 12.0
+    sell: 10.0
