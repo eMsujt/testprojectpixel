@@ -12,6 +12,11 @@ public final class CollectionListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        collectionManager.addCollection(player.getUniqueId(), event.getBlock().getType(), 1L);
+        int unlocked = collectionManager.addCollection(player.getUniqueId(), event.getBlock().getType(), 1L);
+        if (unlocked > 0) {
+            int tier = collectionManager.getTier(player.getUniqueId(), event.getBlock().getType());
+            player.sendMessage("§a§lCOLLECTION UNLOCKED §7"
+                    + event.getBlock().getType().name().toLowerCase() + " §eTier " + tier);
+        }
     }
 }
