@@ -6,10 +6,13 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
 
@@ -43,6 +46,19 @@ public final class SkillManager implements Listener {
             Map.entry(Material.END_STONE,           3L)
     );
 
+    private static final Map<EntityType, Long> COMBAT_XP = Map.ofEntries(
+            Map.entry(EntityType.ZOMBIE,        4L),
+            Map.entry(EntityType.SKELETON,      4L),
+            Map.entry(EntityType.SPIDER,        4L),
+            Map.entry(EntityType.CAVE_SPIDER,   4L),
+            Map.entry(EntityType.CREEPER,       6L),
+            Map.entry(EntityType.ENDERMAN,      14L),
+            Map.entry(EntityType.WITCH,         14L),
+            Map.entry(EntityType.BLAZE,         10L),
+            Map.entry(EntityType.SLIME,         3L),
+            Map.entry(EntityType.MAGMA_CUBE,    3L)
+    );
+
     private static final SkillManager INSTANCE = new SkillManager();
 
     private final SkillsManager skillsManager = SkillsManager.getInstance();
@@ -64,6 +80,22 @@ public final class SkillManager implements Listener {
         skillsManager.addSkillXP(player.getUniqueId(), "mining", miningXp);
         ProfileManager.getInstance().getOrCreate(player.getUniqueId()).addSkillXp("mining", miningXp);
         sendXpBar(player, "mining", miningXp);
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        LivingEntity entity = event.getEntity();
+        Player killer = entity.getKiller();
+        if (killer == null) {
+            return;
+        }
+        Long combatXp = COMBAT_XP.get(entity.getType());
+        if (combatXp == null) {
+            return;
+        }
+        skillsManager.addSkillXP(killer.getUniqueId(), "combat", combatXp);
+        ProfileManager.getInstance().getOrCreate(killer.getUniqueId()).addSkillXp("combat", combatXp);
+        sendXpBar(killer, "combat", combatXp);
     }
 
     private void sendXpBar(Player player, String skill, long xpGained) {
