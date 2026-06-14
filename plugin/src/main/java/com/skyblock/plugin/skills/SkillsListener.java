@@ -24,16 +24,34 @@ public final class SkillsListener implements Listener {
             Map.entry(Material.NETHER_WART,    3L)
     );
 
+    private static final Map<Material, Long> ORE_XP = Map.ofEntries(
+            Map.entry(Material.COAL_ORE,       5L),
+            Map.entry(Material.IRON_ORE,       8L),
+            Map.entry(Material.GOLD_ORE,       12L),
+            Map.entry(Material.REDSTONE_ORE,   5L),
+            Map.entry(Material.LAPIS_ORE,      6L),
+            Map.entry(Material.DIAMOND_ORE,    16L),
+            Map.entry(Material.EMERALD_ORE,    20L),
+            Map.entry(Material.NETHER_QUARTZ_ORE, 4L)
+    );
+
     private final SkillsManager skillsManager = SkillsManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        Long xp = CROP_XP.get(event.getBlock().getType());
-        if (xp == null) {
-            return;
-        }
+        Material type = event.getBlock().getType();
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
-        skillsManager.addSkillXP(uuid, "farming", xp);
+
+        Long cropXp = CROP_XP.get(type);
+        if (cropXp != null) {
+            skillsManager.addSkillXP(uuid, "farming", cropXp);
+            return;
+        }
+
+        Long oreXp = ORE_XP.get(type);
+        if (oreXp != null) {
+            skillsManager.addSkillXP(uuid, "mining", oreXp);
+        }
     }
 }
