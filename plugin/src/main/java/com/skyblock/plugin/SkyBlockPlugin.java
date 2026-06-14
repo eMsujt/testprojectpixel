@@ -104,7 +104,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         FairyManager.getInstance().load(getDataFolder());
         MinionManager.getInstance().load(getDataFolder());
         minionManager = com.skyblock.plugin.minions.MinionManager.getInstance();
-        minionManager.start(this);
+        minionManager.onEnable(this);
         WardrobeManager.getInstance().load(getDataFolder());
         AlchemyManager.getInstance().load(getDataFolder());
         FishingManager.getInstance().load(getDataFolder());
