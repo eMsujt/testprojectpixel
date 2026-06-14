@@ -14,7 +14,7 @@ public final class SkillsMenu {
     }
 
     private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§aYour Skills");
+        Inventory inv = Bukkit.createInventory(null, 54, "§bYour Skills");
 
         // Row 1: gathering skills
         inv.setItem(11, makeItem(Material.GOLDEN_HOE,        "§aFarming"));
