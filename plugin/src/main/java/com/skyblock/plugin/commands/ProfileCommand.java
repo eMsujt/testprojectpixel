@@ -32,6 +32,11 @@ public final class ProfileCommand implements CommandExecutor {
             return true;
         }
 
+        if (args.length > 0 && args[0].equalsIgnoreCase("history")) {
+            handleHistory(player);
+            return true;
+        }
+
         UUID id = player.getUniqueId();
         ProfileManager manager = ProfileManager.getInstance();
         List<ProfileManager.SkyBlockProfile> profiles = manager.getProfilesForOwner(id);
@@ -43,6 +48,19 @@ public final class ProfileCommand implements CommandExecutor {
             player.sendMessage("  " + profile.name() + " — " + profile.gameMode().getDisplayName());
         }
         return true;
+    }
+
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        List<String> history = ProfileManager.getInstance().getProfileHistory(id);
+        player.sendMessage("=== Profile History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No profile history found.");
+        } else {
+            for (int i = 0; i < history.size(); i++) {
+                player.sendMessage((i + 1) + ". " + history.get(i));
+            }
+        }
     }
 
     private void handleStats(Player player) {
