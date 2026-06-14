@@ -30,8 +30,8 @@ public class ForagingCollectionsMenu extends Menu {
         }
     }
 
-    /** Centred slots across the middle row, one per collection. */
-    private static final int[] SLOTS = {20, 21, 22, 23, 24, 25};
+    /** Slots across the top playable row, one per collection. */
+    private static final int[] SLOTS = {10, 11, 12, 13, 14, 15};
 
     public ForagingCollectionsMenu() {
         super("Foraging Collections", 6);
