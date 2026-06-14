@@ -2,6 +2,7 @@ package com.skyblock.plugin.skill;
 
 import com.skyblock.plugin.managers.SkillsManager;
 import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.skills.SkillManager.SkillType;
 import com.skyblock.plugin.skills.SkillsConfig;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -133,6 +134,26 @@ public final class SkillManager implements Listener {
         skillsManager.addSkillXP(killer.getUniqueId(), "combat", combatXp);
         ProfileManager.getInstance().getOrCreate(killer.getUniqueId()).addSkillXp("combat", combatXp);
         sendXpBar(killer, "combat", combatXp);
+    }
+
+    /**
+     * Awards {@code amount} XP of the given {@link SkillType} to a player, persisting it
+     * to both the shared {@link SkillsManager} and the player's profile and flashing the
+     * Hypixel-style action-bar XP feedback. Non-positive amounts are ignored; the amount
+     * is floored to whole XP, matching the long-based storage used throughout.
+     */
+    public void grantXP(Player player, SkillType skill, double amount) {
+        if (player == null || skill == null || amount <= 0) {
+            return;
+        }
+        long xp = (long) amount;
+        if (xp <= 0) {
+            return;
+        }
+        String key = skill.key();
+        skillsManager.addSkillXP(player.getUniqueId(), key, xp);
+        ProfileManager.getInstance().getOrCreate(player.getUniqueId()).addSkillXp(key, xp);
+        sendXpBar(player, key, xp);
     }
 
     /** The cumulative XP threshold array for {@code skill} (index 0 = level 1). */
