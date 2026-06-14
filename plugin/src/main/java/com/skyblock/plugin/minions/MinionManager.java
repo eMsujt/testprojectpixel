@@ -1,6 +1,13 @@
 package com.skyblock.plugin.minions;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -24,9 +31,10 @@ import java.util.UUID;
  *
  * <p>Call {@link #onEnable(JavaPlugin)} from your plugin's {@code onEnable}
  * and {@link #onDisable()} from {@code onDisable} to drive the resource-tick
- * scheduler.</p>
+ * scheduler. Register the instance as a Bukkit listener so that right-clicking
+ * a placed minion (a {@link Material#DISPENSER} block) interacts with it.</p>
  */
-public final class MinionManager {
+public final class MinionManager implements Listener {
 
     /**
      * A single placed minion.
@@ -110,6 +118,43 @@ public final class MinionManager {
      */
     private void produceTick(MinionData minion) {
         // TODO: drop minion.type() resource into the minion's storage inventory
+    }
+
+    /**
+     * Interacts with a placed minion when its owner right-clicks the
+     * {@link Material#DISPENSER} block that represents it. The clicked block's
+     * location is matched against the player's tracked minions; on a match the
+     * event is cancelled and the minion's status is reported.
+     *
+     * @param event the interaction event
+     */
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        Block block = event.getClickedBlock();
+        if (block == null || block.getType() != Material.DISPENSER) return;
+
+        Player player = event.getPlayer();
+        MinionData minion = findMinionAt(player.getUniqueId(), block.getLocation());
+        if (minion == null) return;
+
+        event.setCancelled(true);
+        player.sendMessage(minion.type() + " Minion (tier " + minion.tier() + ").");
+    }
+
+    /** Returns the owner's minion placed at the given block location, or {@code null}. */
+    private MinionData findMinionAt(UUID owner, Location location) {
+        for (MinionData minion : getMinions(owner)) {
+            Location loc = minion.loc();
+            if (loc.getWorld() == location.getWorld()
+                    && loc.getBlockX() == location.getBlockX()
+                    && loc.getBlockY() == location.getBlockY()
+                    && loc.getBlockZ() == location.getBlockZ()) {
+                return minion;
+            }
+        }
+        return null;
     }
 
     /**
