@@ -16,7 +16,7 @@ public final class CollectionsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public CollectionsMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§eCollections");
+        this.inventory = Bukkit.createInventory(this, 54, "§bCollections");
         build();
     }
 
