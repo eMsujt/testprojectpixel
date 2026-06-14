@@ -51,7 +51,14 @@ public final class SkillsManager {
      * @return the player's total XP for the skill after the addition
      */
     public double addExperience(UUID playerId, SkillType skill, double amount) {
-        return delegate.addExperience(playerId, skill, amount);
+        int levelBefore = delegate.getLevel(playerId, skill);
+        double total = delegate.addExperience(playerId, skill, amount);
+        recordSkillEvent(playerId, "Gained " + amount + " XP in " + skill.name());
+        int levelAfter = delegate.getLevel(playerId, skill);
+        if (levelAfter > levelBefore) {
+            recordSkillEvent(playerId, "Leveled up " + skill.name() + " to level " + levelAfter);
+        }
+        return total;
     }
 
     /**
