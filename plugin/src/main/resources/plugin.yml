@@ -23,7 +23,7 @@ commands:
     permission: skyblock.command.bazaar
   mayor:
     description: View the current SkyBlock mayor and perks.
-    usage: /<command>
+    usage: /<command> [status|candidates|vote <name>|myvote]
     permission: skyblock.command.mayor
   dungeon:
     description: View your dungeon stats and progress.
@@ -83,6 +83,10 @@ commands:
     description: Manage your SkyBlock alchemy skill.
     usage: /<command> [level|brew|status|cancel|recipes]
     permission: skyblock.command.alchemy
+  fishing:
+    description: Manage your SkyBlock fishing skill.
+    usage: /<command> [level|stats|loot|creatures]
+    permission: skyblock.command.fishing
 
 permissions:
   skyblock.command.skyblock:
@@ -138,4 +142,7 @@ permissions:
     default: true
   skyblock.command.alchemy:
     description: Allows use of the /alchemy command.
+    default: true
+  skyblock.command.fishing:
+    description: Allows use of the /fishing command.
     default: true
