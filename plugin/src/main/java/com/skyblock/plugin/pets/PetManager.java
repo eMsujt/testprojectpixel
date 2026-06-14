@@ -1,18 +1,29 @@
 package com.skyblock.plugin.pets;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Singleton registry for each player's pet collection and active pet.
  *
+ * <p>Registered as an event listener in
+ * {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}; on
+ * {@link PlayerJoinEvent} the joining player's active pet is loaded so the rest
+ * of the plugin can query it for an online player.</p>
+ *
  * <p>Not thread-safe; access from the main server thread only.</p>
  */
-public final class PetManager {
+public final class PetManager implements Listener {
 
     public enum PetType {
         BEE, CHICKEN, WOLF, ENDERMAN, SPIDER, RABBIT, HORSE, SHEEP,
@@ -86,6 +97,30 @@ public final class PetManager {
     /** Returns the player's active pet, or {@code null} if none is summoned. */
     public PetEntry getActivePet(UUID playerId) {
         return activePets.get(playerId);
+    }
+
+    /**
+     * Loads the given player's active pet, ensuring their pet collection is
+     * initialised so it is ready for use.
+     *
+     * @param playerId unique identifier of the player
+     * @return the player's active pet, or {@code null} if none is summoned
+     */
+    public PetEntry load(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        playerPets.computeIfAbsent(playerId, k -> new ArrayList<>());
+        return activePets.get(playerId);
+    }
+
+    /**
+     * Loads the joining player's active pet so it is ready for use.
+     *
+     * @param event the join event
+     */
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        load(player.getUniqueId());
     }
 
     /**
