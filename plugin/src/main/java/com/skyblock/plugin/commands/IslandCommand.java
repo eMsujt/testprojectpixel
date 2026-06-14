@@ -27,6 +27,7 @@ public final class IslandCommand implements CommandExecutor {
             case "biome"    -> handleBiome(player);
             case "visitors" -> handleVisitors(player);
             case "visits"   -> handleVisits(player);
+            case "history"  -> handleHistory(player);
             default         -> sendHelp(player);
         }
         return true;
@@ -69,6 +70,19 @@ public final class IslandCommand implements CommandExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        java.util.List<String> history = IslandManager.getInstance().getIslandHistory(id);
+        player.sendMessage("=== Island History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No history recorded.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Island Commands ===");
         player.sendMessage("/island           — show your island stats");
@@ -76,5 +90,6 @@ public final class IslandCommand implements CommandExecutor {
         player.sendMessage("/island biome     — show your current biome");
         player.sendMessage("/island visitors  — show your visitor count");
         player.sendMessage("/island visits    — show your island visit log");
+        player.sendMessage("/island history   — show your island event history");
     }
 }
