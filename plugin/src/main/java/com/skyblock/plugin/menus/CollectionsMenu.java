@@ -26,12 +26,12 @@ public class CollectionsMenu extends Menu {
         }
     }
 
-    private static final int[] SLOTS = {1, 2, 3, 4, 5};
+    private static final int[] SLOTS = {20, 21, 22, 23, 24};
 
     private final UUID playerId;
 
     public CollectionsMenu(UUID playerId) {
-        super("§6Collections", 6);
+        super("§aCollections", 6);
         this.playerId = playerId;
     }
 
