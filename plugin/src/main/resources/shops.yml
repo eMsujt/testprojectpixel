@@ -1,0 +1,37 @@
+# NPC shop definitions for Hypixel SkyBlock.
+# Each key under "shops" is a shop-id. A shop has a display title, the
+# world-space location of its NPC, and the list of items it sells.
+#   npc-location: "world,x,y,z"
+#   items:        list of "MATERIAL:price" entries
+
+shops:
+  farm_merchant:
+    title: "§aFarm Merchant"
+    npc-location: "world,5,70,5"
+    items:
+      - "WHEAT:6"
+      - "CARROT:5"
+      - "POTATO:5"
+      - "PUMPKIN:8"
+      - "MELON:4"
+      - "SUGAR_CANE:9"
+      - "NETHER_WART:7"
+  mine_merchant:
+    title: "§7Mine Merchant"
+    npc-location: "world,-10,68,12"
+    items:
+      - "COBBLESTONE:3"
+      - "COAL:5"
+      - "IRON_INGOT:20"
+      - "GOLD_INGOT:30"
+      - "REDSTONE:8"
+      - "LAPIS_LAZULI:12"
+  adventurer:
+    title: "§eAdventurer"
+    npc-location: "world,8,71,-14"
+    items:
+      - "STRING:9"
+      - "BONE:5"
+      - "GUNPOWDER:12"
+      - "ROTTEN_FLESH:4"
+      - "SPIDER_EYE:7"
