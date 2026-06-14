@@ -1,5 +1,9 @@
 package com.skyblock.core.mayor;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,5 +73,39 @@ public class MayorManager {
 
     public List<String> getElectionHistory() {
         return Collections.unmodifiableList(electionHistory);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "mayor.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        currentMayor = null;
+        electionHistory.clear();
+        String mayor = cfg.getString("currentMayor");
+        if (mayor != null) {
+            currentMayor = mayor;
+        }
+        List<String> savedElectionHistory = cfg.getStringList("electionHistory");
+        if (!savedElectionHistory.isEmpty()) {
+            electionHistory.addAll(savedElectionHistory);
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "mayor.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        if (currentMayor != null) {
+            cfg.set("currentMayor", currentMayor);
+        }
+        if (!electionHistory.isEmpty()) {
+            cfg.set("electionHistory", electionHistory);
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save mayor.yml", e);
+        }
     }
 }
