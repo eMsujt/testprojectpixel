@@ -1,5 +1,7 @@
 package com.skyblock.core.bank;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -23,5 +25,19 @@ public class BankManager {
         if (current < amount) return false;
         balances.put(playerId, current - amount);
         return true;
+    }
+
+    public void saveBanks(FileConfiguration config) {
+        for (Map.Entry<UUID, Double> entry : balances.entrySet()) {
+            config.set("banks." + entry.getKey().toString(), entry.getValue());
+        }
+    }
+
+    public void loadBanks(FileConfiguration config) {
+        balances.clear();
+        if (config.getConfigurationSection("banks") == null) return;
+        for (String key : config.getConfigurationSection("banks").getKeys(false)) {
+            balances.put(UUID.fromString(key), config.getDouble("banks." + key));
+        }
     }
 }
