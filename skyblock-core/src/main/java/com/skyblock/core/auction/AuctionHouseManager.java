@@ -138,6 +138,7 @@ public final class AuctionHouseManager {
 
     private final Map<UUID, ListingState> listings = new HashMap<>();
     private final Map<UUID, AuctionItem> items = new HashMap<>();
+    private final Map<UUID, Integer> auctionCounts = new HashMap<>();
 
     private AuctionHouseManager() {}
 
@@ -313,6 +314,43 @@ public final class AuctionHouseManager {
     }
 
     // -------------------------------------------------------------------------
+    // Auction counts
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the number of auctions the given player has created.
+     *
+     * @param player the player's UUID, must not be null
+     * @return the player's total auction count (0 if never listed)
+     */
+    public int getAuctionCount(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return auctionCounts.getOrDefault(player, 0);
+    }
+
+    /**
+     * Increments the auction count for the given player by one.
+     *
+     * @param player the player's UUID, must not be null
+     */
+    public void incrementAuctionCount(UUID player) {
+        Objects.requireNonNull(player, "player");
+        auctionCounts.merge(player, 1, Integer::sum);
+    }
+
+    /**
+     * Sets the auction count for the given player.
+     *
+     * @param player the player's UUID, must not be null
+     * @param count  the count to set, must not be negative
+     */
+    public void setAuctionCount(UUID player, int count) {
+        Objects.requireNonNull(player, "player");
+        if (count < 0) throw new IllegalArgumentException("count must not be negative: " + count);
+        auctionCounts.put(player, count);
+    }
+
+    // -------------------------------------------------------------------------
     // AuctionItem storage
     // -------------------------------------------------------------------------
 
@@ -372,6 +410,16 @@ public final class AuctionHouseManager {
         File file = new File(dataFolder, "auctionhouse.yml");
         if (!file.exists()) return;
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        auctionCounts.clear();
+        if (cfg.isConfigurationSection("auctionCounts")) {
+            for (String key : cfg.getConfigurationSection("auctionCounts").getKeys(false)) {
+                try {
+                    auctionCounts.put(UUID.fromString(key), cfg.getInt("auctionCounts." + key));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
         items.clear();
         for (String key : cfg.getKeys(false)) {
             if (key.equals("listings")) continue;
@@ -422,6 +470,9 @@ public final class AuctionHouseManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "auctionhouse.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Integer> entry : auctionCounts.entrySet()) {
+            cfg.set("auctionCounts." + entry.getKey().toString(), entry.getValue());
+        }
         for (Map.Entry<UUID, AuctionItem> entry : items.entrySet()) {
             String key = entry.getKey().toString();
             AuctionItem item = entry.getValue();
@@ -452,10 +503,11 @@ public final class AuctionHouseManager {
         }
     }
 
-    /** Removes all stored listings. */
+    /** Removes all stored listings and counts. */
     public void clear() {
         listings.clear();
         items.clear();
+        auctionCounts.clear();
     }
 
     private ListingState requireListing(UUID listingId) {
