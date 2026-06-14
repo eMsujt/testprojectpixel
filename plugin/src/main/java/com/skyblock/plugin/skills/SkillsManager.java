@@ -98,6 +98,16 @@ public final class SkillsManager {
         xpMap.put(skill, updated);
     }
 
+    /**
+     * Grants XP toward a skill (capped at the skill's max-level total) and
+     * returns the player's resulting level, so callers can detect level-ups.
+     * Unknown skills and non-positive amounts leave state untouched.
+     */
+    public int grantSkillXP(UUID playerId, String skill, long amount) {
+        addSkillXP(playerId, skill, amount);
+        return getSkillLevel(playerId, skill);
+    }
+
     /** Directly sets XP for a player in the given skill. */
     public void setSkillXP(UUID playerId, String skill, long amount) {
         skillXP.computeIfAbsent(playerId, k -> new HashMap<>()).put(skill, amount);
