@@ -90,7 +90,7 @@ public final class SkillsListener implements Listener {
         if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
             return;
         }
-        skillsManager.addSkillXP(event.getPlayer().getUniqueId(), "fishing", 6L);
+        skillsManager.addSkillXP(event.getPlayer().getUniqueId(), "fishing", 1L);
     }
 
     @EventHandler
