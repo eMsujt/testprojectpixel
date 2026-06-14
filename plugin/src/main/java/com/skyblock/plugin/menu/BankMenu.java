@@ -17,17 +17,13 @@ import java.util.List;
 
 public final class BankMenu implements InventoryHolder, Listener {
 
-    private static final String TITLE = "§6Bank & Purse";
-    private static final int SIZE = 54;
+    private static final String TITLE = "§6Bank";
+    private static final int SIZE = 27;
 
-    /** Slot showing the bank/purse balance summary. */
-    private static final int BALANCE_SLOT = 22;
-    /** Slot for the Deposit All button. */
-    private static final int DEPOSIT_SLOT = 29;
-    /** Slot for the Withdraw All button. */
-    private static final int WITHDRAW_SLOT = 33;
-    /** Slot for the close button. */
-    private static final int CLOSE_SLOT = 49;
+    private static final int PURSE_SLOT   = 11;
+    private static final int BANK_SLOT    = 13;
+    private static final int DEPOSIT_SLOT = 15;
+    private static final int CLOSE_SLOT   = 22;
 
     private final Inventory inventory;
 
@@ -54,24 +50,24 @@ public final class BankMenu implements InventoryHolder, Listener {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", null);
         for (int slot = 0; slot < SIZE; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 18 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
 
         BankManager bm = BankManager.getInstance();
-        long bank = bm.getBank(player.getUniqueId());
+        long bank  = bm.getBank(player.getUniqueId());
         long purse = bm.getPurse(player.getUniqueId());
 
-        inventory.setItem(BALANCE_SLOT, makeItem(Material.GOLD_BLOCK, "§aBank & Purse",
+        inventory.setItem(PURSE_SLOT, makeItem(Material.GOLD_INGOT, "§6Purse",
+                List.of("§7Balance: §6" + purse + " coins")));
+
+        inventory.setItem(BANK_SLOT, makeItem(Material.GOLD_BLOCK, "§6Bank Account",
                 Arrays.asList("§7Balance: §6" + bank + " coins",
-                              "§7Purse: §6" + purse + " coins")));
+                              "§7Click Deposit to move purse coins here.")));
 
         inventory.setItem(DEPOSIT_SLOT, makeItem(Material.EMERALD, "§aDeposit All",
                 List.of("§7Move all purse coins into the bank.")));
-
-        inventory.setItem(WITHDRAW_SLOT, makeItem(Material.REDSTONE, "§cWithdraw All",
-                List.of("§7Move all bank coins to your purse.")));
 
         inventory.setItem(CLOSE_SLOT, makeItem(Material.BARRIER, "§cClose", null));
     }
@@ -89,12 +85,6 @@ public final class BankMenu implements InventoryHolder, Listener {
             long purse = bm.getPurse(player.getUniqueId());
             if (purse > 0 && bm.deposit(player.getUniqueId(), purse)) {
                 player.sendMessage("§aDeposited §6" + purse + " §acoins into your bank.");
-                refresh(player);
-            }
-        } else if (slot == WITHDRAW_SLOT) {
-            long bank = bm.getBank(player.getUniqueId());
-            if (bank > 0 && bm.withdraw(player.getUniqueId(), bank)) {
-                player.sendMessage("§aWithdrew §6" + bank + " §acoins from your bank.");
                 refresh(player);
             }
         } else if (slot == CLOSE_SLOT) {
