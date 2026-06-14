@@ -19,7 +19,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, 27, "§aFast Travel");
+        this.inventory = Bukkit.createInventory(this, 54, "§aFast Travel");
         build();
     }
 
@@ -34,7 +34,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
 
     private void build() {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 27; slot++) {
+        for (int slot = 0; slot < 54; slot++) {
             inventory.setItem(slot, pane);
         }
 
