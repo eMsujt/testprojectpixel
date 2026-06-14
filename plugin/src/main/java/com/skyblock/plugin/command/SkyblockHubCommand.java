@@ -2,7 +2,10 @@ package com.skyblock.plugin.command;
 
 import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.collections.CollectionsManager;
+import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.core.garden.GardenManager;
+import com.skyblock.core.island.IslandManager;
+import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.skills.SkillsManager;
@@ -54,6 +57,15 @@ public final class SkyblockHubCommand implements CommandExecutor {
                     return true;
                 case "collections":
                     handleCollections(player);
+                    return true;
+                case "island":
+                    handleIsland(player);
+                    return true;
+                case "fairy":
+                    handleFairy(player);
+                    return true;
+                case "kuudra":
+                    handleKuudra(player);
                     return true;
                 default:
                     break;
@@ -164,6 +176,44 @@ public final class SkyblockHubCommand implements CommandExecutor {
             long amount = manager.getItems(id, type);
             int tier = manager.getTier(id, type);
             player.sendMessage("  " + type.getDisplayName() + ": " + amount + " (Tier " + tier + ")");
+        }
+    }
+
+    private void handleIsland(Player player) {
+        UUID id = player.getUniqueId();
+        IslandManager manager = IslandManager.getInstance();
+        java.util.Optional<IslandManager.SkyBlockIsland> opt = manager.getIsland(id);
+        if (opt.isEmpty()) {
+            player.sendMessage("You do not have an island. Use /island create.");
+            return;
+        }
+        IslandManager.IslandData data = manager.getOrCreateIslandData(id);
+        player.sendMessage("=== Your Island ===");
+        player.sendMessage("Level: " + data.level());
+        player.sendMessage("Blocks Placed: " + data.blocksPlaced());
+        String warp = manager.getWarpName(id);
+        player.sendMessage("Warp: " + (warp != null ? warp : "None"));
+    }
+
+    private void handleFairy(Player player) {
+        UUID id = player.getUniqueId();
+        FairyManager manager = FairyManager.getInstance();
+        int count = manager.getCount(id);
+        player.sendMessage("=== Fairy Souls ===");
+        player.sendMessage("Collected: " + count + " / " + FairyManager.MAX_SOULS);
+    }
+
+    private void handleKuudra(Player player) {
+        UUID id = player.getUniqueId();
+        KuudraManager manager = KuudraManager.getInstance();
+        player.sendMessage("=== Your Kuudra Completions ===");
+        for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
+            int count = manager.getCompletionCount(id, tier);
+            player.sendMessage("  " + tier.getDisplayName() + ": " + count + " completions");
+        }
+        KuudraManager.KuudraRun run = manager.getActiveRun(id);
+        if (run != null) {
+            player.sendMessage("Active Run: " + run.getTier().getDisplayName() + " tier");
         }
     }
 }
