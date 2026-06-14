@@ -17,11 +17,11 @@ import java.util.UUID;
 public final class SkillsListener implements Listener {
 
     private static final Map<Material, Long> CROP_XP = Map.ofEntries(
-            Map.entry(Material.WHEAT,          6L),
+            Map.entry(Material.WHEAT,          3L),
             Map.entry(Material.CARROTS,        3L),
             Map.entry(Material.POTATOES,       3L),
-            Map.entry(Material.PUMPKIN,        4L),
-            Map.entry(Material.MELON,          4L),
+            Map.entry(Material.PUMPKIN,        12L),
+            Map.entry(Material.MELON,          3L),
             Map.entry(Material.SUGAR_CANE,     2L),
             Map.entry(Material.COCOA_BEANS,    3L),
             Map.entry(Material.CACTUS,         2L),
