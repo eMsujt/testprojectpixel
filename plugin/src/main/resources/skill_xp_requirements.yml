@@ -1,0 +1,17 @@
+# Hypixel SkyBlock's exact cumulative XP thresholds, grouped by level curve. Each
+# list entry is the total XP required to reach the matching level: index 0 = the
+# XP for level 1 ... the final index = the group's max level. Skills that share a
+# curve are listed under "skills" so a single threshold table is never duplicated.
+#   - standard:    the 60-level curve used by the eight main skills.
+#   - shortened:   the 50-level curve used by Carpentry and Dungeoneering.
+#   - condensed:   the 25-level curve used by Runecrafting and Social.
+groups:
+  standard:
+    skills: [farming, mining, combat, foraging, fishing, enchanting, alchemy, taming]
+    thresholds: [50, 175, 375, 675, 1175, 1925, 2925, 4425, 6425, 9925, 14925, 22425, 32425, 47425, 67425, 97425, 147425, 222425, 322425, 522425, 822425, 1222425, 1722425, 2322425, 3022425, 3822425, 4722425, 5722425, 6822425, 8022425, 9322425, 10722425, 12222425, 13822425, 15522425, 17322425, 19222425, 21222425, 23322425, 25522425, 27822425, 30222425, 32722425, 35322425, 38072425, 40972425, 44072425, 47472425, 51172425, 55172425, 59472425, 64072425, 68972425, 74172425, 79672425, 85472425, 91572425, 97972425, 104672425, 111672425]
+  shortened:
+    skills: [carpentry, dungeoneering]
+    thresholds: [50, 150, 300, 500, 750, 1050, 1400, 1800, 2250, 2750, 3300, 3900, 4550, 5250, 6000, 6800, 7650, 8550, 9500, 10500, 11600, 12800, 14100, 15500, 17000, 18750, 20750, 23250, 26250, 29750, 33750, 38750, 44750, 51750, 59750, 68750, 78750, 90750, 104750, 120750, 138750, 158750, 180750, 204750, 230750, 258750, 288750, 323750, 363750, 413750]
+  condensed:
+    skills: [runecrafting, social]
+    thresholds: [50, 125, 225, 350, 500, 675, 875, 1125, 1425, 1825, 2325, 2925, 3725, 4725, 5925, 7425, 9425, 11925, 14925, 18425, 22425, 26925, 31925, 37425, 43425]
