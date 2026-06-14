@@ -95,6 +95,19 @@ public final class BazaarManager {
         return Collections.unmodifiableMap(copy);
     }
 
+    public String getBazaarStats(UUID player) {
+        long buys = buyOrders.values().stream()
+                .flatMap(List::stream)
+                .filter(o -> o.buyer().equals(player))
+                .count();
+        long sells = sellOrders.values().stream()
+                .flatMap(List::stream)
+                .filter(o -> o.seller().equals(player))
+                .count();
+        int events = bazaarHistory.getOrDefault(player, new ArrayList<>()).size();
+        return "Bazaar Stats: Buy Orders: " + buys + " | Sell Orders: " + sells + " | Total Events: " + events;
+    }
+
     // Price history
 
     public List<Double> getPriceHistory(String item) {

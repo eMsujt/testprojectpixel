@@ -120,6 +120,17 @@ public class BazaarManager {
         return Collections.unmodifiableMap(copy);
     }
 
+    public String getBazaarStats(UUID player) {
+        long buys = buyOrders.values().stream()
+                .filter(o -> o.player().equals(player))
+                .count();
+        long sells = sellOrders.values().stream()
+                .filter(o -> o.player().equals(player))
+                .count();
+        int events = bazaarHistory.getOrDefault(player, Collections.emptyList()).size();
+        return "Bazaar Stats: Buy Orders: " + buys + " | Sell Orders: " + sells + " | Total Events: " + events;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "bazaar.yml");
         if (!file.exists()) return;

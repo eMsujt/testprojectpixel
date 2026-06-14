@@ -745,6 +745,14 @@ public final class BazaarManager {
         return Collections.unmodifiableMap(bazaarHistory);
     }
 
+    public String getBazaarStats(UUID player) {
+        List<BazaarOrder> orders = getOrdersForPlayer(player);
+        long buys = orders.stream().filter(o -> o.type() == BazaarOrderType.BUY).count();
+        long sells = orders.stream().filter(o -> o.type() == BazaarOrderType.SELL).count();
+        int events = bazaarHistory.getOrDefault(player, Collections.emptyList()).size();
+        return "Bazaar Stats: Buy Orders: " + buys + " | Sell Orders: " + sells + " | Total Events: " + events;
+    }
+
     /**
      * Loads per-player transaction histories and active buy/sell orders from
      * {@code bazaar.yml} inside the given data folder.

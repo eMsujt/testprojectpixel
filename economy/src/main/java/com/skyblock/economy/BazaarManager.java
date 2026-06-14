@@ -395,6 +395,13 @@ public final class BazaarManager {
         return Collections.unmodifiableMap(copy);
     }
 
+    public String getBazaarStats(UUID player) {
+        List<String> history = bazaarHistory.getOrDefault(player, Collections.emptyList());
+        long buys = history.stream().filter(e -> e.startsWith("Placed buy order")).count();
+        long sells = history.stream().filter(e -> e.startsWith("Placed sell order")).count();
+        return "Bazaar Stats: Buy Orders: " + buys + " | Sell Orders: " + sells + " | Total Events: " + history.size();
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "bazaar.yml");
         if (!file.exists()) return;
