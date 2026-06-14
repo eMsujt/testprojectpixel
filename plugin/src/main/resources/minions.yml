@@ -1,0 +1,54 @@
+minions:
+  WHEAT:
+    displayName: "Wheat Minion"
+    description: "Harvests wheat automatically."
+    resource: WHEAT
+    baseInterval: 26
+
+  CARROT:
+    displayName: "Carrot Minion"
+    description: "Harvests carrots automatically."
+    resource: CARROT
+    baseInterval: 26
+
+  POTATO:
+    displayName: "Potato Minion"
+    description: "Harvests potatoes automatically."
+    resource: POTATO
+    baseInterval: 26
+
+  PUMPKIN:
+    displayName: "Pumpkin Minion"
+    description: "Grows pumpkins automatically."
+    resource: PUMPKIN
+    baseInterval: 35
+
+  MELON:
+    displayName: "Melon Minion"
+    description: "Grows melons automatically."
+    resource: MELON_SLICE
+    baseInterval: 26
+
+  SUGAR_CANE:
+    displayName: "Sugar Cane Minion"
+    description: "Grows sugar cane automatically."
+    resource: SUGAR_CANE
+    baseInterval: 17
+
+  COBBLESTONE:
+    displayName: "Cobblestone Minion"
+    description: "Generates cobblestone automatically."
+    resource: COBBLESTONE
+    baseInterval: 14
+
+  OAK:
+    displayName: "Oak Minion"
+    description: "Chops oak logs automatically."
+    resource: OAK_LOG
+    baseInterval: 26
+
+  FISHING:
+    displayName: "Fishing Minion"
+    description: "Fishes automatically."
+    resource: COD
+    baseInterval: 35
