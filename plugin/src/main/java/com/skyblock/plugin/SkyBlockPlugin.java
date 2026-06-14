@@ -32,6 +32,7 @@ import com.skyblock.plugin.managers.QuestManager;
 import com.skyblock.plugin.managers.TradingManager;
 import com.skyblock.plugin.managers.TimeManager;
 import com.skyblock.plugin.managers.WeatherManager;
+import com.skyblock.plugin.listeners.FarmingListener;
 import com.skyblock.plugin.command.dungeon.DungeonCommand;
 import com.skyblock.plugin.command.fairy.FairyCommand;
 import com.skyblock.plugin.commands.BankCommand;
@@ -131,6 +132,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("skills").setExecutor(new SkillsCommand());
         getCommand("garden").setExecutor(new GardenCommand());
         getCommand("pets").setExecutor(new PetsCommand());
+        getServer().getPluginManager().registerEvents(new FarmingListener(), this);
         getLogger().info("SkyBlock plugin enabled.");
     }
 
