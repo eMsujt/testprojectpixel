@@ -61,6 +61,10 @@ public final class CollectionManager implements Listener {
         }
     }
 
+    public int increment(UUID playerId, Material material, long amount) {
+        return addCollection(playerId, material, amount);
+    }
+
     public int addCollection(UUID playerId, Material material, long amount) {
         Map<Material, Long> counts = collections.computeIfAbsent(playerId, k -> new EnumMap<>(Material.class));
         long before = counts.getOrDefault(material, 0L);
