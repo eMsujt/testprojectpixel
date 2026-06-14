@@ -322,45 +322,112 @@ public final class BazaarManager {
         PRODUCT_DATA = Collections.unmodifiableMap(m);
     }
 
-    /** Maps each bazaar product category to its metadata: {maxOrderQuantity, maxActiveOrders}. */
+    /** Maps each bazaar product ID to its order limits: {maxOrderQuantity, maxActiveOrders}. */
     public static final Map<String, int[]> BAZAAR_ITEM_DATA;
 
     static {
         Map<String, int[]> m = new LinkedHashMap<>();
         // Raw farming
-        m.put("Farming",              new int[]{71680, 16});
-        m.put("Special_Crops",        new int[]{71680, 16});
-        // Raw mining
-        m.put("Mining",               new int[]{71680, 16});
-        m.put("Gemstones",            new int[]{71680, 16});
-        m.put("Special_Mining",       new int[]{71680, 16});
-        // Raw foraging
-        m.put("Foraging",             new int[]{71680, 16});
-        // Raw combat
-        m.put("Combat",               new int[]{71680, 16});
-        m.put("Slayer_Items",         new int[]{71680, 16});
-        // Raw fishing
-        m.put("Fishing",              new int[]{71680, 16});
+        m.put("WHEAT",                    new int[]{71680, 16});
+        m.put("CARROT_ITEM",              new int[]{71680, 16});
+        m.put("POTATO_ITEM",              new int[]{71680, 16});
+        m.put("PUMPKIN",                  new int[]{71680, 16});
+        m.put("MELON",                    new int[]{71680, 16});
+        m.put("SUGAR_CANE",               new int[]{71680, 16});
+        m.put("CACTUS",                   new int[]{71680, 16});
+        m.put("NETHER_STALK",             new int[]{71680, 16});
+        m.put("COCOA_BEANS",              new int[]{71680, 16});
+        m.put("MUSHROOM_COLLECTION",      new int[]{71680, 16});
         // Enchanted farming
-        m.put("Enchanted_Farming",    new int[]{ 2560, 16});
-        m.put("Enchanted_Seeds",      new int[]{ 2560, 16});
+        m.put("ENCHANTED_CARROT",         new int[]{ 2560, 16});
+        m.put("ENCHANTED_POTATO",         new int[]{ 2560, 16});
+        m.put("ENCHANTED_PUMPKIN",        new int[]{ 2560, 16});
+        m.put("ENCHANTED_MELON",          new int[]{ 2560, 16});
+        m.put("ENCHANTED_WHEAT",          new int[]{ 2560, 16});
+        m.put("ENCHANTED_SUGAR_CANE",     new int[]{ 2560, 16});
+        m.put("ENCHANTED_CACTUS",         new int[]{ 2560, 16});
+        m.put("ENCHANTED_NETHER_WART",    new int[]{ 2560, 16});
+        m.put("ENCHANTED_COCOA_BEANS",    new int[]{ 2560, 16});
+        m.put("ENCHANTED_MUSHROOM",       new int[]{ 2560, 16});
+        // Raw mining
+        m.put("COBBLESTONE",              new int[]{71680, 16});
+        m.put("COAL",                     new int[]{71680, 16});
+        m.put("IRON_INGOT",               new int[]{71680, 16});
+        m.put("GOLD_INGOT",               new int[]{71680, 16});
+        m.put("DIAMOND",                  new int[]{71680, 16});
+        m.put("EMERALD",                  new int[]{71680, 16});
+        m.put("REDSTONE",                 new int[]{71680, 16});
+        m.put("LAPIS_LAZULI",             new int[]{71680, 16});
+        m.put("QUARTZ",                   new int[]{71680, 16});
+        m.put("OBSIDIAN",                 new int[]{71680, 16});
+        m.put("MITHRIL_ORE",              new int[]{71680, 16});
+        m.put("TITANIUM_ORE",             new int[]{71680, 16});
         // Enchanted mining
-        m.put("Enchanted_Mining",     new int[]{ 2560, 16});
-        m.put("Enchanted_Gemstones",  new int[]{ 2560, 16});
+        m.put("ENCHANTED_COBBLESTONE",    new int[]{ 2560, 16});
+        m.put("ENCHANTED_COAL",           new int[]{ 2560, 16});
+        m.put("ENCHANTED_IRON",           new int[]{ 2560, 16});
+        m.put("ENCHANTED_GOLD",           new int[]{ 2560, 16});
+        m.put("ENCHANTED_DIAMOND",        new int[]{ 2560, 16});
+        m.put("ENCHANTED_EMERALD",        new int[]{ 2560, 16});
+        m.put("ENCHANTED_REDSTONE",       new int[]{ 2560, 16});
+        m.put("ENCHANTED_LAPIS",          new int[]{ 2560, 16});
+        m.put("ENCHANTED_QUARTZ",         new int[]{ 2560, 16});
+        m.put("ENCHANTED_OBSIDIAN",       new int[]{ 2560, 16});
+        // Raw foraging
+        m.put("OAK_LOG",                  new int[]{71680, 16});
+        m.put("SPRUCE_LOG",               new int[]{71680, 16});
+        m.put("BIRCH_LOG",                new int[]{71680, 16});
+        m.put("JUNGLE_LOG",               new int[]{71680, 16});
+        m.put("ACACIA_LOG",               new int[]{71680, 16});
+        m.put("DARK_OAK_LOG",             new int[]{71680, 16});
         // Enchanted foraging
-        m.put("Enchanted_Foraging",   new int[]{ 2560, 16});
+        m.put("ENCHANTED_OAK_LOG",        new int[]{ 2560, 16});
+        m.put("ENCHANTED_SPRUCE_LOG",     new int[]{ 2560, 16});
+        m.put("ENCHANTED_BIRCH_LOG",      new int[]{ 2560, 16});
+        m.put("ENCHANTED_JUNGLE_LOG",     new int[]{ 2560, 16});
+        m.put("ENCHANTED_ACACIA_LOG",     new int[]{ 2560, 16});
+        m.put("ENCHANTED_DARK_OAK_LOG",   new int[]{ 2560, 16});
+        // Raw combat
+        m.put("ROTTEN_FLESH",             new int[]{71680, 16});
+        m.put("BONE",                     new int[]{71680, 16});
+        m.put("SPIDER_EYE",               new int[]{71680, 16});
+        m.put("STRING",                   new int[]{71680, 16});
+        m.put("GUNPOWDER",                new int[]{71680, 16});
+        m.put("BLAZE_ROD",                new int[]{71680, 16});
+        m.put("GHAST_TEAR",               new int[]{71680, 16});
         // Enchanted combat
-        m.put("Enchanted_Combat",     new int[]{ 2560, 16});
-        // Enchanted fishing
-        m.put("Enchanted_Fishing",    new int[]{ 2560, 16});
+        m.put("ENCHANTED_ROTTEN_FLESH",   new int[]{ 2560, 16});
+        m.put("ENCHANTED_BONE",           new int[]{ 2560, 16});
+        m.put("ENCHANTED_SPIDER_EYE",     new int[]{ 2560, 16});
+        m.put("ENCHANTED_STRING",         new int[]{ 2560, 16});
+        m.put("ENCHANTED_GUNPOWDER",      new int[]{ 2560, 16});
+        m.put("ENCHANTED_BLAZE_ROD",      new int[]{ 2560, 16});
+        m.put("ENCHANTED_GHAST_TEAR",     new int[]{ 2560, 16});
+        // Raw fishing
+        m.put("RAW_FISH",                 new int[]{71680, 16});
+        m.put("PRISMARINE_SHARD",         new int[]{71680, 16});
+        m.put("PRISMARINE_CRYSTALS",      new int[]{71680, 16});
+        m.put("LILY_PAD",                 new int[]{71680, 16});
+        m.put("INK_SACK",                 new int[]{71680, 16});
+        // Gemstones
+        m.put("RUBY_GEM",                 new int[]{ 2560, 16});
+        m.put("AMETHYST_GEM",             new int[]{ 2560, 16});
+        m.put("JADE_GEM",                 new int[]{ 2560, 16});
+        m.put("SAPPHIRE_GEM",             new int[]{ 2560, 16});
+        m.put("AMBER_GEM",                new int[]{ 2560, 16});
+        m.put("TOPAZ_GEM",                new int[]{ 2560, 16});
+        m.put("JASPER_GEM",               new int[]{ 2560, 16});
         // Crafted / processed
-        m.put("Potions",              new int[]{ 2560, 16});
-        m.put("Reforge_Stones",       new int[]{ 2560, 16});
-        m.put("Enchanted_Books",      new int[]{ 2560, 16});
-        m.put("Alchemy_Ingredients",  new int[]{71680, 16});
-        m.put("Pet_Items",            new int[]{ 2560, 16});
-        m.put("Dungeon_Items",        new int[]{ 2560, 16});
-        m.put("Misc",                 new int[]{71680, 16});
+        m.put("EXPERIENCE_BOTTLE",        new int[]{71680, 16});
+        m.put("SULPHUR",                  new int[]{71680, 16});
+        m.put("ENCHANTED_BOOK",           new int[]{ 2560, 16});
+        m.put("RECOMBOBULATOR_3000",      new int[]{ 2560, 16});
+        m.put("FUMING_POTATO_BOOK",       new int[]{ 2560, 16});
+        m.put("HOT_POTATO_BOOK",          new int[]{ 2560, 16});
+        m.put("DUNGEON_CHEST_KEY",        new int[]{ 2560, 16});
+        m.put("REVENANT_FLESH",           new int[]{71680, 16});
+        m.put("TARANTULA_WEB",            new int[]{71680, 16});
+        m.put("WOLF_TOOTH",               new int[]{71680, 16});
         BAZAAR_ITEM_DATA = Collections.unmodifiableMap(m);
     }
 
