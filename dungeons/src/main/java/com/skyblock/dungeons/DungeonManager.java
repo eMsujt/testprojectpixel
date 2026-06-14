@@ -1,5 +1,10 @@
 package com.skyblock.dungeons;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,8 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
-import org.bukkit.entity.Player;
 
 /**
  * Tracks active dungeon runs keyed by session ID.
@@ -122,6 +125,36 @@ public final class DungeonManager {
 
     public Map<UUID, List<String>> getAllDungeonHistory() {
         return Collections.unmodifiableMap(dungeonHistory);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "dungeons.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        dungeonHistory.clear();
+        if (cfg.isConfigurationSection("dungeonHistory")) {
+            for (String key : cfg.getConfigurationSection("dungeonHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("dungeonHistory." + key);
+                    if (!entries.isEmpty()) {
+                        dungeonHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "dungeons.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<String>> entry : dungeonHistory.entrySet()) {
+            cfg.set("dungeonHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save dungeons.yml", e);
+        }
     }
 
     /**

@@ -1,5 +1,9 @@
 package com.skyblock.dungeon;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -114,6 +118,71 @@ public final class DungeonManager {
 
     public Map<UUID, List<String>> getAllDungeonHistory() {
         return Collections.unmodifiableMap(dungeonHistory);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "dungeon.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        records.clear();
+        dungeonHistory.clear();
+        if (cfg.isConfigurationSection("records")) {
+            for (String uuidKey : cfg.getConfigurationSection("records").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(uuidKey);
+                    if (cfg.isConfigurationSection("records." + uuidKey)) {
+                        Map<Integer, FloorRecord> playerRecords = new HashMap<>();
+                        for (String floorKey : cfg.getConfigurationSection("records." + uuidKey).getKeys(false)) {
+                            try {
+                                int floor = Integer.parseInt(floorKey);
+                                int completions = cfg.getInt("records." + uuidKey + "." + floorKey + ".completions", 0);
+                                int bestScore = cfg.getInt("records." + uuidKey + "." + floorKey + ".bestScore", 0);
+                                if (completions > 0) {
+                                    FloorRecord fr = new FloorRecord();
+                                    fr.completions = completions;
+                                    fr.bestScore = bestScore;
+                                    playerRecords.put(floor, fr);
+                                }
+                            } catch (NumberFormatException ignored) {}
+                        }
+                        if (!playerRecords.isEmpty()) {
+                            records.put(uuid, playerRecords);
+                        }
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("dungeonHistory")) {
+            for (String key : cfg.getConfigurationSection("dungeonHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("dungeonHistory." + key);
+                    if (!entries.isEmpty()) {
+                        dungeonHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "dungeon.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<Integer, FloorRecord>> playerEntry : records.entrySet()) {
+            String uuidKey = "records." + playerEntry.getKey().toString();
+            for (Map.Entry<Integer, FloorRecord> floorEntry : playerEntry.getValue().entrySet()) {
+                String path = uuidKey + "." + floorEntry.getKey();
+                cfg.set(path + ".completions", floorEntry.getValue().completions);
+                cfg.set(path + ".bestScore", floorEntry.getValue().bestScore);
+            }
+        }
+        for (Map.Entry<UUID, List<String>> entry : dungeonHistory.entrySet()) {
+            cfg.set("dungeonHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save dungeon.yml", e);
+        }
     }
 
     private FloorRecord getRecord(UUID playerId, int floor) {

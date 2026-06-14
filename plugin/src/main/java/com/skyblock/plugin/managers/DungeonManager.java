@@ -170,6 +170,7 @@ public final class DungeonManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         runHistory.clear();
+        dungeonHistory.clear();
         playerCompletions.clear();
         playerBestTimes.clear();
         floorCompletions.clear();
@@ -242,6 +243,16 @@ public final class DungeonManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        if (cfg.isConfigurationSection("dungeonHistory")) {
+            for (String uuidKey : cfg.getConfigurationSection("dungeonHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("dungeonHistory." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        dungeonHistory.put(UUID.fromString(uuidKey), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
         if (cfg.isConfigurationSection("floorCompletions")) {
             for (String uuidKey : cfg.getConfigurationSection("floorCompletions").getKeys(false)) {
                 try {
@@ -263,6 +274,9 @@ public final class DungeonManager {
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, List<String>> entry : runHistory.entrySet()) {
             cfg.set("runHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : dungeonHistory.entrySet()) {
+            cfg.set("dungeonHistory." + entry.getKey().toString(), entry.getValue());
         }
         for (Map.Entry<UUID, String> entry : playerClass.entrySet()) {
             cfg.set("playerClass." + entry.getKey().toString(), entry.getValue());
