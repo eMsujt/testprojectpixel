@@ -1,5 +1,6 @@
 package com.skyblock.plugin;
 
+import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.menu.SkyblockMenuCommand;
@@ -36,6 +37,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        SkillsManager.getInstance().load(getDataFolder());
         coinManager = new CoinManager();
         dungeonManager = new DungeonManager();
         slayerManager = new SlayerManager();
@@ -45,6 +47,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        SkillsManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
