@@ -238,7 +238,7 @@ public final class BankManager {
             String key = entry.getKey().toString();
             BankAccount account = entry.getValue();
             cfg.set("accounts." + key + ".balance", account.balance);
-            cfg.set("accounts." + key + ".tier", account.tier.name());
+            cfg.set("accounts." + key + ".tier", account.tier != null ? account.tier.name() : null);
         }
         for (Map.Entry<UUID, List<String>> entry : bankHistory.entrySet()) {
             cfg.set("history." + entry.getKey().toString(), entry.getValue());
