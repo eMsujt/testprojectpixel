@@ -14,7 +14,7 @@ public final class FastTravelMenu {
     }
 
     private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§bFast Travel");
+        Inventory inv = Bukkit.createInventory(null, 54, "§aFast Travel");
 
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
@@ -24,13 +24,20 @@ public final class FastTravelMenu {
             }
         }
 
-        inv.setItem(13, makeItem(Material.COMPASS,        "§bHub Island"));
-        inv.setItem(20, makeItem(Material.HAY_BLOCK,      "§bThe Farming Islands"));
-        inv.setItem(22, makeItem(Material.JUNGLE_SAPLING, "§bThe Park"));
-        inv.setItem(24, makeItem(Material.STRING,         "§bSpider's Den"));
-        inv.setItem(29, makeItem(Material.ENDER_PEARL,    "§bThe End"));
-        inv.setItem(31, makeItem(Material.NETHERRACK,     "§bCrimson Isle"));
-        inv.setItem(33, makeItem(Material.COBBLESTONE,    "§bDeep Caverns"));
+        // Row 1 — surface islands
+        inv.setItem(10, makeItem(Material.COMPASS,          "§eHub"));
+        inv.setItem(12, makeItem(Material.HAY_BLOCK,        "§aFarming Islands"));
+        inv.setItem(13, makeItem(Material.JUNGLE_SAPLING,   "§aThe Park"));
+        inv.setItem(14, makeItem(Material.COBWEB,           "§7Spider's Den"));
+        inv.setItem(16, makeItem(Material.END_STONE,        "§5The End"));
+
+        // Row 2 — underground & nether
+        inv.setItem(19, makeItem(Material.GOLD_ORE,         "§6Gold Mine"));
+        inv.setItem(20, makeItem(Material.COBBLESTONE,      "§7Deep Caverns"));
+        inv.setItem(21, makeItem(Material.DIORITE,          "§fDwarven Mines"));
+        inv.setItem(23, makeItem(Material.AMETHYST_SHARD,   "§5Crystal Hollows"));
+        inv.setItem(24, makeItem(Material.NETHERRACK,       "§cCrimson Isle"));
+        inv.setItem(25, makeItem(Material.IRON_SWORD,       "§9Dungeon Hub"));
 
         return inv;
     }
