@@ -1,9 +1,13 @@
 package com.skyblock.plugin.profile;
 
+import com.skyblock.plugin.SkyBlockPlugin;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,13 +92,50 @@ public final class ProfileManager implements Listener {
     }
 
     /**
-     * Loads the joining player's profile, creating a new one if none exists.
+     * Loads the joining player's profile, creating a new one if none exists and
+     * hydrating it from {@code plugins/SkyBlock/profiles/<uuid>.yml} when a
+     * persisted snapshot is present.
      *
      * @param event the join event
      */
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        getOrCreate(event.getPlayer().getUniqueId());
+        UUID uuid = event.getPlayer().getUniqueId();
+        loadFromDisk(getOrCreate(uuid));
+    }
+
+    /**
+     * Hydrates the given profile from its persisted YAML file, if one exists.
+     * The file layout mirrors what {@link ProfileSaveTask} writes.
+     *
+     * @param profile the profile to populate in place
+     */
+    private void loadFromDisk(PlayerProfile profile) {
+        SkyBlockPlugin plugin = SkyBlockPlugin.getInstance();
+        if (plugin == null) {
+            return;
+        }
+        File file = new File(new File(plugin.getDataFolder(), "profiles"), profile.getUuid() + ".yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        profile.setPurse(cfg.getLong("purse", profile.getPurse()));
+        profile.setBank(cfg.getLong("bank", profile.getBank()));
+
+        ConfigurationSection skills = cfg.getConfigurationSection("skills");
+        if (skills != null) {
+            for (String skill : skills.getKeys(false)) {
+                profile.setSkillXp(skill, skills.getLong(skill));
+            }
+        }
+
+        ConfigurationSection collections = cfg.getConfigurationSection("collections");
+        if (collections != null) {
+            for (String collection : collections.getKeys(false)) {
+                profile.setCollectionXp(collection, collections.getLong(collection));
+            }
+        }
     }
 
     /**
