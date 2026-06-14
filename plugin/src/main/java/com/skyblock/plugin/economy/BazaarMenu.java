@@ -19,7 +19,7 @@ public class BazaarMenu extends Menu {
 
     /** A Bazaar category: its display name, icon and the items it contains. */
     private enum Category {
-        FARMING("Farming", Material.WHEAT, List.of("WHEAT", "CARROT", "POTATO", "PUMPKIN", "MELON")),
+        FARMING("Farming Ingredients", Material.WHEAT, List.of("WHEAT", "CARROT", "POTATO", "PUMPKIN", "MELON")),
         MINING("Mining", Material.COBBLESTONE, List.of("COAL", "IRON_INGOT", "GOLD_INGOT", "DIAMOND", "EMERALD")),
         COMBAT("Combat", Material.IRON_SWORD, List.of("ROTTEN_FLESH", "BONE", "STRING", "GUNPOWDER", "ENDER_PEARL")),
         WOODS_AND_FISHES("Woods and Fishes", Material.OAK_LOG, List.of("OAK_LOG", "BIRCH_LOG", "COD", "SALMON")),
@@ -51,7 +51,7 @@ public class BazaarMenu extends Menu {
         for (int i = 0; i < categories.length; i++) {
             Category category = categories[i];
             setItem(SLOTS[i], new ItemBuilder(category.icon)
-                            .displayName("§a" + category.displayName)
+                            .displayName("§6" + category.displayName)
                             .lore("§7Click to browse " + category.displayName.toLowerCase() + " items.")
                             .build(),
                     event -> new BazaarCategoryMenu(category.displayName, category.items)
