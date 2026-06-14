@@ -40,7 +40,9 @@ public class SkyBlockMenu extends Menu {
         setItem(SKILLS_SLOT, new ItemBuilder(Material.DIAMOND_SWORD)
                 .displayName("§aYour Skills")
                 .lore("§7View your skill progress.")
-                .build());
+                .build(),
+                event -> new SkillsMenu(event.getWhoClicked().getUniqueId())
+                        .open((Player) event.getWhoClicked()));
 
         setItem(COLLECTION_SLOT, new ItemBuilder(Material.CHEST)
                         .displayName("§aCollection")
@@ -61,7 +63,8 @@ public class SkyBlockMenu extends Menu {
         setItem(FAST_TRAVEL_SLOT, new ItemBuilder(Material.ENDER_PEARL)
                 .displayName("§aFast Travel")
                 .lore("§7Warp around the world.")
-                .build());
+                .build(),
+                event -> new FastTravelMenu().open((Player) event.getWhoClicked()));
 
         setItem(CALENDAR_SLOT, new ItemBuilder(Material.CLOCK)
                 .displayName("§aCalendar and Events")
