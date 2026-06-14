@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public final class BazaarCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "buy", "sell", "cancel", "orders");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "buy", "sell", "cancel", "orders", "history");
 
     private final BazaarManager manager;
 
@@ -38,8 +38,9 @@ public final class BazaarCommand implements TabExecutor {
             case "buy"    -> handleBuy(player, args);
             case "sell"   -> handleSell(player, args);
             case "cancel" -> handleCancel(player, args);
-            case "orders" -> handleOrders(player);
-            default       -> sendHelp(player);
+            case "orders"  -> handleOrders(player);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -167,6 +168,18 @@ public final class BazaarCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getBazaarHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("You have no bazaar history.");
+            return;
+        }
+        player.sendMessage("=== Bazaar History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bazaar Commands ===");
         player.sendMessage("/bazaar info <item> — show best bid/ask");
@@ -175,5 +188,6 @@ public final class BazaarCommand implements TabExecutor {
         player.sendMessage("/bazaar cancel buy <orderId> — cancel a buy order");
         player.sendMessage("/bazaar cancel sell <orderId> — cancel a sell order");
         player.sendMessage("/bazaar orders — list your active orders");
+        player.sendMessage("/bazaar history — show your bazaar history");
     }
 }

@@ -39,6 +39,7 @@ public class BazaarManager {
 
     private final Map<UUID, BazaarOrder> buyOrders = new HashMap<>();
     private final Map<UUID, BazaarOrder> sellOrders = new HashMap<>();
+    private final Map<UUID, List<String>> bazaarHistory = new HashMap<>();
 
     public UUID addBuyOrder(UUID buyer, String itemId, int quantity, double priceEach) {
         UUID id = UUID.randomUUID();
@@ -92,6 +93,14 @@ public class BazaarManager {
         return sellOrders.values().stream()
                 .filter(o -> o.itemId().equalsIgnoreCase(itemId))
                 .count();
+    }
+
+    public void recordBazaarEvent(UUID player, String summary) {
+        bazaarHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getBazaarHistory(UUID player) {
+        return Collections.unmodifiableList(bazaarHistory.getOrDefault(player, Collections.emptyList()));
     }
 
     public List<BazaarOrder> getOrdersForPlayer(UUID player) {
