@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public final class PetsCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "equip", "unequip", "level");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "equip", "unequip", "level", "history");
 
     private final PetsManager manager;
 
@@ -39,6 +39,7 @@ public final class PetsCommand implements TabExecutor {
             case "equip"   -> handleEquip(player, args);
             case "unequip" -> handleUnequip(player);
             case "level"   -> handleLevel(player, args);
+            case "history" -> handleHistory(player);
             default        -> sendHelp(player);
         }
         return true;
@@ -124,11 +125,24 @@ public final class PetsCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getPetsHistory(player.getUniqueId());
+        if (history == null || history.isEmpty()) {
+            player.sendMessage("You have no pets history.");
+            return;
+        }
+        player.sendMessage("=== Pets History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Pets Commands ===");
         player.sendMessage("/pets list             — list all owned pets");
         player.sendMessage("/pets equip <petId>   — equip a pet by ID");
         player.sendMessage("/pets unequip         — unequip active pet");
         player.sendMessage("/pets level <petId>   — level up a pet by ID");
+        player.sendMessage("/pets history         — view your pets history");
     }
 }
