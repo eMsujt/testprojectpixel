@@ -79,6 +79,10 @@ commands:
     description: Manage your SkyBlock wardrobe outfits.
     usage: /<command>
     permission: skyblock.command.wardrobe
+  alchemy:
+    description: Manage your SkyBlock alchemy skill.
+    usage: /<command> [level|brew|status|cancel|recipes]
+    permission: skyblock.command.alchemy
 
 permissions:
   skyblock.command.skyblock:
@@ -131,4 +135,7 @@ permissions:
     default: true
   skyblock.command.wardrobe:
     description: Allows use of the /wardrobe command.
+    default: true
+  skyblock.command.alchemy:
+    description: Allows use of the /alchemy command.
     default: true
