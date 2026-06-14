@@ -42,8 +42,17 @@ public final class PetsMenu implements InventoryHolder, Listener {
             }
         }
 
+        PetsManager.Pet active = PetsManager.getInstance().getActivePet(player.getUniqueId());
+        if (active != null) {
+            inventory.setItem(13, makeItem(Material.BONE, "§aActive Pet: " + active.getName(),
+                    Arrays.asList("§7Rarity: §f" + active.getRarity(), "§7Level: §f" + active.getLevel())));
+        } else {
+            inventory.setItem(13, makeItem(Material.BONE, "§cNo Active Pet",
+                    Arrays.asList("§7You have no pet equipped.")));
+        }
+
         List<PetsManager.Pet> pets = PetsManager.getInstance().getPets(player.getUniqueId());
-        int[] petSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
+        int[] petSlots = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
         for (int index = 0; index < petSlots.length && index < pets.size(); index++) {
             PetsManager.Pet pet = pets.get(index);
             inventory.setItem(petSlots[index], makeItem(Material.BONE, "§a" + pet.getName(),
