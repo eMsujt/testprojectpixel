@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public final class ProfileManager {
 
@@ -51,6 +53,12 @@ public final class ProfileManager {
 
     public Map<UUID, List<String>> getAllProfileHistory() {
         return Collections.unmodifiableMap(profileHistory);
+    }
+
+    public String getProfileStats(UUID playerId) {
+        String active = activeProfile.getOrDefault(playerId, "none");
+        int events = profileHistory.getOrDefault(playerId, Collections.emptyList()).size();
+        return "Profile Stats: Active: " + active + " | History Events: " + events;
     }
 
     public void load(File dataFolder) {

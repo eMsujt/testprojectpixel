@@ -1,6 +1,8 @@
 package com.skyblock.profiles;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -138,5 +140,15 @@ public final class ProfileManager {
     public int getProfileCount(UUID playerId) {
         Map<String, SkyBlockProfile> profiles = playerProfiles.get(playerId);
         return profiles == null ? 0 : profiles.size();
+    }
+
+    public String getProfileStats(UUID playerId) {
+        SkyBlockProfile active = getActiveProfile(playerId);
+        String id = active == null ? "none" : active.getProfileId();
+        String mode = active == null ? "N/A" : active.getMode().name();
+        String created = active == null ? "N/A"
+                : new SimpleDateFormat("yyyy-MM-dd").format(new Date(active.getCreatedAt()));
+        int count = getProfileCount(playerId);
+        return "Profile Stats: Active: " + id + " | Mode: " + mode + " | Created: " + created + " | Profiles: " + count;
     }
 }

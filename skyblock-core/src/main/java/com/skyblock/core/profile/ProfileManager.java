@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -396,6 +398,18 @@ public final class ProfileManager {
      */
     public Map<UUID, List<String>> getAllProfileHistory() {
         return Collections.unmodifiableMap(profileHistory);
+    }
+
+    public String getProfileStats(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        ProfileData data = playerData.get(uuid);
+        String name = data == null ? "none" : data.profileName();
+        String created = data == null ? "N/A"
+                : new SimpleDateFormat("yyyy-MM-dd").format(new Date(data.createdAt()));
+        int souls = fairySouls.getOrDefault(uuid, 0);
+        long xp = skyBlockXp.getOrDefault(uuid, 0L);
+        return "Profile Stats: Active: " + name + " | Created: " + created
+                + " | Fairy Souls: " + souls + " | SkyBlock XP: " + xp;
     }
 
     /** Removes all registered profiles. */
