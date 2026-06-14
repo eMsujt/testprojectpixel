@@ -4,10 +4,12 @@ import com.skyblock.plugin.managers.SkillsManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.Map;
 
@@ -54,7 +56,27 @@ public final class SkillXpListener implements Listener {
             Map.entry(Material.DARK_OAK_LOG, 6L)
     );
 
+    private static final Map<EntityType, Long> COMBAT_XP = Map.of(
+            EntityType.ZOMBIE,           5L,
+            EntityType.SKELETON,         5L,
+            EntityType.SPIDER,           5L,
+            EntityType.CREEPER,          6L,
+            EntityType.ENDERMAN,         8L,
+            EntityType.BLAZE,           10L,
+            EntityType.WITHER_SKELETON, 15L
+    );
+
     private final SkillsManager skillsManager = SkillsManager.getInstance();
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) return;
+        Long xp = COMBAT_XP.get(event.getEntity().getType());
+        if (xp == null) return;
+        skillsManager.addSkillXP(killer.getUniqueId(), "combat", xp);
+        sendXpBar(killer, "combat", xp);
+    }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
