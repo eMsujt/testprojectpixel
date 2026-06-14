@@ -16,7 +16,7 @@ public final class QuestsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public QuestsMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§eQuests & Objectives");
+        this.inventory = Bukkit.createInventory(this, 54, "§6Quests & Objectives");
         build();
     }
 
@@ -30,8 +30,15 @@ public final class QuestsMenu implements InventoryHolder, Listener {
     }
 
     private void build() {
-        // Slot 4 — header showing the player's active quests
-        inventory.setItem(4, makeItem(Material.BOOK, "§eActive Quests"));
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
+        }
+
+        inventory.setItem(22, makeItem(Material.WRITABLE_BOOK, "§6Quests & Objectives"));
     }
 
     @EventHandler
