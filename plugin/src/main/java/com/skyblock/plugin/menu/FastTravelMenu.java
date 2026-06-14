@@ -12,6 +12,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Collections;
+
 public final class FastTravelMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
@@ -39,7 +41,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
             }
         }
 
-        inventory.setItem(19, makeItem(Material.NETHER_STAR, "§bHub"));
+        inventory.setItem(19, makeItem(Material.NETHER_STAR, "§bHub", "§bHub"));
     }
 
     @EventHandler
@@ -67,6 +69,17 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private ItemStack makeItem(Material material, String name, String lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(name);
+            meta.setLore(Collections.singletonList(lore));
             item.setItemMeta(meta);
         }
         return item;
