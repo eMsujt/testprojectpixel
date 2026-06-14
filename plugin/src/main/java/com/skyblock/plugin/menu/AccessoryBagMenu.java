@@ -5,44 +5,37 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public final class AccessoryBagMenu {
+public final class AccessoryBagMenu implements InventoryHolder {
 
-    /** Inner slots (between the border), one per accessory. */
-    private static final int[] SLOTS = {
-        10, 11, 12, 13, 14, 15, 16,
-        19, 20, 21, 22, 23, 24, 25,
-        28, 29, 30, 31, 32, 33, 34,
-        37, 38, 39, 40, 41, 42, 43
-    };
+    private final Inventory inventory;
 
-    public void open(Player player) {
-        player.openInventory(buildMenu(player));
+    public AccessoryBagMenu(Player player) {
+        this.inventory = Bukkit.createInventory(this, 54, "§6Accessory Bag");
+        build(player);
     }
 
-    private Inventory buildMenu(Player player) {
+    public void open(Player player) {
+        player.openInventory(inventory);
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    private void build(Player player) {
         List<String> accessories = AccessoryBagManager.getInstance().getEquipped(player.getUniqueId());
 
-        int totalPages = Math.max(1, (accessories.size() + SLOTS.length - 1) / SLOTS.length);
-        Inventory inv = Bukkit.createInventory(null, 54, "§5Accessory Bag §7(1/" + totalPages + ")");
-
-        ItemStack pane = makeItem(Material.PURPLE_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                inv.setItem(slot, pane);
-            }
+        // Slots 0–44 (rows 1–5) hold accessory items.
+        for (int i = 0; i < accessories.size() && i < 45; i++) {
+            inventory.setItem(i, makeItem(Material.GOLD_NUGGET, "§6" + accessories.get(i)));
         }
-
-        for (int i = 0; i < accessories.size() && i < SLOTS.length; i++) {
-            inv.setItem(SLOTS[i], makeItem(Material.GOLD_NUGGET, "§6" + accessories.get(i)));
-        }
-
-        return inv;
     }
 
     private ItemStack makeItem(Material material, String name) {
