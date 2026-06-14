@@ -20,6 +20,19 @@ public final class SlayerManager {
             5, 15, 200, 1000, 5000, 20000, 100000, 400000, 1000000
     };
 
+    /** Boss HP per tier (T1, T2, T3, T4), keyed by slayer type name. */
+    public static final Map<String, int[]> BOSS_HEALTH;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("Zombie",   new int[]{500,    20_000,    400_000,  1_000_000});
+        m.put("Spider",   new int[]{1_000,  30_000,    120_000,  1_000_000});
+        m.put("Wolf",     new int[]{2_000,  40_000,    750_000,  2_000_000});
+        m.put("Enderman", new int[]{10_000, 100_000, 2_000_000, 10_000_000});
+        m.put("Blaze",    new int[]{3_000_000, 8_000_000, 20_000_000, 100_000_000});
+        BOSS_HEALTH = Collections.unmodifiableMap(m);
+    }
+
     /** XP awarded per tier kill (T1, T2, T3, T4), keyed by slayer boss short name. */
     public static final Map<String, int[]> TIER_XP_THRESHOLDS;
 

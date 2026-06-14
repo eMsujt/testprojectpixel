@@ -1,7 +1,9 @@
 package com.skyblock.slayer;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,6 +36,19 @@ public final class SlayerManager {
 
     /** Required mob kills per tier (index 0 = tier 1). */
     private static final int[] REQUIRED_KILLS_BY_TIER = {5, 25, 100, 250, 500};
+
+    /** Boss HP per tier (T1, T2, T3, T4), keyed by slayer type name. */
+    public static final Map<String, int[]> BOSS_HEALTH;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("Zombie",   new int[]{500,      20_000,     400_000,   1_000_000});
+        m.put("Spider",   new int[]{1_000,    30_000,     120_000,   1_000_000});
+        m.put("Wolf",     new int[]{2_000,    40_000,     750_000,   2_000_000});
+        m.put("Enderman", new int[]{10_000,   100_000,  2_000_000,  10_000_000});
+        m.put("Blaze",    new int[]{3_000_000, 8_000_000, 20_000_000, 100_000_000});
+        BOSS_HEALTH = Collections.unmodifiableMap(m);
+    }
 
     /**
      * A single slayer quest: the boss line, the chosen tier and the kill
