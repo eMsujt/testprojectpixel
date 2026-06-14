@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -13,6 +15,71 @@ import java.util.UUID;
 public final class CollectionsManager {
 
     public static final int MAX_TIER = 9;
+
+    // Item counts required to reach each tier (index 0 = tier I … index 8 = tier IX).
+    public static final Map<String, int[]> COLLECTION_DATA;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        // Farming
+        m.put("wheat",        new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("carrot",       new int[]{100, 250, 500, 1_750, 5_000, 15_000, 30_000, 60_000, 100_000});
+        m.put("potato",       new int[]{100, 250, 500, 1_750, 5_000, 15_000, 30_000, 60_000, 100_000});
+        m.put("pumpkin",      new int[]{40, 100, 250, 1_000, 2_500, 7_500, 15_000, 25_000, 50_000});
+        m.put("melon",        new int[]{250, 500, 1_500, 5_000, 15_000, 30_000, 60_000, 100_000, 250_000});
+        m.put("mushroom",     new int[]{50, 100, 250, 1_000, 2_500, 7_500, 20_000, 50_000, 100_000});
+        m.put("cactus",       new int[]{50, 100, 250, 1_000, 2_500, 7_500, 20_000, 50_000, 100_000});
+        m.put("sugar_cane",   new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("nether_wart",  new int[]{50, 100, 250, 1_000, 2_500, 7_500, 20_000, 50_000, 100_000});
+        m.put("cocoa_beans",  new int[]{50, 100, 250, 1_000, 2_500, 7_500, 20_000, 50_000, 100_000});
+        // Mining
+        m.put("cobblestone",  new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("coal",         new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("iron_ingot",   new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("gold_ingot",   new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("diamond",      new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("emerald",      new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("redstone",     new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("lapis_lazuli", new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("quartz",       new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("obsidian",     new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("glowstone",    new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("gravel",       new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("ice",          new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("netherrack",   new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("sand",         new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("end_stone",    new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        // Foraging
+        m.put("oak_log",      new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("spruce_log",   new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("birch_log",    new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("jungle_log",   new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("acacia_log",   new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("dark_oak_log", new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        // Combat
+        m.put("rotten_flesh",       new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("bone",               new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
+        m.put("spider_eye",         new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("string",             new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("gunpowder",          new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("ender_pearl",        new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("ghast_tear",         new int[]{20, 50, 100, 250, 1_000, 2_500, 5_000, 10_000, 20_000});
+        m.put("slime_ball",         new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("blaze_rod",          new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        m.put("magma_cream",        new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
+        // Fishing
+        m.put("raw_fish",           new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("raw_salmon",         new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("clownfish",          new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("pufferfish",         new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("prismarine_shard",   new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("prismarine_crystals",new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("clay",               new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("lily_pad",           new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("ink_sac",            new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
+        m.put("sponge",             new int[]{10, 25, 50, 100, 250, 500, 1_000, 2_500, 5_000});
+        COLLECTION_DATA = Collections.unmodifiableMap(m);
+    }
 
     private static final long[] ITEMS_PER_TIER = {
             50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000
