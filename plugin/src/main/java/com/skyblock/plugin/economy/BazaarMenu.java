@@ -19,7 +19,7 @@ public final class BazaarMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public BazaarMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§6Bazaar");
+        this.inventory = Bukkit.createInventory(this, 54, "§eBazaar");
         build(player);
     }
 
