@@ -27,12 +27,12 @@ public final class CollectionsMenu implements InventoryHolder {
     }
 
     private void build() {
-        // Top row — the five collection categories, centered in slots 2-6
-        inventory.setItem(2, makeItem(Material.WHEAT,        "§eFarming"));
-        inventory.setItem(3, makeItem(Material.COBBLESTONE,  "§eMining"));
-        inventory.setItem(4, makeItem(Material.ROTTEN_FLESH, "§eCombat"));
-        inventory.setItem(5, makeItem(Material.OAK_LOG,      "§eForaging"));
-        inventory.setItem(6, makeItem(Material.COD,          "§eFishing"));
+        // Row 2 — the five collection categories, centered in slots 11-15
+        inventory.setItem(11, makeItem(Material.WHEAT,        "§eFarming"));
+        inventory.setItem(12, makeItem(Material.COBBLESTONE,  "§eMining"));
+        inventory.setItem(13, makeItem(Material.ROTTEN_FLESH, "§eCombat"));
+        inventory.setItem(14, makeItem(Material.OAK_LOG,      "§eForaging"));
+        inventory.setItem(15, makeItem(Material.COD,          "§eFishing"));
     }
 
     private ItemStack makeItem(Material material, String name) {
