@@ -13,20 +13,23 @@ import java.util.UUID;
 
 public final class PetsMenu {
 
+    /** Slot showing the currently equipped pet. */
+    private static final int ACTIVE_SLOT = 22;
+
     /** Centred selection slots across two rows, one per pet. */
-    private static final int[] SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
+    private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
 
     public void open(Player player) {
         player.openInventory(buildMenu(player.getUniqueId()));
     }
 
     private Inventory buildMenu(UUID playerId) {
-        Inventory inv = Bukkit.createInventory(null, 54, "§5Pets");
+        Inventory inv = Bukkit.createInventory(null, 54, "§dPets");
 
         PetsManager pets = PetsManager.getInstance();
         PetsManager.Pet active = pets.getActivePet(playerId);
         if (active != null) {
-            inv.setItem(4, makeItem(active, true));
+            inv.setItem(ACTIVE_SLOT, makeItem(active, true));
         }
         List<PetsManager.Pet> owned = pets.getPets(playerId);
         for (int i = 0; i < owned.size() && i < SLOTS.length; i++) {
