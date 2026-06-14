@@ -65,7 +65,12 @@ public class SkillsMenu extends Menu {
                     .lore(
                             "§7Level: §e" + level,
                             "§7Total XP: §e" + totalXP)
-                    .build());
+                    .build(),
+                    e -> {
+                        e.setCancelled(true);
+                        new SkillDetailMenu(playerId, skill.displayName, skill.key, skill.icon)
+                                .open((org.bukkit.entity.Player) e.getWhoClicked());
+                    });
         }
     }
 
