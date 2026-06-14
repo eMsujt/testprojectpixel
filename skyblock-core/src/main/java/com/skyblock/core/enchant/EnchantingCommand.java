@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public final class EnchantingCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("list", "info", "apply", "remove", "view");
+            Arrays.asList("list", "info", "apply", "remove", "view", "history");
 
     private final EnchantmentManager enchantmentManager;
 
@@ -44,8 +44,9 @@ public final class EnchantingCommand implements TabExecutor {
             case "info"   -> handleInfo(player, args);
             case "apply"  -> handleApply(player, args);
             case "remove" -> handleRemove(player, args);
-            case "view"   -> handleView(player);
-            default       -> player.sendMessage("Unknown subcommand. Usage: /enchanting <list|info|apply|remove|view>");
+            case "view"    -> handleView(player);
+            case "history" -> handleHistory(player);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /enchanting <list|info|apply|remove|view|history>");
         }
         return true;
     }
@@ -153,6 +154,18 @@ public final class EnchantingCommand implements TabExecutor {
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(e -> player.sendMessage(
                         e.getKey().name().toLowerCase().replace('_', ' ') + " " + e.getValue()));
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = enchantmentManager.getEnchantingHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("You have no enchanting history.");
+            return;
+        }
+        player.sendMessage("=== Your Enchanting History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
     }
 
     private static EnchantManager.EnchantType parseType(String name) {
