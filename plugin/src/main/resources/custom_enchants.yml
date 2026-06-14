@@ -1,0 +1,60 @@
+enchants:
+  TELEKINESIS:
+    displayName: "Telekinesis"
+    description: "Sends drops directly to your inventory."
+    maxLevel: 1
+
+  FIRST_STRIKE:
+    displayName: "First Strike"
+    description: "Deals more damage with the first hit on a mob."
+    maxLevel: 4
+
+  GIANT_KILLER:
+    displayName: "Giant Killer"
+    description: "Deals more damage to enemies with more health than you."
+    maxLevel: 7
+
+  PROTECTION:
+    displayName: "Protection"
+    description: "Reduces damage taken from all sources."
+    maxLevel: 6
+
+  SHARPNESS:
+    displayName: "Sharpness"
+    description: "Increases melee damage dealt."
+    maxLevel: 6
+
+  GROWTH:
+    displayName: "Growth"
+    description: "Increases your maximum health."
+    maxLevel: 6
+
+  CRITICAL:
+    displayName: "Critical"
+    description: "Increases the damage of critical hits."
+    maxLevel: 6
+
+  ENDER_SLAYER:
+    displayName: "Ender Slayer"
+    description: "Deals more damage to Ender Dragons and Endermen."
+    maxLevel: 6
+
+  EXECUTE:
+    displayName: "Execute"
+    description: "Deals more damage the lower a mob's health is."
+    maxLevel: 6
+
+  LIFE_STEAL:
+    displayName: "Life Steal"
+    description: "Heals you for a percentage of your max health on hit."
+    maxLevel: 5
+
+  LOOTING:
+    displayName: "Looting"
+    description: "Increases the amount of loot dropped by mobs."
+    maxLevel: 4
+
+  SCAVENGER:
+    displayName: "Scavenger"
+    description: "Grants extra coins for every monster kill."
+    maxLevel: 5
