@@ -10,6 +10,7 @@ import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.minion.MinionCommand;
 import com.skyblock.core.minion.MinionManager;
+import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
@@ -81,6 +82,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("dungeon").setExecutor(new DungeonCommand());
         getCommand("fairy").setExecutor(new FairyCommand());
         getCommand("minion").setExecutor(new MinionCommand());
+        getCommand("wardrobe").setExecutor(new WardrobeCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
