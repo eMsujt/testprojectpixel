@@ -10,19 +10,19 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 /**
- * The Bank hub menu.
+ * The Bank Account menu.
  *
- * <p>A 54-slot (6-row) menu showing the player's current purse and bank
- * balances. The purse sits in slot 13 ({@link Material#SUNFLOWER}); deposit and
- * withdraw icons flank it, transferring coins between purse and bank via
- * {@link BankManager}.</p>
+ * <p>A 54-slot (6-row) menu showing the player's bank and purse balances. The
+ * bank balance sits in slot 11 ({@link Material#GOLD_BLOCK}); the purse summary
+ * mirrors it in slot 15, with deposit and withdraw icons below transferring
+ * coins between purse and bank via {@link BankManager}.</p>
  */
 public class BankMenu extends Menu {
 
-    /** Centre slot holding the purse summary. */
-    private static final int PURSE_SLOT = 13;
     /** Slot holding the bank balance summary. */
-    private static final int BANK_SLOT = 22;
+    private static final int BANK_SLOT = 11;
+    /** Slot holding the purse summary. */
+    private static final int PURSE_SLOT = 15;
     /** Slot for the deposit action. */
     private static final int DEPOSIT_SLOT = 29;
     /** Slot for the withdraw action. */
@@ -51,7 +51,7 @@ public class BankMenu extends Menu {
      * @param bankManager the manager moving coins between them
      */
     public BankMenu(Player player, CoinManager coinManager, BankManager bankManager) {
-        super("§6Bank", 6);
+        super("§6Bank Account", 6);
         this.player = player;
         this.coinManager = coinManager;
         this.bankManager = bankManager;
@@ -63,27 +63,33 @@ public class BankMenu extends Menu {
 
         UUID playerId = player.getUniqueId();
 
-        setItem(PURSE_SLOT, new ItemBuilder(Material.SUNFLOWER)
-                .displayName("§6Purse")
-                .lore("§7Coins on hand:", "§6" + coinManager.getPurse(playerId) + " coins")
-                .build());
-
         setItem(BANK_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
                 .displayName("§6Bank Account")
                 .lore("§7Coins in the bank:", "§6" + coinManager.getBank(playerId) + " coins")
+                .build());
+
+        setItem(PURSE_SLOT, new ItemBuilder(Material.SUNFLOWER)
+                .displayName("§6Purse")
+                .lore("§7Coins on hand:", "§6" + coinManager.getPurse(playerId) + " coins")
                 .build());
 
         setItem(DEPOSIT_SLOT, new ItemBuilder(Material.HOPPER)
                         .displayName("§aDeposit")
                         .lore("§7Click to deposit §6" + STEP + " §7coins.")
                         .build(),
-                event -> bankManager.deposit(player, STEP).thenAccept(ok -> reopen()));
+                event -> {
+                    bankManager.deposit(playerId, STEP);
+                    reopen();
+                });
 
         setItem(WITHDRAW_SLOT, new ItemBuilder(Material.DROPPER)
                         .displayName("§cWithdraw")
                         .lore("§7Click to withdraw §6" + STEP + " §7coins.")
                         .build(),
-                event -> bankManager.withdraw(player, STEP).thenAccept(ok -> reopen()));
+                event -> {
+                    bankManager.withdraw(playerId, STEP);
+                    reopen();
+                });
     }
 
     /** Re-opens the menu so refreshed balances are shown. */
