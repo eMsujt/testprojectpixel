@@ -2,14 +2,19 @@ package com.skyblock.plugin.gui.menus;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
+import com.skyblock.plugin.gui.menus.collections.CombatCollectionsMenu;
+import com.skyblock.plugin.gui.menus.collections.FarmingCollectionsMenu;
+import com.skyblock.plugin.gui.menus.collections.FishingCollectionsMenu;
+import com.skyblock.plugin.gui.menus.collections.ForagingCollectionsMenu;
+import com.skyblock.plugin.gui.menus.collections.MiningCollectionsMenu;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 /**
  * The Collections hub menu.
  *
  * <p>A 54-slot (6-row) menu presenting one icon per collection category. Clicking
- * a category icon tells the player which category they selected; per-category
- * collection screens are opened by the dedicated sub-menus.</p>
+ * a category icon opens the corresponding per-category sub-menu.</p>
  */
 public class CollectionsMenu extends Menu {
 
@@ -46,8 +51,30 @@ public class CollectionsMenu extends Menu {
                             .displayName("§a" + category.displayName)
                             .lore("§7Click to view your " + category.displayName.toLowerCase() + " collections.")
                             .build(),
-                    event -> event.getWhoClicked().sendMessage(
-                            "§aOpening " + category.displayName + " collections..."));
+                    event -> {
+                        Player player = (Player) event.getWhoClicked();
+                        openSubMenu(category, player);
+                    });
+        }
+    }
+
+    private static void openSubMenu(Category category, Player player) {
+        switch (category) {
+            case FARMING:
+                new FarmingCollectionsMenu().open(player);
+                break;
+            case MINING:
+                new MiningCollectionsMenu().open(player);
+                break;
+            case COMBAT:
+                new CombatCollectionsMenu().open(player);
+                break;
+            case FORAGING:
+                new ForagingCollectionsMenu().open(player);
+                break;
+            case FISHING:
+                new FishingCollectionsMenu().open(player);
+                break;
         }
     }
 }
