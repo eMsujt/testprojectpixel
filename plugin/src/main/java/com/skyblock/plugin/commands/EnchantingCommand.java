@@ -24,10 +24,11 @@ public final class EnchantingCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "list" -> handleList(player);
-            case "get"  -> handleGet(player, args);
-            case "set"  -> handleSet(player, args);
-            default     -> sendHelp(player);
+            case "list"  -> handleList(player);
+            case "get"   -> handleGet(player, args);
+            case "set"   -> handleSet(player, args);
+            case "apply" -> handleApply(player, args);
+            default      -> sendHelp(player);
         }
         return true;
     }
@@ -73,10 +74,32 @@ public final class EnchantingCommand implements CommandExecutor {
         player.sendMessage("Set " + enchant + " to Level " + level + ".");
     }
 
+    private void handleApply(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage("Usage: /skyblock enchanting apply <enchantment> <level>");
+            return;
+        }
+        String enchant = args[1];
+        int level;
+        try {
+            level = Integer.parseInt(args[2]);
+        } catch (NumberFormatException e) {
+            player.sendMessage("Level must be a number.");
+            return;
+        }
+        if (level < 1 || level > 10) {
+            player.sendMessage("Level must be between 1 and 10.");
+            return;
+        }
+        EnchantingManager.getInstance().setEnchantLevel(player.getUniqueId(), enchant, level);
+        player.sendMessage("Applied " + enchant + " at Level " + level + ".");
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Enchanting Commands ===");
-        player.sendMessage("/skyblock enchanting list              — list all your enchant levels");
-        player.sendMessage("/skyblock enchanting get <enchant>     — show level for a specific enchant");
-        player.sendMessage("/skyblock enchanting set <enchant> <level> — set an enchant level");
+        player.sendMessage("/skyblock enchanting list                        — list all your enchant levels");
+        player.sendMessage("/skyblock enchanting get <enchant>               — show level for a specific enchant");
+        player.sendMessage("/skyblock enchanting set <enchant> <level>       — set an enchant level");
+        player.sendMessage("/skyblock enchanting apply <enchantment> <level> — apply an enchant (level 1–10)");
     }
 }
