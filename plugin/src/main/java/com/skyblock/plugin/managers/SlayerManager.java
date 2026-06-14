@@ -35,6 +35,7 @@ public final class SlayerManager {
 
     public void addKill(UUID playerId, String bossType) {
         getKillCounts(playerId).merge(bossType, 1L, Long::sum);
+        recordSlayerEvent(playerId, "Killed " + bossType + " slayer boss");
     }
 
     public void setKillCount(UUID playerId, String bossType, long count) {
@@ -55,6 +56,7 @@ public final class SlayerManager {
 
     public void addSlayerXp(UUID playerId, String bossType, long amount) {
         setSlayerXp(playerId, bossType, getSlayerXp(playerId, bossType) + amount);
+        recordSlayerEvent(playerId, "Completed " + bossType + " slayer quest: +" + amount + " XP");
     }
 
     public Map<String, Long> getSlayerXp(UUID playerId) {
