@@ -16,7 +16,7 @@ public final class SkyBlockMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public SkyBlockMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§9SkyBlock Menu");
+        this.inventory = Bukkit.createInventory(this, 54, "§aSkyBlock Menu");
         build();
     }
 
