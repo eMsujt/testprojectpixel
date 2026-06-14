@@ -24,7 +24,7 @@ public final class StorageMenu implements InventoryHolder, Listener {
     private int page;
 
     public StorageMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§8Storage");
+        this.inventory = Bukkit.createInventory(this, 54, "§aStorage");
         this.contents = player.getEnderChest().getContents();
         this.pages = Math.max(1, (int) Math.ceil((double) contents.length / CONTENT_SIZE));
         this.page = 0;
