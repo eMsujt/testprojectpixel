@@ -61,8 +61,28 @@ public final class SkyBlockMenu implements InventoryHolder, Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof SkyBlockMenu) {
-            event.setCancelled(true);
+        if (!(event.getInventory().getHolder() instanceof SkyBlockMenu)) {
+            return;
+        }
+        event.setCancelled(true);
+        if (!(event.getWhoClicked() instanceof Player player)) {
+            return;
+        }
+        switch (event.getRawSlot()) {
+            case 10 -> new SkillsMenu(player).open(player);
+            case 11 -> new CollectionsMenu(player).open(player);
+            case 12 -> new RecipeBookMenu(player).open(player);
+            case 13 -> new WardrobeMenu(player).open(player);
+            case 14 -> new StorageMenu(player).open(player);
+            case 15 -> new AccessoryBagMenu(player).open(player);
+            case 16 -> new PetsMenu(player).open(player);
+            case 19 -> new ProfileMenu(player).open(player);
+            case 20 -> new AuctionHouseMenu().open(player);
+            case 21 -> new BazaarMenu().open(player);
+            case 22 -> new CalendarMenu().open(player);
+            case 23 -> new QuestsMenu().open(player);
+            case 25 -> new FastTravelMenu().open(player);
+            default -> { }
         }
     }
 
