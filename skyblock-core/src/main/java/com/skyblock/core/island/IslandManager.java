@@ -340,6 +340,18 @@ public final class IslandManager {
     }
 
     /**
+     * Returns the island level for {@code owner}, or 0 if no record exists.
+     *
+     * @param owner the island owner's UUID
+     * @return the island level
+     */
+    public int getIslandLevel(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        IslandData d = islandData.get(owner);
+        return d == null ? 0 : d.level();
+    }
+
+    /**
      * Sets the level on the owner's island data record.
      *
      * @param owner the island owner's UUID
