@@ -31,6 +31,7 @@ public final class SkillsCommand implements CommandExecutor {
             case "info"        -> handleInfo(player, args);
             case "top"         -> handleTop(player, args);
             case "xp-history"  -> handleXpHistory(player);
+            case "history"     -> handleHistory(player);
             default            -> sendHelp(player);
         }
         return true;
@@ -120,6 +121,20 @@ public final class SkillsCommand implements CommandExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        List<String> history = SkillsManager.getInstance().getSkillHistory(id);
+
+        player.sendMessage("=== Skill History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No skill history found.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private int computeLevel(String skill, long xp) {
         long[] table = SkillsManager.SKILL_XP_TABLE.get(skill);
         if (table == null) return 0;
@@ -147,5 +162,6 @@ public final class SkillsCommand implements CommandExecutor {
         player.sendMessage("/skills info <skill> — show detailed info for a specific skill");
         player.sendMessage("/skills top <skill>  — show top 10 players by XP for a skill");
         player.sendMessage("/skills xp-history   — show cumulative XP gained per skill");
+        player.sendMessage("/skills history      — show your skill gain history");
     }
 }
