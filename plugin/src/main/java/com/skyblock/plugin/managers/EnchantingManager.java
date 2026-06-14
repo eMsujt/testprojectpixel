@@ -13,12 +13,29 @@ public final class EnchantingManager {
 
     private static final EnchantingManager INSTANCE = new EnchantingManager();
 
+    private final Map<UUID, Integer> enchantingXP = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> enchantLevels = new HashMap<>();
 
     private EnchantingManager() {}
 
     public static EnchantingManager getInstance() {
         return INSTANCE;
+    }
+
+    public int getEnchantingXP(UUID playerId) {
+        return enchantingXP.getOrDefault(playerId, 0);
+    }
+
+    public void setEnchantingXP(UUID playerId, int amount) {
+        enchantingXP.put(playerId, Math.max(0, amount));
+    }
+
+    public void addEnchantingXP(UUID playerId, int amount) {
+        setEnchantingXP(playerId, getEnchantingXP(playerId) + amount);
+    }
+
+    public Map<UUID, Integer> getAllEnchantingXP() {
+        return enchantingXP;
     }
 
     public int getEnchantLevel(UUID playerId, String enchant) {
@@ -49,19 +66,28 @@ public final class EnchantingManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        enchantingXP.clear();
         enchantLevels.clear();
-        for (String key : cfg.getKeys(false)) {
-            try {
-                UUID uuid = UUID.fromString(key);
-                ConfigurationSection section = cfg.getConfigurationSection(key);
-                if (section == null) continue;
-                Map<String, Integer> levels = new HashMap<>();
-                for (String enchant : section.getKeys(false)) {
-                    levels.put(enchant, section.getInt(enchant));
-                }
-                enchantLevels.put(uuid, levels);
-            } catch (IllegalArgumentException ignored) {
-                // skip malformed UUID
+        if (cfg.isConfigurationSection("enchantingXP")) {
+            for (String key : cfg.getConfigurationSection("enchantingXP").getKeys(false)) {
+                try {
+                    enchantingXP.put(UUID.fromString(key), cfg.getInt("enchantingXP." + key));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("enchantLevels")) {
+            ConfigurationSection levelsSection = cfg.getConfigurationSection("enchantLevels");
+            for (String key : levelsSection.getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    ConfigurationSection section = levelsSection.getConfigurationSection(key);
+                    if (section == null) continue;
+                    Map<String, Integer> levels = new HashMap<>();
+                    for (String enchant : section.getKeys(false)) {
+                        levels.put(enchant, section.getInt(enchant));
+                    }
+                    enchantLevels.put(uuid, levels);
+                } catch (IllegalArgumentException ignored) {}
             }
         }
     }
@@ -69,10 +95,13 @@ public final class EnchantingManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "enchanting.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Integer> entry : enchantingXP.entrySet()) {
+            cfg.set("enchantingXP." + entry.getKey().toString(), entry.getValue());
+        }
         for (Map.Entry<UUID, Map<String, Integer>> entry : enchantLevels.entrySet()) {
-            String uuidKey = entry.getKey().toString();
+            String path = "enchantLevels." + entry.getKey().toString();
             for (Map.Entry<String, Integer> levelEntry : entry.getValue().entrySet()) {
-                cfg.set(uuidKey + "." + levelEntry.getKey(), levelEntry.getValue());
+                cfg.set(path + "." + levelEntry.getKey(), levelEntry.getValue());
             }
         }
         try {
