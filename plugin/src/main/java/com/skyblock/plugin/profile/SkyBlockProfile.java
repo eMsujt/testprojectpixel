@@ -5,6 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +30,7 @@ public final class SkyBlockProfile implements Serializable {
     private final Map<String, Long> collectionXp = new HashMap<>();
     private final List<ItemStack> quiverContents = new ArrayList<>();
     private final List<ItemStack> fishingBagContents = new ArrayList<>();
+    private final Map<String, Integer> sackContents = new LinkedHashMap<>();
     private long purse = 0L;
     private long bank = 0L;
 
@@ -168,6 +170,16 @@ public final class SkyBlockProfile implements Serializable {
      */
     public List<ItemStack> getFishingBagContents() {
         return fishingBagContents;
+    }
+
+    /**
+     * Returns the player's sack contents, keyed by item name with the stored
+     * quantity as the value.
+     *
+     * @return the live, mutable map of sack item quantities
+     */
+    public Map<String, Integer> getSackContents() {
+        return sackContents;
     }
 
     public long getPurse() { return purse; }
