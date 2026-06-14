@@ -1,0 +1,34 @@
+# Named NPC shop definitions for the NpcShopMenu.
+# Each key under "shops" is a shop-id selected when the menu is opened. A shop
+# has a display title (used as the inventory title) and a list of items it
+# sells as "MATERIAL:price" entries, where price is the coin cost to buy one.
+
+shops:
+  general_merchant:
+    title: "§aGeneral Merchant"
+    items:
+      - "COOKED_BEEF:3"
+      - "ROTTEN_FLESH:5"
+      - "BONE:5"
+      - "STRING:9"
+      - "GUNPOWDER:12"
+      - "SLIME_BALL:10"
+  farm_merchant:
+    title: "§aFarm Merchant"
+    items:
+      - "WHEAT:6"
+      - "CARROT:5"
+      - "POTATO:5"
+      - "PUMPKIN:8"
+      - "MELON:4"
+      - "SUGAR_CANE:9"
+      - "NETHER_WART:7"
+  mine_merchant:
+    title: "§7Mine Merchant"
+    items:
+      - "COBBLESTONE:3"
+      - "COAL:5"
+      - "IRON_INGOT:20"
+      - "GOLD_INGOT:30"
+      - "REDSTONE:8"
+      - "LAPIS_LAZULI:12"
