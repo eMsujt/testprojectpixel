@@ -190,6 +190,31 @@ public final class DungeonManager {
         FLOOR_METADATA = Collections.unmodifiableMap(m);
     }
 
+    /**
+     * Static floor data keyed by short identifier (e.g. {@code "ENTRANCE"}, {@code "F1"}, {@code "M3"}).
+     * Each int[] entry is: [0] minimum Catacombs level required, [1] recommended power.
+     * Covers Catacombs floors ENTRANCE and F1–F6 and Master Mode floors M1–M6.
+     */
+    public static final Map<String, int[]> FLOOR_DATA;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("ENTRANCE", new int[]{  0,      0});
+        m.put("F1",       new int[]{  0,    200});
+        m.put("F2",       new int[]{  0,    600});
+        m.put("F3",       new int[]{  0,   1200});
+        m.put("F4",       new int[]{  0,   2000});
+        m.put("F5",       new int[]{  0,   3000});
+        m.put("F6",       new int[]{  0,   4000});
+        m.put("M1",       new int[]{ 20,   8000});
+        m.put("M2",       new int[]{ 22,  12000});
+        m.put("M3",       new int[]{ 24,  18000});
+        m.put("M4",       new int[]{ 26,  24000});
+        m.put("M5",       new int[]{ 28,  30000});
+        m.put("M6",       new int[]{ 30,  40000});
+        FLOOR_DATA = Collections.unmodifiableMap(m);
+    }
+
     /** A single active dungeon run. */
     public static final class DungeonRun {
         private final DungeonType type;
