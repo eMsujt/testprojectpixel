@@ -35,16 +35,31 @@ public final class SkillXPListener implements Listener {
             Map.entry(Material.BROWN_MUSHROOM_BLOCK, 6L)
     );
 
+    private static final Map<Material, Long> MINING_XP = Map.of(
+            Material.COAL_ORE,      5L,
+            Material.IRON_ORE,      6L,
+            Material.GOLD_ORE,      7L,
+            Material.DIAMOND_ORE,  10L,
+            Material.LAPIS_ORE,     8L,
+            Material.EMERALD_ORE,  12L,
+            Material.REDSTONE_ORE,  7L
+    );
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        Long xp = FARMING_XP.get(block.getType());
-        if (xp == null || !isMature(block)) {
-            return;
-        }
         Player player = event.getPlayer();
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        profile.addSkillXp("farming", xp);
+
+        Long farmingXp = FARMING_XP.get(block.getType());
+        if (farmingXp != null && isMature(block)) {
+            profile.addSkillXp("farming", farmingXp);
+            return;
+        }
+        Long miningXp = MINING_XP.get(block.getType());
+        if (miningXp != null) {
+            profile.addSkillXp("mining", miningXp);
+        }
     }
 
     /**
