@@ -8,6 +8,8 @@ import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.kuudra.KuudraManager;
+import com.skyblock.core.minion.MinionCommand;
+import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
@@ -67,6 +69,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EnchantingManager.getInstance().load(getDataFolder());
         BazaarManager.getInstance().load(getDataFolder());
         FairyManager.getInstance().load(getDataFolder());
+        MinionManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
         getCommand("mayor").setExecutor(new MayorCommand());
@@ -77,6 +80,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("profile").setExecutor(new ProfileCommand());
         getCommand("dungeon").setExecutor(new DungeonCommand());
         getCommand("fairy").setExecutor(new FairyCommand());
+        getCommand("minion").setExecutor(new MinionCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
@@ -92,6 +96,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EnchantingManager.getInstance().save(getDataFolder());
         BazaarManager.getInstance().save(getDataFolder());
         FairyManager.getInstance().save(getDataFolder());
+        MinionManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
