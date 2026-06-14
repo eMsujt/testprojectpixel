@@ -21,7 +21,7 @@ public final class AuctionHouseCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            handleList(player);
             return true;
         }
 
@@ -37,19 +37,21 @@ public final class AuctionHouseCommand implements CommandExecutor {
     }
 
     private void handleList(Player player) {
-        List<AuctionHouseManager.AuctionListing> items = AuctionHouseManager.getInstance().getAllListings();
-        if (items.isEmpty()) {
+        List<AuctionHouseManager.AuctionListing> top = AuctionHouseManager.getInstance().getAllListings().stream()
+                .sorted((a, b) -> Double.compare(b.currentBid(), a.currentBid()))
+                .limit(5)
+                .toList();
+        if (top.isEmpty()) {
             player.sendMessage("The auction house has no active listings.");
             return;
         }
-        player.sendMessage("=== Auction House (" + items.size() + " listings) ===");
-        items.stream()
-                .sorted((a, b) -> a.itemName().compareToIgnoreCase(b.itemName()))
-                .forEach(item -> player.sendMessage(
-                        "[" + item.id().toString().substring(0, 8) + "] "
-                        + item.itemName() + " x" + item.quantity()
-                        + " — Starting: " + item.startingBid()
-                        + " | Current: " + item.currentBid() + " coins"));
+        player.sendMessage("=== Auction House (Top 5) ===");
+        for (AuctionHouseManager.AuctionListing item : top) {
+            player.sendMessage("[" + item.id().toString().substring(0, 8) + "] "
+                    + item.itemName() + " x" + item.quantity()
+                    + " — Starting: " + item.startingBid()
+                    + " | Current: " + item.currentBid() + " coins");
+        }
     }
 
     private void handleCreate(Player player, String[] args) {
