@@ -20,7 +20,7 @@ public final class PetsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public PetsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§5Pets");
+        this.inventory = Bukkit.createInventory(this, 54, "§aPets");
         build(player);
     }
 
@@ -43,14 +43,10 @@ public final class PetsMenu implements InventoryHolder, Listener {
         }
 
         List<PetsManager.Pet> pets = PetsManager.getInstance().getPets(player.getUniqueId());
-        int index = 0;
-        for (int slot = 10; slot <= 43 && index < pets.size(); slot++) {
-            int col = slot % 9;
-            if (col == 0 || col == 8) {
-                continue;
-            }
-            PetsManager.Pet pet = pets.get(index++);
-            inventory.setItem(slot, makeItem(Material.BONE, "§a" + pet.getName(),
+        int[] petSlots = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
+        for (int index = 0; index < petSlots.length && index < pets.size(); index++) {
+            PetsManager.Pet pet = pets.get(index);
+            inventory.setItem(petSlots[index], makeItem(Material.BONE, "§a" + pet.getName(),
                     Arrays.asList("§7Rarity: §f" + pet.getRarity(), "§7Level: §f" + pet.getLevel())));
         }
     }
