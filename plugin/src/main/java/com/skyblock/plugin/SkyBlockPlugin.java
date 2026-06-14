@@ -36,10 +36,12 @@ import com.skyblock.plugin.command.dungeon.DungeonCommand;
 import com.skyblock.plugin.command.fairy.FairyCommand;
 import com.skyblock.plugin.commands.BankCommand;
 import com.skyblock.plugin.commands.BazaarCommand;
+import com.skyblock.plugin.commands.FishingCommand;
 import com.skyblock.plugin.commands.IslandCommand;
 import com.skyblock.plugin.commands.KuudraCommand;
 import com.skyblock.plugin.commands.MayorCommand;
 import com.skyblock.plugin.commands.ProfileCommand;
+import com.skyblock.plugin.commands.SlayerCommand;
 import com.skyblock.plugin.menu.SkyblockMenuCommand;
 import com.skyblock.slayers.SlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -82,6 +84,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         CollectionsManager.getInstance().load(getDataFolder());
         GardenManager.getInstance().load(getDataFolder());
         com.skyblock.slayer.SlayerManager.getInstance().load(getDataFolder());
+        com.skyblock.plugin.managers.SlayerManager.getInstance().load(getDataFolder());
         KuudraManager.getInstance().load(getDataFolder());
         ProfileManager.getInstance().load(getDataFolder());
         EnchantingManager.getInstance().load(getDataFolder());
@@ -118,6 +121,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("fairy").setExecutor(new FairyCommand());
         getCommand("minion").setExecutor(new MinionCommand());
         getCommand("wardrobe").setExecutor(new WardrobeCommand());
+        getCommand("slayer").setExecutor(new SlayerCommand());
+        getCommand("fishing").setExecutor(new FishingCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
@@ -128,6 +133,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         CollectionsManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
         com.skyblock.slayer.SlayerManager.getInstance().save(getDataFolder());
+        com.skyblock.plugin.managers.SlayerManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
