@@ -26,7 +26,7 @@ public final class CombatListener implements Listener {
         double critChance = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_CHANCE);
         double critDamage = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_DAMAGE);
 
-        double damage = DamageCalculator.computeDamage(weaponDamage, strength, critChance, critDamage);
+        double damage = DamageCalculator.calculate(weaponDamage, strength, critChance, critDamage);
 
         Entity victim = event.getEntity();
         if (victim instanceof Player) {
