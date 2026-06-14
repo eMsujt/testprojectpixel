@@ -1,7 +1,10 @@
 package com.skyblock.core.bank;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +52,47 @@ public class BankManager {
 
     public Map<UUID, List<String>> getAllBankHistory() {
         return Collections.unmodifiableMap(bankHistory);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "bank.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        balances.clear();
+        bankHistory.clear();
+        if (cfg.isConfigurationSection("balances")) {
+            for (String key : cfg.getConfigurationSection("balances").getKeys(false)) {
+                try {
+                    balances.put(UUID.fromString(key), cfg.getDouble("balances." + key));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("history")) {
+            for (String key : cfg.getConfigurationSection("history").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("history." + key);
+                    if (!entries.isEmpty()) {
+                        bankHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "bank.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Double> entry : balances.entrySet()) {
+            cfg.set("balances." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : bankHistory.entrySet()) {
+            cfg.set("history." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save bank.yml", e);
+        }
     }
 
     public void loadBanks(FileConfiguration config) {

@@ -1,5 +1,9 @@
 package com.skyblock.economy;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -114,6 +118,47 @@ public final class BankManager {
 
     public synchronized Map<UUID, List<String>> getAllBankHistory() {
         return Collections.unmodifiableMap(bankHistory);
+    }
+
+    public synchronized void load(File dataFolder) {
+        File file = new File(dataFolder, "bank.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        accounts.clear();
+        bankHistory.clear();
+        if (cfg.isConfigurationSection("accounts")) {
+            for (String key : cfg.getConfigurationSection("accounts").getKeys(false)) {
+                try {
+                    accounts.put(UUID.fromString(key), cfg.getLong("accounts." + key));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("history")) {
+            for (String key : cfg.getConfigurationSection("history").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("history." + key);
+                    if (!entries.isEmpty()) {
+                        bankHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    public synchronized void save(File dataFolder) {
+        File file = new File(dataFolder, "bank.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Long> entry : accounts.entrySet()) {
+            cfg.set("accounts." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : bankHistory.entrySet()) {
+            cfg.set("history." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save bank.yml", e);
+        }
     }
 
     private void record(BankTransaction tx) {
