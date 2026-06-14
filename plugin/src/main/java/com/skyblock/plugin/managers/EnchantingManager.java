@@ -18,7 +18,6 @@ public final class EnchantingManager {
     private final Map<UUID, Map<String, Integer>> enchantLevels = new HashMap<>();
     private final Map<UUID, Integer> bookshelfPower = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> enchantHistory = new HashMap<>();
-    private final Map<UUID, Map<String, Integer>> enchantmentHistory = new HashMap<>();
 
     private EnchantingManager() {}
 
@@ -91,17 +90,17 @@ public final class EnchantingManager {
     }
 
     public void recordEnchantment(UUID playerId, String enchant, int count) {
-        enchantmentHistory
+        enchantHistory
                 .computeIfAbsent(playerId, k -> new HashMap<>())
                 .merge(enchant, count, Integer::sum);
     }
 
     public Map<String, Integer> getEnchantmentHistory(UUID playerId) {
-        return Collections.unmodifiableMap(enchantmentHistory.getOrDefault(playerId, new HashMap<>()));
+        return Collections.unmodifiableMap(enchantHistory.getOrDefault(playerId, new HashMap<>()));
     }
 
     public Map<UUID, Map<String, Integer>> getAllEnchantmentHistory() {
-        return Collections.unmodifiableMap(enchantmentHistory);
+        return Collections.unmodifiableMap(enchantHistory);
     }
 
     public void load(File dataFolder) {
@@ -113,7 +112,7 @@ public final class EnchantingManager {
         enchantingXP.clear();
         enchantLevels.clear();
         bookshelfPower.clear();
-        enchantmentHistory.clear();
+        enchantHistory.clear();
         if (cfg.isConfigurationSection("enchantingXP")) {
             for (String key : cfg.getConfigurationSection("enchantingXP").getKeys(false)) {
                 try {
@@ -154,7 +153,7 @@ public final class EnchantingManager {
                     for (String enchant : section.getKeys(false)) {
                         counts.put(enchant, section.getInt(enchant));
                     }
-                    enchantmentHistory.put(uuid, counts);
+                    enchantHistory.put(uuid, counts);
                 } catch (IllegalArgumentException ignored) {}
             }
         }
@@ -175,7 +174,7 @@ public final class EnchantingManager {
                 cfg.set(path + "." + levelEntry.getKey(), levelEntry.getValue());
             }
         }
-        for (Map.Entry<UUID, Map<String, Integer>> entry : enchantmentHistory.entrySet()) {
+        for (Map.Entry<UUID, Map<String, Integer>> entry : enchantHistory.entrySet()) {
             String path = "enchantmentHistory." + entry.getKey().toString();
             for (Map.Entry<String, Integer> countEntry : entry.getValue().entrySet()) {
                 cfg.set(path + "." + countEntry.getKey(), countEntry.getValue());
