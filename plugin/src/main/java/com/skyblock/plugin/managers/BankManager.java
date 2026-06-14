@@ -17,6 +17,7 @@ public final class BankManager {
 
     private final Map<UUID, Double> balance = new HashMap<>();
     private final Map<UUID, List<String>> transactionLedger = new HashMap<>();
+    private final Map<UUID, List<String>> transactionHistory = new HashMap<>();
 
     private BankManager() {}
 
@@ -48,6 +49,18 @@ public final class BankManager {
         transactionLedger.computeIfAbsent(playerId, k -> new ArrayList<>()).add(0, description);
     }
 
+    public void recordTransaction(UUID playerId, double amount, String type) {
+        transactionHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(0, type + ":" + amount);
+    }
+
+    public List<String> getTransactionHistory(UUID playerId) {
+        return Collections.unmodifiableList(transactionHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllTransactionHistory() {
+        return Collections.unmodifiableMap(transactionHistory);
+    }
+
     public List<String> getTransactionLedger(UUID playerId) {
         return Collections.unmodifiableList(transactionLedger.getOrDefault(playerId, Collections.emptyList()));
     }
@@ -64,6 +77,7 @@ public final class BankManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         balance.clear();
         transactionLedger.clear();
+        transactionHistory.clear();
         if (cfg.isConfigurationSection("balance")) {
             for (String uuidKey : cfg.getConfigurationSection("balance").getKeys(false)) {
                 try {
@@ -85,6 +99,18 @@ public final class BankManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("transactionHistory")) {
+            for (String uuidKey : cfg.getConfigurationSection("transactionHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("transactionHistory." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        transactionHistory.put(UUID.fromString(uuidKey), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -95,6 +121,9 @@ public final class BankManager {
         }
         for (Map.Entry<UUID, List<String>> entry : transactionLedger.entrySet()) {
             cfg.set("transactionLedger." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : transactionHistory.entrySet()) {
+            cfg.set("transactionHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
