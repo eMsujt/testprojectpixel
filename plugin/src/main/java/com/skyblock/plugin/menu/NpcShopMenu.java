@@ -12,7 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class NpcShopMenu implements InventoryHolder, Listener {
 
@@ -27,6 +29,9 @@ public final class NpcShopMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
     private final List<ShopEntry> entries;
+
+    /** Maps each populated slot to the entry it displays, for click resolution. */
+    private final Map<Integer, ShopEntry> slotEntries = new HashMap<>();
 
     /** No-arg constructor for global listener registration only — never open this instance. */
     NpcShopMenu() {
@@ -70,6 +75,7 @@ public final class NpcShopMenu implements InventoryHolder, Listener {
             if (slot >= SIZE) break;
             inventory.setItem(slot, makeItem(entry.material(), "§a" + entry.material(),
                     List.of("§7Price: §6" + entry.price() + " coins", "§eClick to buy!")));
+            slotEntries.put(slot, entry);
             slot++;
         }
 
@@ -84,7 +90,13 @@ public final class NpcShopMenu implements InventoryHolder, Listener {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         if (event.getRawSlot() == CLOSE_SLOT) {
             player.closeInventory();
+            return;
         }
+
+        ShopEntry entry = slotEntries.get(event.getRawSlot());
+        if (entry == null) return;
+        player.getInventory().addItem(new ItemStack(entry.material()));
+        player.sendMessage("§aPurchased §6" + entry.material() + " §afor §6" + entry.price() + " coins§a!");
     }
 
     private static ItemStack makeItem(Material material, String name, List<String> lore) {
