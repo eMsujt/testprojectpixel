@@ -83,6 +83,19 @@ public final class MinionManager implements Listener {
         this.plugin = plugin;
     }
 
+    /**
+     * Starts the production loop: a {@link BukkitRunnable} scheduled on the main
+     * thread that fires every {@value #TICK_INTERVAL} ticks and advances every
+     * placed minion, firing a resource tick for each whose timer has elapsed.
+     * A no-op if the loop is already running.
+     *
+     * @param plugin the owning plugin used to schedule the task
+     */
+    public void startProductionLoop(JavaPlugin plugin) {
+        this.plugin = Objects.requireNonNull(plugin, "plugin");
+        startTask();
+    }
+
     /** Starts the repeating resource-tick scheduler if it is not already running. */
     private void startTask() {
         if (task != null || plugin == null) {
