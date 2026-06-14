@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,6 +22,7 @@ public final class DungeonManager {
     private static final java.util.Set<String> VALID_CLASSES = new java.util.LinkedHashSet<>(
             java.util.Arrays.asList("Healer", "Mage", "Berserker", "Archer", "Tank"));
 
+    private final Map<UUID, List<String>> runHistory = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> playerCompletions = new HashMap<>();
     private final Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
     private final Map<UUID, Map<Integer, Integer>> floorCompletions = new HashMap<>();
@@ -31,6 +34,18 @@ public final class DungeonManager {
 
     public static DungeonManager getInstance() {
         return INSTANCE;
+    }
+
+    public void recordRun(UUID playerId, String summary) {
+        runHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getRunHistory(UUID playerId) {
+        return Collections.unmodifiableList(runHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllRunHistory() {
+        return Collections.unmodifiableMap(runHistory);
     }
 
     public int getDungeonFloor(UUID playerId) {
@@ -138,6 +153,7 @@ public final class DungeonManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        runHistory.clear();
         playerCompletions.clear();
         playerBestTimes.clear();
         floorCompletions.clear();
@@ -200,6 +216,16 @@ public final class DungeonManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("runHistory")) {
+            for (String uuidKey : cfg.getConfigurationSection("runHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("runHistory." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        runHistory.put(UUID.fromString(uuidKey), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
         if (cfg.isConfigurationSection("floorCompletions")) {
             for (String uuidKey : cfg.getConfigurationSection("floorCompletions").getKeys(false)) {
                 try {
@@ -219,6 +245,9 @@ public final class DungeonManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "dungeons.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<String>> entry : runHistory.entrySet()) {
+            cfg.set("runHistory." + entry.getKey().toString(), entry.getValue());
+        }
         for (Map.Entry<UUID, String> entry : playerClass.entrySet()) {
             cfg.set("playerClass." + entry.getKey().toString(), entry.getValue());
         }
