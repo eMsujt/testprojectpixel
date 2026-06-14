@@ -5,8 +5,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,7 +19,7 @@ public final class EnchantingManager {
     private final Map<UUID, Integer> enchantingXP = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> enchantLevels = new HashMap<>();
     private final Map<UUID, Integer> bookshelfPower = new HashMap<>();
-    private final Map<UUID, Map<String, Integer>> enchantHistory = new HashMap<>();
+    private final Map<UUID, List<String>> enchantHistory = new HashMap<>();
 
     private EnchantingManager() {}
 
@@ -75,32 +77,30 @@ public final class EnchantingManager {
         return bookshelfPower;
     }
 
-    public void recordEnchant(UUID playerId, String enchantName, int level) {
+    public void recordEnchant(UUID playerId, String summary) {
         enchantHistory
-                .computeIfAbsent(playerId, k -> new HashMap<>())
-                .put(enchantName, level);
+                .computeIfAbsent(playerId, k -> new ArrayList<>())
+                .add(summary);
     }
 
-    public Map<String, Integer> getEnchantHistory(UUID playerId) {
-        return Collections.unmodifiableMap(enchantHistory.getOrDefault(playerId, new HashMap<>()));
+    public List<String> getEnchantHistory(UUID playerId) {
+        return Collections.unmodifiableList(enchantHistory.getOrDefault(playerId, Collections.emptyList()));
     }
 
-    public Map<UUID, Map<String, Integer>> getAllEnchantHistory() {
+    public Map<UUID, List<String>> getAllEnchantHistory() {
         return Collections.unmodifiableMap(enchantHistory);
     }
 
-    public void recordEnchantment(UUID playerId, String enchant, int count) {
-        enchantHistory
-                .computeIfAbsent(playerId, k -> new HashMap<>())
-                .merge(enchant, count, Integer::sum);
+    public void recordEnchantment(UUID playerId, String summary) {
+        recordEnchant(playerId, summary);
     }
 
-    public Map<String, Integer> getEnchantmentHistory(UUID playerId) {
-        return Collections.unmodifiableMap(enchantHistory.getOrDefault(playerId, new HashMap<>()));
+    public List<String> getEnchantmentHistory(UUID playerId) {
+        return getEnchantHistory(playerId);
     }
 
-    public Map<UUID, Map<String, Integer>> getAllEnchantmentHistory() {
-        return Collections.unmodifiableMap(enchantHistory);
+    public Map<UUID, List<String>> getAllEnchantmentHistory() {
+        return getAllEnchantHistory();
     }
 
     public void load(File dataFolder) {
@@ -142,18 +142,15 @@ public final class EnchantingManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
-        if (cfg.isConfigurationSection("enchantmentHistory")) {
-            ConfigurationSection histSection = cfg.getConfigurationSection("enchantmentHistory");
+        if (cfg.isConfigurationSection("enchantHistory")) {
+            ConfigurationSection histSection = cfg.getConfigurationSection("enchantHistory");
             for (String key : histSection.getKeys(false)) {
                 try {
                     UUID uuid = UUID.fromString(key);
-                    ConfigurationSection section = histSection.getConfigurationSection(key);
-                    if (section == null) continue;
-                    Map<String, Integer> counts = new HashMap<>();
-                    for (String enchant : section.getKeys(false)) {
-                        counts.put(enchant, section.getInt(enchant));
+                    List<String> entries = cfg.getStringList("enchantHistory." + key);
+                    if (!entries.isEmpty()) {
+                        enchantHistory.put(uuid, new ArrayList<>(entries));
                     }
-                    enchantHistory.put(uuid, counts);
                 } catch (IllegalArgumentException ignored) {}
             }
         }
@@ -174,11 +171,8 @@ public final class EnchantingManager {
                 cfg.set(path + "." + levelEntry.getKey(), levelEntry.getValue());
             }
         }
-        for (Map.Entry<UUID, Map<String, Integer>> entry : enchantHistory.entrySet()) {
-            String path = "enchantmentHistory." + entry.getKey().toString();
-            for (Map.Entry<String, Integer> countEntry : entry.getValue().entrySet()) {
-                cfg.set(path + "." + countEntry.getKey(), countEntry.getValue());
-            }
+        for (Map.Entry<UUID, List<String>> entry : enchantHistory.entrySet()) {
+            cfg.set("enchantHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
