@@ -1,6 +1,6 @@
 package com.skyblock.plugin.menus;
 
-import com.skyblock.economy.CoinManager;
+import com.skyblock.plugin.economy.BankManager;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
@@ -9,18 +9,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-/**
- * The "Bank Account" menu.
- *
- * <p>A 54-slot (6-row) menu titled {@code §6Bank Account} that frames a centred
- * {@link Material#GOLD_BLOCK} with a {@code GRAY_STAINED_GLASS_PANE} border. The
- * gold block's lore summarises the player's bank balance, from
- * {@link CoinManager}.</p>
- */
 public class BankMenu extends Menu {
 
-    /** The centre slot that holds the player's bank balance display. */
-    private static final int BALANCE_SLOT = 13;
+    private static final int PURSE_SLOT = 22;
+    private static final int BANK_SLOT  = 31;
 
     private final Player player;
 
@@ -33,18 +25,18 @@ public class BankMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        UUID playerId = player.getUniqueId();
-        CoinManager coins = CoinManager.getInstance();
+        UUID id = player.getUniqueId();
+        BankManager bank = BankManager.getInstance();
 
-        setItem(BALANCE_SLOT, balanceItem(coins, playerId));
-    }
+        setItem(PURSE_SLOT, new ItemBuilder(Material.GOLD_NUGGET)
+                .displayName("§6Purse")
+                .lore("§7Coins: §6" + bank.getPurse(id))
+                .build());
 
-    /** Builds the centred gold block describing the player's bank balance. */
-    private ItemStack balanceItem(CoinManager coins, UUID playerId) {
-        return new ItemBuilder(Material.GOLD_BLOCK)
-                .displayName("§6Balance")
-                .lore("§7Balance: §6" + coins.getBank(playerId) + " coins")
-                .build();
+        setItem(BANK_SLOT, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName("§6You")
+                .lore("§7Bank Balance: §6" + bank.getBank(id))
+                .build());
     }
 
     private void fillBorder() {
