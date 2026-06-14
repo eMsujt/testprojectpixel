@@ -1,5 +1,9 @@
 package com.skyblock.skills;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,6 +106,43 @@ public final class SkillsManager {
      */
     public boolean reset(UUID playerId) {
         return delegate.reset(playerId);
+    }
+
+    public void load(File dataFolder) {
+        delegate.load(dataFolder);
+        File file = new File(dataFolder, "skills-history.yml");
+        skillsHistory.clear();
+        if (file.exists()) {
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            if (cfg.isConfigurationSection("skillsHistory")) {
+                for (String key : cfg.getConfigurationSection("skillsHistory").getKeys(false)) {
+                    try {
+                        List<String> entries = cfg.getStringList("skillsHistory." + key);
+                        if (!entries.isEmpty()) {
+                            skillsHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                        }
+                    } catch (IllegalArgumentException ignored) {
+                        // skip malformed entries
+                    }
+                }
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        delegate.save(dataFolder);
+        File file = new File(dataFolder, "skills-history.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<String>> entry : skillsHistory.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                cfg.set("skillsHistory." + entry.getKey().toString(), entry.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save skills-history.yml", e);
+        }
     }
 
     public void recordSkillEvent(UUID playerUuid, String summary) {
