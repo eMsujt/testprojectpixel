@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * The Recipe Book menu.
  *
- * <p>A 54-slot (6-row) menu titled {@code §eRecipe Book}. Every recipe
+ * <p>A 54-slot (6-row) menu titled {@code §aRecipe Book}. Every recipe
  * registered with the {@link SkyBlockRecipeManager} is rendered as one icon —
  * the recipe's result material — across the inner slots, framed by a
  * {@code GRAY_STAINED_GLASS_PANE} border, with a close button on the bottom
@@ -34,7 +34,7 @@ public class RecipeBookMenu extends Menu {
     private static final int CLOSE_SLOT = 53;
 
     public RecipeBookMenu(Player player) {
-        super("§eRecipe Book", 6);
+        super("§aRecipe Book", 6);
     }
 
     @Override
