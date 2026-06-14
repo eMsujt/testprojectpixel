@@ -198,6 +198,13 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.CollectionsMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.FastTravelMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MiningListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TamingListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FishingListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FarmingListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.EnchantingSkillListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.SkyBlockMenu(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.BazaarMenu(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.AuctionHouseMenu(), this);
         new ActionBarManager().start(this);
         getLogger().info("SkyBlock plugin enabled.");
     }
