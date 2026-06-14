@@ -19,7 +19,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§bFast Travel");
+        this.inventory = Bukkit.createInventory(this, 54, "§aFast Travel");
         build();
     }
 
@@ -41,7 +41,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
             }
         }
 
-        inventory.setItem(19, makeItem(Material.NETHER_STAR, "§bHub", "§bHub"));
+        inventory.setItem(10, makeItem(Material.BEACON, "§bHub", "§bHub"));
     }
 
     @EventHandler
@@ -51,7 +51,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
         }
         event.setCancelled(true);
 
-        if (event.getRawSlot() == 19 && event.getWhoClicked() instanceof Player) {
+        if (event.getRawSlot() == 10 && event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             World hub = Bukkit.getWorld("hub");
             if (hub != null) {
