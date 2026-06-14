@@ -34,15 +34,24 @@ public final class AccessoryBagMenu implements InventoryHolder, Listener {
 
     private void build(Player player) {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 45; slot < 54; slot++) {
-            inventory.setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
         }
 
         List<String> accessories = AccessoryBagManager.getInstance().getEquipped(player.getUniqueId());
 
-        // Slots 0–44 display the equipped accessories.
-        for (int slot = 0; slot < 45 && slot < accessories.size(); slot++) {
-            inventory.setItem(slot, makeItem(Material.GOLD_NUGGET, "§d" + accessories.get(slot)));
+        // The inner slots display the equipped accessories.
+        int index = 0;
+        for (int slot = 0; slot < 54 && index < accessories.size(); slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                continue;
+            }
+            inventory.setItem(slot, makeItem(Material.GOLD_NUGGET, "§d" + accessories.get(index)));
+            index++;
         }
     }
 
