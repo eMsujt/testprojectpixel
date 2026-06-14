@@ -1,74 +1,87 @@
 package com.skyblock.plugin.islands;
 
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.Plugin;
-
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Generates and tracks per-player private island worlds.
+ * In-memory registry of per-player private islands.
  *
- * <p>On a player's first {@link PlayerJoinEvent} a flat island world named
- * {@code island_<uuid>} is created (or loaded if it already exists on disk) so
- * each player owns an isolated SkyBlock space. World creation runs on the
- * server main thread, as required by the Bukkit API.</p>
+ * <p>Holds island records in a {@link Map} keyed by each island's owner,
+ * preserving insertion order so islands are listed in the order they were
+ * created. A record is added when a player's island is generated and removed
+ * if the island is deleted. Not thread-safe; access from the main server
+ * thread.</p>
  */
-public final class IslandManager implements Listener {
-
-    private final Plugin plugin;
+public final class IslandManager {
 
     /**
-     * Creates a manager owned by the given plugin.
+     * A single player-owned island.
      *
-     * @param plugin the owning plugin, used for logging
+     * @param owner     the owning player's UUID
+     * @param worldName the name of the island's world
+     * @param spawnX    the island spawn's x coordinate
+     * @param spawnY    the island spawn's y coordinate
+     * @param spawnZ    the island spawn's z coordinate
      */
-    public IslandManager(Plugin plugin) {
-        this.plugin = Objects.requireNonNull(plugin, "plugin");
-    }
-
-    /**
-     * Returns the world name used for the given player's private island.
-     *
-     * @param uuid unique identifier of the player
-     * @return the island world name, e.g. {@code island_<uuid>}
-     */
-    public static String worldName(UUID uuid) {
-        return "island_" + uuid;
-    }
-
-    /**
-     * Generates the joining player's private island world if it does not exist
-     * yet, creating it on first join.
-     *
-     * @param event the join event
-     */
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        getOrCreateIsland(player.getUniqueId());
-    }
-
-    /**
-     * Returns the player's private island world, generating it on first access.
-     *
-     * @param uuid unique identifier of the player
-     * @return the island world, never {@code null}
-     */
-    public World getOrCreateIsland(UUID uuid) {
-        Objects.requireNonNull(uuid, "uuid");
-        String name = worldName(uuid);
-        World existing = plugin.getServer().getWorld(name);
-        if (existing != null) {
-            return existing;
+    public record IslandData(UUID owner, String worldName, double spawnX, double spawnY, double spawnZ) {
+        public IslandData {
+            Objects.requireNonNull(owner, "owner");
+            Objects.requireNonNull(worldName, "worldName");
         }
-        plugin.getLogger().info("Generating island world " + name);
-        return new WorldCreator(name).type(WorldType.FLAT).createWorld();
+    }
+
+    private static final IslandManager INSTANCE = new IslandManager();
+
+    private final Map<UUID, IslandData> islands = new LinkedHashMap<>();
+
+    private IslandManager() {
+    }
+
+    public static IslandManager getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Adds an island to the registry, replacing any existing record for the
+     * same owner.
+     *
+     * @param island the island to add
+     */
+    public void addIsland(IslandData island) {
+        Objects.requireNonNull(island, "island");
+        islands.put(island.owner(), island);
+    }
+
+    /**
+     * Returns the island owned by the given player, or {@code null} if absent.
+     *
+     * @param owner the owning player's UUID
+     * @return the island, or {@code null}
+     */
+    public IslandData getIsland(UUID owner) {
+        return islands.get(owner);
+    }
+
+    /**
+     * Removes the island owned by the given player.
+     *
+     * @param owner the owning player's UUID
+     * @return the removed island, or {@code null} if none existed
+     */
+    public IslandData removeIsland(UUID owner) {
+        return islands.remove(owner);
+    }
+
+    /**
+     * Returns an unmodifiable view of every island in creation order.
+     *
+     * @return the registered islands
+     */
+    public Collection<IslandData> getIslands() {
+        return Collections.unmodifiableCollection(islands.values());
     }
 }
