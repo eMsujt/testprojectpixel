@@ -24,7 +24,7 @@ public final class HOTMManager {
     public enum HOTMPerk {
         MINING_SPEED(50, "Mining Speed"),
         MINING_SPEED_BOOST(1, "Mining Speed Boost"),
-        PICKOBULUS(3, "Pickobulus"),
+        PICKOBULUS(1, "Pickobulus"),
         MINING_FORTUNE(50, "Mining Fortune"),
         DAILY_POWDER(100, "Daily Powder"),
         EFFICIENT_MINER(100, "Efficient Miner"),
@@ -43,9 +43,7 @@ public final class HOTMManager {
         FORTUNATE(20, "Fortunate"),
         MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost"),
         SEASONED_MINEMAN(100, "Seasoned Mineman"),
-        ANOMALOUS_DESIRE(20, "Anomalous Desire"),
-        MANIACAL_MINER(1, "Maniacal Miner"),
-        VEIN_SEEKER(1, "Vein Seeker");
+        ANOMALOUS_DESIRE(20, "Anomalous Desire");
 
         /** Maximum level for this perk. */
         public final int maxLevel;
@@ -72,7 +70,7 @@ public final class HOTMManager {
         Map<String, int[]> m = new LinkedHashMap<>();
         m.put("MINING_SPEED",              buildPowderCosts(50,  3000, 2.0));
         m.put("MINING_SPEED_BOOST",        new int[]{20000});
-        m.put("PICKOBULUS",                new int[]{1200, 4400, 12000});
+        m.put("PICKOBULUS",                new int[]{1200});
         m.put("MINING_FORTUNE",            buildPowderCosts(50,  3000, 2.0));
         m.put("DAILY_POWDER",              buildPowderCosts(100, 1200, 1.8));
         m.put("EFFICIENT_MINER",           buildPowderCosts(100, 1200, 1.8));
@@ -92,8 +90,6 @@ public final class HOTMManager {
         m.put("MINING_EXPERIENCE_BOOST",   buildPowderCosts(100, 2000, 1.8));
         m.put("SEASONED_MINEMAN",          buildPowderCosts(100, 2000, 1.8));
         m.put("ANOMALOUS_DESIRE",          buildPowderCosts(20,  4000, 2.2));
-        m.put("MANIACAL_MINER",            new int[]{150000});
-        m.put("VEIN_SEEKER",               new int[]{10000});
         NODE_POWDER_COSTS = Collections.unmodifiableMap(m);
     }
 
