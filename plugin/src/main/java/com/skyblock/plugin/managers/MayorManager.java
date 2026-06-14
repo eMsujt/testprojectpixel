@@ -14,6 +14,7 @@ public final class MayorManager {
     private static final MayorManager INSTANCE = new MayorManager();
 
     private String currentMayor = "Finnegan";
+    private int electionDay = 0;
     private final Map<UUID, String> mayorVotes = new HashMap<>();
 
     private MayorManager() {}
@@ -28,6 +29,14 @@ public final class MayorManager {
 
     public void setCurrentMayor(String mayor) {
         this.currentMayor = mayor;
+    }
+
+    public int getElectionDay() {
+        return electionDay;
+    }
+
+    public void setElectionDay(int day) {
+        this.electionDay = day;
     }
 
     public String getMayorVote(UUID playerId) {
@@ -56,6 +65,7 @@ public final class MayorManager {
         if (mayor != null) {
             currentMayor = mayor;
         }
+        electionDay = cfg.getInt("electionDay", 0);
         mayorVotes.clear();
         if (cfg.isConfigurationSection("votes")) {
             for (String key : cfg.getConfigurationSection("votes").getKeys(false)) {
@@ -76,6 +86,7 @@ public final class MayorManager {
         File file = new File(dataFolder, "mayor.yml");
         YamlConfiguration cfg = new YamlConfiguration();
         cfg.set("currentMayor", currentMayor);
+        cfg.set("electionDay", electionDay);
         for (Map.Entry<UUID, String> entry : mayorVotes.entrySet()) {
             cfg.set("votes." + entry.getKey().toString(), entry.getValue());
         }
