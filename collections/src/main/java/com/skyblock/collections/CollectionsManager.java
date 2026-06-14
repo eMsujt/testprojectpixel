@@ -1,7 +1,9 @@
 package com.skyblock.collections;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -10,6 +12,7 @@ public final class CollectionsManager {
     private static final CollectionsManager INSTANCE = new CollectionsManager();
 
     private final Map<UUID, Map<String, Long>> perPlayerCounts = new HashMap<>();
+    private final Map<UUID, List<String>> collectionsHistory = new HashMap<>();
 
     private CollectionsManager() {
     }
@@ -46,5 +49,23 @@ public final class CollectionsManager {
 
     public void resetCounts(UUID playerId) {
         perPlayerCounts.remove(playerId);
+    }
+
+    // Collections history
+
+    public void recordCollectionEvent(UUID playerId, String summary) {
+        collectionsHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getCollectionsHistory(UUID playerId) {
+        return Collections.unmodifiableList(collectionsHistory.getOrDefault(playerId, new ArrayList<>()));
+    }
+
+    public Map<UUID, List<String>> getAllCollectionsHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : collectionsHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
     }
 }

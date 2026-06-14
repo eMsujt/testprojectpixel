@@ -1,5 +1,6 @@
 package com.skyblock.core.collections;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -11,6 +12,7 @@ public final class CollectionsManager {
 
     private final Map<UUID, Map<String, Long>> collectionAmounts = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> collectionTiers = new HashMap<>();
+    private final Map<UUID, List<String>> collectionsHistory = new HashMap<>();
 
     // Item counts required to reach each tier (index 0 = tier I, index N-1 = max tier).
     public static final Map<String, int[]> COLLECTION_TIERS;
@@ -85,5 +87,23 @@ public final class CollectionsManager {
 
     public Map<String, Integer> getCollectionTiers(UUID uuid) {
         return Collections.unmodifiableMap(collectionTiers.computeIfAbsent(uuid, k -> new HashMap<>()));
+    }
+
+    // Collections history
+
+    public void recordCollectionEvent(UUID playerId, String summary) {
+        collectionsHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getCollectionsHistory(UUID playerId) {
+        return Collections.unmodifiableList(collectionsHistory.getOrDefault(playerId, new ArrayList<>()));
+    }
+
+    public Map<UUID, List<String>> getAllCollectionsHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : collectionsHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
     }
 }
