@@ -2,11 +2,14 @@ package com.skyblock.plugin.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-public final class WardrobeMenu implements InventoryHolder {
+public final class WardrobeMenu implements InventoryHolder, Listener {
 
     /** Column-2 slots (rows 2–5) showing the equipped armour set, helmet → boots top-to-bottom. */
     private static final int[] ARMOR_SLOTS = {10, 19, 28, 37};
@@ -35,6 +38,13 @@ public final class WardrobeMenu implements InventoryHolder {
             if (piece != null) {
                 inventory.setItem(ARMOR_SLOTS[i], piece);
             }
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof WardrobeMenu) {
+            event.setCancelled(true);
         }
     }
 }
