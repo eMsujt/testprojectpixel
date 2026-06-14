@@ -1,0 +1,49 @@
+# NPC shop definitions for the SkyBlock Hub.
+# Each key under "shops" is a shop-id. A shop has a display title, the
+# world-space location of its NPC, and the list of items it sells.
+#   npc-location: "world,x,y,z"
+#   items:        list of "MATERIAL:price" entries
+
+shops:
+  general_goods:
+    title: "§aGeneral Goods"
+    npc-location: "world,0,70,0"
+    items:
+      - "DIRT:1"
+      - "OAK_LOG:8"
+      - "OAK_PLANKS:2"
+      - "STICK:1"
+      - "TORCH:4"
+      - "CRAFTING_TABLE:12"
+      - "CHEST:32"
+      - "FURNACE:25"
+  farm_merchant:
+    title: "§aFarm Merchant"
+    npc-location: "world,5,70,5"
+    items:
+      - "WHEAT:6"
+      - "CARROT:5"
+      - "POTATO:5"
+      - "PUMPKIN:8"
+      - "MELON:4"
+      - "SUGAR_CANE:9"
+      - "NETHER_WART:7"
+  mine_merchant:
+    title: "§7Mine Merchant"
+    npc-location: "world,-10,68,12"
+    items:
+      - "COBBLESTONE:3"
+      - "COAL:5"
+      - "IRON_INGOT:20"
+      - "GOLD_INGOT:30"
+      - "REDSTONE:8"
+      - "LAPIS_LAZULI:12"
+  wizard:
+    title: "§dWizard"
+    npc-location: "world,14,71,-8"
+    items:
+      - "GLOWSTONE_DUST:10"
+      - "BLAZE_POWDER:15"
+      - "GHAST_TEAR:120"
+      - "ENDER_PEARL:80"
+      - "EXPERIENCE_BOTTLE:40"
