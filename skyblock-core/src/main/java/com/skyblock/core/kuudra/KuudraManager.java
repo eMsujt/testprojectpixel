@@ -43,6 +43,18 @@ public final class KuudraManager {
         public long getStartTime() { return startTime; }
     }
 
+    // TIER_DATA: {essenceCost, tokenReward, suppliesCost}
+    public static final Map<String, int[]> TIER_DATA;
+    static {
+        Map<String, int[]> m = new HashMap<>();
+        m.put("BASIC",    new int[]{    0,  1,   0});
+        m.put("HOT",      new int[]{   50,  2,  25});
+        m.put("BURNING",  new int[]{  150,  3,  50});
+        m.put("FIERY",    new int[]{  500,  5,  75});
+        m.put("INFERNAL", new int[]{ 2000, 10, 100});
+        TIER_DATA = Collections.unmodifiableMap(m);
+    }
+
     private static final KuudraManager INSTANCE = new KuudraManager();
 
     private final Map<UUID, KuudraRun> activeRuns = new HashMap<>();

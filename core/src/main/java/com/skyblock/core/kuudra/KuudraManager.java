@@ -1,5 +1,6 @@
 package com.skyblock.core.kuudra;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +23,18 @@ public class KuudraManager {
         public String getDisplayName() {
             return displayName;
         }
+    }
+
+    // TIER_DATA: {essenceCost, tokenReward, suppliesCost}
+    public static final Map<String, int[]> TIER_DATA;
+    static {
+        Map<String, int[]> m = new HashMap<>();
+        m.put("BASIC",    new int[]{    0,  1,   0});
+        m.put("HOT",      new int[]{   50,  2,  25});
+        m.put("BURNING",  new int[]{  150,  3,  50});
+        m.put("FIERY",    new int[]{  500,  5,  75});
+        m.put("INFERNAL", new int[]{ 2000, 10, 100});
+        TIER_DATA = Collections.unmodifiableMap(m);
     }
 
     private final Map<UUID, int[]> playerCompletions = new HashMap<>();
