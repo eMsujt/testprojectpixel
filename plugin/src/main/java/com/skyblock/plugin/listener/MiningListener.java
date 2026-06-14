@@ -1,40 +1,55 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.collections.CollectionsManager;
+import com.skyblock.plugin.skills.SkillManager;
+import com.skyblock.plugin.skills.SkillManager.SkillType;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.UUID;
 
 /**
- * Records mining collection progress through {@link CollectionsManager} when a
- * player breaks an ore via {@link BlockBreakEvent}.
+ * Awards Mining XP through {@link SkillManager} whenever a player mines any ore
+ * or stone type and fires level-up rewards when the player's level increases.
  */
 public final class MiningListener implements Listener {
 
-    /** Ores that contribute to a player's mining collections. */
-    private static final Set<Material> ORES = EnumSet.of(
-            Material.COAL_ORE,
-            Material.IRON_ORE,
-            Material.GOLD_ORE,
-            Material.DIAMOND_ORE,
-            Material.EMERALD_ORE,
-            Material.LAPIS_ORE,
-            Material.REDSTONE_ORE,
-            Material.NETHER_QUARTZ_ORE
+    /** Mining XP granted per block broken, keyed by ore/stone {@link Material}. */
+    private static final Map<Material, Long> MINING_XP = Map.ofEntries(
+            Map.entry(Material.STONE,             1L),
+            Map.entry(Material.COBBLESTONE,       1L),
+            Map.entry(Material.COAL_ORE,          5L),
+            Map.entry(Material.IRON_ORE,          5L),
+            Map.entry(Material.GOLD_ORE,         10L),
+            Map.entry(Material.DIAMOND_ORE,      30L),
+            Map.entry(Material.EMERALD_ORE,      30L),
+            Map.entry(Material.LAPIS_ORE,        25L),
+            Map.entry(Material.REDSTONE_ORE,      7L),
+            Map.entry(Material.NETHER_QUARTZ_ORE, 10L)
     );
 
-    private final CollectionsManager collectionsManager = CollectionsManager.getInstance();
+    private final SkillManager skillManager = SkillManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        Material type = event.getBlock().getType();
-        if (!ORES.contains(type)) {
+        Long xp = MINING_XP.get(event.getBlock().getType());
+        if (xp == null) {
             return;
         }
-        collectionsManager.trackCollection(event.getPlayer(), type, 1);
+        grantXP(event.getPlayer(), xp);
+    }
+
+    private void grantXP(Player player, long amount) {
+        UUID id = player.getUniqueId();
+        int before = skillManager.getLevel(id, SkillType.MINING);
+        skillManager.addXP(id, SkillType.MINING, amount);
+        int after = skillManager.getLevel(id, SkillType.MINING);
+        if (after > before) {
+            skillManager.grantLevelUpRewards(id, SkillType.MINING, before, after);
+            player.sendTitle("§aSkill Level Up!", "§eMining §a→ §eLVL " + after, 10, 60, 20);
+        }
     }
 }
