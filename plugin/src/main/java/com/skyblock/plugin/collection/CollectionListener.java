@@ -1,6 +1,6 @@
 package com.skyblock.plugin.collection;
 
-import com.skyblock.plugin.collections.CollectionManager;
+import com.skyblock.plugin.collection.CollectionManager;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
