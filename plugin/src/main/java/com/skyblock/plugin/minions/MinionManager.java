@@ -62,6 +62,7 @@ public final class MinionManager implements Listener {
     /** Elapsed ticks since the last resource tick for each placed minion. */
     private final Map<MinionData, Integer> tickCounters = new IdentityHashMap<>();
 
+    private JavaPlugin plugin;
     private BukkitTask task;
 
     private MinionManager() {
@@ -72,11 +73,21 @@ public final class MinionManager implements Listener {
     }
 
     /**
-     * Starts the repeating resource-tick scheduler. Call from {@code onEnable}.
+     * Records the owning plugin used to drive the resource-tick scheduler. The
+     * scheduler itself is started lazily on the first minion placement (see
+     * {@link #addMinion(MinionData)}). Call from {@code onEnable}.
      *
      * @param plugin the owning plugin
      */
     public void onEnable(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
+
+    /** Starts the repeating resource-tick scheduler if it is not already running. */
+    private void startTask() {
+        if (task != null || plugin == null) {
+            return;
+        }
         task = new BukkitRunnable() {
             @Override
             public void run() {
@@ -166,6 +177,7 @@ public final class MinionManager implements Listener {
         Objects.requireNonNull(minion, "minion");
         minions.computeIfAbsent(minion.owner(), k -> new ArrayList<>()).add(minion);
         tickCounters.put(minion, 0);
+        startTask();
     }
 
     /**
