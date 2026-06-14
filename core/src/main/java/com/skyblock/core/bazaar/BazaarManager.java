@@ -44,12 +44,14 @@ public class BazaarManager {
     public UUID addBuyOrder(UUID buyer, String itemId, int quantity, double priceEach) {
         UUID id = UUID.randomUUID();
         buyOrders.put(id, new BazaarOrder(id, buyer, itemId, quantity, priceEach, OrderType.BUY));
+        recordBazaarEvent(buyer, "Placed buy order: " + quantity + "x " + itemId + " @ " + priceEach);
         return id;
     }
 
     public UUID addSellOrder(UUID seller, String itemId, int quantity, double priceEach) {
         UUID id = UUID.randomUUID();
         sellOrders.put(id, new BazaarOrder(id, seller, itemId, quantity, priceEach, OrderType.SELL));
+        recordBazaarEvent(seller, "Placed sell order: " + quantity + "x " + itemId + " @ " + priceEach);
         return id;
     }
 
@@ -57,6 +59,7 @@ public class BazaarManager {
         BazaarOrder order = buyOrders.get(orderId);
         if (order == null || !order.player().equals(player)) return false;
         buyOrders.remove(orderId);
+        recordBazaarEvent(player, "Cancelled buy order: " + order.quantity() + "x " + order.itemId());
         return true;
     }
 
@@ -64,6 +67,7 @@ public class BazaarManager {
         BazaarOrder order = sellOrders.get(orderId);
         if (order == null || !order.player().equals(player)) return false;
         sellOrders.remove(orderId);
+        recordBazaarEvent(player, "Cancelled sell order: " + order.quantity() + "x " + order.itemId());
         return true;
     }
 
