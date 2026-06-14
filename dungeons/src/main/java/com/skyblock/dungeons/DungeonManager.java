@@ -127,6 +127,11 @@ public final class DungeonManager {
         return Collections.unmodifiableMap(dungeonHistory);
     }
 
+    public String getDungeonStats(UUID playerId) {
+        List<String> history = getDungeonHistory(playerId);
+        return "Total completions: " + history.size();
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "dungeons.yml");
         if (!file.exists()) return;

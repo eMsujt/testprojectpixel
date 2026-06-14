@@ -163,6 +163,21 @@ public final class DungeonManager {
         return Collections.unmodifiableMap(playerClass);
     }
 
+    public String getDungeonStats(UUID playerId) {
+        Map<String, Integer> completions = playerCompletions.getOrDefault(playerId, Collections.emptyMap());
+        int total = completions.values().stream().mapToInt(Integer::intValue).sum();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Total: ").append(total).append(" | Highest Floor: ").append(getHighestFloor(playerId));
+        for (int f = 1; f <= 7; f++) {
+            String key = "F" + f;
+            int count = completions.getOrDefault(key, 0);
+            long best = getBestTime(playerId, key);
+            sb.append(" | F").append(f).append(": ").append(count).append(" runs");
+            if (best > 0) sb.append(" (best: ").append(best).append("s)");
+        }
+        return sb.toString();
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "dungeons.yml");
         if (!file.exists()) {

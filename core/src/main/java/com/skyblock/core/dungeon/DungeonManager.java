@@ -95,6 +95,23 @@ public final class DungeonManager {
         return Collections.unmodifiableMap(dungeonHistory);
     }
 
+    public String getDungeonStats(UUID playerId) {
+        Map<Integer, FloorRecord> playerRecords = records.getOrDefault(playerId, Collections.emptyMap());
+        int total = playerRecords.values().stream().mapToInt(FloorRecord::getCompletions).sum();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Total: ").append(total);
+        for (int f = 1; f <= 7; f++) {
+            FloorRecord rec = playerRecords.get(f);
+            sb.append(" | F").append(f).append(": ");
+            if (rec != null) {
+                sb.append(rec.getCompletions()).append(" runs (best score: ").append(rec.getBestScore()).append(")");
+            } else {
+                sb.append("0 runs");
+            }
+        }
+        return sb.toString();
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "dungeon.yml");
         if (!file.exists()) return;

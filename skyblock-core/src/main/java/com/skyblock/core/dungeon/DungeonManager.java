@@ -520,6 +520,28 @@ public final class DungeonManager {
         return Collections.unmodifiableMap(dungeonHistory);
     }
 
+    public String getDungeonStats(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        DungeonFloor[] normalFloors = {
+            DungeonFloor.FLOOR_1, DungeonFloor.FLOOR_2, DungeonFloor.FLOOR_3,
+            DungeonFloor.FLOOR_4, DungeonFloor.FLOOR_5, DungeonFloor.FLOOR_6,
+            DungeonFloor.FLOOR_7
+        };
+        int total = 0;
+        for (DungeonFloor floor : normalFloors) {
+            total += getFloorCompletionCount(playerId, floor);
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Total: ").append(total);
+        for (DungeonFloor floor : normalFloors) {
+            int count = getFloorCompletionCount(playerId, floor);
+            long best = getFloorBestTime(playerId, floor);
+            sb.append(" | ").append(floor.getDisplayName()).append(": ").append(count).append(" runs");
+            if (best != Long.MAX_VALUE) sb.append(" (best: ").append(best / 1000).append("s)");
+        }
+        return sb.toString();
+    }
+
     // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
