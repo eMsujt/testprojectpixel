@@ -13,10 +13,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class AuctionHouseMenu implements InventoryHolder, Listener {
 
-    private final Inventory inventory = Bukkit.createInventory(this, 54, "§6Auction House");
+    private final Inventory inventory;
+
+    public AuctionHouseMenu() {
+        this.inventory = Bukkit.createInventory(this, 54, "§6Auction House");
+        build();
+    }
 
     public void open(Player player) {
-        player.openInventory(build());
+        player.openInventory(inventory);
     }
 
     @Override
@@ -24,9 +29,7 @@ public final class AuctionHouseMenu implements InventoryHolder, Listener {
         return inventory;
     }
 
-    private Inventory build() {
-        inventory.clear();
-
+    private void build() {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
@@ -50,8 +53,6 @@ public final class AuctionHouseMenu implements InventoryHolder, Listener {
         inventory.setItem(50, makeItem(Material.WHEAT,             "§aConsumables"));
         inventory.setItem(51, makeItem(Material.DIRT,              "§6Blocks"));
         inventory.setItem(52, makeItem(Material.BARRIER,           "§7Misc"));
-
-        return inventory;
     }
 
     @EventHandler
