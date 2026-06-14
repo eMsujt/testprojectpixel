@@ -83,7 +83,7 @@ public class SkyBlockMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new FishingBagMenu().open(player);
+                    new FishingBagMenu(player).open(player);
                 });
 
         setItem(29, new ItemBuilder(Material.CAT_SPAWN_EGG)
