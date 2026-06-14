@@ -71,6 +71,10 @@ commands:
     usage: /<command>
     aliases: [sbmenu]
     permission: skyblock.command.skyblockmenu
+  minion:
+    description: Manage your SkyBlock minions.
+    usage: /<command>
+    permission: skyblock.command.minion
 
 permissions:
   skyblock.command.skyblock:
@@ -117,4 +121,7 @@ permissions:
     default: true
   skyblock.command.skyblockmenu:
     description: Allows use of the /skyblockmenu command.
+    default: true
+  skyblock.command.minion:
+    description: Allows use of the /minion command.
     default: true
