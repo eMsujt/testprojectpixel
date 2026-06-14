@@ -1,37 +1,21 @@
 package com.skyblock.plugin.economy;
 
-import com.skyblock.economy.CoinManager;
-import org.bukkit.entity.Player;
+import com.skyblock.plugin.profile.PlayerProfile;
+import com.skyblock.plugin.profile.ProfileManager;
 
-import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
- * Moves coins between a player's purse and their bank, off the main thread.
- *
- * <p>Balances live in the shared {@link CoinManager}; this manager simply
- * transfers between {@code purse} and {@code bank}. Each operation runs on the
- * common pool and resolves to {@code true} when the transfer succeeded or
- * {@code false} when the player could not afford it.</p>
+ * Singleton that manages purse and bank balances via {@link PlayerProfile}.
  */
 public final class BankManager {
 
     private static final BankManager INSTANCE = new BankManager();
 
-    private final CoinManager coinManager;
+    private final ProfileManager profileManager;
 
     private BankManager() {
-        this(CoinManager.getInstance());
-    }
-
-    /**
-     * Creates a bank backed by the given {@link CoinManager}.
-     *
-     * @param coinManager the coin source moved between purse and bank
-     */
-    public BankManager(CoinManager coinManager) {
-        this.coinManager = Objects.requireNonNull(coinManager, "coinManager");
+        this.profileManager = ProfileManager.getInstance();
     }
 
     public static BankManager getInstance() {
@@ -41,33 +25,40 @@ public final class BankManager {
     /**
      * Moves {@code amount} coins from the player's purse into their bank.
      *
-     * @return a future resolving to {@code true} if the deposit succeeded
+     * @return {@code true} if the deposit succeeded; {@code false} if the player
+     *         lacks sufficient purse funds or the amount is not positive
      */
-    public CompletableFuture<Boolean> deposit(Player player, long amount) {
-        UUID playerId = player.getUniqueId();
-        return CompletableFuture.supplyAsync(() -> {
-            if (coinManager.withdraw(playerId, amount)) {
-                coinManager.addBank(playerId, amount);
-                return true;
-            }
-            return false;
-        });
+    public boolean deposit(UUID uuid, long amount) {
+        if (amount <= 0) return false;
+        PlayerProfile profile = profileManager.getOrCreate(uuid);
+        if (profile.getPurse() < amount) return false;
+        profile.setPurse(profile.getPurse() - amount);
+        profile.setBank(profile.getBank() + amount);
+        return true;
     }
 
     /**
      * Moves {@code amount} coins from the player's bank back into their purse.
      *
-     * @return a future resolving to {@code true} if the withdrawal succeeded
+     * @return {@code true} if the withdrawal succeeded; {@code false} if the bank
+     *         lacks sufficient funds or the amount is not positive
      */
-    public CompletableFuture<Boolean> withdraw(Player player, long amount) {
-        UUID playerId = player.getUniqueId();
-        return CompletableFuture.supplyAsync(() -> {
-            if (amount <= 0 || coinManager.getBank(playerId) < amount) {
-                return false;
-            }
-            coinManager.setBank(playerId, coinManager.getBank(playerId) - amount);
-            coinManager.addPurse(playerId, amount);
-            return true;
-        });
+    public boolean withdraw(UUID uuid, long amount) {
+        if (amount <= 0) return false;
+        PlayerProfile profile = profileManager.getOrCreate(uuid);
+        if (profile.getBank() < amount) return false;
+        profile.setBank(profile.getBank() - amount);
+        profile.setPurse(profile.getPurse() + amount);
+        return true;
+    }
+
+    /** Returns the player's current purse balance. */
+    public long getPurse(UUID uuid) {
+        return profileManager.getOrCreate(uuid).getPurse();
+    }
+
+    /** Returns the player's current bank balance. */
+    public long getBank(UUID uuid) {
+        return profileManager.getOrCreate(uuid).getBank();
     }
 }
