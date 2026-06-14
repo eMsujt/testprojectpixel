@@ -5,6 +5,7 @@ import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import com.skyblock.plugin.managers.BankManager;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class BankMenu extends Menu {
     private final BankManager bankManager;
 
     public BankMenu(UUID playerId, CoinManager coinManager, BankManager bankManager) {
-        super("Bank Account", 6);
+        super("§6Bank Account", 6);
         this.playerId = Objects.requireNonNull(playerId, "playerId");
         this.coinManager = Objects.requireNonNull(coinManager, "coinManager");
         this.bankManager = Objects.requireNonNull(bankManager, "bankManager");
@@ -37,6 +38,8 @@ public class BankMenu extends Menu {
 
     @Override
     protected void build() {
+        fillBorder();
+
         long purse = coinManager.getPurse(playerId);
         double bank = bankManager.getBalance(playerId);
         setItem(PURSE_SLOT, new ItemBuilder(Material.GOLD_NUGGET)
@@ -47,5 +50,18 @@ public class BankMenu extends Menu {
                 .displayName("§6Bank Account")
                 .lore("§7Coins: §6" + String.format("%.1f", bank))
                 .build());
+    }
+
+    /** Fills the menu's outer edge with yellow glass panes, matching Hypixel. */
+    private void fillBorder() {
+        ItemStack pane = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
+        }
     }
 }
