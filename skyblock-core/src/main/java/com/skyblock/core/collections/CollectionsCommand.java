@@ -16,7 +16,7 @@ public final class CollectionsCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS;
 
     static {
-        List<String> subs = new java.util.ArrayList<>(Arrays.asList("category", "reset"));
+        List<String> subs = new java.util.ArrayList<>(Arrays.asList("category", "reset", "history"));
         for (CollectionsManager.CollectionType c : CollectionsManager.CollectionType.values()) {
             subs.add(c.name().toLowerCase());
         }
@@ -45,6 +45,7 @@ public final class CollectionsCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
+            case "history" -> handleHistory(player);
             case "reset" -> {
                 boolean had = collectionsManager.reset(player.getUniqueId());
                 player.sendMessage(had ? "Your collection progress has been reset."
@@ -94,6 +95,18 @@ public final class CollectionsCommand implements TabExecutor {
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = collectionsManager.getCollectionsHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("No collection history yet.");
+            return;
+        }
+        player.sendMessage("=== Collection History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
     }
 
     private void handleAll(Player player) {
