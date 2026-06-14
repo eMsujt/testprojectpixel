@@ -380,6 +380,13 @@ public final class HOTMManager {
         return Collections.unmodifiableMap(hotmHistory);
     }
 
+    public String getMiningStats(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return "HOTM Tier: " + getHotmTier(playerId)
+                + " | Mithril Powder: " + getMithrilPowder(playerId)
+                + " | Gemstone Powder: " + getGemstonePowder(playerId);
+    }
+
     /**
      * Removes all HOTM data for the given player (e.g. on quit).
      *
