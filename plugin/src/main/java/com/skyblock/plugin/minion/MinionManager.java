@@ -1,28 +1,50 @@
 package com.skyblock.plugin.minion;
 
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton tracking the {@link Minion} instances each player has placed.
+ * Singleton tracking the {@link Minion} instances placed in the world.
  *
- * <p>Backed by a {@code Map<UUID, List<Minion>>} keyed by owner. Not
+ * <p>Backed by a {@code Map<Location, MinionData>} keyed by the block location a
+ * minion occupies, so a placed minion can be resolved from its position. Not
  * thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class MinionManager {
 
     private static final MinionManager INSTANCE = new MinionManager();
 
-    /** Placed minions keyed by owner UUID. */
-    private final Map<UUID, List<Minion>> minions = new HashMap<>();
+    /** Per-location bookkeeping for a single placed minion. */
+    public static final class MinionData {
+
+        private final UUID owner;
+        private final Minion minion;
+
+        public MinionData(UUID owner, Minion minion) {
+            this.owner = Objects.requireNonNull(owner, "owner");
+            this.minion = Objects.requireNonNull(minion, "minion");
+        }
+
+        /** The UUID of the player who placed this minion. */
+        public UUID getOwner() {
+            return owner;
+        }
+
+        public Minion getMinion() {
+            return minion;
+        }
+    }
+
+    /** Placed minions keyed by the location they occupy. */
+    private final Map<Location, MinionData> minions = new HashMap<>();
 
     /** Handle to the repeating production task, {@code null} while not running. */
     private BukkitTask task;
@@ -58,70 +80,46 @@ public final class MinionManager {
     }
 
     /**
-     * Records a minion as placed by the given player.
+     * Records a minion as placed at the given location.
      *
-     * @param owner  the player who placed the minion
-     * @param minion the minion to track
+     * @param location the block location the minion occupies
+     * @param minion   the minion to track
      */
-    public void addMinion(UUID owner, Minion minion) {
-        Objects.requireNonNull(owner, "owner");
+    public void placeMinion(Location location, Minion minion) {
+        Objects.requireNonNull(location, "location");
         Objects.requireNonNull(minion, "minion");
-        minions.computeIfAbsent(owner, k -> new ArrayList<>()).add(minion);
+        minions.put(location, new MinionData(minion.owner, minion));
     }
 
     /**
-     * Removes a tracked minion from the given player.
+     * Removes the minion tracked at the given location.
      *
-     * @param owner  the player who owns the minion
-     * @param minion the minion to remove
-     * @return {@code true} if the minion was tracked and removed
+     * @param location the block location to clear
+     * @return the removed data, or {@code null} if no minion was tracked there
      */
-    public boolean removeMinion(UUID owner, Minion minion) {
-        Objects.requireNonNull(owner, "owner");
-        Objects.requireNonNull(minion, "minion");
-        List<Minion> list = minions.get(owner);
-        if (list == null) {
-            return false;
-        }
-        boolean removed = list.remove(minion);
-        if (list.isEmpty()) {
-            minions.remove(owner);
-        }
-        return removed;
+    public MinionData removeMinion(Location location) {
+        Objects.requireNonNull(location, "location");
+        return minions.remove(location);
     }
 
     /**
-     * Returns an unmodifiable view of the minions placed by the given player.
+     * Returns the minion tracked at the given location.
      *
-     * @param owner the player to look up
-     * @return the player's minions, empty if they have none
+     * @param location the block location to look up
+     * @return the tracked data, or {@code null} if none
      */
-    public List<Minion> getMinions(UUID owner) {
-        Objects.requireNonNull(owner, "owner");
-        List<Minion> list = minions.get(owner);
-        return list == null ? Collections.emptyList() : Collections.unmodifiableList(list);
+    public MinionData getMinion(Location location) {
+        Objects.requireNonNull(location, "location");
+        return minions.get(location);
     }
 
-    /**
-     * Returns the number of minions the given player has placed.
-     *
-     * @param owner the player to look up
-     */
-    public int getMinionCount(UUID owner) {
-        Objects.requireNonNull(owner, "owner");
-        List<Minion> list = minions.get(owner);
-        return list == null ? 0 : list.size();
+    /** Returns an unmodifiable view of every placed minion. */
+    public Collection<MinionData> getMinions() {
+        return Collections.unmodifiableCollection(minions.values());
     }
 
-    /**
-     * Removes all minions belonging to the given player.
-     *
-     * @param owner the player whose minions should be cleared
-     * @return the number of minions removed
-     */
-    public int clearMinions(UUID owner) {
-        Objects.requireNonNull(owner, "owner");
-        List<Minion> list = minions.remove(owner);
-        return list == null ? 0 : list.size();
+    /** Returns the number of minions currently placed. */
+    public int getMinionCount() {
+        return minions.size();
     }
 }

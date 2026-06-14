@@ -1,10 +1,6 @@
 package com.skyblock.plugin.minion;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.List;
 
 /**
  * Periodic task that ticks every online player's placed {@link Minion}s.
@@ -27,11 +23,8 @@ public final class MinionTickTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            List<Minion> minions = manager.getMinions(player.getUniqueId());
-            for (Minion minion : minions) {
-                tick(minion);
-            }
+        for (MinionManager.MinionData data : manager.getMinions()) {
+            tick(data.getMinion());
         }
     }
 
