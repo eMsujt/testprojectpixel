@@ -1,0 +1,41 @@
+# Per-action skill XP granted by SkillProgressionListener, read straight from the
+# jar. Each `farming`, `mining` and `foraging` key is a Bukkit Material name whose
+# value is the XP awarded when that block is broken (farming crops only count once
+# mature); `fishing` is the flat XP granted per fish reeled in. Unlisted materials
+# grant no XP. If this file is missing the listener falls back to its built-in
+# defaults.
+farming:
+  WHEAT: 3
+  POTATOES: 3
+  CARROTS: 3
+  BEETROOTS: 3
+  NETHER_WART: 5
+  PUMPKIN: 8
+  MELON: 2
+  SUGAR_CANE: 2
+  CACTUS: 2
+  COCOA: 3
+  MUSHROOM_STEM: 3
+  RED_MUSHROOM_BLOCK: 3
+  BROWN_MUSHROOM_BLOCK: 3
+mining:
+  STONE: 1
+  COBBLESTONE: 1
+  COAL_ORE: 5
+  IRON_ORE: 5
+  GOLD_ORE: 10
+  DIAMOND_ORE: 30
+  EMERALD_ORE: 30
+  LAPIS_ORE: 25
+  REDSTONE_ORE: 7
+  NETHER_QUARTZ_ORE: 10
+foraging:
+  OAK_LOG: 6
+  BIRCH_LOG: 6
+  SPRUCE_LOG: 6
+  JUNGLE_LOG: 6
+  ACACIA_LOG: 6
+  DARK_OAK_LOG: 6
+  MANGROVE_LOG: 6
+  CHERRY_LOG: 6
+fishing: 6
