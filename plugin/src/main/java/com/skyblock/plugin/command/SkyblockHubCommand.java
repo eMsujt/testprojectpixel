@@ -100,6 +100,9 @@ public final class SkyblockHubCommand implements CommandExecutor {
                 case "alchemy":
                     handleAlchemy(player);
                     return true;
+                case "hub":
+                    handleStatusPanel(player);
+                    return true;
                 default:
                     break;
             }
@@ -114,6 +117,77 @@ public final class SkyblockHubCommand implements CommandExecutor {
         player.teleport(hub);
         player.sendMessage("§aTeleported to the Hub!");
         return true;
+    }
+
+    private void handleStatusPanel(Player player) {
+        UUID id = player.getUniqueId();
+        player.sendMessage("§8§m--------------------§r §6SkyBlock Status §8§m--------------------");
+
+        // Economy
+        BankManager bank = BankManager.getInstance();
+        BazaarManager bazaar = BazaarManager.getInstance();
+        AuctionHouseManager ah = AuctionHouseManager.getInstance();
+        player.sendMessage("§e[Economy] §fBank: §a" + (long) bank.getBalance(id)
+                + " §7| Bazaar orders: §a" + bazaar.getOrderCount(id)
+                + " §7| AH listings: §a" + ah.getAuctionCount(id));
+
+        // Progression
+        ProfileManager profiles = ProfileManager.getInstance();
+        FairyManager fairy = FairyManager.getInstance();
+        HOTMManager hotm = HOTMManager.getInstance();
+        int profileCount = profiles.getProfilesForOwner(id).size();
+        player.sendMessage("§e[Progression] §fProfiles: §a" + profileCount
+                + " §7| Fairy souls: §a" + fairy.getSouls(id) + "§7/§a" + FairyManager.MAX_SOULS
+                + " §7| Mithril powder: §a" + hotm.getMithrilPowder(id));
+
+        // Combat
+        SlayerManager slayer = SlayerManager.getInstance();
+        DungeonManager dungeon = DungeonManager.getInstance();
+        KuudraManager kuudra = KuudraManager.getInstance();
+        int slayerLevels = 0;
+        for (SlayerManager.SlayerType t : SlayerManager.SlayerType.values()) {
+            slayerLevels += slayer.getLevel(id, t);
+        }
+        DungeonManager.DungeonClass dungeonClass = dungeon.getClass(id);
+        int kuudraClears = 0;
+        for (KuudraManager.KuudraTier t : KuudraManager.KuudraTier.values()) {
+            kuudraClears += kuudra.getCompletionCount(id, t);
+        }
+        player.sendMessage("§e[Combat] §fSlayer levels: §a" + slayerLevels
+                + " §7| Dungeon class: §a" + (dungeonClass != null ? dungeonClass.getDisplayName() : "None")
+                + " §7| Kuudra clears: §a" + kuudraClears);
+
+        // Activities
+        SkillsManager skills = SkillsManager.getInstance();
+        FishingManager fishing = FishingManager.getInstance();
+        AlchemyManager alchemy = AlchemyManager.getInstance();
+        GardenManager garden = GardenManager.getInstance();
+        int avgSkillLevel = 0;
+        SkillsManager.SkillType[] skillTypes = SkillsManager.SkillType.values();
+        for (SkillsManager.SkillType s : skillTypes) {
+            avgSkillLevel += skills.getLevel(id, s);
+        }
+        if (skillTypes.length > 0) avgSkillLevel /= skillTypes.length;
+        player.sendMessage("§e[Activities] §fAvg skill level: §a" + avgSkillLevel
+                + " §7| Fish caught: §a" + fishing.getTotalFishCaught(id)
+                + " §7| Alchemy level: §a" + alchemy.getLevel(id)
+                + " §7| Garden level: §a" + garden.getPlotLevel(id));
+
+        // Personal
+        PetsManager pets = PetsManager.getInstance();
+        IslandManager islands = IslandManager.getInstance();
+        MayorManager mayor = MayorManager.getInstance();
+        EnchantingManager enchanting = EnchantingManager.getInstance();
+        PetsManager.Pet activePet = pets.getActivePet(id);
+        String petName = activePet != null ? activePet.type.name() + " [" + activePet.rarity.name() + "]" : "None";
+        String islandWarp = islands.getIsland(id).map(i -> i.getWarpName() != null ? i.getWarpName() : "None").orElse("No island");
+        MayorManager.MayorCandidate currentMayor = mayor.getCurrentMayor();
+        player.sendMessage("§e[Personal] §fPet: §a" + petName
+                + " §7| Island: §a" + islandWarp
+                + " §7| Mayor: §a" + (currentMayor != null ? currentMayor.getDisplayName() : "None")
+                + " §7| Enchants: §a" + enchanting.getEnchantments(id).size());
+
+        player.sendMessage("§8§m-------------------------------------------------------");
     }
 
     private void handleBank(Player player) {
