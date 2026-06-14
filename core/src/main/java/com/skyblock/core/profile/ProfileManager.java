@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Iterator;
+import java.util.Comparator;
 
 public final class ProfileManager {
 
@@ -59,10 +59,11 @@ public final class ProfileManager {
         if (playerProfiles == null || playerProfiles.isEmpty()) {
             return "Profile Stats: Profiles: " + count;
         }
-        Iterator<ProfileData> it = playerProfiles.values().iterator();
-        ProfileData first = it.next();
-        return "Profile Stats: Active: " + first.getName() + " | Game Mode: " + first.getGameMode()
-                + " | Coins: " + first.getCoinsBalance() + " | Profiles: " + count;
+        ProfileData active = playerProfiles.values().stream()
+                .min(Comparator.comparing(ProfileData::getName))
+                .get();
+        return "Profile Stats: Active: " + active.getName() + " | Game Mode: " + active.getGameMode()
+                + " | Coins: " + active.getCoinsBalance() + " | Profiles: " + count;
     }
 
     public static final class ProfileData {

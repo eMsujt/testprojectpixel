@@ -2,6 +2,7 @@ package com.skyblock.profile;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -129,7 +130,10 @@ public final class ProfileManager {
             profilesByPlayer.remove(playerId);
             activeProfiles.remove(playerId);
         } else if (name.equals(activeProfiles.get(playerId))) {
-            activeProfiles.put(playerId, profiles.keySet().iterator().next());
+            Profile oldest = profiles.values().stream()
+                    .min(Comparator.comparingLong(Profile::createdAtMillis))
+                    .get();
+            activeProfiles.put(playerId, oldest.name());
         }
         return true;
     }
