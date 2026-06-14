@@ -1,5 +1,6 @@
 package com.skyblock.plugin.collections;
 
+import com.skyblock.plugin.SkyBlockPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -7,6 +8,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -22,10 +24,22 @@ public final class CollectionsManager {
 
     private final Map<UUID, Map<Material, Long>> collections = new HashMap<>();
 
+    private SkyBlockPlugin plugin;
+
     private CollectionsManager() {}
 
     public static CollectionsManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Initializes the manager with the owning plugin instance. Must be called
+     * once during plugin enable before any collection is tracked.
+     *
+     * @param plugin the owning plugin instance
+     */
+    public void init(SkyBlockPlugin plugin) {
+        this.plugin = Objects.requireNonNull(plugin, "plugin");
     }
 
     /**
