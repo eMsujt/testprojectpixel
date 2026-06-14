@@ -41,6 +41,7 @@ public final class SkillsManager {
 
     private final Map<UUID, Map<String, Long>> skillXP = new HashMap<>();
     private final Map<String, Integer> skillMaxLevel = new HashMap<>();
+    private final Map<UUID, Map<String, Integer>> xpHistory = new HashMap<>();
 
     private SkillsManager() {}
 
@@ -107,6 +108,19 @@ public final class SkillsManager {
         return skillXP.getOrDefault(playerId, new HashMap<>());
     }
 
+    public void recordXpGain(UUID playerId, String skill, int amount) {
+        xpHistory.computeIfAbsent(playerId, k -> new HashMap<>())
+                .merge(skill, amount, Integer::sum);
+    }
+
+    public Map<String, Integer> getXpHistory(UUID playerId) {
+        return Collections.unmodifiableMap(xpHistory.getOrDefault(playerId, new HashMap<>()));
+    }
+
+    public Map<UUID, Map<String, Integer>> getAllXpHistory() {
+        return Collections.unmodifiableMap(xpHistory);
+    }
+
     public Map<UUID, Long> getAllSkillXP(String skill) {
         Map<UUID, Long> result = new HashMap<>();
         for (Map.Entry<UUID, Map<String, Long>> entry : skillXP.entrySet()) {
@@ -123,7 +137,10 @@ public final class SkillsManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         skillXP.clear();
+        xpHistory.clear();
+        ConfigurationSection historySection = cfg.getConfigurationSection("xpHistory");
         for (String key : cfg.getKeys(false)) {
+            if (key.equals("xpHistory")) continue;
             try {
                 UUID uuid = UUID.fromString(key);
                 ConfigurationSection section = cfg.getConfigurationSection(key);
@@ -137,6 +154,22 @@ public final class SkillsManager {
                 // skip malformed UUID
             }
         }
+        if (historySection != null) {
+            for (String key : historySection.getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    ConfigurationSection sec = historySection.getConfigurationSection(key);
+                    if (sec == null) continue;
+                    Map<String, Integer> hist = new HashMap<>();
+                    for (String skill : sec.getKeys(false)) {
+                        hist.put(skill, sec.getInt(skill));
+                    }
+                    xpHistory.put(uuid, hist);
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -146,6 +179,12 @@ public final class SkillsManager {
             String uuidKey = entry.getKey().toString();
             for (Map.Entry<String, Long> xpEntry : entry.getValue().entrySet()) {
                 cfg.set(uuidKey + "." + xpEntry.getKey(), xpEntry.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<String, Integer>> entry : xpHistory.entrySet()) {
+            String uuidKey = "xpHistory." + entry.getKey().toString();
+            for (Map.Entry<String, Integer> histEntry : entry.getValue().entrySet()) {
+                cfg.set(uuidKey + "." + histEntry.getKey(), histEntry.getValue());
             }
         }
         try {
