@@ -85,6 +85,14 @@ public final class SkyBlockCalendar {
         return getMonthName() + " " + ordinal(getDayOfMonth());
     }
 
+    /**
+     * Computes the current SkyBlock date including the year, e.g.
+     * {@code "Early Spring 1st, Year 1"}.
+     */
+    public static String currentSkyBlockDate() {
+        return formatDate() + ", Year " + getYear();
+    }
+
     /** Returns the ordinal string for a day number (e.g. {@code 1} → {@code "1st"}). */
     public static String ordinal(int day) {
         if (day >= 11 && day <= 13) {
