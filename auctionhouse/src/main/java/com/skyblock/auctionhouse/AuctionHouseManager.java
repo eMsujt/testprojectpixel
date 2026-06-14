@@ -1,5 +1,9 @@
 package com.skyblock.auctionhouse;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -193,6 +197,60 @@ public final class AuctionHouseManager {
      */
     public Set<Long> getActiveListings() {
         return Collections.unmodifiableSet(listings.keySet());
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        listings.clear();
+        auctionHistory.clear();
+        nextListingId = cfg.getLong("nextListingId", 1L);
+        if (cfg.isConfigurationSection("listings")) {
+            for (String key : cfg.getConfigurationSection("listings").getKeys(false)) {
+                try {
+                    long id = Long.parseLong(key);
+                    UUID seller = UUID.fromString(cfg.getString("listings." + key + ".seller", ""));
+                    String itemName = cfg.getString("listings." + key + ".itemName");
+                    if (itemName == null) continue;
+                    double price = cfg.getDouble("listings." + key + ".price", 0.0);
+                    listings.put(id, new BinListing(seller, itemName, price));
+                } catch (IllegalArgumentException | NumberFormatException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("auctionHistory")) {
+            for (String key : cfg.getConfigurationSection("auctionHistory").getKeys(false)) {
+                try {
+                    auctionHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("auctionHistory." + key)));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        cfg.set("nextListingId", nextListingId);
+        for (Map.Entry<Long, BinListing> entry : listings.entrySet()) {
+            String key = "listings." + entry.getKey();
+            BinListing listing = entry.getValue();
+            cfg.set(key + ".seller", listing.seller.toString());
+            cfg.set(key + ".itemName", listing.itemName);
+            cfg.set(key + ".price", listing.price);
+        }
+        for (Map.Entry<UUID, List<String>> entry : auctionHistory.entrySet()) {
+            cfg.set("auctionHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save auctionhouse.yml", e);
+        }
     }
 
     private BinListing requireListing(long listingId) {

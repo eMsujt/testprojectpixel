@@ -1,12 +1,16 @@
 package com.skyblock.core.auction;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.ArrayList;
 
 public class AuctionHouseManager {
 
@@ -95,5 +99,57 @@ public class AuctionHouseManager {
 
     public Map<UUID, AuctionItem> getItems() {
         return Collections.unmodifiableMap(items);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        items.clear();
+        auctionHistory.clear();
+        if (cfg.isConfigurationSection("items")) {
+            for (String key : cfg.getConfigurationSection("items").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(key);
+                    String itemName = cfg.getString("items." + key + ".itemName");
+                    if (itemName == null) continue;
+                    UUID seller = UUID.fromString(cfg.getString("items." + key + ".seller", ""));
+                    long price = cfg.getLong("items." + key + ".price", 0L);
+                    items.put(id, new AuctionItem(seller, itemName, price));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("auctionHistory")) {
+            for (String key : cfg.getConfigurationSection("auctionHistory").getKeys(false)) {
+                try {
+                    auctionHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("auctionHistory." + key)));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, AuctionItem> entry : items.entrySet()) {
+            String key = "items." + entry.getKey().toString();
+            AuctionItem item = entry.getValue();
+            cfg.set(key + ".seller", item.seller().toString());
+            cfg.set(key + ".itemName", item.itemName());
+            cfg.set(key + ".price", item.price());
+        }
+        for (Map.Entry<UUID, List<String>> entry : auctionHistory.entrySet()) {
+            cfg.set("auctionHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save auctionhouse.yml", e);
+        }
     }
 }

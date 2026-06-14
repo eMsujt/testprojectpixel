@@ -1,5 +1,10 @@
 package com.skyblock.economy;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Manages auction house listings that support both buy-it-now (BIN) and
@@ -236,6 +240,75 @@ public final class AuctionHouseManager {
      */
     public Set<UUID> getActiveListings() {
         return Collections.unmodifiableSet(listings.keySet());
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        listings.clear();
+        auctionHistory.clear();
+        if (cfg.isConfigurationSection("auctionHistory")) {
+            for (String key : cfg.getConfigurationSection("auctionHistory").getKeys(false)) {
+                try {
+                    auctionHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("auctionHistory." + key)));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("listings")) {
+            for (String key : cfg.getConfigurationSection("listings").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(key);
+                    UUID seller = UUID.fromString(cfg.getString("listings." + key + ".seller", ""));
+                    String itemName = cfg.getString("listings." + key + ".itemName");
+                    if (itemName == null) continue;
+                    double startingBid = cfg.getDouble("listings." + key + ".startingBid", 0.0);
+                    boolean binListing = cfg.getBoolean("listings." + key + ".binListing", false);
+                    ItemStack item = cfg.getItemStack("listings." + key + ".item");
+                    if (item == null) continue;
+                    AuctionListing listing = new AuctionListing(id, seller, item, itemName, startingBid, binListing);
+                    ListingState state = new ListingState(listing);
+                    state.highestBid = cfg.getDouble("listings." + key + ".highestBid", startingBid);
+                    String bidderStr = cfg.getString("listings." + key + ".highestBidder");
+                    if (bidderStr != null && !bidderStr.isEmpty()) {
+                        state.highestBidder = UUID.fromString(bidderStr);
+                    }
+                    listings.put(id, state);
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "auctionhouse.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, ListingState> entry : listings.entrySet()) {
+            String key = "listings." + entry.getKey().toString();
+            ListingState state = entry.getValue();
+            AuctionListing listing = state.listing;
+            cfg.set(key + ".seller", listing.seller().toString());
+            cfg.set(key + ".itemName", listing.itemName());
+            cfg.set(key + ".startingBid", listing.startingBid());
+            cfg.set(key + ".binListing", listing.binListing());
+            cfg.set(key + ".item", listing.item());
+            cfg.set(key + ".highestBid", state.highestBid);
+            if (state.highestBidder != null) {
+                cfg.set(key + ".highestBidder", state.highestBidder.toString());
+            }
+        }
+        for (Map.Entry<UUID, List<String>> entry : auctionHistory.entrySet()) {
+            cfg.set("auctionHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save auctionhouse.yml", e);
+        }
     }
 
     private ListingState requireListing(UUID listingId) {
