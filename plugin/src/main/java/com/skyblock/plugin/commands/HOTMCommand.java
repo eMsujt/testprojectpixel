@@ -18,7 +18,7 @@ public final class HOTMCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            handleLevel(player);
             return true;
         }
 
