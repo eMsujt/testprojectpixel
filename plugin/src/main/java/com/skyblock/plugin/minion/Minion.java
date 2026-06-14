@@ -1,7 +1,13 @@
 package com.skyblock.plugin.minion;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 
 /** Mutable state for a single placed minion owned by a player. */
 public final class Minion {
@@ -81,6 +87,8 @@ public final class Minion {
     public final UUID owner;
     public final MinionType type;
     private MinionTier tier;
+    private Location location;
+    private final List<ItemStack> storage = new ArrayList<>();
 
     public Minion(UUID id, UUID owner, MinionType type, MinionTier tier) {
         this.id = Objects.requireNonNull(id, "id");
@@ -95,5 +103,30 @@ public final class Minion {
 
     public void setTier(MinionTier tier) {
         this.tier = Objects.requireNonNull(tier, "tier");
+    }
+
+    public Location getLocation() {
+        return location == null ? null : location.clone();
+    }
+
+    public void setLocation(Location location) {
+        this.location = location == null ? null : location.clone();
+    }
+
+    /** @return an unmodifiable view of the minion's stored items. */
+    public List<ItemStack> getStorage() {
+        return Collections.unmodifiableList(storage);
+    }
+
+    public void addToStorage(ItemStack item) {
+        storage.add(Objects.requireNonNull(item, "item"));
+    }
+
+    public boolean removeFromStorage(ItemStack item) {
+        return storage.remove(item);
+    }
+
+    public void clearStorage() {
+        storage.clear();
     }
 }
