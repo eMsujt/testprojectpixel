@@ -25,7 +25,7 @@ public final class PetMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public PetMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§5Pets");
+        this.inventory = Bukkit.createInventory(this, 54, "§9Pets");
         build(player.getUniqueId());
     }
 
