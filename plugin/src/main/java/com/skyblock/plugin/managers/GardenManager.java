@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Collections;
 
 public final class GardenManager {
 
@@ -15,6 +16,7 @@ public final class GardenManager {
     private final Map<UUID, Integer> gardenLevel = new HashMap<>();
     private final Map<UUID, Integer> gardenPlots = new HashMap<>();
     private final Map<UUID, Integer> unlockedPlots = new HashMap<>();
+    private final Map<UUID, Map<String, Long>> cropHarvests = new HashMap<>();
 
     private GardenManager() {}
 
@@ -58,6 +60,19 @@ public final class GardenManager {
         setUnlockedPlots(playerId, getUnlockedPlots(playerId) + amount);
     }
 
+    public void addHarvest(UUID playerId, String crop, long amount) {
+        cropHarvests.computeIfAbsent(playerId, k -> new HashMap<>())
+                .merge(crop, amount, Long::sum);
+    }
+
+    public Map<String, Long> getCropHarvests(UUID playerId) {
+        return Collections.unmodifiableMap(cropHarvests.getOrDefault(playerId, Collections.emptyMap()));
+    }
+
+    public Map<UUID, Map<String, Long>> getAllCropHarvests() {
+        return Collections.unmodifiableMap(cropHarvests);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "garden.yml");
         if (!file.exists()) {
@@ -67,6 +82,7 @@ public final class GardenManager {
         gardenLevel.clear();
         gardenPlots.clear();
         unlockedPlots.clear();
+        cropHarvests.clear();
         if (cfg.isConfigurationSection("gardenLevel")) {
             for (String key : cfg.getConfigurationSection("gardenLevel").getKeys(false)) {
                 try {
@@ -88,6 +104,20 @@ public final class GardenManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        if (cfg.isConfigurationSection("cropHarvests")) {
+            for (String key : cfg.getConfigurationSection("cropHarvests").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(key);
+                    Map<String, Long> crops = new HashMap<>();
+                    if (cfg.isConfigurationSection("cropHarvests." + key)) {
+                        for (String crop : cfg.getConfigurationSection("cropHarvests." + key).getKeys(false)) {
+                            crops.put(crop, cfg.getLong("cropHarvests." + key + "." + crop));
+                        }
+                    }
+                    cropHarvests.put(id, crops);
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -101,6 +131,12 @@ public final class GardenManager {
         }
         for (Map.Entry<UUID, Integer> entry : unlockedPlots.entrySet()) {
             cfg.set("unlockedPlots." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Map<String, Long>> entry : cropHarvests.entrySet()) {
+            String prefix = "cropHarvests." + entry.getKey().toString() + ".";
+            for (Map.Entry<String, Long> crop : entry.getValue().entrySet()) {
+                cfg.set(prefix + crop.getKey(), crop.getValue());
+            }
         }
         try {
             cfg.save(file);
