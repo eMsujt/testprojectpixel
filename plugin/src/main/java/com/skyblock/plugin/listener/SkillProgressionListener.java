@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
 import java.util.UUID;
@@ -68,6 +69,9 @@ public final class SkillProgressionListener implements Listener {
             Map.entry(Material.CHERRY_LOG,   6L)
     );
 
+    /** Fishing XP awarded per fish reeled in. */
+    private static final long FISHING_XP = 6L;
+
     private final SkillManager skillManager = SkillManager.getInstance();
 
     @EventHandler
@@ -92,6 +96,13 @@ public final class SkillProgressionListener implements Listener {
         Long foraging = FORAGING_XP.get(type);
         if (foraging != null) {
             grantXP(event.getPlayer(), SkillType.FORAGING, foraging);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerFish(PlayerFishEvent event) {
+        if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
+            grantXP(event.getPlayer(), SkillType.FISHING, FISHING_XP);
         }
     }
 
