@@ -45,8 +45,8 @@ public final class BankManager {
         return Collections.unmodifiableMap(balance);
     }
 
-    public void recordTransaction(UUID playerId, String description) {
-        transactionLedger.computeIfAbsent(playerId, k -> new ArrayList<>()).add(0, description);
+    public void recordTransaction(UUID playerId, String summary) {
+        transactionHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
     }
 
     public void recordTransaction(UUID playerId, double amount, String type) {
