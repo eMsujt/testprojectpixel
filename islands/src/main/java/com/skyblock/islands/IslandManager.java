@@ -1,5 +1,9 @@
 package com.skyblock.islands;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -91,6 +95,8 @@ public final class IslandManager {
 
     private final Map<UUID, PlayerIsland> islands = new HashMap<>();
     public final ConcurrentHashMap<UUID, Location> islandHomes = new ConcurrentHashMap<>();
+    /** Levels loaded from disk; consumed by {@link #createIsland} to restore saved levels. */
+    private final Map<UUID, Integer> islandLevels = new HashMap<>();
 
     private IslandManager() {
     }
@@ -117,7 +123,7 @@ public final class IslandManager {
         if (islands.containsKey(owner)) {
             throw new IllegalStateException("Player " + owner + " already owns an island");
         }
-        PlayerIsland island = new PlayerIsland(owner, spawnLocation, 1, Set.of());
+        PlayerIsland island = new PlayerIsland(owner, spawnLocation, islandLevels.getOrDefault(owner, 1), Set.of());
         islands.put(owner, island);
         return island;
     }
@@ -232,6 +238,34 @@ public final class IslandManager {
         Objects.requireNonNull(owner, "owner");
         Location loc = islandHomes.get(owner);
         return loc == null ? Optional.empty() : Optional.of(loc.clone());
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "island.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        islandLevels.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                islandLevels.put(uuid, cfg.getInt(key + ".level", 1));
+            } catch (IllegalArgumentException ignored) {}
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "island.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, PlayerIsland> entry : islands.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".level", entry.getValue().level());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save island.yml", e);
+        }
     }
 
     private PlayerIsland requireIsland(UUID owner) {
