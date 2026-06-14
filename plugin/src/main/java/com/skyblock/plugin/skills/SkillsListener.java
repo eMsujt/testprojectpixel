@@ -1,0 +1,39 @@
+package com.skyblock.plugin.skills;
+
+import com.skyblock.plugin.managers.SkillsManager;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+
+import java.util.Map;
+import java.util.UUID;
+
+public final class SkillsListener implements Listener {
+
+    private static final Map<Material, Long> CROP_XP = Map.ofEntries(
+            Map.entry(Material.WHEAT,          6L),
+            Map.entry(Material.CARROTS,        3L),
+            Map.entry(Material.POTATOES,       3L),
+            Map.entry(Material.PUMPKIN,        4L),
+            Map.entry(Material.MELON,          4L),
+            Map.entry(Material.SUGAR_CANE,     2L),
+            Map.entry(Material.COCOA_BEANS,    3L),
+            Map.entry(Material.CACTUS,         2L),
+            Map.entry(Material.NETHER_WART,    3L)
+    );
+
+    private final SkillsManager skillsManager = SkillsManager.getInstance();
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        Long xp = CROP_XP.get(event.getBlock().getType());
+        if (xp == null) {
+            return;
+        }
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        skillsManager.addSkillXP(uuid, "farming", xp);
+    }
+}
