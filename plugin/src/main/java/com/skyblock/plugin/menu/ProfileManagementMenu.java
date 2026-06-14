@@ -14,7 +14,7 @@ public final class ProfileManagementMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public ProfileManagementMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§aProfile Management");
+        this.inventory = Bukkit.createInventory(this, 27, "§aSkyBlock Profile");
         build(player);
     }
 
@@ -29,17 +29,17 @@ public final class ProfileManagementMenu implements InventoryHolder {
 
     private void build(Player player) {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
+        for (int slot = 0; slot < 27; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 18 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
 
-        inventory.setItem(13, makeSkull(player, "§a" + player.getName()));
-        inventory.setItem(29, makeItem(Material.EMERALD, "§aCreate New Profile"));
-        inventory.setItem(31, makeItem(Material.COMPASS, "§eSwitch Profile"));
-        inventory.setItem(33, makeItem(Material.BARRIER, "§cDelete Profile"));
+        inventory.setItem(10, makeSkull(player, "§a" + player.getName()));
+        inventory.setItem(12, makeItem(Material.EMERALD, "§aCreate New Profile"));
+        inventory.setItem(14, makeItem(Material.COMPASS, "§eSwitch Profile"));
+        inventory.setItem(16, makeItem(Material.BARRIER, "§cDelete Profile"));
     }
 
     private ItemStack makeSkull(Player player, String name) {
