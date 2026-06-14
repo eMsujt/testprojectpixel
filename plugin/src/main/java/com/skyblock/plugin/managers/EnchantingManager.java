@@ -16,6 +16,7 @@ public final class EnchantingManager {
     private final Map<UUID, Integer> enchantingXP = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> enchantLevels = new HashMap<>();
     private final Map<UUID, Integer> bookshelfPower = new HashMap<>();
+    private final Map<UUID, Map<String, Integer>> enchantHistory = new HashMap<>();
 
     private EnchantingManager() {}
 
@@ -71,6 +72,20 @@ public final class EnchantingManager {
 
     public Map<UUID, Integer> getAllBookshelfPower() {
         return bookshelfPower;
+    }
+
+    public void recordEnchant(UUID playerId, String enchantName, int level) {
+        enchantHistory
+                .computeIfAbsent(playerId, k -> new HashMap<>())
+                .put(enchantName, level);
+    }
+
+    public Map<String, Integer> getEnchantHistory(UUID playerId) {
+        return enchantHistory.getOrDefault(playerId, new HashMap<>());
+    }
+
+    public Map<UUID, Map<String, Integer>> getAllEnchantHistory() {
+        return enchantHistory;
     }
 
     public void load(File dataFolder) {
