@@ -4,10 +4,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Collections;
 
 public final class GardenManager {
 
@@ -18,6 +20,7 @@ public final class GardenManager {
     private final Map<UUID, Integer> unlockedPlots = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> cropHarvests = new HashMap<>();
     private final Map<UUID, Integer> harvestStreak = new HashMap<>();
+    private final Map<UUID, List<String>> harvestHistory = new HashMap<>();
 
     private GardenManager() {}
 
@@ -95,6 +98,18 @@ public final class GardenManager {
         return Collections.unmodifiableMap(harvestStreak);
     }
 
+    public void recordHarvestEvent(UUID playerId, String summary) {
+        harvestHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getHarvestHistory(UUID playerId) {
+        return Collections.unmodifiableList(harvestHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllHarvestHistory() {
+        return Collections.unmodifiableMap(harvestHistory);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "garden.yml");
         if (!file.exists()) {
@@ -106,6 +121,7 @@ public final class GardenManager {
         unlockedPlots.clear();
         cropHarvests.clear();
         harvestStreak.clear();
+        harvestHistory.clear();
         if (cfg.isConfigurationSection("gardenLevel")) {
             for (String key : cfg.getConfigurationSection("gardenLevel").getKeys(false)) {
                 try {
@@ -148,6 +164,15 @@ public final class GardenManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        if (cfg.isConfigurationSection("harvestHistory")) {
+            for (String key : cfg.getConfigurationSection("harvestHistory").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(key);
+                    List<String> entries = cfg.getStringList("harvestHistory." + key);
+                    harvestHistory.put(id, new ArrayList<>(entries));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -170,6 +195,9 @@ public final class GardenManager {
         }
         for (Map.Entry<UUID, Integer> entry : harvestStreak.entrySet()) {
             cfg.set("harvestStreak." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : harvestHistory.entrySet()) {
+            cfg.set("harvestHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
