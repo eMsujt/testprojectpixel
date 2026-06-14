@@ -70,6 +70,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
     private CoinManager coinManager;
     private DungeonManager dungeonManager;
     private CustomItemManager itemManager;
+    private com.skyblock.plugin.minions.MinionManager minionManager;
 
     /**
      * Returns the active plugin instance.
@@ -102,7 +103,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         AuctionManager.getInstance().load(getDataFolder());
         FairyManager.getInstance().load(getDataFolder());
         MinionManager.getInstance().load(getDataFolder());
-        com.skyblock.plugin.minions.MinionManager.getInstance().start(this);
+        minionManager = com.skyblock.plugin.minions.MinionManager.getInstance();
+        minionManager.start(this);
         WardrobeManager.getInstance().load(getDataFolder());
         AlchemyManager.getInstance().load(getDataFolder());
         FishingManager.getInstance().load(getDataFolder());
@@ -213,6 +215,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
     /** Returns the custom item registry. */
     public CustomItemManager getItemManager() {
         return itemManager;
+    }
+
+    /** Returns the placed-minion production service. */
+    public com.skyblock.plugin.minions.MinionManager getMinionManager() {
+        return minionManager;
     }
 
 }
