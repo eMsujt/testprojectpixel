@@ -17,7 +17,7 @@ public final class WardrobeMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public WardrobeMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§6Wardrobe");
+        this.inventory = Bukkit.createInventory(this, 54, "§5Wardrobe");
         build(player);
     }
 
