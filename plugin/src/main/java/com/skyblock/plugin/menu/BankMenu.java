@@ -18,19 +18,19 @@ import java.util.List;
 
 public final class BankMenu implements InventoryHolder, Listener {
 
-    private static final String TITLE = "§6Bank Account";
-    private static final int SIZE = 27;
+    private static final String TITLE = "§6Bank";
+    private static final int SIZE = 54;
 
+    /** Slot showing the GOLD_BLOCK with the current bank balance. */
+    private static final int BALANCE_SLOT = 4;
     /** Slot showing the account holder's player skull. */
-    private static final int SKULL_SLOT = 1;
-    /** Slot showing the bank/purse balance summary. */
-    private static final int BALANCE_SLOT = 13;
+    private static final int SKULL_SLOT = 13;
     /** Slot for the Deposit All button. */
-    private static final int DEPOSIT_SLOT = 11;
+    private static final int DEPOSIT_SLOT = 29;
     /** Slot for the Withdraw All button. */
-    private static final int WITHDRAW_SLOT = 15;
+    private static final int WITHDRAW_SLOT = 33;
     /** Slot for the close button. */
-    private static final int CLOSE_SLOT = 22;
+    private static final int CLOSE_SLOT = 49;
 
     private final Inventory inventory;
 
@@ -66,12 +66,12 @@ public final class BankMenu implements InventoryHolder, Listener {
         long bank = bm.getBank(player.getUniqueId());
         long purse = bm.getPurse(player.getUniqueId());
 
-        inventory.setItem(SKULL_SLOT, makeSkull(player, "§a" + player.getName(),
-                List.of("§7Bank balance: §6" + bank + " coins")));
-
-        inventory.setItem(BALANCE_SLOT, makeItem(Material.GOLD_INGOT, "§aBank & Purse",
+        inventory.setItem(BALANCE_SLOT, makeItem(Material.GOLD_BLOCK, "§6Bank Balance",
                 Arrays.asList("§7Balance: §6" + bank + " coins",
                               "§7Purse: §6" + purse + " coins")));
+
+        inventory.setItem(SKULL_SLOT, makeSkull(player, "§a" + player.getName(),
+                List.of("§7Bank balance: §6" + bank + " coins")));
 
         inventory.setItem(DEPOSIT_SLOT, makeItem(Material.EMERALD, "§aDeposit All",
                 List.of("§7Move all purse coins into the bank.")));
