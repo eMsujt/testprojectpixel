@@ -136,6 +136,12 @@ items:
     strength: 15
     description: "A reliable blade for early hunting."
 
+  ROOKIE_HOE:
+    displayName: "Rookie Hoe"
+    material: WOODEN_HOE
+    rarity: COMMON
+    description: "A humble hoe given to every new farmer."
+
   FARM_SUIT_HELMET:
     displayName: "Farm Suit Helmet"
     material: LEATHER_HELMET
