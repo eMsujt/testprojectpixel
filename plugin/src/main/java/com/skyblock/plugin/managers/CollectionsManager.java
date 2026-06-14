@@ -5,8 +5,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +22,7 @@ public final class CollectionsManager {
     private final Map<UUID, Map<String, Integer>> collectionMilestones = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> collectionItems = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> collectionHistory = new HashMap<>();
+    private final Map<UUID, List<String>> unlockHistory = new HashMap<>();
 
     private CollectionsManager() {}
 
@@ -92,6 +96,18 @@ public final class CollectionsManager {
         return collectionHistory;
     }
 
+    public void recordUnlock(UUID playerId, String summary) {
+        unlockHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getUnlockHistory(UUID playerId) {
+        return Collections.unmodifiableList(unlockHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllUnlockHistory() {
+        return Collections.unmodifiableMap(unlockHistory);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "collections.yml");
         if (!file.exists()) {
@@ -102,6 +118,7 @@ public final class CollectionsManager {
         collectionMilestones.clear();
         collectionItems.clear();
         collectionHistory.clear();
+        unlockHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -139,6 +156,10 @@ public final class CollectionsManager {
                     }
                     collectionHistory.put(uuid, history);
                 }
+                List<String> unlocks = cfg.getStringList(key + ".unlockHistory");
+                if (!unlocks.isEmpty()) {
+                    unlockHistory.put(uuid, new ArrayList<>(unlocks));
+                }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed UUID
             }
@@ -152,6 +173,7 @@ public final class CollectionsManager {
         allPlayers.addAll(collectionMilestones.keySet());
         allPlayers.addAll(collectionItems.keySet());
         allPlayers.addAll(collectionHistory.keySet());
+        allPlayers.addAll(unlockHistory.keySet());
         for (UUID uuid : allPlayers) {
             String uuidKey = uuid.toString();
             Map<String, Long> counts = collectionCounts.getOrDefault(uuid, new HashMap<>());
@@ -169,6 +191,10 @@ public final class CollectionsManager {
             Map<String, Integer> history = collectionHistory.getOrDefault(uuid, new HashMap<>());
             for (Map.Entry<String, Integer> histEntry : history.entrySet()) {
                 cfg.set(uuidKey + ".history." + histEntry.getKey(), histEntry.getValue());
+            }
+            List<String> unlocks = unlockHistory.get(uuid);
+            if (unlocks != null && !unlocks.isEmpty()) {
+                cfg.set(uuidKey + ".unlockHistory", unlocks);
             }
         }
         try {
