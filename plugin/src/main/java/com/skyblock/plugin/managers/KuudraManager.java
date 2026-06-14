@@ -47,6 +47,7 @@ public final class KuudraManager {
         if (tier > getKuudraTier(playerId)) {
             setKuudraTier(playerId, tier);
         }
+        recordKuudraEvent(playerId, "Completed tier " + tier + " Kuudra run");
     }
 
     public int getRunsCompleted(UUID playerId) {

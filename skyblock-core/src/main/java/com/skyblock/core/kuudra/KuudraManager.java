@@ -90,6 +90,7 @@ public final class KuudraManager {
         }
         completions.computeIfAbsent(playerId, k -> new HashMap<>())
                 .merge(run.getTier(), 1, Integer::sum);
+        recordKuudraEvent(playerId, "Completed " + run.getTier().getDisplayName() + " Kuudra run");
     }
 
     public KuudraRun getActiveRun(UUID playerId) {

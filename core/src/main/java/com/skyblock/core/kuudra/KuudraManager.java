@@ -50,6 +50,7 @@ public class KuudraManager {
     public void addCompletion(UUID playerId, KuudraTier tier) {
         int[] c = playerCompletions.computeIfAbsent(playerId, id -> new int[KuudraTier.values().length]);
         c[tier.ordinal()]++;
+        recordKuudraEvent(playerId, "Completed " + tier.getDisplayName() + " Kuudra tier");
     }
 
     public void recordKuudraEvent(UUID playerId, String summary) {
