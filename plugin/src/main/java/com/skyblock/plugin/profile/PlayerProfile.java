@@ -24,6 +24,7 @@ public final class PlayerProfile {
     private long bank = 0L;
     private ItemStack[] enderChestContents;
     private ItemStack[] potionBagContents;
+    private ItemStack[] quiverContents;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -201,6 +202,28 @@ public final class PlayerProfile {
      */
     public void setPotionBagContents(ItemStack[] potionBagContents) {
         this.potionBagContents = potionBagContents == null ? null : potionBagContents.clone();
+    }
+
+    /**
+     * Returns the player's persisted Quiver contents as a per-slot array, or
+     * {@code null} if the Quiver has never been opened. Individual slots may be
+     * {@code null} (empty). The returned array is a defensive copy.
+     *
+     * @return the Quiver contents, or {@code null}
+     */
+    public ItemStack[] getQuiverContents() {
+        return quiverContents == null ? null : quiverContents.clone();
+    }
+
+    /**
+     * Sets the player's persisted Quiver contents from a per-slot array. The
+     * array is copied, so later mutations of the live inventory do not leak into
+     * the stored snapshot.
+     *
+     * @param quiverContents the Quiver contents, may be {@code null}
+     */
+    public void setQuiverContents(ItemStack[] quiverContents) {
+        this.quiverContents = quiverContents == null ? null : quiverContents.clone();
     }
 
     @Override
