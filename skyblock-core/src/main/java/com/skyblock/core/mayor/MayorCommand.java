@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public final class MayorCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("current", "perks", "vote", "set");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("current", "perks", "vote", "set", "history");
     private static final List<String> MAYOR_NAMES = Arrays.stream(MayorManager.MayorCandidate.values())
             .map(m -> m.name().toLowerCase())
             .collect(Collectors.toList());
@@ -51,7 +51,8 @@ public final class MayorCommand implements TabExecutor {
             case "perks"   -> handlePerks(player);
             case "vote"    -> handleVote(player, args);
             case "set"     -> handleSet(player, args);
-            default        -> player.sendMessage("Unknown subcommand. Usage: /mayor <current|perks|vote|set>");
+            case "history" -> handleHistory(player);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /mayor <current|perks|vote|set|history>");
         }
         return true;
     }
@@ -126,6 +127,18 @@ public final class MayorCommand implements TabExecutor {
         if (mayor == null) return;
         mayorManager.setCurrentMayor(mayor);
         player.sendMessage("Active mayor set to " + mayor.getDisplayName() + ".");
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = mayorManager.getMayorHistory(player.getUniqueId());
+        player.sendMessage("=== Mayor History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No mayor history found.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
     }
 
     // -------------------------------------------------------------------------
