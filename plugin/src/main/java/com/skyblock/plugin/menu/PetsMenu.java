@@ -18,7 +18,7 @@ import java.util.UUID;
 public final class PetsMenu implements InventoryHolder, Listener {
 
     /** Slot showing the currently equipped pet. */
-    private static final int ACTIVE_SLOT = 4;
+    private static final int ACTIVE_SLOT = 13;
 
     /** Centred selection slots across two rows, one per pet. */
     private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
@@ -26,7 +26,7 @@ public final class PetsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public PetsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§9Pets");
+        this.inventory = Bukkit.createInventory(this, 54, "§dPets");
         build(player.getUniqueId());
     }
 
