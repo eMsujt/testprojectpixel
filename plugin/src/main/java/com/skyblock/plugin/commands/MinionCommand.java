@@ -21,15 +21,45 @@ public final class MinionCommand implements CommandExecutor {
         UUID id = player.getUniqueId();
         MinionManager manager = MinionManager.getInstance();
         List<UUID> minionIds = manager.getMinions(id);
+
+        if (args.length >= 1 && args[0].equalsIgnoreCase("upgrade")) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /skyblock minion upgrade <slot>");
+                return true;
+            }
+            int slot;
+            try {
+                slot = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                player.sendMessage("Invalid slot: " + args[1]);
+                return true;
+            }
+            if (slot < 1 || slot > minionIds.size()) {
+                player.sendMessage("Slot must be between 1 and " + minionIds.size() + ".");
+                return true;
+            }
+            UUID minionId = minionIds.get(slot - 1);
+            boolean upgraded = manager.upgradeMinion(minionId);
+            if (upgraded) {
+                MinionManager.MinionData data = manager.getMinion(minionId);
+                player.sendMessage("Minion in slot " + slot + " upgraded to Tier " + (data.getTier().ordinal() + 1) + ".");
+            } else {
+                player.sendMessage("That minion is already at the maximum tier (11).");
+            }
+            return true;
+        }
+
         player.sendMessage("=== Minions (" + minionIds.size() + "/" + MinionManager.MAX_SLOTS + ") ===");
         if (minionIds.isEmpty()) {
             player.sendMessage("You have no active minions.");
             return true;
         }
+        int slot = 1;
         for (UUID minionId : minionIds) {
             MinionManager.MinionData data = manager.getMinion(minionId);
-            if (data == null) continue;
-            player.sendMessage(data.type.getDisplayName() + " — Tier: " + (data.getTier().ordinal() + 1));
+            if (data == null) { slot++; continue; }
+            player.sendMessage("[" + slot + "] " + data.type.getDisplayName() + " — Tier: " + (data.getTier().ordinal() + 1));
+            slot++;
         }
         return true;
     }
