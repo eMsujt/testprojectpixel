@@ -1,7 +1,9 @@
 package com.skyblock.dungeon;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -15,6 +17,7 @@ import java.util.UUID;
 public final class DungeonManager {
 
     private final Map<UUID, Map<Integer, FloorRecord>> records = new HashMap<>();
+    private final Map<UUID, List<String>> dungeonHistory = new HashMap<>();
 
     /**
      * Records a completed dungeon run, updating the player's best score if improved.
@@ -96,6 +99,20 @@ public final class DungeonManager {
      */
     public void clearRecords(UUID playerId) {
         records.remove(playerId);
+    }
+
+    public void recordDungeonEvent(UUID playerUuid, String summary) {
+        dungeonHistory
+                .computeIfAbsent(playerUuid, k -> new ArrayList<>())
+                .add(summary);
+    }
+
+    public List<String> getDungeonHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(dungeonHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllDungeonHistory() {
+        return Collections.unmodifiableMap(dungeonHistory);
     }
 
     private FloorRecord getRecord(UUID playerId, int floor) {

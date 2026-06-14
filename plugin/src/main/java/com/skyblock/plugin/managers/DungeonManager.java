@@ -23,6 +23,7 @@ public final class DungeonManager {
             java.util.Arrays.asList("Healer", "Mage", "Berserker", "Archer", "Tank"));
 
     private final Map<UUID, List<String>> runHistory = new HashMap<>();
+    private final Map<UUID, List<String>> dungeonHistory = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> playerCompletions = new HashMap<>();
     private final Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
     private final Map<UUID, Map<Integer, Integer>> floorCompletions = new HashMap<>();
@@ -46,6 +47,20 @@ public final class DungeonManager {
 
     public Map<UUID, List<String>> getAllRunHistory() {
         return Collections.unmodifiableMap(runHistory);
+    }
+
+    public void recordDungeonEvent(UUID playerUuid, String summary) {
+        dungeonHistory
+                .computeIfAbsent(playerUuid, k -> new ArrayList<>())
+                .add(summary);
+    }
+
+    public List<String> getDungeonHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(dungeonHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllDungeonHistory() {
+        return Collections.unmodifiableMap(dungeonHistory);
     }
 
     public int getDungeonFloor(UUID playerId) {
