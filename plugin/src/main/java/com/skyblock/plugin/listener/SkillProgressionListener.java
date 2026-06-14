@@ -186,21 +186,15 @@ public final class SkillProgressionListener implements Listener {
         Material type = block.getType();
 
         Long farming = farmingXp.get(type);
+        Long mining = miningXp.get(type);
+        Long foraging = foragingXp.get(type);
         if (farming != null) {
             if (isMature(block)) {
                 grantXP(event.getPlayer(), SkillType.FARMING, farming);
             }
-            return;
-        }
-
-        Long mining = miningXp.get(type);
-        if (mining != null) {
+        } else if (mining != null) {
             grantXP(event.getPlayer(), SkillType.MINING, mining);
-            return;
-        }
-
-        Long foraging = foragingXp.get(type);
-        if (foraging != null) {
+        } else if (foraging != null) {
             grantXP(event.getPlayer(), SkillType.FORAGING, foraging);
         }
     }
