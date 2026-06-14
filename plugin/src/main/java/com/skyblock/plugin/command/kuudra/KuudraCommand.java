@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class KuudraCommand implements CommandExecutor {
@@ -14,6 +15,11 @@ public final class KuudraCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("This command can only be used by players.");
+            return true;
+        }
+
+        if (args.length > 0 && args[0].equalsIgnoreCase("history")) {
+            handleHistory(player);
             return true;
         }
 
@@ -31,5 +37,18 @@ public final class KuudraCommand implements CommandExecutor {
             player.sendMessage("Active Run: " + run.getTier().getDisplayName() + " tier");
         }
         return true;
+    }
+
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        List<String> history = KuudraManager.getInstance().getKuudraHistory(id);
+        player.sendMessage("=== Kuudra History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No Kuudra history found.");
+            return;
+        }
+        for (String entry : history) {
+            player.sendMessage(entry);
+        }
     }
 }

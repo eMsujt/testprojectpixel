@@ -9,11 +9,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class KuudraCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("join", "leave", "stats", "shop");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("join", "leave", "stats", "shop", "history");
     private static final List<String> TIER_NAMES = Arrays.stream(KuudraManager.KuudraTier.values())
             .map(t -> t.name().toLowerCase())
             .collect(Collectors.toList());
@@ -37,11 +38,12 @@ public final class KuudraCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "join"  -> handleJoin(player, args);
-            case "leave" -> handleLeave(player);
-            case "stats" -> handleStats(player, args);
-            case "shop"  -> handleShop(player);
-            default      -> sendHelp(player);
+            case "join"    -> handleJoin(player, args);
+            case "leave"   -> handleLeave(player);
+            case "stats"   -> handleStats(player, args);
+            case "shop"    -> handleShop(player);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -121,11 +123,25 @@ public final class KuudraCommand implements TabExecutor {
         player.sendMessage("The Kuudra shop is not yet available.");
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        List<String> history = kuudraManager.getKuudraHistory(id);
+        player.sendMessage("=== Kuudra History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No Kuudra history found.");
+            return;
+        }
+        for (String entry : history) {
+            player.sendMessage(entry);
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Kuudra Commands ===");
         player.sendMessage("/kuudra join <tier>  — join a Kuudra run");
         player.sendMessage("/kuudra leave        — leave your current run");
         player.sendMessage("/kuudra stats [tier] — view your Kuudra completions");
         player.sendMessage("/kuudra shop         — open the Kuudra shop");
+        player.sendMessage("/kuudra history      — view your Kuudra history");
     }
 }
