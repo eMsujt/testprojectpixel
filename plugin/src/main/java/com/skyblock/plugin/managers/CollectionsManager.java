@@ -18,6 +18,7 @@ public final class CollectionsManager {
     private final Map<UUID, Map<String, Long>> collectionCounts = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> collectionMilestones = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> collectionItems = new HashMap<>();
+    private final Map<UUID, Map<String, Integer>> collectionHistory = new HashMap<>();
 
     private CollectionsManager() {}
 
@@ -77,6 +78,20 @@ public final class CollectionsManager {
         return collectionItems;
     }
 
+    public void recordCollection(UUID playerId, String item, int amount) {
+        collectionHistory
+                .computeIfAbsent(playerId, k -> new HashMap<>())
+                .merge(item, amount, Integer::sum);
+    }
+
+    public Map<String, Integer> getCollectionHistory(UUID playerId) {
+        return collectionHistory.getOrDefault(playerId, new HashMap<>());
+    }
+
+    public Map<UUID, Map<String, Integer>> getAllCollectionHistory() {
+        return collectionHistory;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "collections.yml");
         if (!file.exists()) {
@@ -86,6 +101,7 @@ public final class CollectionsManager {
         collectionCounts.clear();
         collectionMilestones.clear();
         collectionItems.clear();
+        collectionHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -115,6 +131,14 @@ public final class CollectionsManager {
                     }
                     collectionItems.put(uuid, items);
                 }
+                ConfigurationSection historySection = section.getConfigurationSection("history");
+                if (historySection != null) {
+                    Map<String, Integer> history = new HashMap<>();
+                    for (String item : historySection.getKeys(false)) {
+                        history.put(item, historySection.getInt(item));
+                    }
+                    collectionHistory.put(uuid, history);
+                }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed UUID
             }
@@ -127,6 +151,7 @@ public final class CollectionsManager {
         Set<UUID> allPlayers = new HashSet<>(collectionCounts.keySet());
         allPlayers.addAll(collectionMilestones.keySet());
         allPlayers.addAll(collectionItems.keySet());
+        allPlayers.addAll(collectionHistory.keySet());
         for (UUID uuid : allPlayers) {
             String uuidKey = uuid.toString();
             Map<String, Long> counts = collectionCounts.getOrDefault(uuid, new HashMap<>());
@@ -140,6 +165,10 @@ public final class CollectionsManager {
             Map<String, Integer> items = collectionItems.getOrDefault(uuid, new HashMap<>());
             for (Map.Entry<String, Integer> itemEntry : items.entrySet()) {
                 cfg.set(uuidKey + ".items." + itemEntry.getKey(), itemEntry.getValue());
+            }
+            Map<String, Integer> history = collectionHistory.getOrDefault(uuid, new HashMap<>());
+            for (Map.Entry<String, Integer> histEntry : history.entrySet()) {
+                cfg.set(uuidKey + ".history." + histEntry.getKey(), histEntry.getValue());
             }
         }
         try {
