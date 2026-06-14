@@ -35,7 +35,8 @@ public final class MayorManager {
     private String currentMayor = "Finnegan";
     private int electionDay = 0;
     private final Map<String, List<String>> mayorPerks = new HashMap<>(DEFAULT_PERKS);
-    private final Map<UUID, String> mayorVotes = new HashMap<>();
+    private final Map<UUID, String> playerVotes = new HashMap<>();
+    private final Map<String, Integer> mayorVotes = new HashMap<>();
 
     private MayorManager() {}
 
@@ -60,20 +61,32 @@ public final class MayorManager {
     }
 
     public String getMayorVote(UUID playerId) {
-        return mayorVotes.get(playerId);
+        return playerVotes.get(playerId);
     }
 
     public void setMayorVote(UUID playerId, String mayor) {
-        mayorVotes.put(playerId, mayor);
+        playerVotes.put(playerId, mayor);
     }
 
     public void castVote(UUID player, String candidate) {
-        mayorVotes.put(player, candidate);
+        playerVotes.put(player, candidate);
+    }
+
+    public void castVote(String mayorName) {
+        mayorVotes.merge(mayorName, 1, Integer::sum);
+    }
+
+    public int getVotes(String mayorName) {
+        return mayorVotes.getOrDefault(mayorName, 0);
+    }
+
+    public Map<String, Integer> getMayorVotes() {
+        return Collections.unmodifiableMap(mayorVotes);
     }
 
     public int getVoteCount(String candidate) {
         int count = 0;
-        for (String vote : mayorVotes.values()) {
+        for (String vote : playerVotes.values()) {
             if (candidate.equals(vote)) {
                 count++;
             }
@@ -88,11 +101,11 @@ public final class MayorManager {
     }
 
     public boolean clearMayorVote(UUID playerId) {
-        return mayorVotes.remove(playerId) != null;
+        return playerVotes.remove(playerId) != null;
     }
 
-    public Map<UUID, String> getMayorVotes() {
-        return Collections.unmodifiableMap(mayorVotes);
+    public Map<UUID, String> getPlayerVotes() {
+        return Collections.unmodifiableMap(playerVotes);
     }
 
     public List<String> getPerks(String mayor) {
@@ -128,18 +141,24 @@ public final class MayorManager {
                 }
             }
         }
-        mayorVotes.clear();
+        playerVotes.clear();
         if (cfg.isConfigurationSection("votes")) {
             for (String key : cfg.getConfigurationSection("votes").getKeys(false)) {
                 try {
                     UUID uuid = UUID.fromString(key);
                     String vote = cfg.getString("votes." + key);
                     if (vote != null) {
-                        mayorVotes.put(uuid, vote);
+                        playerVotes.put(uuid, vote);
                     }
                 } catch (IllegalArgumentException ignored) {
                     // skip malformed UUID
                 }
+            }
+        }
+        mayorVotes.clear();
+        if (cfg.isConfigurationSection("mayorVotes")) {
+            for (String name : cfg.getConfigurationSection("mayorVotes").getKeys(false)) {
+                mayorVotes.put(name, cfg.getInt("mayorVotes." + name, 0));
             }
         }
     }
@@ -152,8 +171,11 @@ public final class MayorManager {
         for (Map.Entry<String, List<String>> entry : mayorPerks.entrySet()) {
             cfg.set("perks." + entry.getKey(), entry.getValue());
         }
-        for (Map.Entry<UUID, String> entry : mayorVotes.entrySet()) {
+        for (Map.Entry<UUID, String> entry : playerVotes.entrySet()) {
             cfg.set("votes." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<String, Integer> entry : mayorVotes.entrySet()) {
+            cfg.set("mayorVotes." + entry.getKey(), entry.getValue());
         }
         try {
             cfg.save(file);
