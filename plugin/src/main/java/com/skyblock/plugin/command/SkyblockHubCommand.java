@@ -1,10 +1,19 @@
 package com.skyblock.plugin.command;
 
+import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.bank.BankManager;
+import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionsManager;
+import com.skyblock.core.dungeon.DungeonManager;
+import com.skyblock.core.enchanting.EnchantingManager;
+import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.core.garden.GardenManager;
+import com.skyblock.core.hotm.HOTMManager;
+import com.skyblock.core.island.IslandManager;
+import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.pets.PetsManager;
+import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.warp.WarpManager;
@@ -15,6 +24,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public final class SkyblockHubCommand implements CommandExecutor {
@@ -54,6 +64,33 @@ public final class SkyblockHubCommand implements CommandExecutor {
                     return true;
                 case "collections":
                     handleCollections(player);
+                    return true;
+                case "hotm":
+                    handleHotm(player);
+                    return true;
+                case "profile":
+                    handleProfile(player);
+                    return true;
+                case "enchanting":
+                    handleEnchanting(player);
+                    return true;
+                case "bazaar":
+                    handleBazaar(player);
+                    return true;
+                case "auctionhouse":
+                    handleAuctionHouse(player);
+                    return true;
+                case "island":
+                    handleIsland(player);
+                    return true;
+                case "dungeon":
+                    handleDungeon(player);
+                    return true;
+                case "fairy":
+                    handleFairy(player);
+                    return true;
+                case "kuudra":
+                    handleKuudra(player);
                     return true;
                 default:
                     break;
@@ -164,6 +201,116 @@ public final class SkyblockHubCommand implements CommandExecutor {
             long amount = manager.getItems(id, type);
             int tier = manager.getTier(id, type);
             player.sendMessage("  " + type.getDisplayName() + ": " + amount + " (Tier " + tier + ")");
+        }
+    }
+
+    private void handleHotm(Player player) {
+        UUID id = player.getUniqueId();
+        HOTMManager manager = HOTMManager.getInstance();
+        player.sendMessage("=== Heart of the Mountain ===");
+        player.sendMessage("Mithril Powder: " + manager.getMithrilPowder(id));
+        player.sendMessage("Gemstone Powder: " + manager.getGemstonePowder(id));
+        for (HOTMManager.HOTMPerk perk : HOTMManager.HOTMPerk.values()) {
+            int level = manager.getLevel(id, perk);
+            if (level > 0) {
+                player.sendMessage("  " + perk.getDisplayName() + ": " + level + "/" + perk.maxLevel);
+            }
+        }
+    }
+
+    private void handleProfile(Player player) {
+        UUID id = player.getUniqueId();
+        ProfileManager manager = ProfileManager.getInstance();
+        player.sendMessage("=== Your Profiles ===");
+        List<ProfileManager.SkyBlockProfile> profiles = manager.getProfilesForOwner(id);
+        if (profiles.isEmpty()) {
+            player.sendMessage("No profiles found.");
+            return;
+        }
+        for (ProfileManager.SkyBlockProfile profile : profiles) {
+            player.sendMessage("  " + profile.name() + " [" + profile.gameMode().getDisplayName() + "]");
+        }
+    }
+
+    private void handleEnchanting(Player player) {
+        UUID id = player.getUniqueId();
+        EnchantingManager manager = EnchantingManager.getInstance();
+        player.sendMessage("=== Your Enchantments ===");
+        Map<EnchantingManager.SkyBlockEnchantment, Integer> enchants = manager.getEnchantments(id);
+        if (enchants.isEmpty()) {
+            player.sendMessage("No enchantments applied.");
+            return;
+        }
+        for (Map.Entry<EnchantingManager.SkyBlockEnchantment, Integer> entry : enchants.entrySet()) {
+            player.sendMessage("  " + entry.getKey().getDisplayName() + ": " + entry.getValue());
+        }
+    }
+
+    private void handleBazaar(Player player) {
+        UUID id = player.getUniqueId();
+        BazaarManager manager = BazaarManager.getInstance();
+        player.sendMessage("=== Bazaar ===");
+        player.sendMessage("Active Orders: " + manager.getOrderCount(id));
+    }
+
+    private void handleAuctionHouse(Player player) {
+        UUID id = player.getUniqueId();
+        AuctionHouseManager manager = AuctionHouseManager.getInstance();
+        player.sendMessage("=== Auction House ===");
+        player.sendMessage("Active Listings: " + manager.getAuctionCount(id));
+    }
+
+    private void handleIsland(Player player) {
+        UUID id = player.getUniqueId();
+        IslandManager manager = IslandManager.getInstance();
+        player.sendMessage("=== Your Island ===");
+        manager.getIsland(id).ifPresentOrElse(island -> {
+            player.sendMessage("Members: " + island.getMembers().size());
+            player.sendMessage("Warp: " + (island.getWarpName() != null ? island.getWarpName() : "None"));
+            for (IslandManager.IslandUpgrade upgrade : IslandManager.IslandUpgrade.values()) {
+                int level = island.getUpgradeLevel(upgrade);
+                if (level > 0) {
+                    player.sendMessage("  " + upgrade.getDisplayName() + ": " + level);
+                }
+            }
+        }, () -> player.sendMessage("You do not have an island."));
+    }
+
+    private void handleDungeon(Player player) {
+        UUID id = player.getUniqueId();
+        DungeonManager manager = DungeonManager.getInstance();
+        player.sendMessage("=== Dungeons ===");
+        DungeonManager.DungeonClass dungeonClass = manager.getClass(id);
+        player.sendMessage("Class: " + (dungeonClass != null ? dungeonClass.getDisplayName() : "None"));
+        for (DungeonManager.DungeonFloor floor : DungeonManager.DungeonFloor.values()) {
+            int completions = manager.getFloorCompletionCount(id, floor);
+            if (completions > 0) {
+                player.sendMessage("  " + floor.getDisplayName() + ": " + completions + " clears");
+            }
+        }
+    }
+
+    private void handleFairy(Player player) {
+        UUID id = player.getUniqueId();
+        FairyManager manager = FairyManager.getInstance();
+        int souls = manager.getSouls(id);
+        player.sendMessage("=== Fairy Souls ===");
+        player.sendMessage("Souls: " + souls + "/" + FairyManager.MAX_SOULS);
+    }
+
+    private void handleKuudra(Player player) {
+        UUID id = player.getUniqueId();
+        KuudraManager manager = KuudraManager.getInstance();
+        player.sendMessage("=== Kuudra ===");
+        for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
+            int count = manager.getCompletionCount(id, tier);
+            if (count > 0) {
+                player.sendMessage("  " + tier.getDisplayName() + ": " + count + " clears");
+            }
+        }
+        KuudraManager.KuudraRun activeRun = manager.getActiveRun(id);
+        if (activeRun != null) {
+            player.sendMessage("Active Run: " + activeRun.getTier().getDisplayName());
         }
     }
 }
