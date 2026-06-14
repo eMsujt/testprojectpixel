@@ -32,11 +32,11 @@ public final class SkillsListener implements Listener {
             Map.entry(Material.STONE,          1L),
             Map.entry(Material.COBBLESTONE,    1L),
             Map.entry(Material.COAL_ORE,       5L),
-            Map.entry(Material.IRON_ORE,       8L),
-            Map.entry(Material.GOLD_ORE,       12L),
+            Map.entry(Material.IRON_ORE,       7L),
+            Map.entry(Material.GOLD_ORE,       9L),
             Map.entry(Material.REDSTONE_ORE,   5L),
-            Map.entry(Material.LAPIS_ORE,      6L),
-            Map.entry(Material.DIAMOND_ORE,    16L),
+            Map.entry(Material.LAPIS_ORE,      12L),
+            Map.entry(Material.DIAMOND_ORE,    22L),
             Map.entry(Material.EMERALD_ORE,    20L),
             Map.entry(Material.NETHER_QUARTZ_ORE, 4L)
     );
