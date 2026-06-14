@@ -20,7 +20,7 @@ public class BankMenu extends Menu {
     private final Player player;
 
     public BankMenu(Player player) {
-        super("§6Bank Account", 6);
+        super("§6Bank", 6);
         this.player = player;
     }
 
@@ -31,7 +31,7 @@ public class BankMenu extends Menu {
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         long balance = profile.getBank();
 
-        setItem(13, new ItemBuilder(Material.GOLD_BLOCK)
+        setItem(13, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Bank Account")
                 .lore(
                         "§7Balance: §6" + String.format("%,.0f", (double) balance) + " Coins",
