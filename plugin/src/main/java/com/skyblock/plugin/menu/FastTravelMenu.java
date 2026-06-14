@@ -19,7 +19,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§aFast Travel");
+        this.inventory = Bukkit.createInventory(this, 54, "§bFast Travel");
         build();
     }
 
@@ -41,7 +41,16 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
             }
         }
 
-        inventory.setItem(10, makeItem(Material.BEACON, "§bHub", "§bHub"));
+        inventory.setItem(10, makeItem(Material.BEACON, "§bHub", "§7Travel to the Hub."));
+        inventory.setItem(11, makeItem(Material.HAY_BLOCK, "§aThe Farming Islands", "§7Travel to The Farming Islands."));
+        inventory.setItem(12, makeItem(Material.OAK_SAPLING, "§aThe Park", "§7Travel to The Park."));
+        inventory.setItem(13, makeItem(Material.COBWEB, "§cSpider's Den", "§7Travel to the Spider's Den."));
+        inventory.setItem(14, makeItem(Material.END_STONE, "§5The End", "§7Travel to The End."));
+        inventory.setItem(15, makeItem(Material.NETHERRACK, "§cCrimson Isle", "§7Travel to the Crimson Isle."));
+        inventory.setItem(16, makeItem(Material.GOLD_ORE, "§6Gold Mine", "§7Travel to the Gold Mine."));
+        inventory.setItem(19, makeItem(Material.DIAMOND_ORE, "§bDeep Caverns", "§7Travel to the Deep Caverns."));
+        inventory.setItem(20, makeItem(Material.IRON_ORE, "§7Dwarven Mines", "§7Travel to the Dwarven Mines."));
+        inventory.setItem(21, makeItem(Material.AMETHYST_CLUSTER, "§dCrystal Hollows", "§7Travel to the Crystal Hollows."));
     }
 
     @EventHandler
