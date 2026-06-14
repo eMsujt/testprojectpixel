@@ -488,6 +488,23 @@ public final class FishingManager {
         return Collections.unmodifiableList(catchHistory.getOrDefault(playerId, new ArrayList<>()));
     }
 
+    public String getFishingStats(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        List<String> history = getCatchHistory(playerId);
+        int common = 0, uncommon = 0, rare = 0, epic = 0, legendary = 0;
+        for (String entry : history) {
+            if (entry.contains(FishRarity.LEGENDARY.getDisplayName())) legendary++;
+            else if (entry.contains(FishRarity.EPIC.getDisplayName())) epic++;
+            else if (entry.contains(FishRarity.RARE.getDisplayName())) rare++;
+            else if (entry.contains(FishRarity.UNCOMMON.getDisplayName())) uncommon++;
+            else if (entry.contains(FishRarity.COMMON.getDisplayName())) common++;
+        }
+        int total = getTotalFishCaught(playerId);
+        return "Fishing Stats: Common: " + common + " | Uncommon: " + uncommon
+                + " | Rare: " + rare + " | Epic: " + epic + " | Legendary: " + legendary
+                + " | Total: " + total;
+    }
+
     public Map<UUID, List<String>> getAllCatchHistory() {
         Map<UUID, List<String>> copy = new HashMap<>();
         for (Map.Entry<UUID, List<String>> entry : catchHistory.entrySet()) {
