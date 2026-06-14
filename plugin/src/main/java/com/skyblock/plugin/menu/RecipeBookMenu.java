@@ -30,7 +30,7 @@ public final class RecipeBookMenu implements InventoryHolder, Listener {
     private int page;
 
     public RecipeBookMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§6Recipe Book");
+        this.inventory = Bukkit.createInventory(this, 54, "§eRecipe Book");
         this.recipes = new ArrayList<>(SkyBlockRecipeManager.getInstance().getAllRecipes().values());
         build();
     }
