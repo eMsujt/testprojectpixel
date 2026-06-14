@@ -22,6 +22,7 @@ public final class DungeonManager {
 
     private final Map<UUID, Map<String, Integer>> playerCompletions = new HashMap<>();
     private final Map<UUID, Map<String, Long>> playerBestTimes = new HashMap<>();
+    private final Map<UUID, Map<Integer, Integer>> floorCompletions = new HashMap<>();
     private final Map<UUID, Integer> dungeonFloor = new HashMap<>();
     private final Map<UUID, Integer> highestFloor = new HashMap<>();
     private final Map<UUID, String> playerClass = new HashMap<>();
@@ -96,6 +97,26 @@ public final class DungeonManager {
                 playerBestTimes.getOrDefault(playerId, Collections.emptyMap()));
     }
 
+    public void recordFloorCompletion(UUID playerId, int floor) {
+        floorCompletions
+                .computeIfAbsent(playerId, id -> new HashMap<>())
+                .merge(floor, 1, Integer::sum);
+    }
+
+    public int getFloorCompletionCount(UUID playerId, int floor) {
+        Map<Integer, Integer> counts = floorCompletions.get(playerId);
+        return counts == null ? 0 : counts.getOrDefault(floor, 0);
+    }
+
+    public Map<Integer, Integer> getPlayerFloorCompletions(UUID playerId) {
+        return Collections.unmodifiableMap(
+                floorCompletions.getOrDefault(playerId, Collections.emptyMap()));
+    }
+
+    public Map<UUID, Map<Integer, Integer>> getAllFloorCompletions() {
+        return Collections.unmodifiableMap(floorCompletions);
+    }
+
     public String getPlayerClass(UUID playerId) {
         return playerClass.getOrDefault(playerId, "");
     }
@@ -119,6 +140,7 @@ public final class DungeonManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerCompletions.clear();
         playerBestTimes.clear();
+        floorCompletions.clear();
         dungeonFloor.clear();
         highestFloor.clear();
         playerClass.clear();
@@ -178,6 +200,20 @@ public final class DungeonManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("floorCompletions")) {
+            for (String uuidKey : cfg.getConfigurationSection("floorCompletions").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(uuidKey);
+                    if (cfg.isConfigurationSection("floorCompletions." + uuidKey)) {
+                        Map<Integer, Integer> counts = new HashMap<>();
+                        for (String floorKey : cfg.getConfigurationSection("floorCompletions." + uuidKey).getKeys(false)) {
+                            counts.put(Integer.parseInt(floorKey), cfg.getInt("floorCompletions." + uuidKey + "." + floorKey));
+                        }
+                        floorCompletions.put(uuid, counts);
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -201,6 +237,12 @@ public final class DungeonManager {
         for (Map.Entry<UUID, Map<String, Integer>> playerEntry : playerCompletions.entrySet()) {
             String uuidKey = "completions." + playerEntry.getKey().toString();
             for (Map.Entry<String, Integer> floorEntry : playerEntry.getValue().entrySet()) {
+                cfg.set(uuidKey + "." + floorEntry.getKey(), floorEntry.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<Integer, Integer>> playerEntry : floorCompletions.entrySet()) {
+            String uuidKey = "floorCompletions." + playerEntry.getKey().toString();
+            for (Map.Entry<Integer, Integer> floorEntry : playerEntry.getValue().entrySet()) {
                 cfg.set(uuidKey + "." + floorEntry.getKey(), floorEntry.getValue());
             }
         }
