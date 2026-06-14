@@ -9,10 +9,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * YAML-driven registry of Bazaar products loaded from {@code bazaar.yml}.
@@ -45,7 +47,26 @@ public final class BazaarManager {
         }
     }
 
+    /**
+     * A single outstanding buy or sell order placed by a player.
+     *
+     * @param player the UUID of the player who placed the order
+     * @param price  the unit price in coins
+     * @param amount the number of items the order is for
+     */
+    public record BazaarOrder(UUID player, double price, int amount) {
+        public BazaarOrder {
+            Objects.requireNonNull(player, "player");
+        }
+    }
+
     private final Map<String, Product> products = new LinkedHashMap<>();
+
+    /** Outstanding buy orders keyed by product-id, in submission order. */
+    private final Map<String, List<BazaarOrder>> buyOrders = new HashMap<>();
+
+    /** Outstanding sell orders keyed by product-id, in submission order. */
+    private final Map<String, List<BazaarOrder>> sellOrders = new HashMap<>();
 
     private BazaarManager() {
     }
@@ -106,6 +127,30 @@ public final class BazaarManager {
     /** Returns an unmodifiable view of all loaded products in definition order. */
     public List<Product> getProducts() {
         return Collections.unmodifiableList(new ArrayList<>(products.values()));
+    }
+
+    /** Records a buy order for the given product-id. */
+    public void addBuyOrder(String productId, BazaarOrder order) {
+        Objects.requireNonNull(productId, "productId");
+        Objects.requireNonNull(order, "order");
+        buyOrders.computeIfAbsent(productId, k -> new ArrayList<>()).add(order);
+    }
+
+    /** Records a sell order for the given product-id. */
+    public void addSellOrder(String productId, BazaarOrder order) {
+        Objects.requireNonNull(productId, "productId");
+        Objects.requireNonNull(order, "order");
+        sellOrders.computeIfAbsent(productId, k -> new ArrayList<>()).add(order);
+    }
+
+    /** Returns an unmodifiable view of the buy orders for a product, in submission order. */
+    public List<BazaarOrder> getBuyOrders(String productId) {
+        return Collections.unmodifiableList(buyOrders.getOrDefault(productId, Collections.emptyList()));
+    }
+
+    /** Returns an unmodifiable view of the sell orders for a product, in submission order. */
+    public List<BazaarOrder> getSellOrders(String productId) {
+        return Collections.unmodifiableList(sellOrders.getOrDefault(productId, Collections.emptyList()));
     }
 
     /** Opens the Bazaar menu listing every loaded product for a player. */
