@@ -2,6 +2,7 @@ package com.skyblock.plugin.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,13 +39,26 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
             }
         }
 
-        inventory.setItem(22, makeItem(Material.NETHER_STAR, "§bFast Travel"));
+        inventory.setItem(19, makeItem(Material.NETHER_STAR, "§bHub"));
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() instanceof FastTravelMenu) {
-            event.setCancelled(true);
+        if (!(event.getInventory().getHolder() instanceof FastTravelMenu)) {
+            return;
+        }
+        event.setCancelled(true);
+
+        if (event.getRawSlot() == 19 && event.getWhoClicked() instanceof Player) {
+            Player player = (Player) event.getWhoClicked();
+            World hub = Bukkit.getWorld("hub");
+            if (hub != null) {
+                player.teleport(hub.getSpawnLocation());
+                player.sendMessage("§aTeleported to the Hub!");
+            } else {
+                player.sendMessage("§cHub is not available.");
+            }
+            player.closeInventory();
         }
     }
 
