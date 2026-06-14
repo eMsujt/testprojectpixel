@@ -16,7 +16,7 @@ public final class PetsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public PetsMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§aPets");
+        this.inventory = Bukkit.createInventory(this, 54, "§dPets");
         build();
     }
 
