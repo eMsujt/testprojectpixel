@@ -1,20 +1,18 @@
 package com.skyblock.plugin.economy;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
  * In-memory registry of active auction house listings.
  *
- * <p>Holds the live listings in a {@link Map} keyed by each listing's unique
- * id, preserving insertion order so menus display them in the order they were
- * posted. A listing is added when a player puts an item up for sale and removed
- * when it is bought or cancelled. Not thread-safe; access from the main server
- * thread.</p>
+ * <p>Holds the live listings in a {@link List} in posting order so menus
+ * display them in the order they were posted. A listing is added when a player
+ * puts an item up for sale and removed when it is bought or cancelled. Not
+ * thread-safe; access from the main server thread.</p>
  */
 public final class AuctionHouseManager {
 
@@ -36,7 +34,7 @@ public final class AuctionHouseManager {
 
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
 
-    private final Map<UUID, AuctionListing> listings = new LinkedHashMap<>();
+    private final List<AuctionListing> listings = new ArrayList<>();
 
     private AuctionHouseManager() {
     }
@@ -52,7 +50,7 @@ public final class AuctionHouseManager {
      */
     public void addListing(AuctionListing listing) {
         Objects.requireNonNull(listing, "listing");
-        listings.put(listing.id(), listing);
+        listings.add(listing);
     }
 
     /**
@@ -62,7 +60,12 @@ public final class AuctionHouseManager {
      * @return the listing, or {@code null}
      */
     public AuctionListing getListing(UUID id) {
-        return listings.get(id);
+        for (AuctionListing listing : listings) {
+            if (listing.id().equals(id)) {
+                return listing;
+            }
+        }
+        return null;
     }
 
     /**
@@ -72,7 +75,12 @@ public final class AuctionHouseManager {
      * @return the removed listing, or {@code null} if none existed
      */
     public AuctionListing removeListing(UUID id) {
-        return listings.remove(id);
+        for (int i = 0; i < listings.size(); i++) {
+            if (listings.get(i).id().equals(id)) {
+                return listings.remove(i);
+            }
+        }
+        return null;
     }
 
     /**
@@ -80,7 +88,7 @@ public final class AuctionHouseManager {
      *
      * @return the active listings
      */
-    public Collection<AuctionListing> getListings() {
-        return Collections.unmodifiableCollection(listings.values());
+    public List<AuctionListing> getListings() {
+        return Collections.unmodifiableList(listings);
     }
 }
