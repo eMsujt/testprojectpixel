@@ -31,6 +31,7 @@ public final class AuctionHouseCommand implements CommandExecutor {
             case "bid"    -> handleBid(player, args);
             case "cancel" -> handleCancel(player, args);
             case "search" -> handleSearch(player, args);
+            case "my"     -> handleMy(player);
             default       -> sendHelp(player);
         }
         return true;
@@ -142,6 +143,22 @@ public final class AuctionHouseCommand implements CommandExecutor {
         }
     }
 
+    private void handleMy(Player player) {
+        List<AuctionHouseManager.AuctionListing> mine = AuctionHouseManager.getInstance()
+                .getListings(player.getUniqueId());
+        if (mine.isEmpty()) {
+            player.sendMessage("You have no active auction listings.");
+            return;
+        }
+        player.sendMessage("=== Your Listings (" + mine.size() + ") ===");
+        for (AuctionHouseManager.AuctionListing item : mine) {
+            player.sendMessage("[" + item.id().toString().substring(0, 8) + "] "
+                    + item.itemName() + " x" + item.quantity()
+                    + " — Starting: " + item.startingBid()
+                    + " | Current: " + item.currentBid() + " coins");
+        }
+    }
+
     private AuctionHouseManager.AuctionListing findListing(Player player, String input) {
         UUID id = parseId(player, input);
         if (id == null) return null;
@@ -172,5 +189,6 @@ public final class AuctionHouseCommand implements CommandExecutor {
         player.sendMessage("/auctionhouse bid <id> <amount>        — place a bid on a listing");
         player.sendMessage("/auctionhouse cancel <id>              — cancel your listing");
         player.sendMessage("/auctionhouse search <query>           — search listings by name");
+        player.sendMessage("/auctionhouse my                       — show your active listings");
     }
 }
