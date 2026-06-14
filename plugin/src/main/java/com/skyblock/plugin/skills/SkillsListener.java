@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 
@@ -99,6 +100,18 @@ public final class SkillsListener implements Listener {
         Long mobXp = MOB_XP.get(event.getEntityType());
         if (mobXp != null) {
             skillsManager.addSkillXP(killer.getUniqueId(), "combat", mobXp);
+        }
+    }
+
+    @EventHandler
+    public void onEnchantItem(EnchantItemEvent event) {
+        int levelSum = 0;
+        for (int level : event.getEnchantsToAdd().values()) {
+            levelSum += level;
+        }
+        long xp = Math.min(levelSum * 3L, 30L);
+        if (xp > 0) {
+            skillsManager.addSkillXP(event.getEnchanter().getUniqueId(), "enchanting", xp);
         }
     }
 }
