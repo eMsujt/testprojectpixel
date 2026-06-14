@@ -2,6 +2,8 @@ package com.skyblock.plugin.skills;
 
 import com.skyblock.plugin.managers.SkillsManager;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,7 +13,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Single Bukkit listener covering every skill XP source: farming and foraging
@@ -62,21 +63,21 @@ public final class SkillsXPListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Material type = event.getBlock().getType();
-        UUID uuid = event.getPlayer().getUniqueId();
+        Player player = event.getPlayer();
 
         Long farmingXp = FARMING_XP.get(type);
         if (farmingXp != null) {
-            skillsManager.addSkillXP(uuid, "farming", farmingXp);
+            grantXp(player, "farming", farmingXp);
             return;
         }
         Long miningXp = MINING_XP.get(type);
         if (miningXp != null) {
-            skillsManager.addSkillXP(uuid, "mining", miningXp);
+            grantXp(player, "mining", miningXp);
             return;
         }
         Long foragingXp = FORAGING_XP.get(type);
         if (foragingXp != null) {
-            skillsManager.addSkillXP(uuid, "foraging", foragingXp);
+            grantXp(player, "foraging", foragingXp);
         }
     }
 
@@ -87,7 +88,7 @@ public final class SkillsXPListener implements Listener {
             return;
         }
         long xp = Math.max(1L, Math.round(event.getEntity().getMaxHealth()));
-        skillsManager.addSkillXP(killer.getUniqueId(), "combat", xp);
+        grantXp(killer, "combat", xp);
     }
 
     @EventHandler
@@ -95,7 +96,7 @@ public final class SkillsXPListener implements Listener {
         if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
             return;
         }
-        skillsManager.addSkillXP(event.getPlayer().getUniqueId(), "fishing", 5L);
+        grantXp(event.getPlayer(), "fishing", 5L);
     }
 
     @EventHandler
@@ -107,6 +108,33 @@ public final class SkillsXPListener implements Listener {
         if (xp <= 0) {
             return;
         }
-        skillsManager.addSkillXP(event.getEnchanter().getUniqueId(), "enchanting", xp);
+        grantXp(event.getEnchanter(), "enchanting", xp);
+    }
+
+    private void grantXp(Player player, String skill, long amount) {
+        int before = skillsManager.getSkillLevel(player.getUniqueId(), skill);
+        skillsManager.addSkillXP(player.getUniqueId(), skill, amount);
+        int after = skillsManager.getSkillLevel(player.getUniqueId(), skill);
+        for (int lvl = before + 1; lvl <= after; lvl++) {
+            String name = Character.toUpperCase(skill.charAt(0)) + skill.substring(1);
+            player.sendTitle("§aSkill Level Up!", "§e" + name + " §a→ §eLVL " + lvl, 10, 60, 20);
+            applyLevelBonus(player, skill);
+        }
+    }
+
+    private static void applyLevelBonus(Player player, String skill) {
+        switch (skill) {
+            case "farming" -> adjustAttribute(player, Attribute.GENERIC_MAX_HEALTH, 2.0);
+            case "combat"  -> adjustAttribute(player, Attribute.GENERIC_MAX_HEALTH, 4.0);
+            case "fishing" -> adjustAttribute(player, Attribute.GENERIC_MAX_HEALTH, 4.0);
+            case "foraging" -> adjustAttribute(player, Attribute.GENERIC_ATTACK_DAMAGE, 2.0);
+        }
+    }
+
+    private static void adjustAttribute(Player player, Attribute attribute, double amount) {
+        AttributeInstance inst = player.getAttribute(attribute);
+        if (inst != null) {
+            inst.setBaseValue(inst.getBaseValue() + amount);
+        }
     }
 }
