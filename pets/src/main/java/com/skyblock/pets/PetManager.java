@@ -1,11 +1,14 @@
 package com.skyblock.pets;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
-import org.bukkit.entity.Player;
 
 /**
  * Singleton managing the pet each player currently has equipped.
@@ -57,6 +60,7 @@ public final class PetManager {
     }
 
     private final Map<UUID, ActivePet> activePets = new HashMap<>();
+    private final Map<UUID, String> loadedPetNames = new HashMap<>();
 
     /**
      * Equips a pet on a player, unequipping their current pet first if they
@@ -125,5 +129,49 @@ public final class PetManager {
      */
     public ActivePet getEquippedPet(UUID playerId) {
         return activePets.get(playerId);
+    }
+
+    /**
+     * Returns the pet name loaded from disk for a player, or {@code null} if
+     * none was persisted.
+     *
+     * @param playerId the player's UUID
+     * @return the saved pet name, or {@code null}
+     */
+    public String getLoadedPetName(UUID playerId) {
+        return loadedPetNames.get(playerId);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "pets.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        loadedPetNames.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                String name = cfg.getString(key + ".activePet");
+                if (name != null && !name.isEmpty()) {
+                    loadedPetNames.put(uuid, name);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "pets.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, ActivePet> entry : activePets.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".activePet", entry.getValue().petName());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save pets.yml", e);
+        }
     }
 }
