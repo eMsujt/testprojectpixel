@@ -47,6 +47,20 @@ public final class SlayerManager {
         TIER_XP_THRESHOLDS = Collections.unmodifiableMap(m);
     }
 
+    /** Summary data per slayer type: {maxLevel, coinsToActivate}. */
+    public static final Map<String, int[]> SLAYER_BOSS_DATA;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("ZOMBIE",   new int[]{9,  100});
+        m.put("SPIDER",   new int[]{9,  2_000});
+        m.put("WOLF",     new int[]{9,  10_000});
+        m.put("ENDERMAN", new int[]{9,  50_000});
+        m.put("BLAZE",    new int[]{9,  100_000});
+        m.put("VAMPIRE",  new int[]{5,  0});
+        SLAYER_BOSS_DATA = Collections.unmodifiableMap(m);
+    }
+
     public enum SlayerType {
         ZOMBIE("Zombie"),
         SPIDER("Spider"),
