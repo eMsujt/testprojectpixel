@@ -250,6 +250,8 @@ public final class DungeonManager {
     private final Map<UUID, Map<DungeonFloor, Long>> floorBestTimes = new HashMap<>();
     /** Selected dungeon class per player. */
     private final Map<UUID, DungeonClass> playerClasses = new HashMap<>();
+    /** Completion count per player per floor number. */
+    private final Map<UUID, Map<Integer, Integer>> floorCompletions = new HashMap<>();
 
     private DungeonManager() {}
 
@@ -459,6 +461,40 @@ public final class DungeonManager {
         return playerClasses.get(playerId);
     }
 
+    /**
+     * Records a completion for the given floor number, incrementing the count by 1.
+     *
+     * @param uuid  the player's UUID
+     * @param floor the floor number that was completed
+     */
+    public void recordFloorCompletion(UUID uuid, int floor) {
+        Objects.requireNonNull(uuid, "uuid");
+        floorCompletions
+            .computeIfAbsent(uuid, k -> new HashMap<>())
+            .merge(floor, 1, Integer::sum);
+    }
+
+    /**
+     * Returns the floor completion counts for the given player, or an empty map if none.
+     *
+     * @param uuid the player to look up
+     * @return unmodifiable map of floor number to completion count
+     */
+    public Map<Integer, Integer> getFloorCompletions(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        Map<Integer, Integer> counts = floorCompletions.get(uuid);
+        return counts == null ? Collections.emptyMap() : Collections.unmodifiableMap(counts);
+    }
+
+    /**
+     * Returns all per-player floor completion counts.
+     *
+     * @return unmodifiable map of UUID to floor-number completion counts
+     */
+    public Map<UUID, Map<Integer, Integer>> getAllFloorCompletions() {
+        return Collections.unmodifiableMap(floorCompletions);
+    }
+
     // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
@@ -474,6 +510,7 @@ public final class DungeonManager {
         floorCompletionCounts.clear();
         floorBestTimes.clear();
         playerClasses.clear();
+        floorCompletions.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -525,6 +562,23 @@ public final class DungeonManager {
                         floorBestTimes.put(uuid, times);
                     }
                 }
+                if (cfg.isConfigurationSection(key + ".floorCompletions")) {
+                    Map<Integer, Integer> fc = new HashMap<>();
+                    for (String floorKey : cfg.getConfigurationSection(key + ".floorCompletions").getKeys(false)) {
+                        try {
+                            int floorNum = Integer.parseInt(floorKey);
+                            int val = cfg.getInt(key + ".floorCompletions." + floorKey, 0);
+                            if (val > 0) {
+                                fc.put(floorNum, val);
+                            }
+                        } catch (NumberFormatException ignored) {
+                            // skip malformed floor keys
+                        }
+                    }
+                    if (!fc.isEmpty()) {
+                        floorCompletions.put(uuid, fc);
+                    }
+                }
                 String cls = cfg.getString(key + ".class");
                 if (cls != null) {
                     try {
@@ -568,6 +622,12 @@ public final class DungeonManager {
         }
         for (Map.Entry<UUID, DungeonClass> entry : playerClasses.entrySet()) {
             cfg.set(entry.getKey().toString() + ".class", entry.getValue().name());
+        }
+        for (Map.Entry<UUID, Map<Integer, Integer>> entry : floorCompletions.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<Integer, Integer> e : entry.getValue().entrySet()) {
+                cfg.set(key + ".floorCompletions." + e.getKey(), e.getValue());
+            }
         }
         try {
             cfg.save(file);
