@@ -4,8 +4,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,6 +18,7 @@ public final class FishingManager {
 
     private final Map<UUID, Integer> fishingXp = new HashMap<>();
     private final Map<UUID, Map<String, Long>> fishCounts = new HashMap<>();
+    private final Map<UUID, List<String>> catchHistory = new ConcurrentHashMap<>();
 
     private FishingManager() {}
 
@@ -52,6 +56,22 @@ public final class FishingManager {
 
     public Map<UUID, Map<String, Long>> getAllFishCounts() {
         return Collections.unmodifiableMap(fishCounts);
+    }
+
+    public void recordCatchEvent(UUID playerId, String summary) {
+        catchHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getCatchHistory(UUID playerId) {
+        return Collections.unmodifiableList(catchHistory.getOrDefault(playerId, new ArrayList<>()));
+    }
+
+    public Map<UUID, List<String>> getAllCatchHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : catchHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
     }
 
     public void load(File dataFolder) {
