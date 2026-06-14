@@ -183,6 +183,22 @@ public final class GardenManager {
 
     private static final GardenManager INSTANCE = new GardenManager();
 
+    /** Static metadata for each SkyBlock garden crop: {baseYield, maxUpgradeLevel, milestoneCount}. */
+    public static final Map<String, int[]> CROP_DATA;
+    static {
+        Map<String, int[]> m = new HashMap<>();
+        m.put("WHEAT",       new int[]{1, 12, 25});
+        m.put("CARROT",      new int[]{3, 12, 25});
+        m.put("POTATO",      new int[]{3, 12, 25});
+        m.put("MELON",       new int[]{4, 12, 25});
+        m.put("PUMPKIN",     new int[]{1, 12, 25});
+        m.put("SUGAR_CANE",  new int[]{2, 12, 25});
+        m.put("COCOA_BEANS", new int[]{3, 12, 25});
+        m.put("CACTUS",      new int[]{2, 12, 25});
+        m.put("MUSHROOM",    new int[]{1, 12, 25});
+        CROP_DATA = Collections.unmodifiableMap(m);
+    }
+
     /** Per-player garden plot level (1–24). */
     private final Map<UUID, Integer> plotLevels = new HashMap<>();
 
