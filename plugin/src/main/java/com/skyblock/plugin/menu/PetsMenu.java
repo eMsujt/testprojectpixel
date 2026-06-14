@@ -1,5 +1,6 @@
 package com.skyblock.plugin.menu;
 
+import com.skyblock.plugin.managers.PetsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -7,50 +8,42 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
+import java.util.UUID;
+
 public final class PetsMenu {
 
+    /** Centred selection slots across two rows, one per pet. */
+    private static final int[] SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
+
     public void open(Player player) {
-        player.openInventory(buildMenu());
+        player.openInventory(buildMenu(player.getUniqueId()));
     }
 
-    private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§dPets");
+    private Inventory buildMenu(UUID playerId) {
+        Inventory inv = Bukkit.createInventory(null, 54, "§5Pets §7(1/1)");
 
-        // Row 1: combat pets
-        inv.setItem(10, makeItem(Material.GHAST_TEAR,        "§7[Lvl 1] §fEnder Dragon"));
-        inv.setItem(11, makeItem(Material.BLAZE_POWDER,      "§7[Lvl 1] §fBlaze"));
-        inv.setItem(12, makeItem(Material.BONE,              "§7[Lvl 1] §fSkeleton"));
-        inv.setItem(13, makeItem(Material.ROTTEN_FLESH,      "§7[Lvl 1] §fZombie"));
-        inv.setItem(14, makeItem(Material.SPIDER_EYE,        "§7[Lvl 1] §fSpider"));
-        inv.setItem(15, makeItem(Material.GUNPOWDER,         "§7[Lvl 1] §fEnderman"));
-        inv.setItem(16, makeItem(Material.GOLDEN_APPLE,      "§7[Lvl 1] §fWither Skeleton"));
-
-        // Row 2: mining / foraging pets
-        inv.setItem(19, makeItem(Material.STONE_PICKAXE,     "§7[Lvl 1] §fSilverfish"));
-        inv.setItem(20, makeItem(Material.RABBIT_FOOT,       "§7[Lvl 1] §fRabbit"));
-        inv.setItem(21, makeItem(Material.WHEAT,             "§7[Lvl 1] §fElephant"));
-        inv.setItem(22, makeItem(Material.OAK_SAPLING,       "§7[Lvl 1] §fMonkey"));
-        inv.setItem(23, makeItem(Material.PORKCHOP,          "§7[Lvl 1] §fPig"));
-        inv.setItem(24, makeItem(Material.RABBIT_HIDE,       "§7[Lvl 1] §fLion"));
-        inv.setItem(25, makeItem(Material.LEATHER,           "§7[Lvl 1] §fWolf"));
-
-        // Row 3: fishing / mythic pets
-        inv.setItem(28, makeItem(Material.COD,               "§7[Lvl 1] §fDolphin"));
-        inv.setItem(29, makeItem(Material.PUFFERFISH,        "§7[Lvl 1] §fBlue Whale"));
-        inv.setItem(30, makeItem(Material.PRISMARINE_SHARD,  "§7[Lvl 1] §fMegalodon"));
-        inv.setItem(31, makeItem(Material.MAGMA_CREAM,       "§7[Lvl 1] §fMagma Cube"));
-        inv.setItem(32, makeItem(Material.PHANTOM_MEMBRANE,  "§7[Lvl 1] §fBat"));
-        inv.setItem(33, makeItem(Material.NETHER_STAR,       "§7[Lvl 1] §fGriffin"));
-        inv.setItem(34, makeItem(Material.DRAGON_HEAD,       "§7[Lvl 1] §fEnder Dragon"));
+        PetsManager pets = PetsManager.getInstance();
+        PetsManager.Pet active = pets.getActivePet(playerId);
+        List<PetsManager.Pet> owned = pets.getPets(playerId);
+        for (int i = 0; i < owned.size() && i < SLOTS.length; i++) {
+            PetsManager.Pet pet = owned.get(i);
+            boolean isActive = active != null && active.getId().equals(pet.getId());
+            inv.setItem(SLOTS[i], makeItem(pet, isActive));
+        }
 
         return inv;
     }
 
-    private ItemStack makeItem(Material material, String name) {
-        ItemStack item = new ItemStack(material);
+    private ItemStack makeItem(PetsManager.Pet pet, boolean isActive) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(name);
+            meta.setDisplayName("§7[Lvl " + pet.getLevel() + "] §f" + pet.getName());
+            meta.setLore(List.of(
+                    "§7Rarity: §6" + pet.getRarity(),
+                    "§7Level: §a" + pet.getLevel(),
+                    isActive ? "§aCurrently active" : "§7Click to view"));
             item.setItemMeta(meta);
         }
         return item;
