@@ -16,13 +16,8 @@ public final class BazaarMenu {
     private Inventory buildMenu() {
         Inventory inv = Bukkit.createInventory(null, 54, "§6Bazaar");
 
-        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                inv.setItem(slot, pane);
-            }
-        }
+        // Title item
+        inv.setItem(4, makeItem(Material.GOLD_INGOT, "§6Bazaar"));
 
         // Category selector — Hypixel's Bazaar groupings
         inv.setItem(10, makeItem(Material.GOLDEN_HOE,     "§aFarming"));
