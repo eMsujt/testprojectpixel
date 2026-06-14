@@ -16,7 +16,7 @@ public final class QuestsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public QuestsMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§6Quests & Objectives");
+        this.inventory = Bukkit.createInventory(this, 54, "§aQuests");
         build();
     }
 
