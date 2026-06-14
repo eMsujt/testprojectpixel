@@ -1,5 +1,6 @@
 package com.skyblock.plugin.minions;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,59 +13,53 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.UUID;
 
 /**
- * Listener that places a minion when a player right-clicks any solid block
- * while holding a minion item.
+ * Listener that places a minion when a player right-clicks while holding a
+ * minion item.
  *
- * <p>The held item is matched to a {@link MinionManager.MinionType} by its
- * display name (e.g. "Wheat Minion"). On a successful placement the minion
- * is registered with {@link MinionManager} on top of the clicked block and
- * one item is consumed from the player's hand.</p>
+ * <p>The held item is recognised as a minion by its display name, which ends
+ * in "Minion" (e.g. "Wheat Minion"). On a right-click against a block the
+ * minion is placed on top of that block; on a right-click in the air it is
+ * placed at the player's location. The minion is registered with
+ * {@link MinionManager} at tier 1 and one item is consumed from the hand.</p>
  */
 public final class MinionPlacementListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-
-        Block block = event.getClickedBlock();
-        if (block == null || !block.getType().isSolid()) return;
+        Action action = event.getAction();
+        if (action != Action.RIGHT_CLICK_BLOCK && action != Action.RIGHT_CLICK_AIR) return;
 
         ItemStack item = event.getItem();
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
         if (meta == null || !meta.hasDisplayName()) return;
 
-        MinionManager.MinionType minionType = matchType(meta.getDisplayName());
-        if (minionType == null) return;
+        String type = matchType(meta.getDisplayName());
+        if (type == null) return;
 
         event.setCancelled(true);
 
         Player player = event.getPlayer();
         UUID owner = player.getUniqueId();
-        MinionManager manager = MinionManager.getInstance();
 
-        if (manager.getMinions(owner).size() >= MinionManager.MAX_SLOTS) {
-            player.sendMessage("You have reached the minion slot cap (" + MinionManager.MAX_SLOTS + ").");
-            return;
+        Location loc;
+        Block block = event.getClickedBlock();
+        if (action == Action.RIGHT_CLICK_BLOCK && block != null) {
+            loc = block.getRelative(0, 1, 0).getLocation();
+        } else {
+            loc = player.getLocation();
         }
 
-        Block placed = block.getRelative(0, 1, 0);
-        String location = placed.getWorld().getName() + ","
-                + placed.getX() + "," + placed.getY() + "," + placed.getZ();
-
-        manager.placeMinion(owner, minionType, MinionManager.MinionTier.TIER_1);
-        manager.setPlacement(owner, location, minionType);
+        MinionManager.getInstance().addMinion(new MinionManager.MinionData(owner, loc, type, 1));
         item.setAmount(item.getAmount() - 1);
-        player.sendMessage("Placed a " + minionType.getDisplayName() + ".");
+        player.sendMessage("Placed a " + type + ".");
     }
 
-    /** Returns the minion type whose display name matches, or {@code null}. */
-    private static MinionManager.MinionType matchType(String displayName) {
-        for (MinionManager.MinionType candidate : MinionManager.MinionType.values()) {
-            if (candidate.getDisplayName().equalsIgnoreCase(displayName)) {
-                return candidate;
-            }
-        }
-        return null;
+    /**
+     * Returns the minion type for a held item's display name, or {@code null}
+     * if the name does not denote a minion.
+     */
+    private static String matchType(String displayName) {
+        return displayName.endsWith("Minion") ? displayName : null;
     }
 }
