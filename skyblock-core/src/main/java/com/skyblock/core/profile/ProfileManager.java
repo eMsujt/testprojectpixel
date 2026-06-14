@@ -116,6 +116,12 @@ public final class ProfileManager {
     /** uuid -> player account data */
     private final Map<UUID, ProfileData> playerData = new HashMap<>();
 
+    /** uuid -> fairy souls collected */
+    private final Map<UUID, Integer> fairySouls = new HashMap<>();
+
+    /** uuid -> total SkyBlock XP */
+    private final Map<UUID, Long> skyBlockXp = new HashMap<>();
+
     private ProfileManager() {}
 
     /**
@@ -273,10 +279,62 @@ public final class ProfileManager {
         }
     }
 
+    /**
+     * Adds fairy souls to the player's total.
+     *
+     * @param uuid   the player's unique id
+     * @param amount the number of fairy souls to add (must be positive)
+     */
+    public void addFairySouls(UUID uuid, int amount) {
+        Objects.requireNonNull(uuid, "uuid");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive");
+        }
+        fairySouls.merge(uuid, amount, Integer::sum);
+    }
+
+    /**
+     * Returns the total fairy souls collected by the given player.
+     *
+     * @param uuid the player's unique id
+     * @return the player's fairy soul count, or 0 if none recorded
+     */
+    public int getFairySouls(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        return fairySouls.getOrDefault(uuid, 0);
+    }
+
+    /**
+     * Adds SkyBlock XP to the player's total.
+     *
+     * @param uuid   the player's unique id
+     * @param amount the XP to add (must be positive)
+     */
+    public void addSkyBlockXp(UUID uuid, long amount) {
+        Objects.requireNonNull(uuid, "uuid");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive");
+        }
+        skyBlockXp.merge(uuid, amount, Long::sum);
+    }
+
+    /**
+     * Returns the total SkyBlock XP accumulated by the given player.
+     *
+     * @param uuid the player's unique id
+     * @return the player's SkyBlock XP, or 0 if none recorded
+     */
+    public long getSkyBlockXp(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        return skyBlockXp.getOrDefault(uuid, 0L);
+    }
+
     /** Removes all registered profiles. */
     public void clear() {
         profilesById.clear();
         profilesByOwner.clear();
         playerData.clear();
+        fairySouls.clear();
+        skyBlockXp.clear();
     }
 }
