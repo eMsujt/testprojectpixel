@@ -28,6 +28,7 @@ public final class BankManager {
 
     private final Map<UUID, Long> accounts = new HashMap<>();
     private final Map<UUID, List<BankTransaction>> history = new HashMap<>();
+    private final Map<UUID, List<String>> bankHistory = new HashMap<>();
 
     /**
      * Returns the player's current bank balance, or {@code 0} if no account exists.
@@ -98,6 +99,18 @@ public final class BankManager {
         history.remove(playerId);
         Long removed = accounts.remove(playerId);
         return removed != null ? removed : 0L;
+    }
+
+    public synchronized void recordBankEvent(UUID playerUuid, String summary) {
+        bankHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public synchronized List<String> getBankHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(bankHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public synchronized Map<UUID, List<String>> getAllBankHistory() {
+        return Collections.unmodifiableMap(bankHistory);
     }
 
     private void record(BankTransaction tx) {

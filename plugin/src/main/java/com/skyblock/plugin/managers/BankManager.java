@@ -18,6 +18,7 @@ public final class BankManager {
     private final Map<UUID, Double> balance = new HashMap<>();
     private final Map<UUID, List<String>> transactionLedger = new HashMap<>();
     private final Map<UUID, List<String>> transactionHistory = new HashMap<>();
+    private final Map<UUID, List<String>> bankHistory = new HashMap<>();
 
     private BankManager() {}
 
@@ -43,6 +44,18 @@ public final class BankManager {
 
     public Map<UUID, Double> getBalances() {
         return Collections.unmodifiableMap(balance);
+    }
+
+    public void recordBankEvent(UUID playerUuid, String summary) {
+        bankHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getBankHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(bankHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllBankHistory() {
+        return Collections.unmodifiableMap(bankHistory);
     }
 
     public void recordTransaction(UUID playerId, String summary) {

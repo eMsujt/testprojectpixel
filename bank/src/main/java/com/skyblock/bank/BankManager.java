@@ -1,6 +1,9 @@
 package com.skyblock.bank;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,6 +27,7 @@ public final class BankManager {
     }
 
     private final Map<UUID, Long> balances = new HashMap<>();
+    private final Map<UUID, List<String>> bankHistory = new HashMap<>();
 
     /**
      * Opens a bank account for a player with a zero balance.
@@ -120,6 +124,18 @@ public final class BankManager {
         }
         balances.put(playerId, balance - amount);
         return true;
+    }
+
+    public void recordBankEvent(UUID playerUuid, String summary) {
+        bankHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getBankHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(bankHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllBankHistory() {
+        return Collections.unmodifiableMap(bankHistory);
     }
 
     private static void requirePlayerId(UUID playerId) {
