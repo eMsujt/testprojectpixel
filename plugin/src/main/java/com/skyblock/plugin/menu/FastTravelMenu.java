@@ -24,20 +24,22 @@ public final class FastTravelMenu {
             }
         }
 
-        // Row 1 — surface islands
-        inv.setItem(10, makeItem(Material.COMPASS,          "§eHub"));
-        inv.setItem(12, makeItem(Material.HAY_BLOCK,        "§aFarming Islands"));
-        inv.setItem(13, makeItem(Material.JUNGLE_SAPLING,   "§aThe Park"));
-        inv.setItem(14, makeItem(Material.COBWEB,           "§7Spider's Den"));
-        inv.setItem(16, makeItem(Material.END_STONE,        "§5The End"));
+        // Top row — Hub
+        inv.setItem(4,  makeItem(Material.COMPASS,          "§eHub"));
 
-        // Row 2 — underground & nether
-        inv.setItem(19, makeItem(Material.GOLD_ORE,         "§6Gold Mine"));
-        inv.setItem(20, makeItem(Material.COBBLESTONE,      "§7Deep Caverns"));
-        inv.setItem(21, makeItem(Material.DIORITE,          "§fDwarven Mines"));
-        inv.setItem(23, makeItem(Material.AMETHYST_SHARD,   "§5Crystal Hollows"));
-        inv.setItem(24, makeItem(Material.NETHERRACK,       "§cCrimson Isle"));
-        inv.setItem(25, makeItem(Material.IRON_SWORD,       "§9Dungeon Hub"));
+        // Row 1 — surface islands
+        inv.setItem(10, makeItem(Material.HAY_BLOCK,        "§aFarming Islands"));
+        inv.setItem(11, makeItem(Material.JUNGLE_SAPLING,   "§aThe Park"));
+        inv.setItem(12, makeItem(Material.COBWEB,           "§7Spider's Den"));
+        inv.setItem(13, makeItem(Material.NETHERRACK,       "§cBlazing Fortress"));
+        inv.setItem(14, makeItem(Material.END_STONE,        "§5The End"));
+        inv.setItem(15, makeItem(Material.GOLD_ORE,         "§6Gold Mine"));
+        inv.setItem(16, makeItem(Material.COBBLESTONE,      "§7Deep Caverns"));
+
+        // Row 2 — underground & dungeons
+        inv.setItem(19, makeItem(Material.DIORITE,          "§fDwarven Mines"));
+        inv.setItem(20, makeItem(Material.AMETHYST_SHARD,   "§5Crystal Hollows"));
+        inv.setItem(21, makeItem(Material.IRON_SWORD,       "§9Dungeon Hub"));
 
         return inv;
     }
