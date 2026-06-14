@@ -4,30 +4,39 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-public final class ProfileMenu {
+public final class ProfileMenu implements InventoryHolder {
 
-    public void open(Player player) {
-        player.openInventory(buildMenu(player));
+    private final Inventory inventory;
+
+    public ProfileMenu(Player player) {
+        this.inventory = Bukkit.createInventory(this, 54, "§bYour SkyBlock Profile");
+        build(player);
     }
 
-    private Inventory buildMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 54, "§aSkyBlock Profile");
+    public void open(Player player) {
+        player.openInventory(inventory);
+    }
 
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    private void build(Player player) {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                inv.setItem(slot, pane);
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
             }
         }
 
-        inv.setItem(4, makeSkull(player, "§e" + player.getName() + "'s Profile"));
-
-        return inv;
+        inventory.setItem(13, makeSkull(player, "§b" + player.getName()));
     }
 
     private ItemStack makeSkull(Player player, String name) {
