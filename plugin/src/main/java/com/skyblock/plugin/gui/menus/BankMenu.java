@@ -26,17 +26,19 @@ public class BankMenu extends Menu {
 
     private final UUID playerId;
     private final CoinManager coinManager;
+    private final BankManager bankManager;
 
-    public BankMenu(UUID playerId, CoinManager coinManager) {
+    public BankMenu(UUID playerId, CoinManager coinManager, BankManager bankManager) {
         super("Bank Account", 6);
         this.playerId = Objects.requireNonNull(playerId, "playerId");
         this.coinManager = Objects.requireNonNull(coinManager, "coinManager");
+        this.bankManager = Objects.requireNonNull(bankManager, "bankManager");
     }
 
     @Override
     protected void build() {
         long purse = coinManager.getBalance(playerId);
-        double bank = BankManager.getInstance().getBalance(playerId);
+        double bank = bankManager.getBalance(playerId);
         setItem(PURSE_SLOT, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Purse")
                 .lore("§7Coins: §6" + purse)
