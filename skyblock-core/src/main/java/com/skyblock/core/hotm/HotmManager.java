@@ -4,8 +4,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -62,6 +65,8 @@ public final class HotmManager {
 
     /** Per-player perk levels; absent entries default to all-zeros. */
     private final Map<UUID, int[]> playerPerks = new HashMap<>();
+    /** Per-player HOTM event history. */
+    private final Map<UUID, List<String>> hotmHistory = new HashMap<>();
 
     private HotmManager() {
     }
@@ -156,6 +161,29 @@ public final class HotmManager {
     }
 
     /**
+     * Records an HOTM event summary for the given player.
+     *
+     * @param playerId the player
+     * @param summary  a human-readable description of the event
+     */
+    public void recordHotmEvent(UUID playerId, String summary) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(summary, "summary");
+        hotmHistory.computeIfAbsent(playerId, id -> new ArrayList<>()).add(summary);
+    }
+
+    /**
+     * Returns the HOTM event history for the given player.
+     *
+     * @param playerId the player to look up
+     * @return unmodifiable list of history entries, empty if none
+     */
+    public List<String> getHotmHistory(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return Collections.unmodifiableList(hotmHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    /**
      * Removes all HOTM data for the given player (e.g. on quit).
      *
      * @param playerId the player to remove
@@ -163,6 +191,7 @@ public final class HotmManager {
      */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        hotmHistory.remove(playerId);
         return playerPerks.remove(playerId) != null;
     }
 

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public final class HotmCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "upgrade", "set", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "upgrade", "set", "reset", "history");
     private static final List<String> PERK_NAMES = Arrays.stream(HotmManager.HotmPerk.values())
             .map(p -> p.name().toLowerCase())
             .collect(Collectors.toList());
@@ -86,7 +86,8 @@ public final class HotmCommand implements TabExecutor {
             case "upgrade" -> handleUpgrade(player, args);
             case "set"     -> handleSet(player, args);
             case "reset"   -> handleReset(player);
-            default        -> player.sendMessage("Unknown subcommand. Usage: /hotm <view|upgrade|set|reset>");
+            case "history" -> handleHistory(player);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /hotm <view|upgrade|set|reset|history>");
         }
         return true;
     }
@@ -237,6 +238,18 @@ public final class HotmCommand implements TabExecutor {
         hotmManager.setLevel(player.getUniqueId(), perk, level);
         int actual = hotmManager.getLevel(player.getUniqueId(), perk);
         player.sendMessage(perk.getDisplayName() + " set to " + actual + ".");
+    }
+
+    private void handleHistory(Player player) {
+        java.util.List<String> history = hotmManager.getHotmHistory(player.getUniqueId());
+        player.sendMessage("=== HOTM History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No HOTM history found.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
     }
 
     private void handleReset(Player player) {
