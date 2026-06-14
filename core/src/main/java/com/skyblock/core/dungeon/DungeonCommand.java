@@ -12,11 +12,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class DungeonCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("floor", "boss", "stats");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("floor", "boss", "stats", "history");
 
     private final DungeonManager manager;
 
@@ -37,10 +38,11 @@ public final class DungeonCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "floor" -> handleFloor(player, args);
-            case "boss"  -> handleBoss(player, args);
-            case "stats" -> handleStats(player);
-            default      -> sendHelp(player);
+            case "floor"   -> handleFloor(player, args);
+            case "boss"    -> handleBoss(player, args);
+            case "stats"   -> handleStats(player);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -132,10 +134,24 @@ public final class DungeonCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        UUID uuid = player.getUniqueId();
+        List<String> history = manager.getDungeonHistory(uuid);
+        if (history.isEmpty()) {
+            player.sendMessage("You have no dungeon history yet.");
+            return;
+        }
+        player.sendMessage("=== Dungeon History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Dungeon Commands ===");
         player.sendMessage("/dungeon floor <1-7> — view your stats for a floor");
         player.sendMessage("/dungeon boss <1-7> — show the boss for a floor");
         player.sendMessage("/dungeon stats — view all your dungeon completions");
+        player.sendMessage("/dungeon history — view your dungeon run history");
     }
 }
