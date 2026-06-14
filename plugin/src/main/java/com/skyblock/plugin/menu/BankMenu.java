@@ -17,17 +17,17 @@ import java.util.List;
 
 public final class BankMenu implements InventoryHolder, Listener {
 
-    private static final String TITLE = "§6Bank & Purse";
-    private static final int SIZE = 54;
+    private static final String TITLE = "§6Bank Account";
+    private static final int SIZE = 27;
 
     /** Slot showing the bank/purse balance summary. */
-    private static final int BALANCE_SLOT = 22;
+    private static final int BALANCE_SLOT = 13;
     /** Slot for the Deposit All button. */
-    private static final int DEPOSIT_SLOT = 29;
+    private static final int DEPOSIT_SLOT = 11;
     /** Slot for the Withdraw All button. */
     private static final int WITHDRAW_SLOT = 15;
     /** Slot for the close button. */
-    private static final int CLOSE_SLOT = 49;
+    private static final int CLOSE_SLOT = 22;
 
     private final Inventory inventory;
 
@@ -54,7 +54,7 @@ public final class BankMenu implements InventoryHolder, Listener {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", null);
         for (int slot = 0; slot < SIZE; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= SIZE - 9 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
