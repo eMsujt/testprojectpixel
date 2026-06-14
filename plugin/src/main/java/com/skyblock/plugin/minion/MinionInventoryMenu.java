@@ -28,7 +28,7 @@ public class MinionInventoryMenu extends Menu {
     private final Minion minion;
 
     public MinionInventoryMenu(Minion minion) {
-        super("§a" + minion.type.getDisplayName() + " " + ROMAN[minion.getTier().ordinal() + 1], 3);
+        super("§a" + minion.type.getDisplayName() + " " + ROMAN[Math.min(minion.getTier().ordinal() + 1, ROMAN.length - 1)], 3);
         this.minion = minion;
     }
 
