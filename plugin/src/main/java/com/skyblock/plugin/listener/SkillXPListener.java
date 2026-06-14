@@ -45,6 +45,15 @@ public final class SkillXPListener implements Listener {
             Material.REDSTONE_ORE,  7L
     );
 
+    private static final Map<Material, Long> FORAGING_XP = Map.ofEntries(
+            Map.entry(Material.OAK_LOG,      6L),
+            Map.entry(Material.SPRUCE_LOG,   6L),
+            Map.entry(Material.BIRCH_LOG,    6L),
+            Map.entry(Material.JUNGLE_LOG,   6L),
+            Map.entry(Material.ACACIA_LOG,   6L),
+            Map.entry(Material.DARK_OAK_LOG, 6L)
+    );
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
@@ -59,6 +68,11 @@ public final class SkillXPListener implements Listener {
         Long miningXp = MINING_XP.get(block.getType());
         if (miningXp != null) {
             profile.addSkillXp("mining", miningXp);
+            return;
+        }
+        Long foragingXp = FORAGING_XP.get(block.getType());
+        if (foragingXp != null) {
+            profile.addSkillXp("foraging", foragingXp);
         }
     }
 
