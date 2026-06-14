@@ -99,7 +99,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ProfileManager.getInstance().load(getDataFolder());
         EnchantingManager.getInstance().load(getDataFolder());
         BazaarManager.getInstance().load(getDataFolder());
-        AuctionManager.getInstance();
+        AuctionManager.getInstance().load(getDataFolder());
         FairyManager.getInstance().load(getDataFolder());
         MinionManager.getInstance().load(getDataFolder());
         WardrobeManager.getInstance().load(getDataFolder());
@@ -158,6 +158,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ProfileManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
         BazaarManager.getInstance().save(getDataFolder());
+        AuctionManager.getInstance().save(getDataFolder());
         FairyManager.getInstance().save(getDataFolder());
         MinionManager.getInstance().save(getDataFolder());
         WardrobeManager.getInstance().save(getDataFolder());
