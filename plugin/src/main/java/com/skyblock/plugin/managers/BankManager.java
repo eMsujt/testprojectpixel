@@ -32,14 +32,17 @@ public final class BankManager {
 
     public void deposit(UUID playerId, double amount) {
         balance.merge(playerId, Math.max(0.0, amount), Double::sum);
+        recordBankEvent(playerId, "Deposited " + amount + " coins");
     }
 
     public void withdraw(UUID playerId, double amount) {
         balance.put(playerId, Math.max(0.0, getBalance(playerId) - amount));
+        recordBankEvent(playerId, "Withdrew " + amount + " coins");
     }
 
     public void setBalance(UUID playerId, double amount) {
         balance.put(playerId, Math.max(0.0, amount));
+        recordBankEvent(playerId, "Balance reset to " + amount + " coins");
     }
 
     public Map<UUID, Double> getBalances() {

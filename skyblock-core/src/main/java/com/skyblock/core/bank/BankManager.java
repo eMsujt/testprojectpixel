@@ -121,6 +121,7 @@ public final class BankManager {
         BankAccount old = getOrCreate(playerId);
         old.transactionHistory().add("DEPOSIT +" + amount);
         accounts.put(playerId, new BankAccount(old.balance() + amount, old.transactionHistory()));
+        recordBankEvent(playerId, "Deposited " + amount + " coins");
     }
 
     /**
@@ -140,6 +141,7 @@ public final class BankManager {
         }
         old.transactionHistory().add("WITHDRAW -" + amount);
         accounts.put(playerId, new BankAccount(old.balance() - amount, old.transactionHistory()));
+        recordBankEvent(playerId, "Withdrew " + amount + " coins");
     }
 
     /**
@@ -341,6 +343,9 @@ public final class BankManager {
 
     /** Removes all stored accounts, tiers, bank types, and co-op balances. */
     public void clear() {
+        for (UUID uuid : accounts.keySet()) {
+            recordBankEvent(uuid, "Balance reset");
+        }
         accounts.clear();
         tiers.clear();
         bankTypes.clear();

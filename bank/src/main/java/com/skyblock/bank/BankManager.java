@@ -103,6 +103,7 @@ public final class BankManager {
         requireNonNegative(amount);
         long balance = Math.addExact(getBalance(playerId), amount);
         balances.put(playerId, balance);
+        recordBankEvent(playerId, "Deposited " + amount + " coins");
         return balance;
     }
 
@@ -123,6 +124,7 @@ public final class BankManager {
             return false;
         }
         balances.put(playerId, balance - amount);
+        recordBankEvent(playerId, "Withdrew " + amount + " coins");
         return true;
     }
 
