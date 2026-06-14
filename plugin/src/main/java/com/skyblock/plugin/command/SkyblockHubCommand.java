@@ -46,6 +46,9 @@ public final class SkyblockHubCommand implements CommandExecutor {
 
         if (args.length > 0) {
             switch (args[0].toLowerCase()) {
+                case "hub":
+                    handleStatusPanel(player);
+                    return true;
                 case "bank":
                     handleBank(player);
                     return true;
@@ -114,6 +117,42 @@ public final class SkyblockHubCommand implements CommandExecutor {
         player.teleport(hub);
         player.sendMessage("§aTeleported to the Hub!");
         return true;
+    }
+
+    private void handleStatusPanel(Player player) {
+        player.sendMessage("§6§l========= SkyBlock Status =========");
+
+        player.sendMessage("§e§l-- Economy --");
+        handleBank(player);
+        handleBazaar(player);
+        handleAuctionHouse(player);
+
+        player.sendMessage("§e§l-- Progression --");
+        handleSkills(player);
+        handleCollections(player);
+        handleHotm(player);
+        handleProfile(player);
+
+        player.sendMessage("§e§l-- Combat --");
+        handleSlayer(player);
+        handleDungeon(player);
+        handleKuudra(player);
+
+        player.sendMessage("§e§l-- Activities --");
+        handleFishing(player);
+        handleAlchemy(player);
+        handleEnchanting(player);
+
+        player.sendMessage("§e§l-- World --");
+        handleIsland(player);
+        handleGarden(player);
+        handleMayor(player);
+
+        player.sendMessage("§e§l-- Misc --");
+        handlePets(player);
+        handleFairy(player);
+
+        player.sendMessage("§6§l====================================");
     }
 
     private void handleBank(Player player) {
