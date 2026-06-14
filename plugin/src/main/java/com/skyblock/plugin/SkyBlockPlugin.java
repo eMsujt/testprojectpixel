@@ -70,6 +70,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
     private DungeonManager dungeonManager;
     private CustomItemManager itemManager;
     private com.skyblock.plugin.minions.MinionManager minionManager;
+    private com.skyblock.plugin.profile.ProfileManager profileManager;
 
     /**
      * Returns the active plugin instance.
@@ -90,6 +91,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         coinManager = new CoinManager();
         dungeonManager = new DungeonManager();
         itemManager = new CustomItemManager();
+        profileManager = com.skyblock.plugin.profile.ProfileManager.getInstance();
         AuctionHouseManager.getInstance().load(getDataFolder());
         BankManager.getInstance().load(getDataFolder());
         CollectionsManager.getInstance().load(getDataFolder());
@@ -151,7 +153,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FarmingListener(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.combat.CombatManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new CollectionsListener(), this);
-        getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.ProfileManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(profileManager, this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.pets.PetManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsListener(), this);
@@ -231,6 +233,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
     /** Returns the placed-minion production service. */
     public com.skyblock.plugin.minions.MinionManager getMinionManager() {
         return minionManager;
+    }
+
+    /** Returns the player profile registry. */
+    public com.skyblock.plugin.profile.ProfileManager getProfileManager() {
+        return profileManager;
     }
 
 }
