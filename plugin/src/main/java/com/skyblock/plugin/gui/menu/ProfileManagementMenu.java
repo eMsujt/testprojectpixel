@@ -2,17 +2,22 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
+import com.skyblock.plugin.profile.PlayerProfile;
+import com.skyblock.plugin.profile.ProfileManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The Profile Management menu.
  *
- * <p>A 54-slot (6-row) menu with a gray glass-pane border. Profile slots are
- * laid out across a centred 3×3 grid; each is shown as a {@code WRITABLE_BOOK}
- * that, when clicked, selects that profile and refreshes the menu, matching
- * Hypixel's layout.</p>
+ * <p>A 54-slot (6-row) chest titled {@code §aProfile Management} with a gray
+ * glass-pane border. Each SkyBlock profile the player owns is shown as a
+ * {@code PLAYER_HEAD} across a centred 3×3 grid; clicking one selects that
+ * profile and refreshes the menu, matching Hypixel's layout.</p>
  */
 public class ProfileManagementMenu extends Menu {
 
@@ -23,20 +28,31 @@ public class ProfileManagementMenu extends Menu {
             38, 39, 40
     };
 
-    public ProfileManagementMenu() {
+    /** The profiles owned by the viewing player, in display order. */
+    private final List<PlayerProfile> profiles;
+
+    public ProfileManagementMenu(Player player) {
         super("§aProfile Management", 6);
+        this.profiles = ownedProfiles(player);
+    }
+
+    private static List<PlayerProfile> ownedProfiles(Player player) {
+        List<PlayerProfile> owned = new ArrayList<>();
+        owned.add(ProfileManager.getInstance().getOrCreate(player.getUniqueId()));
+        return owned;
     }
 
     @Override
     protected void build() {
         fillBorder();
 
-        for (int i = 0; i < SLOTS.length; i++) {
-            int slot = i + 1;
-            setItem(SLOTS[i], new ItemBuilder(Material.WRITABLE_BOOK)
-                            .displayName("§aProfile " + slot)
+        for (int i = 0; i < SLOTS.length && i < profiles.size(); i++) {
+            PlayerProfile profile = profiles.get(i);
+            boolean active = profile.getActiveProfileName() != null;
+            setItem(SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
+                            .displayName("§a" + profile.getActiveProfileName())
                             .lore(
-                                    "§7Empty",
+                                    active ? "§7Currently selected" : "§7Not selected",
                                     "§eClick to select!")
                             .build(),
                     event -> open((Player) event.getWhoClicked()));
