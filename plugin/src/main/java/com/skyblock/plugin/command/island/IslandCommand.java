@@ -9,6 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -88,6 +89,7 @@ public final class IslandCommand implements CommandExecutor {
                 manager.setWarpName(id, args[1]);
                 player.sendMessage("Island warp name set to: " + args[1]);
             }
+            case "history" -> handleHistory(player);
             case "upgrade" -> {
                 if (args.length < 2) {
                     player.sendMessage("Usage: /island upgrade <upgrade>");
@@ -106,9 +108,21 @@ public final class IslandCommand implements CommandExecutor {
                     player.sendMessage("Could not apply upgrade (no island or already at max level).");
                 }
             }
-            default -> player.sendMessage("Unknown subcommand. Use /island, create, leave, invite, kick, warp, upgrade.");
+            default -> player.sendMessage("Unknown subcommand. Use /island, create, leave, invite, kick, warp, upgrade, history.");
         }
         return true;
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = IslandManager.getInstance().getIslandHistory(player.getUniqueId());
+        player.sendMessage("=== Island History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No history recorded.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
     }
 
     private void showIsland(Player player, UUID id, IslandManager manager) {

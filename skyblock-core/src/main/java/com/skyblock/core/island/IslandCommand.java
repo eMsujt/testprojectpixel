@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public final class IslandCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("create", "home", "visit", "invite", "kick", "leave", "upgrade", "upgrades", "warp", "setwarp", "info", "trustee", "blocks");
+            Arrays.asList("create", "home", "visit", "invite", "kick", "leave", "upgrade", "upgrades", "warp", "setwarp", "info", "trustee", "blocks", "history");
 
     private final IslandManager islandManager;
 
@@ -46,7 +46,7 @@ public final class IslandCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp|info|trustee|blocks>");
+            player.sendMessage("Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp|info|trustee|blocks|history>");
             return true;
         }
 
@@ -64,7 +64,8 @@ public final class IslandCommand implements TabExecutor {
             case "info"     -> handleInfo(player);
             case "trustee"  -> handleTrustee(player, args);
             case "blocks"   -> handleBlocks(player, args);
-            default         -> player.sendMessage("Unknown subcommand. Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp|info|trustee|blocks>");
+            case "history"  -> handleHistory(player);
+            default         -> player.sendMessage("Unknown subcommand. Usage: /island <create|home|visit|invite|kick|leave|upgrade|upgrades|warp|setwarp|info|trustee|blocks|history>");
         }
         return true;
     }
@@ -382,6 +383,18 @@ public final class IslandCommand implements TabExecutor {
             target.sendMessage(player.getName() + " has removed you as a trustee on their island.");
         } else {
             player.sendMessage("Usage: /island trustee <add|remove> <player>");
+        }
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = islandManager.getIslandHistory(player.getUniqueId());
+        player.sendMessage("=== Island History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No history recorded.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
         }
     }
 
