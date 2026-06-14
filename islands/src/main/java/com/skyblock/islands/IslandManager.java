@@ -4,9 +4,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -274,6 +276,15 @@ public final class IslandManager {
                 islandLevels.put(uuid, cfg.getInt(key + ".level", 1));
             } catch (IllegalArgumentException ignored) {}
         }
+        islandHistory.clear();
+        if (cfg.isConfigurationSection("islandHistory")) {
+            for (String key : cfg.getConfigurationSection("islandHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("islandHistory." + key);
+                    islandHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -281,6 +292,9 @@ public final class IslandManager {
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, PlayerIsland> entry : islands.entrySet()) {
             cfg.set(entry.getKey().toString() + ".level", entry.getValue().level());
+        }
+        for (Map.Entry<UUID, List<String>> entry : islandHistory.entrySet()) {
+            cfg.set("islandHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
