@@ -218,6 +218,10 @@ public final class SkillsManager {
         }
     }
 
+    public int getSkillLevel(UUID playerId, String skill) {
+        return computeLevel(skill, getSkillXP(playerId, skill));
+    }
+
     public String getSkillsStats(UUID playerId) {
         StringBuilder sb = new StringBuilder("Skills Stats:");
         for (String skill : SKILL_XP_TABLE.keySet()) {
