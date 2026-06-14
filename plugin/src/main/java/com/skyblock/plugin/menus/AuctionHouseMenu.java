@@ -1,11 +1,12 @@
 package com.skyblock.plugin.menus;
 
+import com.skyblock.plugin.auction.AuctionManager;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.managers.AuctionManager;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,11 +20,11 @@ import java.util.List;
  */
 public class AuctionHouseMenu extends Menu {
 
-    /** First slot available for auction listings, below the category bar. */
-    private static final int FIRST_LISTING_SLOT = 9;
+    /** First slot available for auction listings (slots 10-43). */
+    private static final int FIRST_LISTING_SLOT = 10;
 
     /** Number of listing slots available between the category bar and footer. */
-    private static final int LISTING_SLOTS = 36;
+    private static final int LISTING_SLOTS = 34;
 
     /** An Auction House category filter: its icon, display name, and slot. */
     private enum Category {
@@ -57,21 +58,32 @@ public class AuctionHouseMenu extends Menu {
     @Override
     protected void build() {
         fillCategories();
+        fillBorder();
         fillFooter();
 
-        List<AuctionManager.Auction> auctions = AuctionManager.getInstance().getAuctions();
-        for (int i = 0; i < auctions.size() && i < LISTING_SLOTS; i++) {
-            AuctionManager.Auction auction = auctions.get(i);
+        List<AuctionManager.AuctionListing> listings =
+                new ArrayList<>(AuctionManager.getInstance().getListings());
+        for (int i = 0; i < listings.size() && i < LISTING_SLOTS; i++) {
+            AuctionManager.AuctionListing listing = listings.get(i);
             setItem(FIRST_LISTING_SLOT + i, new ItemBuilder(Material.PAPER)
-                            .displayName("§a" + auction.itemName())
+                            .displayName("§a" + listing.itemName())
                             .lore(
-                                    "§7Price: §6" + auction.price() + " coins",
+                                    "§7Price: §6" + listing.price() + " coins",
                                     "§7Click to view")
                             .build(),
                     event -> event.getWhoClicked().sendMessage(
-                            "§a" + auction.itemName() + " §7is going for §6"
-                                    + auction.price() + " coins§7."));
+                            "§a" + listing.itemName() + " §7is going for §6"
+                                    + listing.price() + " coins§7."));
         }
+    }
+
+    /** Fills slots 9 and 44 with gray glass panes to frame the listing area. */
+    private void fillBorder() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        setItem(9, pane);
+        setItem(44, pane);
     }
 
     /** Places the category filter icons across the menu's top row. */
