@@ -322,6 +322,48 @@ public final class BazaarManager {
         PRODUCT_DATA = Collections.unmodifiableMap(m);
     }
 
+    /** Maps each bazaar product category to its metadata: {maxOrderQuantity, maxActiveOrders}. */
+    public static final Map<String, int[]> BAZAAR_ITEM_DATA;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        // Raw farming
+        m.put("Farming",              new int[]{71680, 16});
+        m.put("Special_Crops",        new int[]{71680, 16});
+        // Raw mining
+        m.put("Mining",               new int[]{71680, 16});
+        m.put("Gemstones",            new int[]{71680, 16});
+        m.put("Special_Mining",       new int[]{71680, 16});
+        // Raw foraging
+        m.put("Foraging",             new int[]{71680, 16});
+        // Raw combat
+        m.put("Combat",               new int[]{71680, 16});
+        m.put("Slayer_Items",         new int[]{71680, 16});
+        // Raw fishing
+        m.put("Fishing",              new int[]{71680, 16});
+        // Enchanted farming
+        m.put("Enchanted_Farming",    new int[]{ 2560, 16});
+        m.put("Enchanted_Seeds",      new int[]{ 2560, 16});
+        // Enchanted mining
+        m.put("Enchanted_Mining",     new int[]{ 2560, 16});
+        m.put("Enchanted_Gemstones",  new int[]{ 2560, 16});
+        // Enchanted foraging
+        m.put("Enchanted_Foraging",   new int[]{ 2560, 16});
+        // Enchanted combat
+        m.put("Enchanted_Combat",     new int[]{ 2560, 16});
+        // Enchanted fishing
+        m.put("Enchanted_Fishing",    new int[]{ 2560, 16});
+        // Crafted / processed
+        m.put("Potions",              new int[]{ 2560, 16});
+        m.put("Reforge_Stones",       new int[]{ 2560, 16});
+        m.put("Enchanted_Books",      new int[]{ 2560, 16});
+        m.put("Alchemy_Ingredients",  new int[]{71680, 16});
+        m.put("Pet_Items",            new int[]{ 2560, 16});
+        m.put("Dungeon_Items",        new int[]{ 2560, 16});
+        m.put("Misc",                 new int[]{71680, 16});
+        BAZAAR_ITEM_DATA = Collections.unmodifiableMap(m);
+    }
+
     // Per-item order books: buy orders sorted highest-price first, sell orders lowest-price first
     private final Map<String, List<BuyOrder>> buyOrders = new HashMap<>();
     private final Map<String, List<SellOrder>> sellOrders = new HashMap<>();
