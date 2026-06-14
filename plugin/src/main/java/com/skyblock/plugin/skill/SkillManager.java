@@ -1,6 +1,7 @@
 package com.skyblock.plugin.skill;
 
 import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.plugin.profile.ProfileManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
@@ -61,6 +62,7 @@ public final class SkillManager implements Listener {
         }
         Player player = event.getPlayer();
         skillsManager.addSkillXP(player.getUniqueId(), "mining", miningXp);
+        ProfileManager.getInstance().getOrCreate(player.getUniqueId()).addSkillXp("mining", miningXp);
         sendXpBar(player, "mining", miningXp);
     }
 
