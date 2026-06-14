@@ -1,33 +1,40 @@
 package com.skyblock.plugin.pets;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
- * YAML-driven registry of pet definitions loaded from {@code pets.yml}.
+ * In-memory registry of each player's active pet.
  *
- * <p>Each key under the {@code pets} section is a pet-id mapped to its
- * {@link PetData}: the pet's rarity, a map of base stat names to values, and
- * the ascending list of cumulative XP required to reach each level. The
- * bundled resource is read straight from the jar so it never collides with any
- * player-data file written to the data folder.</p>
+ * <p>Holds the live pets in a {@link Map} keyed by the owning player's UUID,
+ * preserving insertion order. A player's active pet is set when they summon a
+ * pet and removed when they despawn it. Not thread-safe; access from the main
+ * server thread.</p>
  */
 public final class PetManager {
 
+    /**
+     * A single active pet instance.
+     *
+     * @param species the pet species (e.g. {@code WOLF}, {@code DRAGON})
+     * @param xp      the pet's accumulated experience
+     * @param level   the pet's current level
+     * @param rarity  the pet's rarity (e.g. {@code COMMON}, {@code LEGENDARY})
+     */
+    public record PetData(String species, long xp, int level, String rarity) {
+        public PetData {
+            Objects.requireNonNull(species, "species");
+            Objects.requireNonNull(rarity, "rarity");
+        }
+    }
+
     private static final PetManager INSTANCE = new PetManager();
 
-    private final Map<String, PetData> pets = new LinkedHashMap<>();
+    private final Map<UUID, PetData> activePets = new LinkedHashMap<>();
 
     private PetManager() {
     }
@@ -37,74 +44,43 @@ public final class PetManager {
     }
 
     /**
-     * Immutable definition of a single pet.
+     * Sets the active pet for a player, replacing any existing one.
      *
-     * @param rarity        the pet's rarity (e.g. {@code COMMON}, {@code LEGENDARY})
-     * @param baseStats     stat-name to base-value mapping
-     * @param xpThresholds  ascending cumulative XP required to reach each level
+     * @param playerId the owning player's UUID
+     * @param pet      the pet to set active
      */
-    public record PetData(String rarity, Map<String, Double> baseStats, List<Long> xpThresholds) {
+    public void setActivePet(UUID playerId, PetData pet) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(pet, "pet");
+        activePets.put(playerId, pet);
     }
 
     /**
-     * Reads {@code pets.yml} from the jar and parses every pet definition. Has
-     * no effect if the resource is absent.
+     * Returns the player's active pet, or {@code null} if none is summoned.
      *
-     * @param plugin the owning plugin, used for resource access and logging
+     * @param playerId the player's UUID
+     * @return the active pet, or {@code null}
      */
-    public void load(JavaPlugin plugin) {
-        InputStream resource = plugin.getResource("pets.yml");
-        if (resource == null) {
-            return;
-        }
-        YamlConfiguration cfg;
-        try (Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8)) {
-            cfg = YamlConfiguration.loadConfiguration(reader);
-        } catch (java.io.IOException e) {
-            plugin.getLogger().warning("Failed to read pets.yml: " + e.getMessage());
-            return;
-        }
-        ConfigurationSection root = cfg.isConfigurationSection("pets")
-                ? cfg.getConfigurationSection("pets")
-                : cfg;
-        pets.clear();
-        for (String id : root.getKeys(false)) {
-            ConfigurationSection section = root.getConfigurationSection(id);
-            if (section == null) {
-                continue;
-            }
-            String rarity = section.getString("rarity", "COMMON");
-
-            Map<String, Double> baseStats = new LinkedHashMap<>();
-            ConfigurationSection statsSection = section.getConfigurationSection("baseStats");
-            if (statsSection != null) {
-                for (String stat : statsSection.getKeys(false)) {
-                    baseStats.put(stat, statsSection.getDouble(stat));
-                }
-            }
-
-            List<Long> xpThresholds = new ArrayList<>();
-            for (Object value : section.getList("xpThresholds", new ArrayList<>())) {
-                if (value instanceof Number number) {
-                    xpThresholds.add(number.longValue());
-                }
-            }
-            Collections.sort(xpThresholds);
-
-            pets.put(id, new PetData(rarity,
-                    Collections.unmodifiableMap(baseStats),
-                    Collections.unmodifiableList(xpThresholds)));
-        }
-        plugin.getLogger().info("Loaded " + pets.size() + " pet definitions.");
+    public PetData getActivePet(UUID playerId) {
+        return activePets.get(playerId);
     }
 
-    /** Returns the definition for a pet, or {@code null} if the pet is unknown. */
-    public PetData getPet(String petId) {
-        return pets.get(petId);
+    /**
+     * Removes the player's active pet.
+     *
+     * @param playerId the player's UUID
+     * @return the removed pet, or {@code null} if none existed
+     */
+    public PetData removeActivePet(UUID playerId) {
+        return activePets.remove(playerId);
     }
 
-    /** Returns an unmodifiable view of every loaded pet definition by id. */
-    public Map<String, PetData> getPets() {
-        return Collections.unmodifiableMap(pets);
+    /**
+     * Returns an unmodifiable view of every active pet in insertion order.
+     *
+     * @return the active pets
+     */
+    public Collection<PetData> getActivePets() {
+        return Collections.unmodifiableCollection(activePets.values());
     }
 }
