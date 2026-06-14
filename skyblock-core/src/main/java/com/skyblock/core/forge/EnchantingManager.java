@@ -89,6 +89,13 @@ public final class EnchantingManager {
         return Collections.unmodifiableMap(enchantingHistory);
     }
 
+    public String getEnchantingStats(UUID playerId) {
+        int booksApplied = enchantingHistory.getOrDefault(playerId, Collections.emptyList()).size();
+        Map<String, Integer> playerEnchants = enchantments.getOrDefault(playerId, Collections.emptyMap());
+        int totalLevels = playerEnchants.values().stream().mapToInt(Integer::intValue).sum();
+        return "Total books applied: " + booksApplied + ", Cumulative enchant levels: " + totalLevels;
+    }
+
     // -------------------------------------------------------------------------
     // Enchantment tracking
     // -------------------------------------------------------------------------
