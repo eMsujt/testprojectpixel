@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,6 +60,9 @@ public final class MayorManager {
 
     /** Per-player vote, keyed by player UUID. */
     private final Map<UUID, MayorCandidate> playerVotes = new HashMap<>();
+
+    /** Per-player mayor event history. */
+    private final Map<UUID, List<String>> mayorHistory = new HashMap<>();
 
     private MayorManager() {
     }
@@ -133,6 +137,25 @@ public final class MayorManager {
     }
 
     // -------------------------------------------------------------------------
+    // Mayor history
+    // -------------------------------------------------------------------------
+
+    public void recordMayorEvent(UUID playerId, String summary) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(summary, "summary");
+        mayorHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getMayorHistory(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return Collections.unmodifiableList(mayorHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllMayorHistory() {
+        return Collections.unmodifiableMap(mayorHistory);
+    }
+
+    // -------------------------------------------------------------------------
     // Lifecycle
     // -------------------------------------------------------------------------
 
@@ -144,6 +167,7 @@ public final class MayorManager {
      */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        mayorHistory.remove(playerId);
         return playerVotes.remove(playerId) != null;
     }
 
@@ -158,6 +182,7 @@ public final class MayorManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerVotes.clear();
+        mayorHistory.clear();
         currentMayor = null;
         String mayorName = cfg.getString("currentMayor");
         if (mayorName != null) {
@@ -184,6 +209,19 @@ public final class MayorManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("mayorHistory")) {
+            for (String key : cfg.getConfigurationSection("mayorHistory").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<String> entries = cfg.getStringList("mayorHistory." + key);
+                    if (!entries.isEmpty()) {
+                        mayorHistory.put(uuid, new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -194,6 +232,9 @@ public final class MayorManager {
         }
         for (Map.Entry<UUID, MayorCandidate> entry : playerVotes.entrySet()) {
             cfg.set("votes." + entry.getKey().toString(), entry.getValue().name());
+        }
+        for (Map.Entry<UUID, List<String>> entry : mayorHistory.entrySet()) {
+            cfg.set("mayorHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
