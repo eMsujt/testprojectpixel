@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 public final class SkyblockHubCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
-            "hub", "bank", "mayor", "auction", "ah", "bazaar", "island", "skills", "pets",
+            "hub", "bank", "mayor", "auction", "ah", "bazaar", "island", "fairy", "skills", "pets",
             "profile", "quest", "minion", "fishing", "mining", "slayer",
             "hotm", "garden", "collections", "backpack", "reforge", "achievement",
             "dungeon", "stats", "enchanting", "kuudra", "crafting", "trade",
@@ -188,6 +188,7 @@ public final class SkyblockHubCommand implements TabExecutor {
             case "ah" -> "ah";
             case "bazaar", "bz" -> "bazaar";
             case "island" -> "island";
+            case "fairy" -> "fairy";
             case "quests" -> "quest";
             case "minions" -> "minion";
             case "slayer" -> "slay";
