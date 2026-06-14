@@ -91,6 +91,8 @@ import com.skyblock.core.stat.StatManager;
 import com.skyblock.core.stats.StatsCommand;
 import com.skyblock.core.warp.WarpCommand;
 import com.skyblock.core.warp.WarpManager;
+import com.skyblock.core.alchemy.AlchemyCommand;
+import com.skyblock.core.alchemy.AlchemyManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -335,6 +337,11 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("run").setExecutor(runCommand);
             getCommand("run").setTabCompleter(runCommand);
         }
+        AlchemyManager alchemyManager = AlchemyManager.getInstance();
+        alchemyManager.load(getDataFolder());
+        AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
+        getCommand("alchemy").setExecutor(alchemyCommand);
+        getCommand("alchemy").setTabCompleter(alchemyCommand);
     }
 
     @Override
@@ -370,6 +377,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         MailboxManager.getInstance().save(getDataFolder());
         TitleManager.getInstance().save(getDataFolder());
         RunManager.getInstance().save(getDataFolder());
+        AlchemyManager.getInstance().save(getDataFolder());
         try {
             WarpManager.getInstance().save(getDataFolder());
         } catch (java.io.IOException e) {
