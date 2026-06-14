@@ -18,10 +18,12 @@ public final class HOTMManager {
 
     private static final HOTMManager INSTANCE = new HOTMManager();
 
-    private final Map<UUID, Integer> hotmLevel   = new HashMap<>();
-    private final Map<UUID, Double>  hotmXP      = new HashMap<>();
-    private final Map<UUID, Integer> totalPowder = new HashMap<>();
-    private final Map<UUID, Integer> tokensSpent = new HashMap<>();
+    private final Map<UUID, Integer> hotmLevel      = new HashMap<>();
+    private final Map<UUID, Double>  hotmXP         = new HashMap<>();
+    private final Map<UUID, Integer> totalPowder    = new HashMap<>();
+    private final Map<UUID, Integer> tokensSpent    = new HashMap<>();
+    private final Map<UUID, Integer> mithrilPowder  = new HashMap<>();
+    private final Map<UUID, Integer> gemstonePowder = new HashMap<>();
 
     private HOTMManager() {}
 
@@ -77,6 +79,30 @@ public final class HOTMManager {
         tokensSpent.merge(playerId, amount, Integer::sum);
     }
 
+    public int getMithrilPowder(UUID playerId) {
+        return mithrilPowder.getOrDefault(playerId, 0);
+    }
+
+    public int getGemstonePowder(UUID playerId) {
+        return gemstonePowder.getOrDefault(playerId, 0);
+    }
+
+    public void addPowder(UUID playerId, String type, int amount) {
+        if ("mithril".equalsIgnoreCase(type)) {
+            mithrilPowder.merge(playerId, amount, Integer::sum);
+        } else if ("gemstone".equalsIgnoreCase(type)) {
+            gemstonePowder.merge(playerId, amount, Integer::sum);
+        }
+    }
+
+    public Map<UUID, Integer> getAllMithrilPowder() {
+        return Collections.unmodifiableMap(mithrilPowder);
+    }
+
+    public Map<UUID, Integer> getAllGemstonePowder() {
+        return Collections.unmodifiableMap(gemstonePowder);
+    }
+
     public Map<UUID, Integer> getHotmLevels() {
         return Collections.unmodifiableMap(hotmLevel);
     }
@@ -91,6 +117,8 @@ public final class HOTMManager {
         hotmXP.clear();
         totalPowder.clear();
         tokensSpent.clear();
+        mithrilPowder.clear();
+        gemstonePowder.clear();
         if (cfg.isConfigurationSection("hotmLevel")) {
             for (String uuidKey : cfg.getConfigurationSection("hotmLevel").getKeys(false)) {
                 try {
@@ -127,6 +155,24 @@ public final class HOTMManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("mithrilPowder")) {
+            for (String uuidKey : cfg.getConfigurationSection("mithrilPowder").getKeys(false)) {
+                try {
+                    mithrilPowder.put(UUID.fromString(uuidKey), cfg.getInt("mithrilPowder." + uuidKey));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("gemstonePowder")) {
+            for (String uuidKey : cfg.getConfigurationSection("gemstonePowder").getKeys(false)) {
+                try {
+                    gemstonePowder.put(UUID.fromString(uuidKey), cfg.getInt("gemstonePowder." + uuidKey));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -143,6 +189,12 @@ public final class HOTMManager {
         }
         for (Map.Entry<UUID, Integer> entry : tokensSpent.entrySet()) {
             cfg.set("tokensSpent." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Integer> entry : mithrilPowder.entrySet()) {
+            cfg.set("mithrilPowder." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Integer> entry : gemstonePowder.entrySet()) {
+            cfg.set("gemstonePowder." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
