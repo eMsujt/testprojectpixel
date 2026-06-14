@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public final class GardenCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("plots", "crops", "visit");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("plots", "crops", "visit", "history");
 
     private final GardenManager manager;
 
@@ -36,8 +36,9 @@ public final class GardenCommand implements TabExecutor {
         switch (args[0].toLowerCase()) {
             case "plots" -> handlePlots(player);
             case "crops" -> handleCrops(player);
-            case "visit" -> handleVisit(player, args);
-            default      -> sendHelp(player);
+            case "visit"    -> handleVisit(player, args);
+            case "history"  -> handleHistory(player);
+            default         -> sendHelp(player);
         }
         return true;
     }
@@ -77,6 +78,19 @@ public final class GardenCommand implements TabExecutor {
                 player.sendMessage("  " + crop + ": level " + level));
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        java.util.List<String> history = manager.getGardenHistory(id);
+        player.sendMessage("=== Garden History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No garden history found.");
+        } else {
+            for (int i = 0; i < history.size(); i++) {
+                player.sendMessage((i + 1) + ". " + history.get(i));
+            }
+        }
+    }
+
     private void handleVisit(Player player, String[] args) {
         if (args.length < 2) {
             player.sendMessage("Usage: /garden visit <player>");
@@ -99,5 +113,6 @@ public final class GardenCommand implements TabExecutor {
         player.sendMessage("/garden plots — view your unlocked garden plots");
         player.sendMessage("/garden crops — view your crop levels");
         player.sendMessage("/garden visit <player> — visit another player's garden");
+        player.sendMessage("/garden history — view your garden event history");
     }
 }
