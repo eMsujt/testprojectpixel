@@ -20,6 +20,7 @@ public final class AuctionHouseManager {
 
     private final Map<UUID, List<AuctionListing>> active = new HashMap<>();
     private final Map<UUID, List<String>> bidHistory = new HashMap<>();
+    private final Map<UUID, List<String>> auctionHistory = new HashMap<>();
     private final Map<String, List<String[]>> bids = new HashMap<>();
 
     private AuctionHouseManager() {}
@@ -122,6 +123,19 @@ public final class AuctionHouseManager {
         return Collections.unmodifiableMap(bids);
     }
 
+    public void recordAuctionEvent(UUID player, String summary) {
+        auctionHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getAuctionHistory(UUID player) {
+        return Collections.unmodifiableList(
+                auctionHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllAuctionHistory() {
+        return Collections.unmodifiableMap(auctionHistory);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "auction_house.yml");
         if (!file.exists()) {
@@ -130,6 +144,7 @@ public final class AuctionHouseManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         active.clear();
         bidHistory.clear();
+        auctionHistory.clear();
         bids.clear();
         if (cfg.isConfigurationSection("bidHistory")) {
             for (String key : cfg.getConfigurationSection("bidHistory").getKeys(false)) {
@@ -137,6 +152,14 @@ public final class AuctionHouseManager {
                     UUID bidder = UUID.fromString(key);
                     List<String> entries = cfg.getStringList("bidHistory." + key);
                     bidHistory.put(bidder, new ArrayList<>(entries));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("auctionHistory")) {
+            for (String key : cfg.getConfigurationSection("auctionHistory").getKeys(false)) {
+                try {
+                    auctionHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("auctionHistory." + key)));
                 } catch (IllegalArgumentException ignored) {}
             }
         }
@@ -202,6 +225,9 @@ public final class AuctionHouseManager {
         }
         for (Map.Entry<UUID, List<String>> entry : bidHistory.entrySet()) {
             cfg.set("bidHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : auctionHistory.entrySet()) {
+            cfg.set("auctionHistory." + entry.getKey().toString(), entry.getValue());
         }
         for (Map.Entry<String, List<String[]>> entry : bids.entrySet()) {
             List<List<String>> pairs = new ArrayList<>();
