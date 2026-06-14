@@ -2,32 +2,60 @@ package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.skills.SkillManager;
 import com.skyblock.plugin.skills.SkillManager.SkillType;
-import org.bukkit.Material;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
 /**
- * Awards Alchemy XP through {@link SkillManager} whenever a player drinks a
- * potion and fires level-up rewards when the player's level increases.
+ * Awards Alchemy XP through {@link SkillManager} whenever a brewing stand
+ * finishes brewing, granting XP for each potion slot produced and firing
+ * level-up rewards when the nearest player's level increases.
  */
 public final class AlchemyListener implements Listener {
 
-    /** Alchemy XP granted per potion consumed. */
+    /** Alchemy XP granted per brewed potion slot. */
     private static final long POTION_XP = 6L;
+
+    /** Maximum distance (blocks) to credit the nearest player for a brew. */
+    private static final double CREDIT_RADIUS = 16.0D;
 
     private final SkillManager skillManager = SkillManager.getInstance();
 
     @EventHandler
-    public void onItemConsume(PlayerItemConsumeEvent event) {
-        Material type = event.getItem().getType();
-        if (type != Material.POTION && type != Material.SPLASH_POTION && type != Material.LINGERING_POTION) {
+    public void onBrew(BrewEvent event) {
+        long xp = 0L;
+        for (ItemStack result : event.getResults()) {
+            if (result != null && !result.getType().isAir()) {
+                xp += POTION_XP;
+            }
+        }
+        if (xp <= 0L) {
             return;
         }
-        grantXP(event.getPlayer(), POTION_XP);
+        Player player = nearestPlayer(event.getBlock());
+        if (player != null) {
+            grantXP(player, xp);
+        }
+    }
+
+    private Player nearestPlayer(Block block) {
+        Location origin = block.getLocation();
+        Player closest = null;
+        double best = Double.MAX_VALUE;
+        for (Player player : block.getWorld().getNearbyPlayers(origin, CREDIT_RADIUS)) {
+            double distance = player.getLocation().distanceSquared(origin);
+            if (distance < best) {
+                best = distance;
+                closest = player;
+            }
+        }
+        return closest;
     }
 
     private void grantXP(Player player, long amount) {
