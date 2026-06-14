@@ -6,7 +6,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public final class CollectionsManager {
@@ -98,15 +100,16 @@ public final class CollectionsManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "collections.yml");
         YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<UUID, Map<String, Long>> entry : collectionCounts.entrySet()) {
-            String uuidKey = entry.getKey().toString();
-            for (Map.Entry<String, Long> countEntry : entry.getValue().entrySet()) {
+        Set<UUID> allPlayers = new HashSet<>(collectionCounts.keySet());
+        allPlayers.addAll(collectionMilestones.keySet());
+        for (UUID uuid : allPlayers) {
+            String uuidKey = uuid.toString();
+            Map<String, Long> counts = collectionCounts.getOrDefault(uuid, new HashMap<>());
+            for (Map.Entry<String, Long> countEntry : counts.entrySet()) {
                 cfg.set(uuidKey + ".counts." + countEntry.getKey(), countEntry.getValue());
             }
-        }
-        for (Map.Entry<UUID, Map<String, Integer>> entry : collectionMilestones.entrySet()) {
-            String uuidKey = entry.getKey().toString();
-            for (Map.Entry<String, Integer> msEntry : entry.getValue().entrySet()) {
+            Map<String, Integer> milestones = collectionMilestones.getOrDefault(uuid, new HashMap<>());
+            for (Map.Entry<String, Integer> msEntry : milestones.entrySet()) {
                 cfg.set(uuidKey + ".milestones." + msEntry.getKey(), msEntry.getValue());
             }
         }
