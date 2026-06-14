@@ -145,7 +145,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("skills").setExecutor(new SkillsCommand());
         getCommand("garden").setExecutor(new GardenCommand());
         getCommand("pets").setExecutor(new PetsCommand());
-        com.skyblock.plugin.collections.CollectionManager.getInstance();
+        com.skyblock.plugin.collections.CollectionManager.getInstance().register(this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.collections.CollectionListener(), this);
         getServer().getPluginManager().registerEvents(new FarmingListener(), this);
         getServer().getPluginManager().registerEvents(new CombatListener(), this);
