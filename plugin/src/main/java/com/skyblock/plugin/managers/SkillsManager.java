@@ -40,11 +40,42 @@ public final class SkillsManager {
     private static final SkillsManager INSTANCE = new SkillsManager();
 
     private final Map<UUID, Map<String, Long>> skillXP = new HashMap<>();
+    private final Map<String, Integer> skillMaxLevel = new HashMap<>();
 
     private SkillsManager() {}
 
     public static SkillsManager getInstance() {
         return INSTANCE;
+    }
+
+    public int getSkillMaxLevel(String skill) {
+        return skillMaxLevel.getOrDefault(skill, 60);
+    }
+
+    public void setSkillMaxLevel(String skill, int maxLevel) {
+        skillMaxLevel.put(skill, maxLevel);
+    }
+
+    private int computeLevel(String skill, long totalXP) {
+        long[] table = SKILL_XP_TABLE.get(skill);
+        if (table == null) return 0;
+        long cumulative = 0;
+        int level = 0;
+        for (long threshold : table) {
+            cumulative += threshold;
+            if (totalXP < cumulative) break;
+            level++;
+        }
+        return level;
+    }
+
+    private long xpCapForLevel(String skill, int maxLevel) {
+        long[] table = SKILL_XP_TABLE.get(skill);
+        if (table == null) return Long.MAX_VALUE;
+        long cap = 0;
+        int limit = Math.min(maxLevel, table.length);
+        for (int i = 0; i < limit; i++) cap += table[i];
+        return cap;
     }
 
     public long getSkillXP(UUID playerId, String skill) {
@@ -54,9 +85,16 @@ public final class SkillsManager {
     }
 
     public void addSkillXP(UUID playerId, String skill, long amount) {
-        skillXP
-                .computeIfAbsent(playerId, k -> new HashMap<>())
-                .merge(skill, amount, Long::sum);
+        Map<String, Long> xpMap = skillXP.computeIfAbsent(playerId, k -> new HashMap<>());
+        long current = xpMap.getOrDefault(skill, 0L);
+        int maxLevel = getSkillMaxLevel(skill);
+        if (computeLevel(skill, current) >= maxLevel) {
+            return;
+        }
+        long newXP = current + amount;
+        long cap = xpCapForLevel(skill, maxLevel);
+        if (newXP > cap) newXP = cap;
+        xpMap.put(skill, newXP);
     }
 
     public void setSkillXP(UUID playerId, String skill, long amount) {
