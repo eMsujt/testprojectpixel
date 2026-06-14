@@ -25,8 +25,8 @@ public final class HubCommand implements CommandExecutor {
     private Inventory buildMenu() {
         Inventory inv = Bukkit.createInventory(null, 54, "Hub");
 
-        inv.setItem(10, makeItem(Material.GRASS_BLOCK,   "Farming"));
-        inv.setItem(11, makeItem(Material.IRON_PICKAXE,  "Mining"));
+        inv.setItem(10, makeItem(Material.GRASS_BLOCK, "Garden"));
+        inv.setItem(11, makeItem(Material.IRON_SWORD,  "Slayer"));
         inv.setItem(12, makeItem(Material.COD,           "Fishing"));
         inv.setItem(13, makeItem(Material.OAK_LOG,       "Foraging"));
         inv.setItem(14, makeItem(Material.DIAMOND_SWORD, "Combat"));
