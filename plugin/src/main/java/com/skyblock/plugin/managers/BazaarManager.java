@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +13,13 @@ import java.util.UUID;
 
 public final class BazaarManager {
 
+    public enum OrderType { BUY, SELL }
+
+    public record BazaarOrder(UUID id, UUID player, String item, double price, int quantity, OrderType type) {}
+
     private static final BazaarManager INSTANCE = new BazaarManager();
 
-    private final Map<String, Double> buyPrices = new HashMap<>();
-    private final Map<String, Double> sellPrices = new HashMap<>();
-    private final Map<UUID, List<String>> productWatchlists = new HashMap<>();
+    private final Map<UUID, List<BazaarOrder>> orders = new HashMap<>();
 
     private BazaarManager() {}
 
@@ -24,40 +27,40 @@ public final class BazaarManager {
         return INSTANCE;
     }
 
-    public double getBuyPrice(String item) {
-        return buyPrices.getOrDefault(item, 0.0);
+    public List<BazaarOrder> getOrders(UUID player) {
+        return orders.computeIfAbsent(player, k -> new ArrayList<>());
     }
 
-    public void setBuyPrice(String item, double price) {
-        buyPrices.put(item, price);
+    public void addOrder(BazaarOrder order) {
+        getOrders(order.player()).add(order);
     }
 
-    public double getSellPrice(String item) {
-        return sellPrices.getOrDefault(item, 0.0);
+    public boolean removeOrder(UUID player, UUID orderId) {
+        List<BazaarOrder> list = orders.get(player);
+        if (list == null) {
+            return false;
+        }
+        return list.removeIf(o -> o.id().equals(orderId));
     }
 
-    public void setSellPrice(String item, double price) {
-        sellPrices.put(item, price);
+    public List<BazaarOrder> getAllOrders() {
+        List<BazaarOrder> all = new ArrayList<>();
+        for (List<BazaarOrder> list : orders.values()) {
+            all.addAll(list);
+        }
+        return Collections.unmodifiableList(all);
     }
 
-    public Map<String, Double> getBuyPrices() {
-        return buyPrices;
-    }
-
-    public Map<String, Double> getSellPrices() {
-        return sellPrices;
-    }
-
-    public List<String> getWatchlist(UUID uuid) {
-        return productWatchlists.computeIfAbsent(uuid, k -> new ArrayList<>());
-    }
-
-    public void watchProduct(UUID uuid, String product) {
-        getWatchlist(uuid).add(product);
-    }
-
-    public void unwatchProduct(UUID uuid, String product) {
-        getWatchlist(uuid).remove(product);
+    public List<BazaarOrder> getOrdersByItem(String item, OrderType type) {
+        List<BazaarOrder> result = new ArrayList<>();
+        for (List<BazaarOrder> list : orders.values()) {
+            for (BazaarOrder o : list) {
+                if (o.item().equals(item) && o.type() == type) {
+                    result.add(o);
+                }
+            }
+        }
+        return result;
     }
 
     public void load(File dataFolder) {
@@ -66,22 +69,28 @@ public final class BazaarManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        buyPrices.clear();
-        if (cfg.isConfigurationSection("buyPrices")) {
-            for (String key : cfg.getConfigurationSection("buyPrices").getKeys(false)) {
-                buyPrices.put(key, cfg.getDouble("buyPrices." + key));
-            }
-        }
-        sellPrices.clear();
-        if (cfg.isConfigurationSection("sellPrices")) {
-            for (String key : cfg.getConfigurationSection("sellPrices").getKeys(false)) {
-                sellPrices.put(key, cfg.getDouble("sellPrices." + key));
-            }
-        }
-        productWatchlists.clear();
-        if (cfg.isConfigurationSection("watchlists")) {
-            for (String key : cfg.getConfigurationSection("watchlists").getKeys(false)) {
-                productWatchlists.put(UUID.fromString(key), new ArrayList<>(cfg.getStringList("watchlists." + key)));
+        orders.clear();
+        if (cfg.isConfigurationSection("orders")) {
+            for (String playerKey : cfg.getConfigurationSection("orders").getKeys(false)) {
+                try {
+                    UUID player = UUID.fromString(playerKey);
+                    List<BazaarOrder> list = new ArrayList<>();
+                    String playerPath = "orders." + playerKey;
+                    if (cfg.isConfigurationSection(playerPath)) {
+                        for (String orderKey : cfg.getConfigurationSection(playerPath).getKeys(false)) {
+                            try {
+                                UUID orderId = UUID.fromString(orderKey);
+                                String prefix = playerPath + "." + orderKey + ".";
+                                String item = cfg.getString(prefix + "item", "");
+                                double price = cfg.getDouble(prefix + "price");
+                                int quantity = cfg.getInt(prefix + "quantity", 1);
+                                OrderType type = OrderType.valueOf(cfg.getString(prefix + "type", "BUY"));
+                                list.add(new BazaarOrder(orderId, player, item, price, quantity, type));
+                            } catch (IllegalArgumentException ignored) {}
+                        }
+                    }
+                    orders.put(player, list);
+                } catch (IllegalArgumentException ignored) {}
             }
         }
     }
@@ -89,14 +98,15 @@ public final class BazaarManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "bazaar.yml");
         YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<String, Double> entry : buyPrices.entrySet()) {
-            cfg.set("buyPrices." + entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, Double> entry : sellPrices.entrySet()) {
-            cfg.set("sellPrices." + entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<UUID, List<String>> entry : productWatchlists.entrySet()) {
-            cfg.set("watchlists." + entry.getKey().toString(), entry.getValue());
+        for (Map.Entry<UUID, List<BazaarOrder>> entry : orders.entrySet()) {
+            String playerPath = "orders." + entry.getKey().toString();
+            for (BazaarOrder order : entry.getValue()) {
+                String prefix = playerPath + "." + order.id().toString() + ".";
+                cfg.set(prefix + "item", order.item());
+                cfg.set(prefix + "price", order.price());
+                cfg.set(prefix + "quantity", order.quantity());
+                cfg.set(prefix + "type", order.type().name());
+            }
         }
         try {
             cfg.save(file);
