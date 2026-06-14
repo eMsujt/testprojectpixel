@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public final class GardenCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "tier", "harvest", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "tier", "harvest", "history", "reset");
     private static final List<String> CROP_TYPE_NAMES = Arrays.stream(GardenManager.CropType.values())
             .map(c -> c.name().toLowerCase())
             .collect(Collectors.toList());
@@ -57,7 +57,7 @@ public final class GardenCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|reset>");
+            player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|history|reset>");
             return true;
         }
 
@@ -69,8 +69,9 @@ public final class GardenCommand implements TabExecutor {
             case "plots"    -> handlePlots(player, args);
             case "tier"     -> handleTier(player, args);
             case "harvest"  -> handleHarvest(player, args);
+            case "history"  -> handleHistory(player);
             case "reset"    -> handleReset(player);
-            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|reset>");
+            default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|history|reset>");
         }
         return true;
     }
@@ -289,6 +290,19 @@ public final class GardenCommand implements TabExecutor {
         for (GardenManager.CropType crop : GardenManager.CropType.values()) {
             long total = gardenManager.getHarvestCount(player.getUniqueId(), crop);
             player.sendMessage(crop.name() + ": " + total);
+        }
+    }
+
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        java.util.List<String> history = gardenManager.getGardenHistory(id);
+        player.sendMessage("=== Garden History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No garden history found.");
+        } else {
+            for (int i = 0; i < history.size(); i++) {
+                player.sendMessage((i + 1) + ". " + history.get(i));
+            }
         }
     }
 
