@@ -139,6 +139,7 @@ public final class AuctionHouseManager {
     private final Map<UUID, ListingState> listings = new HashMap<>();
     private final Map<UUID, AuctionItem> items = new HashMap<>();
     private final Map<UUID, Integer> auctionCounts = new HashMap<>();
+    private final Map<UUID, List<String>> auctionHistory = new HashMap<>();
 
     private AuctionHouseManager() {}
 
@@ -351,6 +352,42 @@ public final class AuctionHouseManager {
     }
 
     // -------------------------------------------------------------------------
+    // Auction history
+    // -------------------------------------------------------------------------
+
+    /**
+     * Records an auction event for the given player.
+     *
+     * @param player  the player's UUID, must not be null
+     * @param summary a human-readable description of the event
+     */
+    public void recordAuction(UUID player, String summary) {
+        Objects.requireNonNull(player, "player");
+        auctionHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    /**
+     * Returns the auction history for the given player.
+     *
+     * @param player the player's UUID, must not be null
+     * @return unmodifiable list of history entries; empty if none recorded
+     */
+    public List<String> getAuctionHistory(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return Collections.unmodifiableList(
+                auctionHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    /**
+     * Returns the auction history for all players.
+     *
+     * @return unmodifiable map of player UUID to their history entries
+     */
+    public Map<UUID, List<String>> getAllAuctionHistory() {
+        return Collections.unmodifiableMap(auctionHistory);
+    }
+
+    // -------------------------------------------------------------------------
     // AuctionItem storage
     // -------------------------------------------------------------------------
 
@@ -411,6 +448,7 @@ public final class AuctionHouseManager {
         if (!file.exists()) return;
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         auctionCounts.clear();
+        auctionHistory.clear();
         if (cfg.isConfigurationSection("auctionCounts")) {
             for (String key : cfg.getConfigurationSection("auctionCounts").getKeys(false)) {
                 try {
@@ -433,6 +471,16 @@ public final class AuctionHouseManager {
                 items.put(id, new AuctionItem(itemName, seller, price, endEpoch));
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
+            }
+        }
+        if (cfg.isConfigurationSection("auctionHistory")) {
+            for (String key : cfg.getConfigurationSection("auctionHistory").getKeys(false)) {
+                try {
+                    auctionHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("auctionHistory." + key)));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
             }
         }
         listings.clear();
@@ -481,6 +529,9 @@ public final class AuctionHouseManager {
             cfg.set(key + ".price", item.price());
             cfg.set(key + ".endEpoch", item.endEpoch());
         }
+        for (Map.Entry<UUID, List<String>> entry : auctionHistory.entrySet()) {
+            cfg.set("auctionHistory." + entry.getKey().toString(), entry.getValue());
+        }
         for (Map.Entry<UUID, ListingState> entry : listings.entrySet()) {
             String key = "listings." + entry.getKey().toString();
             ListingState state = entry.getValue();
@@ -503,11 +554,12 @@ public final class AuctionHouseManager {
         }
     }
 
-    /** Removes all stored listings and counts. */
+    /** Removes all stored listings, counts, and history. */
     public void clear() {
         listings.clear();
         items.clear();
         auctionCounts.clear();
+        auctionHistory.clear();
     }
 
     private ListingState requireListing(UUID listingId) {
