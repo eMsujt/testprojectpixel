@@ -22,8 +22,8 @@ public final class CollectionListener implements Listener {
             Map.entry(Material.COBBLESTONE,       Material.COBBLESTONE),
             // Farming crops
             Map.entry(Material.WHEAT,             Material.WHEAT),
-            Map.entry(Material.CARROTS,           Material.WHEAT),
-            Map.entry(Material.POTATOES,          Material.WHEAT),
+            Map.entry(Material.CARROT,            Material.WHEAT),
+            Map.entry(Material.POTATO,            Material.WHEAT),
             // Foraging logs
             Map.entry(Material.OAK_LOG,           Material.OAK_LOG),
             Map.entry(Material.BIRCH_LOG,         Material.OAK_LOG),
