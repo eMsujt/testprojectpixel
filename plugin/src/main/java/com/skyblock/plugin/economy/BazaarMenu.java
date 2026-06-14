@@ -39,13 +39,21 @@ public class BazaarMenu extends Menu {
     /** Centred slots in the middle row, one per category. */
     private static final int[] SLOTS = {20, 21, 22, 23, 24};
 
+    /** Centred top-row slot holding the menu header. */
+    private static final int HEADER_SLOT = 4;
+
     public BazaarMenu() {
-        super("§eBazaar", 6);
+        super("§6Bazaar", 6);
     }
 
     @Override
     protected void build() {
         fillBorder();
+
+        setItem(HEADER_SLOT, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName("§6Bazaar")
+                .lore("§7Buy and sell items with other players.")
+                .build());
 
         Category[] categories = Category.values();
         for (int i = 0; i < categories.length; i++) {
