@@ -23,13 +23,14 @@ import java.util.stream.Collectors;
  *   <li>{@code /auctionhouse view <id>}           — view a specific listing</li>
  *   <li>{@code /auctionhouse cancel <id>}         — cancel your own listing</li>
  *   <li>{@code /auctionhouse mine}                — list your own active listings</li>
+ *   <li>{@code /auctionhouse history}            — show your auction event history</li>
  * </ul>
  * </p>
  */
 public final class AuctionHouseCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("list", "create", "bid", "view", "cancel", "mine");
+            Arrays.asList("list", "create", "bid", "view", "cancel", "mine", "history");
     private static final List<String> CATEGORY_NAMES = Arrays.stream(AuctionHouseManager.AuctionCategory.values())
             .map(c -> c.name().toLowerCase())
             .collect(Collectors.toList());
@@ -48,19 +49,20 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /auctionhouse <list|create|bid|view|cancel|mine>");
+            player.sendMessage("Usage: /auctionhouse <list|create|bid|view|cancel|mine|history>");
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "list"   -> handleList(player, args);
-            case "create" -> handleCreate(player, args);
-            case "bid"    -> handleBid(player, args);
-            case "view"   -> handleView(player, args);
-            case "cancel" -> handleCancel(player, args);
-            case "mine"   -> handleMine(player);
+            case "list"    -> handleList(player, args);
+            case "create"  -> handleCreate(player, args);
+            case "bid"     -> handleBid(player, args);
+            case "view"    -> handleView(player, args);
+            case "cancel"  -> handleCancel(player, args);
+            case "mine"    -> handleMine(player);
+            case "history" -> handleHistory(player);
             default        -> player.sendMessage(
-                    "Unknown subcommand. Usage: /auctionhouse <list|create|bid|view|cancel|mine>");
+                    "Unknown subcommand. Usage: /auctionhouse <list|create|bid|view|cancel|mine|history>");
         }
         return true;
     }
@@ -236,6 +238,18 @@ public final class AuctionHouseCommand implements TabExecutor {
                 l.itemName(),
                 l.startingBid(),
                 l.type().name())));
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = manager.getAuctionHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("You have no auction house history.");
+            return;
+        }
+        player.sendMessage("=== Auction House History ===");
+        for (String entry : history) {
+            player.sendMessage(entry);
+        }
     }
 
     /** Parses an auction category name, sending an error to the player on failure. */
