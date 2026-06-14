@@ -23,9 +23,10 @@ public final class GardenCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "stats"  -> handleStats(player);
-            case "plots"  -> handlePlots(player);
-            default       -> sendHelp(player);
+            case "stats"   -> handleStats(player);
+            case "plots"   -> handlePlots(player);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -47,10 +48,24 @@ public final class GardenCommand implements CommandExecutor {
         player.sendMessage("Unlocked: " + manager.getUnlockedPlots(id));
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        java.util.Map<String, Integer> harvests = GardenManager.getInstance().getCropHarvests(id);
+        player.sendMessage("=== Garden Harvest History ===");
+        if (harvests.isEmpty()) {
+            player.sendMessage("No harvest history found.");
+        } else {
+            for (java.util.Map.Entry<String, Integer> entry : harvests.entrySet()) {
+                player.sendMessage(entry.getKey() + ": " + entry.getValue());
+            }
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Garden Commands ===");
         player.sendMessage("/garden          — show your garden stats");
         player.sendMessage("/garden stats    — show your garden level and plots");
         player.sendMessage("/garden plots    — show your plot counts");
+        player.sendMessage("/garden history  — show your crop harvest history");
     }
 }
