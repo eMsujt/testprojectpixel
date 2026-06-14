@@ -97,6 +97,44 @@ public final class HOTMManager {
         NODE_POWDER_COSTS = Collections.unmodifiableMap(m);
     }
 
+    /**
+     * Static metadata for each HOTM perk.
+     * Each int[] is {@code {maxLevel, bonusPerLevel}} where {@code bonusPerLevel}
+     * is the primary stat increase per upgrade (0 for toggle/ability perks).
+     */
+    public static final Map<String, int[]> PERK_DATA;
+
+    static {
+        Map<String, int[]> p = new LinkedHashMap<>();
+        // multi-level perks — {maxLevel, bonusPerLevel}
+        p.put("MINING_SPEED",            new int[]{50,  20}); // +20 Mining Speed/level
+        p.put("MINING_FORTUNE",          new int[]{50,   5}); // +5 Mining Fortune/level
+        p.put("DAILY_POWDER",            new int[]{100,  1}); // +1 daily Mithril Powder/level
+        p.put("EFFICIENT_MINER",         new int[]{100,  1}); // +0.1% extra block chance/level (×10 scaled)
+        p.put("QUICK_FORGE",             new int[]{20,   5}); // -0.5% forge time/level (×10 scaled)
+        p.put("TITANIUM_INSANITY",       new int[]{50,   2}); // +2 bonus rolls/level
+        p.put("LUCK_OF_THE_CAVE",        new int[]{45,   1}); // +1% luck/level
+        p.put("POWDER_BUFF",             new int[]{50,   1}); // +1% Mithril Powder/level
+        p.put("MOLE",                    new int[]{200,  1}); // +1 cumulative block/level
+        p.put("PROFESSIONAL",            new int[]{140,  4}); // +4 Mining Speed when mining ores/level
+        p.put("LONESOME_MINER",          new int[]{45,   5}); // +5 bonus stats in Crystal Hollows/level
+        p.put("GREAT_EXPLORER",          new int[]{20,   3}); // +3% chest find chance/level
+        p.put("FORTUNATE",               new int[]{20,   4}); // +4 Gemstone Mining Fortune/level
+        p.put("MINING_EXPERIENCE_BOOST", new int[]{100,  1}); // +1 bonus Mining XP/level
+        p.put("SEASONED_MINEMAN",        new int[]{100,  1}); // +1 Mining Wisdom/level
+        p.put("ANOMALOUS_DESIRE",        new int[]{20,   2}); // +2% Gemstone Crystal chance/level
+        // ability/toggle perks — {maxLevel, 0}
+        p.put("MINING_SPEED_BOOST",      new int[]{1,    0}); // active ability: +200% Mining Speed for 10 s
+        p.put("PICKOBULUS",              new int[]{3,    0}); // active ability: AOE pickaxe throw
+        p.put("MINING_MADNESS",          new int[]{1,    0}); // toggle: double Mining Speed & Fortune
+        p.put("SKY_MALL",               new int[]{1,    0}); // toggle: random daily perk
+        p.put("GOBLIN_KILLER",           new int[]{1,    0}); // toggle: Goblins drop Mithril Powder
+        p.put("STAR_POWDER",             new int[]{1,    0}); // toggle: Mithril Golems drop Mithril Powder
+        p.put("MANIACAL_MINER",          new int[]{1,    0}); // passive: mining grants Haste II
+        p.put("VEIN_SEEKER",             new int[]{1,    0}); // toggle: highlight ore veins
+        PERK_DATA = Collections.unmodifiableMap(p);
+    }
+
     private static int[] buildPowderCosts(int levels, int base, double scale) {
         int[] costs = new int[levels];
         for (int i = 0; i < levels; i++) {
