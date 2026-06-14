@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,6 +121,56 @@ public final class ProfileManager implements Listener {
             }
             YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
             Bukkit.getScheduler().runTask(plugin, () -> applyFromDisk(profile, cfg));
+        });
+    }
+
+    /**
+     * Persists the given player's profile to
+     * {@code plugins/SkyBlock/profiles/<uuid>.yml} without blocking the main
+     * thread.
+     *
+     * <p>An immutable YAML snapshot is built on the calling (main) thread from
+     * the profile accessors, then written to disk on an async scheduler thread so
+     * the profile is only ever read on the main thread. No-op if no profile is
+     * registered for the UUID or the plugin is not enabled.</p>
+     *
+     * @param uuid unique identifier of the player to persist
+     */
+    public void saveAsync(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        PlayerProfile profile = profiles.get(uuid);
+        if (profile == null) {
+            return;
+        }
+
+        SkyBlockPlugin plugin = SkyBlockPlugin.getInstance();
+        if (plugin == null) {
+            return;
+        }
+
+        YamlConfiguration cfg = new YamlConfiguration();
+        cfg.set("purse", profile.getPurse());
+        cfg.set("bank", profile.getBank());
+        for (Map.Entry<String, Long> entry : profile.getSkillXp().entrySet()) {
+            cfg.set("skills." + entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
+            cfg.set("collections." + entry.getKey(), entry.getValue());
+        }
+
+        File dir = new File(plugin.getDataFolder(), "profiles");
+        File file = new File(dir, uuid + ".yml");
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            try {
+                cfg.save(file);
+            } catch (IOException e) {
+                plugin.getLogger().warning(
+                        "Failed to save profile for " + uuid + ": " + e.getMessage());
+            }
         });
     }
 
