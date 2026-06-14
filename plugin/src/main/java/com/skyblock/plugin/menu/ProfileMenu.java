@@ -14,7 +14,7 @@ public final class ProfileMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public ProfileMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§bYour SkyBlock Profile");
+        this.inventory = Bukkit.createInventory(this, 54, "§aYour SkyBlock Profile");
         build(player);
     }
 
