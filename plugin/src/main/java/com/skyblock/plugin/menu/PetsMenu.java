@@ -57,7 +57,7 @@ public final class PetsMenu implements InventoryHolder, Listener {
                 inventory.setItem(slot, pane);
             }
         }
-        // Slot 4 — header showing the player's active pet
+        // Centre slot — header showing the player's active pet
         inventory.setItem(ACTIVE_SLOT, makeActiveItem(active));
         List<PetsManager.Pet> owned = pets.getPets(playerId);
         for (int i = 0; i < owned.size() && i < SLOTS.length; i++) {
