@@ -141,6 +141,9 @@ public final class ProfileManager {
     /** uuid -> total SkyBlock XP */
     private final Map<UUID, Long> skyBlockXp = new HashMap<>();
 
+    /** uuid -> profile event history */
+    private final Map<UUID, List<String>> profileHistory = new HashMap<>();
+
     private ProfileManager() {}
 
     /**
@@ -277,6 +280,17 @@ public final class ProfileManager {
                 // skip malformed entries
             }
         }
+        profileHistory.clear();
+        if (cfg.isConfigurationSection("profileHistory")) {
+            for (String key : cfg.getConfigurationSection("profileHistory").getKeys(false)) {
+                try {
+                    profileHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("profileHistory." + key)));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -290,6 +304,9 @@ public final class ProfileManager {
             for (Map.Entry<String, Double> stat : data.stats().entrySet()) {
                 cfg.set(key + ".stats." + stat.getKey(), stat.getValue());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : profileHistory.entrySet()) {
+            cfg.set("profileHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
@@ -348,6 +365,39 @@ public final class ProfileManager {
         return skyBlockXp.getOrDefault(uuid, 0L);
     }
 
+    /**
+     * Records a profile event for the given player.
+     *
+     * @param uuid    the player's unique id
+     * @param summary human-readable description of the event
+     */
+    public void recordProfileEvent(UUID uuid, String summary) {
+        Objects.requireNonNull(uuid, "uuid");
+        Objects.requireNonNull(summary, "summary");
+        profileHistory.computeIfAbsent(uuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    /**
+     * Returns an unmodifiable view of the profile event history for the given player.
+     *
+     * @param uuid the player's unique id
+     * @return the player's profile history, never {@code null}
+     */
+    public List<String> getProfileHistory(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        return Collections.unmodifiableList(
+                profileHistory.getOrDefault(uuid, Collections.emptyList()));
+    }
+
+    /**
+     * Returns an unmodifiable view of the full profile history map.
+     *
+     * @return all players' profile histories
+     */
+    public Map<UUID, List<String>> getAllProfileHistory() {
+        return Collections.unmodifiableMap(profileHistory);
+    }
+
     /** Removes all registered profiles. */
     public void clear() {
         profilesById.clear();
@@ -355,5 +405,6 @@ public final class ProfileManager {
         playerData.clear();
         fairySouls.clear();
         skyBlockXp.clear();
+        profileHistory.clear();
     }
 }
