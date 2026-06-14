@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,6 +19,20 @@ public final class SlayerManager {
     private static final long[] XP_PER_LEVEL = {
             5, 15, 200, 1000, 5000, 20000, 100000, 400000, 1000000
     };
+
+    /** XP awarded per tier kill (T1, T2, T3, T4), keyed by slayer boss short name. */
+    public static final Map<String, int[]> TIER_XP_THRESHOLDS;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("Revenant",   new int[]{5,  15,  200, 1000});
+        m.put("Tarantula",  new int[]{5,  25,  200, 1500});
+        m.put("Sven",       new int[]{10, 30,  250, 1500});
+        m.put("Voidgloom",  new int[]{10, 30,  250, 2500});
+        m.put("Inferno",    new int[]{10, 30,  250, 2500});
+        m.put("Riftstalker",new int[]{10, 30,  250, 2500});
+        TIER_XP_THRESHOLDS = Collections.unmodifiableMap(m);
+    }
 
     public enum SlayerType {
         ZOMBIE("Zombie"),
