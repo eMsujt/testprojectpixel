@@ -25,7 +25,7 @@ public final class BankMenu implements InventoryHolder, Listener {
     /** Slot for the Deposit All button. */
     private static final int DEPOSIT_SLOT = 29;
     /** Slot for the Withdraw All button. */
-    private static final int WITHDRAW_SLOT = 33;
+    private static final int WITHDRAW_SLOT = 15;
     /** Slot for the close button. */
     private static final int CLOSE_SLOT = 49;
 
@@ -70,7 +70,7 @@ public final class BankMenu implements InventoryHolder, Listener {
         inventory.setItem(DEPOSIT_SLOT, makeItem(Material.EMERALD, "§aDeposit All",
                 List.of("§7Move all purse coins into the bank.")));
 
-        inventory.setItem(WITHDRAW_SLOT, makeItem(Material.REDSTONE, "§cWithdraw All",
+        inventory.setItem(WITHDRAW_SLOT, makeItem(Material.GOLD_NUGGET, "§cWithdraw All",
                 List.of("§7Move all bank coins to your purse.")));
 
         inventory.setItem(CLOSE_SLOT, makeItem(Material.BARRIER, "§cClose", null));
