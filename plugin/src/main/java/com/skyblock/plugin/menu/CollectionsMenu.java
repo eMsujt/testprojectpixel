@@ -100,7 +100,24 @@ public final class CollectionsMenu implements InventoryHolder, Listener {
         List<String> lore = new ArrayList<>();
         lore.add("§7Collected: §e" + count);
         lore.add("§7Tier: §e" + tier);
-        return makeItem(material, "§e" + material.name(), lore);
+        return makeItem(material, "§e" + formatName(material), lore);
+    }
+
+    /** Turns a Material like IRON_INGOT into a display name like "Iron Ingot". */
+    private String formatName(Material material) {
+        String[] words = material.name().split("_");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            if (word.isEmpty()) {
+                continue;
+            }
+            if (sb.length() > 0) {
+                sb.append(' ');
+            }
+            sb.append(Character.toUpperCase(word.charAt(0)));
+            sb.append(word.substring(1).toLowerCase());
+        }
+        return sb.toString();
     }
 
     private ItemStack makeItem(Material material, String name, List<String> lore) {
