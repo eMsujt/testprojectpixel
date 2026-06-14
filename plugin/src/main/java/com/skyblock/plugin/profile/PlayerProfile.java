@@ -1,5 +1,7 @@
 package com.skyblock.plugin.profile;
 
+import org.bukkit.inventory.Inventory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,6 +22,7 @@ public final class PlayerProfile {
     private final Map<String, Long> collectionXp = new HashMap<>();
     private long purse = 0L;
     private long bank = 0L;
+    private Inventory enderChest;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -154,6 +157,23 @@ public final class PlayerProfile {
         if (bank < 0) throw new IllegalArgumentException("bank must not be negative");
         this.bank = bank;
     }
+
+    /**
+     * Returns the player's personal Ender Chest storage inventory, or
+     * {@code null} if one has not been created yet.
+     *
+     * @return the Ender Chest inventory, or {@code null}
+     */
+    public Inventory getEnderChest() { return enderChest; }
+
+    /**
+     * Sets the player's personal Ender Chest storage inventory. Items the player
+     * moves into it are mutated in place, so the stored reference persists their
+     * contents across openings.
+     *
+     * @param enderChest the Ender Chest inventory
+     */
+    public void setEnderChest(Inventory enderChest) { this.enderChest = enderChest; }
 
     @Override
     public boolean equals(Object obj) {
