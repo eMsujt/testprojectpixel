@@ -2,9 +2,14 @@ package com.skyblock.plugin.economy;
 
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.gui.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -12,12 +17,14 @@ import java.util.UUID;
 /**
  * The Bank Account menu.
  *
- * <p>A 54-slot (6-row) menu showing the player's bank and purse balances. The
- * bank balance sits in slot 11 ({@link Material#GOLD_BLOCK}); the purse summary
- * mirrors it in slot 15, with deposit and withdraw icons below transferring
- * coins between purse and bank via {@link BankManager}.</p>
+ * <p>A 54-slot (6-row) chest GUI showing the player's bank and purse balances.
+ * The bank balance sits in slot 11 ({@link Material#GOLD_BLOCK}); the purse
+ * summary mirrors it in slot 15, with deposit and withdraw icons below
+ * transferring coins between purse and bank via {@link BankManager}. The menu is
+ * its own {@link InventoryHolder} and {@link Listener}, cancelling clicks on its
+ * own inventory and dispatching the deposit/withdraw actions.</p>
  */
-public class BankMenu extends Menu {
+public final class BankMenu implements InventoryHolder, Listener {
 
     /** Slot holding the bank balance summary. */
     private static final int BANK_SLOT = 11;
@@ -33,6 +40,7 @@ public class BankMenu extends Menu {
     private final Player player;
     private final CoinManager coinManager;
     private final BankManager bankManager;
+    private final Inventory inventory;
 
     /**
      * Creates a bank menu for the given player using the shared managers.
@@ -51,61 +59,80 @@ public class BankMenu extends Menu {
      * @param bankManager the manager moving coins between them
      */
     public BankMenu(Player player, CoinManager coinManager, BankManager bankManager) {
-        super("§6Bank Account", 6);
         this.player = player;
         this.coinManager = coinManager;
         this.bankManager = bankManager;
+        this.inventory = Bukkit.createInventory(this, 54, "§6Bank");
+        build();
+    }
+
+    public void open(Player player) {
+        player.openInventory(inventory);
     }
 
     @Override
-    protected void build() {
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    private void build() {
         fillBorder();
 
         UUID playerId = player.getUniqueId();
 
-        setItem(BANK_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
+        inventory.setItem(BANK_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
                 .displayName("§6Bank Account")
                 .lore("§7Coins in the bank:", "§6" + coinManager.getBank(playerId) + " coins")
                 .build());
 
-        setItem(PURSE_SLOT, new ItemBuilder(Material.SUNFLOWER)
+        inventory.setItem(PURSE_SLOT, new ItemBuilder(Material.SUNFLOWER)
                 .displayName("§6Purse")
                 .lore("§7Coins on hand:", "§6" + coinManager.getPurse(playerId) + " coins")
                 .build());
 
-        setItem(DEPOSIT_SLOT, new ItemBuilder(Material.HOPPER)
-                        .displayName("§aDeposit")
-                        .lore("§7Click to deposit §6" + STEP + " §7coins.")
-                        .build(),
-                event -> {
-                    bankManager.deposit(playerId, STEP);
-                    reopen();
-                });
+        inventory.setItem(DEPOSIT_SLOT, new ItemBuilder(Material.HOPPER)
+                .displayName("§aDeposit")
+                .lore("§7Click to deposit §6" + STEP + " §7coins.")
+                .build());
 
-        setItem(WITHDRAW_SLOT, new ItemBuilder(Material.DROPPER)
-                        .displayName("§cWithdraw")
-                        .lore("§7Click to withdraw §6" + STEP + " §7coins.")
-                        .build(),
-                event -> {
-                    bankManager.withdraw(playerId, STEP);
-                    reopen();
-                });
+        inventory.setItem(WITHDRAW_SLOT, new ItemBuilder(Material.DROPPER)
+                .displayName("§cWithdraw")
+                .lore("§7Click to withdraw §6" + STEP + " §7coins.")
+                .build());
     }
 
-    /** Re-opens the menu so refreshed balances are shown. */
-    private void reopen() {
-        new BankMenu(player, coinManager, bankManager).open(player);
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (!(event.getInventory().getHolder() instanceof BankMenu)) {
+            return;
+        }
+        event.setCancelled(true);
+
+        int slot = event.getRawSlot();
+        if (slot == DEPOSIT_SLOT) {
+            bankManager.deposit(player.getUniqueId(), STEP);
+            refresh();
+        } else if (slot == WITHDRAW_SLOT) {
+            bankManager.withdraw(player.getUniqueId(), STEP);
+            refresh();
+        }
     }
 
-    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
+    /** Rebuilds the menu in place so refreshed balances are shown. */
+    private void refresh() {
+        inventory.clear();
+        build();
+    }
+
+    /** Fills the menu's outer edge with black glass panes. */
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
             int column = slot % 9;
             if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
+                inventory.setItem(slot, pane);
             }
         }
     }
