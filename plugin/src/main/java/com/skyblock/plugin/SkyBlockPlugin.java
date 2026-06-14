@@ -215,6 +215,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WeatherManager.getInstance().save(getDataFolder());
         TimeManager.getInstance().save(getDataFolder());
         NetworkManager.getInstance().save(getDataFolder());
+        com.skyblock.plugin.minion.MinionManager.getInstance().onDisable();
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
