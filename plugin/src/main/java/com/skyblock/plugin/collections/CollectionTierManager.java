@@ -16,13 +16,13 @@ import java.util.Map;
 
 /**
  * YAML-driven registry of collection tier thresholds loaded from
- * {@code collections.yml}.
+ * {@code collection_tiers.yml}.
  *
  * <p>Each key under the {@code collections} section is a collection-id (the
  * collected item's {@link org.bukkit.Material} name) mapped to the ascending
  * list of cumulative amounts required to unlock each tier. The bundled
- * resource is read straight from the jar so it never collides with the
- * player-data {@code collections.yml} written to the data folder.</p>
+ * resource is read straight from the jar so it never collides with any
+ * player-data files written to the data folder.</p>
  */
 public final class CollectionTierManager {
 
@@ -38,13 +38,13 @@ public final class CollectionTierManager {
     }
 
     /**
-     * Reads {@code collections.yml} from the jar and parses every collection's
+     * Reads {@code collection_tiers.yml} from the jar and parses every collection's
      * tier thresholds. Has no effect if the resource is absent.
      *
      * @param plugin the owning plugin, used for resource access and logging
      */
     public void load(JavaPlugin plugin) {
-        InputStream resource = plugin.getResource("collections.yml");
+        InputStream resource = plugin.getResource("collection_tiers.yml");
         if (resource == null) {
             return;
         }
@@ -52,7 +52,7 @@ public final class CollectionTierManager {
         try (Reader reader = new InputStreamReader(resource, StandardCharsets.UTF_8)) {
             cfg = YamlConfiguration.loadConfiguration(reader);
         } catch (java.io.IOException e) {
-            plugin.getLogger().warning("Failed to read collections.yml: " + e.getMessage());
+            plugin.getLogger().warning("Failed to read collection_tiers.yml: " + e.getMessage());
             return;
         }
         ConfigurationSection root = cfg.isConfigurationSection("collections")
