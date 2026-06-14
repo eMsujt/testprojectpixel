@@ -38,6 +38,7 @@ public final class MayorManager {
     private final Map<UUID, String> playerVotes = new HashMap<>();
     private final Map<String, Integer> mayorVotes = new HashMap<>();
     private final Map<UUID, List<String>> voteHistory = new HashMap<>();
+    private final List<String> electionHistory = new ArrayList<>();
 
     private MayorManager() {}
 
@@ -113,6 +114,14 @@ public final class MayorManager {
         return Collections.unmodifiableMap(voteHistory);
     }
 
+    public void recordElectionEvent(String summary) {
+        electionHistory.add(summary);
+    }
+
+    public List<String> getElectionHistory() {
+        return Collections.unmodifiableList(electionHistory);
+    }
+
     public boolean clearMayorVote(UUID playerId) {
         return playerVotes.remove(playerId) != null;
     }
@@ -178,6 +187,7 @@ public final class MayorManager {
                 mayorVotes.put(name, cfg.getInt("mayorVotes." + name, 0));
             }
         }
+        electionHistory.clear();
         voteHistory.clear();
         if (cfg.isConfigurationSection("voteHistory")) {
             for (String key : cfg.getConfigurationSection("voteHistory").getKeys(false)) {
@@ -191,6 +201,10 @@ public final class MayorManager {
                     // skip malformed UUID
                 }
             }
+        }
+        List<String> savedElectionHistory = cfg.getStringList("electionHistory");
+        if (!savedElectionHistory.isEmpty()) {
+            electionHistory.addAll(savedElectionHistory);
         }
     }
 
@@ -210,6 +224,9 @@ public final class MayorManager {
         }
         for (Map.Entry<UUID, List<String>> entry : voteHistory.entrySet()) {
             cfg.set("voteHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        if (!electionHistory.isEmpty()) {
+            cfg.set("electionHistory", electionHistory);
         }
         try {
             cfg.save(file);

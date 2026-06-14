@@ -64,6 +64,9 @@ public final class MayorManager {
     /** Per-player mayor event history. */
     private final Map<UUID, List<String>> mayorHistory = new HashMap<>();
 
+    /** Global election event history. */
+    private final List<String> electionHistory = new ArrayList<>();
+
     private MayorManager() {
     }
 
@@ -155,6 +158,15 @@ public final class MayorManager {
         return Collections.unmodifiableMap(mayorHistory);
     }
 
+    public void recordElectionEvent(String summary) {
+        Objects.requireNonNull(summary, "summary");
+        electionHistory.add(summary);
+    }
+
+    public List<String> getElectionHistory() {
+        return Collections.unmodifiableList(electionHistory);
+    }
+
     // -------------------------------------------------------------------------
     // Lifecycle
     // -------------------------------------------------------------------------
@@ -183,6 +195,7 @@ public final class MayorManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerVotes.clear();
         mayorHistory.clear();
+        electionHistory.clear();
         currentMayor = null;
         String mayorName = cfg.getString("currentMayor");
         if (mayorName != null) {
@@ -222,6 +235,10 @@ public final class MayorManager {
                 }
             }
         }
+        List<String> savedElectionHistory = cfg.getStringList("electionHistory");
+        if (!savedElectionHistory.isEmpty()) {
+            electionHistory.addAll(savedElectionHistory);
+        }
     }
 
     public void save(File dataFolder) {
@@ -235,6 +252,9 @@ public final class MayorManager {
         }
         for (Map.Entry<UUID, List<String>> entry : mayorHistory.entrySet()) {
             cfg.set("mayorHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        if (!electionHistory.isEmpty()) {
+            cfg.set("electionHistory", electionHistory);
         }
         try {
             cfg.save(file);
