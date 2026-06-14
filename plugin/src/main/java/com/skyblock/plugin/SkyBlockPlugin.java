@@ -49,7 +49,6 @@ import com.skyblock.plugin.commands.ProfileCommand;
 import com.skyblock.plugin.commands.SkillsCommand;
 import com.skyblock.plugin.commands.SlayerCommand;
 import com.skyblock.plugin.menu.SkyblockMenuCommand;
-import com.skyblock.slayers.SlayerManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -64,7 +63,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
     private CoinManager coinManager;
     private DungeonManager dungeonManager;
-    private SlayerManager slayerManager;
 
     /**
      * Returns the active plugin instance.
@@ -84,12 +82,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         instance = this;
         coinManager = new CoinManager();
         dungeonManager = new DungeonManager();
-        slayerManager = new SlayerManager();
         AuctionHouseManager.getInstance().load(getDataFolder());
         BankManager.getInstance().load(getDataFolder());
         CollectionsManager.getInstance().load(getDataFolder());
         GardenManager.getInstance().load(getDataFolder());
-        com.skyblock.slayer.SlayerManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().load(getDataFolder());
         KuudraManager.getInstance().load(getDataFolder());
         ProfileManager.getInstance().load(getDataFolder());
@@ -144,7 +140,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         BankManager.getInstance().save(getDataFolder());
         CollectionsManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
-        com.skyblock.slayer.SlayerManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
@@ -185,8 +180,4 @@ public final class SkyBlockPlugin extends JavaPlugin {
         return dungeonManager;
     }
 
-    /** Returns the slayer quest service. */
-    public SlayerManager getSlayerManager() {
-        return slayerManager;
-    }
 }
