@@ -23,6 +23,7 @@ public final class PlayerProfile {
     private long purse = 0L;
     private long bank = 0L;
     private ItemStack[] enderChestContents;
+    private ItemStack[] potionBagContents;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -178,6 +179,28 @@ public final class PlayerProfile {
      */
     public void setEnderChestContents(ItemStack[] enderChestContents) {
         this.enderChestContents = enderChestContents == null ? null : enderChestContents.clone();
+    }
+
+    /**
+     * Returns the player's persisted Potion Bag contents as a per-slot array,
+     * or {@code null} if the Potion Bag has never been opened. Individual slots
+     * may be {@code null} (empty). The returned array is a defensive copy.
+     *
+     * @return the Potion Bag contents, or {@code null}
+     */
+    public ItemStack[] getPotionBagContents() {
+        return potionBagContents == null ? null : potionBagContents.clone();
+    }
+
+    /**
+     * Sets the player's persisted Potion Bag contents from a per-slot array.
+     * The array is copied, so later mutations of the live inventory do not leak
+     * into the stored snapshot.
+     *
+     * @param potionBagContents the Potion Bag contents, may be {@code null}
+     */
+    public void setPotionBagContents(ItemStack[] potionBagContents) {
+        this.potionBagContents = potionBagContents == null ? null : potionBagContents.clone();
     }
 
     @Override
