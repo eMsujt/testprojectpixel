@@ -2,29 +2,34 @@ package com.skyblock.plugin.item;
 
 import org.bukkit.Material;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
- * An immutable custom item: a unique id, a display name, the {@link Material}
- * it renders as, a {@link Rarity} tier and the {@link ItemStatBlock} of bonuses
- * it grants.
+ * An immutable custom item: a unique id, the {@link Material} it renders as, a
+ * display name, a {@link Rarity} tier, its lore lines and the map of stat
+ * bonuses it grants keyed by stat name.
  *
  * @param id          the item's unique id, non-blank
- * @param displayName the item's human-readable name, non-blank
  * @param material    the Bukkit material the item renders as, never null
+ * @param displayName the item's human-readable name, non-blank
  * @param rarity      the item's rarity tier, never null
- * @param statBlock   the stat bonuses the item grants, never null
+ * @param lore        the item's lore lines, never null (defensively copied)
+ * @param stats       the stat bonuses keyed by stat name, never null
+ *                    (defensively copied)
  */
-public record SkyBlockItem(String id, String displayName, Material material, Rarity rarity,
-                           ItemStatBlock statBlock) {
+public record SkyBlockItem(String id, Material material, String displayName, Rarity rarity,
+                           List<String> lore, Map<String, Double> stats) {
 
     /**
-     * Validates the components.
+     * Validates the components and stores unmodifiable copies of {@code lore}
+     * and {@code stats}.
      *
      * @throws IllegalArgumentException if {@code id} or {@code displayName} is
      *                                  null or blank
-     * @throws NullPointerException     if {@code material}, {@code rarity} or
-     *                                  {@code statBlock} is null
+     * @throws NullPointerException     if {@code material}, {@code rarity},
+     *                                  {@code lore} or {@code stats} is null
      */
     public SkyBlockItem {
         if (id == null || id.isBlank()) {
@@ -35,7 +40,19 @@ public record SkyBlockItem(String id, String displayName, Material material, Rar
         }
         Objects.requireNonNull(material, "material");
         Objects.requireNonNull(rarity, "rarity");
-        Objects.requireNonNull(statBlock, "statBlock");
+        lore = List.copyOf(lore);
+        stats = Map.copyOf(stats);
+    }
+
+    /**
+     * Returns the bonus value for {@code stat}, or {@code 0.0} if this item
+     * grants no such stat.
+     *
+     * @param stat the stat name to look up, never null
+     * @return the bonus value, or {@code 0.0} when absent
+     */
+    public double stat(String stat) {
+        return stats.getOrDefault(stat, 0.0);
     }
 
     /**

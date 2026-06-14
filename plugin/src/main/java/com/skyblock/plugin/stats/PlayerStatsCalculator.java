@@ -33,15 +33,15 @@ public final class PlayerStatsCalculator {
         double intelligence = 0, critChance = 0, critDamage = 0, speed = 0;
 
         for (SkyBlockItem item : items) {
-            ItemStatBlock stats = Objects.requireNonNull(item, "item").statBlock();
-            damage += stats.damage();
-            health += stats.health();
-            defense += stats.defense();
-            strength += stats.strength();
-            intelligence += stats.intelligence();
-            critChance += stats.critChance();
-            critDamage += stats.critDamage();
-            speed += stats.speed();
+            Objects.requireNonNull(item, "item");
+            damage += item.stat("damage");
+            health += item.stat("health");
+            defense += item.stat("defense");
+            strength += item.stat("strength");
+            intelligence += item.stat("intelligence");
+            critChance += item.stat("critChance");
+            critDamage += item.stat("critDamage");
+            speed += item.stat("speed");
         }
 
         return new ItemStatBlock(damage, health, defense, strength,
