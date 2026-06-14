@@ -129,7 +129,24 @@ public final class DungeonManager {
 
     public String getDungeonStats(UUID playerId) {
         List<String> history = getDungeonHistory(playerId);
-        return "Total completions: " + history.size();
+        Map<String, Integer> floorCounts = new HashMap<>();
+        for (String entry : history) {
+            for (int f = 1; f <= 7; f++) {
+                String key = "F" + f;
+                if (entry.contains(key)) {
+                    floorCounts.merge(key, 1, Integer::sum);
+                    break;
+                }
+            }
+        }
+        int total = history.size();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Total: ").append(total);
+        for (int f = 1; f <= 7; f++) {
+            String key = "F" + f;
+            sb.append(" | F").append(f).append(": ").append(floorCounts.getOrDefault(key, 0)).append(" runs");
+        }
+        return sb.toString();
     }
 
     public void load(File dataFolder) {
