@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -81,11 +82,11 @@ public final class EnchantingManager {
     }
 
     public Map<String, Integer> getEnchantHistory(UUID playerId) {
-        return enchantHistory.getOrDefault(playerId, new HashMap<>());
+        return Collections.unmodifiableMap(enchantHistory.getOrDefault(playerId, new HashMap<>()));
     }
 
     public Map<UUID, Map<String, Integer>> getAllEnchantHistory() {
-        return enchantHistory;
+        return Collections.unmodifiableMap(enchantHistory);
     }
 
     public void load(File dataFolder) {
