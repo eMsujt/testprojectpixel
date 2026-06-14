@@ -34,8 +34,8 @@ public final class DamageListener implements Listener {
         double critChance = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_CHANCE);
         double critDamage = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_DAMAGE);
 
-        double weaponDamage = event.getDamage();
-        double damage = DamageCalculator.compute(strength, weaponDamage, critChance, critDamage);
+        int weaponDamage = (int) event.getDamage();
+        double damage = DamageCalculator.computeDamage(weaponDamage, strength, critChance, critDamage);
 
         // Apply defense reduction when the victim is a player.
         Entity victim = event.getEntity();
