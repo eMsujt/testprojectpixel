@@ -21,18 +21,19 @@ public final class CombatListener implements Listener {
         }
 
         UUID attackerId = damager.getUniqueId();
-        int weaponDamage  = (int) event.getDamage();
-        double strength   = statManager.getStat(attackerId, StatManager.CombatStat.STRENGTH);
-        double critChance = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_CHANCE);
-        double critDamage = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_DAMAGE);
+        double weaponDamage = event.getDamage();
+        double strength     = statManager.getStat(attackerId, StatManager.CombatStat.STRENGTH);
+        double critChance   = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_CHANCE);
+        double critDamage   = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_DAMAGE);
 
-        double damage = DamageCalculator.calculate(weaponDamage, strength, critChance, critDamage);
+        double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
 
         Entity victim = event.getEntity();
         if (victim instanceof Player) {
             UUID defenderId = victim.getUniqueId();
             double defense     = statManager.getStat(defenderId, StatManager.CombatStat.DEFENSE);
             double trueDefense = statManager.getStat(defenderId, StatManager.CombatStat.TRUE_DEFENSE);
+            // Hypixel defense formula: damage × (1 - defense / (defense + 100)), then flat true-defense reduction
             damage *= (1.0 - defense / (defense + 100.0));
             damage = Math.max(0.0, damage - trueDefense);
         }
