@@ -20,7 +20,7 @@ public final class SkillsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public SkillsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§eYour Skills");
+        this.inventory = Bukkit.createInventory(this, 54, "§aSkills");
         build(player);
     }
 
