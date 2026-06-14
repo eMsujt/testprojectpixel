@@ -70,4 +70,20 @@ public final class CollectionsManager {
         }
         return Collections.unmodifiableMap(copy);
     }
+
+    public String getCollectionStats(UUID playerId) {
+        Map<String, Long> counts = perPlayerCounts.getOrDefault(playerId, new HashMap<>());
+        List<Map.Entry<String, Long>> sorted = new ArrayList<>(counts.entrySet());
+        sorted.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
+        StringBuilder sb = new StringBuilder("Top Collections:");
+        int limit = Math.min(5, sorted.size());
+        if (limit == 0) {
+            sb.append(" none");
+        } else {
+            for (int i = 0; i < limit; i++) {
+                sb.append(" ").append(sorted.get(i).getKey()).append("=").append(sorted.get(i).getValue());
+            }
+        }
+        return sb.toString();
+    }
 }

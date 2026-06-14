@@ -122,6 +122,22 @@ public final class CollectionsManager {
         return Collections.unmodifiableMap(collectionsHistory);
     }
 
+    public String getCollectionStats(UUID playerId) {
+        Map<String, Long> counts = collectionCounts.getOrDefault(playerId, new HashMap<>());
+        List<Map.Entry<String, Long>> sorted = new ArrayList<>(counts.entrySet());
+        sorted.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
+        StringBuilder sb = new StringBuilder("Top Collections:");
+        int limit = Math.min(5, sorted.size());
+        if (limit == 0) {
+            sb.append(" none");
+        } else {
+            for (int i = 0; i < limit; i++) {
+                sb.append(" ").append(sorted.get(i).getKey()).append("=").append(sorted.get(i).getValue());
+            }
+        }
+        return sb.toString();
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "collections.yml");
         if (!file.exists()) {

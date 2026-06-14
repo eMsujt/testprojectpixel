@@ -10,6 +10,12 @@ import java.util.UUID;
 
 public final class CollectionsManager {
 
+    private static final CollectionsManager INSTANCE = new CollectionsManager();
+
+    public static CollectionsManager getInstance() {
+        return INSTANCE;
+    }
+
     private final Map<UUID, Map<String, Long>> collectionAmounts = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> collectionTiers = new HashMap<>();
     private final Map<UUID, List<String>> collectionsHistory = new HashMap<>();
@@ -107,5 +113,21 @@ public final class CollectionsManager {
             copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
         }
         return Collections.unmodifiableMap(copy);
+    }
+
+    public String getCollectionStats(UUID uuid) {
+        Map<String, Long> amounts = collectionAmounts.getOrDefault(uuid, new HashMap<>());
+        List<Map.Entry<String, Long>> sorted = new ArrayList<>(amounts.entrySet());
+        sorted.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
+        StringBuilder sb = new StringBuilder("Top Collections:");
+        int limit = Math.min(5, sorted.size());
+        if (limit == 0) {
+            sb.append(" none");
+        } else {
+            for (int i = 0; i < limit; i++) {
+                sb.append(" ").append(sorted.get(i).getKey()).append("=").append(sorted.get(i).getValue());
+            }
+        }
+        return sb.toString();
     }
 }
