@@ -1,6 +1,8 @@
 package com.skyblock.plugin.skill;
 
 import com.skyblock.plugin.managers.SkillsManager;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,16 +64,37 @@ public final class SkillXpListener implements Listener {
         Long farmingXp = FARMING_XP.get(type);
         if (farmingXp != null) {
             skillsManager.addSkillXP(player.getUniqueId(), "farming", farmingXp);
+            sendXpBar(player, "farming", farmingXp);
             return;
         }
         Long miningXp = MINING_XP.get(type);
         if (miningXp != null) {
             skillsManager.addSkillXP(player.getUniqueId(), "mining", miningXp);
+            sendXpBar(player, "mining", miningXp);
             return;
         }
         Long foragingXp = FORAGING_XP.get(type);
         if (foragingXp != null) {
             skillsManager.addSkillXP(player.getUniqueId(), "foraging", foragingXp);
+            sendXpBar(player, "foraging", foragingXp);
         }
+    }
+
+    private void sendXpBar(Player player, String skill, long xpGained) {
+        long total = skillsManager.getSkillXP(player.getUniqueId(), skill);
+        int level = skillsManager.getSkillLevel(player.getUniqueId(), skill);
+        long[] table = SkillsManager.SKILL_XP_TABLE.get(skill);
+        String displayName = Character.toUpperCase(skill.charAt(0)) + skill.substring(1);
+        String msg;
+        if (table == null || level >= table.length) {
+            msg = "§a+" + xpGained + " " + displayName + " XP §7(§eMAXED§7)";
+        } else {
+            long cumulative = 0;
+            for (int i = 0; i < level; i++) cumulative += table[i];
+            long inLevel = total - cumulative;
+            long forNext = table[level];
+            msg = "§a+" + xpGained + " " + displayName + " XP §7(§e" + inLevel + "§7/§e" + forNext + "§7)";
+        }
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(msg));
     }
 }
