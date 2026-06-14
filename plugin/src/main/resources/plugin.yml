@@ -99,6 +99,22 @@ commands:
     description: Manage your SkyBlock quests.
     usage: /<command> [list|start <quest>|status|abandon]
     permission: skyblock.command.quest
+  garden:
+    description: View and manage your SkyBlock garden.
+    usage: /<command>
+    permission: skyblock.command.garden
+  pets:
+    description: View and manage your SkyBlock pets.
+    usage: /<command>
+    permission: skyblock.command.pets
+  collections:
+    description: View your SkyBlock collections progress.
+    usage: /<command>
+    permission: skyblock.command.collections
+  hotm:
+    description: View your Heart of the Mountain progress.
+    usage: /<command>
+    permission: skyblock.command.hotm
 
 permissions:
   skyblock.command.skyblock:
@@ -166,4 +182,16 @@ permissions:
     default: true
   skyblock.command.quest:
     description: Allows use of the /quest command.
+    default: true
+  skyblock.command.garden:
+    description: Allows use of the /garden command.
+    default: true
+  skyblock.command.pets:
+    description: Allows use of the /pets command.
+    default: true
+  skyblock.command.collections:
+    description: Allows use of the /collections command.
+    default: true
+  skyblock.command.hotm:
+    description: Allows use of the /hotm command.
     default: true
