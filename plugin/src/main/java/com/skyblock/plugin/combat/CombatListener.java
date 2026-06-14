@@ -8,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Bukkit listener that intercepts {@link EntityDamageByEntityEvent} and, when the
@@ -33,8 +32,7 @@ public final class CombatListener implements Listener {
 
         // The vanilla damage of the swung weapon feeds the formula's weapon-damage term.
         double weaponDamage = event.getDamage();
-        boolean crit = ThreadLocalRandom.current().nextDouble() * 100.0 < critChance;
-        double damage = DamageFormula.calculate(weaponDamage, strength, crit ? critDamage : 0.0);
+        double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
 
         event.setDamage(damage);
     }
