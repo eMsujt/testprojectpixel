@@ -1,5 +1,10 @@
 package com.skyblock.plugin.islands;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -83,5 +88,69 @@ public final class IslandManager {
      */
     public Collection<IslandData> getIslands() {
         return Collections.unmodifiableCollection(islands.values());
+    }
+
+    /**
+     * Loads islands from {@code islands.yml} in the given data folder, replacing
+     * any currently registered islands. Missing or malformed entries are skipped.
+     *
+     * @param dataFolder the plugin data folder containing {@code islands.yml}
+     */
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "islands.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection root = cfg.getConfigurationSection("islands");
+        islands.clear();
+        if (root == null) {
+            return;
+        }
+        for (String key : root.getKeys(false)) {
+            ConfigurationSection section = root.getConfigurationSection(key);
+            if (section == null) {
+                continue;
+            }
+            UUID owner;
+            try {
+                owner = UUID.fromString(key);
+            } catch (IllegalArgumentException ignored) {
+                continue;
+            }
+            String worldName = section.getString("world");
+            if (worldName == null) {
+                continue;
+            }
+            islands.put(owner, new IslandData(
+                    owner,
+                    worldName,
+                    section.getDouble("x"),
+                    section.getDouble("y"),
+                    section.getDouble("z")));
+        }
+    }
+
+    /**
+     * Saves every registered island to {@code islands.yml} in the given data
+     * folder, mapping each owner's UUID to its island.
+     *
+     * @param dataFolder the plugin data folder to write {@code islands.yml} into
+     */
+    public void save(File dataFolder) {
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, IslandData> entry : islands.entrySet()) {
+            String path = "islands." + entry.getKey();
+            IslandData island = entry.getValue();
+            cfg.set(path + ".world", island.worldName());
+            cfg.set(path + ".x", island.spawnX());
+            cfg.set(path + ".y", island.spawnY());
+            cfg.set(path + ".z", island.spawnZ());
+        }
+        try {
+            cfg.save(new File(dataFolder, "islands.yml"));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save islands.yml", e);
+        }
     }
 }
