@@ -47,12 +47,13 @@ public final class DungeonCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "join" -> handleJoin(player, args);
-            case "leave" -> handleLeave(player);
-            case "status" -> handleStatus(player);
-            case "stats" -> handleStats(player, args);
-            case "class" -> handleClass(player, args);
-            default -> sendHelp(player);
+            case "join"    -> handleJoin(player, args);
+            case "leave"   -> handleLeave(player);
+            case "status"  -> handleStatus(player);
+            case "stats"   -> handleStats(player, args);
+            case "class"   -> handleClass(player, args);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -61,7 +62,7 @@ public final class DungeonCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("join", "leave", "status", "stats", "class").stream()
+            return Arrays.asList("join", "leave", "status", "stats", "class", "history").stream()
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
@@ -172,6 +173,18 @@ public final class DungeonCommand implements TabExecutor {
         player.sendMessage("Dungeon class set to: " + dungeonClass.name());
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = dungeonManager.getDungeonHistory(player.getUniqueId());
+        player.sendMessage("=== Dungeon History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No dungeon history found.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Dungeon Commands ===");
         player.sendMessage("/dungeon join <type> — join a dungeon run");
@@ -179,5 +192,6 @@ public final class DungeonCommand implements TabExecutor {
         player.sendMessage("/dungeon status — show current run info");
         player.sendMessage("/dungeon stats [type] — show completion stats");
         player.sendMessage("/dungeon class <class> — select your dungeon class");
+        player.sendMessage("/dungeon history — view your dungeon run history");
     }
 }
