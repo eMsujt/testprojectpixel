@@ -14,19 +14,15 @@ public final class CollectionsMenu {
     }
 
     private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§eCollections");
+        Inventory inv = Bukkit.createInventory(null, 54, "§6Collections");
 
-        // Category selector — 10 icons centered across two rows
-        inv.setItem(20, makeItem(Material.WHEAT,        "§aFarming"));
-        inv.setItem(21, makeItem(Material.COBBLESTONE,  "§aMining"));
-        inv.setItem(22, makeItem(Material.ROTTEN_FLESH, "§aCombat"));
-        inv.setItem(23, makeItem(Material.OAK_LOG,      "§aForaging"));
-        inv.setItem(24, makeItem(Material.COD,          "§aFishing"));
-        inv.setItem(29, makeItem(Material.GUNPOWDER,    "§aRift"));
-        inv.setItem(30, makeItem(Material.IRON_SWORD,   "§aSlayer"));
-        inv.setItem(31, makeItem(Material.STONE_BRICKS, "§aDungeoneering"));
-        inv.setItem(32, makeItem(Material.SUGAR_CANE,   "§aAlchemy"));
-        inv.setItem(33, makeItem(Material.ENCHANTING_TABLE, "§aEnchanting"));
+        // Six category icons centered in row 3
+        inv.setItem(20, makeItem(Material.WHEAT,        "§6Farming"));
+        inv.setItem(21, makeItem(Material.COBBLESTONE,  "§6Mining"));
+        inv.setItem(22, makeItem(Material.ROTTEN_FLESH, "§6Combat"));
+        inv.setItem(23, makeItem(Material.OAK_LOG,      "§6Foraging"));
+        inv.setItem(24, makeItem(Material.COD,          "§6Fishing"));
+        inv.setItem(25, makeItem(Material.ENDER_PEARL,  "§6Rift"));
 
         return inv;
     }
