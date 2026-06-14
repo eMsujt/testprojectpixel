@@ -106,8 +106,8 @@ public final class EnchantingCommand implements CommandExecutor {
             player.sendMessage("You have no enchanting history.");
             return;
         }
-        for (String entry : history) {
-            player.sendMessage("  " + entry);
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
         }
     }
 

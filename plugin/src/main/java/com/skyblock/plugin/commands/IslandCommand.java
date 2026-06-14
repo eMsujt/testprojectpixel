@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class IslandCommand implements CommandExecutor {
@@ -72,7 +73,7 @@ public final class IslandCommand implements CommandExecutor {
 
     private void handleHistory(Player player) {
         UUID id = player.getUniqueId();
-        java.util.List<String> history = IslandManager.getInstance().getIslandHistory(id);
+        List<String> history = IslandManager.getInstance().getIslandHistory(id);
         player.sendMessage("=== Island History ===");
         if (history.isEmpty()) {
             player.sendMessage("No history recorded.");

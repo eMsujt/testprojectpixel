@@ -56,10 +56,10 @@ public final class ProfileCommand implements CommandExecutor {
         player.sendMessage("=== Profile History ===");
         if (history.isEmpty()) {
             player.sendMessage("No profile history found.");
-        } else {
-            for (int i = 0; i < history.size(); i++) {
-                player.sendMessage((i + 1) + ". " + history.get(i));
-            }
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
         }
     }
 

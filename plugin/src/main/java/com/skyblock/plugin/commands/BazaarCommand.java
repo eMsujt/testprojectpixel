@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public final class BazaarCommand implements CommandExecutor {
 
@@ -129,15 +130,15 @@ public final class BazaarCommand implements CommandExecutor {
     }
 
     private void handleHistory(Player player, String[] args) {
-        java.util.UUID uuid = player.getUniqueId();
+        UUID uuid = player.getUniqueId();
         List<String> history = BazaarManager.getInstance().getOrderHistory(uuid);
+        player.sendMessage("=== Bazaar Order History ===");
         if (history.isEmpty()) {
             player.sendMessage("You have no bazaar order history.");
             return;
         }
-        player.sendMessage("=== Bazaar Order History (" + history.size() + " entries) ===");
         for (int i = 0; i < history.size(); i++) {
-            player.sendMessage("#" + (i + 1) + ": " + history.get(i));
+            player.sendMessage((i + 1) + ". " + history.get(i));
         }
     }
 
