@@ -23,6 +23,7 @@ public final class BazaarManager {
     private final Map<String, Double> sellPrices = new HashMap<>();
     private final Map<String, List<BuyOrder>> buyOrders = new HashMap<>();
     private final Map<String, List<SellOrder>> sellOrders = new HashMap<>();
+    private final Map<String, List<Double>> priceHistory = new HashMap<>();
 
     private BazaarManager() {}
 
@@ -52,6 +53,24 @@ public final class BazaarManager {
 
     public Map<String, Double> getSellPrices() {
         return Collections.unmodifiableMap(sellPrices);
+    }
+
+    // Price history
+
+    public List<Double> getPriceHistory(String item) {
+        return Collections.unmodifiableList(priceHistory.computeIfAbsent(item, k -> new ArrayList<>()));
+    }
+
+    public void addPriceHistory(String item, double price) {
+        priceHistory.computeIfAbsent(item, k -> new ArrayList<>()).add(price);
+    }
+
+    public Map<String, List<Double>> getAllPriceHistory() {
+        Map<String, List<Double>> copy = new HashMap<>();
+        for (Map.Entry<String, List<Double>> entry : priceHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
     }
 
     // Buy orders
@@ -116,6 +135,7 @@ public final class BazaarManager {
         sellPrices.clear();
         buyOrders.clear();
         sellOrders.clear();
+        priceHistory.clear();
 
         if (cfg.isConfigurationSection("buy")) {
             for (String key : cfg.getConfigurationSection("buy").getKeys(false)) {
@@ -125,6 +145,18 @@ public final class BazaarManager {
         if (cfg.isConfigurationSection("sell")) {
             for (String key : cfg.getConfigurationSection("sell").getKeys(false)) {
                 sellPrices.put(key, cfg.getDouble("sell." + key));
+            }
+        }
+
+        if (cfg.isConfigurationSection("priceHistory")) {
+            for (String key : cfg.getConfigurationSection("priceHistory").getKeys(false)) {
+                List<Double> history = new ArrayList<>();
+                for (Object val : cfg.getList("priceHistory." + key, new ArrayList<>())) {
+                    if (val instanceof Number number) {
+                        history.add(number.doubleValue());
+                    }
+                }
+                priceHistory.put(key, history);
             }
         }
 
@@ -178,6 +210,10 @@ public final class BazaarManager {
         }
         for (Map.Entry<String, Double> entry : sellPrices.entrySet()) {
             cfg.set("sell." + entry.getKey(), entry.getValue());
+        }
+
+        for (Map.Entry<String, List<Double>> entry : priceHistory.entrySet()) {
+            cfg.set("priceHistory." + entry.getKey(), new ArrayList<>(entry.getValue()));
         }
 
         for (Map.Entry<String, List<BuyOrder>> entry : buyOrders.entrySet()) {
