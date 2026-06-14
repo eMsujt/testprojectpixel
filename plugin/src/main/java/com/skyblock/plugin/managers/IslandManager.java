@@ -21,6 +21,7 @@ public final class IslandManager {
     private final Map<UUID, Integer> visitorCounts = new HashMap<>();
     private final Map<UUID, List<String>> islandBuildings = new HashMap<>();
     private final Map<UUID, List<UUID>> islandVisitors = new HashMap<>();
+    private final Map<UUID, List<UUID>> islandMembers = new HashMap<>();
 
     private IslandManager() {}
 
@@ -108,6 +109,25 @@ public final class IslandManager {
         return Collections.unmodifiableMap(islandVisitors);
     }
 
+    public void addMember(UUID owner, UUID member) {
+        islandMembers.computeIfAbsent(owner, k -> new ArrayList<>()).add(member);
+    }
+
+    public void removeMember(UUID owner, UUID member) {
+        List<UUID> members = islandMembers.get(owner);
+        if (members != null) {
+            members.remove(member);
+        }
+    }
+
+    public List<UUID> getIslandMembers(UUID owner) {
+        return Collections.unmodifiableList(islandMembers.getOrDefault(owner, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<UUID>> getAllIslandMembers() {
+        return Collections.unmodifiableMap(islandMembers);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "island.yml");
         if (!file.exists()) {
@@ -120,6 +140,7 @@ public final class IslandManager {
         visitorCounts.clear();
         islandBuildings.clear();
         islandVisitors.clear();
+        islandMembers.clear();
         if (cfg.isConfigurationSection("islandBiome")) {
             for (String key : cfg.getConfigurationSection("islandBiome").getKeys(false)) {
                 try {
@@ -168,6 +189,18 @@ public final class IslandManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        if (cfg.isConfigurationSection("islandMembers")) {
+            for (String key : cfg.getConfigurationSection("islandMembers").getKeys(false)) {
+                try {
+                    List<String> raw = cfg.getStringList("islandMembers." + key);
+                    List<UUID> members = new ArrayList<>();
+                    for (String m : raw) {
+                        try { members.add(UUID.fromString(m)); } catch (IllegalArgumentException ignored) {}
+                    }
+                    islandMembers.put(UUID.fromString(key), members);
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -194,6 +227,13 @@ public final class IslandManager {
                 raw.add(v.toString());
             }
             cfg.set("islandVisitors." + entry.getKey().toString(), raw);
+        }
+        for (Map.Entry<UUID, List<UUID>> entry : islandMembers.entrySet()) {
+            List<String> raw = new ArrayList<>();
+            for (UUID m : entry.getValue()) {
+                raw.add(m.toString());
+            }
+            cfg.set("islandMembers." + entry.getKey().toString(), raw);
         }
         try {
             cfg.save(file);
