@@ -36,7 +36,10 @@ import com.skyblock.plugin.command.dungeon.DungeonCommand;
 import com.skyblock.plugin.command.fairy.FairyCommand;
 import com.skyblock.plugin.commands.BankCommand;
 import com.skyblock.plugin.commands.BazaarCommand;
+import com.skyblock.plugin.commands.CollectionsCommand;
+import com.skyblock.plugin.commands.EnchantingCommand;
 import com.skyblock.plugin.commands.FishingCommand;
+import com.skyblock.plugin.commands.HOTMCommand;
 import com.skyblock.plugin.commands.IslandCommand;
 import com.skyblock.plugin.commands.KuudraCommand;
 import com.skyblock.plugin.commands.MayorCommand;
@@ -123,6 +126,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("wardrobe").setExecutor(new WardrobeCommand());
         getCommand("slayer").setExecutor(new SlayerCommand());
         getCommand("fishing").setExecutor(new FishingCommand());
+        getCommand("collections").setExecutor(new CollectionsCommand());
+        getCommand("enchanting").setExecutor(new EnchantingCommand());
+        getCommand("hotm").setExecutor(new HOTMCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
