@@ -87,6 +87,18 @@ commands:
     description: Manage your SkyBlock fishing skill.
     usage: /<command> [level|stats|loot|creatures]
     permission: skyblock.command.fishing
+  trade:
+    description: Trade items with another SkyBlock player.
+    usage: /<command> <player>
+    permission: skyblock.command.trade
+  event:
+    description: View and join SkyBlock events.
+    usage: /<command> [current|list|join <event>|status]
+    permission: skyblock.command.event
+  quest:
+    description: Manage your SkyBlock quests.
+    usage: /<command> [list|start <quest>|status|abandon]
+    permission: skyblock.command.quest
 
 permissions:
   skyblock.command.skyblock:
@@ -145,4 +157,13 @@ permissions:
     default: true
   skyblock.command.fishing:
     description: Allows use of the /fishing command.
+    default: true
+  skyblock.command.trade:
+    description: Allows use of the /trade command.
+    default: true
+  skyblock.command.event:
+    description: Allows use of the /event command.
+    default: true
+  skyblock.command.quest:
+    description: Allows use of the /quest command.
     default: true
