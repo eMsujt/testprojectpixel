@@ -16,13 +16,13 @@ public final class DamageCalculator {
     /**
      * Computes the damage of a melee hit, rolling for a critical strike.
      *
-     * @param strength     attacker's strength stat, clamped to &ge; 0
      * @param weaponDamage base weapon damage stat, clamped to &ge; 0
+     * @param strength     attacker's strength stat, clamped to &ge; 0
      * @param critChance   chance to land a critical hit as a percentage, e.g. {@code 30.0} for 30 %
      * @param critDamage   crit damage bonus as a percentage, e.g. {@code 50.0} for +50 %
      * @return the final damage dealt, never negative
      */
-    public static double compute(double strength, double weaponDamage, double critChance, double critDamage) {
+    public static double computeDamage(int weaponDamage, double strength, double critChance, double critDamage) {
         double str = Math.max(0.0, strength);
         double weapon = Math.max(0.0, weaponDamage);
         double base = (5 + weapon + Math.floor(str / 5.0)) * (1 + str / 100.0);
