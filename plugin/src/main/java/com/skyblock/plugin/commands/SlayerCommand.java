@@ -1,6 +1,7 @@
 package com.skyblock.plugin.commands;
 
 import com.skyblock.plugin.managers.SlayerManager;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -89,7 +90,10 @@ public final class SlayerCommand implements CommandExecutor {
         int rank = 1;
         for (Map.Entry<UUID, Long> entry : sorted) {
             if (rank > 10) break;
-            player.sendMessage(rank + ". " + entry.getKey() + " — XP: " + entry.getValue());
+            UUID uuid = entry.getKey();
+            String name = Bukkit.getOfflinePlayer(uuid).getName();
+            if (name == null) name = uuid.toString();
+            player.sendMessage(rank + ". " + name + " — XP: " + entry.getValue());
             rank++;
         }
     }
