@@ -1,0 +1,80 @@
+items:
+  ASPECT_OF_THE_END:
+    displayName: "Aspect of the End"
+    material: DIAMOND_SWORD
+    rarity: RARE
+    damage: 100.0
+    strength: 100
+    description: "Teleports you forward on right-click."
+
+  MIDAS_SWORD:
+    displayName: "Midas Sword"
+    material: GOLDEN_SWORD
+    rarity: LEGENDARY
+    damage: 175.0
+    strength: 50
+    description: "Damage scales with the coins you paid for it."
+
+  RAIDER_AXE:
+    displayName: "Raider Axe"
+    material: IRON_AXE
+    rarity: UNCOMMON
+    damage: 60.0
+    strength: 25
+    description: "Deals bonus damage to spawnable mobs."
+
+  ROGUE_SWORD:
+    displayName: "Rogue Sword"
+    material: GOLDEN_SWORD
+    rarity: UNCOMMON
+    damage: 30.0
+    speed: 50
+    description: "Grants a burst of speed on right-click."
+
+  HUNTER_KNIFE:
+    displayName: "Hunter Knife"
+    material: SHEARS
+    rarity: COMMON
+    damage: 25.0
+    strength: 15
+    description: "A reliable blade for early hunting."
+
+  FARM_SUIT_HELMET:
+    displayName: "Farm Suit Helmet"
+    material: LEATHER_HELMET
+    rarity: COMMON
+    health: 25.0
+    defense: 15
+    description: "Part of the Farm Suit set."
+
+  FARM_SUIT_CHESTPLATE:
+    displayName: "Farm Suit Chestplate"
+    material: LEATHER_CHESTPLATE
+    rarity: COMMON
+    health: 40.0
+    defense: 25
+    description: "Part of the Farm Suit set."
+
+  FARM_SUIT_LEGGINGS:
+    displayName: "Farm Suit Leggings"
+    material: LEATHER_LEGGINGS
+    rarity: COMMON
+    health: 35.0
+    defense: 20
+    description: "Part of the Farm Suit set."
+
+  FARM_SUIT_BOOTS:
+    displayName: "Farm Suit Boots"
+    material: LEATHER_BOOTS
+    rarity: COMMON
+    health: 25.0
+    defense: 15
+    description: "Part of the Farm Suit set."
+
+  ASPECT_OF_THE_DRAGON:
+    displayName: "Aspect of the Dragon"
+    material: DIAMOND_SWORD
+    rarity: LEGENDARY
+    damage: 225.0
+    strength: 100
+    description: "Summons dragon fury on right-click."
