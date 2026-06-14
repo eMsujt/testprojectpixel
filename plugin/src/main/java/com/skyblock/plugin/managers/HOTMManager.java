@@ -64,6 +64,9 @@ public final class HOTMManager {
             xp -= HOTM_XP_TABLE[level - 1];
             level++;
         }
+        if (level > getHOTMLevel(playerId)) {
+            recordHotmEvent(playerId, "Unlocked HOTM tier " + level);
+        }
         hotmLevel.put(playerId, level);
         hotmXP.put(playerId, xp);
     }
@@ -123,6 +126,7 @@ public final class HOTMManager {
 
     public void recordUpgrade(UUID playerId, String summary) {
         upgradeHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+        recordHotmEvent(playerId, summary);
     }
 
     public List<String> getUpgradeHistory(UUID playerId) {
