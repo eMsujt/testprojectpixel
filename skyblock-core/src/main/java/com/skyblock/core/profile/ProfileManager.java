@@ -105,6 +105,25 @@ public final class ProfileManager {
 
     public static final int MAX_PROFILES = 4;
 
+    /**
+     * Static metadata for each SkyBlock profile mode.
+     *
+     * <p>Key: profile mode name (e.g. {@code "NORMAL"}, {@code "IRONMAN"}).
+     * Value: {@code int[]} with {@code [maxProfiles, coopSlots, bankingEnabled]}
+     * where {@code bankingEnabled} uses {@code 1} for true and {@code 0} for false.</p>
+     */
+    public static final Map<String, int[]> PROFILE_TYPE_DATA;
+
+    static {
+        Map<String, int[]> m = new HashMap<>();
+        // {maxProfiles, coopSlots, bankingEnabled}
+        m.put("NORMAL",   new int[]{4, 4, 1});
+        m.put("IRONMAN",  new int[]{2, 0, 0});
+        m.put("STRANDED", new int[]{1, 0, 0});
+        m.put("BINGO",    new int[]{1, 0, 0});
+        PROFILE_TYPE_DATA = Collections.unmodifiableMap(m);
+    }
+
     private static final ProfileManager INSTANCE = new ProfileManager();
 
     /** profileId -> profile */
