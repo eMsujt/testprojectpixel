@@ -5,12 +5,15 @@ import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.enchanting.EnchantingManager;
+import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.profile.ProfileManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.command.auctionhouse.AuctionHouseCommand;
+import com.skyblock.plugin.command.dungeon.DungeonCommand;
+import com.skyblock.plugin.command.fairy.FairyCommand;
 import com.skyblock.plugin.commands.BankCommand;
 import com.skyblock.plugin.commands.BazaarCommand;
 import com.skyblock.plugin.commands.IslandCommand;
@@ -63,6 +66,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ProfileManager.getInstance().load(getDataFolder());
         EnchantingManager.getInstance().load(getDataFolder());
         BazaarManager.getInstance().load(getDataFolder());
+        FairyManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
         getCommand("mayor").setExecutor(new MayorCommand());
@@ -71,6 +75,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("kuudra").setExecutor(new KuudraCommand());
         getCommand("bazaar").setExecutor(new BazaarCommand());
         getCommand("profile").setExecutor(new ProfileCommand());
+        getCommand("dungeon").setExecutor(new DungeonCommand());
+        getCommand("fairy").setExecutor(new FairyCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
@@ -85,6 +91,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         ProfileManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
         BazaarManager.getInstance().save(getDataFolder());
+        FairyManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
