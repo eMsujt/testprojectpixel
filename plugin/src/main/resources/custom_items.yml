@@ -1,0 +1,35 @@
+items:
+  ASPECT_OF_THE_END:
+    displayName: "Aspect of the End"
+    material: END_STONE
+    rarity: EPIC
+    strength: 100
+    intelligence: 100
+
+  HYPERION:
+    displayName: "Hyperion"
+    material: NETHERITE_SWORD
+    rarity: MYTHIC
+    strength: 150
+    intelligence: 350
+
+  SUPERIOR_DRAGON_CHESTPLATE:
+    displayName: "Superior Dragon Chestplate"
+    material: GOLDEN_CHESTPLATE
+    rarity: LEGENDARY
+    health: 270.0
+    defense: 130
+    strength: 25
+
+  LIVID_DAGGER:
+    displayName: "Livid Dagger"
+    material: IRON_SWORD
+    rarity: LEGENDARY
+    speed: 30
+    critDamage: 90
+
+  SPEED_TALISMAN:
+    displayName: "Speed Talisman"
+    material: RABBIT_FOOT
+    rarity: COMMON
+    speed: 1
