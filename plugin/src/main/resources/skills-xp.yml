@@ -1,9 +1,10 @@
 # Per-action skill XP granted by SkillProgressionListener, read straight from the
 # jar. Each `farming`, `mining` and `foraging` key is a Bukkit Material name whose
 # value is the XP awarded when that block is broken (farming crops only count once
-# mature); `fishing` is the flat XP granted per fish reeled in. Unlisted materials
-# grant no XP. If this file is missing the listener falls back to its built-in
-# defaults.
+# mature); each `combat` key is a Bukkit EntityType name whose value is the XP
+# awarded when a player kills that mob; `fishing` is the flat XP granted per fish
+# reeled in. Unlisted materials/entities grant no XP. If this file is missing the
+# listener falls back to its built-in defaults.
 farming:
   WHEAT: 3
   POTATOES: 3
@@ -38,4 +39,10 @@ foraging:
   DARK_OAK_LOG: 6
   MANGROVE_LOG: 6
   CHERRY_LOG: 6
+combat:
+  ZOMBIE: 5
+  SKELETON: 5
+  SPIDER: 5
+  CREEPER: 7
+  ENDERMAN: 12
 fishing: 6
