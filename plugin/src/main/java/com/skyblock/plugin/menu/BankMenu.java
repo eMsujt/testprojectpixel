@@ -18,7 +18,7 @@ import java.util.List;
 public final class BankMenu implements InventoryHolder, Listener {
 
     private static final String TITLE = "§6Bank Account";
-    private static final int SIZE = 27;
+    private static final int SIZE = 54;
 
     /** Slot showing the bank/purse balance summary. */
     private static final int BALANCE_SLOT = 13;
@@ -63,7 +63,7 @@ public final class BankMenu implements InventoryHolder, Listener {
         long bank = bm.getBank(player.getUniqueId());
         long purse = bm.getPurse(player.getUniqueId());
 
-        inventory.setItem(BALANCE_SLOT, makeItem(Material.GOLD_BLOCK, "§aBank & Purse",
+        inventory.setItem(BALANCE_SLOT, makeItem(Material.GOLD_INGOT, "§aBank & Purse",
                 Arrays.asList("§7Balance: §6" + bank + " coins",
                               "§7Purse: §6" + purse + " coins")));
 
