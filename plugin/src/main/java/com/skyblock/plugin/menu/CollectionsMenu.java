@@ -41,7 +41,7 @@ public final class CollectionsMenu implements InventoryHolder, Listener {
     private Category currentCategory = Category.FARMING;
 
     public CollectionsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§eCollections");
+        this.inventory = Bukkit.createInventory(this, 54, "§2Collections");
         build(player);
     }
 
@@ -58,8 +58,12 @@ public final class CollectionsMenu implements InventoryHolder, Listener {
         inventory.clear();
 
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", Arrays.asList());
-        for (int slot = 45; slot < 54; slot++) {
-            inventory.setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int row = slot / 9;
+            int col = slot % 9;
+            if (row == 0 || row == 5 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
         }
 
         // Top row: one tab per category; the selected tab is highlighted.
