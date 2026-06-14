@@ -49,6 +49,7 @@ public final class DungeonManager {
                 .computeIfAbsent(floor, f -> new FloorRecord());
         record.completions++;
         record.bestScore = Math.max(record.bestScore, score);
+        recordDungeonEvent(playerId, "Completed floor " + floor + " with score " + score);
         return record;
     }
 
