@@ -14,16 +14,19 @@ public final class SkillsMenu {
     }
 
     private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§aSkills");
+        Inventory inv = Bukkit.createInventory(null, 54, "§bSkills");
 
-        // Row 2: the seven core skills, centered in slots 10-16
-        inv.setItem(10, makeItem(Material.GOLDEN_HOE,        "§aFarming"));
-        inv.setItem(11, makeItem(Material.STONE_PICKAXE,     "§aMining"));
-        inv.setItem(12, makeItem(Material.STONE_SWORD,       "§aCombat"));
-        inv.setItem(13, makeItem(Material.JUNGLE_SAPLING,    "§aForaging"));
-        inv.setItem(14, makeItem(Material.FISHING_ROD,       "§aFishing"));
-        inv.setItem(15, makeItem(Material.ENCHANTING_TABLE,  "§aEnchanting"));
-        inv.setItem(16, makeItem(Material.BREWING_STAND,     "§aAlchemy"));
+        // The ten skills, laid out from slot 1
+        inv.setItem(1,  makeItem(Material.GOLDEN_HOE,        "§bFarming"));
+        inv.setItem(2,  makeItem(Material.STONE_PICKAXE,     "§bMining"));
+        inv.setItem(3,  makeItem(Material.STONE_SWORD,       "§bCombat"));
+        inv.setItem(4,  makeItem(Material.JUNGLE_SAPLING,    "§bForaging"));
+        inv.setItem(5,  makeItem(Material.FISHING_ROD,       "§bFishing"));
+        inv.setItem(6,  makeItem(Material.ENCHANTING_TABLE,  "§bEnchanting"));
+        inv.setItem(7,  makeItem(Material.BREWING_STAND,     "§bAlchemy"));
+        inv.setItem(8,  makeItem(Material.BONE,              "§bTaming"));
+        inv.setItem(9,  makeItem(Material.CRAFTING_TABLE,    "§bCarpentry"));
+        inv.setItem(10, makeItem(Material.MAGMA_CREAM,       "§bRunecrafting"));
 
         return inv;
     }
