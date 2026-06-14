@@ -11,10 +11,14 @@ import java.util.UUID;
 
 public final class MayorManager {
 
+    public enum Mayor {
+        PAUL, DIANA, JERRY, DERPY, FOXY, COLE, AATROX, MARINA, SCORPIUS
+    }
+
     private static final MayorManager INSTANCE = new MayorManager();
 
-    private String activeMayor;
-    private final Map<UUID, String> playerVotes = new HashMap<>();
+    private Mayor activeMayor;
+    private final Map<UUID, Mayor> playerVotes = new HashMap<>();
 
     private MayorManager() {}
 
@@ -22,21 +26,21 @@ public final class MayorManager {
         return INSTANCE;
     }
 
-    public String getActiveMayor() {
+    public Mayor getActiveMayor() {
         return activeMayor;
     }
 
-    public void setActiveMayor(String mayor) {
+    public void setActiveMayor(Mayor mayor) {
         this.activeMayor = mayor;
     }
 
-    public void vote(UUID playerId, String mayor) {
+    public void vote(UUID playerId, Mayor mayor) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(mayor, "mayor");
         playerVotes.put(playerId, mayor);
     }
 
-    public String getVote(UUID playerId) {
+    public Mayor getVote(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerVotes.get(playerId);
     }
@@ -52,7 +56,14 @@ public final class MayorManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        activeMayor = cfg.getString("activeMayor");
+        String active = cfg.getString("activeMayor");
+        if (active != null) {
+            try {
+                activeMayor = Mayor.valueOf(active);
+            } catch (IllegalArgumentException ignored) {
+                // skip unknown mayor name
+            }
+        }
         playerVotes.clear();
         if (cfg.isConfigurationSection("votes")) {
             for (String key : cfg.getConfigurationSection("votes").getKeys(false)) {
@@ -60,7 +71,11 @@ public final class MayorManager {
                     UUID uuid = UUID.fromString(key);
                     String vote = cfg.getString("votes." + key);
                     if (vote != null) {
-                        playerVotes.put(uuid, vote);
+                        try {
+                            playerVotes.put(uuid, Mayor.valueOf(vote));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown mayor name
+                        }
                     }
                 } catch (IllegalArgumentException ignored) {
                     // skip malformed UUID
@@ -73,10 +88,10 @@ public final class MayorManager {
         File file = new File(dataFolder, "mayor.yml");
         YamlConfiguration cfg = new YamlConfiguration();
         if (activeMayor != null) {
-            cfg.set("activeMayor", activeMayor);
+            cfg.set("activeMayor", activeMayor.name());
         }
-        for (Map.Entry<UUID, String> entry : playerVotes.entrySet()) {
-            cfg.set("votes." + entry.getKey().toString(), entry.getValue());
+        for (Map.Entry<UUID, Mayor> entry : playerVotes.entrySet()) {
+            cfg.set("votes." + entry.getKey().toString(), entry.getValue().name());
         }
         try {
             cfg.save(file);
