@@ -120,6 +120,12 @@ public final class EnchantingManager {
         return Collections.unmodifiableMap(enchantingHistory);
     }
 
+    public String getEnchantingStats(UUID playerId) {
+        int booksApplied = enchantingHistory.getOrDefault(playerId, Collections.emptyList()).size();
+        int xp = enchantingXP.getOrDefault(playerId, 0);
+        return "Total books applied: " + booksApplied + ", Enchanting XP: " + xp;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "enchanting.yml");
         if (!file.exists()) {

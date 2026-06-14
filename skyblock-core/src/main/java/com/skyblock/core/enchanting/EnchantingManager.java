@@ -277,6 +277,13 @@ public final class EnchantingManager {
         return Collections.unmodifiableMap(enchantingHistory);
     }
 
+    public String getEnchantingStats(UUID playerId) {
+        int booksApplied = enchantingHistory.getOrDefault(playerId, Collections.emptyList()).size();
+        Map<SkyBlockEnchantment, Integer> enchants = playerEnchantments.getOrDefault(playerId, Collections.emptyMap());
+        int totalLevels = enchants.values().stream().mapToInt(Integer::intValue).sum();
+        return "Total books applied: " + booksApplied + ", Cumulative enchant levels: " + totalLevels;
+    }
+
     /**
      * Returns the enchanting skill level for the given player.
      *
