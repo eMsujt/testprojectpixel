@@ -21,6 +21,7 @@ public final class PlayerProfile {
     private final Map<String, Long> skillXp = new HashMap<>();
     private final Map<String, Long> collectionXp = new HashMap<>();
     private final Map<String, Long> collectionCounts = new HashMap<>();
+    private String activeProfileName = "Apple";
     private long purse = 0L;
     private long bank = 0L;
     private ItemStack[] enderChestContents;
@@ -199,6 +200,12 @@ public final class PlayerProfile {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
         collectionCounts.put(collection, amount);
+    }
+
+    public String getActiveProfileName() { return activeProfileName; }
+
+    public void setActiveProfileName(String name) {
+        this.activeProfileName = Objects.requireNonNull(name, "name");
     }
 
     public long getPurse() { return purse; }
