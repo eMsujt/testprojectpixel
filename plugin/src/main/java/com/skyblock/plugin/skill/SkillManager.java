@@ -2,6 +2,7 @@ package com.skyblock.plugin.skill;
 
 import com.skyblock.plugin.managers.SkillsManager;
 import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.skills.SkillsConfig;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
@@ -14,6 +15,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -59,6 +62,40 @@ public final class SkillManager implements Listener {
             Map.entry(EntityType.MAGMA_CUBE,    3L)
     );
 
+    /**
+     * The eight main SkyBlock skills paired with their level cap. Farming and Mining
+     * extend to level 60; the remaining skills cap at 50, matching the Hypixel wiki.
+     */
+    public enum Skill {
+        FARMING(60), MINING(60), COMBAT(50), FORAGING(50),
+        FISHING(50), ENCHANTING(50), ALCHEMY(50), TAMING(50);
+
+        private final int maxLevel;
+
+        Skill(int maxLevel) {
+            this.maxLevel = maxLevel;
+        }
+
+        public int maxLevel() {
+            return maxLevel;
+        }
+    }
+
+    /**
+     * Cumulative XP thresholds per skill: {@code XP_THRESHOLDS.get(skill)[i]} is the
+     * total XP required to reach level {@code i + 1}. Derived from the Hypixel-accurate
+     * {@link SkillsConfig#XP_CURVE}, truncated to each skill's {@link Skill#maxLevel()}.
+     */
+    private static final Map<Skill, long[]> XP_THRESHOLDS;
+
+    static {
+        Map<Skill, long[]> thresholds = new EnumMap<>(Skill.class);
+        for (Skill skill : Skill.values()) {
+            thresholds.put(skill, Arrays.copyOf(SkillsConfig.XP_CURVE, skill.maxLevel()));
+        }
+        XP_THRESHOLDS = thresholds;
+    }
+
     private static final SkillManager INSTANCE = new SkillManager();
 
     private final SkillsManager skillsManager = SkillsManager.getInstance();
@@ -96,6 +133,21 @@ public final class SkillManager implements Listener {
         skillsManager.addSkillXP(killer.getUniqueId(), "combat", combatXp);
         ProfileManager.getInstance().getOrCreate(killer.getUniqueId()).addSkillXp("combat", combatXp);
         sendXpBar(killer, "combat", combatXp);
+    }
+
+    /** The cumulative XP threshold array for {@code skill} (index 0 = level 1). */
+    public long[] thresholds(Skill skill) {
+        return XP_THRESHOLDS.get(skill).clone();
+    }
+
+    /** The level a player with {@code totalXp} total XP has reached in {@code skill}. */
+    public int levelFor(Skill skill, long totalXp) {
+        long[] curve = XP_THRESHOLDS.get(skill);
+        int level = 0;
+        while (level < curve.length && totalXp >= curve[level]) {
+            level++;
+        }
+        return level;
     }
 
     private void sendXpBar(Player player, String skill, long xpGained) {
