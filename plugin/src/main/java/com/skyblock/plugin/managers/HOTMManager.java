@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -12,7 +13,7 @@ public final class HOTMManager {
 
     private static final HOTMManager INSTANCE = new HOTMManager();
 
-    private final Map<UUID, Integer> heartOfTheMountainLevel = new HashMap<>();
+    private final Map<UUID, Integer> hotmLevel = new HashMap<>();
 
     private HOTMManager() {}
 
@@ -20,20 +21,20 @@ public final class HOTMManager {
         return INSTANCE;
     }
 
-    public int getLevel(UUID playerId) {
-        return heartOfTheMountainLevel.getOrDefault(playerId, 1);
+    public int getHotmLevel(UUID playerId) {
+        return hotmLevel.getOrDefault(playerId, 1);
     }
 
-    public void setLevel(UUID playerId, int level) {
-        heartOfTheMountainLevel.put(playerId, Math.max(1, level));
+    public void setHotmLevel(UUID playerId, int level) {
+        hotmLevel.put(playerId, Math.max(1, Math.min(7, level)));
     }
 
-    public void addLevel(UUID playerId, int amount) {
-        setLevel(playerId, getLevel(playerId) + amount);
+    public void addHotmLevel(UUID playerId, int amount) {
+        setHotmLevel(playerId, getHotmLevel(playerId) + amount);
     }
 
-    public Map<UUID, Integer> getHeartOfTheMountainLevel() {
-        return heartOfTheMountainLevel;
+    public Map<UUID, Integer> getHotmLevels() {
+        return Collections.unmodifiableMap(hotmLevel);
     }
 
     public void load(File dataFolder) {
@@ -42,13 +43,14 @@ public final class HOTMManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        heartOfTheMountainLevel.clear();
-        for (String key : cfg.getKeys(false)) {
-            try {
-                UUID uuid = UUID.fromString(key);
-                heartOfTheMountainLevel.put(uuid, cfg.getInt(key));
-            } catch (IllegalArgumentException ignored) {
-                // skip malformed UUID
+        hotmLevel.clear();
+        if (cfg.isConfigurationSection("hotmLevel")) {
+            for (String uuidKey : cfg.getConfigurationSection("hotmLevel").getKeys(false)) {
+                try {
+                    hotmLevel.put(UUID.fromString(uuidKey), cfg.getInt("hotmLevel." + uuidKey));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
             }
         }
     }
@@ -56,8 +58,8 @@ public final class HOTMManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "hotm.yml");
         YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<UUID, Integer> entry : heartOfTheMountainLevel.entrySet()) {
-            cfg.set(entry.getKey().toString(), entry.getValue());
+        for (Map.Entry<UUID, Integer> entry : hotmLevel.entrySet()) {
+            cfg.set("hotmLevel." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
