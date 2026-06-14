@@ -3,12 +3,15 @@ package com.skyblock.plugin.menu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public final class QuestsMenu implements InventoryHolder {
+public final class QuestsMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
 
@@ -29,6 +32,13 @@ public final class QuestsMenu implements InventoryHolder {
     private void build() {
         // Slot 4 — header showing the player's active quests
         inventory.setItem(4, makeItem(Material.BOOK, "§eActive Quests"));
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof QuestsMenu) {
+            event.setCancelled(true);
+        }
     }
 
     private ItemStack makeItem(Material material, String name) {
