@@ -40,6 +40,7 @@ public class MayorManager {
 
     public void setCurrentMayor(String mayor) {
         this.currentMayor = mayor;
+        recordElectionEvent("Mayor elected: " + mayor);
     }
 
     public List<String> getPerks(String mayor) {
