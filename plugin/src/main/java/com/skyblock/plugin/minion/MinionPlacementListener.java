@@ -39,7 +39,7 @@ public final class MinionPlacementListener implements Listener {
 
         Player player = event.getPlayer();
         Minion minion = new Minion(UUID.randomUUID(), player.getUniqueId(), type, Minion.MinionTier.TIER_1);
-        MinionManager.getInstance().addMinion(player.getUniqueId(), minion);
+        MinionManager.getInstance().placeMinion(event.getBlock().getLocation(), minion);
     }
 
     /**

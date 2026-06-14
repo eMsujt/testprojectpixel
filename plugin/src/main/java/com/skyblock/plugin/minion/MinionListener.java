@@ -7,7 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,12 +28,18 @@ public final class MinionListener implements Listener {
 
         Player player = event.getPlayer();
         UUID owner = player.getUniqueId();
-        List<Minion> minions = MinionManager.getInstance().getMinions(owner);
-        if (minions.isEmpty()) {
+        Minion minion = null;
+        for (MinionManager.MinionData data : MinionManager.getInstance().getMinions()) {
+            if (data.getOwner().equals(owner)) {
+                minion = data.getMinion();
+                break;
+            }
+        }
+        if (minion == null) {
             return;
         }
 
         event.setCancelled(true);
-        new MinionMenu(minions.get(0)).open(player);
+        new MinionMenu(minion).open(player);
     }
 }
