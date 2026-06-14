@@ -91,6 +91,21 @@ public final class AuctionHouseManager {
         }
     }
 
+    /** Maps each AH category name to its constituent item-type labels. */
+    public static final Map<String, String[]> ITEM_CATEGORIES;
+
+    static {
+        Map<String, String[]> m = new HashMap<>();
+        m.put("Weapons",      new String[]{"Sword", "Bow", "Fishing Rod", "Wand", "Shortbow", "Long Bow"});
+        m.put("Armor",        new String[]{"Helmet", "Chestplate", "Leggings", "Boots"});
+        m.put("Accessories",  new String[]{"Talisman", "Ring", "Orb", "Necklace", "Gloves", "Belt", "Cloak", "Bracelet", "Gauntlet"});
+        m.put("Consumables",  new String[]{"Potion", "Scroll", "Arrow", "Quiver Arrow", "Food"});
+        m.put("Blocks",       new String[]{"Block", "Mineral", "Wood", "Stone", "Sand", "Glass", "Planks", "Log"});
+        m.put("Mobs",         new String[]{"Pet", "Pet Item", "Monster Drop", "Animal Drop", "Sea Creature Drop"});
+        m.put("Misc",         new String[]{"Essence", "Rune", "Bait", "Dye", "Travel Scroll", "Reforge Stone", "Shards", "Enchanted Book"});
+        ITEM_CATEGORIES = Collections.unmodifiableMap(m);
+    }
+
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
 
     private final Map<UUID, State> listings = new HashMap<>();
