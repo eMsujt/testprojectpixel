@@ -37,8 +37,22 @@ public final class MinionManager {
     public record TierSpec(int productionIntervalTicks, int storageSlots) {
     }
 
+    /**
+     * A minion type's top-level definition.
+     *
+     * @param displayName   the minion's display name
+     * @param description   a one-line description of what it produces
+     * @param resource      the {@link org.bukkit.Material} name it produces
+     * @param baseInterval  the base production interval in server ticks
+     */
+    public record MinionDef(String displayName, String description, String resource, int baseInterval) {
+    }
+
     /** Per-minion tier specs keyed by minion id, then by 1-based tier number. */
     private final Map<String, Map<Integer, TierSpec>> minions = new LinkedHashMap<>();
+
+    /** Per-minion type definitions keyed by minion id. */
+    private final Map<String, MinionDef> defs = new LinkedHashMap<>();
 
     private MinionManager() {
     }
@@ -69,7 +83,17 @@ public final class MinionManager {
                 ? cfg.getConfigurationSection("minions")
                 : cfg;
         minions.clear();
+        defs.clear();
         for (String id : root.getKeys(false)) {
+            ConfigurationSection def = root.getConfigurationSection(id);
+            if (def == null) {
+                continue;
+            }
+            defs.put(id, new MinionDef(
+                    def.getString("displayName", id),
+                    def.getString("description", ""),
+                    def.getString("resource", ""),
+                    def.getInt("baseInterval")));
             ConfigurationSection tiers = root.getConfigurationSection(id + ".tiers");
             if (tiers == null) {
                 continue;
@@ -92,7 +116,20 @@ public final class MinionManager {
                 minions.put(id, specs);
             }
         }
-        plugin.getLogger().info("Loaded tier specs for " + minions.size() + " minions.");
+        plugin.getLogger().info("Loaded " + defs.size() + " minion types ("
+                + minions.size() + " with tier specs).");
+    }
+
+    /**
+     * Returns the type definition for a minion id, or {@code null} if unknown.
+     */
+    public MinionDef getDef(String minion) {
+        return defs.get(minion);
+    }
+
+    /** Returns an unmodifiable view of every minion type definition keyed by id. */
+    public Map<String, MinionDef> getDefs() {
+        return Collections.unmodifiableMap(defs);
     }
 
     /**
