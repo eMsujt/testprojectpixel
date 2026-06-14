@@ -22,7 +22,7 @@ public final class SettingsMenu implements InventoryHolder, Listener {
 
     public SettingsMenu(Plugin plugin) {
         this.plugin = plugin;
-        this.inventory = Bukkit.createInventory(this, 54, "§aSettings");
+        this.inventory = Bukkit.createInventory(this, 54, "§8SkyBlock Settings");
         Bukkit.getPluginManager().registerEvents(this, plugin);
         build();
     }
