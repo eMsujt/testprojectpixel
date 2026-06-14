@@ -1,4 +1,99 @@
 items:
+  THICK_SWORD:
+    displayName: "Thick Sword"
+    material: WOODEN_SWORD
+    rarity: COMMON
+    damage: 40.0
+    strength: 5
+    description: "A chunky wooden blade for new adventurers."
+
+  JERRY_SWORD:
+    displayName: "Jerry Sword"
+    material: WOODEN_SWORD
+    rarity: COMMON
+    damage: 1.0
+    description: "It's just a stick. Jerry would be proud."
+
+  PROMISING_SHOVEL:
+    displayName: "Promising Shovel"
+    material: WOODEN_SHOVEL
+    rarity: COMMON
+    description: "An entry-level shovel for aspiring miners."
+
+  JUNGLE_AXE:
+    displayName: "Jungle Axe"
+    material: WOODEN_AXE
+    rarity: UNCOMMON
+    damage: 45.0
+    strength: 10
+    description: "Chops surrounding logs when a tree is felled."
+
+  TREECAPITATOR:
+    displayName: "Treecapitator"
+    material: GOLDEN_AXE
+    rarity: RARE
+    damage: 70.0
+    strength: 20
+    description: "Fells an entire tree in a single swing."
+
+  HARDENED_DIAMOND_HELMET:
+    displayName: "Hardened Diamond Helmet"
+    material: DIAMOND_HELMET
+    rarity: RARE
+    health: 70.0
+    defense: 50
+    description: "Part of the Hardened Diamond Armor set."
+
+  HARDENED_DIAMOND_CHESTPLATE:
+    displayName: "Hardened Diamond Chestplate"
+    material: DIAMOND_CHESTPLATE
+    rarity: RARE
+    health: 110.0
+    defense: 75
+    description: "Part of the Hardened Diamond Armor set."
+
+  HARDENED_DIAMOND_LEGGINGS:
+    displayName: "Hardened Diamond Leggings"
+    material: DIAMOND_LEGGINGS
+    rarity: RARE
+    health: 95.0
+    defense: 65
+    description: "Part of the Hardened Diamond Armor set."
+
+  HARDENED_DIAMOND_BOOTS:
+    displayName: "Hardened Diamond Boots"
+    material: DIAMOND_BOOTS
+    rarity: RARE
+    health: 65.0
+    defense: 45
+    description: "Part of the Hardened Diamond Armor set."
+
+  SPEED_TALISMAN:
+    displayName: "Speed Talisman"
+    material: RABBIT_FOOT
+    rarity: COMMON
+    speed: 1
+    description: "Grants a small permanent speed bonus."
+
+  FEATHER_TALISMAN:
+    displayName: "Feather Talisman"
+    material: FEATHER
+    rarity: COMMON
+    description: "Reduces fall damage taken."
+
+  VACCINE_TALISMAN:
+    displayName: "Vaccine Talisman"
+    material: SPIDER_EYE
+    rarity: UNCOMMON
+    description: "Grants immunity to poison and wither effects."
+
+  MANA_FLUX_POWER_ORB:
+    displayName: "Mana Flux Power Orb"
+    material: GLOWSTONE
+    rarity: UNCOMMON
+    intelligence: 15
+    description: "Regenerates mana for nearby players when placed."
+
   WOODEN_SWORD:
     displayName: "Wooden Sword"
     material: WOODEN_SWORD
