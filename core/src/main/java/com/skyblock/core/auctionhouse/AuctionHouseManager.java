@@ -49,6 +49,19 @@ public class AuctionHouseManager {
     }
 
     private final Map<UUID, AuctionItem> items = new HashMap<>();
+    private final Map<UUID, List<String>> auctionHistory = new HashMap<>();
+
+    public void recordAuctionEvent(UUID player, String summary) {
+        auctionHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getAuctionHistory(UUID player) {
+        return Collections.unmodifiableList(auctionHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllAuctionHistory() {
+        return Collections.unmodifiableMap(auctionHistory);
+    }
 
     public UUID addItem(UUID seller, String itemName, long price) {
         UUID id = UUID.randomUUID();
