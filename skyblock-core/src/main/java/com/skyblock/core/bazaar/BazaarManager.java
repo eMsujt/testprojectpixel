@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -442,7 +443,7 @@ public final class BazaarManager {
     private final Map<UUID, List<String>> playerTransactions = new HashMap<>();
 
     /** Per-player bazaar event history. */
-    private final Map<UUID, List<String>> bazaarHistory = new HashMap<>();
+    private final Map<UUID, List<String>> bazaarHistory = new ConcurrentHashMap<>();
 
     /** Per-product instant-buy and sell-offer prices. */
     private final Map<String, Double> instantBuyPrices = new HashMap<>();

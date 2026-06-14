@@ -3,6 +3,7 @@ package com.skyblock.core.bazaar;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class BazaarManager {
 
     private final Map<UUID, BazaarOrder> buyOrders = new HashMap<>();
     private final Map<UUID, BazaarOrder> sellOrders = new HashMap<>();
-    private final Map<UUID, List<String>> bazaarHistory = new HashMap<>();
+    private final Map<UUID, List<String>> bazaarHistory = new ConcurrentHashMap<>();
 
     public UUID addBuyOrder(UUID buyer, String itemId, int quantity, double priceEach) {
         UUID id = UUID.randomUUID();
