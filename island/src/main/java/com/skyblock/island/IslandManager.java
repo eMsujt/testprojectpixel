@@ -1,8 +1,10 @@
 package com.skyblock.island;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,6 +37,19 @@ public final class IslandManager {
     }
 
     private final Map<UUID, PlayerIsland> islands = new HashMap<>();
+    private final Map<UUID, List<String>> islandHistory = new HashMap<>();
+
+    public void recordIslandEvent(UUID playerUuid, String summary) {
+        islandHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getIslandHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(islandHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllIslandHistory() {
+        return Collections.unmodifiableMap(islandHistory);
+    }
 
     /**
      * Creates a new island for the player, with all upgrades at level 0.
@@ -50,6 +65,7 @@ public final class IslandManager {
         }
         PlayerIsland island = new PlayerIsland(ownerId);
         islands.put(ownerId, island);
+        recordIslandEvent(ownerId, "Island created");
         return island;
     }
 
@@ -104,6 +120,7 @@ public final class IslandManager {
                     upgrade.getDisplayName() + " is already at max level " + upgrade.getMaxLevel());
         }
         island.upgradeLevels.put(upgrade, level + 1);
+        recordIslandEvent(ownerId, "Upgrade applied: " + upgrade.getDisplayName() + " -> " + (level + 1));
         return level + 1;
     }
 
@@ -114,7 +131,11 @@ public final class IslandManager {
      * @return the island that was removed, or {@code null} if none existed
      */
     public PlayerIsland deleteIsland(UUID ownerId) {
-        return islands.remove(ownerId);
+        PlayerIsland removed = islands.remove(ownerId);
+        if (removed != null) {
+            recordIslandEvent(ownerId, "Island deleted");
+        }
+        return removed;
     }
 
     private PlayerIsland requireIsland(UUID ownerId) {
