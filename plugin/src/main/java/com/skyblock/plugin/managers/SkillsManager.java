@@ -218,6 +218,17 @@ public final class SkillsManager {
         }
     }
 
+    public String getSkillsStats(UUID playerId) {
+        StringBuilder sb = new StringBuilder("Skills Stats:");
+        for (String skill : SKILL_XP_TABLE.keySet()) {
+            long xp = getSkillXP(playerId, skill);
+            int level = computeLevel(skill, xp);
+            String name = skill.substring(0, 1).toUpperCase() + skill.substring(1);
+            sb.append(" | ").append(name).append(" Lvl ").append(level).append(" (").append(xp).append(" XP)");
+        }
+        return sb.toString();
+    }
+
     public void save(File dataFolder) {
         File file = new File(dataFolder, "skills.yml");
         YamlConfiguration cfg = new YamlConfiguration();

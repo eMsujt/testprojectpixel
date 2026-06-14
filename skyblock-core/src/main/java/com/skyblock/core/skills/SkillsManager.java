@@ -187,4 +187,14 @@ public final class SkillsManager {
     public int getLevel(UUID playerId, SkillType skill) {
         return delegate.getLevel(playerId, skill.toSkillType());
     }
+
+    public String getSkillsStats(UUID playerId) {
+        StringBuilder sb = new StringBuilder("Skills Stats:");
+        for (SkillType skill : SkillType.values()) {
+            int level = getLevel(playerId, skill);
+            long xp = (long) getXp(playerId, skill);
+            sb.append(" | ").append(skill.getDisplayName()).append(" Lvl ").append(level).append(" (").append(xp).append(" XP)");
+        }
+        return sb.toString();
+    }
 }
