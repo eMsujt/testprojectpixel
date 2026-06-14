@@ -1,5 +1,9 @@
 package com.skyblock.plugin.managers;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,5 +66,55 @@ public final class AuctionManager {
      */
     public boolean removeAuction(UUID id) {
         return auctions.removeIf(a -> a.id().equals(id));
+    }
+
+    /**
+     * Loads active listings from {@code auctions.yml} in the data folder,
+     * replacing the in-memory state. A missing file leaves the registry empty.
+     *
+     * @param dataFolder the plugin data folder
+     */
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "auctions.yml");
+        auctions.clear();
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        if (cfg.isConfigurationSection("auctions")) {
+            for (String key : cfg.getConfigurationSection("auctions").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(key);
+                    String prefix = "auctions." + key + ".";
+                    UUID seller = UUID.fromString(cfg.getString(prefix + "seller"));
+                    String itemName = cfg.getString(prefix + "itemName", "");
+                    double price = cfg.getDouble(prefix + "price");
+                    long endTime = cfg.getLong(prefix + "endTime");
+                    auctions.add(new Auction(id, seller, itemName, price, endTime));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    /**
+     * Saves active listings to {@code auctions.yml} in the data folder.
+     *
+     * @param dataFolder the plugin data folder
+     */
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "auctions.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Auction auction : auctions) {
+            String prefix = "auctions." + auction.id().toString() + ".";
+            cfg.set(prefix + "seller", auction.seller().toString());
+            cfg.set(prefix + "itemName", auction.itemName());
+            cfg.set(prefix + "price", auction.price());
+            cfg.set(prefix + "endTime", auction.endTime());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save auctions.yml", e);
+        }
     }
 }
