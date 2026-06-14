@@ -24,9 +24,10 @@ public final class CollectionsCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "list" -> handleList(player);
-            case "view" -> handleView(player, args);
-            default     -> sendHelp(player);
+            case "list"    -> handleList(player);
+            case "view"    -> handleView(player, args);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -55,10 +56,24 @@ public final class CollectionsCommand implements CommandExecutor {
         player.sendMessage("Count: " + count);
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        Map<String, Integer> history = CollectionsManager.getInstance().getCollectionHistory(id);
+        player.sendMessage("=== Collection History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No collection history yet.");
+            return;
+        }
+        for (Map.Entry<String, Integer> entry : history.entrySet()) {
+            player.sendMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Collections Commands ===");
         player.sendMessage("/collections            — list all your collections");
         player.sendMessage("/collections list       — list all your collections");
         player.sendMessage("/collections view <col> — view count for a specific collection");
+        player.sendMessage("/collections history    — view your collection history");
     }
 }
