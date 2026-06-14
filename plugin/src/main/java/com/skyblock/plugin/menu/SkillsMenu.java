@@ -20,7 +20,7 @@ public final class SkillsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public SkillsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§aYour Skills");
+        this.inventory = Bukkit.createInventory(this, 54, "§aSkills");
         build(player);
     }
 
@@ -44,7 +44,7 @@ public final class SkillsMenu implements InventoryHolder, Listener {
             }
         }
 
-        inventory.setItem(4, makeItem(Material.BOOK, "§9Skills", Arrays.asList("§7Your skill progress")));
+        inventory.setItem(4, makeItem(Material.LIME_DYE, "§9Skills", Arrays.asList("§7Your skill progress")));
 
         // Row 2, centered (cols 2-5): farming, mining, combat, foraging
         inventory.setItem(11, makeSkillItem(player, sm, Material.WHEAT,           "farming",    "§eFarming"));
