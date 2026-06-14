@@ -17,16 +17,74 @@ public final class MayorCommand implements CommandExecutor {
             return true;
         }
 
-        UUID id = player.getUniqueId();
-        MayorManager manager = MayorManager.getInstance();
-        MayorManager.MayorCandidate currentMayor = manager.getCurrentMayor();
-        MayorManager.MayorCandidate vote = manager.getVote(id);
-        player.sendMessage("=== Mayor ===");
-        player.sendMessage("Current Mayor: " + (currentMayor != null ? currentMayor.getDisplayName() : "None"));
-        if (currentMayor != null) {
-            player.sendMessage("Perks: " + String.join(", ", currentMayor.getPerks()));
+        if (args.length == 0 || "status".equalsIgnoreCase(args[0])) {
+            handleStatus(player);
+            return true;
         }
-        player.sendMessage("Your Vote: " + (vote != null ? vote.getDisplayName() : "None"));
+
+        switch (args[0].toLowerCase()) {
+            case "candidates" -> handleCandidates(player);
+            case "vote"       -> handleVote(player, args);
+            case "myvote"     -> handleMyVote(player);
+            default           -> sendHelp(player);
+        }
         return true;
+    }
+
+    private void handleStatus(Player player) {
+        MayorManager manager = MayorManager.getInstance();
+        MayorManager.MayorCandidate current = manager.getCurrentMayor();
+        player.sendMessage("=== Mayor ===");
+        player.sendMessage("Current Mayor: " + (current != null ? current.getDisplayName() : "None"));
+        if (current != null) {
+            player.sendMessage("Perks: " + String.join(", ", current.getPerks()));
+        }
+    }
+
+    private void handleCandidates(Player player) {
+        player.sendMessage("=== Mayor Candidates ===");
+        for (MayorManager.MayorCandidate candidate : MayorManager.MayorCandidate.values()) {
+            player.sendMessage("  " + candidate.getDisplayName() + " — " + String.join(", ", candidate.getPerks()));
+        }
+    }
+
+    private void handleVote(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /mayor vote <candidate>");
+            return;
+        }
+        MayorManager.MayorCandidate candidate = parseCandidate(args[1]);
+        if (candidate == null) {
+            player.sendMessage("Unknown candidate: " + args[1] + ". Use /mayor candidates to see options.");
+            return;
+        }
+        MayorManager.getInstance().vote(player.getUniqueId(), candidate);
+        player.sendMessage("You voted for " + candidate.getDisplayName() + ".");
+    }
+
+    private void handleMyVote(Player player) {
+        MayorManager.MayorCandidate vote = MayorManager.getInstance().getVote(player.getUniqueId());
+        if (vote == null) {
+            player.sendMessage("You have not cast a vote yet.");
+        } else {
+            player.sendMessage("Your vote: " + vote.getDisplayName());
+        }
+    }
+
+    private void sendHelp(Player player) {
+        player.sendMessage("=== Mayor Commands ===");
+        player.sendMessage("/mayor status          — show the current mayor and perks");
+        player.sendMessage("/mayor candidates      — list all mayor candidates");
+        player.sendMessage("/mayor vote <name>     — vote for a candidate");
+        player.sendMessage("/mayor myvote          — show your current vote");
+    }
+
+    private static MayorManager.MayorCandidate parseCandidate(String name) {
+        for (MayorManager.MayorCandidate c : MayorManager.MayorCandidate.values()) {
+            if (c.name().equalsIgnoreCase(name) || c.getDisplayName().equalsIgnoreCase(name)) {
+                return c;
+            }
+        }
+        return null;
     }
 }
