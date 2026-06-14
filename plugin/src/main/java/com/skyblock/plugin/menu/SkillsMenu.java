@@ -17,7 +17,7 @@ public final class SkillsMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public SkillsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§aYour Skills");
+        this.inventory = Bukkit.createInventory(this, 54, "§aSkills");
         build(player);
     }
 
@@ -32,12 +32,12 @@ public final class SkillsMenu implements InventoryHolder {
 
     private void build(Player player) {
         SkillsManager sm = SkillsManager.getInstance();
-        // Five main skills centered in row 3 (slots 20–24)
-        inventory.setItem(20, makeSkillItem(player, sm, Material.WHEAT,        "farming",  "§eFarming"));
-        inventory.setItem(21, makeSkillItem(player, sm, Material.COBBLESTONE,  "mining",   "§eMining"));
-        inventory.setItem(22, makeSkillItem(player, sm, Material.ROTTEN_FLESH, "combat",   "§eCombat"));
-        inventory.setItem(23, makeSkillItem(player, sm, Material.OAK_LOG,      "foraging", "§eForaging"));
-        inventory.setItem(24, makeSkillItem(player, sm, Material.COD,          "fishing",  "§eFishing"));
+        // Fixed Hypixel skill slots — first row, one slot per skill (slots 10–14)
+        inventory.setItem(10, makeSkillItem(player, sm, Material.WHEAT,        "farming",  "§eFarming"));
+        inventory.setItem(11, makeSkillItem(player, sm, Material.COBBLESTONE,  "mining",   "§eMining"));
+        inventory.setItem(12, makeSkillItem(player, sm, Material.ROTTEN_FLESH, "combat",   "§eCombat"));
+        inventory.setItem(13, makeSkillItem(player, sm, Material.OAK_LOG,      "foraging", "§eForaging"));
+        inventory.setItem(14, makeSkillItem(player, sm, Material.COD,          "fishing",  "§eFishing"));
     }
 
     private ItemStack makeSkillItem(Player player, SkillsManager sm,
