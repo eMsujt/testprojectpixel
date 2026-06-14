@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,6 +17,7 @@ public final class SlayerManager {
 
     private final Map<UUID, Map<String, Long>> killCounts = new HashMap<>();
     private final Map<UUID, Map<String, Long>> slayerXp = new HashMap<>();
+    private final Map<UUID, List<String>> slayerHistory = new HashMap<>();
 
     private SlayerManager() {}
 
@@ -62,6 +65,22 @@ public final class SlayerManager {
         return Collections.unmodifiableMap(slayerXp);
     }
 
+    public void recordSlayerEvent(UUID playerId, String summary) {
+        slayerHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getSlayerHistory(UUID playerId) {
+        return Collections.unmodifiableList(slayerHistory.getOrDefault(playerId, new ArrayList<>()));
+    }
+
+    public Map<UUID, List<String>> getAllSlayerHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : slayerHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
+    }
+
     public Map<UUID, Long> getAllPlayerXpForType(String slayerType) {
         Map<UUID, Long> result = new HashMap<>();
         for (Map.Entry<UUID, Map<String, Long>> entry : slayerXp.entrySet()) {
@@ -81,6 +100,7 @@ public final class SlayerManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         killCounts.clear();
         slayerXp.clear();
+        slayerHistory.clear();
         if (cfg.isConfigurationSection("kills")) {
             for (String playerKey : cfg.getConfigurationSection("kills").getKeys(false)) {
                 try {
@@ -93,6 +113,14 @@ public final class SlayerManager {
                         }
                     }
                     killCounts.put(playerId, counts);
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("slayerHistory")) {
+            for (String key : cfg.getConfigurationSection("slayerHistory").getKeys(false)) {
+                try {
+                    slayerHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("slayerHistory." + key)));
                 } catch (IllegalArgumentException ignored) {}
             }
         }
@@ -127,6 +155,9 @@ public final class SlayerManager {
             for (Map.Entry<String, Long> xp : entry.getValue().entrySet()) {
                 cfg.set(path + "." + xp.getKey(), xp.getValue());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : slayerHistory.entrySet()) {
+            cfg.set("slayerHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
