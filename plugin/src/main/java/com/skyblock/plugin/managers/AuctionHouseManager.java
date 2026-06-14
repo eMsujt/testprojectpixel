@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public final class AuctionHouseManager {
 
-    public record AuctionListing(UUID id, String itemName, int quantity, double startingBid,
+    public record AuctionListing(UUID id, UUID seller, String itemName, int quantity, double startingBid,
                                  double currentBid, UUID highestBidder, long endTime) {}
 
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
@@ -97,7 +97,7 @@ public final class AuctionHouseManager {
                                 String highestBidderStr = cfg.getString(prefix + "highestBidder");
                                 UUID highestBidder = highestBidderStr != null ? UUID.fromString(highestBidderStr) : null;
                                 long endTime = cfg.getLong(prefix + "endTime");
-                                listings.add(new AuctionListing(id, itemName, quantity, startingBid, currentBid, highestBidder, endTime));
+                                listings.add(new AuctionListing(id, sellerId, itemName, quantity, startingBid, currentBid, highestBidder, endTime));
                             } catch (IllegalArgumentException ignored) {}
                         }
                     }
