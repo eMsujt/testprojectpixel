@@ -45,6 +45,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         BankManager.getInstance().load(getDataFolder());
         CollectionsManager.getInstance().load(getDataFolder());
         GardenManager.getInstance().load(getDataFolder());
+        com.skyblock.slayer.SlayerManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
@@ -54,6 +55,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         BankManager.getInstance().save(getDataFolder());
         CollectionsManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
+        com.skyblock.slayer.SlayerManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }

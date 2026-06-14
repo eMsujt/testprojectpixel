@@ -1,5 +1,9 @@
 package com.skyblock.slayer;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -246,6 +250,52 @@ public final class SlayerManager {
     public void clear(UUID playerId) {
         activeQuests.remove(playerId);
         xpMap.remove(playerId);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "slayer.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        xpMap.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.isConfigurationSection(key + ".xp")) {
+                    Map<SlayerType, Long> entry = new EnumMap<>(SlayerType.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".xp").getKeys(false)) {
+                        try {
+                            SlayerType type = SlayerType.valueOf(typeName);
+                            entry.put(type, cfg.getLong(key + ".xp." + typeName, 0L));
+                        } catch (IllegalArgumentException ignored) {
+                            // skip unknown slayer types
+                        }
+                    }
+                    if (!entry.isEmpty()) {
+                        xpMap.put(uuid, entry);
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "slayer.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Map<SlayerType, Long>> entry : xpMap.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<SlayerType, Long> xp : entry.getValue().entrySet()) {
+                cfg.set(key + ".xp." + xp.getKey().name(), xp.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save slayer.yml", e);
+        }
     }
 
     private static void requireNonNegative(long amount) {
