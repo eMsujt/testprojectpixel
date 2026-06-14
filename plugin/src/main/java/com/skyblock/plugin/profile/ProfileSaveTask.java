@@ -55,6 +55,10 @@ public final class ProfileSaveTask extends BukkitRunnable {
             cfg.set("collections." + entry.getKey(), entry.getValue());
         }
 
+        for (Map.Entry<String, Long> entry : profile.getCollectionCounts().entrySet()) {
+            cfg.set("collectionCounts." + entry.getKey(), entry.getValue());
+        }
+
         try {
             cfg.save(file);
         } catch (IOException e) {

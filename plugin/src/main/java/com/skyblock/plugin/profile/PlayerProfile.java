@@ -20,6 +20,7 @@ public final class PlayerProfile {
     private final UUID uuid;
     private final Map<String, Long> skillXp = new HashMap<>();
     private final Map<String, Long> collectionXp = new HashMap<>();
+    private final Map<String, Long> collectionCounts = new HashMap<>();
     private long purse = 0L;
     private long bank = 0L;
     private ItemStack[] enderChestContents;
@@ -147,6 +148,57 @@ public final class PlayerProfile {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
         collectionXp.put(collection, amount);
+    }
+
+    /**
+     * Returns an immutable snapshot of the player's per-item collection counts
+     * keyed by collection item name.
+     *
+     * @return the collection item counts
+     */
+    public Map<String, Long> getCollectionCounts() {
+        return Map.copyOf(collectionCounts);
+    }
+
+    /**
+     * Returns the player's accumulated count for the given collection item.
+     *
+     * @param collection the collection item name
+     * @return the count, or 0 if the item has never been collected
+     */
+    public long getCollectionCount(String collection) {
+        Objects.requireNonNull(collection, "collection");
+        return collectionCounts.getOrDefault(collection, 0L);
+    }
+
+    /**
+     * Adds to the count for the given collection item.
+     *
+     * @param collection the collection item name
+     * @param amount the amount to add, must not be negative
+     * @throws IllegalArgumentException if {@code amount} is negative
+     */
+    public void addCollectionCount(String collection, long amount) {
+        Objects.requireNonNull(collection, "collection");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        collectionCounts.merge(collection, amount, Long::sum);
+    }
+
+    /**
+     * Sets the player's accumulated count for the given collection item.
+     *
+     * @param collection the collection item name
+     * @param amount the new count, must not be negative
+     * @throws IllegalArgumentException if {@code amount} is negative
+     */
+    public void setCollectionCount(String collection, long amount) {
+        Objects.requireNonNull(collection, "collection");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        collectionCounts.put(collection, amount);
     }
 
     public long getPurse() { return purse; }

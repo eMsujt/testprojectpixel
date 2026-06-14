@@ -171,6 +171,9 @@ public final class ProfileManager implements Listener {
         for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
             cfg.set("collections." + entry.getKey(), entry.getValue());
         }
+        for (Map.Entry<String, Long> entry : profile.getCollectionCounts().entrySet()) {
+            cfg.set("collectionCounts." + entry.getKey(), entry.getValue());
+        }
 
         File dir = new File(plugin.getDataFolder(), "profiles");
         File file = new File(dir, uuid + ".yml");
@@ -224,6 +227,9 @@ public final class ProfileManager implements Listener {
         for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
             cfg.set("collections." + entry.getKey(), entry.getValue());
         }
+        for (Map.Entry<String, Long> entry : profile.getCollectionCounts().entrySet()) {
+            cfg.set("collectionCounts." + entry.getKey(), entry.getValue());
+        }
 
         File dir = new File(plugin.getDataFolder(), "profiles");
         File file = new File(dir, uuid + ".yml");
@@ -268,6 +274,13 @@ public final class ProfileManager implements Listener {
         if (collections != null) {
             for (String collection : collections.getKeys(false)) {
                 profile.setCollectionXp(collection, collections.getLong(collection));
+            }
+        }
+
+        ConfigurationSection collectionCounts = cfg.getConfigurationSection("collectionCounts");
+        if (collectionCounts != null) {
+            for (String collection : collectionCounts.getKeys(false)) {
+                profile.setCollectionCount(collection, collectionCounts.getLong(collection));
             }
         }
     }
