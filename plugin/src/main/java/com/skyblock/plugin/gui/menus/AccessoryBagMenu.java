@@ -23,6 +23,9 @@ public class AccessoryBagMenu extends Menu {
     /** Slot for the bag-summary info item. */
     private static final int INFO_SLOT = 49;
 
+    /** Slot for the close button. */
+    private static final int CLOSE_SLOT = 53;
+
     private final Player player;
 
     public AccessoryBagMenu(Player player) {
@@ -49,6 +52,10 @@ public class AccessoryBagMenu extends Menu {
                 .displayName("§aAccessory Bag")
                 .lore("§7Accessories: §f" + accessories.size() + "§7/§f" + AccessoryBagManager.MAX_SLOTS)
                 .build());
+
+        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(), e -> e.getWhoClicked().closeInventory());
     }
 
     private static String formatName(TalismanManager.TalismanType type) {
