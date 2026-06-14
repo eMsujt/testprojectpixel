@@ -4,10 +4,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -202,6 +204,7 @@ public final class CollectionsManager {
     private static final CollectionsManager INSTANCE = new CollectionsManager();
 
     private final Map<UUID, Map<CollectionType, Long>> playerCollections = new HashMap<>();
+    private final Map<UUID, List<String>> collectionsHistory = new HashMap<>();
 
     private CollectionsManager() {}
 
@@ -251,6 +254,24 @@ public final class CollectionsManager {
         return playerCollections.remove(playerId) != null;
     }
 
+    // Collections history
+
+    public void recordCollectionEvent(UUID playerId, String summary) {
+        collectionsHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getCollectionsHistory(UUID playerId) {
+        return Collections.unmodifiableList(collectionsHistory.getOrDefault(playerId, new ArrayList<>()));
+    }
+
+    public Map<UUID, List<String>> getAllCollectionsHistory() {
+        Map<UUID, List<String>> copy = new HashMap<>();
+        for (Map.Entry<UUID, List<String>> entry : collectionsHistory.entrySet()) {
+            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "collections.yml");
         if (!file.exists()) {
@@ -258,6 +279,7 @@ public final class CollectionsManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerCollections.clear();
+        collectionsHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -275,6 +297,10 @@ public final class CollectionsManager {
                         playerCollections.put(uuid, totals);
                     }
                 }
+                List<String> colHistory = cfg.getStringList(key + ".collectionsHistory");
+                if (!colHistory.isEmpty()) {
+                    collectionsHistory.put(uuid, new ArrayList<>(colHistory));
+                }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
             }
@@ -288,6 +314,11 @@ public final class CollectionsManager {
             String key = entry.getKey().toString();
             for (Map.Entry<CollectionType, Long> col : entry.getValue().entrySet()) {
                 cfg.set(key + "." + col.getKey().name(), col.getValue());
+            }
+        }
+        for (Map.Entry<UUID, List<String>> entry : collectionsHistory.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                cfg.set(entry.getKey().toString() + ".collectionsHistory", entry.getValue());
             }
         }
         try {
