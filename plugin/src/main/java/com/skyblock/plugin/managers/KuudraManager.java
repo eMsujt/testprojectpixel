@@ -70,8 +70,12 @@ public final class KuudraManager {
         return Collections.unmodifiableMap(tierCompletions);
     }
 
-    public void recordRun(UUID playerId, String summary) {
+    public void recordKuudraRun(UUID playerId, String summary) {
         kuudraHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public void recordRun(UUID playerId, String summary) {
+        recordKuudraRun(playerId, summary);
     }
 
     public List<String> getKuudraHistory(UUID playerId) {
