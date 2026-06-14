@@ -256,11 +256,25 @@ public final class EnchantingManager {
     /** Per-player enchantment book inventories. */
     private final Map<UUID, List<EnchantmentBook>> playerBooks = new HashMap<>();
 
+    private final Map<UUID, List<String>> enchantingHistory = new HashMap<>();
+
     private EnchantingManager() {
     }
 
     public static EnchantingManager getInstance() {
         return INSTANCE;
+    }
+
+    public void recordEnchantingEvent(UUID playerUuid, String summary) {
+        enchantingHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getEnchantingHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(enchantingHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllEnchantingHistory() {
+        return Collections.unmodifiableMap(enchantingHistory);
     }
 
     /**
@@ -361,6 +375,7 @@ public final class EnchantingManager {
         Objects.requireNonNull(playerId, "playerId");
         playerBooks.remove(playerId);
         enchantingLevels.remove(playerId);
+        enchantingHistory.remove(playerId);
         return playerEnchantments.remove(playerId) != null;
     }
 
@@ -419,6 +434,7 @@ public final class EnchantingManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         enchantingLevels.clear();
         playerEnchantments.clear();
+        enchantingHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -442,6 +458,17 @@ public final class EnchantingManager {
                 // skip malformed entries
             }
         }
+        if (cfg.isConfigurationSection("enchantingHistory")) {
+            for (String key : cfg.getConfigurationSection("enchantingHistory").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<String> entries = cfg.getStringList("enchantingHistory." + key);
+                    if (!entries.isEmpty()) {
+                        enchantingHistory.put(uuid, new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -455,6 +482,9 @@ public final class EnchantingManager {
             for (Map.Entry<SkyBlockEnchantment, Integer> e : entry.getValue().entrySet()) {
                 cfg.set(key + ".enchantments." + e.getKey().name(), e.getValue());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : enchantingHistory.entrySet()) {
+            cfg.set("enchantingHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
