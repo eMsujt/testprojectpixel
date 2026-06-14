@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 public final class HOTMCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "upgrade", "set", "reset", "powder");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "upgrade", "set", "reset", "powder", "history");
     private static final List<String> PERK_NAMES = Arrays.stream(HOTMManager.HOTMPerk.values())
             .map(p -> p.name().toLowerCase())
             .collect(Collectors.toList());
@@ -54,7 +54,8 @@ public final class HOTMCommand implements TabExecutor {
             case "set"     -> handleSet(player, args);
             case "reset"   -> handleReset(player);
             case "powder"  -> handlePowder(player, args);
-            default        -> player.sendMessage("Unknown subcommand. Usage: /hotmtree <view|upgrade|set|reset|powder>");
+            case "history" -> handleHistory(player);
+            default        -> player.sendMessage("Unknown subcommand. Usage: /hotmtree <view|upgrade|set|reset|powder|history>");
         }
         return true;
     }
@@ -175,6 +176,18 @@ public final class HOTMCommand implements TabExecutor {
             } else {
                 player.sendMessage("Insufficient Mithril Powder (have " + hotmManager.getMithrilPowder(player.getUniqueId()) + ", need " + amount + ").");
             }
+        }
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = hotmManager.getHotmHistory(player.getUniqueId());
+        player.sendMessage("=== HOTM History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No HOTM events recorded.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
         }
     }
 
