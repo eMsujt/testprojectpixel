@@ -13,7 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -33,6 +36,7 @@ public class NpcShopMenu extends Menu {
 
     private final CoinManager coinManager;
     private final List<ShopEntry> entries = new ArrayList<>();
+    private Map<Integer, ShopEntry> slotMap = Collections.emptyMap();
 
     /**
      * Loads the named shop using the shared {@link CoinManager} instance.
@@ -55,6 +59,11 @@ public class NpcShopMenu extends Menu {
         super("§6" + Objects.requireNonNull(shopName, "shopName"), 6);
         this.coinManager = Objects.requireNonNull(coinManager, "coinManager");
         load(plugin, shopName);
+        Map<Integer, ShopEntry> map = new LinkedHashMap<>();
+        for (int i = 0; i < entries.size() && i < 54; i++) {
+            map.put(i, entries.get(i));
+        }
+        this.slotMap = Collections.unmodifiableMap(map);
     }
 
     /**
@@ -117,14 +126,13 @@ public class NpcShopMenu extends Menu {
 
     @Override
     protected void build() {
-        for (int i = 0; i < entries.size() && i < 54; i++) {
-            ShopEntry entry = entries.get(i);
+        slotMap.forEach((slot, entry) -> {
             ItemStack display = new ItemBuilder(entry.material())
                     .addLore("§7Price: §6" + entry.price() + " coins")
                     .addLore("§eClick to buy!")
                     .build();
-            setItem(i, display, event -> purchase((Player) event.getWhoClicked(), entry));
-        }
+            setItem(slot, display, event -> purchase((Player) event.getWhoClicked(), entry));
+        });
     }
 
     private void purchase(Player player, ShopEntry entry) {
