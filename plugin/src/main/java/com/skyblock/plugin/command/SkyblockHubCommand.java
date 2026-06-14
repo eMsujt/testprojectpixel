@@ -6,7 +6,9 @@ import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.dungeon.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingManager;
+import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.core.fairy.FairyManager;
+import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.hotm.HOTMManager;
 import com.skyblock.core.island.IslandManager;
@@ -91,6 +93,12 @@ public final class SkyblockHubCommand implements CommandExecutor {
                     return true;
                 case "kuudra":
                     handleKuudra(player);
+                    return true;
+                case "fishing":
+                    handleFishing(player);
+                    return true;
+                case "alchemy":
+                    handleAlchemy(player);
                     return true;
                 default:
                     break;
@@ -296,6 +304,27 @@ public final class SkyblockHubCommand implements CommandExecutor {
         int souls = manager.getSouls(id);
         player.sendMessage("=== Fairy Souls ===");
         player.sendMessage("Souls: " + souls + "/" + FairyManager.MAX_SOULS);
+    }
+
+    private void handleFishing(Player player) {
+        UUID id = player.getUniqueId();
+        FishingManager manager = FishingManager.getInstance();
+        player.sendMessage("=== Fishing ===");
+        player.sendMessage("Level: " + manager.getLevel(id));
+        player.sendMessage("XP: " + (long) manager.getXp(id));
+        player.sendMessage("Fish Caught: " + manager.getTotalFishCaught(id));
+    }
+
+    private void handleAlchemy(Player player) {
+        UUID id = player.getUniqueId();
+        AlchemyManager manager = AlchemyManager.getInstance();
+        player.sendMessage("=== Alchemy ===");
+        player.sendMessage("Level: " + manager.getLevel(id));
+        player.sendMessage("XP: " + (long) manager.getXp(id));
+        AlchemyManager.BrewJob job = manager.getActiveJob(id);
+        if (job != null) {
+            player.sendMessage("Active Brew: " + job.getRecipe().getId());
+        }
     }
 
     private void handleKuudra(Player player) {
