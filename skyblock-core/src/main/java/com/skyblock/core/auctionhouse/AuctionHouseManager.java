@@ -139,6 +139,7 @@ public final class AuctionHouseManager {
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
 
     private final Map<UUID, State> listings = new HashMap<>();
+    private final Map<UUID, List<String>> auctionHistory = new HashMap<>();
 
     private AuctionHouseManager() {}
 
@@ -149,6 +150,19 @@ public final class AuctionHouseManager {
      */
     public static AuctionHouseManager getInstance() {
         return INSTANCE;
+    }
+
+    public void recordAuctionEvent(UUID player, String summary) {
+        auctionHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getAuctionHistory(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return Collections.unmodifiableList(auctionHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllAuctionHistory() {
+        return Collections.unmodifiableMap(auctionHistory);
     }
 
     // ---------------------------------------------------------------------------
@@ -170,6 +184,7 @@ public final class AuctionHouseManager {
         Objects.requireNonNull(type, "type");
         UUID id = UUID.randomUUID();
         listings.put(id, new State(new AuctionListing(id, seller, itemName, startingBid, type), 0L));
+        recordAuctionEvent(seller, "Listed " + itemName + " (" + type.getDisplayName() + ") starting at " + startingBid + " coins");
         return id;
     }
 
@@ -188,6 +203,7 @@ public final class AuctionHouseManager {
         UUID id = UUID.randomUUID();
         listings.put(id, new State(
                 new AuctionListing(id, seller, item, startPrice, AuctionType.AUCTION), expiry));
+        recordAuctionEvent(seller, "Posted auction for " + item + " starting at " + startPrice + " coins");
         return id;
     }
 
@@ -237,6 +253,7 @@ public final class AuctionHouseManager {
                         "amount must meet the BIN price " + state.entry.startingBid() + ": " + amount);
             }
             listings.remove(listingId);
+            recordAuctionEvent(bidder, "Purchased " + state.entry.itemName() + " for " + amount + " coins");
             return true;
         }
         boolean tooLow = state.highestBidder == null
@@ -370,7 +387,19 @@ public final class AuctionHouseManager {
         if (!file.exists()) return;
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         listings.clear();
+        auctionHistory.clear();
+        if (cfg.isConfigurationSection("auctionHistory")) {
+            for (String key : cfg.getConfigurationSection("auctionHistory").getKeys(false)) {
+                try {
+                    auctionHistory.put(UUID.fromString(key),
+                            new ArrayList<>(cfg.getStringList("auctionHistory." + key)));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
         for (String key : cfg.getKeys(false)) {
+            if (key.equals("auctionHistory")) continue;
             try {
                 UUID id = UUID.fromString(key);
                 UUID seller = UUID.fromString(cfg.getString(key + ".seller", ""));
@@ -409,6 +438,9 @@ public final class AuctionHouseManager {
                 cfg.set(key + ".highestBidder", state.highestBidder.toString());
             }
         }
+        for (Map.Entry<UUID, List<String>> entry : auctionHistory.entrySet()) {
+            cfg.set("auctionHistory." + entry.getKey().toString(), entry.getValue());
+        }
         try {
             cfg.save(file);
         } catch (IOException e) {
@@ -416,9 +448,10 @@ public final class AuctionHouseManager {
         }
     }
 
-    /** Removes all active listings. */
+    /** Removes all active listings and history. */
     public void clear() {
         listings.clear();
+        auctionHistory.clear();
     }
 
     private State requireState(UUID listingId) {

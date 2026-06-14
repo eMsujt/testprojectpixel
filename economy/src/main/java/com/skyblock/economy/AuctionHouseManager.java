@@ -1,7 +1,9 @@
 package com.skyblock.economy;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -59,6 +61,19 @@ public final class AuctionHouseManager {
     }
 
     private final Map<UUID, ListingState> listings = new HashMap<>();
+    private final Map<UUID, List<String>> auctionHistory = new HashMap<>();
+
+    public void recordAuctionEvent(UUID player, String summary) {
+        auctionHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getAuctionHistory(UUID player) {
+        return Collections.unmodifiableList(auctionHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllAuctionHistory() {
+        return Collections.unmodifiableMap(auctionHistory);
+    }
 
     private static final class ListingState {
         final AuctionListing listing;
@@ -88,6 +103,7 @@ public final class AuctionHouseManager {
         AuctionListing listing = new AuctionListing(listingId, seller, item, itemName,
                 startingBid, binListing);
         listings.put(listingId, new ListingState(listing));
+        recordAuctionEvent(seller, "Listed " + itemName + " for " + startingBid + " coins");
         return listingId;
     }
 
@@ -121,6 +137,7 @@ public final class AuctionHouseManager {
                         "amount must meet the BIN price " + state.listing.startingBid() + ": " + amount);
             }
             listings.remove(listingId);
+            recordAuctionEvent(bidder, "Purchased " + state.listing.itemName() + " for " + amount + " coins");
             return true;
         }
         boolean tooLow = state.highestBidder == null
