@@ -165,6 +165,31 @@ public final class DungeonManager {
         FLOOR_META = Collections.unmodifiableMap(m);
     }
 
+    /**
+     * Static floor metadata keyed by short identifier (e.g. {@code "F1"}, {@code "M3"}).
+     * Each int[] entry is: [0] recommended power, [1] secrets count.
+     */
+    public static final Map<String, int[]> FLOOR_METADATA;
+
+    static {
+        Map<String, int[]> m = new LinkedHashMap<>();
+        m.put("F1", new int[]{200,   40});
+        m.put("F2", new int[]{600,   50});
+        m.put("F3", new int[]{1200,  60});
+        m.put("F4", new int[]{2000,  70});
+        m.put("F5", new int[]{3000,  80});
+        m.put("F6", new int[]{4000, 100});
+        m.put("F7", new int[]{6000, 120});
+        m.put("M1", new int[]{8000,   40});
+        m.put("M2", new int[]{12000,  50});
+        m.put("M3", new int[]{18000,  60});
+        m.put("M4", new int[]{24000,  70});
+        m.put("M5", new int[]{30000,  80});
+        m.put("M6", new int[]{40000, 100});
+        m.put("M7", new int[]{60000, 120});
+        FLOOR_METADATA = Collections.unmodifiableMap(m);
+    }
+
     /** A single active dungeon run. */
     public static final class DungeonRun {
         private final DungeonType type;
