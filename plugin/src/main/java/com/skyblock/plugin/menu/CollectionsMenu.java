@@ -14,15 +14,14 @@ public final class CollectionsMenu {
     }
 
     private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§6Collections");
+        Inventory inv = Bukkit.createInventory(null, 54, "§bCollections");
 
-        // Six category icons centered in row 3
-        inv.setItem(20, makeItem(Material.WHEAT,        "§6Farming"));
-        inv.setItem(21, makeItem(Material.COBBLESTONE,  "§6Mining"));
-        inv.setItem(22, makeItem(Material.ROTTEN_FLESH, "§6Combat"));
-        inv.setItem(23, makeItem(Material.OAK_LOG,      "§6Foraging"));
-        inv.setItem(24, makeItem(Material.COD,          "§6Fishing"));
-        inv.setItem(25, makeItem(Material.ENDER_PEARL,  "§6Rift"));
+        // Top row — the five collection categories, centered in slots 2-6
+        inv.setItem(2, makeItem(Material.WHEAT,        "§eFarming"));
+        inv.setItem(3, makeItem(Material.COBBLESTONE,  "§eMining"));
+        inv.setItem(4, makeItem(Material.ROTTEN_FLESH, "§eCombat"));
+        inv.setItem(5, makeItem(Material.OAK_LOG,      "§eForaging"));
+        inv.setItem(6, makeItem(Material.COD,          "§eFishing"));
 
         return inv;
     }
