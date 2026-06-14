@@ -4,6 +4,9 @@ import com.skyblock.plugin.accessories.AccessoryBagManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public final class AccessoryBagMenu implements InventoryHolder {
+public final class AccessoryBagMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
 
@@ -36,6 +39,12 @@ public final class AccessoryBagMenu implements InventoryHolder {
         for (int i = 0; i < accessories.size() && i < 45; i++) {
             inventory.setItem(i, makeItem(Material.GOLD_NUGGET, "§5" + accessories.get(i)));
         }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!(event.getInventory().getHolder() instanceof AccessoryBagMenu)) return;
+        event.setCancelled(true);
     }
 
     private ItemStack makeItem(Material material, String name) {
