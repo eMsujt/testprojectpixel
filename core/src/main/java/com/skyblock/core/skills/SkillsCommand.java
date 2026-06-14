@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public final class SkillsCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "xp", "level");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "xp", "level", "history");
 
     private final SkillsManager manager;
 
@@ -34,10 +34,11 @@ public final class SkillsCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "view"  -> handleView(player);
-            case "xp"    -> handleXp(player, args);
-            case "level" -> handleLevel(player, args);
-            default      -> sendHelp(player);
+            case "view"    -> handleView(player);
+            case "xp"      -> handleXp(player, args);
+            case "level"   -> handleLevel(player, args);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -99,10 +100,23 @@ public final class SkillsCommand implements TabExecutor {
         player.sendMessage("Your " + skill + " level is " + level + ".");
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getSkillsHistory(player.getUniqueId());
+        player.sendMessage("=== Skills History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No skills history found.");
+            return;
+        }
+        for (String entry : history) {
+            player.sendMessage(entry);
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Skills Commands ===");
         player.sendMessage("/skills view — view all your skill levels");
         player.sendMessage("/skills xp <skill> — view XP and level for a skill");
         player.sendMessage("/skills level <skill> — view your level in a skill");
+        player.sendMessage("/skills history — view your skills event history");
     }
 }
