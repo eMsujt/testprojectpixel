@@ -1,6 +1,7 @@
 package com.skyblock.plugin.combat;
 
-import com.skyblock.core.combat.StatManager;
+import com.skyblock.core.stat.StatManager.StatType;
+import com.skyblock.core.stats.PlayerStatManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 public final class CombatListener implements Listener {
 
-    private final StatManager statManager = StatManager.getInstance();
+    private final PlayerStatManager statManager = PlayerStatManager.getInstance();
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
@@ -22,17 +23,17 @@ public final class CombatListener implements Listener {
 
         UUID attackerId = damager.getUniqueId();
         double weaponDamage = event.getDamage();
-        double strength     = statManager.getStat(attackerId, StatManager.CombatStat.STRENGTH);
-        double critChance   = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_CHANCE);
-        double critDamage   = statManager.getStat(attackerId, StatManager.CombatStat.CRIT_DAMAGE);
+        double strength     = statManager.getStat(attackerId, StatType.STRENGTH);
+        double critChance   = statManager.getStat(attackerId, StatType.CRIT_CHANCE);
+        double critDamage   = statManager.getStat(attackerId, StatType.CRIT_DAMAGE);
 
         double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
 
         Entity victim = event.getEntity();
         if (victim instanceof Player) {
             UUID defenderId = victim.getUniqueId();
-            double defense     = statManager.getStat(defenderId, StatManager.CombatStat.DEFENSE);
-            double trueDefense = statManager.getStat(defenderId, StatManager.CombatStat.TRUE_DEFENSE);
+            double defense     = statManager.getStat(defenderId, StatType.DEFENSE);
+            double trueDefense = statManager.getStat(defenderId, StatType.TRUE_DEFENSE);
             // Hypixel defense formula: damage × (1 - defense / (defense + 100)), then flat true-defense reduction
             damage *= (1.0 - defense / (defense + 100.0));
             damage = Math.max(0.0, damage - trueDefense);
