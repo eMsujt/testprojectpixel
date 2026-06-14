@@ -2,7 +2,12 @@ package com.skyblock.plugin.menus;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
+import com.skyblock.plugin.pets.PetsMenu;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -12,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
  * Hypixel's layout: a {@link Material#GRAY_STAINED_GLASS_PANE} border framing a
  * grid of icons linking to the game's subsystems.</p>
  */
-public class SkyBlockMenu extends Menu {
+public class SkyBlockMenu extends Menu implements Listener {
 
     /** A SkyBlock Menu entry: its icon, display name, and slot. */
     private enum Entry {
@@ -57,6 +62,30 @@ public class SkyBlockMenu extends Menu {
                     .displayName(entry.displayName)
                     .lore(entry.lore)
                     .build());
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!(event.getInventory().getHolder() instanceof SkyBlockMenu)) return;
+        event.setCancelled(true);
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+
+        switch (event.getRawSlot()) {
+            case 10 -> new SkillsMenu(player.getUniqueId()).open(player);
+            case 11 -> new CollectionsMenu(player.getUniqueId()).open(player);
+            case 12 -> new RecipeBookMenu(player).open(player);
+            case 13 -> new ProfileMenu(player).open(player);
+            case 14 -> new AccessoryBagMenu(player).open(player);
+            case 15 -> new QuestsMenu(player).open(player);
+            case 16 -> new CalendarMenu(player).open(player);
+            case 19 -> new PetsMenu(player.getUniqueId()).open(player);
+            case 20 -> WardrobeMenu.open(player);
+            case 21 -> StorageMenu.open(player);
+            case 22 -> new BankMenu(player).open(player);
+            case 23 -> new BazaarMenu().open(player);
+            case 25 -> new FastTravelMenu().open(player);
+            default -> { /* border / empty slot — already cancelled */ }
         }
     }
 
