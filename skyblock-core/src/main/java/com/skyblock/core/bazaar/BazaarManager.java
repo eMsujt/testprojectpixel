@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -268,6 +269,57 @@ public final class BazaarManager {
                 throw new IllegalArgumentException("priceEach must be positive: " + priceEach);
             }
         }
+    }
+
+    /**
+     * Reference market data for major bazaar products.
+     * Values are {@code {instantBuyPrice, sellOfferPrice}} in coins.
+     */
+    public static final Map<String, double[]> PRODUCT_DATA;
+
+    static {
+        Map<String, double[]> m = new LinkedHashMap<>();
+        // Enchanted farming crops
+        m.put("ENCHANTED_CARROT",         new double[]{  3_200,   3_000});
+        m.put("ENCHANTED_POTATO",         new double[]{  2_800,   2_600});
+        m.put("ENCHANTED_PUMPKIN",        new double[]{  5_500,   5_200});
+        m.put("ENCHANTED_MELON",          new double[]{  1_800,   1_650});
+        m.put("ENCHANTED_WHEAT",          new double[]{  4_000,   3_750});
+        m.put("ENCHANTED_SUGAR_CANE",     new double[]{  2_500,   2_300});
+        m.put("ENCHANTED_CACTUS",         new double[]{  3_600,   3_400});
+        m.put("ENCHANTED_NETHER_WART",    new double[]{  6_000,   5_700});
+        m.put("ENCHANTED_COCOA_BEANS",    new double[]{  1_400,   1_300});
+        m.put("ENCHANTED_MUSHROOM",       new double[]{  9_500,   9_000});
+        // Enchanted mining
+        m.put("ENCHANTED_COBBLESTONE",    new double[]{    480,     450});
+        m.put("ENCHANTED_COAL",           new double[]{  1_200,   1_100});
+        m.put("ENCHANTED_IRON",           new double[]{  3_000,   2_800});
+        m.put("ENCHANTED_GOLD",           new double[]{  8_000,   7_500});
+        m.put("ENCHANTED_DIAMOND",        new double[]{ 45_000,  42_000});
+        m.put("ENCHANTED_EMERALD",        new double[]{ 12_000,  11_200});
+        m.put("ENCHANTED_REDSTONE",       new double[]{  2_200,   2_050});
+        m.put("ENCHANTED_LAPIS",          new double[]{  1_700,   1_580});
+        m.put("ENCHANTED_QUARTZ",         new double[]{  4_800,   4_500});
+        m.put("ENCHANTED_OBSIDIAN",       new double[]{ 20_000,  18_500});
+        // Enchanted foraging
+        m.put("ENCHANTED_OAK_LOG",        new double[]{  5_000,   4_700});
+        m.put("ENCHANTED_SPRUCE_LOG",     new double[]{  4_800,   4_500});
+        m.put("ENCHANTED_BIRCH_LOG",      new double[]{  4_600,   4_300});
+        m.put("ENCHANTED_JUNGLE_LOG",     new double[]{  5_200,   4_900});
+        m.put("ENCHANTED_ACACIA_LOG",     new double[]{  4_700,   4_400});
+        m.put("ENCHANTED_DARK_OAK_LOG",   new double[]{  4_900,   4_600});
+        // Enchanted combat
+        m.put("ENCHANTED_ROTTEN_FLESH",   new double[]{    600,     560});
+        m.put("ENCHANTED_BONE",           new double[]{  1_000,     940});
+        m.put("ENCHANTED_SPIDER_EYE",     new double[]{  2_400,   2_250});
+        m.put("ENCHANTED_STRING",         new double[]{  3_800,   3_600});
+        m.put("ENCHANTED_GUNPOWDER",      new double[]{  2_000,   1_880});
+        m.put("ENCHANTED_BLAZE_ROD",      new double[]{ 14_000,  13_000});
+        m.put("ENCHANTED_GHAST_TEAR",     new double[]{ 18_000,  17_000});
+        // Misc high-value
+        m.put("MITHRIL_ORE",              new double[]{    120,     110});
+        m.put("TITANIUM_ORE",             new double[]{  2_500,   2_350});
+        PRODUCT_DATA = Collections.unmodifiableMap(m);
     }
 
     // Per-item order books: buy orders sorted highest-price first, sell orders lowest-price first
