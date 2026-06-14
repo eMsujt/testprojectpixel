@@ -37,6 +37,7 @@ public final class MayorManager {
     private final Map<String, List<String>> mayorPerks = new HashMap<>(DEFAULT_PERKS);
     private final Map<UUID, String> playerVotes = new HashMap<>();
     private final Map<String, Integer> mayorVotes = new HashMap<>();
+    private final Map<UUID, List<String>> voteHistory = new HashMap<>();
 
     private MayorManager() {}
 
@@ -98,6 +99,18 @@ public final class MayorManager {
         List<String> candidates = new ArrayList<>(mayorPerks.keySet());
         Collections.sort(candidates);
         return candidates;
+    }
+
+    public void recordVote(UUID playerId, String mayorName) {
+        voteHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(mayorName);
+    }
+
+    public List<String> getVoteHistory(UUID playerId) {
+        return voteHistory.getOrDefault(playerId, Collections.emptyList());
+    }
+
+    public Map<UUID, List<String>> getAllVoteHistory() {
+        return Collections.unmodifiableMap(voteHistory);
     }
 
     public boolean clearMayorVote(UUID playerId) {
@@ -165,6 +178,20 @@ public final class MayorManager {
                 mayorVotes.put(name, cfg.getInt("mayorVotes." + name, 0));
             }
         }
+        voteHistory.clear();
+        if (cfg.isConfigurationSection("voteHistory")) {
+            for (String key : cfg.getConfigurationSection("voteHistory").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    List<String> history = cfg.getStringList("voteHistory." + key);
+                    if (!history.isEmpty()) {
+                        voteHistory.put(uuid, new ArrayList<>(history));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -180,6 +207,9 @@ public final class MayorManager {
         }
         for (Map.Entry<String, Integer> entry : mayorVotes.entrySet()) {
             cfg.set("mayorVotes." + entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : voteHistory.entrySet()) {
+            cfg.set("voteHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
