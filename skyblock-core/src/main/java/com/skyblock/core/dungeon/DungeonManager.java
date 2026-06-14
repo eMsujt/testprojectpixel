@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -121,6 +122,47 @@ public final class DungeonManager {
         MASTER_M5,
         MASTER_M6,
         MASTER_M7
+    }
+
+    /** Immutable metadata for a single dungeon floor. */
+    public static final class FloorMeta {
+        private final String displayName;
+        private final int minCatacombsLevel;
+        private final String bossName;
+
+        FloorMeta(String displayName, int minCatacombsLevel, String bossName) {
+            this.displayName = displayName;
+            this.minCatacombsLevel = minCatacombsLevel;
+            this.bossName = bossName;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getMinCatacombsLevel() { return minCatacombsLevel; }
+        public String getBossName() { return bossName; }
+    }
+
+    /**
+     * Static floor metadata keyed by short identifier (e.g. {@code "F1"}, {@code "M3"}).
+     * Covers normal floors F1–F7 and Master Mode floors M1–M6.
+     */
+    public static final Map<String, FloorMeta> FLOOR_META;
+
+    static {
+        Map<String, FloorMeta> m = new LinkedHashMap<>();
+        m.put("F1", new FloorMeta("Floor 1", 0, "Bonzo"));
+        m.put("F2", new FloorMeta("Floor 2", 0, "Scarf"));
+        m.put("F3", new FloorMeta("Floor 3", 0, "The Professor"));
+        m.put("F4", new FloorMeta("Floor 4", 0, "Thorn"));
+        m.put("F5", new FloorMeta("Floor 5", 0, "Livid"));
+        m.put("F6", new FloorMeta("Floor 6", 0, "Sadan"));
+        m.put("F7", new FloorMeta("Floor 7", 0, "Necron"));
+        m.put("M1", new FloorMeta("Master 1", 20, "Bonzo"));
+        m.put("M2", new FloorMeta("Master 2", 22, "Scarf"));
+        m.put("M3", new FloorMeta("Master 3", 24, "The Professor"));
+        m.put("M4", new FloorMeta("Master 4", 26, "Thorn"));
+        m.put("M5", new FloorMeta("Master 5", 28, "Livid"));
+        m.put("M6", new FloorMeta("Master 6", 30, "Sadan"));
+        FLOOR_META = Collections.unmodifiableMap(m);
     }
 
     /** A single active dungeon run. */
