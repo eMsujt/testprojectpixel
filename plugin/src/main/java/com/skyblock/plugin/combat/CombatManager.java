@@ -62,7 +62,7 @@ public final class CombatManager implements Listener {
      * @param critDamagePercent crit damage bonus as a percentage, e.g. {@code 50.0} for +50 %
      * @return the final damage dealt, never negative
      */
-    public double calculateDamage(double weaponDamage, double strength, double critChancePercent, double critDamagePercent) {
+    public static double calculateDamage(double weaponDamage, double strength, double critChancePercent, double critDamagePercent) {
         return DamageFormula.calculate(weaponDamage, strength, critChancePercent, critDamagePercent);
     }
 }
