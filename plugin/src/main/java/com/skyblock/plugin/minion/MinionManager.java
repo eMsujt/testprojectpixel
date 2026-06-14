@@ -69,7 +69,7 @@ public final class MinionManager implements Listener {
     }
 
     /**
-     * Schedules the repeating {@link MinionTickTask} that steps every placed
+     * Schedules the repeating {@link MinionTicker} that steps every placed
      * minion once per second. Call from the plugin's {@code onEnable}; a no-op
      * if the task is already running.
      *
@@ -80,8 +80,8 @@ public final class MinionManager implements Listener {
         if (task != null) {
             return;
         }
-        task = new MinionTickTask(this)
-                .runTaskTimer(plugin, MinionTickTask.PERIOD_TICKS, MinionTickTask.PERIOD_TICKS);
+        task = new MinionTicker(this)
+                .runTaskTimer(plugin, MinionTicker.PERIOD_TICKS, MinionTicker.PERIOD_TICKS);
     }
 
     /** Cancels the repeating production task. Call from the plugin's {@code onDisable}. */
