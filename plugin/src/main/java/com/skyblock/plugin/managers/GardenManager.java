@@ -17,6 +17,7 @@ public final class GardenManager {
     private final Map<UUID, Integer> gardenPlots = new HashMap<>();
     private final Map<UUID, Integer> unlockedPlots = new HashMap<>();
     private final Map<UUID, Map<String, Long>> cropHarvests = new HashMap<>();
+    private final Map<UUID, Integer> harvestStreak = new HashMap<>();
 
     private GardenManager() {}
 
@@ -73,6 +74,22 @@ public final class GardenManager {
         return Collections.unmodifiableMap(cropHarvests);
     }
 
+    public void incrementHarvestStreak(UUID playerId) {
+        harvestStreak.merge(playerId, 1, Integer::sum);
+    }
+
+    public void resetHarvestStreak(UUID playerId) {
+        harvestStreak.put(playerId, 0);
+    }
+
+    public int getHarvestStreak(UUID playerId) {
+        return harvestStreak.getOrDefault(playerId, 0);
+    }
+
+    public Map<UUID, Integer> getAllHarvestStreaks() {
+        return Collections.unmodifiableMap(harvestStreak);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "garden.yml");
         if (!file.exists()) {
@@ -83,6 +100,7 @@ public final class GardenManager {
         gardenPlots.clear();
         unlockedPlots.clear();
         cropHarvests.clear();
+        harvestStreak.clear();
         if (cfg.isConfigurationSection("gardenLevel")) {
             for (String key : cfg.getConfigurationSection("gardenLevel").getKeys(false)) {
                 try {
@@ -118,6 +136,13 @@ public final class GardenManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        if (cfg.isConfigurationSection("harvestStreak")) {
+            for (String key : cfg.getConfigurationSection("harvestStreak").getKeys(false)) {
+                try {
+                    harvestStreak.put(UUID.fromString(key), cfg.getInt("harvestStreak." + key));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -137,6 +162,9 @@ public final class GardenManager {
             for (Map.Entry<String, Long> crop : entry.getValue().entrySet()) {
                 cfg.set(prefix + crop.getKey(), crop.getValue());
             }
+        }
+        for (Map.Entry<UUID, Integer> entry : harvestStreak.entrySet()) {
+            cfg.set("harvestStreak." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
