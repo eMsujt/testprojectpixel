@@ -81,6 +81,31 @@ public final class AuctionHouseManager {
         return Collections.unmodifiableMap(auctionHistory);
     }
 
+    public String getAuctionHouseStats(UUID player) {
+        List<String> history = auctionHistory.getOrDefault(player, Collections.emptyList());
+        int auctionsCreated = 0;
+        int itemsSold = 0;
+        long totalCoins = 0;
+        for (String entry : history) {
+            if (entry.startsWith("Listed")) {
+                auctionsCreated++;
+            } else if (entry.startsWith("Purchased")) {
+                itemsSold++;
+            }
+            int idx = entry.lastIndexOf(" coins");
+            if (idx > 0) {
+                String before = entry.substring(0, idx);
+                int space = before.lastIndexOf(' ');
+                if (space >= 0) {
+                    try {
+                        totalCoins += (long) Double.parseDouble(before.substring(space + 1));
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+        }
+        return "Auction Stats: Auctions Created: " + auctionsCreated + ", Items Sold: " + itemsSold + ", Total Coins: " + totalCoins;
+    }
+
     /**
      * Creates a new buy-it-now listing for the given item.
      *
