@@ -20,7 +20,7 @@ public final class SkillsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public SkillsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§aSkills");
+        this.inventory = Bukkit.createInventory(this, 54, "§aYour Skills");
         build(player);
     }
 
@@ -58,6 +58,7 @@ public final class SkillsMenu implements InventoryHolder, Listener {
         inventory.setItem(31, makeSkillItem(player, sm, Material.BREWING_STAND,   "alchemy",    "§eAlchemy"));
         inventory.setItem(32, makeSkillItem(player, sm, Material.LEAD,            "taming",     "§eTaming"));
         inventory.setItem(33, makeSkillItem(player, sm, Material.CRAFTING_TABLE,  "carpentry",  "§eCarpentry"));
+        inventory.setItem(34, makeSkillItem(player, sm, Material.MAGMA_CREAM,     "runecrafting", "§eRunecrafting"));
     }
 
     @EventHandler
