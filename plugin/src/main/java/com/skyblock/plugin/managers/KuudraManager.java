@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ public final class KuudraManager {
     private final Map<UUID, Integer> kuudraTier = new HashMap<>();
     private final Map<UUID, Integer> runsCompleted = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> tierCompletions = new HashMap<>();
+    private final Map<UUID, List<String>> kuudraHistory = new HashMap<>();
 
     private KuudraManager() {}
 
@@ -67,12 +70,38 @@ public final class KuudraManager {
         return Collections.unmodifiableMap(tierCompletions);
     }
 
+    public void recordRun(UUID playerId, String summary) {
+        kuudraHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getKuudraHistory(UUID playerId) {
+        return Collections.unmodifiableList(kuudraHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllKuudraHistory() {
+        return Collections.unmodifiableMap(kuudraHistory);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "kuudra.yml");
         if (!file.exists()) {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        kuudraHistory.clear();
+        if (cfg.isConfigurationSection("kuudraHistory")) {
+            for (String uuidKey : cfg.getConfigurationSection("kuudraHistory").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(uuidKey);
+                    List<String> entries = cfg.getStringList("kuudraHistory." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        kuudraHistory.put(id, new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
         kuudraTier.clear();
         if (cfg.isConfigurationSection("kuudraTier")) {
             for (String uuidKey : cfg.getConfigurationSection("kuudraTier").getKeys(false)) {
@@ -116,6 +145,9 @@ public final class KuudraManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "kuudra.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<String>> entry : kuudraHistory.entrySet()) {
+            cfg.set("kuudraHistory." + entry.getKey().toString(), entry.getValue());
+        }
         for (Map.Entry<UUID, Integer> entry : kuudraTier.entrySet()) {
             cfg.set("kuudraTier." + entry.getKey().toString(), entry.getValue());
         }
