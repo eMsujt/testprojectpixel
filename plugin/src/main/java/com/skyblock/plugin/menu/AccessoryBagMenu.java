@@ -19,7 +19,7 @@ public final class AccessoryBagMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public AccessoryBagMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§5Accessory Bag");
+        this.inventory = Bukkit.createInventory(this, 54, "§dAccessory Bag");
         build(player);
     }
 
