@@ -39,6 +39,14 @@ items:
     strength: 25
     description: "Launches you into the air on right-click."
 
+  TACTICIANS_SWORD:
+    displayName: "Tactician's Sword"
+    material: IRON_SWORD
+    rarity: RARE
+    damage: 60.0
+    intelligence: 50
+    description: "Reduces the mana cost of your other abilities on right-click."
+
   ZOMBIE_SWORD:
     displayName: "Zombie Sword"
     material: ROTTEN_FLESH
