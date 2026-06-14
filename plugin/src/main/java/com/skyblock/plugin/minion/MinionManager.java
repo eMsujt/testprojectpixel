@@ -1,5 +1,8 @@
 package com.skyblock.plugin.minion;
 
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,10 +24,37 @@ public final class MinionManager {
     /** Placed minions keyed by owner UUID. */
     private final Map<UUID, List<Minion>> minions = new HashMap<>();
 
+    /** Handle to the repeating production task, {@code null} while not running. */
+    private BukkitTask task;
+
     private MinionManager() {}
 
     public static MinionManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Schedules the repeating {@link MinionTickTask} that steps every placed
+     * minion once per second. Call from the plugin's {@code onEnable}; a no-op
+     * if the task is already running.
+     *
+     * @param plugin the owning plugin used to schedule the task
+     */
+    public void onEnable(JavaPlugin plugin) {
+        Objects.requireNonNull(plugin, "plugin");
+        if (task != null) {
+            return;
+        }
+        task = new MinionTickTask(this)
+                .runTaskTimer(plugin, MinionTickTask.PERIOD_TICKS, MinionTickTask.PERIOD_TICKS);
+    }
+
+    /** Cancels the repeating production task. Call from the plugin's {@code onDisable}. */
+    public void onDisable() {
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
     }
 
     /**
