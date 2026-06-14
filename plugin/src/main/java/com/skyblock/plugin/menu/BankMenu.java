@@ -17,7 +17,7 @@ import java.util.List;
 
 public final class BankMenu implements InventoryHolder, Listener {
 
-    private static final String TITLE = "§6Bank";
+    private static final String TITLE = "§6Bank & Purse";
     private static final int SIZE = 54;
 
     /** Slot showing the bank/purse balance summary. */
