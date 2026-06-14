@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,6 +27,7 @@ public final class HOTMManager {
     private final Map<UUID, Integer> mithrilPowder  = new HashMap<>();
     private final Map<UUID, Integer> gemstonePowder = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> powderCollected = new HashMap<>();
+    private final Map<UUID, List<String>> upgradeHistory = new HashMap<>();
 
     private HOTMManager() {}
 
@@ -117,6 +120,18 @@ public final class HOTMManager {
         return Collections.unmodifiableMap(powderCollected);
     }
 
+    public void recordUpgrade(UUID playerId, String summary) {
+        upgradeHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getUpgradeHistory(UUID playerId) {
+        return Collections.unmodifiableList(upgradeHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllUpgradeHistory() {
+        return Collections.unmodifiableMap(upgradeHistory);
+    }
+
     public Map<UUID, Integer> getHotmLevels() {
         return Collections.unmodifiableMap(hotmLevel);
     }
@@ -134,6 +149,7 @@ public final class HOTMManager {
         mithrilPowder.clear();
         gemstonePowder.clear();
         powderCollected.clear();
+        upgradeHistory.clear();
         if (cfg.isConfigurationSection("hotmLevel")) {
             for (String uuidKey : cfg.getConfigurationSection("hotmLevel").getKeys(false)) {
                 try {
@@ -204,6 +220,19 @@ public final class HOTMManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("upgradeHistory")) {
+            for (String uuidKey : cfg.getConfigurationSection("upgradeHistory").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(uuidKey);
+                    List<String> entries = cfg.getStringList("upgradeHistory." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        upgradeHistory.put(id, new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -231,6 +260,9 @@ public final class HOTMManager {
             for (Map.Entry<String, Integer> inner : outer.getValue().entrySet()) {
                 cfg.set("powderCollected." + outer.getKey() + "." + inner.getKey(), inner.getValue());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : upgradeHistory.entrySet()) {
+            cfg.set("upgradeHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
