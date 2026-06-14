@@ -2,6 +2,10 @@ package com.skyblock.bazaar;
 
 import com.skyblock.bazaar.BazaarOrder.OrderType;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -143,5 +147,35 @@ public final class BazaarManager {
             return 0;
         }
         return deque.stream().mapToDouble(BazaarOrder::pricePerUnit).max().orElse(0);
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "bazaar.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        bazaarHistory.clear();
+        if (cfg.isConfigurationSection("bazaarHistory")) {
+            for (String key : cfg.getConfigurationSection("bazaarHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("bazaarHistory." + key);
+                    if (!entries.isEmpty()) {
+                        bazaarHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "bazaar.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<String>> entry : bazaarHistory.entrySet()) {
+            cfg.set("bazaarHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save bazaar.yml", e);
+        }
     }
 }
