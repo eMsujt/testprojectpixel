@@ -50,6 +50,10 @@ public final class BankCommand implements CommandExecutor {
         }
         try {
             double amount = Double.parseDouble(args[1]);
+            if (amount <= 0) {
+                player.sendMessage("Amount must be greater than 0.");
+                return;
+            }
             BankManager manager = BankManager.getInstance();
             manager.deposit(player.getUniqueId(), amount);
             player.sendMessage("Deposited " + amount + " coins. Balance: " + manager.getBalance(player.getUniqueId()));
@@ -67,6 +71,10 @@ public final class BankCommand implements CommandExecutor {
         }
         try {
             double amount = Double.parseDouble(args[1]);
+            if (amount <= 0) {
+                player.sendMessage("Amount must be greater than 0.");
+                return;
+            }
             BankManager manager = BankManager.getInstance();
             boolean success = manager.withdraw(player.getUniqueId(), amount);
             if (success) {
