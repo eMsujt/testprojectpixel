@@ -15,26 +15,26 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CollectionsMenu extends Menu {
 
-    /** A Hypixel collection category and its representative icon. */
+    /** A Hypixel collection category, its colour, wool icon and content slot. */
     private enum Category {
-        FARMING("Farming", Material.GOLDEN_HOE),
-        MINING("Mining", Material.STONE_PICKAXE),
-        COMBAT("Combat", Material.STONE_SWORD),
-        FORAGING("Foraging", Material.JUNGLE_SAPLING),
-        FISHING("Fishing", Material.FISHING_ROD),
-        RIFT("Rift", Material.MYCELIUM);
+        FARMING("Farming", "§a", Material.LIME_WOOL, 10),
+        MINING("Mining", "§7", Material.LIGHT_GRAY_WOOL, 19),
+        COMBAT("Combat", "§c", Material.RED_WOOL, 28),
+        FORAGING("Foraging", "§2", Material.GREEN_WOOL, 37),
+        FISHING("Fishing", "§9", Material.BLUE_WOOL, 46);
 
         private final String displayName;
+        private final String color;
         private final Material icon;
+        private final int slot;
 
-        Category(String displayName, Material icon) {
+        Category(String displayName, String color, Material icon, int slot) {
             this.displayName = displayName;
+            this.color = color;
             this.icon = icon;
+            this.slot = slot;
         }
     }
-
-    /** The centred content slots, one per category. */
-    private static final int[] SLOTS = {20, 21, 22, 23, 24, 30};
 
     public CollectionsMenu() {
         super("§2Collections", 6);
@@ -44,11 +44,9 @@ public class CollectionsMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        Category[] values = Category.values();
-        for (int i = 0; i < values.length; i++) {
-            Category category = values[i];
-            setItem(SLOTS[i], new ItemBuilder(category.icon)
-                            .displayName("§a" + category.displayName + " Collections")
+        for (Category category : Category.values()) {
+            setItem(category.slot, new ItemBuilder(category.icon)
+                            .displayName(category.color + category.displayName + " Collections")
                             .lore(
                                     "§7View your " + category.displayName.toLowerCase() + " collections.",
                                     "§eClick to view!")
