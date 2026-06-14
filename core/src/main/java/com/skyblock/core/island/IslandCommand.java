@@ -10,11 +10,12 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class IslandCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("home", "sethome", "visit", "warp", "settings");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("home", "sethome", "visit", "warp", "settings", "info", "upgrade");
 
     private final IslandManager manager;
 
@@ -40,6 +41,8 @@ public final class IslandCommand implements TabExecutor {
             case "visit"    -> handleVisit(player, args);
             case "warp"     -> handleWarp(player, args);
             case "settings" -> handleSettings(player);
+            case "info"     -> handleInfo(player);
+            case "upgrade"  -> handleUpgrade(player, args);
             default         -> sendHelp(player);
         }
         return true;
@@ -55,6 +58,12 @@ public final class IslandCommand implements TabExecutor {
         }
         if (args.length == 2) {
             String sub = args[0].toLowerCase();
+            if (sub.equals("upgrade")) {
+                String prefix = args[1].toLowerCase();
+                return IslandManager.UPGRADES.keySet().stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
             if (sub.equals("visit") || sub.equals("warp")) {
                 String prefix = args[1].toLowerCase();
                 return Bukkit.getOnlinePlayers().stream()
@@ -121,6 +130,36 @@ public final class IslandCommand implements TabExecutor {
         player.sendMessage("Warped to " + target.getName() + "'s island.");
     }
 
+    private void handleInfo(Player player) {
+        player.sendMessage("=== Island Info ===");
+        player.sendMessage("  Owner: " + player.getName());
+        boolean hasHome = manager.hasHome(player.getUniqueId());
+        player.sendMessage("  Home: " + (hasHome ? manager.getHome(player.getUniqueId()).toString() : "not set"));
+        for (Map.Entry<String, Integer> entry : manager.getUpgrades(player.getUniqueId()).entrySet()) {
+            player.sendMessage("  " + entry.getKey() + ": level " + entry.getValue());
+        }
+    }
+
+    private void handleUpgrade(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /island upgrade <" + String.join("|", IslandManager.UPGRADES.keySet()) + ">");
+            return;
+        }
+        String type = args[1].toLowerCase();
+        if (!IslandManager.UPGRADES.containsKey(type)) {
+            player.sendMessage("Unknown upgrade '" + type + "'.");
+            return;
+        }
+        int current = manager.getUpgradeLevel(player.getUniqueId(), type);
+        int maxLevel = IslandManager.UPGRADES.get(type);
+        if (current >= maxLevel) {
+            player.sendMessage("'" + type + "' is already at max level (" + maxLevel + ").");
+            return;
+        }
+        manager.setUpgradeLevel(player.getUniqueId(), type, current + 1);
+        player.sendMessage("Upgraded '" + type + "' to level " + (current + 1) + "/" + maxLevel + ".");
+    }
+
     private void handleSettings(Player player) {
         player.sendMessage("=== Island Settings ===");
         boolean hasHome = manager.hasHome(player.getUniqueId());
@@ -133,6 +172,8 @@ public final class IslandCommand implements TabExecutor {
         player.sendMessage("/island sethome — set your island home here");
         player.sendMessage("/island visit <player> — visit another player's island");
         player.sendMessage("/island warp <player> — warp to another player's island");
+        player.sendMessage("/island info — view your island info and upgrades");
+        player.sendMessage("/island upgrade <type> — upgrade an island feature");
         player.sendMessage("/island settings — view your island settings");
     }
 }
