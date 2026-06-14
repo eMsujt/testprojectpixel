@@ -1,7 +1,10 @@
 package com.skyblock.plugin.menu;
 
+import com.skyblock.plugin.islands.IslandManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,10 +18,11 @@ import java.util.List;
 
 public final class FastTravelMenu implements InventoryHolder, Listener {
 
-    private static final String TITLE = "§aFast Travel";
-    private static final int SIZE = 27;
+    private static final String TITLE = "§bFast Travel";
+    private static final int SIZE = 54;
 
-    private static final int HUB_SLOT = 13;
+    private static final int HUB_SLOT = 19;
+    private static final int ISLAND_SLOT = 25;
 
     private final Inventory inventory;
 
@@ -40,13 +44,16 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", null);
         for (int slot = 0; slot < SIZE; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 18 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
 
-        inventory.setItem(HUB_SLOT, makeItem(Material.NETHER_STAR, "§aHub",
-                List.of("§7Teleport to the Hub.")));
+        inventory.setItem(HUB_SLOT, makeItem(Material.NETHER_STAR, "§bHub",
+                List.of("§7Teleport to the SkyBlock Hub.", "§7", "§eClick to warp!")));
+
+        inventory.setItem(ISLAND_SLOT, makeItem(Material.GRASS_BLOCK, "§aPrivate Island",
+                List.of("§7Teleport to your Private Island.", "§7", "§eClick to warp!")));
     }
 
     @EventHandler
@@ -59,7 +66,23 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
 
         if (slot == HUB_SLOT) {
             player.closeInventory();
-            player.sendMessage("§aTeleporting to Hub...");
+            World hub = Bukkit.getWorlds().get(0);
+            player.teleport(hub.getSpawnLocation());
+            player.sendMessage("§aTeleported to the Hub!");
+        } else if (slot == ISLAND_SLOT) {
+            player.closeInventory();
+            IslandManager.IslandData island = IslandManager.getInstance().getIsland(player.getUniqueId());
+            if (island == null) {
+                player.sendMessage("§cYou do not have a Private Island.");
+                return;
+            }
+            World world = Bukkit.getWorld(island.worldName());
+            if (world == null) {
+                player.sendMessage("§cYour island world is not loaded.");
+                return;
+            }
+            player.teleport(new Location(world, island.spawnX(), island.spawnY(), island.spawnZ()));
+            player.sendMessage("§aTeleported to your Private Island!");
         }
     }
 
