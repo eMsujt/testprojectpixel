@@ -24,6 +24,7 @@ public final class HOTMManager {
     private final Map<UUID, Integer> tokensSpent    = new HashMap<>();
     private final Map<UUID, Integer> mithrilPowder  = new HashMap<>();
     private final Map<UUID, Integer> gemstonePowder = new HashMap<>();
+    private final Map<UUID, Map<String, Integer>> powderCollected = new HashMap<>();
 
     private HOTMManager() {}
 
@@ -103,6 +104,19 @@ public final class HOTMManager {
         return Collections.unmodifiableMap(gemstonePowder);
     }
 
+    public void recordPowderCollected(UUID playerId, String powderType, int amount) {
+        powderCollected.computeIfAbsent(playerId, k -> new HashMap<>())
+                .merge(powderType, amount, Integer::sum);
+    }
+
+    public Map<String, Integer> getPowderCollected(UUID playerId) {
+        return Collections.unmodifiableMap(powderCollected.getOrDefault(playerId, Collections.emptyMap()));
+    }
+
+    public Map<UUID, Map<String, Integer>> getAllPowderCollected() {
+        return Collections.unmodifiableMap(powderCollected);
+    }
+
     public Map<UUID, Integer> getHotmLevels() {
         return Collections.unmodifiableMap(hotmLevel);
     }
@@ -119,6 +133,7 @@ public final class HOTMManager {
         tokensSpent.clear();
         mithrilPowder.clear();
         gemstonePowder.clear();
+        powderCollected.clear();
         if (cfg.isConfigurationSection("hotmLevel")) {
             for (String uuidKey : cfg.getConfigurationSection("hotmLevel").getKeys(false)) {
                 try {
@@ -173,6 +188,22 @@ public final class HOTMManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("powderCollected")) {
+            for (String uuidKey : cfg.getConfigurationSection("powderCollected").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(uuidKey);
+                    if (cfg.isConfigurationSection("powderCollected." + uuidKey)) {
+                        Map<String, Integer> inner = new HashMap<>();
+                        for (String pType : cfg.getConfigurationSection("powderCollected." + uuidKey).getKeys(false)) {
+                            inner.put(pType, cfg.getInt("powderCollected." + uuidKey + "." + pType));
+                        }
+                        powderCollected.put(id, inner);
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -195,6 +226,11 @@ public final class HOTMManager {
         }
         for (Map.Entry<UUID, Integer> entry : gemstonePowder.entrySet()) {
             cfg.set("gemstonePowder." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Map<String, Integer>> outer : powderCollected.entrySet()) {
+            for (Map.Entry<String, Integer> inner : outer.getValue().entrySet()) {
+                cfg.set("powderCollected." + outer.getKey() + "." + inner.getKey(), inner.getValue());
+            }
         }
         try {
             cfg.save(file);
