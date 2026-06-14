@@ -17,8 +17,21 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class PotionBagMenu implements InventoryHolder, Listener {
 
-    private static final int FIRST_SLOT = 0;
-    private static final int LAST_SLOT = 44;
+    // Inner slots (everything except the gray-pane perimeter border) hold the player's potions.
+    private static final int[] CONTENT_SLOTS = innerSlots();
+
+    private static int[] innerSlots() {
+        int[] slots = new int[(6 - 2) * (9 - 2)];
+        int idx = 0;
+        for (int slot = 0; slot < 54; slot++) {
+            int row = slot / 9;
+            int col = slot % 9;
+            if (row != 0 && row != 5 && col != 0 && col != 8) {
+                slots[idx++] = slot;
+            }
+        }
+        return slots;
+    }
 
     private final Inventory inventory;
 
@@ -37,17 +50,22 @@ public final class PotionBagMenu implements InventoryHolder, Listener {
     }
 
     private void build(Player player) {
-        ItemStack pane = makeItem(Material.PURPLE_STAINED_GLASS_PANE, "§r");
-        for (int slot = 45; slot < 54; slot++) {
-            inventory.setItem(slot, pane);
+        // Gray-pane border around the perimeter; inner slots hold the player's potion items.
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 54; slot++) {
+            int row = slot / 9;
+            int col = slot % 9;
+            if (row == 0 || row == 5 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
         }
 
-        // Slots 0–44 display the player's persisted Potion Bag contents.
+        // Inner slots display the player's persisted Potion Bag contents.
         PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         ItemStack[] contents = profile.getPotionBagContents();
         if (contents != null) {
-            for (int i = 0; i < contents.length && FIRST_SLOT + i <= LAST_SLOT; i++) {
-                inventory.setItem(FIRST_SLOT + i, contents[i]);
+            for (int i = 0; i < contents.length && i < CONTENT_SLOTS.length; i++) {
+                inventory.setItem(CONTENT_SLOTS[i], contents[i]);
             }
         }
     }
@@ -56,7 +74,7 @@ public final class PotionBagMenu implements InventoryHolder, Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof PotionBagMenu)) return;
         int raw = event.getRawSlot();
-        if (raw >= 0 && raw < 54 && (raw < FIRST_SLOT || raw > LAST_SLOT)) {
+        if (raw >= 0 && raw < 54 && !isContentSlot(raw)) {
             event.setCancelled(true);
         }
     }
@@ -66,11 +84,18 @@ public final class PotionBagMenu implements InventoryHolder, Listener {
         if (!(event.getInventory().getHolder() instanceof PotionBagMenu)) return;
         HumanEntity closer = event.getPlayer();
         if (!(closer instanceof Player player)) return;
-        ItemStack[] contents = new ItemStack[LAST_SLOT - FIRST_SLOT + 1];
+        ItemStack[] contents = new ItemStack[CONTENT_SLOTS.length];
         for (int i = 0; i < contents.length; i++) {
-            contents[i] = event.getInventory().getItem(FIRST_SLOT + i);
+            contents[i] = event.getInventory().getItem(CONTENT_SLOTS[i]);
         }
         ProfileManager.getInstance().getOrCreate(player.getUniqueId()).setPotionBagContents(contents);
+    }
+
+    private boolean isContentSlot(int slot) {
+        for (int s : CONTENT_SLOTS) {
+            if (s == slot) return true;
+        }
+        return false;
     }
 
     private ItemStack makeItem(Material material, String name) {
