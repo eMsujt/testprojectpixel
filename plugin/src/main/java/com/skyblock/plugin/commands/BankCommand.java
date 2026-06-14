@@ -6,6 +6,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public final class BankCommand implements CommandExecutor {
 
     @Override
@@ -24,6 +26,7 @@ public final class BankCommand implements CommandExecutor {
             case "balance"  -> handleBalance(player);
             case "deposit"  -> handleDeposit(player, args);
             case "withdraw" -> handleWithdraw(player, args);
+            case "history"  -> handleHistory(player);
             default         -> sendHelp(player);
         }
         return true;
@@ -83,11 +86,24 @@ public final class BankCommand implements CommandExecutor {
                 amount, manager.getBalance(player.getUniqueId())));
     }
 
+    private void handleHistory(Player player) {
+        List<String> ledger = BankManager.getInstance().getTransactionLedger(player.getUniqueId());
+        if (ledger.isEmpty()) {
+            player.sendMessage("No transaction history found.");
+            return;
+        }
+        player.sendMessage("=== Transaction History ===");
+        for (int i = 0; i < ledger.size(); i++) {
+            player.sendMessage((i + 1) + ". " + ledger.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bank Commands ===");
         player.sendMessage("/bank                   — show your balance");
         player.sendMessage("/bank balance           — show your balance");
         player.sendMessage("/bank deposit <amount>  — deposit coins");
         player.sendMessage("/bank withdraw <amount> — withdraw coins");
+        player.sendMessage("/bank history           — show transaction history");
     }
 }
