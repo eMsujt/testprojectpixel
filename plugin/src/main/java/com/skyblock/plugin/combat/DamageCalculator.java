@@ -1,0 +1,34 @@
+package com.skyblock.plugin.combat;
+
+/**
+ * Static utility implementing the core Hypixel SkyBlock melee damage formula.
+ *
+ * <p>{@code damage = (5 + weaponDamage + ⌊strength / 5⌋) × (1 + strength / 100)},
+ * and, on a critical hit, multiplied by {@code (1 + critDamage / 100)}. A hit is
+ * critical with probability {@code critChance / 100}.</p>
+ */
+public final class DamageCalculator {
+
+    private DamageCalculator() {
+        // static utility class, never instantiated
+    }
+
+    /**
+     * Computes the damage of a melee hit, rolling for a critical strike.
+     *
+     * @param strength     attacker's strength stat, clamped to &ge; 0
+     * @param weaponDamage base weapon damage stat, clamped to &ge; 0
+     * @param critChance   chance to land a critical hit as a percentage, e.g. {@code 30.0} for 30 %
+     * @param critDamage   crit damage bonus as a percentage, e.g. {@code 50.0} for +50 %
+     * @return the final damage dealt, never negative
+     */
+    public static double compute(double strength, double weaponDamage, double critChance, double critDamage) {
+        double str = Math.max(0.0, strength);
+        double weapon = Math.max(0.0, weaponDamage);
+        double base = (5 + weapon + Math.floor(str / 5.0)) * (1 + str / 100.0);
+        if (Math.random() < critChance / 100.0) {
+            base *= (1 + critDamage / 100.0);
+        }
+        return base;
+    }
+}
