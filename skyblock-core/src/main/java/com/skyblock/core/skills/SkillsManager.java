@@ -1,8 +1,14 @@
 package com.skyblock.core.skills;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -105,6 +111,8 @@ public final class SkillsManager {
 
     private final SkillManager delegate = SkillManager.getInstance();
 
+    private final Map<UUID, List<String>> skillsHistory = new HashMap<>();
+
     private SkillsManager() {
     }
 
@@ -114,10 +122,51 @@ public final class SkillsManager {
 
     public void load(File dataFolder) {
         delegate.load(dataFolder);
+        File file = new File(dataFolder, "skills-history.yml");
+        skillsHistory.clear();
+        if (file.exists()) {
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            if (cfg.isConfigurationSection("skillsHistory")) {
+                for (String key : cfg.getConfigurationSection("skillsHistory").getKeys(false)) {
+                    try {
+                        List<String> entries = cfg.getStringList("skillsHistory." + key);
+                        if (!entries.isEmpty()) {
+                            skillsHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                        }
+                    } catch (IllegalArgumentException ignored) {
+                        // skip malformed entries
+                    }
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
         delegate.save(dataFolder);
+        File file = new File(dataFolder, "skills-history.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, List<String>> entry : skillsHistory.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                cfg.set("skillsHistory." + entry.getKey().toString(), entry.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save skills-history.yml", e);
+        }
+    }
+
+    public void recordSkillEvent(UUID playerId, String summary) {
+        skillsHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getSkillsHistory(UUID playerId) {
+        return Collections.unmodifiableList(skillsHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllSkillsHistory() {
+        return Collections.unmodifiableMap(skillsHistory);
     }
 
     public double addXp(UUID playerId, SkillType skill, double amount) {
