@@ -18,12 +18,14 @@ import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.warp.WarpManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.command.auctionhouse.AuctionHouseCommand;
 import com.skyblock.plugin.managers.CooldownManager;
 import com.skyblock.plugin.managers.EventManager;
+import com.skyblock.plugin.managers.IslandManager;
 import com.skyblock.plugin.managers.NetworkManager;
 import com.skyblock.plugin.managers.QuestManager;
 import com.skyblock.plugin.managers.TradingManager;
@@ -92,6 +94,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         PetsManager.getInstance().load(getDataFolder());
         HOTMManager.getInstance().load(getDataFolder());
         WarpManager.getInstance().load(getDataFolder());
+        SkillsManager.getInstance().load(getDataFolder());
+        IslandManager.getInstance().load(getDataFolder());
         CooldownManager.getInstance();
         EventManager.getInstance().load(getDataFolder());
         QuestManager.getInstance().load(getDataFolder());
@@ -133,6 +137,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MayorManager.getInstance().save(getDataFolder());
         PetsManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
+        SkillsManager.getInstance().save(getDataFolder());
+        IslandManager.getInstance().save(getDataFolder());
         try {
             WarpManager.getInstance().save(getDataFolder());
         } catch (java.io.IOException e) {
