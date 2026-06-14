@@ -1,23 +1,26 @@
 package com.skyblock.plugin.pet;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton in-memory registry of each player's currently equipped pet keyed by
- * player UUID.
+ * Singleton in-memory registry of each player's full pet inventory together with
+ * the UUID of their currently active pet, both keyed by player UUID.
  *
- * <p>The active-pet map is mutated only on the server main thread; access it
- * from the main thread or guard it externally.</p>
+ * <p>The backing maps are mutated only on the server main thread; access them
+ * from the main thread or guard them externally.</p>
  */
 public final class PetManager {
 
     private static final PetManager INSTANCE = new PetManager();
 
-    private final Map<UUID, ActivePet> activePets = new HashMap<>();
+    private final Map<UUID, Map<UUID, ActivePet>> inventories = new HashMap<>();
+    private final Map<UUID, UUID> activePetIds = new HashMap<>();
 
     private PetManager() {}
 
@@ -26,26 +29,94 @@ public final class PetManager {
     }
 
     /**
-     * Equips the given pet for the player, replacing any currently active pet.
+     * Adds a pet to the player's inventory, replacing any existing pet that
+     * shares its UUID.
      *
      * @param uuid unique identifier of the player
-     * @param pet the pet to equip
+     * @param pet the pet to add
      */
-    public void equip(UUID uuid, ActivePet pet) {
+    public void addPet(UUID uuid, ActivePet pet) {
         Objects.requireNonNull(uuid, "uuid");
         Objects.requireNonNull(pet, "pet");
-        activePets.put(uuid, pet);
+        inventories.computeIfAbsent(uuid, k -> new HashMap<>()).put(pet.getId(), pet);
     }
 
     /**
-     * Unequips the player's currently active pet.
+     * Removes the pet with the given UUID from the player's inventory, clearing
+     * the active pet if it was the one removed.
      *
      * @param uuid unique identifier of the player
-     * @return the removed pet, or {@code null} if none was active
+     * @param petId unique identifier of the pet
+     * @return the removed pet, or {@code null} if none matched
      */
-    public ActivePet unequip(UUID uuid) {
+    public ActivePet removePet(UUID uuid, UUID petId) {
         Objects.requireNonNull(uuid, "uuid");
-        return activePets.remove(uuid);
+        Objects.requireNonNull(petId, "petId");
+        Map<UUID, ActivePet> inventory = inventories.get(uuid);
+        if (inventory == null) {
+            return null;
+        }
+        ActivePet removed = inventory.remove(petId);
+        if (removed != null && petId.equals(activePetIds.get(uuid))) {
+            activePetIds.remove(uuid);
+        }
+        return removed;
+    }
+
+    /**
+     * Returns an immutable snapshot of the player's pet inventory.
+     *
+     * @param uuid unique identifier of the player
+     * @return the player's pets, never {@code null}
+     */
+    public List<ActivePet> getPets(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        Map<UUID, ActivePet> inventory = inventories.get(uuid);
+        if (inventory == null) {
+            return Collections.emptyList();
+        }
+        return Collections.unmodifiableList(new ArrayList<>(inventory.values()));
+    }
+
+    /**
+     * Equips the pet with the given UUID as the player's active pet. The pet must
+     * already be in the player's inventory.
+     *
+     * @param uuid unique identifier of the player
+     * @param petId unique identifier of the pet to equip
+     * @return {@code true} if the pet was found and equipped
+     */
+    public boolean equip(UUID uuid, UUID petId) {
+        Objects.requireNonNull(uuid, "uuid");
+        Objects.requireNonNull(petId, "petId");
+        Map<UUID, ActivePet> inventory = inventories.get(uuid);
+        if (inventory == null || !inventory.containsKey(petId)) {
+            return false;
+        }
+        activePetIds.put(uuid, petId);
+        return true;
+    }
+
+    /**
+     * Unequips the player's currently active pet, leaving it in their inventory.
+     *
+     * @param uuid unique identifier of the player
+     * @return the UUID of the previously active pet, or {@code null} if none was active
+     */
+    public UUID unequip(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        return activePetIds.remove(uuid);
+    }
+
+    /**
+     * Returns the UUID of the player's currently active pet.
+     *
+     * @param uuid unique identifier of the player
+     * @return the active pet UUID, or {@code null} if none is equipped
+     */
+    public UUID getActivePetId(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        return activePetIds.get(uuid);
     }
 
     /**
@@ -56,7 +127,12 @@ public final class PetManager {
      */
     public ActivePet getActivePet(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
-        return activePets.get(uuid);
+        UUID petId = activePetIds.get(uuid);
+        if (petId == null) {
+            return null;
+        }
+        Map<UUID, ActivePet> inventory = inventories.get(uuid);
+        return inventory == null ? null : inventory.get(petId);
     }
 
     /**
@@ -67,16 +143,7 @@ public final class PetManager {
      */
     public boolean hasActivePet(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
-        return activePets.containsKey(uuid);
-    }
-
-    /**
-     * Returns an immutable snapshot of all active pets keyed by player UUID.
-     *
-     * @return the active pets
-     */
-    public Map<UUID, ActivePet> getActivePets() {
-        return Collections.unmodifiableMap(activePets);
+        return activePetIds.containsKey(uuid);
     }
 
     /**
