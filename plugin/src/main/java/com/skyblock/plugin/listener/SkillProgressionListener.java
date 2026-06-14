@@ -9,10 +9,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,9 +28,9 @@ import java.util.UUID;
 
 /**
  * Awards skill XP through {@link SkillManager} whenever a player breaks a block,
- * mapping the broken {@link Material} to its governing {@link SkillType}
- * (Farming, Mining or Foraging) and firing level-up rewards when the player's
- * level increases.
+ * reels in a fish or kills a mob, mapping the broken {@link Material} or killed
+ * {@link EntityType} to its governing {@link SkillType} (Farming, Mining, Foraging,
+ * Fishing or Combat) and firing level-up rewards when the player's level increases.
  *
  * <p>Farming crops only count once mature: {@link Ageable} crops must have reached
  * their maximum age, while non-ageable produce (pumpkins, melons, sugar cane, …)
@@ -83,6 +85,15 @@ public final class SkillProgressionListener implements Listener {
             Map.entry(Material.CHERRY_LOG,   6L)
     );
 
+    /** Built-in fallback Combat XP per mob killed, keyed by {@link EntityType}. */
+    private static final Map<EntityType, Long> DEFAULT_COMBAT_XP = Map.ofEntries(
+            Map.entry(EntityType.ZOMBIE,   5L),
+            Map.entry(EntityType.SKELETON, 5L),
+            Map.entry(EntityType.SPIDER,   5L),
+            Map.entry(EntityType.CREEPER,  7L),
+            Map.entry(EntityType.ENDERMAN, 12L)
+    );
+
     /** Built-in fallback Fishing XP awarded per fish reeled in. */
     private static final long DEFAULT_FISHING_XP = 6L;
 
@@ -94,6 +105,9 @@ public final class SkillProgressionListener implements Listener {
 
     /** Foraging XP granted per log broken, keyed by {@link Material}. */
     private final Map<Material, Long> foragingXp;
+
+    /** Combat XP granted per mob killed, keyed by {@link EntityType}. */
+    private final Map<EntityType, Long> combatXp;
 
     /** Fishing XP granted per fish reeled in. */
     private final long fishingXp;
@@ -111,6 +125,7 @@ public final class SkillProgressionListener implements Listener {
         this.farmingXp = loadSection(plugin, cfg, "farming", DEFAULT_FARMING_XP);
         this.miningXp = loadSection(plugin, cfg, "mining", DEFAULT_MINING_XP);
         this.foragingXp = loadSection(plugin, cfg, "foraging", DEFAULT_FORAGING_XP);
+        this.combatXp = loadEntitySection(plugin, cfg, "combat", DEFAULT_COMBAT_XP);
         this.fishingXp = cfg != null ? cfg.getLong("fishing", DEFAULT_FISHING_XP) : DEFAULT_FISHING_XP;
     }
 
@@ -145,6 +160,26 @@ public final class SkillProgressionListener implements Listener {
         return table.isEmpty() ? defaults : table;
     }
 
+    private static Map<EntityType, Long> loadEntitySection(JavaPlugin plugin, YamlConfiguration cfg,
+                                                           String name, Map<EntityType, Long> defaults) {
+        ConfigurationSection section = cfg != null ? cfg.getConfigurationSection(name) : null;
+        if (section == null) {
+            return defaults;
+        }
+        Map<EntityType, Long> table = new EnumMap<>(EntityType.class);
+        for (String key : section.getKeys(false)) {
+            EntityType entity;
+            try {
+                entity = EntityType.valueOf(key.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("Unknown entity in skills-xp.yml (" + name + "): " + key);
+                continue;
+            }
+            table.put(entity, section.getLong(key));
+        }
+        return table.isEmpty() ? defaults : table;
+    }
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
@@ -167,6 +202,18 @@ public final class SkillProgressionListener implements Listener {
         Long foraging = foragingXp.get(type);
         if (foraging != null) {
             grantXP(event.getPlayer(), SkillType.FORAGING, foraging);
+        }
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) {
+            return;
+        }
+        Long combat = combatXp.get(event.getEntityType());
+        if (combat != null) {
+            grantXP(killer, SkillType.COMBAT, combat);
         }
     }
 
