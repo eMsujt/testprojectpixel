@@ -1,0 +1,24 @@
+reforges:
+  SHARP:
+    displayName: "Sharp"
+    critChance: 10
+    critDamage: 25
+  HEROIC:
+    displayName: "Heroic"
+    strength: 25
+    intelligence: 175
+  FIERCE:
+    displayName: "Fierce"
+    strength: 20
+    critChance: 7
+    critDamage: 33
+  PURE:
+    displayName: "Pure"
+    health: 30
+    defense: 20
+    strength: 20
+    intelligence: 20
+  TITANIC:
+    displayName: "Titanic"
+    health: 50
+    defense: 65
