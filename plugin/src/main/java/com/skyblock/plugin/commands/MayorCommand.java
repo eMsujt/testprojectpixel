@@ -28,6 +28,7 @@ public final class MayorCommand implements CommandExecutor {
             case "vote"   -> handleVote(player, args);
             case "unvote" -> handleUnvote(player);
             case "votes"  -> handleVotes(player);
+            case "list"   -> handleList(player);
             case "set"    -> handleSet(player, args);
             case "setday" -> handleSetDay(player, args);
             default       -> sendHelp(player);
@@ -53,7 +54,7 @@ public final class MayorCommand implements CommandExecutor {
             return;
         }
         String mayorName = args[1];
-        MayorManager.getInstance().setMayorVote(player.getUniqueId(), mayorName);
+        MayorManager.getInstance().castVote(player.getUniqueId(), mayorName);
         player.sendMessage("You voted for " + mayorName + ".");
     }
 
@@ -75,6 +76,15 @@ public final class MayorCommand implements CommandExecutor {
         }
         for (Map.Entry<UUID, String> entry : votes.entrySet()) {
             player.sendMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    private void handleList(Player player) {
+        MayorManager mgr = MayorManager.getInstance();
+        java.util.List<String> candidates = mgr.getAllCandidates();
+        player.sendMessage("=== Mayor Candidates ===");
+        for (String candidate : candidates) {
+            player.sendMessage(candidate + ": " + mgr.getVoteCount(candidate) + " votes");
         }
     }
 
@@ -111,6 +121,7 @@ public final class MayorCommand implements CommandExecutor {
         player.sendMessage("/mayor vote <name>  — cast your vote");
         player.sendMessage("/mayor unvote       — clear your vote");
         player.sendMessage("/mayor votes        — list all votes");
+        player.sendMessage("/mayor list         — list all candidates with vote counts");
         player.sendMessage("/mayor set <name>   — set the current mayor");
         player.sendMessage("/mayor setday <day> — set the election day");
     }
