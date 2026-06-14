@@ -39,11 +39,14 @@ import com.skyblock.plugin.commands.BazaarCommand;
 import com.skyblock.plugin.commands.CollectionsCommand;
 import com.skyblock.plugin.commands.EnchantingCommand;
 import com.skyblock.plugin.commands.FishingCommand;
+import com.skyblock.plugin.commands.GardenCommand;
 import com.skyblock.plugin.commands.HOTMCommand;
 import com.skyblock.plugin.commands.IslandCommand;
 import com.skyblock.plugin.commands.KuudraCommand;
 import com.skyblock.plugin.commands.MayorCommand;
+import com.skyblock.plugin.commands.PetsCommand;
 import com.skyblock.plugin.commands.ProfileCommand;
+import com.skyblock.plugin.commands.SkillsCommand;
 import com.skyblock.plugin.commands.SlayerCommand;
 import com.skyblock.plugin.menu.SkyblockMenuCommand;
 import com.skyblock.slayers.SlayerManager;
@@ -129,6 +132,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("collections").setExecutor(new CollectionsCommand());
         getCommand("enchanting").setExecutor(new EnchantingCommand());
         getCommand("hotm").setExecutor(new HOTMCommand());
+        getCommand("skills").setExecutor(new SkillsCommand());
+        getCommand("garden").setExecutor(new GardenCommand());
+        getCommand("pets").setExecutor(new PetsCommand());
         getLogger().info("SkyBlock plugin enabled.");
     }
 
