@@ -39,7 +39,8 @@ public final class FastTravelMenu {
         // Row 2 — underground & dungeons
         inv.setItem(19, makeItem(Material.DIORITE,          "§fDwarven Mines"));
         inv.setItem(20, makeItem(Material.AMETHYST_SHARD,   "§5Crystal Hollows"));
-        inv.setItem(21, makeItem(Material.IRON_SWORD,       "§9Dungeon Hub"));
+        inv.setItem(22, makeItem(Material.NETHER_STAR,      "§cCrimson Isle"));
+        inv.setItem(23, makeItem(Material.BEACON,           "§5Dungeon Hub"));
 
         return inv;
     }
