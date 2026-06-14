@@ -4,10 +4,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -149,6 +151,8 @@ public final class HOTMManager {
     private final Map<UUID, Long> mithrilPowder = new HashMap<>();
     /** Per-player Gemstone Powder balance. */
     private final Map<UUID, Long> gemstonePowder = new HashMap<>();
+    /** Per-player HOTM event history. */
+    private final Map<UUID, List<String>> hotmHistory = new HashMap<>();
 
     private HOTMManager() {
     }
@@ -343,6 +347,37 @@ public final class HOTMManager {
     }
 
     /**
+     * Records a HOTM event summary for the given player.
+     *
+     * @param playerId the player to record for
+     * @param summary  a short description of the event
+     */
+    public void recordHotmEvent(UUID playerId, String summary) {
+        Objects.requireNonNull(playerId, "playerId");
+        hotmHistory.computeIfAbsent(playerId, id -> new ArrayList<>()).add(summary);
+    }
+
+    /**
+     * Returns the HOTM event history for the given player.
+     *
+     * @param playerId the player to look up
+     * @return list of event summaries, empty if none recorded
+     */
+    public List<String> getHotmHistory(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return hotmHistory.getOrDefault(playerId, Collections.emptyList());
+    }
+
+    /**
+     * Returns the full HOTM event history map for all players.
+     *
+     * @return unmodifiable view of the history map
+     */
+    public Map<UUID, List<String>> getAllHotmHistory() {
+        return Collections.unmodifiableMap(hotmHistory);
+    }
+
+    /**
      * Removes all HOTM data for the given player (e.g. on quit).
      *
      * @param playerId the player to remove
@@ -353,6 +388,7 @@ public final class HOTMManager {
         hotmTier.remove(playerId);
         mithrilPowder.remove(playerId);
         gemstonePowder.remove(playerId);
+        hotmHistory.remove(playerId);
         return playerPerks.remove(playerId) != null;
     }
 
@@ -366,6 +402,7 @@ public final class HOTMManager {
         hotmTier.clear();
         mithrilPowder.clear();
         gemstonePowder.clear();
+        hotmHistory.clear();
         HOTMPerk[] perks = HOTMPerk.values();
         for (String key : cfg.getKeys(false)) {
             try {
@@ -393,6 +430,13 @@ public final class HOTMManager {
                 String gemstonePath = key + ".gemstone_powder";
                 if (cfg.contains(gemstonePath)) {
                     gemstonePowder.put(uuid, cfg.getLong(gemstonePath, 0L));
+                }
+                String historyPath = key + ".hotm_history";
+                if (cfg.contains(historyPath)) {
+                    List<String> entries = cfg.getStringList(historyPath);
+                    if (!entries.isEmpty()) {
+                        hotmHistory.put(uuid, new ArrayList<>(entries));
+                    }
                 }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed entries
@@ -424,6 +468,11 @@ public final class HOTMManager {
         for (Map.Entry<UUID, Long> entry : gemstonePowder.entrySet()) {
             if (entry.getValue() != 0) {
                 cfg.set(entry.getKey().toString() + ".gemstone_powder", entry.getValue());
+            }
+        }
+        for (Map.Entry<UUID, List<String>> entry : hotmHistory.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                cfg.set(entry.getKey().toString() + ".hotm_history", entry.getValue());
             }
         }
         try {
