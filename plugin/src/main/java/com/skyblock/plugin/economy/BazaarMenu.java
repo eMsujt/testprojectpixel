@@ -40,7 +40,7 @@ public class BazaarMenu extends Menu {
     private static final int[] SLOTS = {20, 21, 22, 23, 24};
 
     public BazaarMenu() {
-        super("§6Bazaar", 6);
+        super("§eBazaar", 6);
     }
 
     @Override
