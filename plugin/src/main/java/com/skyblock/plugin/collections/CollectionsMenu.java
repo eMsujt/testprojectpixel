@@ -11,8 +11,8 @@ import java.util.UUID;
 /**
  * Collections hub menu.
  *
- * <p>Row 0 (slots 0–8) holds the five category tab icons centred at slots 2–6,
- * with gray glass panes filling the remaining header slots. Rows 1–5 list the
+ * <p>Row 0 (slots 0–8) holds the five category tab icons at slots 0–4, with
+ * gray glass panes filling the remaining header slots. Rows 1–5 list the
  * player's per-material counts for the currently active category, reading live
  * data from {@link CollectionManager}.</p>
  */
@@ -48,8 +48,8 @@ public class CollectionsMenu extends Menu {
         }
     }
 
-    /** Header row slots for the five category tabs (centred in row 0). */
-    private static final int[] TAB_SLOTS = {2, 3, 4, 5, 6};
+    /** Header row slots for the five category tabs (slots 0–4 of row 0). */
+    private static final int[] TAB_SLOTS = {0, 1, 2, 3, 4};
 
     private final UUID playerId;
     private final Category active;
@@ -68,7 +68,7 @@ public class CollectionsMenu extends Menu {
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
 
-        // Row 0: glass pane header, category tabs at slots 2-6
+        // Row 0: glass pane header, category tabs at slots 0-4
         for (int slot = 0; slot < 9; slot++) {
             setItem(slot, pane);
         }
