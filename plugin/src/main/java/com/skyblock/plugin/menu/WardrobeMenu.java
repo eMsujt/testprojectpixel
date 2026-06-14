@@ -11,13 +11,13 @@ import org.bukkit.inventory.ItemStack;
 
 public final class WardrobeMenu implements InventoryHolder, Listener {
 
-    /** Column-2 slots (rows 2–5) showing the equipped armour set, helmet → boots top-to-bottom. */
-    private static final int[] ARMOR_SLOTS = {10, 19, 28, 37};
+    /** Nine armour-set columns; each column shows helmet → boots top-to-bottom over rows 1–4. */
+    private static final int COLUMNS = 9;
 
     private final Inventory inventory;
 
     public WardrobeMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§5Wardrobe");
+        this.inventory = Bukkit.createInventory(this, 45, "Wardrobe");
         build(player);
     }
 
@@ -33,10 +33,12 @@ public final class WardrobeMenu implements InventoryHolder, Listener {
     private void build(Player player) {
         // getArmorContents() is ordered boots, leggings, chestplate, helmet; show helmet on top.
         ItemStack[] armor = player.getInventory().getArmorContents();
-        for (int i = 0; i < ARMOR_SLOTS.length && i < armor.length; i++) {
-            ItemStack piece = armor[armor.length - 1 - i];
-            if (piece != null) {
-                inventory.setItem(ARMOR_SLOTS[i], piece);
+        for (int column = 0; column < COLUMNS; column++) {
+            for (int row = 0; row < armor.length; row++) {
+                ItemStack piece = armor[armor.length - 1 - row];
+                if (piece != null) {
+                    inventory.setItem(row * COLUMNS + column, piece);
+                }
             }
         }
     }
