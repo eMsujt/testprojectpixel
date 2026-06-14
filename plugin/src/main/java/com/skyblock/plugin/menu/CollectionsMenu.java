@@ -4,26 +4,35 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public final class CollectionsMenu {
+public final class CollectionsMenu implements InventoryHolder {
 
-    public void open(Player player) {
-        player.openInventory(buildMenu());
+    private final Inventory inventory;
+
+    public CollectionsMenu() {
+        this.inventory = Bukkit.createInventory(this, 54, "§6Collections");
+        build();
     }
 
-    private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§aCollections");
+    public void open(Player player) {
+        player.openInventory(inventory);
+    }
 
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    private void build() {
         // Top row — the five collection categories, centered in slots 2-6
-        inv.setItem(2, makeItem(Material.WHEAT,        "§eFarming"));
-        inv.setItem(3, makeItem(Material.COBBLESTONE,  "§eMining"));
-        inv.setItem(4, makeItem(Material.ROTTEN_FLESH, "§eCombat"));
-        inv.setItem(5, makeItem(Material.OAK_LOG,      "§eForaging"));
-        inv.setItem(6, makeItem(Material.COD,          "§eFishing"));
-
-        return inv;
+        inventory.setItem(2, makeItem(Material.WHEAT,        "§eFarming"));
+        inventory.setItem(3, makeItem(Material.COBBLESTONE,  "§eMining"));
+        inventory.setItem(4, makeItem(Material.ROTTEN_FLESH, "§eCombat"));
+        inventory.setItem(5, makeItem(Material.OAK_LOG,      "§eForaging"));
+        inventory.setItem(6, makeItem(Material.COD,          "§eFishing"));
     }
 
     private ItemStack makeItem(Material material, String name) {
