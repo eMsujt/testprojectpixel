@@ -5,6 +5,7 @@ import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.alchemy.AlchemyManager;
+import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.core.garden.GardenManager;
@@ -75,6 +76,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MinionManager.getInstance().load(getDataFolder());
         WardrobeManager.getInstance().load(getDataFolder());
         AlchemyManager.getInstance().load(getDataFolder());
+        FishingManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
         getCommand("mayor").setExecutor(new MayorCommand());
@@ -105,6 +107,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MinionManager.getInstance().save(getDataFolder());
         WardrobeManager.getInstance().save(getDataFolder());
         AlchemyManager.getInstance().save(getDataFolder());
+        FishingManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
