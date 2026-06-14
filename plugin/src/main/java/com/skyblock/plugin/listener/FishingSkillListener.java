@@ -20,7 +20,9 @@ public final class FishingSkillListener implements Listener {
 
     @EventHandler
     public void onFish(PlayerFishEvent event) {
-        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
+        PlayerFishEvent.State state = event.getState();
+        if (state != PlayerFishEvent.State.CAUGHT_FISH
+                && state != PlayerFishEvent.State.CAUGHT_ENTITY) {
             return;
         }
         grantXP(event.getPlayer(), CATCH_XP);
