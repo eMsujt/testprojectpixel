@@ -169,6 +169,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillXPListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionPlacementListener(), this);
         new com.skyblock.plugin.minion.MinionTickTask().runTaskTimer(this, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.StorageMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.PotionBagMenu(), this);
