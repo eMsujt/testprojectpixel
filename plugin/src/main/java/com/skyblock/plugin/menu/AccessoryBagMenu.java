@@ -19,7 +19,7 @@ public final class AccessoryBagMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public AccessoryBagMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§5Accessory Bag");
+        this.inventory = Bukkit.createInventory(this, 54, "§dAccessory Bag");
         build(player);
     }
 
@@ -34,22 +34,15 @@ public final class AccessoryBagMenu implements InventoryHolder, Listener {
 
     private void build(Player player) {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                inventory.setItem(slot, pane);
-            }
+        for (int slot = 45; slot < 54; slot++) {
+            inventory.setItem(slot, pane);
         }
 
         List<String> accessories = AccessoryBagManager.getInstance().getEquipped(player.getUniqueId());
 
-        // Inner slots (rows 1–4, columns 1–7) hold accessory items, skipping the border.
-        int index = 0;
-        for (int slot = 10; slot < 44 && index < accessories.size(); slot++) {
-            int col = slot % 9;
-            if (col == 0 || col == 8) continue;
-            inventory.setItem(slot, makeItem(Material.GOLD_NUGGET, "§5" + accessories.get(index)));
-            index++;
+        // Slots 0–44 display the equipped accessories.
+        for (int slot = 0; slot < 45 && slot < accessories.size(); slot++) {
+            inventory.setItem(slot, makeItem(Material.GOLD_NUGGET, "§d" + accessories.get(slot)));
         }
     }
 
