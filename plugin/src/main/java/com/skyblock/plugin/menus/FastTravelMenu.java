@@ -18,7 +18,7 @@ public class FastTravelMenu extends Menu {
 
     /** A fast-travel destination: its display name, representative icon, and slot. */
     private enum Destination {
-        HUB("Hub Island", Material.OAK_LEAVES, 10),
+        HUB("Hub Island", Material.NETHER_STAR, 10),
         THE_FARMING_ISLANDS("The Farming Islands", Material.HAY_BLOCK, 11),
         THE_PARK("The Park", Material.JUNGLE_SAPLING, 12),
         SPIDERS_DEN("Spider's Den", Material.STRING, 13),
