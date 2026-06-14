@@ -11,6 +11,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.skyblock.plugin.SkyBlockPlugin;
+
 public final class SkyBlockMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
@@ -73,13 +75,13 @@ public final class SkyBlockMenu implements InventoryHolder, Listener {
             case 11 -> new CollectionsMenu(player).open(player);
             case 12 -> new RecipeBookMenu(player).open(player);
             case 13 -> new WardrobeMenu(player).open(player);
-            case 14 -> new StorageMenu(player).open(player);
+            case 14 -> new StorageMenu().open(player);
             case 15 -> new AccessoryBagMenu(player).open(player);
             case 16 -> new PetsMenu(player).open(player);
             case 19 -> new ProfileMenu(player).open(player);
             case 20 -> new AuctionHouseMenu().open(player);
             case 21 -> new BazaarMenu().open(player);
-            case 22 -> new CalendarMenu().open(player);
+            case 22 -> new CalendarMenu(SkyBlockPlugin.getInstance()).open(player);
             case 23 -> new QuestsMenu().open(player);
             case 25 -> new FastTravelMenu().open(player);
             default -> { }
