@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public final class DungeonCommand implements CommandExecutor {
             case "floor"       -> handleFloor(player, args);
             case "floor-stats" -> handleFloorStats(player);
             case "class"       -> handleClass(player, args);
+            case "history"     -> handleHistory(player);
             default            -> sendHelp(player);
         }
         return true;
@@ -124,6 +126,19 @@ public final class DungeonCommand implements CommandExecutor {
         player.sendMessage("Your dungeon class has been set to: " + matched);
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        List<String> history = DungeonManager.getInstance().getRunHistory(id);
+        player.sendMessage("=== Dungeon Run History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No dungeon runs recorded.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Dungeon Commands ===");
         player.sendMessage("/dungeon              — show your dungeon stats");
@@ -131,5 +146,6 @@ public final class DungeonCommand implements CommandExecutor {
         player.sendMessage("/dungeon floor <n>    — show completions and best time for floor N (1-7)");
         player.sendMessage("/dungeon floor-stats   — show all floor completion counts");
         player.sendMessage("/dungeon class <name> — set your dungeon class (Healer, Mage, Berserker, Archer, Tank)");
+        player.sendMessage("/dungeon history      — show your dungeon run history");
     }
 }
