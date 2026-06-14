@@ -36,7 +36,7 @@ public final class PetsCommand implements CommandExecutor {
 
         player.sendMessage("=== Your Pets ===");
         for (PetsManager.Pet pet : pets) {
-            String marker = (active != null && pet.id.equals(active.id)) ? " *" : "";
+            String marker = pet.id.equals(PetsManager.getInstance().getActivePetId(id)) ? " *" : "";
             player.sendMessage("  " + pet.type.name() + " [" + pet.rarity.name() + "]" + marker);
         }
         return true;

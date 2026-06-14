@@ -291,6 +291,11 @@ public final class PetsManager {
      * @param playerId the player to look up
      * @return the active pet, or {@code null}
      */
+    public UUID getActivePetId(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return equippedPets.get(playerId);
+    }
+
     public Pet getActivePet(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         UUID petId = equippedPets.get(playerId);
