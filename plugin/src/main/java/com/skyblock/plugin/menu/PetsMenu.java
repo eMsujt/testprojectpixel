@@ -23,7 +23,7 @@ public final class PetsMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public PetsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§aPets");
+        this.inventory = Bukkit.createInventory(this, 54, "§dPets");
         build(player.getUniqueId());
     }
 
@@ -39,6 +39,14 @@ public final class PetsMenu implements InventoryHolder {
     private void build(UUID playerId) {
         PetsManager pets = PetsManager.getInstance();
         PetsManager.Pet active = pets.getActivePet(playerId);
+        // Black-glass border around the edges of the chest
+        ItemStack pane = makeItem(Material.BLACK_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                inventory.setItem(slot, pane);
+            }
+        }
         // Slot 4 — header showing the player's active pet
         inventory.setItem(ACTIVE_SLOT, makeActiveItem(active));
         List<PetsManager.Pet> owned = pets.getPets(playerId);
@@ -57,6 +65,16 @@ public final class PetsMenu implements InventoryHolder {
         } catch (IllegalArgumentException e) {
             return Material.WOLF_SPAWN_EGG;
         }
+    }
+
+    private ItemStack makeItem(Material material, String name) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(name);
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     private ItemStack makeActiveItem(PetsManager.Pet active) {
