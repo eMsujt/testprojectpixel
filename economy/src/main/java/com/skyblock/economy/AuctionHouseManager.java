@@ -28,6 +28,36 @@ public final class AuctionHouseManager {
         }
     }
 
+    /** Maps each auction category name to its metadata: {maxListings, taxPercent}. */
+    public static final Map<String, int[]> AUCTION_CATEGORY_DATA;
+
+    static {
+        Map<String, int[]> m = new HashMap<>();
+        m.put("Weapons",      new int[]{16, 1});
+        m.put("Swords",       new int[]{16, 1});
+        m.put("Bows",         new int[]{16, 1});
+        m.put("Wands",        new int[]{16, 1});
+        m.put("Fishing Rods", new int[]{16, 1});
+        m.put("Armor",        new int[]{16, 1});
+        m.put("Helmets",      new int[]{16, 1});
+        m.put("Chestplates",  new int[]{16, 1});
+        m.put("Leggings",     new int[]{16, 1});
+        m.put("Boots",        new int[]{16, 1});
+        m.put("Accessories",  new int[]{16, 1});
+        m.put("Talismans",    new int[]{16, 1});
+        m.put("Rings",        new int[]{16, 1});
+        m.put("Orbs",         new int[]{16, 1});
+        m.put("Necklaces",    new int[]{16, 1});
+        m.put("Consumables",  new int[]{16, 1});
+        m.put("Potions",      new int[]{16, 1});
+        m.put("Scrolls",      new int[]{16, 1});
+        m.put("Arrows",       new int[]{16, 1});
+        m.put("Blocks",       new int[]{16, 1});
+        m.put("Pets",         new int[]{16, 1});
+        m.put("Misc",         new int[]{16, 1});
+        AUCTION_CATEGORY_DATA = Collections.unmodifiableMap(m);
+    }
+
     private final Map<UUID, ListingState> listings = new HashMap<>();
 
     private static final class ListingState {
