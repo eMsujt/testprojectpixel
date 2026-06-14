@@ -8,7 +8,7 @@ import java.io.IOException;
 public final class WeatherManager {
 
     public enum WeatherType {
-        CLEAR, RAIN, STORM
+        CLEAR, RAIN, STORM, SNOW
     }
 
     private static final WeatherManager INSTANCE = new WeatherManager();
