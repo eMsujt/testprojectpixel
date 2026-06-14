@@ -67,6 +67,26 @@ public final class MayorManager {
         mayorVotes.put(playerId, mayor);
     }
 
+    public void castVote(UUID player, String candidate) {
+        mayorVotes.put(player, candidate);
+    }
+
+    public int getVoteCount(String candidate) {
+        int count = 0;
+        for (String vote : mayorVotes.values()) {
+            if (candidate.equals(vote)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public List<String> getAllCandidates() {
+        List<String> candidates = new ArrayList<>(mayorPerks.keySet());
+        Collections.sort(candidates);
+        return candidates;
+    }
+
     public boolean clearMayorVote(UUID playerId) {
         return mayorVotes.remove(playerId) != null;
     }
