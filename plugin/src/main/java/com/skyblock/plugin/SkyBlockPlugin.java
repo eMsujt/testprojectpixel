@@ -125,6 +125,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         NetworkManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.items.ItemManager.getInstance().load(this);
         com.skyblock.plugin.economy.ShopManager.getInstance().load(this);
+        com.skyblock.core.accessory.AccessoryManager.getInstance();
+        com.skyblock.plugin.pets.PetManager.getInstance();
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
         getCommand("mayor").setExecutor(new MayorCommand());
@@ -150,7 +152,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FarmingListener(), this);
         getServer().getPluginManager().registerEvents(new CombatListener(), this);
         getServer().getPluginManager().registerEvents(new CollectionsListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.profile.ProfileManager(this), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.ProfileManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minions.MinionPlacementListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listeners.EnchantingListener(), this);
