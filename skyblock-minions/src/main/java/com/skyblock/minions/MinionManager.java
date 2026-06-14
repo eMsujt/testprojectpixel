@@ -138,27 +138,25 @@ public final class MinionManager {
 
     /**
      * The kinds of minion a player can place on their island.
+     *
+     * <p>Each type carries its production interval, in seconds, for every
+     * upgrade tier from 1 to {@link #MAX_TIER}. Higher tiers act faster.</p>
      */
     public enum MinionType {
-        COBBLESTONE("Cobblestone Minion"),
-        WHEAT("Wheat Minion"),
-        CARROT("Carrot Minion"),
-        POTATO("Potato Minion"),
-        PUMPKIN("Pumpkin Minion"),
-        COAL("Coal Minion"),
-        IRON("Iron Minion"),
-        GOLD("Gold Minion"),
-        DIAMOND("Diamond Minion"),
-        ZOMBIE("Zombie Minion"),
-        SKELETON("Skeleton Minion"),
-        SPIDER("Spider Minion"),
-        OAK("Oak Minion"),
-        FISHING("Fishing Minion");
+        COBBLESTONE("Cobblestone Minion",
+                new int[] {14, 14, 12, 12, 10, 10, 9, 9, 8, 8, 7}),
+        WHEAT("Wheat Minion",
+                new int[] {14, 14, 12, 12, 10, 10, 9, 9, 8, 8, 7});
+
+        /** The highest tier a minion can reach. */
+        public static final int MAX_TIER = 11;
 
         private final String displayName;
+        private final int[] productionIntervalSeconds;
 
-        MinionType(String displayName) {
+        MinionType(String displayName, int[] productionIntervalSeconds) {
             this.displayName = displayName;
+            this.productionIntervalSeconds = productionIntervalSeconds;
         }
 
         /**
@@ -168,6 +166,22 @@ public final class MinionManager {
          */
         public String getDisplayName() {
             return displayName;
+        }
+
+        /**
+         * Returns this minion's production interval, in seconds, at the given
+         * tier.
+         *
+         * @param tier the upgrade tier, between 1 and {@link #MAX_TIER}
+         * @return the seconds between two actions at that tier
+         * @throws IllegalArgumentException if {@code tier} is out of range
+         */
+        public int getProductionIntervalSeconds(int tier) {
+            if (tier < 1 || tier > MAX_TIER) {
+                throw new IllegalArgumentException(
+                        "tier must be between 1 and " + MAX_TIER + ", got " + tier);
+            }
+            return productionIntervalSeconds[tier - 1];
         }
     }
 
