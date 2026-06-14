@@ -26,7 +26,7 @@ public class CollectionsMenu extends Menu {
         }
     }
 
-    private static final int[] SLOTS = {10, 11, 12, 13, 14};
+    private static final int[] SLOTS = {1, 2, 3, 4, 5};
 
     private final UUID playerId;
 
