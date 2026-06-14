@@ -4,6 +4,7 @@ import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
@@ -45,12 +46,27 @@ public class CollectionsMenu extends Menu {
     /** Centred slots in the middle row, one per category. */
     private static final int[] SLOTS = {20, 21, 22, 23, 24};
 
+    /** All border slots (top row, bottom row, left/right edges of middle rows). */
+    private static final int[] BORDER_SLOTS = {
+        0,  1,  2,  3,  4,  5,  6,  7,  8,
+        9,                                 17,
+        18,                                26,
+        27,                                35,
+        36,                                44,
+        45, 46, 47, 48, 49, 50, 51, 52, 53
+    };
+
     public CollectionsMenu() {
-        super("Collections", 6);
+        super("§8Collections", 6);
     }
 
     @Override
     protected void build() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot : BORDER_SLOTS) {
+            setItem(slot, pane);
+        }
+
         Category[] categories = Category.values();
         for (int i = 0; i < categories.length; i++) {
             Category category = categories[i];
