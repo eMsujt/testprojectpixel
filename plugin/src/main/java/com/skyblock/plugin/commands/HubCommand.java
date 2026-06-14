@@ -25,24 +25,23 @@ public final class HubCommand implements CommandExecutor {
     private Inventory buildMenu() {
         Inventory inv = Bukkit.createInventory(null, 54, "Hub");
 
-        inv.setItem(10, makeItem(Material.GRASS_BLOCK, "Garden"));
-        inv.setItem(11, makeItem(Material.IRON_SWORD,  "Slayer"));
-        inv.setItem(12, makeItem(Material.COD,           "Fishing"));
-        inv.setItem(13, makeItem(Material.OAK_LOG,       "Foraging"));
-        inv.setItem(14, makeItem(Material.DIAMOND_SWORD, "Combat"));
-        inv.setItem(15, makeItem(Material.BLAZE_ROD,     "Slayer"));
-        inv.setItem(16, makeItem(Material.ENDER_EYE,     "Dungeons"));
+        inv.setItem(10, makeItem(Material.GRASS_BLOCK,     "Garden"));
+        inv.setItem(11, makeItem(Material.IRON_SWORD,      "Slayer"));
+        inv.setItem(12, makeItem(Material.COD,             "Fishing"));
+        inv.setItem(13, makeItem(Material.ENDER_EYE,       "Dungeons"));
+        inv.setItem(14, makeItem(Material.BOOK,            "Skills"));
+        inv.setItem(15, makeItem(Material.ENCHANTING_TABLE,"Enchanting"));
+        inv.setItem(16, makeItem(Material.GOLD_INGOT,      "Auction House"));
 
-        inv.setItem(19, makeItem(Material.CHEST,            "Storage"));
-        inv.setItem(20, makeItem(Material.CRAFTING_TABLE,   "Crafting"));
-        inv.setItem(21, makeItem(Material.ENCHANTING_TABLE, "Enchanting"));
-        inv.setItem(22, makeItem(Material.GOLD_INGOT,       "Auction House"));
-        inv.setItem(23, makeItem(Material.EMERALD,          "Bazaar"));
-        inv.setItem(24, makeItem(Material.PLAYER_HEAD,      "Profile"));
-        inv.setItem(25, makeItem(Material.BOOK,             "Skills"));
+        inv.setItem(19, makeItem(Material.EMERALD,         "Bazaar"));
+        inv.setItem(20, makeItem(Material.PLAYER_HEAD,     "Profile"));
+        inv.setItem(21, makeItem(Material.BONE,            "Pets"));
+        inv.setItem(22, makeItem(Material.BLAZE_POWDER,    "Kuudra"));
+        inv.setItem(23, makeItem(Material.CHEST,           "Collections"));
+        inv.setItem(24, makeItem(Material.OAK_SAPLING,     "Island"));
+        inv.setItem(25, makeItem(Material.IRON_PICKAXE,    "Heart of the Mountain"));
 
-        inv.setItem(31, makeItem(Material.COMPASS, "Warps"));
-        inv.setItem(32, makeItem(Material.BELL,    "Community Center"));
+        inv.setItem(31, makeItem(Material.GOLD_NUGGET,     "Bank"));
 
         return inv;
     }
