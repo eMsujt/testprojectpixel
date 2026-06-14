@@ -59,9 +59,9 @@ public final class ProfileManagementMenu implements InventoryHolder {
 
         PlayerProfile profile = ProfileManager.getInstance().getProfile(player.getUniqueId());
 
-        // The first slot is the player's active profile; the rest are empty.
+        String activeProfileName = profile != null ? profile.getActiveProfileName() : null;
         for (int i = 0; i < PROFILE_NAMES.length; i++) {
-            boolean active = i == 0 && profile != null;
+            boolean active = PROFILE_NAMES[i].equals(activeProfileName);
             if (active) {
                 inventory.setItem(PROFILE_SLOTS[i], makeItem(Material.GRASS_BLOCK,
                         "§a" + PROFILE_NAMES[i],
