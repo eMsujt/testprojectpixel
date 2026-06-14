@@ -21,7 +21,7 @@ public final class WardrobeMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public WardrobeMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§9Wardrobe");
+        this.inventory = Bukkit.createInventory(this, 54, "§aWardrobe");
         build();
     }
 
@@ -35,9 +35,27 @@ public final class WardrobeMenu implements InventoryHolder, Listener {
     }
 
     private void build() {
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
+        }
+
         for (int i = 0; i < SLOTS.length; i++) {
             inventory.setItem(SLOTS[i], makeSlot(i + 1));
         }
+    }
+
+    private ItemStack makeItem(Material material, String name) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(name);
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     private ItemStack makeSlot(int number) {
