@@ -219,6 +219,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.AuctionHouseMenu(), this);
         new com.skyblock.plugin.minion.MinionTickTask(com.skyblock.plugin.minion.MinionManager.getInstance())
                 .runTaskTimer(this, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS);
+        new com.skyblock.plugin.minion.MinionTickerTask(com.skyblock.plugin.minion.MinionManager.getInstance())
+                .runTaskTimer(this, com.skyblock.plugin.minion.MinionTickerTask.PERIOD_TICKS, com.skyblock.plugin.minion.MinionTickerTask.PERIOD_TICKS);
         new com.skyblock.plugin.profile.ProfileSaveTask(getDataFolder(), getLogger())
                 .runTaskTimerAsynchronously(this, 6000L, 6000L);
         new ActionBarManager().start(this);
