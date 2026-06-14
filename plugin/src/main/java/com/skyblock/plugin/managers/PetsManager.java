@@ -4,8 +4,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ public final class PetsManager {
     private static final PetsManager INSTANCE = new PetsManager();
 
     private final Map<UUID, Pet> activePets = new HashMap<>();
+    private final Map<UUID, List<Pet>> playerPets = new HashMap<>();
 
     private PetsManager() {}
 
@@ -55,6 +58,14 @@ public final class PetsManager {
 
     public Map<UUID, Pet> getActivePets() {
         return Collections.unmodifiableMap(activePets);
+    }
+
+    public List<Pet> getPets(UUID playerId) {
+        return Collections.unmodifiableList(playerPets.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public void addPet(UUID playerId, Pet pet) {
+        playerPets.computeIfAbsent(playerId, k -> new ArrayList<>()).add(pet);
     }
 
     public void load(File dataFolder) {
