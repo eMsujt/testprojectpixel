@@ -16,7 +16,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, 27, "§bFast Travel");
+        this.inventory = Bukkit.createInventory(this, 54, "§9Fast Travel");
         build();
     }
 
@@ -31,24 +31,14 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
 
     private void build() {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 27; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 18 || column == 0 || column == 8) {
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
 
-        // Top row — Hub
-        inventory.setItem(4,  makeItem(Material.COMPASS,          "§eHub"));
-
-        // Middle row — destinations
-        inventory.setItem(10, makeItem(Material.HAY_BLOCK,        "§aFarming Islands"));
-        inventory.setItem(11, makeItem(Material.JUNGLE_SAPLING,   "§aThe Park"));
-        inventory.setItem(12, makeItem(Material.COBWEB,           "§7Spider's Den"));
-        inventory.setItem(13, makeItem(Material.NETHERRACK,       "§cBlazing Fortress"));
-        inventory.setItem(14, makeItem(Material.END_STONE,        "§5The End"));
-        inventory.setItem(15, makeItem(Material.GOLD_ORE,         "§6Gold Mine"));
-        inventory.setItem(16, makeItem(Material.COBBLESTONE,      "§7Deep Caverns"));
+        inventory.setItem(22, makeItem(Material.COMPASS, "§9Fast Travel"));
     }
 
     @EventHandler
