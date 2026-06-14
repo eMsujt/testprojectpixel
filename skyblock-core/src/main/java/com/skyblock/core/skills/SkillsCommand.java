@@ -1,12 +1,15 @@
 package com.skyblock.core.skills;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,7 +31,7 @@ public final class SkillsCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS;
 
     static {
-        List<String> subs = new java.util.ArrayList<>(Arrays.asList("info", "reset"));
+        List<String> subs = new ArrayList<>(Arrays.asList("info", "reset", "top"));
         for (SkillsManager.SkillType skill : SkillsManager.SkillType.values()) {
             subs.add(skill.name().toLowerCase());
         }
@@ -59,6 +62,7 @@ public final class SkillsCommand implements TabExecutor {
         switch (args[0].toLowerCase()) {
             case "info"  -> handleInfo(player);
             case "reset" -> handleReset(player);
+            case "top"   -> handleTop(player);
             default      -> handleSkill(player, args[0]);
         }
         return true;
@@ -97,6 +101,19 @@ public final class SkillsCommand implements TabExecutor {
         player.sendMessage("Skill reset is not currently supported.");
     }
 
+    private void handleTop(Player player) {
+        List<Player> online = new ArrayList<>(Bukkit.getOnlinePlayers());
+        online.sort(Comparator.comparingDouble(
+                (Player p) -> skillsManager.getXp(p.getUniqueId(), SkillsManager.SkillType.COMBAT)
+        ).reversed());
+        player.sendMessage("=== Top Combat XP ===");
+        int rank = 1;
+        for (Player p : online) {
+            double xp = skillsManager.getXp(p.getUniqueId(), SkillsManager.SkillType.COMBAT);
+            player.sendMessage(String.format("  %d. %-16s %.1f XP", rank++, p.getName(), xp));
+        }
+    }
+
     private void handleSkill(Player player, String name) {
         SkillsManager.SkillType skill = parseSkill(name);
         if (skill == null) {
@@ -117,6 +134,7 @@ public final class SkillsCommand implements TabExecutor {
         player.sendMessage("/skills                  — show all skill levels");
         player.sendMessage("/skills <skill>          — show level and XP for a skill");
         player.sendMessage("/skills info             — list all available skills");
+        player.sendMessage("/skills top              — show online players ranked by Combat XP");
     }
 
     private static SkillsManager.SkillType parseSkill(String name) {
