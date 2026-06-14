@@ -39,6 +39,12 @@ public final class KuudraCommand implements CommandExecutor {
 
         player.sendMessage("=== Kuudra Stats ===");
         player.sendMessage("Best tier: T" + tier + " — " + TIER_NAMES[tier]);
+        java.util.Map<String, Integer> completions = manager.getTierCompletions(id);
+        for (int i = 1; i < TIER_NAMES.length; i++) {
+            String name = TIER_NAMES[i];
+            int count = completions.getOrDefault(name, 0);
+            player.sendMessage("  " + name + ": " + count + " completions");
+        }
     }
 
     private void handleJoin(Player player, String[] args) {
