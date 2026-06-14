@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
 import java.util.UUID;
 
 public final class HOTMCommand implements CommandExecutor {
@@ -23,10 +24,11 @@ public final class HOTMCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "level" -> handleLevel(player);
-            case "set"   -> handleSet(player, args);
-            case "stats" -> handleStats(player);
-            default      -> sendHelp(player);
+            case "level"        -> handleLevel(player);
+            case "set"          -> handleSet(player, args);
+            case "stats"        -> handleStats(player);
+            case "powder-stats" -> handlePowderStats(player);
+            default             -> sendHelp(player);
         }
         return true;
     }
@@ -62,9 +64,23 @@ public final class HOTMCommand implements CommandExecutor {
         player.sendMessage("Tokens Spent: " + mgr.getTokensSpent(id));
     }
 
+    private void handlePowderStats(Player player) {
+        UUID id = player.getUniqueId();
+        Map<String, Integer> collected = HOTMManager.getInstance().getPowderCollected(id);
+        player.sendMessage("=== HOTM Powder Stats ===");
+        if (collected.isEmpty()) {
+            player.sendMessage("No powder collected yet.");
+            return;
+        }
+        for (Map.Entry<String, Integer> entry : collected.entrySet()) {
+            player.sendMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== HOTM Commands ===");
-        player.sendMessage("/skyblock hotm level       — show your Heart of the Mountain level");
-        player.sendMessage("/skyblock hotm set <level> — set your HOTM level (1–7)");
+        player.sendMessage("/skyblock hotm level        — show your Heart of the Mountain level");
+        player.sendMessage("/skyblock hotm set <level>  — set your HOTM level (1–7)");
+        player.sendMessage("/skyblock hotm powder-stats — show powder collected by type");
     }
 }
