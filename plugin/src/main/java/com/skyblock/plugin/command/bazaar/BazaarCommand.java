@@ -30,8 +30,9 @@ public final class BazaarCommand implements CommandExecutor {
             case "buy" -> handleBuy(player, args, manager);
             case "sell" -> handleSell(player, args, manager);
             case "cancel" -> handleCancel(player, args, manager);
-            case "orders" -> handleOrders(player, manager);
-            default -> sendHelp(player);
+            case "orders"  -> handleOrders(player, manager);
+            case "history" -> handleHistory(player, manager);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -140,6 +141,18 @@ public final class BazaarCommand implements CommandExecutor {
         }
     }
 
+    private void handleHistory(Player player, BazaarManager manager) {
+        List<String> history = manager.getBazaarHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("You have no bazaar history.");
+            return;
+        }
+        player.sendMessage("=== Bazaar History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Bazaar Commands ===");
         player.sendMessage("/bazaar info <item> — show best bid/ask");
@@ -148,5 +161,6 @@ public final class BazaarCommand implements CommandExecutor {
         player.sendMessage("/bazaar cancel buy <orderId> — cancel a buy order");
         player.sendMessage("/bazaar cancel sell <orderId> — cancel a sell order");
         player.sendMessage("/bazaar orders — list your active orders");
+        player.sendMessage("/bazaar history — show your bazaar history");
     }
 }
