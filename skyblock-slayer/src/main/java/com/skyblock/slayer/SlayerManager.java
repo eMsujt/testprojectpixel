@@ -65,6 +65,20 @@ public final class SlayerManager {
         SLAYER_BOSS_DATA = Collections.unmodifiableMap(m);
     }
 
+    /**
+     * XP required to reach each slayer level (index 0 = level 1, index 8 = level 9)
+     * for the three original boss lines.  Values match the standard SkyBlock XP table.
+     */
+    public static final Map<String, long[]> SLAYER_XP_TABLE;
+
+    static {
+        Map<String, long[]> m = new LinkedHashMap<>();
+        m.put("ZOMBIE", new long[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000});
+        m.put("SPIDER", new long[]{5, 25, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000});
+        m.put("WOLF",   new long[]{10, 30, 250, 1_500, 7_000, 30_000, 150_000, 500_000, 1_000_000});
+        SLAYER_XP_TABLE = Collections.unmodifiableMap(m);
+    }
+
     /** Required mob kills per tier (index 0 = tier 1). */
     private static final int[] REQUIRED_KILLS_BY_TIER = {5, 25, 100, 250, 500};
 
