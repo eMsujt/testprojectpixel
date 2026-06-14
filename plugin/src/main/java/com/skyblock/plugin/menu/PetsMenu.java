@@ -5,13 +5,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.UUID;
 
-public final class PetsMenu {
+public final class PetsMenu implements InventoryHolder {
 
     /** Slot showing the currently equipped pet. */
     private static final int ACTIVE_SLOT = 22;
@@ -19,26 +20,34 @@ public final class PetsMenu {
     /** Centred selection slots across two rows, one per pet. */
     private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
 
-    public void open(Player player) {
-        player.openInventory(buildMenu(player.getUniqueId()));
+    private final Inventory inventory;
+
+    public PetsMenu(Player player) {
+        this.inventory = Bukkit.createInventory(this, 54, "§dPets");
+        build(player.getUniqueId());
     }
 
-    private Inventory buildMenu(UUID playerId) {
-        Inventory inv = Bukkit.createInventory(null, 54, "§dPets");
+    public void open(Player player) {
+        player.openInventory(inventory);
+    }
 
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    private void build(UUID playerId) {
         PetsManager pets = PetsManager.getInstance();
         PetsManager.Pet active = pets.getActivePet(playerId);
         if (active != null) {
-            inv.setItem(ACTIVE_SLOT, makeItem(active, true));
+            inventory.setItem(ACTIVE_SLOT, makeItem(active, true));
         }
         List<PetsManager.Pet> owned = pets.getPets(playerId);
         for (int i = 0; i < owned.size() && i < SLOTS.length; i++) {
             PetsManager.Pet pet = owned.get(i);
             boolean isActive = active != null && active.getId().equals(pet.getId());
-            inv.setItem(SLOTS[i], makeItem(pet, isActive));
+            inventory.setItem(SLOTS[i], makeItem(pet, isActive));
         }
-
-        return inv;
     }
 
     private ItemStack makeItem(PetsManager.Pet pet, boolean isActive) {
