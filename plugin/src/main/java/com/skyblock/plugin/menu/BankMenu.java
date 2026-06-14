@@ -11,7 +11,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,10 +20,8 @@ public final class BankMenu implements InventoryHolder, Listener {
     private static final String TITLE = "§6Bank";
     private static final int SIZE = 54;
 
-    /** Slot showing the GOLD_BLOCK with the current bank balance. */
-    private static final int BALANCE_SLOT = 4;
-    /** Slot showing the account holder's player skull. */
-    private static final int SKULL_SLOT = 13;
+    /** Slot showing the GOLD_INGOT with the current bank balance. */
+    private static final int BALANCE_SLOT = 13;
     /** Slot for the Deposit All button. */
     private static final int DEPOSIT_SLOT = 29;
     /** Slot for the Withdraw All button. */
@@ -66,12 +63,9 @@ public final class BankMenu implements InventoryHolder, Listener {
         long bank = bm.getBank(player.getUniqueId());
         long purse = bm.getPurse(player.getUniqueId());
 
-        inventory.setItem(BALANCE_SLOT, makeItem(Material.GOLD_BLOCK, "§6Bank Balance",
+        inventory.setItem(BALANCE_SLOT, makeItem(Material.GOLD_INGOT, "§6Bank Balance",
                 Arrays.asList("§7Balance: §6" + bank + " coins",
                               "§7Purse: §6" + purse + " coins")));
-
-        inventory.setItem(SKULL_SLOT, makeSkull(player, "§a" + player.getName(),
-                List.of("§7Bank balance: §6" + bank + " coins")));
 
         inventory.setItem(DEPOSIT_SLOT, makeItem(Material.EMERALD, "§aDeposit All",
                 List.of("§7Move all purse coins into the bank.")));
@@ -111,18 +105,6 @@ public final class BankMenu implements InventoryHolder, Listener {
     private void refresh(Player player) {
         inventory.clear();
         build(player);
-    }
-
-    private static ItemStack makeSkull(Player player, String name, List<String> lore) {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta meta = (SkullMeta) item.getItemMeta();
-        if (meta != null) {
-            meta.setOwningPlayer(player);
-            meta.setDisplayName(name);
-            meta.setLore(lore);
-            item.setItemMeta(meta);
-        }
-        return item;
     }
 
     private static ItemStack makeItem(Material material, String name, List<String> lore) {
