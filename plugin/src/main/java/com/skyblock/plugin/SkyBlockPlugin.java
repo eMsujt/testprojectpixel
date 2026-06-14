@@ -115,6 +115,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         HOTMManager.getInstance().load(getDataFolder());
         WarpManager.getInstance().load(getDataFolder());
         SkillsManager.getInstance().load(getDataFolder());
+        com.skyblock.plugin.skills.SkillManager.getInstance().load(this);
         IslandManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.DungeonManager.getInstance().load(getDataFolder());
         CraftingManager.getInstance().registerRecipes(this);
