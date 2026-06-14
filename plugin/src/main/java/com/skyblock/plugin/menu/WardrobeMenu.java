@@ -1,6 +1,7 @@
 package com.skyblock.plugin.menu;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,17 +9,20 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 public final class WardrobeMenu implements InventoryHolder, Listener {
 
-    /** Nine armour-set columns; each column shows helmet → boots top-to-bottom over rows 1–4. */
-    private static final int COLUMNS = 9;
+    /** Nine saved-armour wardrobe slots laid out across the central row. */
+    private static final int[] SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29};
 
     private final Inventory inventory;
 
     public WardrobeMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 45, "Wardrobe");
-        build(player);
+        this.inventory = Bukkit.createInventory(this, 54, "§9Wardrobe");
+        build();
     }
 
     public void open(Player player) {
@@ -30,17 +34,21 @@ public final class WardrobeMenu implements InventoryHolder, Listener {
         return inventory;
     }
 
-    private void build(Player player) {
-        // getArmorContents() is ordered boots, leggings, chestplate, helmet; show helmet on top.
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        for (int column = 0; column < COLUMNS; column++) {
-            for (int row = 0; row < armor.length; row++) {
-                ItemStack piece = armor[armor.length - 1 - row];
-                if (piece != null) {
-                    inventory.setItem(row * COLUMNS + column, piece);
-                }
-            }
+    private void build() {
+        for (int i = 0; i < SLOTS.length; i++) {
+            inventory.setItem(SLOTS[i], makeSlot(i + 1));
         }
+    }
+
+    private ItemStack makeSlot(int number) {
+        ItemStack item = new ItemStack(Material.LEATHER_CHESTPLATE);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName("§eWardrobe Slot " + number);
+            meta.setLore(List.of("§7Click to equip this armour set."));
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 
     @EventHandler
