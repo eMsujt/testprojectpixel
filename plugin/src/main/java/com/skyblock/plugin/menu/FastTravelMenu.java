@@ -16,7 +16,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§bFast Travel");
+        this.inventory = Bukkit.createInventory(this, 54, "§9Fast Travel");
         build();
     }
 
