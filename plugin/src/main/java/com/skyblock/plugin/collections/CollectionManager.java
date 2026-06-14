@@ -19,6 +19,22 @@ public final class CollectionManager implements Listener {
 
     private static final CollectionManager INSTANCE = new CollectionManager();
 
+    /** The cumulative shared default thresholds for an unlisted collection's tiers. */
+    private static final int[] DEFAULT_THRESHOLDS = {50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000};
+
+    /** Cumulative amounts required to unlock each tier, per collection. */
+    private static final Map<Material, int[]> TIER_THRESHOLDS = new EnumMap<>(Material.class);
+
+    static {
+        TIER_THRESHOLDS.put(Material.WHEAT, new int[]{50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000});
+        TIER_THRESHOLDS.put(Material.COBBLESTONE, new int[]{50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000});
+        TIER_THRESHOLDS.put(Material.COAL, new int[]{50, 100, 250, 1000, 2500, 5000, 10000, 25000, 50000, 100000});
+        TIER_THRESHOLDS.put(Material.IRON_INGOT, new int[]{50, 100, 250, 1000, 2500, 5000, 10000, 25000, 50000, 100000});
+        TIER_THRESHOLDS.put(Material.GOLD_INGOT, new int[]{50, 100, 250, 1000, 2500, 5000, 10000, 25000, 50000, 100000});
+        TIER_THRESHOLDS.put(Material.DIAMOND, new int[]{50, 100, 250, 1000, 2500, 5000, 10000, 25000, 50000, 100000});
+        TIER_THRESHOLDS.put(Material.OAK_LOG, new int[]{50, 100, 250, 500, 1000, 2000, 5000, 10000, 25000, 50000});
+    }
+
     private final Map<UUID, Map<Material, Long>> collections = new HashMap<>();
 
     private JavaPlugin plugin;
@@ -33,7 +49,6 @@ public final class CollectionManager implements Listener {
     public void register(JavaPlugin owningPlugin) {
         this.plugin = owningPlugin;
         this.collectionsDir = new File(owningPlugin.getDataFolder(), "collections");
-        CollectionTierManager.getInstance().load(owningPlugin);
         owningPlugin.getServer().getPluginManager().registerEvents(this, owningPlugin);
     }
 
@@ -47,13 +62,31 @@ public final class CollectionManager implements Listener {
         long after = before + amount;
         counts.put(material, after);
 
-        CollectionTierManager tiers = CollectionTierManager.getInstance();
-        return tiers.getTier(material.name(), after) - tiers.getTier(material.name(), before);
+        return tierFor(material, after) - tierFor(material, before);
     }
 
     /** Returns the tier the player has unlocked for the given collection. */
     public int getTier(UUID playerId, Material material) {
-        return CollectionTierManager.getInstance().getTier(material.name(), getCollection(playerId, material));
+        return tierFor(material, getCollection(playerId, material));
+    }
+
+    /** Returns the cumulative tier thresholds defined for a collection. */
+    public int[] getThresholds(Material material) {
+        return TIER_THRESHOLDS.getOrDefault(material, DEFAULT_THRESHOLDS).clone();
+    }
+
+    /** Returns the tier unlocked at {@code amount}: the number of thresholds reached. */
+    private int tierFor(Material material, long amount) {
+        int[] thresholds = TIER_THRESHOLDS.getOrDefault(material, DEFAULT_THRESHOLDS);
+        int tier = 0;
+        for (int threshold : thresholds) {
+            if (amount >= threshold) {
+                tier++;
+            } else {
+                break;
+            }
+        }
+        return tier;
     }
 
     public long getCollection(UUID playerId, Material material) {
