@@ -1,15 +1,9 @@
 package com.skyblock.plugin.profile;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,32 +11,25 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * In-memory registry of {@link SkyBlockProfile} instances keyed by player UUID.
+ * Singleton in-memory registry of {@link PlayerProfile} instances keyed by
+ * player UUID.
  *
- * <p>Profiles are persisted to {@code plugins/SkyBlock/profiles/<uuid>.yml}.
- * On {@link PlayerJoinEvent} a player's profile is loaded asynchronously and,
- * on {@link PlayerQuitEvent}, saved asynchronously so file I/O never runs on
- * the server main thread.</p>
+ * <p>On {@link PlayerJoinEvent} the joining player's profile is loaded from the
+ * registry, or a new empty one is created and registered if none exists yet.</p>
  *
- * <p>The {@link SkyBlockProfile} map is mutated only on the main thread; access
- * it from the server main thread or guard it externally.</p>
+ * <p>The profile map is mutated only on the server main thread; access it from
+ * the main thread or guard it externally.</p>
  */
 public final class ProfileManager implements Listener {
 
-    private final Map<UUID, SkyBlockProfile> profiles = new HashMap<>();
+    private static final ProfileManager INSTANCE = new ProfileManager();
 
-    private final Plugin plugin;
-    private final File profilesDir;
+    private final Map<UUID, PlayerProfile> profiles = new HashMap<>();
 
-    /**
-     * Creates a registry backed by per-player YAML files under the plugin's
-     * {@code profiles} data directory.
-     *
-     * @param plugin the owning plugin, used for scheduling and the data folder
-     */
-    public ProfileManager(Plugin plugin) {
-        this.plugin = Objects.requireNonNull(plugin, "plugin");
-        this.profilesDir = new File(plugin.getDataFolder(), "profiles");
+    private ProfileManager() {}
+
+    public static ProfileManager getInstance() {
+        return INSTANCE;
     }
 
     /**
@@ -52,9 +39,9 @@ public final class ProfileManager implements Listener {
      * @param uuid unique identifier of the player
      * @return the player's profile, never {@code null}
      */
-    public SkyBlockProfile getOrCreate(UUID uuid) {
+    public PlayerProfile getOrCreate(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
-        return profiles.computeIfAbsent(uuid, SkyBlockProfile::new);
+        return profiles.computeIfAbsent(uuid, PlayerProfile::new);
     }
 
     /**
@@ -64,7 +51,7 @@ public final class ProfileManager implements Listener {
      * @param uuid unique identifier of the player
      * @return the player's profile, or {@code null}
      */
-    public SkyBlockProfile getProfile(UUID uuid) {
+    public PlayerProfile getProfile(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
         return profiles.get(uuid);
     }
@@ -86,7 +73,7 @@ public final class ProfileManager implements Listener {
      * @param uuid unique identifier of the player
      * @return the removed profile, or {@code null} if none existed
      */
-    public SkyBlockProfile removeProfile(UUID uuid) {
+    public PlayerProfile removeProfile(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
         return profiles.remove(uuid);
     }
@@ -96,75 +83,17 @@ public final class ProfileManager implements Listener {
      *
      * @return the registered profiles
      */
-    public Map<UUID, SkyBlockProfile> getProfiles() {
+    public Map<UUID, PlayerProfile> getProfiles() {
         return Collections.unmodifiableMap(profiles);
     }
 
     /**
-     * Loads the joining player's profile from disk asynchronously, then applies
-     * it to the in-memory registry on the main thread.
+     * Loads the joining player's profile, creating a new one if none exists.
      *
      * @param event the join event
      */
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            Map<String, Long> loaded = readSkillXp(uuid);
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-                SkyBlockProfile profile = getOrCreate(uuid);
-                loaded.forEach(profile::setSkillXp);
-            });
-        });
-    }
-
-    /**
-     * Saves the quitting player's profile to disk asynchronously, snapshotting
-     * its state on the main thread first.
-     *
-     * @param event the quit event
-     */
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        SkyBlockProfile profile = profiles.get(player.getUniqueId());
-        if (profile == null) {
-            return;
-        }
-        UUID uuid = player.getUniqueId();
-        Map<String, Long> snapshot = profile.getSkillXp();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
-                () -> writeSkillXp(uuid, snapshot));
-    }
-
-    private Map<String, Long> readSkillXp(UUID uuid) {
-        File file = new File(profilesDir, uuid + ".yml");
-        Map<String, Long> result = new HashMap<>();
-        if (!file.exists()) {
-            return result;
-        }
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        if (cfg.isConfigurationSection("skillXp")) {
-            for (String skill : cfg.getConfigurationSection("skillXp").getKeys(false)) {
-                result.put(skill, cfg.getLong("skillXp." + skill));
-            }
-        }
-        return result;
-    }
-
-    private void writeSkillXp(UUID uuid, Map<String, Long> skillXp) {
-        if (!profilesDir.exists()) {
-            profilesDir.mkdirs();
-        }
-        File file = new File(profilesDir, uuid + ".yml");
-        YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<String, Long> entry : skillXp.entrySet()) {
-            cfg.set("skillXp." + entry.getKey(), entry.getValue());
-        }
-        try {
-            cfg.save(file);
-        } catch (IOException e) {
-            plugin.getLogger().severe("Failed to save profile " + uuid + ": " + e.getMessage());
-        }
+        getOrCreate(event.getPlayer().getUniqueId());
     }
 }
