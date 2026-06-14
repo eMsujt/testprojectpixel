@@ -9,13 +9,15 @@ import java.util.UUID;
  * Data holder for a single player's SkyBlock profile.
  *
  * <p>Tracks the player's identity and accumulated experience keyed by skill
- * name. Instances are not thread-safe; access them from the server main thread
- * or guard them externally.</p>
+ * name, along with collection progress keyed by collection name. Instances are
+ * not thread-safe; access them from the server main thread or guard them
+ * externally.</p>
  */
 public final class PlayerProfile {
 
     private final UUID uuid;
     private final Map<String, Long> skillXp = new HashMap<>();
+    private final Map<String, Long> collectionXp = new HashMap<>();
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -84,6 +86,57 @@ public final class PlayerProfile {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
         skillXp.put(skill, amount);
+    }
+
+    /**
+     * Returns an immutable snapshot of the player's collection progress keyed by
+     * collection name.
+     *
+     * @return the collection totals
+     */
+    public Map<String, Long> getCollectionXp() {
+        return Map.copyOf(collectionXp);
+    }
+
+    /**
+     * Returns the player's accumulated progress in the given collection.
+     *
+     * @param collection the collection name
+     * @return the amount, or 0 if the collection has never been progressed
+     */
+    public long getCollectionXp(String collection) {
+        Objects.requireNonNull(collection, "collection");
+        return collectionXp.getOrDefault(collection, 0L);
+    }
+
+    /**
+     * Adds progress to the given collection.
+     *
+     * @param collection the collection name
+     * @param amount the amount to add, must not be negative
+     * @throws IllegalArgumentException if {@code amount} is negative
+     */
+    public void addCollectionXp(String collection, long amount) {
+        Objects.requireNonNull(collection, "collection");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        collectionXp.merge(collection, amount, Long::sum);
+    }
+
+    /**
+     * Sets the player's accumulated progress in the given collection.
+     *
+     * @param collection the collection name
+     * @param amount the new total, must not be negative
+     * @throws IllegalArgumentException if {@code amount} is negative
+     */
+    public void setCollectionXp(String collection, long amount) {
+        Objects.requireNonNull(collection, "collection");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        collectionXp.put(collection, amount);
     }
 
     @Override
