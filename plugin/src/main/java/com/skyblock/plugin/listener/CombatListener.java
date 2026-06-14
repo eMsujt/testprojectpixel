@@ -3,11 +3,14 @@ package com.skyblock.plugin.listener;
 import com.skyblock.core.stat.StatManager.StatType;
 import com.skyblock.core.stats.PlayerStatManager;
 import com.skyblock.plugin.combat.DamageFormula;
+import com.skyblock.plugin.economy.PlayerEconomy;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.UUID;
 
@@ -23,6 +26,7 @@ import java.util.UUID;
 public final class CombatListener implements Listener {
 
     private final PlayerStatManager statManager = PlayerStatManager.getInstance();
+    private final PlayerEconomy economy = PlayerEconomy.getInstance();
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
@@ -50,5 +54,20 @@ public final class CombatListener implements Listener {
         }
 
         event.setDamage(damage);
+    }
+
+    /**
+     * Rewards the killer with combat coins when they slay a mob. The drop scales
+     * with the victim's max health so tougher mobs pay out more.
+     */
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        LivingEntity victim = event.getEntity();
+        Player killer = victim.getKiller();
+        if (killer == null) {
+            return;
+        }
+        long coins = Math.max(1L, Math.round(victim.getMaxHealth()));
+        economy.addPurse(killer.getUniqueId(), coins);
     }
 }
