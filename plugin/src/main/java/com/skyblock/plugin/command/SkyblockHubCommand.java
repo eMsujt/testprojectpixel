@@ -1,7 +1,12 @@
 package com.skyblock.plugin.command;
 
 import com.skyblock.core.bank.BankManager;
+import com.skyblock.core.collections.CollectionsManager;
+import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.mayor.MayorManager;
+import com.skyblock.core.pets.PetsManager;
+import com.skyblock.core.skills.SkillsManager;
+import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.warp.WarpManager;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -9,6 +14,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class SkyblockHubCommand implements CommandExecutor {
@@ -33,6 +39,21 @@ public final class SkyblockHubCommand implements CommandExecutor {
                     return true;
                 case "mayor":
                     handleMayor(player);
+                    return true;
+                case "garden":
+                    handleGarden(player);
+                    return true;
+                case "slayer":
+                    handleSlayer(player);
+                    return true;
+                case "pets":
+                    handlePets(player);
+                    return true;
+                case "skills":
+                    handleSkills(player);
+                    return true;
+                case "collections":
+                    handleCollections(player);
                     return true;
                 default:
                     break;
@@ -75,5 +96,74 @@ public final class SkyblockHubCommand implements CommandExecutor {
         }
         MayorManager.MayorCandidate vote = manager.getVote(id);
         player.sendMessage("Your Vote: " + (vote != null ? vote.getDisplayName() : "None"));
+    }
+
+    private void handleGarden(Player player) {
+        UUID id = player.getUniqueId();
+        GardenManager manager = GardenManager.getInstance();
+        int level = manager.getPlotLevel(id);
+        player.sendMessage("=== Garden ===");
+        player.sendMessage("Garden Level: " + level);
+        java.util.Set<GardenManager.GardenPlot> plots = manager.getUnlockedPlots(id);
+        player.sendMessage("Unlocked Plots: " + plots.size());
+    }
+
+    private void handleSlayer(Player player) {
+        UUID id = player.getUniqueId();
+        SlayerManager manager = SlayerManager.getInstance();
+        player.sendMessage("=== Your Slayers ===");
+        for (SlayerManager.SlayerType type : SlayerManager.SlayerType.values()) {
+            int level = manager.getLevel(id, type);
+            long xp = manager.getExperience(id, type);
+            int kills = manager.getKillCount(id, type);
+            player.sendMessage("  " + type.getDisplayName() + ": Level " + level + " (" + xp + " XP, " + kills + " kills)");
+        }
+        SlayerManager.SlayerQuest quest = manager.getActiveQuest(id);
+        if (quest != null) {
+            player.sendMessage("Active Quest: " + quest.type.getDisplayName() + " T" + (quest.tier.ordinal() + 1) + " — " + quest.getKills() + " kills");
+        }
+    }
+
+    private void handlePets(Player player) {
+        UUID id = player.getUniqueId();
+        PetsManager manager = PetsManager.getInstance();
+        PetsManager.Pet active = manager.getActivePet(id);
+        if (active != null) {
+            player.sendMessage("Active pet: " + active.type.name() + " [" + active.rarity.name() + "]");
+        } else {
+            player.sendMessage("Active pet: None");
+        }
+        List<PetsManager.Pet> pets = manager.getPets(id);
+        if (pets.isEmpty()) {
+            player.sendMessage("You have no pets.");
+            return;
+        }
+        player.sendMessage("=== Your Pets ===");
+        for (PetsManager.Pet pet : pets) {
+            String marker = (active != null && pet.id.equals(active.id)) ? " *" : "";
+            player.sendMessage("  " + pet.type.name() + " [" + pet.rarity.name() + "]" + marker);
+        }
+    }
+
+    private void handleSkills(Player player) {
+        UUID id = player.getUniqueId();
+        SkillsManager manager = SkillsManager.getInstance();
+        player.sendMessage("=== Your Skills ===");
+        for (SkillsManager.SkillType skill : SkillsManager.SkillType.values()) {
+            int level = manager.getLevel(id, skill);
+            double xp = manager.getXp(id, skill);
+            player.sendMessage("  " + skill.getDisplayName() + ": Level " + level + " (" + (long) xp + " XP)");
+        }
+    }
+
+    private void handleCollections(Player player) {
+        UUID id = player.getUniqueId();
+        CollectionsManager manager = CollectionsManager.getInstance();
+        player.sendMessage("=== Your Collections ===");
+        for (CollectionsManager.CollectionType type : CollectionsManager.CollectionType.values()) {
+            long amount = manager.getItems(id, type);
+            int tier = manager.getTier(id, type);
+            player.sendMessage("  " + type.getDisplayName() + ": " + amount + " (Tier " + tier + ")");
+        }
     }
 }
