@@ -4,9 +4,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,11 +59,11 @@ public final class FishingManager {
     }
 
     public void recordCatchEvent(UUID playerId, String summary) {
-        catchHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+        catchHistory.computeIfAbsent(playerId, k -> new CopyOnWriteArrayList<>()).add(summary);
     }
 
     public List<String> getCatchHistory(UUID playerId) {
-        return Collections.unmodifiableList(catchHistory.getOrDefault(playerId, new ArrayList<>()));
+        return Collections.unmodifiableList(catchHistory.getOrDefault(playerId, new CopyOnWriteArrayList<>()));
     }
 
     public Map<UUID, List<String>> getAllCatchHistory() {
