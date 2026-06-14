@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
 import java.util.UUID;
@@ -68,5 +69,13 @@ public final class SkillsListener implements Listener {
         if (logXp != null) {
             skillsManager.addSkillXP(uuid, "foraging", logXp);
         }
+    }
+
+    @EventHandler
+    public void onPlayerFish(PlayerFishEvent event) {
+        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
+            return;
+        }
+        skillsManager.addSkillXP(event.getPlayer().getUniqueId(), "fishing", 6L);
     }
 }
