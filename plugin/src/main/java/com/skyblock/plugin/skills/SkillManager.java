@@ -25,7 +25,7 @@ import java.util.UUID;
  * <p>XP is stored in the shared {@link SkillsManager}, keyed by each skill's
  * lowercase name (e.g. {@link SkillType#FARMING} → {@code "farming"}), so this
  * facade and the existing string-based API stay in lockstep. Per-skill cumulative
- * XP threshold arrays are loaded from the bundled {@code skills.yml} resource by
+ * XP threshold arrays are loaded from the bundled {@code skills_xp.yml} resource by
  * {@link #load(JavaPlugin)}; any skill without a configured curve falls back to the
  * shared {@link SkillsConfig#XP_CURVE}.</p>
  */
@@ -101,7 +101,7 @@ public final class SkillManager {
 
     private final StatManager statManager = StatManager.getInstance();
 
-    /** Per-skill cumulative XP curves loaded from {@code skills.yml}; empty until {@link #load} runs. */
+    /** Per-skill cumulative XP curves loaded from {@code skills_xp.yml}; empty until {@link #load} runs. */
     private final Map<SkillType, long[]> xpCurves = new EnumMap<>(SkillType.class);
 
     private SkillManager() {}
@@ -112,8 +112,8 @@ public final class SkillManager {
 
     /**
      * Loads each skill's cumulative XP threshold array from the bundled
-     * {@code skills.yml} resource (read straight from the jar, since the data-folder
-     * {@code skills.yml} is the player-XP save file written by {@link SkillsManager}).
+     * {@code skills_xp.yml} resource (read straight from the jar, kept separate from
+     * the player-XP save data written by {@link SkillsManager}).
      * The thresholds live under a {@code curves} section keyed by each skill's
      * {@link SkillType#key() lowercase name}; any skill left unconfigured keeps using
      * the shared {@link SkillsConfig#XP_CURVE}.
@@ -121,7 +121,7 @@ public final class SkillManager {
      * @param plugin the owning plugin, used for resource access and logging
      */
     public void load(JavaPlugin plugin) {
-        InputStream resource = plugin.getResource("skills.yml");
+        InputStream resource = plugin.getResource("skills_xp.yml");
         if (resource == null) {
             return;
         }
@@ -129,7 +129,7 @@ public final class SkillManager {
         try (InputStreamReader reader = new InputStreamReader(resource, StandardCharsets.UTF_8)) {
             cfg = YamlConfiguration.loadConfiguration(reader);
         } catch (IOException e) {
-            plugin.getLogger().warning("Failed to read skills.yml: " + e.getMessage());
+            plugin.getLogger().warning("Failed to read skills_xp.yml: " + e.getMessage());
             return;
         }
         ConfigurationSection curves = cfg.getConfigurationSection("curves");
