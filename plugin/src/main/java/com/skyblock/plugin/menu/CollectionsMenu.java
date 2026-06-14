@@ -14,15 +14,19 @@ public final class CollectionsMenu {
     }
 
     private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§aCollections");
+        Inventory inv = Bukkit.createInventory(null, 54, "§eCollections");
 
-        // Category selector
-        inv.setItem(11, makeItem(Material.WHEAT,        "§aFarming"));
-        inv.setItem(12, makeItem(Material.COBBLESTONE,  "§aMining"));
-        inv.setItem(13, makeItem(Material.ROTTEN_FLESH, "§aCombat"));
-        inv.setItem(14, makeItem(Material.OAK_LOG,      "§aForaging"));
-        inv.setItem(15, makeItem(Material.COD,          "§aFishing"));
-        inv.setItem(16, makeItem(Material.GUNPOWDER,    "§aRift"));
+        // Category selector — 10 icons centered across two rows
+        inv.setItem(20, makeItem(Material.WHEAT,        "§aFarming"));
+        inv.setItem(21, makeItem(Material.COBBLESTONE,  "§aMining"));
+        inv.setItem(22, makeItem(Material.ROTTEN_FLESH, "§aCombat"));
+        inv.setItem(23, makeItem(Material.OAK_LOG,      "§aForaging"));
+        inv.setItem(24, makeItem(Material.COD,          "§aFishing"));
+        inv.setItem(29, makeItem(Material.GUNPOWDER,    "§aRift"));
+        inv.setItem(30, makeItem(Material.IRON_SWORD,   "§aSlayer"));
+        inv.setItem(31, makeItem(Material.STONE_BRICKS, "§aDungeoneering"));
+        inv.setItem(32, makeItem(Material.SUGAR_CANE,   "§aAlchemy"));
+        inv.setItem(33, makeItem(Material.ENCHANTING_TABLE, "§aEnchanting"));
 
         return inv;
     }
