@@ -35,6 +35,7 @@ public final class AuctionHouseManager {
 
     public void addListing(UUID sellerId, AuctionListing listing) {
         getListings(sellerId).add(listing);
+        recordAuctionEvent(sellerId, "Listed " + listing.itemName() + " x" + listing.quantity() + " starting at " + listing.startingBid() + " coins");
     }
 
     public boolean removeListing(UUID sellerId, UUID listingId) {

@@ -66,6 +66,7 @@ public class AuctionHouseManager {
     public UUID addItem(UUID seller, String itemName, long price) {
         UUID id = UUID.randomUUID();
         items.put(id, new AuctionItem(seller, itemName, price));
+        recordAuctionEvent(seller, "Listed " + itemName + " for " + price + " coins");
         return id;
     }
 
@@ -84,6 +85,7 @@ public class AuctionHouseManager {
         AuctionItem item = items.get(id);
         if (item == null || item.seller().equals(buyer)) return false;
         items.remove(id);
+        recordAuctionEvent(buyer, "Purchased " + item.itemName() + " for " + item.price() + " coins");
         return true;
     }
 
