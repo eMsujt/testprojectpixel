@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public final class AuctionHouseCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("list", "create", "bid", "view", "cancel", "mine");
+            Arrays.asList("list", "create", "bid", "view", "cancel", "mine", "history");
 
     private final AuctionHouseManager auctionHouseManager;
 
@@ -44,19 +44,20 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /auctionhouse <list|create|bid|view|cancel|mine>");
+            player.sendMessage("Usage: /auctionhouse <list|create|bid|view|cancel|mine|history>");
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "list"   -> handleList(player);
-            case "create" -> handleCreate(player, args);
-            case "bid"    -> handleBid(player, args);
-            case "view"   -> handleView(player, args);
-            case "cancel" -> handleCancel(player, args);
-            case "mine"   -> handleMine(player);
-            default       -> player.sendMessage(
-                    "Unknown subcommand. Usage: /auctionhouse <list|create|bid|view|cancel|mine>");
+            case "list"    -> handleList(player);
+            case "create"  -> handleCreate(player, args);
+            case "bid"     -> handleBid(player, args);
+            case "view"    -> handleView(player, args);
+            case "cancel"  -> handleCancel(player, args);
+            case "mine"    -> handleMine(player);
+            case "history" -> handleHistory(player);
+            default        -> player.sendMessage(
+                    "Unknown subcommand. Usage: /auctionhouse <list|create|bid|view|cancel|mine|history>");
         }
         return true;
     }
@@ -194,6 +195,18 @@ public final class AuctionHouseCommand implements TabExecutor {
                 e.itemName(),
                 e.startingBid(),
                 e.type().name())));
+    }
+
+    private void handleHistory(Player player) {
+        List<String> history = auctionHouseManager.getAuctionHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("You have no auction house history.");
+            return;
+        }
+        player.sendMessage("=== Auction House History ===");
+        for (String entry : history) {
+            player.sendMessage(entry);
+        }
     }
 
     /** Parses a short (8-char) or full UUID string; sends an error and returns null on failure. */

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public final class AuctionHouseCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "bid", "cancel", "search");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "create", "bid", "cancel", "search", "history");
 
     private final AuctionHouseManager manager;
 
@@ -39,8 +39,9 @@ public final class AuctionHouseCommand implements TabExecutor {
             case "create" -> handleCreate(player, args);
             case "bid"    -> handleBid(player, args);
             case "cancel" -> handleCancel(player, args);
-            case "search" -> handleSearch(player, args);
-            default       -> sendHelp(player);
+            case "search"  -> handleSearch(player, args);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -176,6 +177,18 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getAuctionHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("You have no auction history.");
+            return;
+        }
+        player.sendMessage("=== Auction History ===");
+        for (String entry : history) {
+            player.sendMessage(entry);
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Auction House Commands ===");
         player.sendMessage("/ah list — show all active listings");
@@ -183,5 +196,6 @@ public final class AuctionHouseCommand implements TabExecutor {
         player.sendMessage("/ah bid <id> <price> — purchase a listing");
         player.sendMessage("/ah cancel <id> — cancel your listing");
         player.sendMessage("/ah search <query> — search listings by name");
+        player.sendMessage("/ah history — show your auction history");
     }
 }
