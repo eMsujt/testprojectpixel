@@ -7,10 +7,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.skyblock.plugin.shops.ShopMenu;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -112,7 +109,7 @@ public final class ShopManager {
                 plugin.getLogger().warning("Skipping shop item '" + raw + "' in '" + id + "': invalid price.");
                 continue;
             }
-            entries.add(new ShopMenu.ShopEntry(new ItemStack(material), price));
+            entries.add(new ShopMenu.ShopEntry(material, price));
         }
         return new Shop(id, title, location, entries);
     }
