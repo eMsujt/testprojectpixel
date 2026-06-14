@@ -4,17 +4,30 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public final class SkyBlockMenu {
+public final class SkyBlockMenu implements InventoryHolder {
 
-    public void open(Player player) {
-        player.openInventory(buildMenu());
+    private final Inventory inventory;
+
+    public SkyBlockMenu() {
+        this.inventory = Bukkit.createInventory(this, 54, "§aSkyBlock Menu");
+        build();
     }
 
-    private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§aSkyBlock Menu");
+    public void open(Player player) {
+        player.openInventory(inventory);
+    }
+
+    @Override
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    private void build() {
+        Inventory inv = inventory;
 
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§7");
         for (int i = 0; i < 9; i++)  inv.setItem(i,      pane);
@@ -41,8 +54,6 @@ public final class SkyBlockMenu {
         inv.setItem(23, makeItem(Material.WRITTEN_BOOK,      "§aQuests"));
         inv.setItem(24, makeItem(Material.ENDER_PEARL,       "§aCo-op"));
         inv.setItem(25, makeItem(Material.COMPASS,           "§aFast Travel"));
-
-        return inv;
     }
 
     private ItemStack makeItem(Material material, String name) {
