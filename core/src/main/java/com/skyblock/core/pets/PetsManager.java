@@ -80,6 +80,7 @@ public final class PetsManager {
 
     private final Map<UUID, List<Pet>> pets = new HashMap<>();
     private final Map<UUID, UUID> activePet = new HashMap<>();
+    private final Map<UUID, List<String>> petHistory = new HashMap<>();
 
     public List<Pet> getPets(UUID player) {
         return Collections.unmodifiableList(pets.computeIfAbsent(player, k -> new ArrayList<>()));
@@ -100,10 +101,14 @@ public final class PetsManager {
     }
 
     public boolean equipPet(UUID player, UUID petId) {
-        boolean found = pets.getOrDefault(player, Collections.emptyList()).stream()
-                .anyMatch(p -> p.id.equals(petId));
-        if (found) activePet.put(player, petId);
-        return found;
+        Pet pet = pets.getOrDefault(player, Collections.emptyList()).stream()
+                .filter(p -> p.id.equals(petId))
+                .findFirst().orElse(null);
+        if (pet != null) {
+            activePet.put(player, petId);
+            recordPetEvent(player, "Equipped pet " + pet.type.name() + " (level " + pet.level + ")");
+        }
+        return pet != null;
     }
 
     public boolean unequipPet(UUID player) {
@@ -114,8 +119,20 @@ public final class PetsManager {
         return pets.getOrDefault(player, Collections.emptyList()).stream()
                 .filter(p -> p.id.equals(petId))
                 .findFirst()
-                .map(p -> { p.level++; return true; })
+                .map(p -> { p.level++; recordPetEvent(player, "Pet " + p.type.name() + " leveled up to level " + p.level); return true; })
                 .orElse(false);
+    }
+
+    public void recordPetEvent(UUID player, String summary) {
+        petHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getPetHistory(UUID player) {
+        return Collections.unmodifiableList(petHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllPetHistory() {
+        return Collections.unmodifiableMap(petHistory);
     }
 
     public void load(File dataFolder) {

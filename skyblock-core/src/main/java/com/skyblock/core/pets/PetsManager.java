@@ -206,6 +206,8 @@ public final class PetsManager {
     /** Currently active (selected) pet type per player; absent means no active pet. */
     private final Map<UUID, PetType> activePetType = new HashMap<>();
 
+    private final Map<UUID, List<String>> petHistory = new HashMap<>();
+
     private PetsManager() {
     }
 
@@ -271,6 +273,8 @@ public final class PetsManager {
             return false;
         }
         equippedPets.put(playerId, petId);
+        Pet pet = collection.get(petId);
+        recordPetEvent(playerId, "Equipped pet " + pet.type.name() + " (" + pet.rarity.name() + ")");
         return true;
     }
 
@@ -372,7 +376,22 @@ public final class PetsManager {
         }
         PetData updated = new PetData(pet, newXp, level);
         xpMap.put(pet, updated);
+        if (level > current.level) {
+            recordPetEvent(player, "Pet " + pet.name() + " leveled up to level " + level);
+        }
         return updated;
+    }
+
+    public void recordPetEvent(UUID player, String summary) {
+        petHistory.computeIfAbsent(player, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getPetHistory(UUID player) {
+        return Collections.unmodifiableList(petHistory.getOrDefault(player, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllPetHistory() {
+        return Collections.unmodifiableMap(petHistory);
     }
 
     /**
