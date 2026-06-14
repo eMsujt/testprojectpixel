@@ -162,6 +162,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsXPListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.StorageMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.PotionBagMenu(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.QuiverMenu(), this);
         new ActionBarManager().start(this);
         getLogger().info("SkyBlock plugin enabled.");
     }
