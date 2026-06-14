@@ -5,6 +5,7 @@ import com.skyblock.core.crafting.SkyBlockRecipeManager.ShapedRecipe;
 import com.skyblock.core.crafting.SkyBlockRecipeManager.ShapelessRecipe;
 import com.skyblock.core.crafting.SkyBlockRecipeManager.SkyBlockRecipe;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +23,7 @@ public final class RecipeBookMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public RecipeBookMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§eRecipe Book");
+        this.inventory = Bukkit.createInventory(this, 54, "§aRecipe Book");
         build();
     }
 
@@ -36,9 +37,20 @@ public final class RecipeBookMenu implements InventoryHolder, Listener {
     }
 
     private void build() {
-        int slot = 0;
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", List.of());
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
+        }
+
+        int slot = 10;
         for (SkyBlockRecipe recipe : SkyBlockRecipeManager.getInstance().getAllRecipes().values()) {
-            if (slot >= 54) {
+            while (slot < 45 && (slot % 9 == 0 || slot % 9 == 8)) {
+                slot++;
+            }
+            if (slot >= 45) {
                 break;
             }
             inventory.setItem(slot, makeRecipeItem(recipe));
