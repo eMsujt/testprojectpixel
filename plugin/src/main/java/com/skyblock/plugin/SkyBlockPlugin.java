@@ -18,9 +18,12 @@ import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.warp.WarpManager;
 import com.skyblock.dungeons.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.command.auctionhouse.AuctionHouseCommand;
+import com.skyblock.plugin.managers.CooldownManager;
+import com.skyblock.plugin.managers.NetworkManager;
 import com.skyblock.plugin.command.dungeon.DungeonCommand;
 import com.skyblock.plugin.command.fairy.FairyCommand;
 import com.skyblock.plugin.commands.BankCommand;
@@ -83,6 +86,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MayorManager.getInstance().load(getDataFolder());
         PetsManager.getInstance().load(getDataFolder());
         HOTMManager.getInstance().load(getDataFolder());
+        WarpManager.getInstance().load(getDataFolder());
+        CooldownManager.getInstance();
+        NetworkManager.getInstance().load(getDataFolder());
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
         getCommand("mayor").setExecutor(new MayorCommand());
@@ -117,6 +123,12 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MayorManager.getInstance().save(getDataFolder());
         PetsManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
+        try {
+            WarpManager.getInstance().save(getDataFolder());
+        } catch (java.io.IOException e) {
+            getLogger().severe("Failed to save warp data: " + e.getMessage());
+        }
+        NetworkManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
