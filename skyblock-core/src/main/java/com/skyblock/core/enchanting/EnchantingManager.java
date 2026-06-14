@@ -247,6 +247,9 @@ public final class EnchantingManager {
 
     private static final EnchantingManager INSTANCE = new EnchantingManager();
 
+    /** Per-player enchanting skill levels (1–60); absent entries default to 1. */
+    private final Map<UUID, Integer> enchantingLevels = new HashMap<>();
+
     /** Per-player enchantment levels; absent entries mean the enchantment is not applied. */
     private final Map<UUID, Map<SkyBlockEnchantment, Integer>> playerEnchantments = new HashMap<>();
 
@@ -258,6 +261,31 @@ public final class EnchantingManager {
 
     public static EnchantingManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Returns the enchanting skill level for the given player.
+     *
+     * @param playerId the player's UUID
+     * @return skill level, or {@code 1} if none recorded
+     */
+    public int getEnchantingLevel(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return enchantingLevels.getOrDefault(playerId, 1);
+    }
+
+    /**
+     * Sets the enchanting skill level for the given player.
+     *
+     * @param playerId the player's UUID
+     * @param level    the skill level (must be >= 1)
+     */
+    public void setEnchantingLevel(UUID playerId, int level) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (level < 1) {
+            throw new IllegalArgumentException("level must be >= 1");
+        }
+        enchantingLevels.put(playerId, level);
     }
 
     /**
@@ -332,6 +360,7 @@ public final class EnchantingManager {
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         playerBooks.remove(playerId);
+        enchantingLevels.remove(playerId);
         return playerEnchantments.remove(playerId) != null;
     }
 
@@ -388,10 +417,15 @@ public final class EnchantingManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        enchantingLevels.clear();
         playerEnchantments.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
+                int skillLevel = cfg.getInt(key + ".level", 0);
+                if (skillLevel >= 1) {
+                    enchantingLevels.put(uuid, skillLevel);
+                }
                 if (cfg.isConfigurationSection(key + ".enchantments")) {
                     Map<SkyBlockEnchantment, Integer> enchants = new EnumMap<>(SkyBlockEnchantment.class);
                     for (SkyBlockEnchantment type : SkyBlockEnchantment.values()) {
@@ -413,6 +447,9 @@ public final class EnchantingManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "enchanting.yml");
         YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Integer> entry : enchantingLevels.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".level", entry.getValue());
+        }
         for (Map.Entry<UUID, Map<SkyBlockEnchantment, Integer>> entry : playerEnchantments.entrySet()) {
             String key = entry.getKey().toString();
             for (Map.Entry<SkyBlockEnchantment, Integer> e : entry.getValue().entrySet()) {
