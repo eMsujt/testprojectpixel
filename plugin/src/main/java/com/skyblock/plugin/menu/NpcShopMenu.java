@@ -18,8 +18,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public final class NpcShopMenu implements InventoryHolder, Listener {
@@ -29,6 +31,7 @@ public final class NpcShopMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
     private final List<ShopEntry> entries;
+    private final Map<Integer, ShopEntry> slotEntries = new HashMap<>();
 
     public NpcShopMenu(JavaPlugin plugin) {
         this(loadEntries(plugin));
@@ -67,6 +70,7 @@ public final class NpcShopMenu implements InventoryHolder, Listener {
                 break;
             }
             inventory.setItem(slot, buildIcon(entry));
+            slotEntries.put(slot, entry);
             slot++;
         }
     }
@@ -81,18 +85,14 @@ public final class NpcShopMenu implements InventoryHolder, Listener {
         if (rawSlot < FIRST_ITEM_SLOT || rawSlot > LAST_ITEM_SLOT) {
             return;
         }
-        ItemStack clicked = event.getCurrentItem();
-        if (clicked == null || clicked.getType() == Material.AIR
-                || clicked.getType() == Material.GRAY_STAINED_GLASS_PANE) {
+        ShopEntry entry = slotEntries.get(rawSlot);
+        if (entry == null) {
             return;
         }
         if (!(event.getWhoClicked() instanceof Player player)) {
             return;
         }
-        entries.stream()
-                .filter(e -> e.material() == clicked.getType())
-                .findFirst()
-                .ifPresent(entry -> purchase(player, entry));
+        purchase(player, entry);
     }
 
     private static void purchase(Player player, ShopEntry entry) {
