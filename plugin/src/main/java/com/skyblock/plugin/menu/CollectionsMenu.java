@@ -13,7 +13,7 @@ public final class CollectionsMenu implements InventoryHolder {
     private final Inventory inventory;
 
     public CollectionsMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§bCollections");
+        this.inventory = Bukkit.createInventory(this, 54, "§2Collections");
         build();
     }
 
