@@ -50,13 +50,13 @@ public final class GardenCommand implements CommandExecutor {
 
     private void handleHistory(Player player) {
         UUID id = player.getUniqueId();
-        java.util.Map<String, Integer> harvests = GardenManager.getInstance().getCropHarvests(id);
+        java.util.List<String> history = GardenManager.getInstance().getHarvestHistory(id);
         player.sendMessage("=== Garden Harvest History ===");
-        if (harvests.isEmpty()) {
+        if (history.isEmpty()) {
             player.sendMessage("No harvest history found.");
         } else {
-            for (java.util.Map.Entry<String, Integer> entry : harvests.entrySet()) {
-                player.sendMessage(entry.getKey() + ": " + entry.getValue());
+            for (int i = 0; i < history.size(); i++) {
+                player.sendMessage((i + 1) + ". " + history.get(i));
             }
         }
     }
