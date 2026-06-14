@@ -25,7 +25,7 @@ public final class CollectionsCommand implements CommandExecutor {
         }
 
         UUID id = player.getUniqueId();
-        CollectionsManager manager = new CollectionsManager();
+        CollectionsManager manager = CollectionsManager.getInstance();
 
         Map<String, Long> amounts = manager.getCollectionAmounts(id);
         Map<String, Integer> tiers = manager.getCollectionTiers(id);
