@@ -35,7 +35,6 @@ import com.skyblock.plugin.managers.TradingManager;
 import com.skyblock.plugin.managers.TimeManager;
 import com.skyblock.plugin.managers.WeatherManager;
 import com.skyblock.plugin.collections.CollectionsListener;
-import com.skyblock.plugin.combat.CombatListener;
 import com.skyblock.plugin.hud.ActionBarManager;
 import com.skyblock.plugin.listeners.FarmingListener;
 import com.skyblock.plugin.command.dungeon.DungeonCommand;
@@ -150,7 +149,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.plugin.collections.CollectionManager.getInstance().register(this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.collections.CollectionListener(), this);
         getServer().getPluginManager().registerEvents(new FarmingListener(), this);
-        getServer().getPluginManager().registerEvents(new CombatListener(), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.plugin.combat.CombatManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new CollectionsListener(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.ProfileManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.PlayerDataManager.getInstance(), this);
