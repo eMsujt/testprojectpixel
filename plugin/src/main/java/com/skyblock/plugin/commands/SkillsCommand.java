@@ -6,6 +6,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,6 +29,7 @@ public final class SkillsCommand implements CommandExecutor {
         switch (args[0].toLowerCase()) {
             case "stats" -> handleStats(player);
             case "info"  -> handleInfo(player, args);
+            case "top"   -> handleTop(player, args);
             default      -> sendHelp(player);
         }
         return true;
@@ -72,6 +76,35 @@ public final class SkillsCommand implements CommandExecutor {
         }
     }
 
+    private void handleTop(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /skills top <skill>");
+            return;
+        }
+        String skill = args[1].toLowerCase();
+        if (!SkillsManager.SKILL_XP_TABLE.containsKey(skill)) {
+            player.sendMessage("Unknown skill: " + args[1]
+                    + ". Use /skills stats to list valid skills.");
+            return;
+        }
+
+        Map<UUID, Long> allXP = SkillsManager.getInstance().getAllSkillXP(skill);
+        List<Map.Entry<UUID, Long>> sorted = new ArrayList<>(allXP.entrySet());
+        sorted.sort(Comparator.comparingLong(Map.Entry<UUID, Long>::getValue).reversed());
+
+        player.sendMessage("=== Top " + capitalize(skill) + " Players ===");
+        int rank = 1;
+        for (Map.Entry<UUID, Long> entry : sorted) {
+            player.sendMessage(rank + ". " + entry.getKey()
+                    + " — XP: " + entry.getValue()
+                    + ", Level: " + computeLevel(skill, entry.getValue()));
+            if (++rank > 10) break;
+        }
+        if (sorted.isEmpty()) {
+            player.sendMessage("No data found.");
+        }
+    }
+
     private int computeLevel(String skill, long xp) {
         long[] table = SkillsManager.SKILL_XP_TABLE.get(skill);
         if (table == null) return 0;
@@ -97,5 +130,6 @@ public final class SkillsCommand implements CommandExecutor {
         player.sendMessage("=== Skills Commands ===");
         player.sendMessage("/skills stats        — show your level and XP for all skills");
         player.sendMessage("/skills info <skill> — show detailed info for a specific skill");
+        player.sendMessage("/skills top <skill>  — show top 10 players by XP for a skill");
     }
 }
