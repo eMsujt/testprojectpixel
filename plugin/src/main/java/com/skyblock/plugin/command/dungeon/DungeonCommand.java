@@ -6,9 +6,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public final class DungeonCommand implements CommandExecutor {
+
+    private static final List<String> SUBCOMMANDS = Arrays.asList("stats", "history");
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -17,6 +21,19 @@ public final class DungeonCommand implements CommandExecutor {
             return true;
         }
 
+        if (args.length > 0) {
+            switch (args[0].toLowerCase()) {
+                case "history" -> { handleHistory(player); return true; }
+                case "stats"   -> { handleStats(player);   return true; }
+                default        -> { sendHelp(player);       return true; }
+            }
+        }
+
+        handleStats(player);
+        return true;
+    }
+
+    private void handleStats(Player player) {
         UUID id = player.getUniqueId();
         DungeonManager manager = DungeonManager.getInstance();
 
@@ -36,6 +53,24 @@ public final class DungeonCommand implements CommandExecutor {
         if (activeRun != null) {
             player.sendMessage("  Active Run: " + activeRun.getType().name());
         }
-        return true;
+    }
+
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        List<String> history = DungeonManager.getInstance().getDungeonHistory(id);
+        player.sendMessage("=== Dungeon History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No dungeon history found.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
+    private void sendHelp(Player player) {
+        player.sendMessage("=== Dungeon Commands ===");
+        player.sendMessage("/dungeon stats    — view your dungeon stats");
+        player.sendMessage("/dungeon history  — view your dungeon run history");
     }
 }
