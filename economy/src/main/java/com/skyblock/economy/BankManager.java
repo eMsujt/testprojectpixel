@@ -54,6 +54,7 @@ public final class BankManager {
         long updated = Math.addExact(getBalance(playerId), amount);
         accounts.put(playerId, updated);
         record(new BankTransaction(UUID.randomUUID(), playerId, amount, type));
+        recordBankEvent(playerId, "Deposited " + amount + " coins (" + type + ")");
         return updated;
     }
 
@@ -74,6 +75,7 @@ public final class BankManager {
         }
         accounts.put(playerId, current - amount);
         record(new BankTransaction(UUID.randomUUID(), playerId, amount, type));
+        recordBankEvent(playerId, "Withdrew " + amount + " coins (" + type + ")");
         return true;
     }
 
@@ -98,6 +100,7 @@ public final class BankManager {
     public synchronized long clear(UUID playerId) {
         history.remove(playerId);
         Long removed = accounts.remove(playerId);
+        recordBankEvent(playerId, "Balance reset");
         return removed != null ? removed : 0L;
     }
 

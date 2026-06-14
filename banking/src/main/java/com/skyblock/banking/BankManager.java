@@ -146,6 +146,7 @@ public final class BankManager {
         BankAccount account = getAccount(playerId);
         long deposited = Math.min(amount, account.tier.getCoinCap() - account.balance);
         account.balance += deposited;
+        recordBankEvent(playerId, "Deposited " + deposited + " coins");
         return deposited;
     }
 
@@ -166,6 +167,7 @@ public final class BankManager {
             return false;
         }
         account.balance -= amount;
+        recordBankEvent(playerId, "Withdrew " + amount + " coins");
         return true;
     }
 
