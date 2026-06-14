@@ -15,6 +15,50 @@ import java.util.UUID;
  */
 public final class EnchantingManager {
 
+    /** Static catalogue: enchant name → {maxLevel, bookshelvesRequired}. */
+    public static final Map<String, int[]> ENCHANT_DATA;
+    static {
+        Map<String, int[]> m = new HashMap<>();
+        // Combat
+        m.put("SHARPNESS",          new int[]{7, 15});
+        m.put("CRITICAL",           new int[]{7, 12});
+        m.put("SMITE",              new int[]{7, 10});
+        m.put("BANE_OF_ARTHROPODS", new int[]{7, 10});
+        m.put("FIRST_STRIKE",       new int[]{4,  8});
+        m.put("GIANT_KILLER",       new int[]{7, 12});
+        m.put("ENDER_SLAYER",       new int[]{7, 15});
+        m.put("DRAGON_HUNTER",      new int[]{5, 15});
+        m.put("THUNDERLORD",        new int[]{7, 12});
+        m.put("EXECUTE",            new int[]{5, 10});
+        // Utility / Special
+        m.put("TELEKINESIS",        new int[]{1,  5});
+        m.put("LOOTING",            new int[]{4,  8});
+        m.put("POWER",              new int[]{5, 10});
+        m.put("SMELTING_TOUCH",     new int[]{1,  8});
+        m.put("MAGNET",             new int[]{1,  5});
+        m.put("LIFE_STEAL",         new int[]{5, 10});
+        // Fishing
+        m.put("LUCK_OF_THE_SEA",    new int[]{7, 10});
+        m.put("ANGLER",             new int[]{6, 12});
+        m.put("FRAIL",              new int[]{5, 10});
+        m.put("EXPERTISE",          new int[]{10, 15});
+        // Farming
+        m.put("CULTIVATING",        new int[]{10, 15});
+        m.put("GREEN_THUMB",        new int[]{5, 10});
+        m.put("HARVESTING",         new int[]{6, 10});
+        // Mining / Tool
+        m.put("EFFICIENCY",         new int[]{5, 10});
+        m.put("FORTUNE",            new int[]{4, 12});
+        m.put("SILK_TOUCH",         new int[]{1,  8});
+        // Armor
+        m.put("PROTECTION",         new int[]{7, 15});
+        m.put("THORNS",             new int[]{3,  8});
+        m.put("GROWTH",             new int[]{7, 12});
+        m.put("FEATHER_FALLING",    new int[]{7, 10});
+        m.put("REJUVENATE",         new int[]{5, 12});
+        ENCHANT_DATA = Collections.unmodifiableMap(m);
+    }
+
     private static final EnchantingManager INSTANCE = new EnchantingManager();
 
     /** Per-player enchantment levels keyed by enchantment name (lower-case). */
