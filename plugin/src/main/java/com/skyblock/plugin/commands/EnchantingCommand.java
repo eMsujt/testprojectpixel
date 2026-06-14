@@ -24,11 +24,12 @@ public final class EnchantingCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "list"  -> handleList(player);
-            case "get"   -> handleGet(player, args);
-            case "set"   -> handleSet(player, args);
-            case "apply" -> handleApply(player, args);
-            default      -> sendHelp(player);
+            case "list"    -> handleList(player);
+            case "get"     -> handleGet(player, args);
+            case "set"     -> handleSet(player, args);
+            case "apply"   -> handleApply(player, args);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -95,11 +96,26 @@ public final class EnchantingCommand implements CommandExecutor {
         player.sendMessage("Applied " + enchant + " at Level " + level + ".");
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        Map<String, Integer> history = EnchantingManager.getInstance().getEnchantHistory(id);
+
+        player.sendMessage("=== Enchanting History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("You have no enchanting history.");
+            return;
+        }
+        for (Map.Entry<String, Integer> entry : history.entrySet()) {
+            player.sendMessage("  " + entry.getKey() + " — applied " + entry.getValue() + " time(s)");
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Enchanting Commands ===");
         player.sendMessage("/skyblock enchanting list                        — list all your enchant levels");
         player.sendMessage("/skyblock enchanting get <enchant>               — show level for a specific enchant");
         player.sendMessage("/skyblock enchanting set <enchant> <level>       — set an enchant level");
         player.sendMessage("/skyblock enchanting apply <enchantment> <level> — apply an enchant (level 1–10)");
+        player.sendMessage("/skyblock enchanting history                     — show your enchanting history");
     }
 }
