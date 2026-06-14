@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * The main SkyBlock Menu hub.
  *
- * <p>A 54-slot chest menu titled {@code §6SkyBlock Menu} that replicates
+ * <p>A 54-slot chest menu titled {@code §aSkyBlock Menu} that replicates
  * Hypixel's layout: a {@link Material#GRAY_STAINED_GLASS_PANE} border framing a
  * grid of icons linking to the game's subsystems.</p>
  */
@@ -45,7 +45,7 @@ public class SkyBlockMenu extends Menu {
     }
 
     public SkyBlockMenu() {
-        super("§6SkyBlock Menu", 6);
+        super("§aSkyBlock Menu", 6);
     }
 
     @Override
