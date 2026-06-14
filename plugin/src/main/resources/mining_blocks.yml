@@ -1,0 +1,16 @@
+# Mining XP granted per block broken, read from the jar by MiningSkillListener.
+# Each key under `blocks` is a Bukkit Material name; its value is the Mining XP
+# awarded when a player breaks that ore or stone type. Unlisted blocks grant no
+# Mining XP. If this file is missing the listener falls back to its built-in
+# defaults.
+blocks:
+  STONE: 1
+  COBBLESTONE: 1
+  COAL_ORE: 5
+  IRON_ORE: 5
+  GOLD_ORE: 10
+  DIAMOND_ORE: 30
+  EMERALD_ORE: 30
+  LAPIS_ORE: 25
+  REDSTONE_ORE: 7
+  NETHER_QUARTZ_ORE: 10
