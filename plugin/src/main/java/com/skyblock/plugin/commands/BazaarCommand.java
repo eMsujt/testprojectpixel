@@ -132,11 +132,11 @@ public final class BazaarCommand implements CommandExecutor {
     private void handleHistory(Player player, String[] args) {
         UUID uuid = player.getUniqueId();
         List<String> history = BazaarManager.getInstance().getOrderHistory(uuid);
-        player.sendMessage("=== Bazaar Order History ===");
         if (history.isEmpty()) {
             player.sendMessage("You have no bazaar order history.");
             return;
         }
+        player.sendMessage("=== Bazaar Order History ===");
         for (int i = 0; i < history.size(); i++) {
             player.sendMessage((i + 1) + ". " + history.get(i));
         }
