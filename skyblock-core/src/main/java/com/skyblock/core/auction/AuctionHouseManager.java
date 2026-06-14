@@ -171,6 +171,7 @@ public final class AuctionHouseManager {
         AuctionListing listing = new AuctionListing(listingId, seller, item, itemName,
                 category, startingBid, type);
         listings.put(listingId, new ListingState(listing));
+        recordAuction(seller, "Listed " + itemName + " (" + type.getDisplayName() + ") starting at " + startingBid + " coins");
         return listingId;
     }
 
@@ -215,6 +216,7 @@ public final class AuctionHouseManager {
                         "amount must meet the BIN price " + state.listing.startingBid() + ": " + amount);
             }
             listings.remove(listingId);
+            recordAuction(bidder, "Purchased " + state.listing.itemName() + " for " + amount + " coins");
             return true;
         }
         boolean tooLow = state.highestBidder == null
