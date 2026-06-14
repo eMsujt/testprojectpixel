@@ -70,6 +70,7 @@ public final class PetsManager {
             activePets.remove(playerId);
         } else {
             activePets.put(playerId, pet);
+            recordPetEvent(playerId, "Equipped pet " + pet.getName() + " (level " + pet.getLevel() + ")");
         }
     }
 
