@@ -2,10 +2,12 @@ package com.skyblock.plugin.skills;
 
 import com.skyblock.plugin.managers.SkillsManager;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
@@ -45,6 +47,15 @@ public final class SkillsListener implements Listener {
             Map.entry(Material.DARK_OAK_LOG,   6L)
     );
 
+    private static final Map<EntityType, Long> MOB_XP = Map.ofEntries(
+            Map.entry(EntityType.ZOMBIE,       4L),
+            Map.entry(EntityType.SKELETON,     4L),
+            Map.entry(EntityType.SPIDER,       5L),
+            Map.entry(EntityType.CREEPER,      6L),
+            Map.entry(EntityType.ENDERMAN,     8L),
+            Map.entry(EntityType.BLAZE,        8L)
+    );
+
     private final SkillsManager skillsManager = SkillsManager.getInstance();
 
     @EventHandler
@@ -77,5 +88,17 @@ public final class SkillsListener implements Listener {
             return;
         }
         skillsManager.addSkillXP(event.getPlayer().getUniqueId(), "fishing", 6L);
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) {
+            return;
+        }
+        Long mobXp = MOB_XP.get(event.getEntityType());
+        if (mobXp != null) {
+            skillsManager.addSkillXP(killer.getUniqueId(), "combat", mobXp);
+        }
     }
 }
