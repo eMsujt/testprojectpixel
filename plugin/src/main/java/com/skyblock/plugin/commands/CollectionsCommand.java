@@ -6,7 +6,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -59,14 +58,14 @@ public final class CollectionsCommand implements CommandExecutor {
 
     private void handleHistory(Player player) {
         UUID id = player.getUniqueId();
-        List<String> history = CollectionsManager.getInstance().getUnlockHistory(id);
+        Map<String, Integer> history = CollectionsManager.getInstance().getCollectionHistory(id);
         player.sendMessage("=== Collection History ===");
         if (history.isEmpty()) {
             player.sendMessage("No collection history yet.");
             return;
         }
-        for (int i = 0; i < history.size(); i++) {
-            player.sendMessage((i + 1) + ". " + history.get(i));
+        for (Map.Entry<String, Integer> entry : history.entrySet()) {
+            player.sendMessage(entry.getKey() + ": " + entry.getValue());
         }
     }
 
