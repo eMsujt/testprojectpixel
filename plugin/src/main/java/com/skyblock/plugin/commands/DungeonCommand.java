@@ -24,10 +24,11 @@ public final class DungeonCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "stats"  -> handleStats(player);
-            case "floor"  -> handleFloor(player, args);
-            case "class"  -> handleClass(player, args);
-            default       -> sendHelp(player);
+            case "stats"       -> handleStats(player);
+            case "floor"       -> handleFloor(player, args);
+            case "floor-stats" -> handleFloorStats(player);
+            case "class"       -> handleClass(player, args);
+            default            -> sendHelp(player);
         }
         return true;
     }
@@ -83,6 +84,20 @@ public final class DungeonCommand implements CommandExecutor {
         }
     }
 
+    private void handleFloorStats(Player player) {
+        UUID id = player.getUniqueId();
+        Map<Integer, Integer> completions = DungeonManager.getInstance().getPlayerFloorCompletions(id);
+
+        player.sendMessage("=== Floor Stats ===");
+        if (completions.isEmpty()) {
+            player.sendMessage("No floor completions recorded.");
+        } else {
+            for (Map.Entry<Integer, Integer> entry : completions.entrySet()) {
+                player.sendMessage("  F" + entry.getKey() + " — " + entry.getValue() + "x");
+            }
+        }
+    }
+
     private static final java.util.List<String> VALID_CLASSES =
             java.util.Arrays.asList("Healer", "Mage", "Berserker", "Archer", "Tank");
 
@@ -114,6 +129,7 @@ public final class DungeonCommand implements CommandExecutor {
         player.sendMessage("/dungeon              — show your dungeon stats");
         player.sendMessage("/dungeon stats        — show current floor, highest floor, and completions");
         player.sendMessage("/dungeon floor <n>    — show completions and best time for floor N (1-7)");
+        player.sendMessage("/dungeon floor-stats   — show all floor completion counts");
         player.sendMessage("/dungeon class <name> — set your dungeon class (Healer, Mage, Berserker, Archer, Tank)");
     }
 }
