@@ -34,7 +34,7 @@ public final class CalendarMenu implements InventoryHolder, Listener {
 
     public CalendarMenu(Plugin plugin) {
         this.plugin = plugin;
-        this.inventory = Bukkit.createInventory(this, 54, "§aSkyBlock Calendar");
+        this.inventory = Bukkit.createInventory(this, 36, "§bSkyBlock Calendar");
         Bukkit.getPluginManager().registerEvents(this, plugin);
         build();
     }
@@ -50,9 +50,9 @@ public final class CalendarMenu implements InventoryHolder, Listener {
 
     private void build() {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
+        for (int slot = 0; slot < 36; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 27 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
@@ -71,7 +71,7 @@ public final class CalendarMenu implements InventoryHolder, Listener {
                     "§7Year: §a" + year));
             date.setItemMeta(meta);
         }
-        inventory.setItem(22, date);
+        inventory.setItem(13, date);
     }
 
     @EventHandler
