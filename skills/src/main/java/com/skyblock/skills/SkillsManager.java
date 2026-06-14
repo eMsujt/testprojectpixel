@@ -1,7 +1,10 @@
 package com.skyblock.skills;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,6 +40,7 @@ public final class SkillsManager {
     }
 
     private final SkillManager delegate = new SkillManager();
+    private final Map<UUID, List<String>> skillsHistory = new HashMap<>();
 
     /**
      * Adds XP to the player's progress for the given skill.
@@ -91,5 +95,17 @@ public final class SkillsManager {
      */
     public boolean reset(UUID playerId) {
         return delegate.reset(playerId);
+    }
+
+    public void recordSkillEvent(UUID playerUuid, String summary) {
+        skillsHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getSkillsHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(skillsHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllSkillsHistory() {
+        return Collections.unmodifiableMap(skillsHistory);
     }
 }

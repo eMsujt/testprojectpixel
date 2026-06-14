@@ -1,5 +1,6 @@
 package com.skyblock.core.skills;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -37,6 +38,7 @@ public final class SkillsManager {
 
     private final Map<UUID, Map<String, Integer>> skillLevels = new HashMap<>();
     private final Map<UUID, Map<String, Long>> skillXp = new HashMap<>();
+    private final Map<UUID, List<String>> skillsHistory = new HashMap<>();
 
     public static final List<String> SKILLS = List.of(
             "farming", "mining", "combat", "foraging", "fishing",
@@ -66,5 +68,17 @@ public final class SkillsManager {
 
     public Map<String, Long> getSkillXp(UUID uuid) {
         return Collections.unmodifiableMap(skillXp.computeIfAbsent(uuid, k -> new HashMap<>()));
+    }
+
+    public void recordSkillEvent(UUID playerUuid, String summary) {
+        skillsHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getSkillsHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(skillsHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllSkillsHistory() {
+        return Collections.unmodifiableMap(skillsHistory);
     }
 }
