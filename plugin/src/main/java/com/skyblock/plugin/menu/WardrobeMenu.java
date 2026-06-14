@@ -14,15 +14,12 @@ public final class WardrobeMenu {
     }
 
     private Inventory buildMenu() {
-        Inventory inv = Bukkit.createInventory(null, 54, "§aWardrobe");
+        Inventory inv = Bukkit.createInventory(null, 54, "§6Wardrobe");
 
-        // 9 armor-set columns, each occupying one of the 9 slots across 4 rows:
-        // helmet (row 1), chestplate (row 2), leggings (row 3), boots (row 4).
-        for (int column = 0; column < 9; column++) {
-            inv.setItem(column,      makeItem(Material.LEATHER_HELMET,     "§aArmor Set " + (column + 1)));
-            inv.setItem(column + 9,  makeItem(Material.LEATHER_CHESTPLATE, "§aArmor Set " + (column + 1)));
-            inv.setItem(column + 18, makeItem(Material.LEATHER_LEGGINGS,   "§aArmor Set " + (column + 1)));
-            inv.setItem(column + 27, makeItem(Material.LEATHER_BOOTS,      "§aArmor Set " + (column + 1)));
+        // 20 armor-set slots, each occupying a single slot, laid out across the
+        // three interior rows (slots 9–28) matching Hypixel's wardrobe page.
+        for (int set = 0; set < 20; set++) {
+            inv.setItem(9 + set, makeItem(Material.LEATHER_CHESTPLATE, "§6Armor Set " + (set + 1)));
         }
 
         return inv;
