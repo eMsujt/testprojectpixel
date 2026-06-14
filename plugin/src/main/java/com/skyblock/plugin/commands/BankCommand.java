@@ -1,12 +1,10 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.core.bank.BankManager;
+import com.skyblock.plugin.managers.BankManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 public final class BankCommand implements CommandExecutor {
 
@@ -32,63 +30,64 @@ public final class BankCommand implements CommandExecutor {
     }
 
     private void handleBalance(Player player) {
-        UUID id = player.getUniqueId();
-        BankManager manager = BankManager.getInstance();
-        double balance = manager.getBalance(id);
-        BankManager.BankTier tier = manager.getTier(id);
-        BankManager.BankType type = manager.getBankType(id);
-        player.sendMessage("=== Bank ===");
-        player.sendMessage("Balance: " + balance + " coins");
-        player.sendMessage("Tier: " + tier.getDisplayName());
-        player.sendMessage("Type: " + type.getDisplayName());
+        double balance = BankManager.getInstance().getBalance(player.getUniqueId());
+        player.sendMessage(String.format("Your bank balance: %.1f coins", balance));
     }
 
     private void handleDeposit(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("Usage: /skyblock bank deposit <amount>");
+            player.sendMessage("Usage: /bank deposit <amount>");
             return;
         }
+        double amount;
         try {
-            double amount = Double.parseDouble(args[1]);
-            if (amount <= 0) {
-                player.sendMessage("Amount must be greater than 0.");
-                return;
-            }
-            BankManager manager = BankManager.getInstance();
-            manager.deposit(player.getUniqueId(), amount);
-            player.sendMessage("Deposited " + amount + " coins. Balance: " + manager.getBalance(player.getUniqueId()));
+            amount = Double.parseDouble(args[1]);
         } catch (NumberFormatException e) {
             player.sendMessage("Invalid amount: " + args[1]);
-        } catch (IllegalArgumentException e) {
-            player.sendMessage(e.getMessage());
+            return;
         }
+        if (amount <= 0) {
+            player.sendMessage("Deposit amount must be positive.");
+            return;
+        }
+        BankManager manager = BankManager.getInstance();
+        manager.deposit(player.getUniqueId(), amount);
+        player.sendMessage(String.format("Deposited %.1f coins. New balance: %.1f coins",
+                amount, manager.getBalance(player.getUniqueId())));
     }
 
     private void handleWithdraw(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("Usage: /skyblock bank withdraw <amount>");
+            player.sendMessage("Usage: /bank withdraw <amount>");
             return;
         }
+        double amount;
         try {
-            double amount = Double.parseDouble(args[1]);
-            if (amount <= 0) {
-                player.sendMessage("Amount must be greater than 0.");
-                return;
-            }
-            BankManager manager = BankManager.getInstance();
-            manager.withdraw(player.getUniqueId(), amount);
-            player.sendMessage("Withdrew " + amount + " coins. Balance: " + manager.getBalance(player.getUniqueId()));
+            amount = Double.parseDouble(args[1]);
         } catch (NumberFormatException e) {
             player.sendMessage("Invalid amount: " + args[1]);
-        } catch (IllegalArgumentException e) {
-            player.sendMessage(e.getMessage());
+            return;
         }
+        if (amount <= 0) {
+            player.sendMessage("Withdrawal amount must be positive.");
+            return;
+        }
+        BankManager manager = BankManager.getInstance();
+        double current = manager.getBalance(player.getUniqueId());
+        if (amount > current) {
+            player.sendMessage(String.format("Insufficient funds. Balance: %.1f coins", current));
+            return;
+        }
+        manager.withdraw(player.getUniqueId(), amount);
+        player.sendMessage(String.format("Withdrew %.1f coins. New balance: %.1f coins",
+                amount, manager.getBalance(player.getUniqueId())));
     }
 
     private void sendHelp(Player player) {
         player.sendMessage("=== Bank Commands ===");
-        player.sendMessage("/skyblock bank balance           — show your balance, tier, and type");
-        player.sendMessage("/skyblock bank deposit <amount>  — deposit coins into your bank");
-        player.sendMessage("/skyblock bank withdraw <amount> — withdraw coins from your bank");
+        player.sendMessage("/bank                   — show your balance");
+        player.sendMessage("/bank balance           — show your balance");
+        player.sendMessage("/bank deposit <amount>  — deposit coins");
+        player.sendMessage("/bank withdraw <amount> — withdraw coins");
     }
 }
