@@ -1,11 +1,15 @@
 package com.skyblock.plugin.commands;
 
 import com.skyblock.plugin.managers.SlayerManager;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,6 +29,7 @@ public final class SlayerCommand implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
             case "stats" -> handleStats(player);
+            case "top"   -> handleTop(player, args);
             default      -> sendHelp(player);
         }
         return true;
@@ -67,9 +72,34 @@ public final class SlayerCommand implements CommandExecutor {
         }
     }
 
+    private void handleTop(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /slayer top <type>");
+            return;
+        }
+        String type = args[1].toLowerCase();
+        Map<UUID, Long> allXP = SlayerManager.getInstance().getAllPlayerXpForType(type);
+        List<Map.Entry<UUID, Long>> sorted = new ArrayList<>(allXP.entrySet());
+        sorted.sort(Comparator.comparingLong(Map.Entry<UUID, Long>::getValue).reversed());
+
+        player.sendMessage("=== Top " + type + " Slayer Players ===");
+        if (sorted.isEmpty()) {
+            player.sendMessage("No data found for type: " + type);
+            return;
+        }
+        int rank = 1;
+        for (Map.Entry<UUID, Long> entry : sorted) {
+            String name = Bukkit.getOfflinePlayer(entry.getKey()).getName();
+            if (name == null) name = entry.getKey().toString();
+            player.sendMessage(rank + ". " + name + " — XP: " + entry.getValue());
+            if (++rank > 10) break;
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Slayer Commands ===");
         player.sendMessage("/slayer        — show your total slayer kills and XP");
         player.sendMessage("/slayer stats  — show per-boss kills and XP breakdown");
+        player.sendMessage("/slayer top <type> — show top 10 players by XP for a slayer type");
     }
 }

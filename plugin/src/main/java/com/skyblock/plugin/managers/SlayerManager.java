@@ -62,6 +62,17 @@ public final class SlayerManager {
         return Collections.unmodifiableMap(slayerXp);
     }
 
+    public Map<UUID, Long> getAllPlayerXpForType(String bossType) {
+        Map<UUID, Long> result = new HashMap<>();
+        for (Map.Entry<UUID, Map<String, Long>> entry : slayerXp.entrySet()) {
+            long xp = entry.getValue().getOrDefault(bossType, 0L);
+            if (xp > 0) {
+                result.put(entry.getKey(), xp);
+            }
+        }
+        return result;
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "slayer.yml");
         if (!file.exists()) {
