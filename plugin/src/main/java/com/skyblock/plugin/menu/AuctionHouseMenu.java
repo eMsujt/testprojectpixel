@@ -13,17 +13,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public final class AuctionHouseMenu implements InventoryHolder, Listener {
 
+    private final Inventory inventory = Bukkit.createInventory(this, 54, "§6Auction House");
+
     public void open(Player player) {
         player.openInventory(build());
     }
 
     @Override
     public Inventory getInventory() {
-        return Bukkit.createInventory(this, 54, "§6Auction House");
+        return inventory;
     }
 
     private Inventory build() {
-        Inventory inv = Bukkit.createInventory(this, 54, "§6Auction House");
+        Inventory inv = inventory;
 
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
