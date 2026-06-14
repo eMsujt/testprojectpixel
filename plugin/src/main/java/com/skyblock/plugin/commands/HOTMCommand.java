@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public final class HOTMCommand implements CommandExecutor {
             case "set"          -> handleSet(player, args);
             case "stats"        -> handleStats(player);
             case "powder-stats" -> handlePowderStats(player);
+            case "history"      -> handleHistory(player);
             default             -> sendHelp(player);
         }
         return true;
@@ -77,10 +79,24 @@ public final class HOTMCommand implements CommandExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        UUID id = player.getUniqueId();
+        List<String> history = HOTMManager.getInstance().getUpgradeHistory(id);
+        player.sendMessage("=== HOTM Upgrade History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No upgrades recorded.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== HOTM Commands ===");
         player.sendMessage("/skyblock hotm level        — show your Heart of the Mountain level");
         player.sendMessage("/skyblock hotm set <level>  — set your HOTM level (1–7)");
         player.sendMessage("/skyblock hotm powder-stats — show powder collected by type");
+        player.sendMessage("/skyblock hotm history      — show your HOTM upgrade history");
     }
 }
