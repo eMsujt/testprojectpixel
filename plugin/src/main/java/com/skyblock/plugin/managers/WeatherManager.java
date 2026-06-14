@@ -29,6 +29,17 @@ public final class WeatherManager {
         this.activeWeather = weather;
     }
 
+    public void tickWeather(long skyblockTick) {
+        double t = (Math.sin(skyblockTick * Math.PI / 12000.0) + 1.0) / 2.0;
+        if (t < 0.6) {
+            activeWeather = WeatherType.CLEAR;
+        } else if (t < 0.85) {
+            activeWeather = WeatherType.RAIN;
+        } else {
+            activeWeather = WeatherType.STORM;
+        }
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "weather.yml");
         if (!file.exists()) {
