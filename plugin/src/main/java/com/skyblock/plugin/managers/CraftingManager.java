@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CraftingManager {
 
@@ -16,7 +16,7 @@ public final class CraftingManager {
         return INSTANCE;
     }
 
-    public void registerRecipes(Plugin plugin) {
+    public void registerRecipes(JavaPlugin plugin) {
         registerEnchantedCobblestone(plugin);
         registerEnchantedOakLog(plugin);
         registerEnchantedIronIngot(plugin);
@@ -24,7 +24,7 @@ public final class CraftingManager {
         registerEnchantedDiamond(plugin);
     }
 
-    private void registerEnchantedCobblestone(Plugin plugin) {
+    private void registerEnchantedCobblestone(JavaPlugin plugin) {
         NamespacedKey key = new NamespacedKey(plugin, "enchanted_cobblestone");
         ShapedRecipe recipe = new ShapedRecipe(key, new ItemStack(Material.COBBLESTONE, 1));
         recipe.shape("AAA", "AAA", "AAA");
@@ -32,7 +32,7 @@ public final class CraftingManager {
         plugin.getServer().addRecipe(recipe);
     }
 
-    private void registerEnchantedOakLog(Plugin plugin) {
+    private void registerEnchantedOakLog(JavaPlugin plugin) {
         NamespacedKey key = new NamespacedKey(plugin, "enchanted_oak_log");
         ShapedRecipe recipe = new ShapedRecipe(key, new ItemStack(Material.OAK_LOG, 1));
         recipe.shape("AAA", "AAA", "AAA");
@@ -40,7 +40,7 @@ public final class CraftingManager {
         plugin.getServer().addRecipe(recipe);
     }
 
-    private void registerEnchantedIronIngot(Plugin plugin) {
+    private void registerEnchantedIronIngot(JavaPlugin plugin) {
         NamespacedKey key = new NamespacedKey(plugin, "enchanted_iron_ingot");
         ShapedRecipe recipe = new ShapedRecipe(key, new ItemStack(Material.IRON_INGOT, 1));
         recipe.shape("AAA", "AAA", "AAA");
@@ -48,7 +48,7 @@ public final class CraftingManager {
         plugin.getServer().addRecipe(recipe);
     }
 
-    private void registerEnchantedGoldIngot(Plugin plugin) {
+    private void registerEnchantedGoldIngot(JavaPlugin plugin) {
         NamespacedKey key = new NamespacedKey(plugin, "enchanted_gold_ingot");
         ShapedRecipe recipe = new ShapedRecipe(key, new ItemStack(Material.GOLD_INGOT, 1));
         recipe.shape("AAA", "AAA", "AAA");
@@ -56,7 +56,7 @@ public final class CraftingManager {
         plugin.getServer().addRecipe(recipe);
     }
 
-    private void registerEnchantedDiamond(Plugin plugin) {
+    private void registerEnchantedDiamond(JavaPlugin plugin) {
         NamespacedKey key = new NamespacedKey(plugin, "enchanted_diamond");
         ShapedRecipe recipe = new ShapedRecipe(key, new ItemStack(Material.DIAMOND, 1));
         recipe.shape("AAA", "AAA", "AAA");
