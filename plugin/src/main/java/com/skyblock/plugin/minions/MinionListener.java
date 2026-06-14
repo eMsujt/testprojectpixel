@@ -1,6 +1,5 @@
 package com.skyblock.plugin.minions;
 
-import com.skyblock.core.minion.MinionManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
