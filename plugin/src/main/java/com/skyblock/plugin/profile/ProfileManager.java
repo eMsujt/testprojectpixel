@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Singleton in-memory registry of {@link PlayerProfile} instances keyed by
@@ -185,6 +186,63 @@ public final class ProfileManager implements Listener {
                         "Failed to save profile for " + uuid + ": " + e.getMessage());
             }
         });
+    }
+
+    /**
+     * Persists the given player's profile to
+     * {@code plugins/SkyBlock/profiles/<uuid>.yml} without blocking the main
+     * thread, returning a future that completes once the write has finished.
+     *
+     * <p>An immutable YAML snapshot is built on the calling (main) thread from
+     * the profile accessors, then written to disk on an async scheduler thread so
+     * the profile is only ever read on the main thread. The returned future
+     * completes normally when the snapshot is written, exceptionally if the write
+     * fails, and immediately (with {@code null}) when no profile is registered for
+     * the UUID or the plugin is not enabled.</p>
+     *
+     * @param uuid unique identifier of the player to persist
+     * @return a future completed when the profile has been written to disk
+     */
+    public CompletableFuture<Void> saveProfile(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        PlayerProfile profile = profiles.get(uuid);
+        if (profile == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        SkyBlockPlugin plugin = this.plugin;
+        if (plugin == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        YamlConfiguration cfg = new YamlConfiguration();
+        cfg.set("purse", profile.getPurse());
+        cfg.set("bank", profile.getBank());
+        for (Map.Entry<String, Long> entry : profile.getSkillXp().entrySet()) {
+            cfg.set("skills." + entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
+            cfg.set("collections." + entry.getKey(), entry.getValue());
+        }
+
+        File dir = new File(plugin.getDataFolder(), "profiles");
+        File file = new File(dir, uuid + ".yml");
+
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            try {
+                cfg.save(file);
+                future.complete(null);
+            } catch (IOException e) {
+                plugin.getLogger().warning(
+                        "Failed to save profile for " + uuid + ": " + e.getMessage());
+                future.completeExceptionally(e);
+            }
+        });
+        return future;
     }
 
     /**
