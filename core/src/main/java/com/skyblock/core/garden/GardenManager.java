@@ -12,6 +12,22 @@ public final class GardenManager {
     private final Map<UUID, Integer> unlockedPlots = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> cropLevels = new HashMap<>();
 
+    /** Static metadata for each SkyBlock garden crop: {baseYield, maxUpgradeLevel, milestoneCount}. */
+    public static final Map<String, int[]> CROP_DATA;
+    static {
+        Map<String, int[]> m = new HashMap<>();
+        m.put("wheat",      new int[]{1, 12, 25});
+        m.put("carrot",     new int[]{3, 12, 25});
+        m.put("potato",     new int[]{3, 12, 25});
+        m.put("melon",      new int[]{4, 12, 25});
+        m.put("pumpkin",    new int[]{1, 12, 25});
+        m.put("sugarcane",  new int[]{2, 12, 25});
+        m.put("cocoa",      new int[]{3, 12, 25});
+        m.put("cactus",     new int[]{2, 12, 25});
+        m.put("mushroom",   new int[]{1, 12, 25});
+        CROP_DATA = Collections.unmodifiableMap(m);
+    }
+
     private static final List<String> DEFAULT_CROPS = List.of(
             "wheat", "carrot", "potato", "melon", "pumpkin",
             "cactus", "sugarcane", "mushroom", "cocoa", "nether_wart"
