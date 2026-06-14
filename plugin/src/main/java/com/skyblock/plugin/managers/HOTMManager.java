@@ -28,6 +28,7 @@ public final class HOTMManager {
     private final Map<UUID, Integer> gemstonePowder = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> powderCollected = new HashMap<>();
     private final Map<UUID, List<String>> upgradeHistory = new HashMap<>();
+    private final Map<UUID, List<String>> hotmHistory    = new HashMap<>();
 
     private HOTMManager() {}
 
@@ -132,6 +133,18 @@ public final class HOTMManager {
         return Collections.unmodifiableMap(upgradeHistory);
     }
 
+    public void recordHotmEvent(UUID playerId, String summary) {
+        hotmHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getHotmHistory(UUID playerId) {
+        return Collections.unmodifiableList(hotmHistory.getOrDefault(playerId, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllHotmHistory() {
+        return Collections.unmodifiableMap(hotmHistory);
+    }
+
     public Map<UUID, Integer> getHotmLevels() {
         return Collections.unmodifiableMap(hotmLevel);
     }
@@ -150,6 +163,7 @@ public final class HOTMManager {
         gemstonePowder.clear();
         powderCollected.clear();
         upgradeHistory.clear();
+        hotmHistory.clear();
         if (cfg.isConfigurationSection("hotmLevel")) {
             for (String uuidKey : cfg.getConfigurationSection("hotmLevel").getKeys(false)) {
                 try {
@@ -233,6 +247,19 @@ public final class HOTMManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("hotmHistory")) {
+            for (String uuidKey : cfg.getConfigurationSection("hotmHistory").getKeys(false)) {
+                try {
+                    UUID id = UUID.fromString(uuidKey);
+                    List<String> entries = cfg.getStringList("hotmHistory." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        hotmHistory.put(id, new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -263,6 +290,9 @@ public final class HOTMManager {
         }
         for (Map.Entry<UUID, List<String>> entry : upgradeHistory.entrySet()) {
             cfg.set("upgradeHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : hotmHistory.entrySet()) {
+            cfg.set("hotmHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
