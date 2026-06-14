@@ -138,6 +138,7 @@ public final class IslandManager {
 
     /** Per-player IslandData records. */
     private final Map<UUID, IslandData> islandData = new HashMap<>();
+    private final Map<UUID, List<String>> islandHistory = new HashMap<>();
 
     /** owner UUID → island */
     private final Map<UUID, SkyBlockIsland> islands = new HashMap<>();
@@ -172,6 +173,7 @@ public final class IslandManager {
                 .createWorld();
         islandWorlds.put(owner, world);
 
+        recordIslandEvent(owner, "Island created");
         return island;
     }
 
@@ -222,6 +224,7 @@ public final class IslandManager {
         }
         island.members.add(invitee);
         memberIndex.put(invitee, owner);
+        recordIslandEvent(owner, "Member added: " + invitee);
         return true;
     }
 
@@ -240,6 +243,7 @@ public final class IslandManager {
         boolean removed = island.members.remove(target);
         if (removed) {
             memberIndex.remove(target);
+            recordIslandEvent(owner, "Member removed: " + target);
         }
         return removed;
     }
@@ -281,6 +285,7 @@ public final class IslandManager {
             return false;
         }
         island.upgrades.put(upgrade, current + 1);
+        recordIslandEvent(owner, "Upgrade applied: " + upgrade.getDisplayName() + " -> " + (current + 1));
         return true;
     }
 
@@ -309,6 +314,18 @@ public final class IslandManager {
         Objects.requireNonNull(owner, "owner");
         SkyBlockIsland island = islands.get(owner);
         return island == null ? null : island.getWarpName();
+    }
+
+    public void recordIslandEvent(UUID playerUuid, String summary) {
+        islandHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getIslandHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(islandHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllIslandHistory() {
+        return Collections.unmodifiableMap(islandHistory);
     }
 
     // -------------------------------------------------------------------------
@@ -482,6 +499,7 @@ public final class IslandManager {
         if (world != null) {
             Bukkit.unloadWorld(world, false);
         }
+        recordIslandEvent(owner, "Island deleted");
         return true;
     }
 }

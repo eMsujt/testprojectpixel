@@ -2,9 +2,11 @@ package com.skyblock.core.island;
 
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -44,6 +46,19 @@ public class IslandManager {
 
     private final Map<UUID, Location> islandHomes = new HashMap<>();
     private final Map<UUID, Map<String, Integer>> islandUpgrades = new HashMap<>();
+    private final Map<UUID, List<String>> islandHistory = new HashMap<>();
+
+    public void recordIslandEvent(UUID playerUuid, String summary) {
+        islandHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getIslandHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(islandHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllIslandHistory() {
+        return Collections.unmodifiableMap(islandHistory);
+    }
 
     public void setHome(UUID player, Location location) {
         Objects.requireNonNull(player, "player");
@@ -75,6 +90,7 @@ public class IslandManager {
         Objects.requireNonNull(player, "player");
         Objects.requireNonNull(type, "type");
         islandUpgrades.computeIfAbsent(player, k -> new HashMap<>()).put(type, level);
+        recordIslandEvent(player, "Upgrade set: " + type + " -> " + level);
     }
 
     public Map<String, Integer> getUpgrades(UUID player) {

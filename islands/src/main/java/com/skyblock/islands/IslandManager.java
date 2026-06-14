@@ -97,6 +97,7 @@ public final class IslandManager {
     public final ConcurrentHashMap<UUID, Location> islandHomes = new ConcurrentHashMap<>();
     /** Levels loaded from disk; consumed by {@link #createIsland} to restore saved levels. */
     private final Map<UUID, Integer> islandLevels = new HashMap<>();
+    private final Map<UUID, List<String>> islandHistory = new HashMap<>();
 
     private IslandManager() {
     }
@@ -125,6 +126,7 @@ public final class IslandManager {
         }
         PlayerIsland island = new PlayerIsland(owner, spawnLocation, islandLevels.getOrDefault(owner, 1), Set.of());
         islands.put(owner, island);
+        recordIslandEvent(owner, "Island created");
         return island;
     }
 
@@ -162,6 +164,7 @@ public final class IslandManager {
         PlayerIsland updated =
                 new PlayerIsland(island.owner(), island.spawnLocation(), level, island.members());
         islands.put(owner, updated);
+        recordIslandEvent(owner, "Island level set to: " + level);
         return updated;
     }
 
@@ -185,6 +188,7 @@ public final class IslandManager {
         PlayerIsland updated =
                 new PlayerIsland(island.owner(), island.spawnLocation(), island.level(), members);
         islands.put(owner, updated);
+        recordIslandEvent(owner, "Member added: " + playerId);
         return updated;
     }
 
@@ -203,6 +207,7 @@ public final class IslandManager {
         PlayerIsland updated =
                 new PlayerIsland(island.owner(), island.spawnLocation(), island.level(), members);
         islands.put(owner, updated);
+        recordIslandEvent(owner, "Member removed: " + playerId);
         return updated;
     }
 
@@ -213,7 +218,11 @@ public final class IslandManager {
      * @return {@code true} if the player owned an island
      */
     public boolean deleteIsland(UUID owner) {
-        return islands.remove(owner) != null;
+        boolean removed = islands.remove(owner) != null;
+        if (removed) {
+            recordIslandEvent(owner, "Island deleted");
+        }
+        return removed;
     }
 
     /**
@@ -238,6 +247,18 @@ public final class IslandManager {
         Objects.requireNonNull(owner, "owner");
         Location loc = islandHomes.get(owner);
         return loc == null ? Optional.empty() : Optional.of(loc.clone());
+    }
+
+    public void recordIslandEvent(UUID playerUuid, String summary) {
+        islandHistory.computeIfAbsent(playerUuid, k -> new ArrayList<>()).add(summary);
+    }
+
+    public List<String> getIslandHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(islandHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllIslandHistory() {
+        return Collections.unmodifiableMap(islandHistory);
     }
 
     public void load(File dataFolder) {
