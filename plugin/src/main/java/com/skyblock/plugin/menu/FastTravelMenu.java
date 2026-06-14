@@ -16,7 +16,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, 54, "§9Fast Travel");
+        this.inventory = Bukkit.createInventory(this, 27, "§bFast Travel");
         build();
     }
 
@@ -31,9 +31,9 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
 
     private void build() {
         ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
+        for (int slot = 0; slot < 27; slot++) {
             int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 18 || column == 0 || column == 8) {
                 inventory.setItem(slot, pane);
             }
         }
@@ -41,7 +41,7 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
         // Top row — Hub
         inventory.setItem(4,  makeItem(Material.COMPASS,          "§eHub"));
 
-        // Row 1 — surface islands
+        // Middle row — destinations
         inventory.setItem(10, makeItem(Material.HAY_BLOCK,        "§aFarming Islands"));
         inventory.setItem(11, makeItem(Material.JUNGLE_SAPLING,   "§aThe Park"));
         inventory.setItem(12, makeItem(Material.COBWEB,           "§7Spider's Den"));
@@ -49,12 +49,6 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
         inventory.setItem(14, makeItem(Material.END_STONE,        "§5The End"));
         inventory.setItem(15, makeItem(Material.GOLD_ORE,         "§6Gold Mine"));
         inventory.setItem(16, makeItem(Material.COBBLESTONE,      "§7Deep Caverns"));
-
-        // Row 2 — underground & dungeons
-        inventory.setItem(19, makeItem(Material.DIORITE,          "§fDwarven Mines"));
-        inventory.setItem(20, makeItem(Material.AMETHYST_SHARD,   "§5Crystal Hollows"));
-        inventory.setItem(22, makeItem(Material.NETHER_STAR,      "§cCrimson Isle"));
-        inventory.setItem(23, makeItem(Material.BEACON,           "§5Dungeon Hub"));
     }
 
     @EventHandler
