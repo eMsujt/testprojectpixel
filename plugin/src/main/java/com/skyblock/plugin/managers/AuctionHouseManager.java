@@ -19,6 +19,7 @@ public final class AuctionHouseManager {
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
 
     private final Map<UUID, List<AuctionListing>> active = new HashMap<>();
+    private final Map<UUID, List<String>> bidHistory = new HashMap<>();
 
     private AuctionHouseManager() {}
 
@@ -98,6 +99,19 @@ public final class AuctionHouseManager {
         return false;
     }
 
+    public void recordBid(UUID bidder, String itemId, int bidAmount) {
+        List<String> history = bidHistory.computeIfAbsent(bidder, k -> new ArrayList<>());
+        history.add(0, itemId + ":" + bidAmount);
+    }
+
+    public List<String> getBidHistory(UUID bidder) {
+        return bidHistory.getOrDefault(bidder, Collections.emptyList());
+    }
+
+    public Map<UUID, List<String>> getAllBidHistory() {
+        return Collections.unmodifiableMap(bidHistory);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "auction_house.yml");
         if (!file.exists()) {
@@ -105,6 +119,16 @@ public final class AuctionHouseManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         active.clear();
+        bidHistory.clear();
+        if (cfg.isConfigurationSection("bidHistory")) {
+            for (String key : cfg.getConfigurationSection("bidHistory").getKeys(false)) {
+                try {
+                    UUID bidder = UUID.fromString(key);
+                    List<String> entries = cfg.getStringList("bidHistory." + key);
+                    bidHistory.put(bidder, new ArrayList<>(entries));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
         if (cfg.isConfigurationSection("active")) {
             for (String sellerKey : cfg.getConfigurationSection("active").getKeys(false)) {
                 try {
@@ -149,6 +173,9 @@ public final class AuctionHouseManager {
                 }
                 cfg.set(prefix + "endTime", listing.endTime());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : bidHistory.entrySet()) {
+            cfg.set("bidHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
