@@ -31,8 +31,9 @@ public final class AuctionHouseCommand implements CommandExecutor {
             case "bid"    -> handleBid(player, args);
             case "cancel" -> handleCancel(player, args);
             case "search" -> handleSearch(player, args);
-            case "my"     -> handleMy(player);
-            default       -> sendHelp(player);
+            case "my"      -> handleMy(player);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -159,6 +160,18 @@ public final class AuctionHouseCommand implements CommandExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = AuctionHouseManager.getInstance().getAuctionHistory(player.getUniqueId());
+        player.sendMessage("=== Auction History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("You have no auction history.");
+            return;
+        }
+        for (String entry : history) {
+            player.sendMessage(entry);
+        }
+    }
+
     private AuctionHouseManager.AuctionListing findListing(Player player, String input) {
         UUID id = parseId(player, input);
         if (id == null) return null;
@@ -190,5 +203,6 @@ public final class AuctionHouseCommand implements CommandExecutor {
         player.sendMessage("/auctionhouse cancel <id>              — cancel your listing");
         player.sendMessage("/auctionhouse search <query>           — search listings by name");
         player.sendMessage("/auctionhouse my                       — show your active listings");
+        player.sendMessage("/auctionhouse history                  — show your auction history");
     }
 }
