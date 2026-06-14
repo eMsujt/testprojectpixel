@@ -6,6 +6,9 @@ import com.skyblock.core.crafting.SkyBlockRecipeManager.ShapelessRecipe;
 import com.skyblock.core.crafting.SkyBlockRecipeManager.SkyBlockRecipe;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.List;
 
-public final class RecipeBookMenu implements InventoryHolder {
+public final class RecipeBookMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;
 
@@ -40,6 +43,13 @@ public final class RecipeBookMenu implements InventoryHolder {
             }
             inventory.setItem(slot, makeRecipeItem(recipe));
             slot++;
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof RecipeBookMenu) {
+            event.setCancelled(true);
         }
     }
 
