@@ -10,13 +10,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
 
 /**
  * Awards Farming XP when a player breaks a fully grown crop. Age-based crops
  * (wheat, carrots, potatoes, etc.) only grant XP once mature; block-style crops
- * such as pumpkins, melons and sugar cane grant XP on every break.
+ * such as pumpkins, melons and sugar cane grant XP on every break. Also awards
+ * Foraging XP for chopping logs and Fishing XP for reeling in a catch.
  */
 public final class SkillXPListener implements Listener {
 
@@ -35,21 +37,47 @@ public final class SkillXPListener implements Listener {
             Map.entry(Material.RED_MUSHROOM,   6L)
     );
 
+    private static final Map<Material, Long> FORAGING_XP = Map.ofEntries(
+            Map.entry(Material.OAK_LOG,      6L),
+            Map.entry(Material.BIRCH_LOG,    6L),
+            Map.entry(Material.SPRUCE_LOG,   6L),
+            Map.entry(Material.JUNGLE_LOG,   6L),
+            Map.entry(Material.ACACIA_LOG,   6L),
+            Map.entry(Material.DARK_OAK_LOG, 6L),
+            Map.entry(Material.MANGROVE_LOG, 6L)
+    );
+
     private final SkillsManager skillsManager = SkillsManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
+        Player player = event.getPlayer();
+
         Long farmingXp = FARMING_XP.get(block.getType());
-        if (farmingXp == null) {
+        if (farmingXp != null) {
+            if (block.getBlockData() instanceof Ageable ageable && ageable.getAge() < ageable.getMaximumAge()) {
+                return;
+            }
+            skillsManager.addSkillXP(player.getUniqueId(), "farming", farmingXp);
+            sendXpBar(player, "farming", farmingXp);
             return;
         }
-        if (block.getBlockData() instanceof Ageable ageable && ageable.getAge() < ageable.getMaximumAge()) {
+        Long foragingXp = FORAGING_XP.get(block.getType());
+        if (foragingXp != null) {
+            skillsManager.addSkillXP(player.getUniqueId(), "foraging", foragingXp);
+            sendXpBar(player, "foraging", foragingXp);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerFish(PlayerFishEvent event) {
+        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
             return;
         }
         Player player = event.getPlayer();
-        skillsManager.addSkillXP(player.getUniqueId(), "farming", farmingXp);
-        sendXpBar(player, "farming", farmingXp);
+        skillsManager.addSkillXP(player.getUniqueId(), "fishing", 5L);
+        sendXpBar(player, "fishing", 5L);
     }
 
     private void sendXpBar(Player player, String skill, long xpGained) {
