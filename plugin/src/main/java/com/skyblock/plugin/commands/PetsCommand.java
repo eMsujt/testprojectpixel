@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class PetsCommand implements CommandExecutor {
@@ -33,12 +34,16 @@ public final class PetsCommand implements CommandExecutor {
     private void handleList(Player player) {
         UUID id = player.getUniqueId();
         PetsManager manager = PetsManager.getInstance();
-        Pet pet = manager.getActivePet(id);
+        Pet active = manager.getActivePet(id);
+        List<Pet> pets = manager.getPets(id);
         player.sendMessage("=== Pets ===");
-        if (pet == null) {
-            player.sendMessage("No active pet.");
-        } else {
-            player.sendMessage("Active: " + pet.getName() + " [" + pet.getRarity() + "] Lv" + pet.getLevel());
+        if (pets.isEmpty()) {
+            player.sendMessage("You have no pets.");
+            return;
+        }
+        for (Pet pet : pets) {
+            String marker = (active != null && pet.getName().equals(active.getName()) && pet.getRarity().equals(active.getRarity())) ? " (active)" : "";
+            player.sendMessage("  " + pet.getName() + " [" + pet.getRarity() + "] Lv" + pet.getLevel() + marker);
         }
     }
 
