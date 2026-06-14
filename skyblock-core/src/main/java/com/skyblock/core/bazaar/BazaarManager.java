@@ -435,6 +435,9 @@ public final class BazaarManager {
     private final Map<String, List<BuyOrder>> buyOrders = new HashMap<>();
     private final Map<String, List<SellOrder>> sellOrders = new HashMap<>();
 
+    /** Per-player active order count. */
+    private final Map<UUID, Integer> orderCounts = new HashMap<>();
+
     /** Per-player transaction history. */
     private final Map<UUID, List<String>> playerTransactions = new HashMap<>();
 
@@ -655,6 +658,28 @@ public final class BazaarManager {
             }
         }
         return Collections.unmodifiableList(result);
+    }
+
+    /**
+     * Returns the cached active order count for the given player, or {@code 0} if not set.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return the player's order count
+     */
+    public int getOrderCount(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return orderCounts.getOrDefault(playerId, 0);
+    }
+
+    /**
+     * Sets the cached active order count for the given player.
+     *
+     * @param playerId   the player's UUID, must not be null
+     * @param count      the order count to store
+     */
+    public void setOrderCount(UUID playerId, int count) {
+        Objects.requireNonNull(playerId, "playerId");
+        orderCounts.put(playerId, count);
     }
 
     /**
