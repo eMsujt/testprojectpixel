@@ -11,6 +11,10 @@ import java.util.UUID;
 
 public final class DungeonManager {
 
+    public enum DungeonFloor {
+        FLOOR_1, FLOOR_2, FLOOR_3, FLOOR_4, FLOOR_5, FLOOR_6, FLOOR_7
+    }
+
     private static final DungeonManager INSTANCE = new DungeonManager();
 
     private final Map<UUID, Map<String, Integer>> playerCompletions = new HashMap<>();
