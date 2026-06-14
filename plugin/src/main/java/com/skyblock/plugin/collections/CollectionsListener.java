@@ -45,6 +45,19 @@ public final class CollectionsListener implements Listener {
             Map.entry(Material.DARK_OAK_LOG,       "dark_oak_wood")
     );
 
+    // Cumulative counts required to reach each collection tier (Hypixel-style curve).
+    private static final long[] DEFAULT_TIERS =
+            {50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000};
+
+    private static final Map<String, long[]> TIER_REQUIREMENTS;
+    static {
+        Map<String, long[]> tiers = new java.util.HashMap<>();
+        for (String collection : BLOCK_COLLECTION.values()) {
+            tiers.put(collection, DEFAULT_TIERS);
+        }
+        TIER_REQUIREMENTS = Map.copyOf(tiers);
+    }
+
     private final CollectionsManager collectionsManager = CollectionsManager.getInstance();
 
     @EventHandler
@@ -56,5 +69,33 @@ public final class CollectionsListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         collectionsManager.addCollectionCount(uuid, collection, 1L);
+        checkTierUnlock(player, uuid, collection);
+    }
+
+    private void checkTierUnlock(Player player, UUID uuid, String collection) {
+        long[] thresholds = TIER_REQUIREMENTS.get(collection);
+        if (thresholds == null) {
+            return;
+        }
+        long total = collectionsManager.getCollectionCount(uuid, collection);
+        int newTier = tierFor(total, thresholds);
+        int currentTier = collectionsManager.getCollectionMilestone(uuid, collection);
+        if (newTier > currentTier) {
+            collectionsManager.setCollectionMilestone(uuid, collection, newTier);
+            collectionsManager.recordUnlock(uuid, collection + " tier " + newTier);
+            player.sendMessage("§a§lCOLLECTION UNLOCKED §7" + collection + " §eTier " + newTier);
+        }
+    }
+
+    private static int tierFor(long count, long[] thresholds) {
+        int tier = 0;
+        for (long threshold : thresholds) {
+            if (count >= threshold) {
+                tier++;
+            } else {
+                break;
+            }
+        }
+        return tier;
     }
 }
