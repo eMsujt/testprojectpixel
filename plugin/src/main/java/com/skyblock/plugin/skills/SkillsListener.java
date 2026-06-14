@@ -35,6 +35,15 @@ public final class SkillsListener implements Listener {
             Map.entry(Material.NETHER_QUARTZ_ORE, 4L)
     );
 
+    private static final Map<Material, Long> LOG_XP = Map.ofEntries(
+            Map.entry(Material.OAK_LOG,        6L),
+            Map.entry(Material.SPRUCE_LOG,     6L),
+            Map.entry(Material.BIRCH_LOG,      6L),
+            Map.entry(Material.JUNGLE_LOG,     6L),
+            Map.entry(Material.ACACIA_LOG,     6L),
+            Map.entry(Material.DARK_OAK_LOG,   6L)
+    );
+
     private final SkillsManager skillsManager = SkillsManager.getInstance();
 
     @EventHandler
@@ -52,6 +61,12 @@ public final class SkillsListener implements Listener {
         Long oreXp = ORE_XP.get(type);
         if (oreXp != null) {
             skillsManager.addSkillXP(uuid, "mining", oreXp);
+            return;
+        }
+
+        Long logXp = LOG_XP.get(type);
+        if (logXp != null) {
+            skillsManager.addSkillXP(uuid, "foraging", logXp);
         }
     }
 }
