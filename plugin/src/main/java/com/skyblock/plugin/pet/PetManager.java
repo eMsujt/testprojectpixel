@@ -17,7 +17,7 @@ public final class PetManager {
 
     private static final PetManager INSTANCE = new PetManager();
 
-    private final Map<UUID, PetData> activePets = new HashMap<>();
+    private final Map<UUID, ActivePet> activePets = new HashMap<>();
 
     private PetManager() {}
 
@@ -31,7 +31,7 @@ public final class PetManager {
      * @param uuid unique identifier of the player
      * @param pet the pet to equip
      */
-    public void equip(UUID uuid, PetData pet) {
+    public void equip(UUID uuid, ActivePet pet) {
         Objects.requireNonNull(uuid, "uuid");
         Objects.requireNonNull(pet, "pet");
         activePets.put(uuid, pet);
@@ -43,7 +43,7 @@ public final class PetManager {
      * @param uuid unique identifier of the player
      * @return the removed pet, or {@code null} if none was active
      */
-    public PetData unequip(UUID uuid) {
+    public ActivePet unequip(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
         return activePets.remove(uuid);
     }
@@ -54,7 +54,7 @@ public final class PetManager {
      * @param uuid unique identifier of the player
      * @return the active pet, or {@code null} if none is equipped
      */
-    public PetData getActivePet(UUID uuid) {
+    public ActivePet getActivePet(UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
         return activePets.get(uuid);
     }
@@ -75,7 +75,7 @@ public final class PetManager {
      *
      * @return the active pets
      */
-    public Map<UUID, PetData> getActivePets() {
+    public Map<UUID, ActivePet> getActivePets() {
         return Collections.unmodifiableMap(activePets);
     }
 
@@ -85,7 +85,7 @@ public final class PetManager {
      * <p>Instances are not thread-safe; access them from the server main thread
      * or guard them externally.</p>
      */
-    public static final class PetData {
+    public static final class ActivePet {
 
         private final UUID id;
         private final String name;
@@ -99,7 +99,7 @@ public final class PetManager {
          * @param rarity rarity tier of the pet
          * @param level current level of the pet
          */
-        public PetData(String name, String rarity, int level) {
+        public ActivePet(String name, String rarity, int level) {
             this(UUID.randomUUID(), name, rarity, level);
         }
 
@@ -111,7 +111,7 @@ public final class PetManager {
          * @param rarity rarity tier of the pet
          * @param level current level of the pet
          */
-        public PetData(UUID id, String name, String rarity, int level) {
+        public ActivePet(UUID id, String name, String rarity, int level) {
             this.id = Objects.requireNonNull(id, "id");
             this.name = name;
             this.rarity = rarity;
@@ -136,7 +136,7 @@ public final class PetManager {
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof PetData other && Objects.equals(id, other.id);
+            return obj instanceof ActivePet other && Objects.equals(id, other.id);
         }
 
         @Override
@@ -146,7 +146,7 @@ public final class PetManager {
 
         @Override
         public String toString() {
-            return "PetData{id=" + id + ", name=" + name + ", rarity=" + rarity + ", level=" + level + '}';
+            return "ActivePet{id=" + id + ", name=" + name + ", rarity=" + rarity + ", level=" + level + '}';
         }
     }
 }
