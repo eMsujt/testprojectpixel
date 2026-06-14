@@ -8,11 +8,12 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public final class HotmCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "reset", "upgrade");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "reset", "upgrade", "history");
     private static final List<String> UPGRADE_NAMES = Arrays.stream(HotmManager.HotmUpgrade.values())
             .map(u -> u.name().toLowerCase())
             .collect(Collectors.toList());
@@ -39,6 +40,7 @@ public final class HotmCommand implements TabExecutor {
             case "view"    -> handleView(player);
             case "reset"   -> handleReset(player);
             case "upgrade" -> handleUpgrade(player, args);
+            case "history" -> handleHistory(player);
             default        -> sendHelp(player);
         }
         return true;
@@ -90,10 +92,24 @@ public final class HotmCommand implements TabExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        UUID uuid = player.getUniqueId();
+        List<String> history = manager.getHotmHistory(uuid);
+        if (history.isEmpty()) {
+            player.sendMessage("No HOTM history found.");
+            return;
+        }
+        player.sendMessage("=== HOTM History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== HOTM Commands ===");
         player.sendMessage("/hotm view — view your Heart of the Mountain upgrades");
         player.sendMessage("/hotm upgrade <upgrade> — upgrade a Heart of the Mountain perk");
         player.sendMessage("/hotm reset — reset all Heart of the Mountain upgrades");
+        player.sendMessage("/hotm history — view your HOTM event history");
     }
 }
