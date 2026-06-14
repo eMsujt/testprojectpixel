@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public final class CollectionsCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "amount", "tier");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "amount", "tier", "history");
 
     private final CollectionsManager manager;
 
@@ -36,8 +36,9 @@ public final class CollectionsCommand implements TabExecutor {
         switch (args[0].toLowerCase()) {
             case "view"   -> handleView(player);
             case "amount" -> handleAmount(player, args);
-            case "tier"   -> handleTier(player, args);
-            default       -> sendHelp(player);
+            case "tier"    -> handleTier(player, args);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -101,10 +102,23 @@ public final class CollectionsCommand implements TabExecutor {
         player.sendMessage("Your " + collection + " collection is tier " + tier + ".");
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getCollectionsHistory(player.getUniqueId());
+        if (history.isEmpty()) {
+            player.sendMessage("No collection history yet.");
+            return;
+        }
+        player.sendMessage("=== Collection History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Collections Commands ===");
         player.sendMessage("/collections view — view all your collections");
         player.sendMessage("/collections amount <collection> — view amount and tier for a collection");
         player.sendMessage("/collections tier <collection> — view your tier in a collection");
+        player.sendMessage("/collections history — view your collection history");
     }
 }
