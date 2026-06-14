@@ -38,6 +38,15 @@ public final class HubCommand implements CommandExecutor {
             sender.sendMessage("This command can only be used by players.");
             return true;
         }
+        if (args.length > 0) {
+            String[] rest = Arrays.copyOfRange(args, 1, args.length);
+            switch (args[0].toLowerCase()) {
+                case "bank"  -> new BankCommand().onCommand(sender, command, label, rest);
+                case "mayor" -> new MayorCommand().onCommand(sender, command, label, rest);
+                default      -> player.sendMessage("Unknown sub-command. Try /hub bank or /hub mayor.");
+            }
+            return true;
+        }
         player.openInventory(buildMenu(player));
         return true;
     }
