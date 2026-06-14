@@ -18,13 +18,15 @@ import java.util.UUID;
 public final class ForagingListener implements Listener {
 
     /** Foraging XP granted per log broken, keyed by log {@link Material}. */
-    private static final Map<Material, Long> LOG_XP = Map.of(
-            Material.OAK_LOG,      6L,
-            Material.BIRCH_LOG,    6L,
-            Material.SPRUCE_LOG,   6L,
-            Material.JUNGLE_LOG,   6L,
-            Material.ACACIA_LOG,   6L,
-            Material.DARK_OAK_LOG, 6L
+    private static final Map<Material, Long> LOG_XP = Map.ofEntries(
+            Map.entry(Material.OAK_LOG,       6L),
+            Map.entry(Material.BIRCH_LOG,     6L),
+            Map.entry(Material.SPRUCE_LOG,    6L),
+            Map.entry(Material.JUNGLE_LOG,    6L),
+            Map.entry(Material.ACACIA_LOG,    6L),
+            Map.entry(Material.DARK_OAK_LOG,  6L),
+            Map.entry(Material.MANGROVE_LOG,  6L),
+            Map.entry(Material.CHERRY_LOG,    6L)
     );
 
     private final SkillManager skillManager = SkillManager.getInstance();
