@@ -2,6 +2,8 @@ package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.skills.SkillManager;
 import com.skyblock.plugin.skills.SkillManager.SkillType;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -122,9 +124,11 @@ public final class SkillProgressionListener implements Listener {
         int before = skillManager.getLevel(id, skill);
         skillManager.addXP(id, skill, amount);
         int after = skillManager.getLevel(id, skill);
+        String name = skill.name().charAt(0) + skill.name().substring(1).toLowerCase();
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                new TextComponent("§3+" + amount + " " + name + " XP"));
         if (after > before) {
             skillManager.grantLevelUpRewards(id, skill, before, after);
-            String name = skill.name().charAt(0) + skill.name().substring(1).toLowerCase();
             player.sendTitle("§aSkill Level Up!", "§e" + name + " §a→ §eLVL " + after, 10, 60, 20);
         }
     }
