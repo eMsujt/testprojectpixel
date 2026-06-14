@@ -1,5 +1,6 @@
 package com.skyblock.dungeons;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -22,6 +23,7 @@ public final class DungeonManager {
 
     private final Map<UUID, DungeonSession> activeSessions = new HashMap<>();
     private final Map<UUID, UUID> playerSessions = new HashMap<>();
+    private final Map<UUID, List<String>> dungeonHistory = new HashMap<>();
 
     /**
      * Starts a new dungeon run for the given party.
@@ -105,6 +107,20 @@ public final class DungeonManager {
      */
     public Map<UUID, DungeonSession> getActiveSessions() {
         return Collections.unmodifiableMap(activeSessions);
+    }
+
+    public void recordDungeonEvent(UUID playerUuid, String summary) {
+        dungeonHistory
+                .computeIfAbsent(playerUuid, k -> new ArrayList<>())
+                .add(summary);
+    }
+
+    public List<String> getDungeonHistory(UUID playerUuid) {
+        return Collections.unmodifiableList(dungeonHistory.getOrDefault(playerUuid, Collections.emptyList()));
+    }
+
+    public Map<UUID, List<String>> getAllDungeonHistory() {
+        return Collections.unmodifiableMap(dungeonHistory);
     }
 
     // -------------------------------------------------------------------------
