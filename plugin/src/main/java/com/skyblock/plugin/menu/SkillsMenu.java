@@ -20,7 +20,7 @@ public final class SkillsMenu implements InventoryHolder, Listener {
     private final Inventory inventory;
 
     public SkillsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§aYour Skills");
+        this.inventory = Bukkit.createInventory(this, 54, "§9Skills");
         build(player);
     }
 
@@ -35,13 +35,28 @@ public final class SkillsMenu implements InventoryHolder, Listener {
 
     private void build(Player player) {
         SkillsManager sm = SkillsManager.getInstance();
-        inventory.setItem(4, makeItem(Material.BOOK, "§aSkills", Arrays.asList("§7Your skill progress")));
-        // Fixed Hypixel skill slots — first row, one slot per skill (slots 10–14)
-        inventory.setItem(10, makeSkillItem(player, sm, Material.WHEAT,        "farming",  "§eFarming"));
-        inventory.setItem(11, makeSkillItem(player, sm, Material.COBBLESTONE,  "mining",   "§eMining"));
-        inventory.setItem(12, makeSkillItem(player, sm, Material.ROTTEN_FLESH, "combat",   "§eCombat"));
-        inventory.setItem(13, makeSkillItem(player, sm, Material.OAK_LOG,      "foraging", "§eForaging"));
-        inventory.setItem(14, makeSkillItem(player, sm, Material.COD,          "fishing",  "§eFishing"));
+
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", Arrays.asList());
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
+        }
+
+        inventory.setItem(4, makeItem(Material.BOOK, "§9Skills", Arrays.asList("§7Your skill progress")));
+
+        // Row 2, centered (cols 2-5): farming, mining, combat, foraging
+        inventory.setItem(11, makeSkillItem(player, sm, Material.WHEAT,           "farming",    "§eFarming"));
+        inventory.setItem(12, makeSkillItem(player, sm, Material.COBBLESTONE,     "mining",     "§eMining"));
+        inventory.setItem(13, makeSkillItem(player, sm, Material.ROTTEN_FLESH,    "combat",     "§eCombat"));
+        inventory.setItem(14, makeSkillItem(player, sm, Material.OAK_LOG,         "foraging",   "§eForaging"));
+
+        // Row 4, centered (cols 2-5): fishing, enchanting, alchemy, taming
+        inventory.setItem(29, makeSkillItem(player, sm, Material.COD,             "fishing",    "§eFishing"));
+        inventory.setItem(30, makeSkillItem(player, sm, Material.ENCHANTED_BOOK,  "enchanting", "§eEnchanting"));
+        inventory.setItem(31, makeSkillItem(player, sm, Material.BREWING_STAND,   "alchemy",    "§eAlchemy"));
+        inventory.setItem(32, makeSkillItem(player, sm, Material.LEAD,            "taming",     "§eTaming"));
     }
 
     @EventHandler
