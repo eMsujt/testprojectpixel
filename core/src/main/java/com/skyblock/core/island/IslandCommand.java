@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public final class IslandCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("home", "sethome", "visit", "warp", "settings", "info", "upgrade");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("home", "sethome", "visit", "warp", "settings", "info", "upgrade", "history");
 
     private final IslandManager manager;
 
@@ -43,6 +43,7 @@ public final class IslandCommand implements TabExecutor {
             case "settings" -> handleSettings(player);
             case "info"     -> handleInfo(player);
             case "upgrade"  -> handleUpgrade(player, args);
+            case "history"  -> handleHistory(player);
             default         -> sendHelp(player);
         }
         return true;
@@ -160,6 +161,18 @@ public final class IslandCommand implements TabExecutor {
         player.sendMessage("Upgraded '" + type + "' to level " + (current + 1) + "/" + maxLevel + ".");
     }
 
+    private void handleHistory(Player player) {
+        List<String> history = manager.getIslandHistory(player.getUniqueId());
+        player.sendMessage("=== Island History ===");
+        if (history.isEmpty()) {
+            player.sendMessage("No history recorded.");
+            return;
+        }
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void handleSettings(Player player) {
         player.sendMessage("=== Island Settings ===");
         boolean hasHome = manager.hasHome(player.getUniqueId());
@@ -175,5 +188,6 @@ public final class IslandCommand implements TabExecutor {
         player.sendMessage("/island info — view your island info and upgrades");
         player.sendMessage("/island upgrade <type> — upgrade an island feature");
         player.sendMessage("/island settings — view your island settings");
+        player.sendMessage("/island history — show your island event history");
     }
 }
