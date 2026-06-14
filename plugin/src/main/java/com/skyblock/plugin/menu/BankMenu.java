@@ -17,7 +17,7 @@ import java.util.List;
 
 public final class BankMenu implements InventoryHolder, Listener {
 
-    private static final String TITLE = "§6Bank & Purse";
+    private static final String TITLE = "§9Bank";
     private static final int SIZE = 54;
 
     /** Slot showing the bank/purse balance summary. */
@@ -51,7 +51,7 @@ public final class BankMenu implements InventoryHolder, Listener {
     }
 
     private void build(Player player) {
-        ItemStack pane = makeItem(Material.YELLOW_STAINED_GLASS_PANE, "§r", null);
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", null);
         for (int slot = 0; slot < SIZE; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
