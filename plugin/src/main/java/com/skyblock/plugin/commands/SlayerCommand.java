@@ -28,15 +28,16 @@ public final class SlayerCommand implements CommandExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "stats" -> handleStats(player);
-            case "top"   -> {
+            case "stats"   -> handleStats(player);
+            case "top"     -> {
                 if (args.length < 2) {
                     player.sendMessage("Usage: /slayer top <type>");
                 } else {
                     handleTop(player, args[1]);
                 }
             }
-            default      -> sendHelp(player);
+            case "history" -> handleHistory(player);
+            default        -> sendHelp(player);
         }
         return true;
     }
@@ -98,10 +99,24 @@ public final class SlayerCommand implements CommandExecutor {
         }
     }
 
+    private void handleHistory(Player player) {
+        UUID uuid = player.getUniqueId();
+        List<String> history = SlayerManager.getInstance().getSlayerHistory(uuid);
+        if (history.isEmpty()) {
+            player.sendMessage("You have no slayer history.");
+            return;
+        }
+        player.sendMessage("=== Slayer History ===");
+        for (int i = 0; i < history.size(); i++) {
+            player.sendMessage((i + 1) + ". " + history.get(i));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Slayer Commands ===");
         player.sendMessage("/slayer        — show your total slayer kills and XP");
         player.sendMessage("/slayer stats  — show per-boss kills and XP breakdown");
         player.sendMessage("/slayer top <type>  — show top 10 players by XP for a slayer type");
+        player.sendMessage("/slayer history     — show your slayer event history");
     }
 }
