@@ -41,7 +41,7 @@ public final class CollectionsMenu implements InventoryHolder, Listener {
     private Category currentCategory = Category.FARMING;
 
     public CollectionsMenu(Player player) {
-        this.inventory = Bukkit.createInventory(this, 54, "§aCollections");
+        this.inventory = Bukkit.createInventory(this, 54, "§6Collections");
         build(player);
     }
 
