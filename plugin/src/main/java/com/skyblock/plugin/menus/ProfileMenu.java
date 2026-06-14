@@ -13,7 +13,7 @@ import java.util.UUID;
 /**
  * The "Your SkyBlock Profile" menu.
  *
- * <p>A 54-slot (6-row) menu titled {@code §aYour SkyBlock Profile} that frames a
+ * <p>A 45-slot (5-row) menu titled {@code §aYour SkyBlock Profile} that frames a
  * centred {@link Material#PLAYER_HEAD} of the viewing player with a
  * {@code GRAY_STAINED_GLASS_PANE} border. The head's lore summarises the
  * player's profile stats (purse and bank balances, from
@@ -22,12 +22,12 @@ import java.util.UUID;
 public class ProfileMenu extends Menu {
 
     /** The centre slot that holds the player's profile head. */
-    private static final int HEAD_SLOT = 22;
+    private static final int HEAD_SLOT = 13;
 
     private final Player player;
 
     public ProfileMenu(Player player) {
-        super("§aYour SkyBlock Profile", 6);
+        super("§aYour SkyBlock Profile", 5);
         this.player = player;
     }
 
@@ -62,9 +62,9 @@ public class ProfileMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 54; slot++) {
+        for (int slot = 0; slot < 45; slot++) {
             int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 36 || column == 0 || column == 8) {
                 setItem(slot, pane);
             }
         }
