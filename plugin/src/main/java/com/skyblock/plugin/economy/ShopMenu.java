@@ -1,68 +1,84 @@
 package com.skyblock.plugin.economy;
 
+import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Abstract base for coin-shop menus.
+ * Reusable 54-slot (6-row) menu for NPC shops.
  *
- * <p>A shop presents a fixed list of {@link ShopItem}s, each laid out left-to-right
- * starting at the top-left slot. Every entry shows its purchase price as an appended
- * lore line. Clicking an entry dispatches to {@link #onPurchase(Player, ShopItem)},
- * which subclasses implement to debit coins and grant the item.</p>
+ * <p>A shop is described by a {@link List} of {@link ShopEntry}s, each pairing a
+ * {@link Material} with its coin price. Entries are laid out left-to-right
+ * starting at slot 0 (capped at the 54 available slots), each showing its price
+ * as an appended lore line. Clicking an entry withdraws its price from the
+ * clicking player's purse (via {@link CoinManager}) and grants the item; if they
+ * can't afford it, the purchase is rejected with a message.</p>
  */
-public abstract class ShopMenu extends Menu {
+public class ShopMenu extends Menu {
 
     /**
      * A single purchasable shop entry.
      *
-     * @param icon  the item shown in the menu (also what the player receives)
-     * @param price the coin cost to purchase
+     * @param material the item shown in the menu (also what the player receives)
+     * @param price    the coin cost to purchase
      */
-    public record ShopItem(ItemStack icon, int price) {
+    public record ShopEntry(Material material, int price) {
+        public ShopEntry {
+            Objects.requireNonNull(material, "material");
+        }
     }
 
-    private final List<ShopItem> shopItems;
+    private final CoinManager coinManager;
+    private final List<ShopEntry> entries;
 
     /**
-     * Creates a shop with the given title and entries. The row count is sized to
-     * hold every entry (one row per nine items, capped at the six-row maximum).
+     * Creates a shop using the shared {@link CoinManager} instance.
      *
-     * @param title the inventory title (supports colour codes)
-     * @param items the entries to display
+     * @param title   the inventory title (supports colour codes)
+     * @param entries the entries to display
      */
-    protected ShopMenu(String title, List<ShopItem> items) {
-        super(title, rowsFor(items));
-        this.shopItems = items != null ? new ArrayList<>(items) : new ArrayList<>();
-    }
-
-    private static int rowsFor(List<ShopItem> items) {
-        int count = items != null ? items.size() : 0;
-        int rows = Math.max(1, (count + 8) / 9);
-        return Math.min(rows, 6);
+    public ShopMenu(String title, List<ShopEntry> entries) {
+        this(title, entries, CoinManager.getInstance());
     }
 
     /**
-     * Called when a player clicks a shop entry.
+     * Creates a shop backed by the given {@link CoinManager}.
      *
-     * @param player the purchasing player
-     * @param item   the clicked entry
+     * @param title       the inventory title (supports colour codes)
+     * @param entries     the entries to display
+     * @param coinManager the coin source charged on purchase
      */
-    protected abstract void onPurchase(Player player, ShopItem item);
+    public ShopMenu(String title, List<ShopEntry> entries, CoinManager coinManager) {
+        super(title, 6);
+        this.entries = entries != null ? new ArrayList<>(entries) : new ArrayList<>();
+        this.coinManager = Objects.requireNonNull(coinManager, "coinManager");
+    }
 
     @Override
     protected void build() {
-        for (int i = 0; i < shopItems.size() && i < 54; i++) {
-            ShopItem shopItem = shopItems.get(i);
-            ItemStack display = new ItemBuilder(shopItem.icon())
-                    .addLore("§7Price: §6" + shopItem.price() + " coins")
+        for (int i = 0; i < entries.size() && i < 54; i++) {
+            ShopEntry entry = entries.get(i);
+            ItemStack display = new ItemBuilder(entry.material())
+                    .addLore("§7Price: §6" + entry.price() + " coins")
+                    .addLore("§eClick to buy!")
                     .build();
-            setItem(i, display, event -> onPurchase((Player) event.getWhoClicked(), shopItem));
+            setItem(i, display, event -> purchase((Player) event.getWhoClicked(), entry));
+        }
+    }
+
+    private void purchase(Player player, ShopEntry entry) {
+        if (coinManager.withdraw(player.getUniqueId(), entry.price())) {
+            player.getInventory().addItem(new ItemStack(entry.material()));
+            player.sendMessage("§aPurchased §6" + entry.material() + " §afor §6" + entry.price() + " coins§a!");
+        } else {
+            player.sendMessage("§cYou don't have enough coins!");
         }
     }
 }
