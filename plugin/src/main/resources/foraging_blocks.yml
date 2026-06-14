@@ -1,0 +1,13 @@
+# Foraging XP granted per log broken, read from the jar by ForagingSkillListener.
+# Each key under `blocks` is a Bukkit Material name; its value is the Foraging XP
+# awarded when a player breaks that log type. Unlisted blocks grant no Foraging
+# XP. If this file is missing the listener falls back to its built-in defaults.
+blocks:
+  OAK_LOG: 6
+  BIRCH_LOG: 6
+  SPRUCE_LOG: 6
+  JUNGLE_LOG: 6
+  ACACIA_LOG: 6
+  DARK_OAK_LOG: 6
+  MANGROVE_LOG: 6
+  CHERRY_LOG: 6
