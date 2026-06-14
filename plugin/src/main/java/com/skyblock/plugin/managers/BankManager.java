@@ -94,6 +94,7 @@ public final class BankManager {
         balance.clear();
         transactionLedger.clear();
         transactionHistory.clear();
+        bankHistory.clear();
         if (cfg.isConfigurationSection("balance")) {
             for (String uuidKey : cfg.getConfigurationSection("balance").getKeys(false)) {
                 try {
@@ -127,6 +128,18 @@ public final class BankManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("bankHistory")) {
+            for (String uuidKey : cfg.getConfigurationSection("bankHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("bankHistory." + uuidKey);
+                    if (!entries.isEmpty()) {
+                        bankHistory.put(UUID.fromString(uuidKey), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -140,6 +153,9 @@ public final class BankManager {
         }
         for (Map.Entry<UUID, List<String>> entry : transactionHistory.entrySet()) {
             cfg.set("transactionHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : bankHistory.entrySet()) {
+            cfg.set("bankHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);

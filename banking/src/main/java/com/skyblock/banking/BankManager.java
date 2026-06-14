@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Manages per-player bank accounts.
@@ -191,6 +195,59 @@ public final class BankManager {
         }
         account.tier = tier;
         return true;
+    }
+
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "bank.yml");
+        if (!file.exists()) return;
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        accounts.clear();
+        bankHistory.clear();
+        if (cfg.isConfigurationSection("accounts")) {
+            for (String key : cfg.getConfigurationSection("accounts").getKeys(false)) {
+                try {
+                    UUID uuid = UUID.fromString(key);
+                    BankAccount account = new BankAccount(uuid);
+                    account.balance = cfg.getLong("accounts." + key + ".balance");
+                    String tierName = cfg.getString("accounts." + key + ".tier");
+                    if (tierName != null) {
+                        try {
+                            account.tier = BankTier.valueOf(tierName);
+                        } catch (IllegalArgumentException ignored) {}
+                    }
+                    accounts.put(uuid, account);
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("history")) {
+            for (String key : cfg.getConfigurationSection("history").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("history." + key);
+                    if (!entries.isEmpty()) {
+                        bankHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+    }
+
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "bank.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, BankAccount> entry : accounts.entrySet()) {
+            String key = entry.getKey().toString();
+            BankAccount account = entry.getValue();
+            cfg.set("accounts." + key + ".balance", account.balance);
+            cfg.set("accounts." + key + ".tier", account.tier.name());
+        }
+        for (Map.Entry<UUID, List<String>> entry : bankHistory.entrySet()) {
+            cfg.set("history." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save bank.yml", e);
+        }
     }
 
     public void recordBankEvent(UUID playerUuid, String summary) {

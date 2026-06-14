@@ -283,6 +283,7 @@ public final class BankManager {
         accounts.clear();
         tiers.clear();
         bankTypes.clear();
+        bankHistory.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -309,6 +310,16 @@ public final class BankManager {
                 // skip malformed entries
             }
         }
+        if (cfg.isConfigurationSection("bankHistory")) {
+            for (String key : cfg.getConfigurationSection("bankHistory").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("bankHistory." + key);
+                    if (!entries.isEmpty()) {
+                        bankHistory.put(UUID.fromString(key), new ArrayList<>(entries));
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     /**
@@ -333,6 +344,9 @@ public final class BankManager {
             if (bankType != null) {
                 cfg.set(key + ".bankType", bankType.name());
             }
+        }
+        for (Map.Entry<UUID, List<String>> entry : bankHistory.entrySet()) {
+            cfg.set("bankHistory." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
