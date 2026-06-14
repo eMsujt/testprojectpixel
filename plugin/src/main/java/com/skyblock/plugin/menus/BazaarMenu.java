@@ -8,32 +8,36 @@ import org.bukkit.inventory.ItemStack;
 /**
  * The Bazaar menu.
  *
- * <p>A 54-slot (6-row) menu titled {@code §6Bazaar} whose first two rows hold
- * the category filter icons, in Hypixel's category order, while the remaining
- * rows are framed by a {@code GRAY_STAINED_GLASS_PANE} border ready to display
- * the selected category's product listings.</p>
+ * <p>A 54-slot (6-row) menu titled {@code §6Bazaar} presenting the twelve
+ * most-traded collection items across the centred rows, framed by a
+ * {@code GRAY_STAINED_GLASS_PANE} border. Clicking an item tells the player they
+ * are opening its order book; the actual trading is handled elsewhere.</p>
  */
 public class BazaarMenu extends Menu {
 
-    /** A Bazaar category filter: its icon, display name, and slot. */
-    private enum Category {
-        FARMING(10, Material.GOLDEN_HOE, "§aFarming", "§7Crops and farming drops."),
-        MINING(11, Material.STONE_PICKAXE, "§aMining", "§7Ores, gemstones and minerals."),
-        COMBAT(12, Material.STONE_SWORD, "§aCombat", "§7Mob drops and combat loot."),
-        WOODS_AND_FISHES(13, Material.OAK_SAPLING, "§aWoods & Fishes", "§7Logs, fish and sea creatures."),
-        ODDS_AND_ENDS(14, Material.OAK_BOAT, "§aOdds & Ends", "§7Miscellaneous goods."),
-        SPECIAL(15, Material.NETHER_STAR, "§aSpecial", "§7Rare and special items.");
+    /** A most-traded Bazaar collection item: its display name, icon, and slot. */
+    private enum Product {
+        WHEAT("Wheat", Material.WHEAT, 10),
+        CARROT("Carrot", Material.CARROT, 11),
+        POTATO("Potato", Material.POTATO, 12),
+        PUMPKIN("Pumpkin", Material.PUMPKIN, 13),
+        MELON("Melon", Material.MELON_SLICE, 14),
+        SUGAR_CANE("Sugar Cane", Material.SUGAR_CANE, 15),
+        COCOA_BEANS("Cocoa Beans", Material.COCOA_BEANS, 16),
+        COBBLESTONE("Cobblestone", Material.COBBLESTONE, 19),
+        COAL("Coal", Material.COAL, 20),
+        IRON_INGOT("Iron Ingot", Material.IRON_INGOT, 21),
+        GOLD_INGOT("Gold Ingot", Material.GOLD_INGOT, 22),
+        DIAMOND("Diamond", Material.DIAMOND, 23);
 
-        private final int slot;
-        private final Material icon;
         private final String displayName;
-        private final String lore;
+        private final Material icon;
+        private final int slot;
 
-        Category(int slot, Material icon, String displayName, String lore) {
-            this.slot = slot;
-            this.icon = icon;
+        Product(String displayName, Material icon, int slot) {
             this.displayName = displayName;
-            this.lore = lore;
+            this.icon = icon;
+            this.slot = slot;
         }
     }
 
@@ -45,11 +49,13 @@ public class BazaarMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        for (Category category : Category.values()) {
-            setItem(category.slot, new ItemBuilder(category.icon)
-                    .displayName(category.displayName)
-                    .lore(category.lore)
-                    .build());
+        for (Product product : Product.values()) {
+            setItem(product.slot, new ItemBuilder(product.icon)
+                            .displayName("§a" + product.displayName)
+                            .lore("§7Click to open the " + product.displayName + " order book.")
+                            .build(),
+                    event -> event.getWhoClicked().sendMessage(
+                            "§aOpening the " + product.displayName + " order book..."));
         }
     }
 
