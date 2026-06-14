@@ -1,5 +1,6 @@
 package com.skyblock.plugin.menu;
 
+import com.skyblock.plugin.auction.AuctionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,6 +13,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public final class AuctionHouseMenu implements InventoryHolder, Listener {
+
+    /** Inner content slots (between the border) used to display active listings. */
+    private static final int[] LISTING_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43};
 
     private final Inventory inventory;
 
@@ -53,6 +61,16 @@ public final class AuctionHouseMenu implements InventoryHolder, Listener {
         inventory.setItem(50, makeItem(Material.WHEAT,             "§aConsumables"));
         inventory.setItem(51, makeItem(Material.DIRT,              "§6Blocks"));
         inventory.setItem(52, makeItem(Material.BARRIER,           "§7Misc"));
+
+        // Active listings
+        var listings = AuctionManager.getInstance().getListings();
+        for (int i = 0; i < listings.size() && i < LISTING_SLOTS.length; i++) {
+            AuctionManager.AuctionEntry listing = listings.get(i);
+            inventory.setItem(LISTING_SLOTS[i], makeItem(Material.PAPER,
+                    "§a" + listing.itemName(),
+                    "§7Price: §6" + listing.price() + " coins",
+                    "§7Click to view"));
+        }
     }
 
     @EventHandler
@@ -62,11 +80,14 @@ public final class AuctionHouseMenu implements InventoryHolder, Listener {
         }
     }
 
-    private ItemStack makeItem(Material material, String name) {
+    private ItemStack makeItem(Material material, String name, String... lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
+            if (lore.length > 0) {
+                meta.setLore(java.util.Arrays.asList(lore));
+            }
             item.setItemMeta(meta);
         }
         return item;
