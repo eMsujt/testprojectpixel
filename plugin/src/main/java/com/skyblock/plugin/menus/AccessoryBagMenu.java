@@ -42,7 +42,7 @@ public class AccessoryBagMenu extends Menu {
     private final Player player;
 
     public AccessoryBagMenu(Player player) {
-        super("§5Accessory Bag", 6);
+        super("§dAccessory Bag §7(§6" + totalMagicPower(player) + " MP§7)", 6);
         this.player = player;
     }
 
@@ -86,6 +86,10 @@ public class AccessoryBagMenu extends Menu {
     }
 
     private int totalMagicPower() {
+        return totalMagicPower(player);
+    }
+
+    private static int totalMagicPower(Player player) {
         int total = 0;
         AccessoryBagManager bag = AccessoryBagManager.getInstance();
         for (AccessoryBagManager.AccessoryTier tier : AccessoryBagManager.AccessoryTier.values()) {
