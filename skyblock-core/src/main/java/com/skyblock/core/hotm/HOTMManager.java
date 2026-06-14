@@ -215,6 +215,7 @@ public final class HOTMManager {
         }
         int[] levels = playerPerks.computeIfAbsent(playerId, id -> new int[HOTMPerk.values().length]);
         levels[perk.ordinal()] = current + 1;
+        recordHotmEvent(playerId, "Upgraded " + perk.getDisplayName() + " to level " + (current + 1));
         return current + 1;
     }
 
@@ -282,6 +283,7 @@ public final class HOTMManager {
         long current = getMithrilPowder(playerId);
         if (current < amount) return false;
         mithrilPowder.put(playerId, current - amount);
+        recordHotmEvent(playerId, "Spent " + amount + " Mithril Powder");
         return true;
     }
 
@@ -321,6 +323,7 @@ public final class HOTMManager {
         long current = getGemstonePowder(playerId);
         if (current < amount) return false;
         gemstonePowder.put(playerId, current - amount);
+        recordHotmEvent(playerId, "Spent " + amount + " Gemstone Powder");
         return true;
     }
 
