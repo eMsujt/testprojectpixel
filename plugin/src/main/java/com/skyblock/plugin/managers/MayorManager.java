@@ -4,21 +4,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public final class MayorManager {
 
-    public enum Mayor {
-        PAUL, DIANA, JERRY, DERPY, FOXY, COLE, AATROX, MARINA, SCORPIUS
-    }
-
     private static final MayorManager INSTANCE = new MayorManager();
 
-    private Mayor activeMayor;
-    private final Map<UUID, Mayor> playerVotes = new HashMap<>();
+    private String currentMayor = "Finnegan";
+    private final Map<UUID, String> mayorVotes = new HashMap<>();
 
     private MayorManager() {}
 
@@ -26,28 +22,28 @@ public final class MayorManager {
         return INSTANCE;
     }
 
-    public Mayor getActiveMayor() {
-        return activeMayor;
+    public String getCurrentMayor() {
+        return currentMayor;
     }
 
-    public void setActiveMayor(Mayor mayor) {
-        this.activeMayor = mayor;
+    public void setCurrentMayor(String mayor) {
+        this.currentMayor = mayor;
     }
 
-    public void vote(UUID playerId, Mayor mayor) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(mayor, "mayor");
-        playerVotes.put(playerId, mayor);
+    public String getMayorVote(UUID playerId) {
+        return mayorVotes.get(playerId);
     }
 
-    public Mayor getVote(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        return playerVotes.get(playerId);
+    public void setMayorVote(UUID playerId, String mayor) {
+        mayorVotes.put(playerId, mayor);
     }
 
-    public boolean clearVote(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        return playerVotes.remove(playerId) != null;
+    public boolean clearMayorVote(UUID playerId) {
+        return mayorVotes.remove(playerId) != null;
+    }
+
+    public Map<UUID, String> getMayorVotes() {
+        return Collections.unmodifiableMap(mayorVotes);
     }
 
     public void load(File dataFolder) {
@@ -56,26 +52,18 @@ public final class MayorManager {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        String active = cfg.getString("activeMayor");
-        if (active != null) {
-            try {
-                activeMayor = Mayor.valueOf(active);
-            } catch (IllegalArgumentException ignored) {
-                // skip unknown mayor name
-            }
+        String mayor = cfg.getString("currentMayor");
+        if (mayor != null) {
+            currentMayor = mayor;
         }
-        playerVotes.clear();
+        mayorVotes.clear();
         if (cfg.isConfigurationSection("votes")) {
             for (String key : cfg.getConfigurationSection("votes").getKeys(false)) {
                 try {
                     UUID uuid = UUID.fromString(key);
                     String vote = cfg.getString("votes." + key);
                     if (vote != null) {
-                        try {
-                            playerVotes.put(uuid, Mayor.valueOf(vote));
-                        } catch (IllegalArgumentException ignored) {
-                            // skip unknown mayor name
-                        }
+                        mayorVotes.put(uuid, vote);
                     }
                 } catch (IllegalArgumentException ignored) {
                     // skip malformed UUID
@@ -87,11 +75,9 @@ public final class MayorManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "mayor.yml");
         YamlConfiguration cfg = new YamlConfiguration();
-        if (activeMayor != null) {
-            cfg.set("activeMayor", activeMayor.name());
-        }
-        for (Map.Entry<UUID, Mayor> entry : playerVotes.entrySet()) {
-            cfg.set("votes." + entry.getKey().toString(), entry.getValue().name());
+        cfg.set("currentMayor", currentMayor);
+        for (Map.Entry<UUID, String> entry : mayorVotes.entrySet()) {
+            cfg.set("votes." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
