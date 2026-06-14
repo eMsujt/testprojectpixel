@@ -75,11 +75,13 @@ public final class CollectionListener implements Listener {
     }
 
     private void award(Player player, Material collection) {
+        int tierBefore = collectionManager.getTier(player.getUniqueId(), collection);
         int unlocked = collectionManager.addCollection(player.getUniqueId(), collection, 1L);
         if (unlocked > 0) {
-            int tier = collectionManager.getTier(player.getUniqueId(), collection);
+            int tierAfter = tierBefore + unlocked;
             player.sendMessage("§a§lCOLLECTION UNLOCKED §7"
-                    + collection.name().toLowerCase() + " §eTier " + tier);
+                    + collection.name().toLowerCase() + " §eTier " + tierAfter);
+            CollectionRewardManager.getInstance().grant(player, tierBefore, tierAfter);
         }
     }
 }
