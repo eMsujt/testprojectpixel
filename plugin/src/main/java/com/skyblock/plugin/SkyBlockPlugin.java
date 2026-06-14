@@ -34,6 +34,7 @@ import com.skyblock.plugin.managers.QuestManager;
 import com.skyblock.plugin.managers.TradingManager;
 import com.skyblock.plugin.managers.TimeManager;
 import com.skyblock.plugin.managers.WeatherManager;
+import com.skyblock.plugin.accessories.AccessoryManager;
 import com.skyblock.plugin.collections.CollectionsListener;
 import com.skyblock.plugin.combat.CombatListener;
 import com.skyblock.plugin.hud.ActionBarManager;
@@ -120,6 +121,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WeatherManager.getInstance().load(getDataFolder());
         TimeManager.getInstance().load(getDataFolder());
         NetworkManager.getInstance().load(getDataFolder());
+        AccessoryManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.items.ItemManager.getInstance().load(this);
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
@@ -142,6 +144,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("garden").setExecutor(new GardenCommand());
         getCommand("pets").setExecutor(new PetsCommand());
         com.skyblock.plugin.collections.CollectionManager.getInstance();
+        getServer().getPluginManager().registerEvents(AccessoryManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new FarmingListener(), this);
         getServer().getPluginManager().registerEvents(new CombatListener(), this);
         getServer().getPluginManager().registerEvents(new CollectionsListener(), this);
@@ -172,6 +175,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         PetsManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
         SkillsManager.getInstance().save(getDataFolder());
+        AccessoryManager.getInstance().save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.DungeonManager.getInstance().save(getDataFolder());
         try {
