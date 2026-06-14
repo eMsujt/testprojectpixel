@@ -14,6 +14,7 @@ public final class KuudraManager {
     private static final KuudraManager INSTANCE = new KuudraManager();
 
     private final Map<UUID, Integer> kuudraTier = new HashMap<>();
+    private final Map<UUID, Integer> runsCompleted = new HashMap<>();
 
     private KuudraManager() {}
 
@@ -37,6 +38,21 @@ public final class KuudraManager {
         return Collections.unmodifiableMap(kuudraTier);
     }
 
+    public void trackRun(UUID playerId, int tier) {
+        runsCompleted.merge(playerId, 1, Integer::sum);
+        if (tier > getKuudraTier(playerId)) {
+            setKuudraTier(playerId, tier);
+        }
+    }
+
+    public int getRunsCompleted(UUID playerId) {
+        return runsCompleted.getOrDefault(playerId, 0);
+    }
+
+    public Map<UUID, Integer> getAllRunsCompleted() {
+        return Collections.unmodifiableMap(runsCompleted);
+    }
+
     public void load(File dataFolder) {
         File file = new File(dataFolder, "kuudra.yml");
         if (!file.exists()) {
@@ -53,6 +69,16 @@ public final class KuudraManager {
                 }
             }
         }
+        runsCompleted.clear();
+        if (cfg.isConfigurationSection("runsCompleted")) {
+            for (String uuidKey : cfg.getConfigurationSection("runsCompleted").getKeys(false)) {
+                try {
+                    runsCompleted.put(UUID.fromString(uuidKey), cfg.getInt("runsCompleted." + uuidKey));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -60,6 +86,9 @@ public final class KuudraManager {
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, Integer> entry : kuudraTier.entrySet()) {
             cfg.set("kuudraTier." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Integer> entry : runsCompleted.entrySet()) {
+            cfg.set("runsCompleted." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
