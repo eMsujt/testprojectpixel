@@ -27,6 +27,7 @@ public final class PlayerProfile {
     private ItemStack[] quiverContents;
     private ItemStack[] fishingBagContents;
     private ItemStack[] islandStorageContents;
+    private ItemStack[] wardrobeContents;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -270,6 +271,25 @@ public final class PlayerProfile {
      */
     public void setIslandStorageContents(ItemStack[] islandStorageContents) {
         this.islandStorageContents = islandStorageContents == null ? null : islandStorageContents.clone();
+    }
+
+    /**
+     * Returns the player's persisted Wardrobe contents as a per-slot snapshot,
+     * or {@code null} if the wardrobe has never been opened.
+     *
+     * @return the Wardrobe contents, or {@code null}
+     */
+    public ItemStack[] getWardrobeContents() {
+        return wardrobeContents == null ? null : wardrobeContents.clone();
+    }
+
+    /**
+     * Sets the player's persisted Wardrobe contents from a per-slot array.
+     *
+     * @param wardrobeContents the Wardrobe contents, may be {@code null}
+     */
+    public void setWardrobeContents(ItemStack[] wardrobeContents) {
+        this.wardrobeContents = wardrobeContents == null ? null : wardrobeContents.clone();
     }
 
     @Override

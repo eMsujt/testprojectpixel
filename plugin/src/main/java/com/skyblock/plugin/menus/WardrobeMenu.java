@@ -1,119 +1,105 @@
 package com.skyblock.plugin.menus;
 
-import com.skyblock.core.wardrobe.WardrobeManager;
-import com.skyblock.core.wardrobe.WardrobeManager.WardrobeSlot;
-import com.skyblock.plugin.gui.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
+import com.skyblock.plugin.profile.PlayerProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * The Wardrobe menu.
  *
- * <p>A 54-slot (6-row) menu titled {@code §6Wardrobe} showing seven armour-set
- * presets ({@link WardrobeSlot#SLOT_1} … {@link WardrobeSlot#SLOT_7}) across the
- * first inner row (slots 10-16), framed by a {@code GRAY_STAINED_GLASS_PANE}
- * border. Clicking an occupied preset equips that armour set; an info item and a
- * close button sit on the bottom row.</p>
+ * <p>A 54-slot (6-row) chest titled {@code §eWardrobe}. Slots
+ * {@value #FIRST_SLOT}–{@value #LAST_SLOT} are interactive storage for armour
+ * sets. The bottom row (slots 45–53) is decorated with
+ * {@code PURPLE_STAINED_GLASS_PANE} and its clicks are cancelled.</p>
+ *
+ * <p>Contents are persisted on the player's {@link PlayerProfile} via
+ * {@link ProfileManager}: loaded on open, saved on close.</p>
  */
-public class WardrobeMenu extends Menu {
+public final class WardrobeMenu implements Listener {
 
-    /** The seven preset slots displayed across the first inner row. */
-    private static final int[] PRESET_SLOTS = {10, 11, 12, 13, 14, 15, 16};
+    /** The inventory title (supports colour codes). */
+    public static final String TITLE = "§eWardrobe";
 
-    /** Slots showing the player's currently equipped armour (helmet → boots). */
-    private static final int[] EQUIPPED_SLOTS = {29, 30, 31, 32};
+    /** The total number of slots (6 rows). */
+    public static final int SIZE = 54;
 
-    /** Fallback placeholder materials for each equipped armour slot. */
-    private static final Material[] EQUIPPED_PLACEHOLDERS = {
-            Material.LEATHER_HELMET,
-            Material.LEATHER_CHESTPLATE,
-            Material.LEATHER_LEGGINGS,
-            Material.LEATHER_BOOTS
-    };
+    /** First interactive slot, inclusive. */
+    public static final int FIRST_SLOT = 0;
 
-    /** Display names for each equipped armour slot. */
-    private static final String[] EQUIPPED_NAMES = {
-            "§6Helmet",
-            "§6Chestplate",
-            "§6Leggings",
-            "§6Boots"
-    };
+    /** Last interactive slot, inclusive. */
+    public static final int LAST_SLOT = 44;
 
-    /** The seven wardrobe presets, one per displayed slot. */
-    private static final WardrobeSlot[] PRESETS = {
-            WardrobeSlot.SLOT_1,
-            WardrobeSlot.SLOT_2,
-            WardrobeSlot.SLOT_3,
-            WardrobeSlot.SLOT_4,
-            WardrobeSlot.SLOT_5,
-            WardrobeSlot.SLOT_6,
-            WardrobeSlot.SLOT_7
-    };
+    /**
+     * Opens the player's Wardrobe, drawing the border and populating the
+     * interactive slots from the contents snapshot on their profile.
+     *
+     * @param player the player to show the wardrobe to
+     */
+    public static void open(Player player) {
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
+        Inventory inventory = Bukkit.createInventory(player, SIZE, TITLE);
 
-    /** Slot for the info item. */
-    private static final int INFO_SLOT = 49;
+        ItemStack pane = new ItemStack(Material.PURPLE_STAINED_GLASS_PANE);
+        ItemMeta meta = pane.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName("§r");
+            pane.setItemMeta(meta);
+        }
+        for (int slot = LAST_SLOT + 1; slot < SIZE; slot++) {
+            inventory.setItem(slot, pane);
+        }
 
-    /** Slot for the close button. */
-    private static final int CLOSE_SLOT = 53;
-
-    private final Player player;
-
-    public WardrobeMenu(Player player) {
-        super("§6Wardrobe", 6);
-        this.player = player;
-    }
-
-    @Override
-    protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
+        ItemStack[] contents = profile.getWardrobeContents();
+        if (contents != null) {
+            for (int i = 0; i < contents.length && FIRST_SLOT + i <= LAST_SLOT; i++) {
+                inventory.setItem(FIRST_SLOT + i, contents[i]);
             }
         }
 
-        WardrobeManager manager = WardrobeManager.getInstance();
-        for (int i = 0; i < PRESETS.length; i++) {
-            WardrobeSlot preset = PRESETS[i];
-            boolean occupied = manager.getOutfit(player.getUniqueId(), preset) != null;
-            setItem(PRESET_SLOTS[i],
-                    new ItemBuilder(occupied ? Material.LEATHER_CHESTPLATE : Material.GRAY_STAINED_GLASS_PANE)
-                            .displayName("§6" + preset.getDisplayName())
-                            .lore(occupied ? "§7Click to equip" : "§7Empty")
-                            .build(),
-                    occupied ? event -> {
-                        ItemStack[] armor = manager.getOutfit(player.getUniqueId(), preset);
-                        if (armor != null) {
-                            player.getInventory().setArmorContents(armor);
-                            manager.setActiveArmorSet(player.getUniqueId(), preset.name());
-                            player.sendMessage("§aEquipped " + preset.getDisplayName() + ".");
-                            player.closeInventory();
-                        }
-                    } : null);
+        player.openInventory(inventory);
+    }
+
+    /**
+     * Cancels clicks on the decorative border panes.
+     *
+     * @param event the inventory click event
+     */
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if (!TITLE.equals(event.getView().getTitle())) return;
+        int raw = event.getRawSlot();
+        if (raw > LAST_SLOT && raw < SIZE) {
+            event.setCancelled(true);
         }
+    }
 
-        // Display the player's live equipped armour (helmet → boots).
-        ItemStack[] armor = player.getInventory().getArmorContents();
-        for (int i = 0; i < EQUIPPED_SLOTS.length; i++) {
-            ItemStack piece = armor[armor.length - 1 - i];
-            boolean worn = piece != null && piece.getType() != Material.AIR;
-            setItem(EQUIPPED_SLOTS[i],
-                    new ItemBuilder(worn ? piece : new ItemStack(EQUIPPED_PLACEHOLDERS[i]))
-                            .displayName(EQUIPPED_NAMES[i])
-                            .lore(worn ? "§7Currently equipped" : "§7Empty")
-                            .build());
+    /**
+     * Persists the interactive wardrobe slots back onto the player's profile
+     * when the menu is closed.
+     *
+     * @param event the inventory close event
+     */
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        if (!TITLE.equals(event.getView().getTitle())) return;
+        HumanEntity closer = event.getPlayer();
+        if (!(closer instanceof Player player)) return;
+        Inventory inventory = event.getInventory();
+        ItemStack[] contents = new ItemStack[LAST_SLOT - FIRST_SLOT + 1];
+        for (int i = 0; i < contents.length; i++) {
+            contents[i] = inventory.getItem(FIRST_SLOT + i);
         }
-
-        setItem(INFO_SLOT, new ItemBuilder(Material.BOOK)
-                .displayName("§aWardrobe")
-                .lore("§7Presets: §f" + PRESETS.length)
-                .build());
-
-        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .build(), e -> e.getWhoClicked().closeInventory());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
+        profile.setWardrobeContents(contents);
     }
 }
