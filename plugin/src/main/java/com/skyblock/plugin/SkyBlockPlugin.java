@@ -147,7 +147,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CombatListener(), this);
         getServer().getPluginManager().registerEvents(new CollectionsListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.profile.ProfileManager(this), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillXpListener(), this);
         new ActionBarManager().start(this);
         getLogger().info("SkyBlock plugin enabled.");
     }
