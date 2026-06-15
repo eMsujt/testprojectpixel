@@ -5,15 +5,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 /**
  * Periodic task that ticks every placed {@link Minion}.
  *
- * <p>Scheduled once per second (every 20 ticks) from
+ * <p>Scheduled every 200 ticks (10 s) from
  * {@link MinionManager#onEnable(org.bukkit.plugin.java.JavaPlugin)} via
  * {@link #runTaskTimer(org.bukkit.plugin.Plugin, long, long)}. Each run walks
  * the minions tracked in the {@link MinionManager} and steps each one.</p>
  */
 public final class MinionTicker extends BukkitRunnable {
 
-    /** One second, expressed in server ticks. */
-    public static final long PERIOD_TICKS = 20L;
+    /** Ten seconds, expressed in server ticks. */
+    public static final long PERIOD_TICKS = 200L;
 
     private final MinionManager manager;
 
