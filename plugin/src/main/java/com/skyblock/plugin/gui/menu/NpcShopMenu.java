@@ -101,7 +101,7 @@ public class NpcShopMenu extends Menu {
         if (!file.exists() && plugin.getResource("shops.yml") != null) {
             plugin.saveResource("shops.yml", false);
         }
-        String title = "§6Shop";
+        String title = "§aNPC Shop";
         List<ShopItem> items = new ArrayList<>();
         if (!file.exists()) {
             return new ShopDefinition(title, items);
@@ -112,7 +112,7 @@ public class NpcShopMenu extends Menu {
             return new ShopDefinition(title, items);
         }
         String raw = shop.getString("title", title);
-        title = "§6" + raw.replaceAll("§[0-9a-fk-orA-FK-OR]", "");
+        title = "§a" + raw.replaceAll("§[0-9a-fk-orA-FK-OR]", "");
         for (String entry : shop.getStringList("items")) {
             int colon = entry.lastIndexOf(':');
             if (colon < 0) {
