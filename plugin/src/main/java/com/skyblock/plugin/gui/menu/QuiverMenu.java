@@ -15,7 +15,7 @@ public class QuiverMenu extends Menu {
     private final Player player;
 
     public QuiverMenu(Player player) {
-        super("§eQuiver", 6);
+        super("§6Quiver", 6);
         this.player = player;
     }
 
