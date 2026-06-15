@@ -14,12 +14,12 @@ import java.util.UUID;
 
 /**
  * Awards Alchemy XP through {@link SkillManager} whenever a brewing stand
- * finishes brewing, granting XP for each potion slot produced and firing
- * level-up rewards when the nearest player's level increases.
+ * finishes brewing, granting XP for each active ingredient slot (0–2) and
+ * firing level-up rewards when the nearest player's level increases.
  */
 public final class AlchemyListener implements Listener {
 
-    /** Alchemy XP granted per brewed potion slot. */
+    /** Alchemy XP granted per active ingredient slot. */
     private static final long POTION_XP = 6L;
 
     /** Maximum distance (blocks) to credit the nearest player for a brew. */
@@ -29,9 +29,11 @@ public final class AlchemyListener implements Listener {
 
     @EventHandler
     public void onBrew(BrewEvent event) {
+        ItemStack[] contents = event.getContents().getContents();
         long xp = 0L;
-        for (ItemStack result : event.getResults()) {
-            if (result != null && !result.getType().isAir()) {
+        for (int i = 0; i <= 2; i++) {
+            ItemStack slot = contents[i];
+            if (slot != null && !slot.getType().isAir()) {
                 xp += POTION_XP;
             }
         }
