@@ -14,12 +14,16 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTameEvent;
+import org.bukkit.Location;
 import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerFishEvent;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Awards skill XP directly to a player's {@link SkyBlockProfile} in response to
@@ -28,6 +32,8 @@ import java.util.Set;
  * non-ageable produce (pumpkins, melons, sugar cane, …) always counts.
  */
 public final class SkillXPListener implements Listener {
+
+    private final Map<Location, UUID> brewingStandOwners = new HashMap<>();
 
     private static final Map<Material, Long> FARMING_XP = Map.ofEntries(
             Map.entry(Material.WHEAT,                4L),
@@ -136,11 +142,20 @@ public final class SkillXPListener implements Listener {
     }
 
     @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getInventory().getType() != InventoryType.BREWING) return;
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+        if (event.getSlot() != 3) return; // ingredient slot
+        Location loc = event.getInventory().getLocation();
+        if (loc == null) return;
+        brewingStandOwners.put(loc, player.getUniqueId());
+    }
+
+    @EventHandler
     public void onBrew(BrewEvent event) {
-        Collection<Player> nearby = event.getBlock().getLocation().getNearbyPlayers(3);
-        if (nearby.isEmpty()) return;
-        Player player = nearby.iterator().next();
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        UUID uuid = brewingStandOwners.remove(event.getBlock().getLocation());
+        if (uuid == null) return;
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(uuid);
         profile.addSkillXp("alchemy", 8L);
     }
 
