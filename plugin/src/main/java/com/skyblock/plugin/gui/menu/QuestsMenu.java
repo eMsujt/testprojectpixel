@@ -10,17 +10,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class QuestsMenu extends Menu {
 
-    private static final int[] INNER_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+    private static final int STARTER_QUEST_COUNT = 8;
+
+    private static final int[] QUEST_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16, 19
     };
 
     private final Player player;
 
     public QuestsMenu(Player player) {
-        super("§dQuests & Objectives", 6);
+        super("§eObjectives", 6);
         this.player = player;
     }
 
@@ -28,42 +27,28 @@ public class QuestsMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        setItem(4, new ItemBuilder(Material.MAP)
-                .displayName("§eObjectives")
-                .lore("§7Track your active quests.")
-                .build());
-
         QuestManager manager = QuestManager.getInstance();
         Quest active = manager.getActiveQuest(player.getUniqueId());
         Quest completed = manager.getLastCompletedQuest(player.getUniqueId());
         Quest[] quests = Quest.values();
 
-        for (int i = 0; i < quests.length && i < INNER_SLOTS.length; i++) {
+        int count = Math.min(STARTER_QUEST_COUNT, quests.length);
+        for (int i = 0; i < count; i++) {
             Quest quest = quests[i];
             boolean isActive = quest.equals(active);
             boolean isCompleted = quest.equals(completed);
-
-            Material icon = isCompleted ? Material.WRITTEN_BOOK
-                    : isActive ? Material.BOOK
-                    : Material.BOOK;
 
             String status = isCompleted ? "§aCompleted"
                     : isActive ? "§eIn Progress"
                     : "§7Not Started";
 
-            setItem(INNER_SLOTS[i], new ItemBuilder(icon)
-                    .displayName((isActive ? "§e" : isCompleted ? "§a" : "§f")
-                            + formatName(quest.name()))
+            String nameColor = isCompleted ? "§a" : isActive ? "§e" : "§f";
+
+            setItem(QUEST_SLOTS[i], new ItemBuilder(Material.PAPER)
+                    .displayName(nameColor + formatName(quest.name()))
                     .lore("§7Status: " + status,
                             "",
                             "§eClick to start!")
-                    .build());
-        }
-
-        if (quests.length == 0) {
-            setItem(22, new ItemBuilder(Material.BARRIER)
-                    .displayName("§cNo Quests Available")
-                    .lore("§7There are no quests to display.")
                     .build());
         }
     }
