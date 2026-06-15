@@ -35,6 +35,7 @@ public final class SkyBlockProfile implements Serializable {
     private long bank = 0L;
     private boolean showSkillNotifications = true;
     private boolean showCollectionNotifications = true;
+    private boolean showPetNotifications = true;
 
     /**
      * Creates a new profile with no accumulated experience.
@@ -267,6 +268,24 @@ public final class SkyBlockProfile implements Serializable {
      */
     public void setShowCollectionNotifications(boolean showCollectionNotifications) {
         this.showCollectionNotifications = showCollectionNotifications;
+    }
+
+    /**
+     * Returns whether pet-related notifications are shown to the player.
+     *
+     * @return {@code true} if pet notifications are enabled
+     */
+    public boolean isShowPetNotifications() {
+        return showPetNotifications;
+    }
+
+    /**
+     * Sets whether pet-related notifications are shown to the player.
+     *
+     * @param showPetNotifications the new setting
+     */
+    public void setShowPetNotifications(boolean showPetNotifications) {
+        this.showPetNotifications = showPetNotifications;
     }
 
     @Override

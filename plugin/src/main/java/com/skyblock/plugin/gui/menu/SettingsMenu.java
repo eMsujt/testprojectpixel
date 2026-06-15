@@ -8,20 +8,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * The SkyBlock Settings menu.
- *
- * <p>A 54-slot (6-row) chest GUI with a gray glass-pane border. Each toggleable
- * setting is shown as a lever across a centred row; clicking a lever flips that
- * setting on the player's {@link SkyBlockProfile} and refreshes the menu,
- * matching Hypixel's layout.</p>
- */
 public class SettingsMenu extends Menu {
 
     private final Player player;
 
     public SettingsMenu(Player player) {
-        super("§7SkyBlock Settings", 5);
+        super("§7SkyBlock Settings", 6);
         this.player = player;
     }
 
@@ -37,6 +29,12 @@ public class SettingsMenu extends Menu {
                     open((Player) event.getWhoClicked());
                 });
 
+        setItem(22, lever("§aPet Notifications", profile.isShowPetNotifications()),
+                event -> {
+                    profile.setShowPetNotifications(!profile.isShowPetNotifications());
+                    open((Player) event.getWhoClicked());
+                });
+
         setItem(24, lever("§aCollection Notifications", profile.isShowCollectionNotifications()),
                 event -> {
                     profile.setShowCollectionNotifications(!profile.isShowCollectionNotifications());
@@ -44,7 +42,6 @@ public class SettingsMenu extends Menu {
                 });
     }
 
-    /** Builds a lever icon showing the setting's name and current on/off state. */
     private ItemStack lever(String name, boolean enabled) {
         return new ItemBuilder(Material.LEVER)
                 .displayName(name)
@@ -54,14 +51,13 @@ public class SettingsMenu extends Menu {
                 .build();
     }
 
-    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 45; slot++) {
+        for (int slot = 0; slot < 54; slot++) {
             int column = slot % 9;
-            if (slot < 9 || slot >= 36 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
                 setItem(slot, pane);
             }
         }
