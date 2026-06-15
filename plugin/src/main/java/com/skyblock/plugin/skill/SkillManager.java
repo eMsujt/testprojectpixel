@@ -146,14 +146,10 @@ public final class SkillManager implements Listener {
         if (player == null || skill == null || amount <= 0) {
             return;
         }
-        long xp = (long) amount;
-        if (xp <= 0) {
-            return;
-        }
         String key = skill.key();
-        skillsManager.addSkillXP(player.getUniqueId(), key, xp);
-        ProfileManager.getInstance().getOrCreate(player.getUniqueId()).addSkillXp(key, xp);
-        sendXpBar(player, key, xp);
+        skillsManager.addSkillXP(player.getUniqueId(), key, (long) amount);
+        ProfileManager.getInstance().getOrCreate(player.getUniqueId()).addSkillXp(key, amount);
+        sendXpBar(player, key, amount);
     }
 
     /** The cumulative XP threshold array for {@code skill} (index 0 = level 1). */

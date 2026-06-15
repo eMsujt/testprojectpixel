@@ -21,7 +21,7 @@ import java.util.UUID;
 public final class PlayerProfile {
 
     private final UUID uuid;
-    private final Map<String, Long> skillXp = new HashMap<>();
+    private final Map<String, Double> skillXp = new HashMap<>();
     private final Map<String, Long> collectionXp = new HashMap<>();
     private final Map<String, Long> collectionCounts = new HashMap<>();
     private String activeProfileName = "Apple";
@@ -60,7 +60,7 @@ public final class PlayerProfile {
      *
      * @return the skill experience totals
      */
-    public Map<String, Long> getSkillXp() {
+    public Map<String, Double> getSkillXp() {
         return Map.copyOf(skillXp);
     }
 
@@ -70,9 +70,9 @@ public final class PlayerProfile {
      * @param skill the skill name
      * @return the experience, or 0 if the skill has never been trained
      */
-    public long getSkillXp(String skill) {
+    public double getSkillXp(String skill) {
         Objects.requireNonNull(skill, "skill");
-        return skillXp.getOrDefault(skill, 0L);
+        return skillXp.getOrDefault(skill, 0.0);
     }
 
     /**
@@ -82,12 +82,12 @@ public final class PlayerProfile {
      * @param amount the experience to add, must not be negative
      * @throws IllegalArgumentException if {@code amount} is negative
      */
-    public void addSkillXp(String skill, long amount) {
+    public void addSkillXp(String skill, double amount) {
         Objects.requireNonNull(skill, "skill");
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
-        skillXp.merge(skill, amount, Long::sum);
+        skillXp.merge(skill, amount, Double::sum);
     }
 
     /**
@@ -97,7 +97,7 @@ public final class PlayerProfile {
      * @param amount the new experience total, must not be negative
      * @throws IllegalArgumentException if {@code amount} is negative
      */
-    public void setSkillXp(String skill, long amount) {
+    public void setSkillXp(String skill, double amount) {
         Objects.requireNonNull(skill, "skill");
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
