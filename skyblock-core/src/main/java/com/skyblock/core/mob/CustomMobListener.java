@@ -54,8 +54,8 @@ public final class CustomMobListener implements Listener {
         }
 
         if (def.getCoinReward() > 0) {
-            com.skyblock.core.economy.manager.EconomyManager.getInstance()
-                    .addBalance(killer.getUniqueId(), def.getCoinReward());
+            com.skyblock.core.manager.EconomyManager.getInstance()
+                    .deposit(killer.getUniqueId(), def.getCoinReward());
             killer.sendMessage("§6+" + def.getCoinReward() + " coins");
         }
 
