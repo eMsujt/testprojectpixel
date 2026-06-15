@@ -23,7 +23,7 @@ public class SkillsMenu extends Menu {
         ALCHEMY      ("Alchemy",      "alchemy",      Material.BREWING_STAND,    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2I0YzRlZDYzMTU0YzVkNTc2N2Q0OGZkMTVhZmI4YTg0YTYwYTZjNWYwMTY2Y2ZhNzZlMzQ5OTA2ZTJiMmIifX19"),
         TAMING       ("Taming",       "taming",       Material.BONE,             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2E1OWFjMTZiYjdjOWU5NGY3N2M0ZDdlNzZmOWYxMDJhODBmNTBhNjlhNGRkNGM5M2ZjMzIzMjc4ZmE3ZWFkNyJ9fX0="),
         CARPENTRY    ("Carpentry",    "carpentry",    Material.CRAFTING_TABLE,   "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzVkMmMxYjJlNGI4NmQ1M2M0ZGZjMWVhNTI3Zjk3NDRhYjRmYjhhYTM4YTFmMGU1N2ZkZTQyMzJiNmZiYzEifX19"),
-        RUNECRAFTING ("Runecrafting", "runecrafting", Material.MAGMA_CREAM,      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q1NzExMzQxZTZiYWE0ZDllZTU0NTI5ZWUyN2Q4MzFiMzc4NTI1ZDgxZTE2MGRlY2Q0NTZlNzFhZjgxN2UifX19"),
+        RUNECRAFTING ("Runecrafting", "runecrafting", Material.MAGMA_CREAM,      "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q1NzExMzQxZTZiYWE0ZDllZTU0NTI5ZWUyN2Q4MzFiMzc4NTI1ZDgxZTE2MGRlY2Q0NTZlNzFhZjgxN2UyMTkifX19"),
         SOCIAL       ("Social",       "social",       Material.EMERALD,          "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzBhMmNjMjU4ZmZlMDc1Nzk5YzllMzI1MDBiNzRiZGNhZGYzOGM1MzRlMzdlMzUzZGE3MjE5ZTFhOWFhYTEifX19");
 
         private final String displayName;
