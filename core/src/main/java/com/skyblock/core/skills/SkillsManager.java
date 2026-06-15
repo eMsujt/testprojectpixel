@@ -27,6 +27,17 @@ public final class SkillsManager {
     public static final Map<String, long[]> XP_REQUIREMENTS;
 
     static {
+        // Guard: SKILL_XP_TABLE must store per-level XP deltas, not cumulative totals.
+        // The standard curve's level-2 entry is 125 XP (delta from level 1 to level 2).
+        // If the table stored cumulative values it would be 175 (50 + 125), which would
+        // cause the loop below to double-cumulate every entry silently.
+        long[] farmingCurve = SkillManager.SKILL_XP_TABLE.get("farming");
+        if (farmingCurve != null && farmingCurve.length >= 2 && farmingCurve[1] != 125L) {
+            throw new IllegalStateException(
+                    "XP_REQUIREMENTS: SKILL_XP_TABLE[\"farming\"][1] = " + farmingCurve[1]
+                    + " but expected per-level delta 125. If SKILL_XP_TABLE now stores cumulative"
+                    + " totals, remove the conversion loop in SkillsManager.XP_REQUIREMENTS.");
+        }
         Map<String, long[]> m = new LinkedHashMap<>();
         for (Map.Entry<String, long[]> entry : SkillManager.SKILL_XP_TABLE.entrySet()) {
             long[] per = entry.getValue();
