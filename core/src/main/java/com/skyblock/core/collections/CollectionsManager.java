@@ -1,133 +1,72 @@
 package com.skyblock.core.collections;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.manager.CollectionManager} instead.
+ */
+@Deprecated
 public final class CollectionsManager {
 
     private static final CollectionsManager INSTANCE = new CollectionsManager();
+    private final com.skyblock.core.manager.CollectionManager delegate =
+            com.skyblock.core.manager.CollectionManager.getInstance();
+
+    private CollectionsManager() {}
 
     public static CollectionsManager getInstance() {
         return INSTANCE;
     }
 
-    private final Map<UUID, Map<String, Long>> collectionAmounts = new HashMap<>();
-    private final Map<UUID, Map<String, Integer>> collectionTiers = new HashMap<>();
-    private final Map<UUID, List<String>> collectionsHistory = new HashMap<>();
-
-    // Item counts required to reach each tier (index 0 = tier I, index N-1 = max tier).
-    public static final Map<String, int[]> COLLECTION_TIERS;
-
-    static {
-        Map<String, int[]> m = new LinkedHashMap<>();
-        // Farming
-        m.put("wheat",       new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
-        m.put("carrot",      new int[]{100, 250, 500, 1_750, 5_000, 15_000, 30_000, 60_000, 100_000});
-        m.put("potato",      new int[]{100, 250, 500, 1_750, 5_000, 15_000, 30_000, 60_000, 100_000});
-        m.put("pumpkin",     new int[]{40, 100, 250, 1_000, 2_500, 7_500, 15_000, 25_000, 50_000});
-        m.put("melon",       new int[]{250, 500, 1_500, 5_000, 15_000, 30_000, 60_000, 100_000, 250_000});
-        m.put("mushroom",    new int[]{50, 100, 250, 1_000, 2_500, 7_500, 20_000, 50_000, 100_000});
-        m.put("cocoa",       new int[]{50, 100, 250, 1_000, 2_500, 7_500, 20_000, 50_000, 100_000});
-        m.put("sugar_cane",  new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
-        m.put("nether_wart", new int[]{50, 100, 250, 1_000, 2_500, 7_500, 20_000, 50_000, 100_000});
-        // Mining
-        m.put("cobblestone", new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
-        m.put("coal",        new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
-        m.put("iron",        new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
-        m.put("gold",        new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
-        m.put("diamond",     new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
-        m.put("lapis",       new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
-        m.put("emerald",     new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
-        m.put("redstone",    new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
-        m.put("quartz",      new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
-        m.put("obsidian",    new int[]{50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000, 50_000});
-        // Foraging
-        m.put("wood",        new int[]{50, 100, 250, 1_000, 2_500, 10_000, 25_000, 50_000, 100_000});
-        // Fishing
-        m.put("fish",        new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
-        m.put("salmon",      new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
-        m.put("clownfish",   new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
-        m.put("pufferfish",  new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
-        m.put("ink_sac",     new int[]{20, 50, 100, 250, 1_000, 2_500, 7_500, 15_000, 30_000});
-        COLLECTION_TIERS = Collections.unmodifiableMap(m);
-    }
-
-    public static final List<String> COLLECTIONS = List.of(
-            "wheat", "carrot", "potato", "pumpkin", "melon",
-            "mushroom", "cocoa", "cactus", "sugar_cane", "nether_wart",
-            "cobblestone", "coal", "iron", "gold", "diamond",
-            "lapis", "emerald", "redstone", "quartz", "obsidian",
-            "wood", "leather", "feather", "string", "ink_sac",
-            "fish", "clownfish", "pufferfish", "salmon"
-    );
-
     public long getAmount(UUID uuid, String collection) {
-        return collectionAmounts.computeIfAbsent(uuid, k -> new HashMap<>())
-                .getOrDefault(collection.toLowerCase(), 0L);
+        com.skyblock.core.model.Collection c = com.skyblock.core.model.Collection.parse(collection);
+        return c == null ? 0L : delegate.getItems(uuid, c);
     }
 
     public void addAmount(UUID uuid, String collection, long amount) {
-        Map<String, Long> amounts = collectionAmounts.computeIfAbsent(uuid, k -> new HashMap<>());
-        String key = collection.toLowerCase();
-        long newTotal = amounts.getOrDefault(key, 0L) + Math.max(0, amount);
-        amounts.put(key, newTotal);
-        recordCollectionEvent(uuid, "Added " + Math.max(0, amount) + " " + collection + ": total " + newTotal);
+        delegate.addItems(uuid, collection, Math.max(0, amount));
     }
 
     public int getTier(UUID uuid, String collection) {
-        return collectionTiers.computeIfAbsent(uuid, k -> new HashMap<>())
-                .getOrDefault(collection.toLowerCase(), 0);
+        com.skyblock.core.model.Collection c = com.skyblock.core.model.Collection.parse(collection);
+        return c == null ? 0 : delegate.getTier(uuid, c);
     }
 
     public void setTier(UUID uuid, String collection, int tier) {
-        collectionTiers.computeIfAbsent(uuid, k -> new HashMap<>())
-                .put(collection.toLowerCase(), Math.max(0, tier));
+        // tier is computed dynamically from count — no-op
     }
 
     public Map<String, Long> getCollectionAmounts(UUID uuid) {
-        return Collections.unmodifiableMap(collectionAmounts.computeIfAbsent(uuid, k -> new HashMap<>()));
+        java.util.Map<String, Long> result = new java.util.HashMap<>();
+        for (Map.Entry<com.skyblock.core.model.Collection, Long> e : delegate.getAll(uuid).entrySet()) {
+            result.put(e.getKey().itemKey, e.getValue());
+        }
+        return java.util.Collections.unmodifiableMap(result);
     }
 
     public Map<String, Integer> getCollectionTiers(UUID uuid) {
-        return Collections.unmodifiableMap(collectionTiers.computeIfAbsent(uuid, k -> new HashMap<>()));
+        java.util.Map<String, Integer> result = new java.util.HashMap<>();
+        for (Map.Entry<com.skyblock.core.model.Collection, Long> e : delegate.getAll(uuid).entrySet()) {
+            result.put(e.getKey().itemKey, delegate.getTier(uuid, e.getKey()));
+        }
+        return java.util.Collections.unmodifiableMap(result);
     }
 
-    // Collections history
-
     public void recordCollectionEvent(UUID playerId, String summary) {
-        collectionsHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
+        delegate.recordCollectionEvent(playerId, summary);
     }
 
     public List<String> getCollectionsHistory(UUID playerId) {
-        return Collections.unmodifiableList(collectionsHistory.getOrDefault(playerId, new ArrayList<>()));
+        return delegate.getCollectionsHistory(playerId);
     }
 
     public Map<UUID, List<String>> getAllCollectionsHistory() {
-        Map<UUID, List<String>> copy = new HashMap<>();
-        for (Map.Entry<UUID, List<String>> entry : collectionsHistory.entrySet()) {
-            copy.put(entry.getKey(), Collections.unmodifiableList(entry.getValue()));
-        }
-        return Collections.unmodifiableMap(copy);
+        return delegate.getAllCollectionsHistory();
     }
 
     public String getCollectionStats(UUID uuid) {
-        Map<String, Long> amounts = collectionAmounts.getOrDefault(uuid, new HashMap<>());
-        List<Map.Entry<String, Long>> sorted = new ArrayList<>(amounts.entrySet());
-        sorted.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
-        StringBuilder sb = new StringBuilder("Top Collections:");
-        int limit = Math.min(5, sorted.size());
-        if (limit == 0) {
-            sb.append(" none");
-        } else {
-            for (int i = 0; i < limit; i++) {
-                sb.append(" ").append(sorted.get(i).getKey()).append("=").append(sorted.get(i).getValue());
-            }
-        }
-        return sb.toString();
+        return delegate.getCollectionStats(uuid);
     }
 }
