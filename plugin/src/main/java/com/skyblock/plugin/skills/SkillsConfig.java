@@ -1,14 +1,12 @@
 package com.skyblock.plugin.skills;
 
 /**
- * Static skill-leveling constants shared across the skills package.
- *
- * <p>{@link #XP_CURVE} is the cumulative form of Hypixel SkyBlock's standard skill
- * XP table: {@code XP_CURVE[i]} is the total XP a player must accumulate to reach
- * level {@code i + 1}. It is the running sum of the per-level requirements held in
- * {@link com.skyblock.core.skills.SkillManager#SKILL_XP_TABLE}, so the two
- * stay in lockstep with {@code SkillManager}'s level computation.</p>
+ * @deprecated Use {@link com.skyblock.core.skills.SkillManager#SKILL_XP_TABLE} for
+ *     per-level XP data and {@link com.skyblock.core.skills.SkillManager#levelForXp}
+ *     for level resolution. The canonical implementation is
+ *     {@code com.skyblock.core.skills.SkillManager}.
  */
+@Deprecated
 public final class SkillsConfig {
 
     /** Highest skill level the standard curve covers. */

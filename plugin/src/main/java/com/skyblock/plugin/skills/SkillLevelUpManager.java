@@ -1,12 +1,12 @@
 package com.skyblock.plugin.skills;
 
 /**
- * Singleton that exposes Hypixel's cumulative XP thresholds for skill levels 1–60
- * and resolves a total-XP amount to the corresponding level.
- *
- * <p>The threshold array is delegated to {@link SkillsConfig#XP_CURVE}, the single
- * source of truth for the standard skill XP curve used across this package.</p>
+ * @deprecated Use {@link com.skyblock.core.skills.SkillManager} instead.
+ *     Level resolution is provided by
+ *     {@link com.skyblock.core.skills.SkillManager#levelForXp(String, long)} and
+ *     the XP table by {@link com.skyblock.core.skills.SkillManager#SKILL_XP_TABLE}.
  */
+@Deprecated
 public final class SkillLevelUpManager {
 
     private static final SkillLevelUpManager INSTANCE = new SkillLevelUpManager();
