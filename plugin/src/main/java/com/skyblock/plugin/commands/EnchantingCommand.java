@@ -1,6 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.plugin.managers.EnchantingManager;
+import com.skyblock.core.manager.EnchantmentManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,7 +37,7 @@ public final class EnchantingCommand implements CommandExecutor {
 
     private void handleList(Player player) {
         UUID id = player.getUniqueId();
-        Map<String, Integer> levels = EnchantingManager.getInstance().getEnchantLevels(id);
+        Map<String, Integer> levels = EnchantmentManager.getInstance().getEnchantLevels(id);
 
         player.sendMessage("=== Your Enchants ===");
         if (levels.isEmpty()) {
@@ -55,7 +55,7 @@ public final class EnchantingCommand implements CommandExecutor {
             return;
         }
         String enchant = args[1];
-        int level = EnchantingManager.getInstance().getEnchantLevel(player.getUniqueId(), enchant);
+        int level = EnchantmentManager.getInstance().getEnchantLevel(player.getUniqueId(), enchant);
         player.sendMessage(enchant + " — Level " + level);
     }
 
@@ -72,7 +72,7 @@ public final class EnchantingCommand implements CommandExecutor {
             player.sendMessage("Level must be a number.");
             return;
         }
-        EnchantingManager.getInstance().setEnchantLevel(player.getUniqueId(), enchant, level);
+        EnchantmentManager.getInstance().setEnchantLevel(player.getUniqueId(), enchant, level);
         player.sendMessage("Set " + enchant + " to Level " + level + ".");
     }
 
@@ -93,13 +93,13 @@ public final class EnchantingCommand implements CommandExecutor {
             player.sendMessage("Level must be between 1 and 10.");
             return;
         }
-        EnchantingManager.getInstance().setEnchantLevel(player.getUniqueId(), enchant, level);
+        EnchantmentManager.getInstance().setEnchantLevel(player.getUniqueId(), enchant, level);
         player.sendMessage("Applied " + enchant + " at Level " + level + ".");
     }
 
     private void handleHistory(Player player) {
         UUID id = player.getUniqueId();
-        List<String> history = EnchantingManager.getInstance().getEnchantHistory(id);
+        List<String> history = EnchantmentManager.getInstance().getEnchantHistory(id);
 
         player.sendMessage("=== Enchanting History ===");
         if (history.isEmpty()) {
