@@ -36,7 +36,6 @@
         <module>mining</module>
         <module>island</module>
         <module>scoreboard</module>
-        <module>stats</module>
         <module>events</module>
         <module>slayers</module>
         <module>dungeons</module>
@@ -58,7 +57,6 @@
 
         <module>party</module>
         <module>museum</module>
-        <module>minion</module>
         <module>calendar</module>
         <module>housing</module>
         <module>shop</module>
