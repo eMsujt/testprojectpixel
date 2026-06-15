@@ -1,7 +1,8 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Counts: **67 declared Maven modules** (`pom.xml`), **577 `.java` source files**.
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations.
+> Counts: **66 declared Maven modules** (`pom.xml`; `auctionhouse` pruned), **577 `.java` source files**.
 
 ## How to read this document
 
@@ -19,7 +20,37 @@ things stand out from a full pass over the tree and should frame everything belo
    `core/` and `plugin/` appear to be earlier or parallel iterations.
 
 Status legend: ✅ canonical / actively wired · 🔁 duplicate or overlapping variant ·
-🧩 model/enum/support type only.
+🧩 model/enum/support type only · ✂️ pruned / removed.
+
+---
+
+## Post-cleanup canonical manager registry
+
+The consolidations below are tracked in full in [`CLEANUP.md`](./CLEANUP.md). Every
+entry lists the **single canonical class** callers should import; all other variants
+carry a `@Deprecated` delegating stub or have been deleted.
+
+| Domain | Canonical class | Status |
+|--------|-----------------|--------|
+| AuctionHouseManager | `com.skyblock.core.auction.AuctionHouseManager` | ✅ consolidated (#9f504bba) |
+| Rarity enum | `com.skyblock.core.model.Rarity` | ✅ consolidated (#2e713bba) |
+| ItemBuilder utility | `com.skyblock.core.util.ItemBuilder` | ✅ consolidated (#01eebf00) |
+| CollectionManager | `com.skyblock.core.manager.CollectionManager` | ✅ consolidated (Oracle) |
+| Collection / CollectionCategory | `com.skyblock.core.model.Collection`, `com.skyblock.core.model.CollectionCategory`, `com.skyblock.core.util.CollectionRegistry` | ✅ consolidated (Sentinel) |
+| Menu abstract base | `com.skyblock.core.menu.Menu` | ✅ consolidated (Vega) |
+| SkillManager / SkillsManager | `com.skyblock.core.skills.SkillManager` | ✅ consolidated (Vega) |
+| EnchantmentManager / EnchantManager | `com.skyblock.core.manager.EnchantmentManager` | ✅ consolidated (#2512 / 64852fe2) |
+| CraftingManager / RecipeManager | `com.skyblock.core.crafting.CraftingManager` | ✅ consolidated (#2510 / 3c333a9e) |
+| SkillType / SkillXPTable | `com.skyblock.core.skills.SkillManager.SkillType` | ✅ consolidated (#2511 / c8fa794d) |
+| QuestManager / QuestsManager | `com.skyblock.core.manager.QuestManager` | ✅ consolidated (#2513) |
+| EconomyManager / CoinManager / MoneyManager / PurseManager | `com.skyblock.core.manager.EconomyManager` | ✅ consolidated (#2514) |
+| AbilityManager / AbilityHandler / SpecialAbilityManager | `com.skyblock.core.manager.AbilityManager` | ✅ consolidated (#2515) |
+| DungeonManager / DungeonsManager | `com.skyblock.core.manager.DungeonManager` | ✅ consolidated (#2517) |
+
+Pending consolidations: `BankManager`, `BazaarManager`, `IslandManager`, `MinionManager`,
+`ProfileManager`, `SlayerManager`, `EnchantingManager`, `NPCManager`, `GuildManager`,
+`TradingManager`, `BrewingManager`. See [`CLEANUP.md`](./CLEANUP.md) for the full pending
+table.
 
 ---
 
@@ -37,35 +68,34 @@ Status legend: ✅ canonical / actively wired · 🔁 duplicate or overlapping v
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `economy` | `CoinManager`, `BankManager`, `AuctionHouseManager`, `BazaarManager`, `CurrencyType` | ✅ Most complete economy module. |
-| `bank` | `BankManager` | 🔁 Bank-only variant. |
-| `banking` | `BankManager`, `BankingManager`, `BankTier` | 🔁 Declared module; overlaps `bank`/`economy`. |
-| `bazaar` | `BazaarManager`, `BazaarOrder`, `ProductCategory` | ✅ Standalone bazaar. |
+| `economy` | `CoinManager`, `BankManager`, `AuctionHouseManager`, `BazaarManager`, `CurrencyType` | ✅ Most complete economy module. Canonical `EconomyManager` consolidated into `com.skyblock.core.manager.EconomyManager`. |
+| `bank` | `BankManager` | 🔁 Bank-only variant. Pending consolidation. |
+| `banking` | `BankManager`, `BankingManager`, `BankTier` | 🔁 Declared module; overlaps `bank`/`economy`. Pending consolidation. |
+| `bazaar` | `BazaarManager`, `BazaarOrder`, `ProductCategory` | ✅ Standalone bazaar. Pending consolidation. |
 
 ## Auction House
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `auction` | `AuctionManager` | 🔁 |
-| `auctions` | `AuctionManager`, `AuctionType` | 🔁 |
-| `auctionhouse` | `AuctionHouseManager` | 🔁 |
+| `auction` | `AuctionManager` | 🔁 `@Deprecated` stub delegating to canonical. |
+| `auctions` | `AuctionManager`, `AuctionType` | 🔁 `@Deprecated` stub delegating to canonical. |
+| `auctionhouse` | *(pruned)* | ✂️ Removed from root `pom.xml`; was a single `@Deprecated` stub. |
 | `auction_house` | `AuctionType` | 🔁 Enum-only fragment. |
 
-> Four overlapping auction modules. `core` and `skyblock-core` each add two more
-> auction packages (`auction`, `auctionhouse`). Strong consolidation candidate.
+> Canonical: `com.skyblock.core.auction.AuctionHouseManager` (#9f504bba).
 
 ## Islands
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `islands` | `Island`, `IslandManager`, `IslandUpgradeManager` | ✅ Most complete. |
-| `island` | `IslandManager`, `IslandUpgrade` | 🔁 |
+| `islands` | `Island`, `IslandManager`, `IslandUpgradeManager` | ✅ Most complete. Pending consolidation. |
+| `island` | `IslandManager`, `IslandUpgrade` | 🔁 Pending consolidation. |
 
 ## Skills & gathering
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `skills` | `SkillManager`, `SkillsManager`, `SkillType`, `SkillXPTable` | ✅ |
+| `skills` | `SkillManager`, `SkillsManager`, `SkillType`, `SkillXPTable` | ✅ Canonical: `com.skyblock.core.skills.SkillManager`. All duplicates consolidated (#2511, Vega). |
 | `farming` | `FarmingManager`, `CropType` | ✅ |
 | `fishing` | `FishingManager`, `FishingListener`, `FishingDrop`, `FishTreasure`, `FishingZone`, `TrophyFishType` | ✅ Richest gathering module. |
 | `foraging` | `ForagingManager`, `ForagingLocation` | ✅ |
@@ -77,52 +107,58 @@ Status legend: ✅ canonical / actively wired · 🔁 duplicate or overlapping v
 | Module | Classes | Status |
 |--------|---------|--------|
 | `combat` | `CombatEngine`, `CombatManager`, `CombatStat`, `CombatStats`, `DamageCalculator`, `DamageType` | ✅ |
-| `slayer` | `SlayerManager`, `SlayerBossManager`, `SlayerType` | ✅ |
-| `slayers` | `SlayerManager`, `SlayerQuest`, `SlayerType` | 🔁 |
-| `skyblock-slayer` | `SlayerManager` | 🔁 |
+| `slayer` | `SlayerManager`, `SlayerBossManager`, `SlayerType` | ✅ Most complete. Pending consolidation. |
+| `slayers` | `SlayerManager`, `SlayerQuest`, `SlayerType` | 🔁 Pending consolidation. |
+| `skyblock-slayer` | `SlayerManager` | 🔁 Pending consolidation. |
 | `dungeons` | `DungeonManager`, `DungeonClass`, `DungeonFloor`, `DungeonRoom`, `DungeonScoreManager` | ✅ Most complete dungeon module. |
-| `dungeon` | `DungeonManager` | 🔁 |
-| `skyblock-dungeons` | `DungeonManager` | 🔁 |
+| `dungeon` | `DungeonManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.DungeonManager` (#2517). |
+| `skyblock-dungeons` | `DungeonManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.DungeonManager` (#2517). |
+
+> Canonical: `com.skyblock.core.manager.DungeonManager` (#2517).
 
 ## Items, enchanting, forging & reforging
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `items` | `ItemManager`, `SkyBlockItem`, `ItemRarity`, `Rarity` | ✅ |
+| `items` | `ItemManager`, `SkyBlockItem`, `ItemRarity`, `Rarity` | ✅ Canonical `Rarity` consolidated into `com.skyblock.core.model.Rarity`. |
 | `enchanting` | `EnchantingManager`, `EnchantmentRegistry`, `SkyBlockEnchantment`, `EnchantType` | ✅ |
-| `enchantments` | `EnchantmentManager`, `SkyBlockEnchantment` | 🔁 |
-| `enchants` | `EnchantManager` | 🔁 |
+| `enchantments` | `EnchantmentManager`, `SkyBlockEnchantment` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.EnchantmentManager`. |
+| `enchants` | `EnchantManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.EnchantmentManager`. |
 | `forging` | `ForgingManager`, `ForgeSlot` | ✅ |
 | `item_forge` | `ItemForgeManager` | 🔁 |
 | `reforging` | `ReforgingManager` | ✅ |
-| `crafting` | `CraftingManager`, `SkyBlockCraftingManager`, `CraftingRecipe`, `RecipeType` | ✅ |
+| `crafting` | `CraftingManager`, `SkyBlockCraftingManager`, `CraftingRecipe`, `RecipeType` | ✅ Canonical: `com.skyblock.core.crafting.CraftingManager` (#2510). |
 | `talismans` | `Talisman` | 🧩 Model-only. |
 | `accessories` | `AccessoryManager`, `AccessoryRarity` | ✅ |
+
+> Canonical EnchantmentManager: `com.skyblock.core.manager.EnchantmentManager` (#2512).
 
 ## Pets & minions
 
 | Module | Classes | Status |
 |--------|---------|--------|
 | `pets` | `PetManager`, `Pet`, `PetAbility`, `PetTier`, `PetType` | ✅ |
-| `minions` | `MinionManager`, `MinionInstance`, `MinionTier`, `MinionType` | ✅ |
-| `minion` | `MinionManager` | 🔁 |
-| `skyblock-minions` | `MinionManager` | 🔁 |
+| `minions` | `MinionManager`, `MinionInstance`, `MinionTier`, `MinionType` | ✅ Most complete. Pending consolidation. |
+| `minion` | `MinionManager` | 🔁 Pending consolidation. |
+| `skyblock-minions` | `MinionManager` | 🔁 Pending consolidation. |
 
 ## Profiles
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `profiles` | `ProfileManager`, `SkyBlockProfile`, `GameMode`, `ProfileMode` | ✅ |
-| `profile` | `ProfileManager` | 🔁 |
-| `playerdata` | `PlayerProfile` | 🔁 (see app modules). |
+| `profiles` | `ProfileManager`, `SkyBlockProfile`, `GameMode`, `ProfileMode` | ✅ Most complete. Pending consolidation into `com.skyblock.core.profile.ProfileManager`. |
+| `profile` | `ProfileManager` | 🔁 Pending consolidation. |
+| `playerdata` | `PlayerProfile` | 🧩 (see app modules). |
+
+> Note: callers are bound to `PlayerProfile` (not `SkyBlockProfile`) — see memory note before converting.
 
 ## Collections, quests & progression
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `collections` | `CollectionManager`, `CollectionsManager`, `CollectionRegistry`, `CollectionCategory`, `CollectionTier` | ✅ |
-| `collection` | `CollectionManager` | 🔁 |
-| `quests` | `QuestManager`, `QuestRegistry`, `QuestType`, `QuestObjectiveType` | ✅ |
+| `collections` | `CollectionManager`, `CollectionsManager`, `CollectionRegistry`, `CollectionCategory`, `CollectionTier` | ✅ Canonical: `com.skyblock.core.manager.CollectionManager`. |
+| `collection` | `CollectionManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.CollectionManager`. |
+| `quests` | `QuestManager`, `QuestRegistry`, `QuestType`, `QuestObjectiveType` | ✅ Canonical: `com.skyblock.core.manager.QuestManager` (#2513). |
 | `achievements` | `AchievementManager`, `AchievementType` | ✅ |
 | `leaderboards` | `LeaderboardManager` | ✅ |
 | `bestiary` | `BestiaryManager`, `BestiaryFamily` | ✅ |
@@ -133,14 +169,14 @@ Status legend: ✅ canonical / actively wired · 🔁 duplicate or overlapping v
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `npc` | `NpcManager`, `NpcType` | 🔁 |
-| `npcs` | `NPCManager`, `NpcManager` | 🔁 Inconsistent casing within module. |
+| `npc` | `NpcManager`, `NpcType` | 🔁 Pending consolidation. |
+| `npcs` | `NPCManager`, `NpcManager` | 🔁 Inconsistent casing within module. Pending consolidation. |
 | `shop` | `ShopManager` | ✅ |
-| `guilds` | `GuildManager`, `Guild` | ✅ |
+| `guilds` | `GuildManager`, `Guild` | ✅ Pending consolidation. |
 | `guild` | `GuildRank` | 🧩 Enum-only fragment. |
 | `party` | `PartyManager` | ✅ |
-| `trades` | `TradeManager`, `TradeCommand` | ✅ |
-| `trading` | `TradingManager` | 🔁 |
+| `trades` | `TradeManager`, `TradeCommand` | ✅ Pending consolidation. |
+| `trading` | `TradingManager` | 🔁 Pending consolidation. |
 
 ## Storage, cosmetics & world
 
@@ -154,8 +190,8 @@ Status legend: ✅ canonical / actively wired · 🔁 duplicate or overlapping v
 | `scoreboard` | `ScoreboardManager`, `ScoreboardSection` | ✅ |
 | `stats` | `StatsManager`, `PlayerStat` | ✅ |
 | `events` | `EventManager`, `SkyBlockEvent` | ✅ |
-| `alchemy` | `AlchemyManager`, `BrewingIngredient` | ✅ |
-| `brewing` | `BrewingManager` | 🔁 Overlaps `alchemy`. |
+| `alchemy` | `AlchemyManager`, `BrewingIngredient` | ✅ Richest alchemy/brewing module. Pending consolidation. |
+| `brewing` | `BrewingManager` | 🔁 Pending consolidation. |
 
 ---
 
@@ -184,9 +220,10 @@ package under `com.skyblock.core.*`. Notable patterns:
   `command`/`commands`, `warp`/`warps` all coexist with parallel manager classes.
 - **Support/infrastructure**: `gui/GuiBuilder`, `item/ItemBuilder`, `storage/YamlPlayerStorage`,
   `listener/CoreListeners`, `menu/MenuManager`+`MenuListener`.
-
-This module is where ongoing per-feature work (stats getters, YAML persistence, history
-tracking) is landing across its many manager variants.
+- **Consolidated canonical managers** now live in `com.skyblock.core.manager.*`:
+  `QuestManager`, `EconomyManager`, `AbilityManager`, `DungeonManager`,
+  `EnchantmentManager`, `CollectionManager`. Facades in `com.skyblock.core.skills.*`:
+  `SkillManager`. See the [canonical registry](#post-cleanup-canonical-manager-registry) above.
 
 ## `plugin` breakdown
 
@@ -210,10 +247,14 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
 
 ## Summary of findings
 
-- **Heavy duplication is the dominant architectural issue.** Most domains have 2–4
-  parallel implementations spread across leaf modules, `core/`, `plugin/`, and
-  `skyblock-core/`. This multiplies the surface for every feature change (e.g. a stats
-  getter must be added to 4–6 manager variants).
+- **Ongoing consolidation has eliminated 14 duplicate surfaces.** Canonical managers for
+  AuctionHouseManager, Rarity, ItemBuilder, CollectionManager, Menu, SkillManager,
+  EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
+  and DungeonManager are now single classes with `@Deprecated` delegating stubs replacing
+  all duplicates. The `auctionhouse` leaf module was pruned entirely.
+- **11 domains remain unconsolidated** (BankManager, BazaarManager, IslandManager,
+  MinionManager, ProfileManager, SlayerManager, EnchantingManager, NPCManager,
+  GuildManager, TradingManager, BrewingManager) — tracked in [`CLEANUP.md`](./CLEANUP.md).
 - **Naming is inconsistent** — singular vs plural module names (`auction`/`auctions`,
   `collection`/`collections`, `minion`/`minions`) and casing (`Hotm`/`HOTM`, `Npc`/`NPC`,
   `SkyBlockPlugin`/`SkyblockPlugin`).
@@ -221,7 +262,6 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
   `garden`, `guild`, `talismans`) that exist only to back a richer sibling module.
 - **`skyblock-core` is the canonical target** per the README and is where active
   development is concentrated; `core/` and `plugin/` are overlapping legacy stacks.
-- **Consolidation roadmap** for these duplicates is tracked separately in
+- **Consolidation roadmap** for remaining duplicates is tracked in
+  [`CLEANUP.md`](./CLEANUP.md) and the overall goal is documented in
   [`ROADMAP.md`](./ROADMAP.md).
-</content>
-</invoke>
