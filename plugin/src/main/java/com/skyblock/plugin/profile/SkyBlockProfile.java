@@ -178,6 +178,21 @@ public final class SkyBlockProfile implements Serializable {
     }
 
     /**
+     * Increments the player's per-item collection count by the given amount.
+     *
+     * @param key    the collection item name
+     * @param amount the amount to add, must not be negative
+     * @throws IllegalArgumentException if {@code amount} is negative
+     */
+    public void incrementCollection(String key, int amount) {
+        Objects.requireNonNull(key, "key");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        collectionCounts.merge(key, amount, Integer::sum);
+    }
+
+    /**
      * Returns the player's quiver contents, one stack per slot.
      *
      * @return the live, mutable list of quiver arrow stacks
