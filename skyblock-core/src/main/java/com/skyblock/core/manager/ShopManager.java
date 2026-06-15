@@ -21,8 +21,9 @@ import java.util.Optional;
  * {@link LinkedHashMap} so iteration order is stable. All mutating operations
  * are {@code synchronized} for thread safety.</p>
  *
- * <p>Canonical implementation — all other ShopManager and NpcShopManager
- * copies in this repository are deprecated stubs that delegate here.</p>
+ * <p>Canonical implementation — the sole {@code ShopManager} in the
+ * repository. The former NpcShopManager duplicate has been removed; all
+ * shop pricing now lives here.</p>
  */
 public final class ShopManager {
 
