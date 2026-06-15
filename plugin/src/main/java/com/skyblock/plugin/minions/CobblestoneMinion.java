@@ -8,14 +8,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * The Cobblestone Minion: the starter minion that mines cobblestone.
- *
- * <p>Defines the minion's identity (its {@link MinionManager.MinionData#type()
- * type} string and the resource it produces) and provides factories that bridge
- * to {@link MinionManager}. It carries no per-placement state of its own; placed
- * minions are tracked by {@link MinionManager} as {@link
- * MinionManager.MinionData} records.</p>
+ * @deprecated Use {@link com.skyblock.plugin.minion.CobblestoneMinion} instead.
  */
+@Deprecated
 public final class CobblestoneMinion {
 
     /** Display name / type identifier used in {@link MinionManager.MinionData}. */
