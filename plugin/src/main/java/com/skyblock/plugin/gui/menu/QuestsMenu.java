@@ -20,13 +20,18 @@ public class QuestsMenu extends Menu {
     private final Player player;
 
     public QuestsMenu(Player player) {
-        super("§eQuests & Objectives", 6);
+        super("§eObjectives", 6);
         this.player = player;
     }
 
     @Override
     protected void build() {
         fillBorder();
+
+        setItem(4, new ItemBuilder(Material.MAP)
+                .displayName("§eObjectives")
+                .lore("§7Track your active quests.")
+                .build());
 
         QuestManager manager = QuestManager.getInstance();
         Quest active = manager.getActiveQuest(player.getUniqueId());
