@@ -67,11 +67,6 @@ commands:
     description: View your SkyBlock profile stats.
     usage: /<command>
     permission: skyblock.command.profile
-  skyblockmenu:
-    description: Open the SkyBlock main menu.
-    usage: /<command>
-    aliases: [sbmenu]
-    permission: skyblock.command.skyblockmenu
   minion:
     description: Manage your SkyBlock minions.
     usage: /<command>
@@ -160,9 +155,6 @@ permissions:
     default: true
   skyblock.command.profile:
     description: Allows use of the /profile command.
-    default: true
-  skyblock.command.skyblockmenu:
-    description: Allows use of the /skyblockmenu command.
     default: true
   skyblock.command.minion:
     description: Allows use of the /minion command.
