@@ -20,7 +20,7 @@ public class QuestsMenu extends Menu {
     private final Player player;
 
     public QuestsMenu(Player player) {
-        super("§aQuests & Objectives", 6);
+        super("§eQuests & Objectives", 6);
         this.player = player;
     }
 
