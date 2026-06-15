@@ -18,7 +18,10 @@ import java.util.UUID;
  * <p>Tracks every {@link MinionData} instance by its unique ID, and
  * maintains an index from owner {@link UUID} to their minion list.
  * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.MinionManager} instead.
  */
+@Deprecated
 public final class MinionManager {
 
     /** All minion types available in SkyBlock. */

@@ -33,7 +33,10 @@ import java.util.UUID;
  * and {@link #onDisable()} from {@code onDisable} to drive the resource-tick
  * scheduler. Register the instance as a Bukkit listener so that right-clicking
  * a placed minion (a {@link Material#DISPENSER} block) interacts with it.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.MinionManager} instead.
  */
+@Deprecated
 public final class MinionManager implements Listener {
 
     /**

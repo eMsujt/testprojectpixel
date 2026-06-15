@@ -11,7 +11,10 @@ import java.util.UUID;
  * Tracks the minions each player has placed and their tiers.
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.MinionManager} instead.
  */
+@Deprecated
 public final class MinionManager {
 
     /** Maximum tier a minion can be upgraded to. */

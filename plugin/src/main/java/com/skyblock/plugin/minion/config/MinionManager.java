@@ -23,7 +23,10 @@ import java.util.Map;
  * {@link TierSpec#storageSlots() storage-slot count}. The bundled resource is
  * read straight from the jar so it never collides with any player-data files
  * written to the data folder.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.MinionManager} instead.
  */
+@Deprecated
 public final class MinionManager {
 
     private static final MinionManager INSTANCE = new MinionManager();

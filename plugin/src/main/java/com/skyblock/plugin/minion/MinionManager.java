@@ -27,7 +27,10 @@ import java.util.UUID;
  *
  * <p>Registered as a Bukkit {@link Listener} so that breaking the block a
  * minion occupies stops tracking it.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.MinionManager} instead.
  */
+@Deprecated
 public final class MinionManager implements Listener {
 
     private static final MinionManager INSTANCE = new MinionManager();

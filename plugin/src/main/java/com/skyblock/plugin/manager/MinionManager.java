@@ -18,7 +18,10 @@ import java.util.UUID;
  * <p>Keyed by the owning player's UUID, each mapping to the list of that
  * player's {@link PlacedMinion}s in placement order. Not thread-safe;
  * access from the main server thread.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.MinionManager} instead.
  */
+@Deprecated
 public final class MinionManager {
 
     /** A single placed minion. */
