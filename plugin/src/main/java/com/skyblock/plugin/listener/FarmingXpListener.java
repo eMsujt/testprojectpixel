@@ -35,6 +35,22 @@ public final class FarmingXpListener implements Listener {
             Map.entry(Material.BROWN_MUSHROOM_BLOCK, 3L)
     );
 
+    private static final Map<Material, String> CROP_DROP = Map.ofEntries(
+            Map.entry(Material.WHEAT,                "WHEAT"),
+            Map.entry(Material.POTATOES,             "POTATO"),
+            Map.entry(Material.CARROTS,              "CARROT"),
+            Map.entry(Material.BEETROOTS,            "BEETROOT"),
+            Map.entry(Material.NETHER_WART,          "NETHER_WART"),
+            Map.entry(Material.PUMPKIN,              "PUMPKIN"),
+            Map.entry(Material.MELON,                "MELON_SLICE"),
+            Map.entry(Material.SUGAR_CANE,           "SUGAR_CANE"),
+            Map.entry(Material.CACTUS,               "CACTUS"),
+            Map.entry(Material.COCOA,                "COCOA_BEANS"),
+            Map.entry(Material.MUSHROOM_STEM,        "MUSHROOM_STEM"),
+            Map.entry(Material.RED_MUSHROOM_BLOCK,   "RED_MUSHROOM"),
+            Map.entry(Material.BROWN_MUSHROOM_BLOCK, "BROWN_MUSHROOM")
+    );
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
@@ -45,7 +61,7 @@ public final class FarmingXpListener implements Listener {
         Player player = event.getPlayer();
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("farming", xp);
-        profile.incrementCollection(block.getType().name(), 1);
+        profile.incrementCollection(CROP_DROP.get(block.getType()), 1);
     }
 
     private static boolean isMature(Block block) {
