@@ -462,6 +462,26 @@ public final class AuctionHouseManager {
     }
 
     /**
+     * Completes a purchase of the given {@link AuctionItem} listing.
+     *
+     * <p>Removes the listing and records the transaction in the buyer's auction history.</p>
+     *
+     * @param id    the listing UUID
+     * @param buyer the purchasing player's UUID, must not be null
+     * @return the purchased {@link AuctionItem}
+     * @throws IllegalArgumentException if the listing does not exist or the buyer is the seller
+     */
+    public AuctionItem purchaseItem(UUID id, UUID buyer) {
+        Objects.requireNonNull(buyer, "buyer");
+        AuctionItem item = items.get(id);
+        if (item == null) throw new IllegalArgumentException("no listing with id: " + id);
+        if (item.seller().equals(buyer)) throw new IllegalArgumentException("seller cannot purchase their own listing");
+        items.remove(id);
+        recordAuction(buyer, "Purchased " + item.itemName() + " for " + item.price() + " coins");
+        return item;
+    }
+
+    /**
      * Cancels a listing. Only the original seller may cancel.
      *
      * @param id     the listing UUID
