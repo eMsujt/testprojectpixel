@@ -80,7 +80,7 @@ public class SkyBlockMenu extends Menu implements Listener {
             case 20 -> WardrobeMenu.open(player);
             case 21 -> StorageMenu.open(player);
             case 22 -> new BankMenu(player).open(player);
-            case 23 -> new BazaarMenu().open(player);
+            case 23 -> new com.skyblock.core.menu.BazaarMenu(player).open(player);
             case 25 -> new FastTravelMenu().open(player);
             default -> { /* border / empty slot — already cancelled */ }
         }
