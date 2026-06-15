@@ -14,7 +14,7 @@ import com.skyblock.plugin.managers.GardenManager;
 import com.skyblock.plugin.managers.KuudraManager;
 import com.skyblock.plugin.managers.MayorManager;
 import com.skyblock.core.manager.MinionManager;
-import com.skyblock.core.minion.MinionCommand;
+import com.skyblock.core.minion.command.MinionCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.plugin.managers.ProfileManager;
@@ -147,7 +147,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("profile").setExecutor(new ProfileCommand());
         getCommand("dungeon").setExecutor(new DungeonCommand());
         getCommand("fairy").setExecutor(new FairyCommand());
-        getCommand("minion").setExecutor(new MinionCommand());
+        getCommand("minion").setExecutor(new MinionCommand(MinionManager.getInstance()));
         getCommand("wardrobe").setExecutor(new WardrobeCommand());
         getCommand("slayer").setExecutor(new SlayerCommand());
         getCommand("fishing").setExecutor(new FishingCommand());
@@ -222,8 +222,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         // com.skyblock.plugin.menu.AuctionHouseMenu listener removed — canonical com.skyblock.core.menu.AuctionHouseMenu handles clicks via MenuListener
         new com.skyblock.plugin.minion.MinionTickTask(com.skyblock.plugin.minion.MinionManager.getInstance())
                 .runTaskTimer(this, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS);
-        new com.skyblock.plugin.minion.MinionTickerTask(com.skyblock.plugin.minion.MinionManager.getInstance())
-                .runTaskTimer(this, com.skyblock.plugin.minion.MinionTickerTask.PERIOD_TICKS, com.skyblock.plugin.minion.MinionTickerTask.PERIOD_TICKS);
         new com.skyblock.plugin.profile.ProfileSaveTask(getDataFolder(), getLogger())
                 .runTaskTimerAsynchronously(this, 6000L, 6000L);
         new ActionBarManager().start(this);
