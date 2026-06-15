@@ -18,7 +18,7 @@ import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.manager.ProfileManager;
-import com.skyblock.core.profile.ProfileManager.SkyBlockProfile;
+import com.skyblock.core.manager.ProfileManager.SkyBlockProfile;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.warp.WarpManager;

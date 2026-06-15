@@ -1,7 +1,7 @@
 package com.skyblock.core.banking;
 
 import com.skyblock.core.manager.ProfileManager;
-import com.skyblock.core.profile.ProfileManager.SkyBlockProfile;
+import com.skyblock.core.manager.ProfileManager.SkyBlockProfile;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
