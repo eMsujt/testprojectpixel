@@ -6,7 +6,7 @@ import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
 import com.skyblock.plugin.managers.DungeonManager;
-import com.skyblock.plugin.managers.EnchantingManager;
+import com.skyblock.core.manager.EnchantmentManager;
 import com.skyblock.plugin.managers.FishingManager;
 import com.skyblock.plugin.managers.GardenManager;
 import com.skyblock.plugin.managers.HOTMManager;
@@ -71,7 +71,7 @@ public final class HubCommand implements CommandExecutor {
         int dungeonHighest  = DungeonManager.getInstance().getHighestFloor(id);
 
         Map<String, Long>    skillXps    = SkillManager.getInstance().getSkillXPs(id);
-        Map<String, Integer> enchants    = EnchantingManager.getInstance().getEnchantLevels(id);
+        Map<String, Integer> enchants    = EnchantmentManager.getInstance().getEnchantLevels(id);
 
         AuctionHouseManager ahm = AuctionHouseManager.getInstance();
         int auctionListings = (int) ahm.getActiveListings().stream()

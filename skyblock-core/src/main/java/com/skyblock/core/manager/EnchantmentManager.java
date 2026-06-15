@@ -3,6 +3,7 @@ package com.skyblock.core.manager;
 import com.skyblock.core.enchanting.EnchantingManager;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -70,6 +71,33 @@ public final class EnchantmentManager {
 
     public EnchantingManager.EnchantmentBook applyBook(UUID playerId, int bookIndex) {
         return delegate.applyBook(playerId, bookIndex);
+    }
+
+    public Map<String, Integer> getEnchantLevels(UUID playerId) {
+        Map<EnchantingManager.SkyBlockEnchantment, Integer> enumMap = delegate.getEnchantments(playerId);
+        Map<String, Integer> result = new LinkedHashMap<>();
+        for (Map.Entry<EnchantingManager.SkyBlockEnchantment, Integer> e : enumMap.entrySet()) {
+            result.put(e.getKey().name(), e.getValue());
+        }
+        return result;
+    }
+
+    public int getEnchantLevel(UUID playerId, String enchantName) {
+        try {
+            return delegate.getLevel(playerId, EnchantingManager.SkyBlockEnchantment.valueOf(enchantName.toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            return 0;
+        }
+    }
+
+    public void setEnchantLevel(UUID playerId, String enchantName, int level) {
+        try {
+            delegate.setEnchantment(playerId, EnchantingManager.SkyBlockEnchantment.valueOf(enchantName.toUpperCase()), level);
+        } catch (IllegalArgumentException ignored) {}
+    }
+
+    public List<String> getEnchantHistory(UUID playerId) {
+        return delegate.getEnchantingHistory(playerId);
     }
 
     public void load(File dataFolder) {

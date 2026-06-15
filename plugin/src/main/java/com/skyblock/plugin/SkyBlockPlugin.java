@@ -7,7 +7,7 @@ import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.plugin.managers.FishingManager;
-import com.skyblock.plugin.managers.EnchantingManager;
+import com.skyblock.core.manager.EnchantmentManager;
 import com.skyblock.plugin.managers.HOTMManager;
 import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.plugin.managers.GardenManager;
@@ -99,7 +99,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         GardenManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().load(getDataFolder());
         KuudraManager.getInstance().load(getDataFolder());
-        EnchantingManager.getInstance().load(getDataFolder());
+        EnchantmentManager.getInstance().load(getDataFolder());
         BazaarManager.getInstance().load(getDataFolder());
         FairyManager.getInstance().load(getDataFolder());
         MinionManager.getInstance().load(getDataFolder());
@@ -222,7 +222,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         GardenManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
-        EnchantingManager.getInstance().save(getDataFolder());
+        EnchantmentManager.getInstance().save(getDataFolder());
         BazaarManager.getInstance().save(getDataFolder());
         FairyManager.getInstance().save(getDataFolder());
         MinionManager.getInstance().save(getDataFolder());
