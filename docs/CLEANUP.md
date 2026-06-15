@@ -65,6 +65,18 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (Command class consolidations — round 25)
+
+| Domain | Canonical class | Stubs deprecated | PR / commit |
+|--------|-----------------|-----------------|-------------|
+| `plugin.command.*` sub-package commands (CollectionsCommand, AuctionHouseCommand, EnchantingCommand, HOTMCommand, HotmCommand, SkillsCommand, PetsCommand, SlayerCommand, IslandCommand, BankCommand, KuudraCommand, BazaarCommand, MayorCommand) | `com.skyblock.plugin.commands.*` | 13 `@Deprecated` stubs in `plugin.command.*` sub-packages delegating to `plugin.commands.*` canonical implementations | #2574 |
+| `plugin.commands.*` reverse stubs (DungeonCommand, FairyCommand) | `com.skyblock.plugin.command.dungeon.*`, `com.skyblock.plugin.command.fairy.*` | 2 `@Deprecated` stubs in `plugin.commands.*` delegating to canonical `plugin.command.*` sub-packages | #2574 |
+| `core.command.*` prefix-package duplicates (QuestCommand, AuctionCommand, SkyBlockMenuCommand, IslandCommand, SkyBlockCommand, CollectionCommand) | Domain sub-packages (`com.skyblock.core.quest`, `.auction`, `.island`, `.collection`, `.hub`) | 6 `@Deprecated` stubs in `core.command.*` delegating to canonical per-domain sub-packages | #2574 |
+| `core.commands.*` prefix-package duplicates (SkyBlockCommand, IslandCommand) | Domain sub-packages (`com.skyblock.core.hub`, `.island`) | 2 `@Deprecated` stubs in `core.commands.*` delegating to canonical per-domain sub-packages | #2574 |
+| Command registration fix (`SkyBlockPlugin.java`) | `com.skyblock.plugin.command.menu.SkyblockMenuCommand` | Removed erroneous `@Deprecated` `plugin.menu.SkyblockMenuCommand` import; wired canonical `SkyBlockMenuManager` | #2575 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |

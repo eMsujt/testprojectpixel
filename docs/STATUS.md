@@ -1,7 +1,7 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-24: stub removal, pom.xml pruning, 12 menu GUI consolidations).
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-25: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated).
 > Counts: **64 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion` pruned), **~561 `.java` source files** (16 zero-caller `@Deprecated` stubs deleted in #2553).
 
 ## How to read this document
@@ -77,6 +77,40 @@ table.
 | SkillsMenu / SkillMenu / SkillGui / SkillsGui | `com.skyblock.core.menu.SkillsMenu` | ✅ consolidated (#2523 / #2563) |
 | PetsMenu / PetMenu / PetGui / PetsGui | `com.skyblock.core.menu.PetsMenu` | ✅ consolidated (#2522 / #2565) |
 | QuestsMenu / QuestMenu / QuestGui / QuestsGui | `com.skyblock.core.menu.QuestsMenu` | ✅ consolidated (#2524 / #2567) |
+
+---
+
+## Post-cleanup canonical command registry (round 25)
+
+23 duplicate command class stubs deprecated across `plugin.command.*`, `plugin.commands.*`, `core.command.*`, and `core.commands.*` prefix packages. Canonical command implementations live in per-domain sub-packages.
+
+| Stub location | Canonical target | Status |
+|---------------|-----------------|--------|
+| `com.skyblock.plugin.command.collections.CollectionsCommand` | `com.skyblock.plugin.commands.CollectionsCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.auctionhouse.AuctionHouseCommand` | `com.skyblock.plugin.commands.AuctionHouseCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.enchanting.EnchantingCommand` | `com.skyblock.plugin.commands.EnchantingCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.hotm.HOTMCommand` | `com.skyblock.plugin.commands.HOTMCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.hotm.HotmCommand` | `com.skyblock.plugin.commands.HOTMCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.skills.SkillsCommand` | `com.skyblock.plugin.commands.SkillsCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.pets.PetsCommand` | `com.skyblock.plugin.commands.PetsCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.slayer.SlayerCommand` | `com.skyblock.plugin.commands.SlayerCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.island.IslandCommand` | `com.skyblock.plugin.commands.IslandCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.bank.BankCommand` | `com.skyblock.plugin.commands.BankCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.kuudra.KuudraCommand` | `com.skyblock.plugin.commands.KuudraCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.bazaar.BazaarCommand` | `com.skyblock.plugin.commands.BazaarCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.command.mayor.MayorCommand` | `com.skyblock.plugin.commands.MayorCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.commands.DungeonCommand` | `com.skyblock.plugin.command.dungeon.DungeonCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.plugin.commands.FairyCommand` | `com.skyblock.plugin.command.fairy.FairyCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.core.command.QuestCommand` | `com.skyblock.core.quest.QuestCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.core.command.AuctionCommand` | `com.skyblock.core.auction.AuctionCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.core.command.SkyBlockMenuCommand` | `com.skyblock.core.hub.SkyblockHubCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.core.command.IslandCommand` | `com.skyblock.core.island.IslandCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.core.command.SkyBlockCommand` | `com.skyblock.core.hub.SkyblockHubCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.core.command.CollectionCommand` | `com.skyblock.core.collection.CollectionCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.core.commands.SkyBlockCommand` | `com.skyblock.core.hub.SkyblockHubCommand` | ✅ `@Deprecated` stub (#2574) |
+| `com.skyblock.core.commands.IslandCommand` | `com.skyblock.core.island.IslandCommand` | ✅ `@Deprecated` stub (#2574) |
+
+Command registration in `SkyBlockPlugin.java` fixed to import canonical `com.skyblock.plugin.command.menu.SkyblockMenuCommand` (#2575). Zero-caller stubs from this round are being removed by Forge.
 
 ---
 
@@ -274,18 +308,20 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
 
 ## Summary of findings
 
-- **Ongoing consolidation has eliminated 20 duplicate manager surfaces and 12 duplicate menu GUI surfaces.** Canonical managers for
+- **Ongoing consolidation has eliminated 20 duplicate manager surfaces, 12 duplicate menu GUI surfaces, and 23 duplicate command class stubs.** Canonical managers for
   AuctionHouseManager, Rarity, ItemBuilder/SkullUtil, CollectionManager, Menu, SkillManager,
   EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
   DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, ShopManager,
   and ProfileManager are now single classes with `@Deprecated` delegating stubs replacing
   all duplicates. Rounds 20-24 added 12 canonical menu GUI classes under `com.skyblock.core.menu.*`
   (CollectionsMenu, AuctionHouseMenu, CraftingMenu, BazaarMenu, EnchantingMenu, BankMenu,
-  MinionMenu, DungeonMenu, IslandMenu, SkillsMenu, PetsMenu, QuestsMenu). The `auctionhouse`,
-  `auction`, `dungeon`, `stats`, and `minion` leaf modules have been pruned from the parent
-  `pom.xml`; **16 zero-caller `@Deprecated` stub files were deleted outright** (#2553),
-  reducing the source tree from 577 to ~561 files. The parent `pom.xml` now declares
-  **64 modules** (down from 66 before rounds 20–21).
+  MinionMenu, DungeonMenu, IslandMenu, SkillsMenu, PetsMenu, QuestsMenu). Round 25 deprecated
+  23 command class stubs across `plugin.command.*`, `plugin.commands.*`, `core.command.*`, and
+  `core.commands.*` prefix packages, and fixed command registration in `SkyBlockPlugin.java`
+  (#2574 / #2575). The `auctionhouse`, `auction`, `dungeon`, `stats`, and `minion` leaf modules
+  have been pruned from the parent `pom.xml`; **16 zero-caller `@Deprecated` stub files were
+  deleted outright** (#2553), reducing the source tree from 577 to ~561 files. The parent
+  `pom.xml` now declares **64 modules** (down from 66 before rounds 20–21).
 - **6 domains remain unconsolidated** (SlayerManager, EnchantingManager, NPCManager,
   GuildManager, TradingManager, BrewingManager) — tracked in [`CLEANUP.md`](./CLEANUP.md).
 - **Naming is inconsistent** — singular vs plural module names (`auction`/`auctions`,
