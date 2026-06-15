@@ -1,5 +1,6 @@
 package com.skyblock.plugin.minion;
 
+import com.skyblock.core.manager.MinionManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -10,8 +11,7 @@ import java.util.Objects;
  *
  * <p>Registered once from {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}
  * via {@link #start(JavaPlugin)}, which schedules it with {@code runTaskTimer}
- * to run every 600 ticks (30 s). Each run walks every minion tracked
- * in the {@link MinionManager} and advances its production.</p>
+ * to run every 600 ticks (30 s).</p>
  */
 public final class MinionTickScheduler extends BukkitRunnable {
 
@@ -24,11 +24,6 @@ public final class MinionTickScheduler extends BukkitRunnable {
         this.manager = Objects.requireNonNull(manager, "manager");
     }
 
-    /**
-     * Schedules this scheduler to run once per second on the main thread.
-     *
-     * @param plugin the owning plugin used to schedule the task
-     */
     public void start(JavaPlugin plugin) {
         Objects.requireNonNull(plugin, "plugin");
         runTaskTimer(plugin, PERIOD_TICKS, PERIOD_TICKS);
@@ -36,17 +31,12 @@ public final class MinionTickScheduler extends BukkitRunnable {
 
     @Override
     public void run() {
-        for (MinionManager.MinionData data : manager.getMinions()) {
-            tick(data.getMinion());
+        for (MinionManager.MinionData data : manager.getAllMinions()) {
+            tick(data);
         }
     }
 
-    /**
-     * Advances a single minion's production by one tick.
-     *
-     * @param minion the minion to tick
-     */
-    private void tick(Minion minion) {
+    private void tick(MinionManager.MinionData data) {
         // Production hook: per-tier output is applied here as the minion model grows.
     }
 }

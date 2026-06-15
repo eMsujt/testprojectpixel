@@ -61,8 +61,9 @@ public final class MinionPlacementListener implements Listener {
                 + "," + loc.getBlockZ();
 
         MinionManager manager = MinionManager.getInstance();
-        manager.placeMinion(player.getUniqueId(), type, MinionTier.TIER_1);
+        MinionManager.MinionData data = manager.placeMinion(player.getUniqueId(), type, MinionTier.TIER_1);
         manager.setPlacement(player.getUniqueId(), locationKey, type);
+        manager.setMinionLocation(data.id, locationKey);
     }
 
     /**

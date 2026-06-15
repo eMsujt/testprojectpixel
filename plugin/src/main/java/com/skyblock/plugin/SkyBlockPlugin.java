@@ -172,10 +172,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TimeListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.WeatherListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionPlacementListener(), this);
-        getServer().getPluginManager().registerEvents(com.skyblock.plugin.minion.MinionManager.getInstance(), this);
-        com.skyblock.plugin.minion.MinionManager.getInstance().onEnable(this);
-        new com.skyblock.plugin.minion.MinionTickScheduler(com.skyblock.plugin.minion.MinionManager.getInstance()).start(this);
+        new com.skyblock.plugin.minion.MinionTickScheduler(MinionManager.getInstance()).start(this);
         // menus.StorageMenu/PotionBagMenu/QuiverMenu/FishingBagMenu listeners removed — canonical com.skyblock.plugin.gui.menu.* classes handle clicks via core MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.fishing.FishingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerJoinSetupListener(), this);
@@ -213,7 +210,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         // com.skyblock.plugin.menu.SkyBlockMenu listener removed — canonical com.skyblock.core.menu.SkyBlockMainMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.BazaarMenu listener removed — canonical com.skyblock.core.menu.BazaarMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.AuctionHouseMenu listener removed — canonical com.skyblock.core.menu.AuctionHouseMenu handles clicks via MenuListener
-        new com.skyblock.plugin.minion.MinionTickTask(com.skyblock.plugin.minion.MinionManager.getInstance())
+        new com.skyblock.plugin.minion.MinionTickTask(MinionManager.getInstance())
                 .runTaskTimer(this, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS);
         new com.skyblock.plugin.profile.ProfileSaveTask(getDataFolder(), getLogger())
                 .runTaskTimerAsynchronously(this, 6000L, 6000L);
@@ -256,7 +253,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         WeatherManager.getInstance().save(getDataFolder());
         TimeManager.getInstance().save(getDataFolder());
         NetworkManager.getInstance().save(getDataFolder());
-        com.skyblock.plugin.minion.MinionManager.getInstance().onDisable();
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
     }
@@ -277,8 +273,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
     }
 
     /** Returns the placed-minion production service. */
-    public com.skyblock.plugin.minion.MinionManager getMinionManager() {
-        return com.skyblock.plugin.minion.MinionManager.getInstance();
+    public MinionManager getMinionManager() {
+        return MinionManager.getInstance();
     }
 
     /** Returns the player profile registry. */
