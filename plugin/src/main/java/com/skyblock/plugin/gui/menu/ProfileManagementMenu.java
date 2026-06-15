@@ -1,7 +1,7 @@
 package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
+import com.skyblock.core.menu.Menu;
 import com.skyblock.plugin.profile.PlayerProfile;
 import com.skyblock.plugin.profile.ProfileManager;
 import org.bukkit.Material;

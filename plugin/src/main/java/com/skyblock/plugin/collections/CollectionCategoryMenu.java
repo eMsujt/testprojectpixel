@@ -1,7 +1,7 @@
 package com.skyblock.plugin.collections;
 
 import com.skyblock.core.util.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
+import com.skyblock.core.menu.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

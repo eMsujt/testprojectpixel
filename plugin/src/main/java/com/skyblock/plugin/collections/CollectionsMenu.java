@@ -1,6 +1,6 @@
 package com.skyblock.plugin.collections;
 
-import com.skyblock.plugin.gui.Menu;
+import com.skyblock.core.menu.Menu;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
