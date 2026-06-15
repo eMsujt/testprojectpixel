@@ -15,7 +15,7 @@ public class QuiverMenu extends Menu {
     private final Player player;
 
     public QuiverMenu(Player player) {
-        super("§6Quiver", 6);
+        super("§fQuiver", 6);
         this.player = player;
     }
 
@@ -40,7 +40,7 @@ public class QuiverMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.ORANGE_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
