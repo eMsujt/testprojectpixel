@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * border, that lists every product loaded from {@code bazaar.yml} via
  * {@link BazaarManager}. Each product occupies one of the 28 inner slots and
  * is shown using the product's configured {@link Material} icon. Category
- * filter buttons sit in the bottom row (slots 46–51) and re-open the menu
+ * filter buttons sit in the bottom border row (slots 46–51) and re-open the menu
  * filtered to that category; clicking a highlighted category shows all
  * products again.</p>
  */
@@ -27,10 +27,10 @@ public class BazaarMenu extends Menu {
 
     /** Inner slots across the four centre rows, left-to-right, top-to-bottom. */
     private static final int[] INNER_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+             9, 10, 11, 12, 13, 14, 15, 16, 17,
+            18, 19, 20, 21, 22, 23, 24, 25, 26,
+            27, 28, 29, 30, 31, 32, 33, 34, 35,
+            36, 37, 38, 39, 40, 41, 42, 43, 44
     };
 
     /** Slots used for category filter buttons (within the bottom border row). */
@@ -100,14 +100,14 @@ public class BazaarMenu extends Menu {
         }
     }
 
-    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
+    /** Fills rows 0 and 5 with gray glass panes. */
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
             int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 45) {
                 setItem(slot, pane);
             }
         }
