@@ -24,6 +24,13 @@ public final class FishingXpListener implements Listener {
             Material.PUFFERFISH,    8L
     );
 
+    private static final Map<Material, String> FISH_DROP = Map.of(
+            Material.RAW_COD,       "RAW_COD",
+            Material.RAW_SALMON,    "RAW_SALMON",
+            Material.TROPICAL_FISH, "TROPICAL_FISH",
+            Material.PUFFERFISH,    "PUFFERFISH"
+    );
+
     @EventHandler
     public void onFish(PlayerFishEvent event) {
         if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
@@ -35,5 +42,9 @@ public final class FishingXpListener implements Listener {
         Player player = event.getPlayer();
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("fishing", xp);
+        String drop = FISH_DROP.get(type);
+        if (drop != null) {
+            profile.incrementCollection(drop, 1);
+        }
     }
 }
