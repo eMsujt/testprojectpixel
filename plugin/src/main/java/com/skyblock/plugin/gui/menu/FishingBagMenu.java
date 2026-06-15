@@ -28,7 +28,7 @@ public class FishingBagMenu extends Menu {
     }
 
     private FishingBagMenu(Player player, int page) {
-        super("§9Fishing Bag", 6);
+        super("§bFishing Bag", 6);
         this.player = player;
         this.page = page;
     }
@@ -60,7 +60,7 @@ public class FishingBagMenu extends Menu {
         }
 
         setItem(49, new ItemBuilder(Material.FISHING_ROD)
-                .displayName("§3Fishing Bag")
+                .displayName("§bFishing Bag")
                 .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
                 .build());
 
