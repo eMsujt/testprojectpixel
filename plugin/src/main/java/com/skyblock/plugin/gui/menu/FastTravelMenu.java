@@ -44,7 +44,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§bFast Travel", 6);
+        super("§6Fast Travel", 6);
     }
 
     @Override
