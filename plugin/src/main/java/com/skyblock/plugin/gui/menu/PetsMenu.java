@@ -2,9 +2,8 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.pets.PetManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.pets.PetManager.PetEntry;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +28,7 @@ public class PetsMenu extends Menu {
     }
 
     private PetsMenu(Player player, int page) {
-        super("§dPets", 6);
+        super("§aPets", 6);
         this.player = player;
         this.page = page;
     }
@@ -38,9 +37,9 @@ public class PetsMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        List<String> owned = profile.getOwnedPets();
-        String activePetId = profile.getActivePet();
+        PetManager petManager = PetManager.getInstance();
+        List<PetEntry> owned = petManager.getPets(player.getUniqueId());
+        PetEntry activePet = petManager.getActivePet(player.getUniqueId());
 
         int totalPages = Math.max(1, (int) Math.ceil((double) owned.size() / SLOTS_PER_PAGE));
         int start = page * SLOTS_PER_PAGE;
@@ -48,18 +47,22 @@ public class PetsMenu extends Menu {
         for (int i = 0; i < SLOTS_PER_PAGE; i++) {
             int idx = start + i;
             if (idx >= owned.size()) break;
-            String petId = owned.get(idx);
-            boolean equipped = petId.equals(activePetId);
-            PetManager.PetDefinition def = PetManager.getInstance().getDefinition(petId);
-            String rarity = def != null ? def.rarity() : "COMMON";
+            PetEntry pet = owned.get(idx);
+            boolean equipped = activePet != null && pet.getId().equals(activePet.getId());
             setItem(INNER_SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
-                            .displayName((equipped ? "§a" : "§f") + petId)
+                            .displayName((equipped ? "§a" : "§f") + pet.getType().name())
                             .lore(
-                                    "§7Rarity: §f" + rarity,
+                                    "§7Rarity: §f" + pet.getRarity(),
+                                    "§7Level: §a" + pet.getLevel(),
+                                    "§7XP: §e" + pet.getXp(),
                                     equipped ? "§aCurrently equipped" : "§eClick to equip!")
                             .build(),
                     event -> {
-                        profile.setActivePet(equipped ? null : petId);
+                        if (equipped) {
+                            petManager.setActivePet(player.getUniqueId(), null);
+                        } else {
+                            petManager.setActivePet(player.getUniqueId(), pet);
+                        }
                         new PetsMenu(player, page).open(player);
                     });
         }
@@ -72,7 +75,7 @@ public class PetsMenu extends Menu {
         }
 
         setItem(49, new ItemBuilder(Material.BONE)
-                .displayName("§dPets")
+                .displayName("§aPets")
                 .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
                 .build());
 
@@ -99,11 +102,7 @@ public class PetsMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 45; slot < 54; slot++) {
-            setItem(slot, pane);
-        }
+        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
     }
 }
