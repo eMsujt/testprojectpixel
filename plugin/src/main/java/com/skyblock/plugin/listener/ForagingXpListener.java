@@ -26,14 +26,27 @@ public final class ForagingXpListener implements Listener {
             Map.entry(Material.CHERRY_LOG,   6L)
     );
 
+    private static final Map<Material, String> LOG_DROP = Map.ofEntries(
+            Map.entry(Material.OAK_LOG,      "OAK_LOG"),
+            Map.entry(Material.SPRUCE_LOG,   "SPRUCE_LOG"),
+            Map.entry(Material.BIRCH_LOG,    "BIRCH_LOG"),
+            Map.entry(Material.JUNGLE_LOG,   "JUNGLE_LOG"),
+            Map.entry(Material.ACACIA_LOG,   "ACACIA_LOG"),
+            Map.entry(Material.DARK_OAK_LOG, "DARK_OAK_LOG"),
+            Map.entry(Material.MANGROVE_LOG, "MANGROVE_LOG"),
+            Map.entry(Material.CHERRY_LOG,   "CHERRY_LOG")
+    );
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        Long xp = LOG_XP.get(event.getBlock().getType());
+        Material type = event.getBlock().getType();
+        Long xp = LOG_XP.get(type);
         if (xp == null) {
             return;
         }
         SkyBlockProfile profile = ProfileManager.getInstance()
                 .getOrCreateProfile(event.getPlayer().getUniqueId());
         profile.addSkillXp("foraging", xp);
+        profile.incrementCollection(LOG_DROP.get(type), 1);
     }
 }
