@@ -15,7 +15,7 @@ public class StorageMenu extends Menu {
     private final Player player;
 
     public StorageMenu(Player player) {
-        super("§8Storage", 6);
+        super("§8Ender Chest", 6);
         this.player = player;
     }
 
