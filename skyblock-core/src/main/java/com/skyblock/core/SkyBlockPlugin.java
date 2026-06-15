@@ -449,7 +449,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.enchant.EnchantmentManager.getInstance();
         com.skyblock.core.enchanting.EnchantmentManager.getInstance();
         CollectionManager.getInstance();
-        com.skyblock.core.quests.QuestManager.getInstance();
+        com.skyblock.core.manager.QuestManager.getInstance();
         NPCCommand npcManagerCommand = new NPCCommand(NPCManager.getInstance());
         getCommand("npcmanager").setExecutor(npcManagerCommand);
         getCommand("npcmanager").setTabCompleter(npcManagerCommand);
