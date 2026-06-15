@@ -1,7 +1,7 @@
 package com.skyblock.plugin.skill;
 
-import com.skyblock.core.combat.StatManager;
-import com.skyblock.core.combat.StatManager.CombatStat;
+import com.skyblock.core.stat.Stat;
+import com.skyblock.core.stat.StatManager;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * Singleton holding the permanent stat reward each SkyBlock skill grants per
  * level, mirroring Hypixel SkyBlock's reward tables. Each entry pairs the
- * {@link CombatStat} the skill boosts with the amount awarded for every level
+ * {@link Stat} the skill boosts with the amount awarded for every level
  * gained.
  *
  * <p>Farming and Fishing reward Health; Mining rewards Defense; Foraging rewards
@@ -23,20 +23,20 @@ import java.util.UUID;
 public final class SkillRewardManager {
 
     /** A per-level stat reward: the stat boosted and the amount awarded each level. */
-    public record StatReward(CombatStat stat, double amountPerLevel) {}
+    public record StatReward(Stat stat, double amountPerLevel) {}
 
     /** The per-level stat reward each skill grants, keyed by lowercase skill name. */
     private static final Map<String, StatReward> SKILL_REWARDS;
 
     static {
         Map<String, StatReward> m = new HashMap<>();
-        m.put("farming",    new StatReward(CombatStat.HEALTH, 2));
-        m.put("fishing",    new StatReward(CombatStat.HEALTH, 2));
-        m.put("mining",     new StatReward(CombatStat.DEFENSE, 1));
-        m.put("foraging",   new StatReward(CombatStat.STRENGTH, 1));
-        m.put("combat",     new StatReward(CombatStat.CRIT_CHANCE, 0.5));
-        m.put("enchanting", new StatReward(CombatStat.INTELLIGENCE, 1));
-        m.put("alchemy",    new StatReward(CombatStat.INTELLIGENCE, 1));
+        m.put("farming",    new StatReward(Stat.HEALTH, 2));
+        m.put("fishing",    new StatReward(Stat.HEALTH, 2));
+        m.put("mining",     new StatReward(Stat.DEFENSE, 1));
+        m.put("foraging",   new StatReward(Stat.STRENGTH, 1));
+        m.put("combat",     new StatReward(Stat.CRIT_CHANCE, 0.5));
+        m.put("enchanting", new StatReward(Stat.INTELLIGENCE, 1));
+        m.put("alchemy",    new StatReward(Stat.INTELLIGENCE, 1));
         // taming rewards pet luck (no combat stat) — intentionally absent.
         SKILL_REWARDS = Collections.unmodifiableMap(m);
     }

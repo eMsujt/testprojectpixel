@@ -1,5 +1,6 @@
 package com.skyblock.core.stats;
 
+import com.skyblock.core.stat.Stat;
 import com.skyblock.core.stat.StatManager;
 
 import java.util.EnumMap;
@@ -17,51 +18,16 @@ import java.util.UUID;
  */
 public final class StatsManager {
 
-    /** Every player stat tracked in SkyBlock. */
-    public enum StatType {
-        MAX_HEALTH,
-        DEFENSE,
-        STRENGTH,
-        SPEED,
-        CRIT_CHANCE,
-        CRIT_DAMAGE,
-        INTELLIGENCE,
-        FEROCITY,
-        ATTACK_SPEED,
-        MAGIC_FIND,
-        TRUE_DEFENSE,
-        VITALITY
-    }
-
-    /** Maps this package's StatType to the backing stat.StatManager.StatType. */
-    private static final Map<StatType, StatManager.StatType> STAT_MAP;
-
-    static {
-        STAT_MAP = new EnumMap<>(StatType.class);
-        STAT_MAP.put(StatType.MAX_HEALTH,   StatManager.StatType.HEALTH);
-        STAT_MAP.put(StatType.DEFENSE,      StatManager.StatType.DEFENSE);
-        STAT_MAP.put(StatType.STRENGTH,     StatManager.StatType.STRENGTH);
-        STAT_MAP.put(StatType.SPEED,        StatManager.StatType.SPEED);
-        STAT_MAP.put(StatType.CRIT_CHANCE,  StatManager.StatType.CRIT_CHANCE);
-        STAT_MAP.put(StatType.CRIT_DAMAGE,  StatManager.StatType.CRIT_DAMAGE);
-        STAT_MAP.put(StatType.INTELLIGENCE, StatManager.StatType.INTELLIGENCE);
-        STAT_MAP.put(StatType.FEROCITY,     StatManager.StatType.FEROCITY);
-        STAT_MAP.put(StatType.ATTACK_SPEED, StatManager.StatType.ATTACK_SPEED);
-        STAT_MAP.put(StatType.MAGIC_FIND,   StatManager.StatType.MAGIC_FIND);
-        STAT_MAP.put(StatType.TRUE_DEFENSE, StatManager.StatType.TRUE_DEFENSE);
-        STAT_MAP.put(StatType.VITALITY,     StatManager.StatType.VITALITY);
-    }
-
     private static final StatsManager INSTANCE = new StatsManager();
 
     /**
      * Immutable snapshot of all stats for a single player at a point in time.
      */
     public static final class PlayerStats {
-        private final Map<StatType, Double> stats;
+        private final Map<Stat, Double> stats;
         private final CombatStatsManager.CombatStats combat;
 
-        PlayerStats(Map<StatType, Double> stats, CombatStatsManager.CombatStats combat) {
+        PlayerStats(Map<Stat, Double> stats, CombatStatsManager.CombatStats combat) {
             this.stats = stats;
             this.combat = combat;
         }
@@ -72,7 +38,7 @@ public final class StatsManager {
          * @param stat the stat to look up
          * @return the effective value, {@code 0} if unknown
          */
-        public double getStat(StatType stat) {
+        public double getStat(Stat stat) {
             return stats.getOrDefault(stat, 0.0);
         }
 
@@ -112,10 +78,9 @@ public final class StatsManager {
     public PlayerStats getStats(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         StatManager statManager = StatManager.getInstance();
-        Map<StatType, Double> statValues = new EnumMap<>(StatType.class);
-        for (StatType type : StatType.values()) {
-            StatManager.StatType backing = STAT_MAP.get(type);
-            statValues.put(type, statManager.getStat(playerId, backing));
+        Map<Stat, Double> statValues = new EnumMap<>(Stat.class);
+        for (Stat stat : Stat.values()) {
+            statValues.put(stat, statManager.getStat(playerId, stat));
         }
         CombatStatsManager.CombatStats combat =
                 CombatStatsManager.getInstance().getStats(playerId);

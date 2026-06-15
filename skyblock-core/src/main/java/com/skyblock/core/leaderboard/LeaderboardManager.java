@@ -1,6 +1,7 @@
 package com.skyblock.core.leaderboard;
 
 import com.skyblock.core.level.SkyblockLevelManager;
+import com.skyblock.core.stat.Stat;
 import com.skyblock.core.stat.StatManager;
 import com.skyblock.core.vault.VaultManager;
 
@@ -183,7 +184,7 @@ public final class LeaderboardManager {
         strengthScores.clear();
         for (UUID id : statMgr.getTrackedPlayers()) {
             String name = knownNames.getOrDefault(id, id.toString());
-            strengthScores.put(id, statMgr.getStat(id, StatManager.StatType.STRENGTH));
+            strengthScores.put(id, statMgr.getStat(id, Stat.STRENGTH));
             playerNames.put(id, name);
         }
     }

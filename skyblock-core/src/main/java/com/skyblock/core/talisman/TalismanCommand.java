@@ -1,6 +1,6 @@
 package com.skyblock.core.talisman;
 
-import com.skyblock.core.combat.StatManager.CombatStat;
+import com.skyblock.core.stat.Stat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -152,7 +152,7 @@ public final class TalismanCommand implements TabExecutor {
     }
 
     private void handleBonuses(Player player) {
-        Map<CombatStat, Double> bonuses = talismanManager.getTotalBonuses(player.getUniqueId());
+        Map<Stat, Double> bonuses = talismanManager.getTotalBonuses(player.getUniqueId());
         if (bonuses.isEmpty()) {
             player.sendMessage("You have no talisman bonuses. Equip talismans with /talisman equip <type>.");
             return;

@@ -1,7 +1,7 @@
 package com.skyblock.plugin.combat;
 
-import com.skyblock.core.combat.StatManager;
-import com.skyblock.core.stat.StatManager.StatType;
+import com.skyblock.core.stat.Stat;
+import com.skyblock.core.stat.StatManager;
 import com.skyblock.core.stats.PlayerStatManager;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -51,9 +51,9 @@ public final class CombatManager implements Listener {
         }
 
         UUID uuid = attacker.getUniqueId();
-        double strength   = statManager.getStat(uuid, StatManager.CombatStat.STRENGTH);
-        double critChance = statManager.getStat(uuid, StatManager.CombatStat.CRIT_CHANCE);
-        double critDamage = statManager.getStat(uuid, StatManager.CombatStat.CRIT_DAMAGE);
+        double strength   = statManager.getStat(uuid, Stat.STRENGTH);
+        double critChance = statManager.getStat(uuid, Stat.CRIT_CHANCE);
+        double critDamage = statManager.getStat(uuid, Stat.CRIT_DAMAGE);
 
         // The vanilla damage of the swung weapon feeds the formula's weapon-damage term.
         double weaponDamage = event.getDamage();
@@ -74,16 +74,16 @@ public final class CombatManager implements Listener {
         UUID attackerId = attacker.getUniqueId();
 
         double weaponDamage = getWeaponDamage(weapon);
-        double strength   = stats.getStat(attackerId, StatType.STRENGTH);
-        double critChance = stats.getStat(attackerId, StatType.CRIT_CHANCE);
-        double critDamage = stats.getStat(attackerId, StatType.CRIT_DAMAGE);
+        double strength   = stats.getStat(attackerId, Stat.STRENGTH);
+        double critChance = stats.getStat(attackerId, Stat.CRIT_CHANCE);
+        double critDamage = stats.getStat(attackerId, Stat.CRIT_DAMAGE);
 
         double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
 
         if (target instanceof Player) {
             UUID defenderId = target.getUniqueId();
-            double defense     = stats.getStat(defenderId, StatType.DEFENSE);
-            double trueDefense = stats.getStat(defenderId, StatType.TRUE_DEFENSE);
+            double defense     = stats.getStat(defenderId, Stat.DEFENSE);
+            double trueDefense = stats.getStat(defenderId, Stat.TRUE_DEFENSE);
             damage *= (1.0 - defense / (defense + 100.0));
             damage = Math.max(0.0, damage - trueDefense);
         }

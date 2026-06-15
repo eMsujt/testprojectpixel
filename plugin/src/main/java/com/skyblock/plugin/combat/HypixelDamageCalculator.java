@@ -1,6 +1,6 @@
 package com.skyblock.plugin.combat;
 
-import com.skyblock.plugin.items.StatType;
+import com.skyblock.core.stat.Stat;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -37,9 +37,9 @@ public final class HypixelDamageCalculator {
         Objects.requireNonNull(defender, "defender");
 
         double weaponDamage = extractWeaponDamage(weapon);
-        double strength   = StatType.STRENGTH.getBaseValue();
-        double critChance = StatType.CRIT_CHANCE.getBaseValue();
-        double critDamage = StatType.CRIT_DAMAGE.getBaseValue();
+        double strength   = Stat.STRENGTH.getBaseValue();
+        double critChance = Stat.CRIT_CHANCE.getBaseValue();
+        double critDamage = Stat.CRIT_DAMAGE.getBaseValue();
 
         double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
 

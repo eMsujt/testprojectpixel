@@ -1,57 +1,64 @@
 package com.skyblock.stats;
 
+import com.skyblock.core.stat.Stat;
+
 /**
- * The player stats tracked in SkyBlock, with their display name, symbol
- * and base value for a fresh profile.
+ * @deprecated Use {@link Stat} instead.
+ *
+ * <p>This enum is a full-constant mirror of {@link Stat} kept for source compatibility.
+ * Each constant delegates its accessors to the corresponding {@link Stat} entry.</p>
  */
+@Deprecated
 public enum PlayerStat {
 
-    HEALTH("Health", "❤", 100.0),
-    DEFENSE("Defense", "❈", 0.0),
-    STRENGTH("Strength", "❁", 0.0),
-    INTELLIGENCE("Intelligence", "✎", 100.0),
-    CRIT_CHANCE("Crit Chance", "☣", 30.0),
-    CRIT_DAMAGE("Crit Damage", "☠", 50.0),
-    ATTACK_SPEED("Bonus Attack Speed", "⚔", 0.0),
-    ABILITY_DAMAGE("Ability Damage", "☄", 0.0),
-    TRUE_DEFENSE("True Defense", "❂", 0.0),
-    FEROCITY("Ferocity", "⫽", 0.0),
-    SPEED("Speed", "✦", 100.0),
-    MAGIC_FIND("Magic Find", "✯", 0.0),
-    PET_LUCK("Pet Luck", "♣", 0.0),
-    SEA_CREATURE_CHANCE("Sea Creature Chance", "α", 20.0),
-    FISHING_SPEED("Fishing Speed", "☛", 0.0),
-    MINING_SPEED("Mining Speed", "⸕", 0.0),
-    MINING_FORTUNE("Mining Fortune", "☘", 0.0),
-    FARMING_FORTUNE("Farming Fortune", "☘", 0.0),
-    FORAGING_FORTUNE("Foraging Fortune", "☘", 0.0),
-    PRISTINE("Pristine", "✧", 0.0),
-    COMBAT_WISDOM("Combat Wisdom", "☯", 0.0),
-    MINING_WISDOM("Mining Wisdom", "☯", 0.0),
-    FARMING_WISDOM("Farming Wisdom", "☯", 0.0),
-    HEALTH_REGEN("Health Regen", "❤", 100.0),
-    VITALITY("Vitality", "♨", 100.0),
-    SWING_RANGE("Swing Range", "❂", 3.0);
+    HEALTH(Stat.HEALTH),
+    DEFENSE(Stat.DEFENSE),
+    STRENGTH(Stat.STRENGTH),
+    INTELLIGENCE(Stat.INTELLIGENCE),
+    CRIT_CHANCE(Stat.CRIT_CHANCE),
+    CRIT_DAMAGE(Stat.CRIT_DAMAGE),
+    ATTACK_SPEED(Stat.ATTACK_SPEED),
+    ABILITY_DAMAGE(Stat.ABILITY_DAMAGE),
+    TRUE_DEFENSE(Stat.TRUE_DEFENSE),
+    FEROCITY(Stat.FEROCITY),
+    SPEED(Stat.SPEED),
+    MAGIC_FIND(Stat.MAGIC_FIND),
+    PET_LUCK(Stat.PET_LUCK),
+    SEA_CREATURE_CHANCE(Stat.SEA_CREATURE_CHANCE),
+    FISHING_SPEED(Stat.FISHING_SPEED),
+    MINING_SPEED(Stat.MINING_SPEED),
+    MINING_FORTUNE(Stat.MINING_FORTUNE),
+    FARMING_FORTUNE(Stat.FARMING_FORTUNE),
+    FORAGING_FORTUNE(Stat.FORAGING_FORTUNE),
+    PRISTINE(Stat.PRISTINE),
+    COMBAT_WISDOM(Stat.COMBAT_WISDOM),
+    MINING_WISDOM(Stat.MINING_WISDOM),
+    FARMING_WISDOM(Stat.FARMING_WISDOM),
+    HEALTH_REGEN(Stat.HEALTH_REGEN),
+    VITALITY(Stat.VITALITY),
+    SWING_RANGE(Stat.SWING_RANGE);
 
-    private final String displayName;
-    private final String symbol;
-    private final double baseValue;
+    final Stat delegate;
 
-    PlayerStat(String displayName, String symbol, double baseValue) {
-        this.displayName = displayName;
-        this.symbol = symbol;
-        this.baseValue = baseValue;
+    PlayerStat(Stat delegate) {
+        this.delegate = delegate;
     }
 
+    /** @deprecated Use {@link Stat#getDisplayName()}. */
+    @Deprecated
     public String getDisplayName() {
-        return displayName;
+        return delegate.getDisplayName();
     }
 
+    /** @deprecated Use {@link Stat#getSymbol()}. */
+    @Deprecated
     public String getSymbol() {
-        return symbol;
+        return delegate.getSymbol();
     }
 
+    /** @deprecated Use {@link Stat#getBaseValue()}. */
+    @Deprecated
     public double getBaseValue() {
-        return baseValue;
+        return delegate.getBaseValue();
     }
 }

@@ -1,7 +1,7 @@
 package com.skyblock.plugin.skills;
 
-import com.skyblock.core.combat.StatManager;
-import com.skyblock.core.combat.StatManager.CombatStat;
+import com.skyblock.core.stat.Stat;
+import com.skyblock.core.stat.StatManager;
 import com.skyblock.core.skills.SkillManager.SkillType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,18 +18,18 @@ import java.util.UUID;
 @Deprecated
 public final class SkillManager {
 
-    private static final Map<String, CombatStat> SKILL_STAT;
+    private static final Map<String, Stat> SKILL_STAT;
     private static final Map<String, Map<Integer, Double>> LEVEL_REWARDS;
 
     static {
-        Map<String, CombatStat> stat = new HashMap<>();
-        stat.put("farming",    CombatStat.HEALTH);
-        stat.put("fishing",    CombatStat.HEALTH);
-        stat.put("mining",     CombatStat.DEFENSE);
-        stat.put("foraging",   CombatStat.STRENGTH);
-        stat.put("combat",     CombatStat.CRIT_CHANCE);
-        stat.put("enchanting", CombatStat.INTELLIGENCE);
-        stat.put("alchemy",    CombatStat.INTELLIGENCE);
+        Map<String, Stat> stat = new HashMap<>();
+        stat.put("farming",    Stat.HEALTH);
+        stat.put("fishing",    Stat.HEALTH);
+        stat.put("mining",     Stat.DEFENSE);
+        stat.put("foraging",   Stat.STRENGTH);
+        stat.put("combat",     Stat.CRIT_CHANCE);
+        stat.put("enchanting", Stat.INTELLIGENCE);
+        stat.put("alchemy",    Stat.INTELLIGENCE);
         SKILL_STAT = stat;
 
         Map<String, Map<Integer, Double>> rewards = new HashMap<>();
@@ -91,7 +91,7 @@ public final class SkillManager {
 
     public void grantLevelUpRewards(UUID playerId, com.skyblock.core.skills.SkillManager.SkillType skill, int fromLevel, int toLevel) {
         if (playerId == null || skill == null || toLevel <= fromLevel) return;
-        CombatStat stat = SKILL_STAT.get(skill.key());
+        Stat stat = SKILL_STAT.get(skill.key());
         Map<Integer, Double> rewards = LEVEL_REWARDS.get(skill.key());
         if (stat == null || rewards == null) return;
         double total = 0;

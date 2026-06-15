@@ -1,7 +1,7 @@
 package com.skyblock.core.stats;
 
+import com.skyblock.core.stat.Stat;
 import com.skyblock.core.stat.StatManager;
-import com.skyblock.core.stat.StatManager.StatType;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public final class PlayerStatManager {
     private static final PlayerStatManager INSTANCE = new PlayerStatManager();
 
     /** Per-player flat stat overrides (supersede StatManager defaults when present). */
-    private final Map<UUID, Map<StatType, Double>> playerStats = new HashMap<>();
+    private final Map<UUID, Map<Stat, Double>> playerStats = new HashMap<>();
 
     private PlayerStatManager() {
     }
@@ -42,10 +42,10 @@ public final class PlayerStatManager {
      * @param stat     the stat to retrieve
      * @return the effective stat value
      */
-    public double getStat(UUID playerId, StatType stat) {
+    public double getStat(UUID playerId, Stat stat) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
-        Map<StatType, Double> stats = playerStats.get(playerId);
+        Map<Stat, Double> stats = playerStats.get(playerId);
         if (stats != null && stats.containsKey(stat)) {
             return stats.get(stat);
         }
@@ -59,10 +59,10 @@ public final class PlayerStatManager {
      * @param stat     the stat to set
      * @param value    the new value
      */
-    public void setStat(UUID playerId, StatType stat, double value) {
+    public void setStat(UUID playerId, Stat stat, double value) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
-        playerStats.computeIfAbsent(playerId, id -> new EnumMap<>(StatType.class))
+        playerStats.computeIfAbsent(playerId, id -> new EnumMap<>(Stat.class))
                 .put(stat, value);
     }
 
@@ -75,12 +75,12 @@ public final class PlayerStatManager {
      * @param amount   the delta (may be negative)
      * @return the new value
      */
-    public double addStat(UUID playerId, StatType stat, double amount) {
+    public double addStat(UUID playerId, Stat stat, double amount) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
         double current = getStat(playerId, stat);
         double updated = current + amount;
-        playerStats.computeIfAbsent(playerId, id -> new EnumMap<>(StatType.class))
+        playerStats.computeIfAbsent(playerId, id -> new EnumMap<>(Stat.class))
                 .put(stat, updated);
         return updated;
     }
@@ -91,11 +91,11 @@ public final class PlayerStatManager {
      * @param playerId the player to look up
      * @return a copy of the stored overrides, or an empty map if none
      */
-    public Map<StatType, Double> getAllStats(UUID playerId) {
+    public Map<Stat, Double> getAllStats(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Map<StatType, Double> stats = playerStats.get(playerId);
+        Map<Stat, Double> stats = playerStats.get(playerId);
         if (stats == null) {
-            return new EnumMap<>(StatType.class);
+            return new EnumMap<>(Stat.class);
         }
         return new EnumMap<>(stats);
     }
