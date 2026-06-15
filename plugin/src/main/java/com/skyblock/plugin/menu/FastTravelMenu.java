@@ -1,6 +1,7 @@
 package com.skyblock.plugin.menu;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -16,12 +17,25 @@ import java.util.Collections;
 
 public final class FastTravelMenu implements InventoryHolder, Listener {
 
-    private static final int SIZE = 27;
+    private static final String TITLE = "§bFast Travel";
+    private static final int SIZE = 54;
+
+    private static final Island[] ISLANDS = {
+        new Island(10, Material.COMPASS,     "§bHub",                  "hub",             "§7Travel to the Hub."),
+        new Island(11, Material.HAY_BLOCK,   "§aThe Farming Islands",  "farming_islands", "§7Travel to The Farming Islands."),
+        new Island(12, Material.OAK_SAPLING, "§aThe Park",             "the_park",        "§7Travel to The Park."),
+        new Island(13, Material.COBWEB,      "§cSpider's Den",          "spiders_den",     "§7Travel to the Spider's Den."),
+        new Island(14, Material.END_STONE,   "§5The End",              "the_end",         "§7Travel to The End."),
+        new Island(15, Material.NETHERRACK,  "§cCrimson Isle",         "crimson_isle",    "§7Travel to the Crimson Isle."),
+        new Island(16, Material.GOLD_ORE,    "§6Gold Mine",            "gold_mine",       "§7Travel to the Gold Mine."),
+    };
+
+    private record Island(int slot, Material material, String displayName, String worldName, String lore) {}
 
     private final Inventory inventory;
 
     public FastTravelMenu() {
-        this.inventory = Bukkit.createInventory(this, SIZE, "§aFast Travel");
+        this.inventory = Bukkit.createInventory(this, SIZE, TITLE);
         build();
     }
 
@@ -35,22 +49,19 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
     }
 
     private void build() {
-        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = makeItem(Material.GRAY_STAINED_GLASS_PANE, "§r", null);
         for (int slot = 0; slot < SIZE; slot++) {
-            int col = slot % 9;
             int row = slot / 9;
-            if (row == 0 || row == 2 || col == 0 || col == 8) {
+            int col = slot % 9;
+            if (row == 0 || row == 5 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
 
-        inventory.setItem(10, makeItem(Material.COMPASS, "§bHub", "§7Travel to the Hub."));
-        inventory.setItem(11, makeItem(Material.HAY_BLOCK, "§aThe Farming Islands", "§7Travel to The Farming Islands."));
-        inventory.setItem(12, makeItem(Material.OAK_SAPLING, "§aThe Park", "§7Travel to The Park."));
-        inventory.setItem(13, makeItem(Material.COBWEB, "§cSpider's Den", "§7Travel to the Spider's Den."));
-        inventory.setItem(14, makeItem(Material.END_STONE, "§5The End", "§7Travel to The End."));
-        inventory.setItem(15, makeItem(Material.NETHERRACK, "§cCrimson Isle", "§7Travel to the Crimson Isle."));
-        inventory.setItem(16, makeItem(Material.GOLD_ORE, "§6Gold Mine", "§7Travel to the Gold Mine."));
+        for (Island island : ISLANDS) {
+            inventory.setItem(island.slot(), makeItem(island.material(), island.displayName(),
+                    Collections.singletonList(island.lore())));
+        }
     }
 
     @EventHandler
@@ -60,35 +71,39 @@ public final class FastTravelMenu implements InventoryHolder, Listener {
         }
         event.setCancelled(true);
 
-        if (event.getRawSlot() == 10 && event.getWhoClicked() instanceof Player) {
-            Player player = (Player) event.getWhoClicked();
-            World hub = Bukkit.getWorld("hub");
-            if (hub != null) {
-                player.teleport(hub.getSpawnLocation());
-                player.sendMessage("§aTeleported to the Hub!");
-            } else {
-                player.sendMessage("§cHub is not available.");
+        if (!(event.getWhoClicked() instanceof Player player)) {
+            return;
+        }
+
+        int slot = event.getRawSlot();
+        for (Island island : ISLANDS) {
+            if (island.slot() == slot) {
+                teleport(player, island);
+                return;
             }
-            player.closeInventory();
         }
     }
 
-    private ItemStack makeItem(Material material, String name) {
+    private void teleport(Player player, Island island) {
+        World world = Bukkit.getWorld(island.worldName());
+        if (world != null) {
+            Location spawn = world.getSpawnLocation();
+            player.teleport(spawn);
+            player.sendMessage("§aTeleported to " + island.displayName() + "§a!");
+        } else {
+            player.sendMessage("§c" + island.displayName() + " §cis not available.");
+        }
+        player.closeInventory();
+    }
+
+    private static ItemStack makeItem(Material material, String name, java.util.List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
-            item.setItemMeta(meta);
-        }
-        return item;
-    }
-
-    private ItemStack makeItem(Material material, String name, String lore) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(name);
-            meta.setLore(Collections.singletonList(lore));
+            if (lore != null) {
+                meta.setLore(lore);
+            }
             item.setItemMeta(meta);
         }
         return item;
