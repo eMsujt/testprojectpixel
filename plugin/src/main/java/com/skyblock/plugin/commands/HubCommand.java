@@ -78,7 +78,7 @@ public final class HubCommand implements CommandExecutor {
                 .filter(lid -> id.equals(ahm.getListing(lid).seller()))
                 .count();
 
-        int bazaarItems     = BazaarManager.getInstance().getBuyPrices().size();
+        int bazaarItems     = BazaarManager.PRODUCT_DATA.size();
 
         String activeProfile = ProfileManager.getInstance().getActiveProfile(id);
 
