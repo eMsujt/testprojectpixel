@@ -35,6 +35,11 @@ public final class PlayerProfile {
     private ItemStack[] wardrobeContents;
     private final List<String> ownedPets = new ArrayList<>();
     private String activePet = null;
+    private final List<ItemStack> accessoryBagContents = new ArrayList<>();
+    private final List<ItemStack[]> wardrobeSlots = new ArrayList<>();
+    private boolean showSkillNotifications = true;
+    private boolean showPetNotifications = true;
+    private boolean showCollectionNotifications = true;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -381,6 +386,21 @@ public final class PlayerProfile {
     public void setActivePet(String activePet) {
         this.activePet = activePet;
     }
+
+    public List<ItemStack> getAccessoryBagContents() {
+        return accessoryBagContents;
+    }
+
+    public List<ItemStack[]> getWardrobeSlots() {
+        return wardrobeSlots;
+    }
+
+    public boolean isShowSkillNotifications() { return showSkillNotifications; }
+    public void setShowSkillNotifications(boolean v) { showSkillNotifications = v; }
+    public boolean isShowPetNotifications() { return showPetNotifications; }
+    public void setShowPetNotifications(boolean v) { showPetNotifications = v; }
+    public boolean isShowCollectionNotifications() { return showCollectionNotifications; }
+    public void setShowCollectionNotifications(boolean v) { showCollectionNotifications = v; }
 
     @Override
     public boolean equals(Object obj) {

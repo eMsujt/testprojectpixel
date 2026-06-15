@@ -1,8 +1,8 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.manager.ProfileManager;
+import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.Map;
 
 /**
- * Awards Mining XP on the player's {@link SkyBlockProfile} whenever a player
+ * Awards Mining XP on the player's {@link PlayerProfile} whenever a player
  * mines a stone or ore block.
  */
 public final class MiningListener implements Listener {
@@ -46,8 +46,8 @@ public final class MiningListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        SkyBlockProfile profile = ProfileManager.getInstance()
-                .getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance()
+                .getOrCreate(player.getUniqueId());
         int before = SKILL_MANAGER.levelForXp("mining", (long) profile.getSkillXp("mining"));
         profile.addSkillXp("mining", xp);
         int after = SKILL_MANAGER.levelForXp("mining", (long) profile.getSkillXp("mining"));

@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import java.util.Map;
 
 /**
- * Awards Combat XP on the player's {@link SkyBlockProfile} whenever a player
+ * Awards Combat XP on the player's {@link PlayerProfile} whenever a player
  * kills a mob mapped in {@code MOB_XP}.
  */
 public final class CombatXpListener implements Listener {
@@ -56,12 +56,12 @@ public final class CombatXpListener implements Listener {
         if (xp == null) {
             return;
         }
-        SkyBlockProfile profile = ProfileManager.getInstance()
-                .getOrCreateProfile(killer.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance()
+                .getOrCreate(killer.getUniqueId());
         profile.addSkillXp("combat", xp);
         XpActionBar.send(killer, "combat", xp, profile.getSkillXp("combat"));
         String drop = MOB_DROP.get(event.getEntityType());
         if (drop == null) return;
-        profile.incrementCollection(drop, 1);
+        profile.addCollectionCount(drop, 1L);
     }
 }

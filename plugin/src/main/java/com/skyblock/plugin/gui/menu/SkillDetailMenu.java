@@ -2,9 +2,9 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
+import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -30,7 +30,7 @@ public class SkillDetailMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(playerId);
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(playerId);
         SkillManager skillManager = SkillManager.getInstance();
         double xp = profile.getSkillXp(key);
         int level = skillManager.levelForXp(key, (long) xp);

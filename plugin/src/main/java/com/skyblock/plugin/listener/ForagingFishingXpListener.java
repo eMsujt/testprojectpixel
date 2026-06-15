@@ -1,8 +1,8 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.CollectionManager;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * Awards Foraging XP on log/leaf breaks and Fishing XP on fish/entity catches,
- * all routed to the player's {@link SkyBlockProfile}.
+ * all routed to the player's {@link PlayerProfile}.
  */
 public final class ForagingFishingXpListener implements Listener {
 
@@ -61,7 +61,7 @@ public final class ForagingFishingXpListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         profile.addSkillXp("foraging", xp);
         XpActionBar.send(player, "foraging", xp, profile.getSkillXp("foraging"));
         CollectionManager.getInstance().addItems(player.getUniqueId(), type.name(), 1);
@@ -75,7 +75,7 @@ public final class ForagingFishingXpListener implements Listener {
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
             if (!(caught instanceof Item item)) return;
             Material type = item.getItemStack().getType();
-            SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+            PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
             profile.addSkillXp("fishing", CAUGHT_FISH_XP);
             XpActionBar.send(player, "fishing", CAUGHT_FISH_XP, profile.getSkillXp("fishing"));
             CollectionManager.getInstance().addItems(player.getUniqueId(), type.name(), 1);
@@ -83,7 +83,7 @@ public final class ForagingFishingXpListener implements Listener {
         } else if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY && caught != null) {
             Long xp = SEA_CREATURE_XP.get(caught.getType());
             if (xp == null) return;
-            SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+            PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
             profile.addSkillXp("fishing", xp);
             XpActionBar.send(player, "fishing", xp, profile.getSkillXp("fishing"));
         }

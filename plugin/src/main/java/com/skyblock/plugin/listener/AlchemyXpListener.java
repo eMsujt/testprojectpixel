@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 /**
- * Awards Alchemy XP directly to the player's {@link SkyBlockProfile} whenever
+ * Awards Alchemy XP directly to the player's {@link PlayerProfile} whenever
  * a player picks up a brewed potion from a brewing stand output slot.
  */
 public final class AlchemyXpListener implements Listener {
@@ -24,7 +24,7 @@ public final class AlchemyXpListener implements Listener {
         if (event.getCurrentItem() == null || event.getCurrentItem().getType().isAir()) return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         profile.addSkillXp("alchemy", POTION_XP);
         XpActionBar.send(player, "alchemy", POTION_XP, profile.getSkillXp("alchemy"));
     }

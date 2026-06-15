@@ -1,8 +1,8 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.combat.calculator.DamageCalculator;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,7 +22,7 @@ public final class CombatEventHandler implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player player)) return;
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
 
         double weaponDamage = 0.0;
         double strength     = 0.0;

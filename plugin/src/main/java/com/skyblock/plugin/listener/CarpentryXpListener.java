@@ -1,14 +1,14 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 
 /**
- * Awards Carpentry XP directly to the player's {@link SkyBlockProfile} whenever
+ * Awards Carpentry XP directly to the player's {@link PlayerProfile} whenever
  * a player crafts an item.
  */
 public final class CarpentryXpListener implements Listener {
@@ -18,7 +18,7 @@ public final class CarpentryXpListener implements Listener {
     @EventHandler
     public void onCraftItem(CraftItemEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         profile.addSkillXp("carpentry", CRAFT_XP);
         XpActionBar.send(player, "carpentry", CRAFT_XP, profile.getSkillXp("carpentry"));
     }

@@ -13,7 +13,7 @@ import com.skyblock.plugin.managers.HOTMManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.plugin.managers.KuudraManager;
 import com.skyblock.core.manager.PetManager;
-import com.skyblock.plugin.managers.ProfileManager;
+import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.SlayerManager;
 import org.bukkit.Bukkit;
@@ -80,7 +80,7 @@ public final class HubCommand implements CommandExecutor {
 
         int bazaarItems     = BazaarManager.PRODUCT_DATA.size();
 
-        String activeProfile = ProfileManager.getInstance().getActiveProfile(id);
+        String activeProfile = ProfileManager.getInstance().getOrCreate(id).getActiveProfileName();
 
         PetManager petMgr = PetManager.getInstance();
         PetManager.Pet activePet = petMgr.getActivePet(id);

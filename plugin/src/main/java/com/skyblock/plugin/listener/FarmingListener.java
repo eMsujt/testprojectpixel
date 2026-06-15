@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,7 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.Map;
 
 /**
- * Awards Farming XP on the player's {@link SkyBlockProfile} whenever a player
+ * Awards Farming XP on the player's {@link PlayerProfile} whenever a player
  * harvests a crop block.
  */
 public final class FarmingListener implements Listener {
@@ -33,8 +33,8 @@ public final class FarmingListener implements Listener {
         if (xp == null) {
             return;
         }
-        SkyBlockProfile profile = ProfileManager.getInstance()
-                .getOrCreateProfile(event.getPlayer().getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance()
+                .getOrCreate(event.getPlayer().getUniqueId());
         profile.addSkillXp("farming", xp);
     }
 }

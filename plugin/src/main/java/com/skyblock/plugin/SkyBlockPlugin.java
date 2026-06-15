@@ -17,7 +17,6 @@ import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.minion.command.MinionCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
-import com.skyblock.plugin.managers.ProfileManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.WarpManager;
 import com.skyblock.core.manager.DungeonManager;
@@ -103,7 +102,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         GardenManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().load(getDataFolder());
         KuudraManager.getInstance().load(getDataFolder());
-        ProfileManager.getInstance().load(getDataFolder());
         EnchantingManager.getInstance().load(getDataFolder());
         BazaarManager.getInstance().load(getDataFolder());
         FairyManager.getInstance().load(getDataFolder());
@@ -227,7 +225,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         GardenManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
-        ProfileManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
         BazaarManager.getInstance().save(getDataFolder());
         FairyManager.getInstance().save(getDataFolder());
