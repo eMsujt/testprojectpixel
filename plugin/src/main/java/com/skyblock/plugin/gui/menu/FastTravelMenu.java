@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
 public class FastTravelMenu extends Menu {
 
     private enum Destination {
-        HUB("Hub Island", 11, Material.NETHER_STAR, "/warp hub"),
-        PRIVATE_ISLAND("Private Island", 13, Material.OAK_BED, "/warp island"),
+        HUB("Hub", 13, Material.COMPASS, "/warp hub"),
+        PRIVATE_ISLAND("Private Island", 11, Material.OAK_BED, "/warp island"),
         THE_BARN("The Barn", 15, Material.HAY_BLOCK, "/warp barn"),
         MUSHROOM_DESERT("Mushroom Desert", 20, Material.RED_MUSHROOM, "/warp desert"),
         SPIDERS_DEN("Spider's Den", 22, Material.COBWEB, "/warp spider"),
