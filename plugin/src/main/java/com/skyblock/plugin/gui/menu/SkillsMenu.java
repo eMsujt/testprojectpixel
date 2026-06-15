@@ -22,7 +22,8 @@ public class SkillsMenu extends Menu {
         ALCHEMY      ("Alchemy",      "alchemy",      Material.GLASS_BOTTLE),
         TAMING       ("Taming",       "taming",       Material.BONE),
         CARPENTRY    ("Carpentry",    "carpentry",    Material.CRAFTING_TABLE),
-        RUNECRAFTING ("Runecrafting", "runecrafting", Material.MAGMA_CREAM);
+        RUNECRAFTING ("Runecrafting", "runecrafting", Material.MAGMA_CREAM),
+        SOCIAL       ("Social",       "social",       Material.FEATHER);
 
         private final String displayName;
         private final String key;
@@ -35,7 +36,7 @@ public class SkillsMenu extends Menu {
         }
     }
 
-    private static final int[] SLOTS = {10, 11, 12, 13, 14, 19, 20, 21, 22, 23};
+    private static final int[] SLOTS = {10, 11, 12, 13, 14, 19, 20, 21, 22, 23, 24};
 
     private final UUID playerId;
 
