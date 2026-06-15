@@ -1,4 +1,4 @@
-package com.skyblock.minions;
+package com.skyblock.minions.model;
 
 import java.util.Objects;
 import org.bukkit.Location;

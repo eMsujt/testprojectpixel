@@ -1,4 +1,4 @@
-package com.skyblock.minions;
+package com.skyblock.minions.model;
 
 /**
  * The upgrade tiers a placed minion can reach.

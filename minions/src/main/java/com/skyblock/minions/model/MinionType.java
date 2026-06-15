@@ -1,4 +1,4 @@
-package com.skyblock.minions;
+package com.skyblock.minions.model;
 
 /**
  * The kinds of minion a player can place on their island.
