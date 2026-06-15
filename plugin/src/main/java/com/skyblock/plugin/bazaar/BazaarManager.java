@@ -203,6 +203,6 @@ public final class BazaarManager {
     /** Opens the Bazaar menu listing every loaded product for a player. */
     public void openBazaar(Player player) {
         Objects.requireNonNull(player, "player");
-        new BazaarMenu(getProducts()).open(player);
+        new BazaarMenu(player, getProducts()).open(player);
     }
 }
