@@ -101,6 +101,18 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (dead-code sweeps, config/persistence consolidations — rounds 34-36)
+
+| Domain | Canonical class | Duplicates removed | PR / commit |
+|--------|-----------------|-------------------|-------------|
+| Persistence / DataManager | `com.skyblock.core.persistence.DataManager` | All `DataManager`/save/load/query duplicates across modules → 1 canonical; all variants replaced with `@Deprecated` stubs delegating to canonical | #2606 |
+| Config-loader (ConfigManager / SkyBlockConfig / PluginConfig) | `com.skyblock.core.config.ConfigManager` | `SkillsConfig`, `SkillXPConfig`, `SkillLevelUpManager` zero-caller stubs deleted; all remaining config-loader variants consolidated to canonical | #2607 |
+| Zero-caller `@Deprecated` stub sweep (`plugin.items` / `plugin.combat` / `plugin.enchantment` / `plugin.model` / `plugin.data`) | *(class files deleted)* | Zero-caller `@Deprecated` stubs deleted across `plugin.items`, `plugin.combat`, `plugin.enchantment`, `plugin.model`, and `plugin.data` packages | #2608 |
+| Duplicate listener sweep (`plugin.items` / `plugin.combat` / `plugin.enchantment` / `plugin.world`) | *(canonical per-domain packages)* | 4 zero-caller `@Deprecated` listener stubs deleted (`CollectionListener`, `CollectionTracker`, `CollectionTrackingListener`, `CollectionsListener`); 3 remaining listener duplicates deprecated pointing to canonical counterparts | #2609 |
+| `plugin.combat` listener stubs (`DamageListener` / `CombatDamageListener` / `CombatListener`) | `com.skyblock.plugin.listener.CombatListener` | `DamageListener`, `CombatDamageListener`, and `CombatListener` deleted from `plugin.combat`; duplicate `plugin.combat.CombatListener` registration removed from `SkyBlockPlugin` (line 155) | #2610 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
