@@ -35,7 +35,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§aFast Travel", 5);
+        super("§bFast Travel", 6);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class FastTravelMenu extends Menu {
         for (int slot = 0; slot < 9; slot++) {
             setItem(slot, pane);
         }
-        for (int slot = 36; slot < 45; slot++) {
+        for (int slot = 45; slot < 54; slot++) {
             setItem(slot, pane);
         }
     }
