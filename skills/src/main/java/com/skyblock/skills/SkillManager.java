@@ -30,6 +30,12 @@ public final class SkillManager {
         }
     }
 
+    private static final SkillManager INSTANCE = new SkillManager();
+
+    public static SkillManager getInstance() {
+        return INSTANCE;
+    }
+
     private final Map<UUID, Map<SkillType, Double>> experience = new HashMap<>();
 
     /**
