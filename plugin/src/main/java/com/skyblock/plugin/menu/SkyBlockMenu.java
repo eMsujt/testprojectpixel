@@ -13,6 +13,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.skyblock.plugin.SkyBlockPlugin;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.menu.SkyBlockMainMenu} instead.
+ */
+@Deprecated
 public final class SkyBlockMenu implements InventoryHolder, Listener {
 
     private final Inventory inventory;

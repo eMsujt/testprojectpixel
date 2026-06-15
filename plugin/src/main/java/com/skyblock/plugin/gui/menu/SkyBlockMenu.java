@@ -12,12 +12,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.Arrays;
 
 /**
- * The main SkyBlock hub menu.
- *
- * <p>A 54-slot (6-row) chest GUI titled '§aSkyBlock Menu'. Matches the Hypixel
- * slot layout: player-head profile at slot 4, then three rows of shortcuts
- * across inner slots 10-16, 19-25, and 28-34.</p>
+ * @deprecated Use {@link com.skyblock.core.menu.SkyBlockMainMenu} instead.
  */
+@Deprecated
 public class SkyBlockMenu extends Menu {
 
     private final Player player;

@@ -11,12 +11,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * The main SkyBlock Menu hub.
- *
- * <p>A 54-slot chest menu titled {@code §aSkyBlock Menu} that replicates
- * Hypixel's layout: a {@link Material#GRAY_STAINED_GLASS_PANE} border framing a
- * grid of icons linking to the game's subsystems.</p>
+ * @deprecated Use {@link com.skyblock.core.menu.SkyBlockMainMenu} instead.
  */
+@Deprecated
 public class SkyBlockMenu extends Menu implements Listener {
 
     /** A SkyBlock Menu entry: its icon, display name, and slot. */
