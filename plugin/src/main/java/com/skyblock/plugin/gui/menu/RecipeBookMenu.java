@@ -41,7 +41,7 @@ public class RecipeBookMenu extends Menu {
     }
 
     private RecipeBookMenu(Player player, int page) {
-        super("§6Recipe Book", 6);
+        super("§aRecipe Book", 6);
         this.player = player;
         this.page = page;
         this.recipes = loadRecipes();
