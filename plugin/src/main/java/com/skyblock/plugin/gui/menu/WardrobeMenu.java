@@ -71,13 +71,13 @@ public class WardrobeMenu extends Menu {
                 int slot = row * 9 + col;
                 ItemStack stored = set[row];
                 if (stored != null) {
-                    setItem(slot, stored);
+                    setItem(slot, stored, event -> event.setCancelled(true));
                 } else {
                     setItem(slot, new ItemBuilder(ARMOR_PIECES[row])
                                     .displayName("§aWardrobe Slot " + setNumber + " §7- " + PIECE_NAMES[row])
                                     .lore("§7Empty", "§eClick to equip!")
                                     .build(),
-                            event -> open((Player) event.getWhoClicked()));
+                            event -> event.setCancelled(true));
                 }
             }
         }
