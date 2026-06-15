@@ -28,7 +28,7 @@ public class SacksMenu extends Menu {
     }
 
     public SacksMenu() {
-        super("§aSacks", 6);
+        super("§aSacks of Holding", 6);
     }
 
     @Override
