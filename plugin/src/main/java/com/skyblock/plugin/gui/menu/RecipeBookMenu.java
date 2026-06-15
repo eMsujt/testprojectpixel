@@ -13,17 +13,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * The Recipe Book menu.
- *
- * <p>A 54-slot (6-row) menu titled {@code §6Recipe Book}, framed by a gray
- * glass-pane border, that lists every registered {@link ShapedRecipe} across
- * paginated pages of 28 inner slots. Previous/next navigation arrows appear at
- * slots 45 and 53 when additional pages exist.</p>
- */
 public class RecipeBookMenu extends Menu {
 
-    /** Inner slots across the four centre rows, left-to-right, top-to-bottom. */
     private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
@@ -41,7 +32,7 @@ public class RecipeBookMenu extends Menu {
     }
 
     private RecipeBookMenu(Player player, int page) {
-        super("§aRecipe Book", 6);
+        super("§fRecipe Book", 6);
         this.player = player;
         this.page = page;
         this.recipes = loadRecipes();
@@ -115,11 +106,11 @@ public class RecipeBookMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 45; slot < 54; slot++) {
-            setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
         }
     }
 
