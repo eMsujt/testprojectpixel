@@ -1,5 +1,6 @@
 package com.skyblock.plugin.item;
 
+import com.skyblock.core.model.Rarity;
 import org.bukkit.Material;
 
 import java.util.List;
@@ -55,32 +56,4 @@ public record SkyBlockItem(String id, Material material, String displayName, Rar
         return stats.getOrDefault(stat, 0.0);
     }
 
-    /**
-     * Item rarity tiers, ordered from least to most rare.
-     *
-     * <p>Each tier carries the display name used when rendering item names and
-     * lore.</p>
-     */
-    public enum Rarity {
-
-        COMMON("Common"),
-        UNCOMMON("Uncommon"),
-        RARE("Rare"),
-        EPIC("Epic"),
-        LEGENDARY("Legendary"),
-        MYTHIC("Mythic"),
-        DIVINE("Divine"),
-        SPECIAL("Special");
-
-        private final String displayName;
-
-        Rarity(String displayName) {
-            this.displayName = displayName;
-        }
-
-        /** Returns the human-readable name of this rarity, e.g. {@code "Legendary"}. */
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
 }
