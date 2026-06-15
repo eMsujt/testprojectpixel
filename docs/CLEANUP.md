@@ -343,6 +343,24 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (economy-domain, island-domain, and guild-domain package layout normalization — round 69)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| BankManager / BazaarManager / AuctionManager | `com.skyblock.core.manager.BankManager`, `com.skyblock.core.manager.BazaarManager`, `com.skyblock.core.manager.AuctionHouseManager` | Normalized economy-domain package layout: every class across every module containing bank, bazaar, or auction-related classes moved into correct `.manager`/`.listener`/`.command`/`.model` sub-packages; flat-package strays eliminated; canonical manager implementations confirmed as sole implementations | #2710 |
+| IslandManager / GuildManager | `com.skyblock.core.manager.IslandManager`, `com.skyblock.core.guild.GuildManager` | Normalized island-domain and guild-domain package layout: every class across every module containing island-related classes (`IslandManager`, `IslandListener`, `IslandCommand`) and guild-related classes (`GuildManager`, `GuildListener`, `GuildCommand`) moved into correct `.manager`/`.listener`/`.command`/`.model` sub-packages; flat-package strays deleted; canonical implementations confirmed | #2711 |
+
+---
+
+## Completed (pets-domain and skills-domain package layout normalization — round 70)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkillManager / SkillListener / SkillCommand | `com.skyblock.core.manager.SkillManager` | Normalized skills-domain package layout: every class across every module containing skill-related classes (`SkillManager`, `SkillListener`, `SkillCommand`, `SkillLeaderboard`, and related model types) moved into correct `.manager`/`.listener`/`.command`/`.model` sub-packages; flat-package strays deleted; canonical `com.skyblock.core.manager.SkillManager` confirmed as sole manager implementation | #2713 |
+| PetManager / PetListener / PetCommand | `com.skyblock.core.manager.PetManager` | Normalized pets-domain package layout: every class across every module containing pet-related classes (`PetManager`, `PetListener`, `PetCommand`, `PetItem`, `PetType`, and related model types) moved into correct `.manager`/`.listener`/`.command`/`.model` sub-packages; flat-package strays deleted; canonical `com.skyblock.core.manager.PetManager` confirmed as sole manager implementation | #2714 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
