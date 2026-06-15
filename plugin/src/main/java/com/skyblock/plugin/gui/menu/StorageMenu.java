@@ -2,13 +2,11 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.PlayerProfile;
+import com.skyblock.plugin.profile.ProfileManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 public class StorageMenu extends Menu {
 
@@ -23,8 +21,9 @@ public class StorageMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        List<ItemStack> contents = profile.getStorageContents();
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
+        ItemStack[] contents = profile.getEnderChestContents();
+        if (contents == null) contents = new ItemStack[0];
 
         int contentIndex = 0;
         for (int slot = 0; slot < 54; slot++) {
@@ -32,8 +31,8 @@ public class StorageMenu extends Menu {
             if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
                 continue;
             }
-            if (contentIndex < contents.size()) {
-                ItemStack item = contents.get(contentIndex);
+            if (contentIndex < contents.length) {
+                ItemStack item = contents[contentIndex];
                 if (item != null && item.getType() != Material.AIR) {
                     setItem(slot, item);
                 }
