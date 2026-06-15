@@ -98,7 +98,10 @@ public final class SkyBlockMainMenu extends Menu {
                 .displayName("§aMinions")
                 .lore("§7Manage your minions.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> {
+                    e.setCancelled(true);
+                    new MinionsMenu(player).open(player);
+                });
 
         setItem(21, new ItemBuilder(Material.COMPASS)
                 .displayName("§aFast Travel")
