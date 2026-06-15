@@ -19,7 +19,7 @@ public class QuestsMenu extends Menu {
     private final Player player;
 
     public QuestsMenu(Player player) {
-        super("§eObjectives", 6);
+        super("§eQuests & Objectives", 6);
         this.player = player;
     }
 
@@ -58,8 +58,7 @@ public class QuestsMenu extends Menu {
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 45) {
                 setItem(slot, pane);
             }
         }
