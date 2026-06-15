@@ -139,6 +139,10 @@ public final class IslandManager {
     /** Per-player IslandData records. */
     private final Map<UUID, IslandData> islandData = new HashMap<>();
     private final Map<UUID, List<String>> islandHistory = new HashMap<>();
+    private final Map<UUID, String> islandBiome = new HashMap<>();
+    private final Map<UUID, Boolean> islandUnlocked = new HashMap<>();
+    private final Map<UUID, Integer> visitorCounts = new HashMap<>();
+    private final Map<UUID, List<String>> visitLog = new HashMap<>();
 
     /** owner UUID → island */
     private final Map<UUID, SkyBlockIsland> islands = new HashMap<>();
@@ -436,6 +440,55 @@ public final class IslandManager {
     }
 
     // -------------------------------------------------------------------------
+    // Biome / unlock / visitor / visit-log API
+    // -------------------------------------------------------------------------
+
+    public String getIslandBiome(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return islandBiome.getOrDefault(playerId, "PLAINS");
+    }
+
+    public void setIslandBiome(UUID playerId, String biome) {
+        Objects.requireNonNull(playerId, "playerId");
+        islandBiome.put(playerId, biome);
+    }
+
+    public boolean isIslandUnlocked(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return islandUnlocked.getOrDefault(playerId, false);
+    }
+
+    public void setIslandUnlocked(UUID playerId, boolean unlocked) {
+        Objects.requireNonNull(playerId, "playerId");
+        islandUnlocked.put(playerId, unlocked);
+    }
+
+    public int getVisitorCount(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return visitorCounts.getOrDefault(playerId, 0);
+    }
+
+    public void addVisitor(UUID islandOwner) {
+        Objects.requireNonNull(islandOwner, "islandOwner");
+        visitorCounts.merge(islandOwner, 1, Integer::sum);
+    }
+
+    public void setVisitorCount(UUID islandOwner, int count) {
+        Objects.requireNonNull(islandOwner, "islandOwner");
+        visitorCounts.put(islandOwner, count);
+    }
+
+    public void recordVisit(UUID visitorId, String islandOwnerName) {
+        Objects.requireNonNull(visitorId, "visitorId");
+        visitLog.computeIfAbsent(visitorId, k -> new ArrayList<>()).add(islandOwnerName);
+    }
+
+    public List<String> getVisitLog(UUID visitorId) {
+        Objects.requireNonNull(visitorId, "visitorId");
+        return Collections.unmodifiableList(visitLog.getOrDefault(visitorId, Collections.emptyList()));
+    }
+
+    // -------------------------------------------------------------------------
     // IslandData persistence
     // -------------------------------------------------------------------------
 
@@ -447,6 +500,10 @@ public final class IslandManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         islandData.clear();
         islandHistory.clear();
+        islandBiome.clear();
+        islandUnlocked.clear();
+        visitorCounts.clear();
+        visitLog.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID owner = UUID.fromString(key);
@@ -474,6 +531,35 @@ public final class IslandManager {
                 } catch (IllegalArgumentException ignored) {}
             }
         }
+        if (cfg.isConfigurationSection("islandBiome")) {
+            for (String key : cfg.getConfigurationSection("islandBiome").getKeys(false)) {
+                try {
+                    islandBiome.put(UUID.fromString(key), cfg.getString("islandBiome." + key, "PLAINS"));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("islandUnlocked")) {
+            for (String key : cfg.getConfigurationSection("islandUnlocked").getKeys(false)) {
+                try {
+                    islandUnlocked.put(UUID.fromString(key), cfg.getBoolean("islandUnlocked." + key));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("visitorCounts")) {
+            for (String key : cfg.getConfigurationSection("visitorCounts").getKeys(false)) {
+                try {
+                    visitorCounts.put(UUID.fromString(key), cfg.getInt("visitorCounts." + key));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        if (cfg.isConfigurationSection("visitLog")) {
+            for (String key : cfg.getConfigurationSection("visitLog").getKeys(false)) {
+                try {
+                    List<String> entries = cfg.getStringList("visitLog." + key);
+                    visitLog.put(UUID.fromString(key), new ArrayList<>(entries));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -492,6 +578,18 @@ public final class IslandManager {
         }
         for (Map.Entry<UUID, List<String>> entry : islandHistory.entrySet()) {
             cfg.set("islandHistory." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, String> entry : islandBiome.entrySet()) {
+            cfg.set("islandBiome." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Boolean> entry : islandUnlocked.entrySet()) {
+            cfg.set("islandUnlocked." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Integer> entry : visitorCounts.entrySet()) {
+            cfg.set("visitorCounts." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<String>> entry : visitLog.entrySet()) {
+            cfg.set("visitLog." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
