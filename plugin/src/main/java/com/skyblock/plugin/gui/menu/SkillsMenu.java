@@ -20,8 +20,12 @@ public class SkillsMenu extends Menu {
         COMBAT     ("Combat",     "combat",     Color.fromRGB(255,   0,   0)),
         FORAGING   ("Foraging",   "foraging",   Color.fromRGB(  0, 128,   0)),
         FISHING    ("Fishing",    "fishing",    Color.fromRGB(  0, 191, 255)),
-        ENCHANTING ("Enchanting", "enchanting", Color.fromRGB(138,  43, 226)),
-        ALCHEMY    ("Alchemy",    "alchemy",    Color.fromRGB( 50, 205,  50));
+        ENCHANTING   ("Enchanting",   "enchanting",   Color.fromRGB(138,  43, 226)),
+        ALCHEMY      ("Alchemy",      "alchemy",      Color.fromRGB( 50, 205,  50)),
+        TAMING       ("Taming",       "taming",       Color.fromRGB(255, 140,   0)),
+        CARPENTRY    ("Carpentry",    "carpentry",    Color.fromRGB(139,  90,  43)),
+        RUNECRAFTING ("Runecrafting", "runecrafting", Color.fromRGB(170,   0, 170)),
+        SOCIAL       ("Social",       "social",       Color.fromRGB(255, 105, 180));
 
         private final String displayName;
         private final String key;
@@ -34,12 +38,12 @@ public class SkillsMenu extends Menu {
         }
     }
 
-    private static final int[] SLOTS = {10, 11, 12, 13, 14, 15, 16};
+    private static final int[] SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22};
 
     private final UUID playerId;
 
     public SkillsMenu(UUID playerId) {
-        super("§2Skills", 6);
+        super("§aSkills", 6);
         this.playerId = playerId;
     }
 
