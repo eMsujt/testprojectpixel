@@ -1,25 +1,29 @@
-package com.skyblock.plugin.gui.menus.collections;
+package com.skyblock.plugin.gui.menu.collections;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
 import org.bukkit.Material;
 
 /**
- * The Foraging collections menu.
+ * The Fishing collections menu.
  *
- * <p>A 54-slot (6-row) menu listing one icon per foraging collection. Clicking a
+ * <p>A 54-slot (6-row) menu listing one icon per fishing collection. Clicking a
  * collection icon tells the player which collection they selected.</p>
  */
-public class ForagingCollectionsMenu extends Menu {
+public class FishingCollectionsMenu extends Menu {
 
-    /** A foraging collection: its display name and representative icon. */
+    /** A fishing collection: its display name and representative icon. */
     private enum Collection {
-        OAK("Oak", Material.OAK_LOG),
-        BIRCH("Birch", Material.BIRCH_LOG),
-        SPRUCE("Spruce", Material.SPRUCE_LOG),
-        DARK_OAK("Dark Oak", Material.DARK_OAK_LOG),
-        ACACIA("Acacia", Material.ACACIA_LOG),
-        JUNGLE("Jungle", Material.JUNGLE_LOG);
+        RAW_FISH("Raw Fish", Material.COD),
+        RAW_SALMON("Raw Salmon", Material.SALMON),
+        CLOWNFISH("Clownfish", Material.TROPICAL_FISH),
+        PUFFERFISH("Pufferfish", Material.PUFFERFISH),
+        PRISMARINE_SHARD("Prismarine Shard", Material.PRISMARINE_SHARD),
+        PRISMARINE_CRYSTALS("Prismarine Crystals", Material.PRISMARINE_CRYSTALS),
+        CLAY("Clay", Material.CLAY_BALL),
+        LILY_PAD("Lily Pad", Material.LILY_PAD),
+        INK_SAC("Ink Sac", Material.INK_SAC),
+        SPONGE("Sponge", Material.SPONGE);
 
         private final String displayName;
         private final Material icon;
@@ -30,11 +34,11 @@ public class ForagingCollectionsMenu extends Menu {
         }
     }
 
-    /** Slots across the top playable row, one per collection. */
-    private static final int[] SLOTS = {10, 11, 12, 13, 14, 15};
+    /** Slots across the two playable rows, one per collection. */
+    private static final int[] SLOTS = {10, 11, 12, 13, 14, 19, 20, 21, 22, 23};
 
-    public ForagingCollectionsMenu() {
-        super("Foraging Collections", 6);
+    public FishingCollectionsMenu() {
+        super("Fishing Collections", 6);
     }
 
     @Override

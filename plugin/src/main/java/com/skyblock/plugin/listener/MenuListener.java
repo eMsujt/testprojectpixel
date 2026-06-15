@@ -10,7 +10,7 @@ import org.bukkit.inventory.InventoryHolder;
  *
  * <p>A single shared listener registered once in
  * {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()} so individual menu
- * classes in {@code com.skyblock.plugin.menu} do not each need to implement
+ * classes in {@code com.skyblock.plugin.gui.menu} do not each need to implement
  * {@link Listener}.</p>
  */
 public final class MenuListener implements Listener {
@@ -18,7 +18,7 @@ public final class MenuListener implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
-        if (holder != null && holder.getClass().getName().startsWith("com.skyblock.plugin.menu.")) {
+        if (holder != null && holder.getClass().getName().startsWith("com.skyblock.plugin.gui.menu.")) {
             event.setCancelled(true);
         }
     }

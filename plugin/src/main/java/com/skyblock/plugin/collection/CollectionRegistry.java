@@ -13,7 +13,7 @@ import java.util.Map;
  * category it belongs to (Farming, Mining, Combat, Foraging, Fishing).
  *
  * <p>The per-category material lists feed
- * {@link com.skyblock.plugin.menu.CollectionCategoryMenu}; tier progress for
+ * {@link com.skyblock.plugin.gui.menu.CollectionCategoryMenu}; tier progress for
  * each material is tracked by {@link CollectionManager}.</p>
  */
 public final class CollectionRegistry {
