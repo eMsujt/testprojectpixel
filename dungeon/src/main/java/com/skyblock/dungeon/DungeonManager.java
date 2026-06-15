@@ -51,6 +51,10 @@ public final class DungeonManager {
         DELEGATE.clearRecords(playerId);
     }
 
+    public void recordDungeonRun(UUID playerId, String summary) {
+        DELEGATE.recordDungeonRun(playerId, summary);
+    }
+
     public void recordDungeonEvent(UUID playerUuid, String summary) {
         DELEGATE.recordDungeonEvent(playerUuid, summary);
     }
