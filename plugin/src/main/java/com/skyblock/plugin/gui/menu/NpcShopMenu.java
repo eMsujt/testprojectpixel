@@ -46,7 +46,7 @@ public class NpcShopMenu extends Menu {
      * @param items    the wares to list; only the first {@value SLOTS#length} entries are shown
      */
     public NpcShopMenu(String shopName, List<ShopItem> items) {
-        super("§a" + shopName, 6);
+        super("§6" + shopName, 6);
         this.items = new ArrayList<>(items);
     }
 
@@ -112,7 +112,7 @@ public class NpcShopMenu extends Menu {
         if (!file.exists() && plugin.getResource("shops.yml") != null) {
             plugin.saveResource("shops.yml", false);
         }
-        String title = "§aNPC Shop";
+        String title = "§6NPC Shop";
         List<ShopItem> items = new ArrayList<>();
         if (!file.exists()) {
             return new ShopDefinition(title, items);
@@ -123,7 +123,7 @@ public class NpcShopMenu extends Menu {
             return new ShopDefinition(title, items);
         }
         String raw = shop.getString("title", title);
-        title = "§a" + raw.replaceAll("§[0-9a-fk-orA-FK-OR]", "");
+        title = "§6" + raw.replaceAll("§[0-9a-fk-orA-FK-OR]", "");
         for (String entry : shop.getStringList("items")) {
             int colon = entry.lastIndexOf(':');
             if (colon < 0) {
