@@ -31,7 +31,7 @@ import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.minion.command.MinionCommand;
-import com.skyblock.core.minion.MinionManager;
+import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.party.PartyManager;
 import com.skyblock.core.pets.command.PetsCommand;

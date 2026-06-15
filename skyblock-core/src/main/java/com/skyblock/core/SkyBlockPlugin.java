@@ -58,7 +58,7 @@ import com.skyblock.core.menu.MenuListener;
 import com.skyblock.core.menu.MenuManager;
 import com.skyblock.core.menu.SkyBlockMenuManager;
 import com.skyblock.core.minion.command.MinionCommand;
-import com.skyblock.core.minion.MinionManager;
+import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.pet.command.PetCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.ProfileManager;

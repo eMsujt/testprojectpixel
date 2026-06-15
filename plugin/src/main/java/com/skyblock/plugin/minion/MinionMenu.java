@@ -1,8 +1,8 @@
 package com.skyblock.plugin.minion;
 
-import com.skyblock.core.minion.MinionManager.MinionData;
-import com.skyblock.core.minion.MinionManager.MinionTier;
-import com.skyblock.core.minion.MinionManager.MinionType;
+import com.skyblock.core.manager.MinionManager.MinionData;
+import com.skyblock.core.manager.MinionManager.MinionTier;
+import com.skyblock.core.manager.MinionManager.MinionType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;

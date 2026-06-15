@@ -1,6 +1,6 @@
 package com.skyblock.core.minion.listener;
 
-import com.skyblock.core.minion.MinionManager;
+import com.skyblock.core.manager.MinionManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
