@@ -77,7 +77,7 @@ import com.skyblock.core.achievement.AchievementCommand;
 import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.level.SkyblockLevelCommand;
 import com.skyblock.core.level.SkyblockLevelManager;
-import com.skyblock.core.menu.SkyblockMenuCommand;
+import com.skyblock.core.command.SkyblockMenuCommand;
 import com.skyblock.core.run.RunCommand;
 import com.skyblock.core.run.RunManager;
 import com.skyblock.core.title.TitleCommand;
