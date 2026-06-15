@@ -33,7 +33,7 @@ public class CalendarMenu extends Menu {
     private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34, 37, 38};
 
     public CalendarMenu() {
-        super("§eSkyBlock Calendar", 6);
+        super("§bSkyBlock Calendar", 6);
     }
 
     @Override
