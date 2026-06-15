@@ -1,11 +1,13 @@
 package com.skyblock.skills;
 
 /**
- * The skills a player can level up by performing activities in SkyBlock.
+ * @deprecated Use {@code com.skyblock.core.skills.SkillManager.SkillType} instead.
  *
- * <p>Each skill carries its human-readable display name and the maximum
- * level a player can reach in that skill.</p>
+ * <p>This standalone enum duplicates the canonical definition in skyblock-core.
+ * All callers should migrate to {@code com.skyblock.core.skills.SkillManager.SkillType}
+ * which carries the full 12-skill list with correct Hypixel max-level caps.</p>
  */
+@Deprecated
 public enum SkillType {
 
     FARMING("Farming", 50),
