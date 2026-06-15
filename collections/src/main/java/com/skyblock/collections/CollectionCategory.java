@@ -3,8 +3,7 @@ package com.skyblock.collections;
 /**
  * Top-level groupings for SkyBlock collections.
  *
- * <p>Each category covers a distinct play-style. Materials are registered to
- * a category at startup via {@link CollectionRegistry}; ordinal order matches
+ * <p>Each category covers a distinct play-style; ordinal order matches
  * the in-game tab ordering.</p>
  */
 public enum CollectionCategory {
