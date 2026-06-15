@@ -388,6 +388,31 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkillManager/SkillsManager final consolidation — round 75)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkillManager / SkillsManager | `com.skyblock.core.manager.SkillManager` | Thorough final-pass consolidation of every class named `SkillManager` or `SkillsManager` across every module; all remaining duplicate implementations and `@Deprecated` delegation stubs deleted outright; canonical `com.skyblock.core.manager.SkillManager` confirmed as sole implementation with no remaining orphan stubs | #2729 |
+
+---
+
+## Completed (CollectionManager/CollectionsManager and BazaarManager final consolidation — round 76)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| CollectionManager / CollectionsManager | `com.skyblock.core.manager.CollectionManager` | Thorough final-pass consolidation of every class named `CollectionManager` or `CollectionsManager` across every module; all remaining duplicate implementations and `@Deprecated` delegation stubs deleted outright; canonical `com.skyblock.core.manager.CollectionManager` confirmed as sole implementation | #2728 |
+| BazaarManager | `com.skyblock.core.manager.BazaarManager` | Thorough final-pass consolidation of every class named `BazaarManager` across every module; orphan `com.skyblock.plugin.economy.BazaarCategoryMenu` deleted; canonical `com.skyblock.core.manager.BazaarManager` confirmed as sole implementation with all callers referencing it directly | #2730 |
+
+---
+
+## Completed (MinionManager final consolidation — round 77)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| MinionManager | `com.skyblock.core.manager.MinionManager` | Thorough final-pass consolidation of every class named `MinionManager` across every module; `plugin.minion.MinionManager` (location-based duplicate) and `plugin.minion.MinionPlacementListener` (duplicate of `plugin.listener.MinionPlacementListener`) deleted outright; canonical `com.skyblock.core.manager.MinionManager` confirmed as sole implementation | #2731 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
