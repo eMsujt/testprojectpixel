@@ -27,7 +27,7 @@ public class WardrobeMenu extends Menu {
     private final UUID playerId;
 
     public WardrobeMenu(Player player) {
-        super("§6Wardrobe", 6);
+        super("§eWardrobe", 6);
         this.playerId = Objects.requireNonNull(player, "player").getUniqueId();
     }
 
@@ -41,10 +41,6 @@ public class WardrobeMenu extends Menu {
         }
         for (int slot = 45; slot < 54; slot++) {
             setItem(slot, pane);
-        }
-        for (int row = 1; row <= 4; row++) {
-            setItem(row * 9, pane);
-            setItem(row * 9 + 8, pane);
         }
 
         PlayerProfile profile = ProfileManager.getInstance().getProfile(playerId);
