@@ -1,6 +1,6 @@
 package com.skyblock.core.stats;
 
-import com.skyblock.core.stat.Stat;
+import com.skyblock.core.model.Stat;
 import com.skyblock.core.stat.StatManager;
 
 import java.util.EnumMap;

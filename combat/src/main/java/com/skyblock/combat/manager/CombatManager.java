@@ -1,7 +1,7 @@
 package com.skyblock.combat.manager;
 
 import com.skyblock.combat.engine.CombatEngine;
-import com.skyblock.core.stat.Stat;
+import com.skyblock.core.model.Stat;
 
 import java.util.EnumMap;
 import java.util.HashMap;

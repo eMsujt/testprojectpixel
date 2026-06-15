@@ -1,7 +1,7 @@
 package com.skyblock.core.talisman;
 
 import com.skyblock.core.model.AccessoryRarity;
-import com.skyblock.core.stat.Stat;
+import com.skyblock.core.model.Stat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
