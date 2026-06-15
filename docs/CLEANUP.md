@@ -264,6 +264,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (combat-domain stub deletion follow-up — round 62)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| `com.skyblock.combat` root-level `@Deprecated` stubs | `com.skyblock.combat.<sub-package>` | Deleted `CombatStat`, `CollectionCategory`, and `CollectionRegistry` zero-caller `@Deprecated` root-level stub classes (flagged by Oracle in the round-61 PR review); no live callers existed in any module | #2694 |
+
+---
+
 ## Completed (IslandManager/SkyBlockIslandManager consolidation, Skill/Stat/Rarity/Collection enum consolidation, and combat-domain package layout normalization — round 61)
 
 | Domain | Canonical class | Work done | PR / commit |
