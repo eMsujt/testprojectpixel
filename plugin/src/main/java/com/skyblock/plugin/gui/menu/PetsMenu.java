@@ -2,69 +2,96 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
+import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.pets.PetManager;
-import com.skyblock.plugin.pets.PetManager.PetEntry;
+import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 public class PetsMenu extends Menu {
 
-    private static final int EQUIPPED_SLOT = 13;
-
-    private static final int[] LIST_SLOTS = {
-            10, 11, 12, 14, 15, 16,
+    private static final int[] INNER_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34,
             37, 38, 39, 40, 41, 42, 43
     };
+    private static final int SLOTS_PER_PAGE = INNER_SLOTS.length;
 
-    private final UUID playerId;
+    private final Player player;
+    private final int page;
 
-    public PetsMenu(UUID playerId) {
-        super("§aPets", 6);
-        this.playerId = Objects.requireNonNull(playerId, "playerId");
+    public PetsMenu(Player player) {
+        this(player, 0);
+    }
+
+    private PetsMenu(Player player, int page) {
+        super("§dPets", 6);
+        this.player = player;
+        this.page = page;
     }
 
     @Override
     protected void build() {
         fillBorder();
 
-        PetManager pets = PetManager.getInstance();
-        PetEntry active = pets.getActivePet(playerId);
-        List<PetEntry> owned = pets.getPets(playerId);
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        List<String> owned = profile.getOwnedPets();
+        String activePetId = profile.getActivePet();
 
-        if (active != null) {
-            setItem(EQUIPPED_SLOT, new ItemBuilder(Material.PLAYER_HEAD)
-                            .displayName("§5" + active.getType().name())
-                            .lore(
-                                    "§7Level: §a" + active.getLevel(),
-                                    "§7XP: §e" + active.getXp(),
-                                    "§7Rarity: §f" + active.getRarity(),
-                                    "§aCurrently equipped")
-                            .build(),
-                    e -> e.setCancelled(true));
-        }
+        int totalPages = Math.max(1, (int) Math.ceil((double) owned.size() / SLOTS_PER_PAGE));
+        int start = page * SLOTS_PER_PAGE;
 
-        int count = Math.min(owned.size(), LIST_SLOTS.length);
-        for (int i = 0; i < count; i++) {
-            PetEntry pet = owned.get(i);
-            boolean equipped = active != null && pet.getId().equals(active.getId());
-            setItem(LIST_SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
-                            .displayName((equipped ? "§a" : "§f") + pet.getType().name())
+        for (int i = 0; i < SLOTS_PER_PAGE; i++) {
+            int idx = start + i;
+            if (idx >= owned.size()) break;
+            String petId = owned.get(idx);
+            boolean equipped = petId.equals(activePetId);
+            PetManager.PetDefinition def = PetManager.getInstance().getDefinition(petId);
+            String rarity = def != null ? def.rarity() : "COMMON";
+            setItem(INNER_SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
+                            .displayName((equipped ? "§a" : "§f") + petId)
                             .lore(
-                                    "§7Level: §a" + pet.getLevel(),
-                                    "§7Rarity: §f" + pet.getRarity(),
+                                    "§7Rarity: §f" + rarity,
                                     equipped ? "§aCurrently equipped" : "§eClick to equip!")
                             .build(),
                     event -> {
-                        pets.setActivePet(playerId, pet);
-                        open((Player) event.getWhoClicked());
+                        profile.setActivePet(equipped ? null : petId);
+                        new PetsMenu(player, page).open(player);
                     });
+        }
+
+        if (owned.isEmpty()) {
+            setItem(22, new ItemBuilder(Material.BARRIER)
+                    .displayName("§cNo Pets")
+                    .lore("§7You don't own any pets yet.")
+                    .build());
+        }
+
+        setItem(49, new ItemBuilder(Material.BONE)
+                .displayName("§dPets")
+                .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
+                .build());
+
+        if (page > 0) {
+            int prevPage = page - 1;
+            setItem(45, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Go to page §e" + (prevPage + 1))
+                    .build(),
+                    event -> new PetsMenu(player, prevPage).open(player));
+        }
+
+        if ((page + 1) < totalPages) {
+            int nextPage = page + 1;
+            setItem(53, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Go to page §e" + (nextPage + 1))
+                    .build(),
+                    event -> new PetsMenu(player, nextPage).open(player));
         }
     }
 

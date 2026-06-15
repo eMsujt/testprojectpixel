@@ -42,8 +42,6 @@ public final class SkyBlockProfile implements Serializable {
     private boolean showSkillNotifications = true;
     private boolean showCollectionNotifications = true;
     private boolean showPetNotifications = true;
-    private final List<String> ownedPets = new ArrayList<>();
-    private String activePet = null;
 
     /**
      * Creates a new profile with no accumulated experience.
@@ -340,33 +338,6 @@ public final class SkyBlockProfile implements Serializable {
      */
     public void setShowPetNotifications(boolean showPetNotifications) {
         this.showPetNotifications = showPetNotifications;
-    }
-
-    /**
-     * Returns the list of pet names owned by the player.
-     *
-     * @return mutable list of owned pet names
-     */
-    public List<String> getOwnedPets() {
-        return ownedPets;
-    }
-
-    /**
-     * Returns the name of the currently active pet, or {@code null} if none is active.
-     *
-     * @return active pet name, or {@code null}
-     */
-    public String getActivePet() {
-        return activePet;
-    }
-
-    /**
-     * Sets the currently active pet.
-     *
-     * @param activePet the pet name to activate, or {@code null} to deactivate
-     */
-    public void setActivePet(String activePet) {
-        this.activePet = activePet;
     }
 
     @Override
