@@ -7,13 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * The top-level SkyBlock menu (opened via {@code /sbmenu}).
- *
- * <p>A 54-slot (6-row) menu laid out to match Hypixel's exact slot positions:
- * the player's profile head sits in the centre of the top region, with the
- * feature icons (Skills, Collection, Recipe Book, Trades, Fast Travel, Calendar
- * and Events) arranged across the two middle rows.</p>
+ * @deprecated Use {@link com.skyblock.core.menu.SkyBlockMainMenu} instead.
  */
+@Deprecated
 public class SkyBlockMenu extends Menu {
 
     /** Centre slot holding the player's SkyBlock profile head. */

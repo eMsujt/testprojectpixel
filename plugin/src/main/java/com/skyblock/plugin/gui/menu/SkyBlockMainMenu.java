@@ -11,6 +11,10 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.menu.SkyBlockMainMenu} instead.
+ */
+@Deprecated
 public class SkyBlockMainMenu extends Menu {
 
     private final Player player;

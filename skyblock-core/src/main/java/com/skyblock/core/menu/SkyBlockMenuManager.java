@@ -31,6 +31,6 @@ public final class SkyBlockMenuManager {
      */
     public void openMainMenu(Player player) {
         Objects.requireNonNull(player, "player");
-        menuManager.openMenu(player, new SkyBlockMainMenu());
+        menuManager.openMenu(player, new SkyBlockMainMenu(player));
     }
 }
