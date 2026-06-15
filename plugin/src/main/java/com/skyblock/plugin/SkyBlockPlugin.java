@@ -55,7 +55,7 @@ import com.skyblock.plugin.commands.QuestCommand;
 import com.skyblock.plugin.commands.SkillsCommand;
 import com.skyblock.plugin.commands.SlayerCommand;
 import com.skyblock.plugin.commands.TradingCommand;
-import com.skyblock.plugin.command.menu.SkyblockMenuCommand;
+import com.skyblock.core.command.SkyblockMenuCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
