@@ -7,13 +7,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Manages NPC shops: one catalog per {@link ShopType}, each holding item
- * entries with a buy price (what a player pays) and a sell price (what a
- * player receives).
- *
- * <p>Catalogs are stored in {@link ConcurrentHashMap}s keyed by item id, so
- * all operations are thread-safe. Prices are tracked in coins.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.ShopManager} (the canonical singleton).
  */
+@Deprecated
 public final class ShopManager {
 
     /** The category of items a shop trades in. */
