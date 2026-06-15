@@ -13,7 +13,7 @@ public class BankMenu extends Menu {
     private final Player player;
 
     public BankMenu(Player player) {
-        super("§6Bank", 6);
+        super("§6Bank Account", 6);
         this.player = player;
     }
 
@@ -23,21 +23,22 @@ public class BankMenu extends Menu {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
 
-        setItem(13, new ItemBuilder(Material.GOLD_NUGGET)
-                .displayName("§6Purse")
-                .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getPurse()) + " Coins")
-                .build());
+        ItemStack bankItem = new ItemBuilder(Material.GOLD_INGOT)
+                .displayName("§6Bank Account")
+                .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins")
+                .build();
+        setItem(13, bankItem, e -> e.setCancelled(true));
     }
 
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 45; slot < 54; slot++) {
-            setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
         }
     }
 }
