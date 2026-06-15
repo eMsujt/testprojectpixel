@@ -2,53 +2,91 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
+import com.skyblock.plugin.items.CustomItemRegistry;
+import com.skyblock.plugin.items.SkyBlockItem;
 import com.skyblock.plugin.manager.EconomyManager;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+import java.util.Objects;
+
 public class NpcShopMenu extends Menu {
 
-    private record ShopItem(Material material, String name, int price) {}
+    /**
+     * A single shop entry. {@code materialOrCustomId} is resolved first against
+     * {@link CustomItemRegistry}; if not found there it is matched against a
+     * vanilla {@link Material} name.
+     */
+    public record ShopItem(String materialOrCustomId, String displayName, int price) {
+        public ShopItem {
+            Objects.requireNonNull(materialOrCustomId, "materialOrCustomId");
+            Objects.requireNonNull(displayName, "displayName");
+            if (price < 0) throw new IllegalArgumentException("price must not be negative");
+        }
+    }
 
-    private static final ShopItem[] ITEMS = {
-            new ShopItem(Material.IRON_INGOT,    "§fIron Ingot",    10),
-            new ShopItem(Material.GOLD_INGOT,    "§fGold Ingot",    15),
-            new ShopItem(Material.DIAMOND,       "§fDiamond",       50),
-            new ShopItem(Material.COAL,          "§fCoal",           5),
-            new ShopItem(Material.IRON_SWORD,    "§fIron Sword",    25),
-            new ShopItem(Material.IRON_CHESTPLATE,"§fIron Chestplate",75),
-            new ShopItem(Material.IRON_HELMET,   "§fIron Helmet",   50),
+    private static final int[] SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34
     };
 
-    private static final int[] SLOTS = {10, 11, 12, 13, 14, 15, 16};
+    private final List<ShopItem> items;
 
-    public NpcShopMenu() {
-        super("§aMagnus the Blacksmith", 6);
+    public NpcShopMenu(String title, List<ShopItem> items) {
+        super(Objects.requireNonNull(title, "title"), 6);
+        this.items = List.copyOf(Objects.requireNonNull(items, "items"));
     }
 
     @Override
     protected void build() {
         fillBorder();
 
-        for (int i = 0; i < ITEMS.length; i++) {
-            ShopItem item = ITEMS[i];
-            setItem(SLOTS[i], new ItemBuilder(item.material())
-                            .displayName(item.name())
-                            .lore("§7Price: §6" + item.price() + " coins", "§eClick to buy!")
-                            .build(),
-                    event -> {
-                        event.setCancelled(true);
-                        HumanEntity who = event.getWhoClicked();
-                        if (EconomyManager.getInstance().removeCoins(who.getUniqueId(), item.price())) {
-                            who.getInventory().addItem(new ItemStack(item.material()));
-                            who.sendMessage("§aPurchased " + item.name()
-                                    + " §afor §6" + item.price() + " coins§a!");
-                        } else {
-                            who.sendMessage("§cYou don't have enough coins!");
-                        }
-                    });
+        int count = Math.min(items.size(), SLOTS.length);
+        for (int i = 0; i < count; i++) {
+            ShopItem shopItem = items.get(i);
+            ItemStack icon = buildIcon(shopItem);
+            setItem(SLOTS[i], icon, event -> {
+                event.setCancelled(true);
+                HumanEntity who = event.getWhoClicked();
+                if (EconomyManager.getInstance().removeCoins(who.getUniqueId(), shopItem.price())) {
+                    ItemStack give = resolveItem(shopItem.materialOrCustomId());
+                    if (give != null) {
+                        who.getInventory().addItem(give);
+                    }
+                    who.sendMessage("§aPurchased " + shopItem.displayName()
+                            + " §afor §6" + shopItem.price() + " coins§a!");
+                } else {
+                    who.sendMessage("§cYou don't have enough coins!");
+                }
+            });
         }
+    }
+
+    private static ItemStack buildIcon(ShopItem item) {
+        ItemStack base = resolveItem(item.materialOrCustomId());
+        if (base == null) {
+            base = new ItemStack(Material.BARRIER);
+        }
+        return new ItemBuilder(base)
+                .displayName(item.displayName())
+                .lore("§7Price: §6" + item.price() + " coins", "§eClick to buy!")
+                .build();
+    }
+
+    /** Resolves a material-or-custom-id string to an ItemStack, or null if unknown. */
+    private static ItemStack resolveItem(String id) {
+        SkyBlockItem custom = CustomItemRegistry.getInstance().getItem(id);
+        if (custom != null) {
+            return new ItemStack(custom.getMaterial());
+        }
+        Material material = Material.matchMaterial(id);
+        if (material != null) {
+            return new ItemStack(material);
+        }
+        return null;
     }
 
     private void fillBorder() {
