@@ -1,6 +1,7 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.collections.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.EntityType;
@@ -30,7 +31,7 @@ public final class CollectionTrackingListener implements Listener {
         MOB_COLLECTION.put(EntityType.BLAZE,    "BLAZE_ROD");
     }
 
-    private final CollectionManager collectionManager = CollectionManager.getInstance();
+    private final CollectionManager cm = CollectionManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -51,10 +52,12 @@ public final class CollectionTrackingListener implements Listener {
     }
 
     private void award(Player player, String collection) {
-        int unlocked = collectionManager.addCollection(player.getUniqueId(), collection, 1L);
-        if (unlocked > 0) {
-            int tier = collectionManager.getTier(player.getUniqueId(), collection);
-            player.sendMessage("§a§lCOLLECTION UNLOCKED §7" + collection.toLowerCase() + " §eTier " + tier);
+        Collection c = Collection.parse(collection);
+        int tierBefore = c == null ? 0 : cm.getTier(player.getUniqueId(), c);
+        cm.addItems(player.getUniqueId(), collection, 1L);
+        int tierAfter = c == null ? 0 : cm.getTier(player.getUniqueId(), c);
+        if (tierAfter > tierBefore) {
+            player.sendMessage("§a§lCOLLECTION UNLOCKED §7" + collection.toLowerCase() + " §eTier " + tierAfter);
         }
     }
 }

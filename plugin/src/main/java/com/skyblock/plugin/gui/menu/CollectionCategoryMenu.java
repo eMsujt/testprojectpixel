@@ -1,6 +1,7 @@
 package com.skyblock.plugin.gui.menu;
 
-import com.skyblock.plugin.collections.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
@@ -56,8 +57,9 @@ public class CollectionCategoryMenu extends Menu {
         CollectionManager manager = CollectionManager.getInstance();
         for (int i = 0; i < items.length && i + 9 < 45; i++) {
             Material mat = items[i];
-            long count = manager.getCollection(playerId, mat.name());
-            int tier = manager.getTier(playerId, mat.name());
+            Collection c = Collection.parse(mat.name());
+            long count = c == null ? 0L : manager.getItems(playerId, c);
+            int tier = c == null ? 0 : manager.getTier(playerId, c);
             setItem(9 + i, new ItemBuilder(mat)
                     .displayName("§a" + prettify(mat.name()))
                     .lore("§7Collected: §e" + count, "§7Tier: §e" + tier)

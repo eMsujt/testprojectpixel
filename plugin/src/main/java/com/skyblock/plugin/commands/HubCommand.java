@@ -3,7 +3,8 @@ package com.skyblock.plugin.commands;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.plugin.managers.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import com.skyblock.plugin.managers.DungeonManager;
 import com.skyblock.plugin.managers.EnchantingManager;
 import com.skyblock.plugin.managers.FishingManager;
@@ -85,7 +86,7 @@ public final class HubCommand implements CommandExecutor {
 
         int kuudraTier      = KuudraManager.getInstance().getKuudraTier(id);
 
-        Map<String, Long> collections = CollectionsManager.getInstance().getCollectionCounts(id);
+        Map<Collection, Long> collections = CollectionManager.getInstance().getAll(id);
 
         boolean islandUnlocked = IslandManager.getInstance().isIslandUnlocked(id);
         int islandLevel        = IslandManager.getInstance().getIslandLevel(id);

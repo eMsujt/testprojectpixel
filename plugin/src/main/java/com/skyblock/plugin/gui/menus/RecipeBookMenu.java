@@ -2,7 +2,8 @@ package com.skyblock.plugin.gui.menus;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.managers.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -58,18 +59,19 @@ public class RecipeBookMenu extends Menu {
             setItem(slot, pane);
         }
 
-        CollectionsManager manager = CollectionsManager.getInstance();
-        List<Map.Entry<String, Integer>> unlocked = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : manager.getCollectionMilestones(playerId).entrySet()) {
-            if (entry.getValue() != null && entry.getValue() >= 1) {
-                unlocked.add(entry);
+        CollectionManager manager = CollectionManager.getInstance();
+        List<Map.Entry<Collection, Integer>> unlocked = new ArrayList<>();
+        for (Map.Entry<Collection, Long> entry : manager.getAll(playerId).entrySet()) {
+            int tier = manager.getTier(playerId, entry.getKey());
+            if (tier >= 1) {
+                unlocked.add(Map.entry(entry.getKey(), tier));
             }
         }
-        unlocked.sort((a, b) -> a.getKey().compareTo(b.getKey()));
+        unlocked.sort((a, b) -> a.getKey().itemKey.compareTo(b.getKey().itemKey));
         for (int i = 0; i < unlocked.size() && i < SLOTS.length; i++) {
-            Map.Entry<String, Integer> entry = unlocked.get(i);
-            setItem(SLOTS[i], new ItemBuilder(materialFor(entry.getKey()))
-                    .displayName("§a" + prettify(entry.getKey()))
+            Map.Entry<Collection, Integer> entry = unlocked.get(i);
+            setItem(SLOTS[i], new ItemBuilder(materialFor(entry.getKey().itemKey))
+                    .displayName("§a" + prettify(entry.getKey().itemKey))
                     .lore("§7Unlocked at tier §e" + entry.getValue())
                     .build());
         }

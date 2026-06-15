@@ -5,7 +5,8 @@ import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.bank.BankTier;
 import com.skyblock.core.bank.BankType;
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.core.collections.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.alchemy.AlchemyManager;
@@ -280,9 +281,9 @@ public final class SkyblockHubCommand implements CommandExecutor {
 
     private void handleCollections(Player player) {
         UUID id = player.getUniqueId();
-        CollectionsManager manager = CollectionsManager.getInstance();
+        CollectionManager manager = CollectionManager.getInstance();
         player.sendMessage("=== Your Collections ===");
-        for (CollectionsManager.CollectionType type : CollectionsManager.CollectionType.values()) {
+        for (Collection type : Collection.values()) {
             long amount = manager.getItems(id, type);
             int tier = manager.getTier(id, type);
             player.sendMessage("  " + type.getDisplayName() + ": " + amount + " (Tier " + tier + ")");

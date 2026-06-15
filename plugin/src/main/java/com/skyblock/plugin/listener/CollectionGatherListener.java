@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.manager.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -48,6 +48,6 @@ public final class CollectionGatherListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        CollectionManager.getInstance().addCount(player.getUniqueId(), collection, 1);
+        CollectionManager.getInstance().addItems(player.getUniqueId(), collection, 1);
     }
 }
