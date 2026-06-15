@@ -6,11 +6,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton managing per-profile coin balances.
- *
- * <p>Balances are keyed by profile UUID (see {@link com.skyblock.core.profile.ProfileManager.SkyBlockProfile#profileId()}).
- * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
  */
+@Deprecated
 public final class BankingManager {
 
     private static final BankingManager INSTANCE = new BankingManager();

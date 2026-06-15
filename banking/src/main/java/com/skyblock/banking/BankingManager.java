@@ -4,12 +4,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Manages per-player bank account balances.
- *
- * <p>Balances are stored in a {@link ConcurrentHashMap} keyed by player
- * UUID. Updates use atomic {@code compute} operations so deposits and
- * withdrawals are safe to call from any thread.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
  */
+@Deprecated
 public final class BankingManager {
 
     private final ConcurrentHashMap<UUID, Long> balances = new ConcurrentHashMap<>();

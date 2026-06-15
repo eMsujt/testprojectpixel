@@ -14,14 +14,9 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Manages per-player bank accounts.
- *
- * <p>Accounts are stored in a {@link HashMap} keyed by player UUID. Each
- * player owns at most one {@link BankAccount}, which tracks its balance and
- * {@link BankTier}; deposits are capped at the account tier's coin cap.
- * Not thread-safe; synchronize externally if accessed from multiple
- * threads.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
  */
+@Deprecated
 public final class BankManager {
 
     /**

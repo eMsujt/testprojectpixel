@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
+ */
+@Deprecated
 public class BankManager {
 
     private final Map<UUID, Double> balances = new HashMap<>();
