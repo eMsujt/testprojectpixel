@@ -1,4 +1,4 @@
-package com.skyblock.plugin.gui.menus.collections;
+package com.skyblock.plugin.gui.menu.collections;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;

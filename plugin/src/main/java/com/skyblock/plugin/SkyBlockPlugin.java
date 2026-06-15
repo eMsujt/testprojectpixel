@@ -178,10 +178,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.minion.MinionManager.getInstance(), this);
         com.skyblock.plugin.minion.MinionManager.getInstance().onEnable(this);
         new com.skyblock.plugin.minion.MinionTickScheduler(com.skyblock.plugin.minion.MinionManager.getInstance()).start(this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.StorageMenu(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.PotionBagMenu(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.QuiverMenu(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.FishingBagMenu(), this);
+        // menus.StorageMenu/PotionBagMenu/QuiverMenu/FishingBagMenu listeners removed — canonical com.skyblock.plugin.gui.menu.* classes handle clicks via core MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.fishing.FishingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerJoinSetupListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MinionPlacementListener(), this);
@@ -201,7 +198,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         // com.skyblock.plugin.menu.BankMenu listener removed — canonical com.skyblock.core.menu.BankMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.QuestsMenu listener removed — canonical com.skyblock.core.menu.QuestsMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.CollectionsMenu listener removed — canonical com.skyblock.core.menu.CollectionsMenu handles clicks via MenuListener
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.FastTravelMenu(), this);
+        // com.skyblock.plugin.menu.FastTravelMenu listener removed — canonical com.skyblock.plugin.gui.menu.FastTravelMenu handles clicks via core MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MiningListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TamingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FishingListener(), this);
