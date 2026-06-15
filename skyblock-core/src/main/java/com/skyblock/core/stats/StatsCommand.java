@@ -1,7 +1,7 @@
 package com.skyblock.core.stats;
 
-import com.skyblock.core.skills.SkillManager;
-import com.skyblock.core.skills.SkillManager.SkillType;
+import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.manager.SkillManager.SkillType;
 import com.skyblock.core.slayer.SlayerManager;
 
 import org.bukkit.command.Command;
