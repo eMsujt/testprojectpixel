@@ -23,10 +23,6 @@
         </dependency>
         <dependency>
             <groupId>com.skyblock</groupId>
-            <artifactId>skyblock-skills</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.skyblock</groupId>
             <artifactId>skyblock-api</artifactId>
         </dependency>
         <dependency>

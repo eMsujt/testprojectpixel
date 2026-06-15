@@ -24,11 +24,6 @@
         </dependency>
         <dependency>
             <groupId>com.skyblock</groupId>
-            <artifactId>skyblock-skills</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.skyblock</groupId>
             <artifactId>skyblock-api</artifactId>
         </dependency>
         <dependency>
