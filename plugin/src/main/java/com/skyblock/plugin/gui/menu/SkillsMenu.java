@@ -2,34 +2,25 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.plugin.manager.ProfileManager;
+import com.skyblock.plugin.manager.SkillManager;
+import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-/**
- * The Skills hub menu.
- *
- * <p>A 54-slot (6-row) chest titled {@code §bSkills} with a gray glass-pane
- * border. Ten skill icons are placed in alternating inner slots across rows 1–3,
- * each showing the player's current level and total XP.</p>
- */
 public class SkillsMenu extends Menu {
 
     private enum Skill {
-        FARMING      ("Farming",      "farming",      Material.WHEAT),
-        MINING       ("Mining",       "mining",       Material.IRON_PICKAXE),
-        COMBAT       ("Combat",       "combat",       Material.IRON_SWORD),
-        FORAGING     ("Foraging",     "foraging",     Material.OAK_LOG),
-        FISHING      ("Fishing",      "fishing",      Material.FISHING_ROD),
-        ENCHANTING   ("Enchanting",   "enchanting",   Material.BOOKSHELF),
-        ALCHEMY      ("Alchemy",      "alchemy",      Material.BREWING_STAND),
-        TAMING       ("Taming",       "taming",       Material.BONE),
-        CARPENTRY    ("Carpentry",    "carpentry",    Material.CRAFTING_TABLE),
-        RUNECRAFTING ("Runecrafting", "runecrafting", Material.NETHER_STAR),
-        SOCIAL       ("Social",       "social",       Material.EMERALD),
-        DUNGEONEERING("Dungeoneering","dungeoneering",Material.ENDER_EYE);
+        FARMING    ("Farming",    "farming",    Material.WHEAT),
+        MINING     ("Mining",     "mining",     Material.IRON_PICKAXE),
+        COMBAT     ("Combat",     "combat",     Material.IRON_SWORD),
+        FORAGING   ("Foraging",   "foraging",   Material.OAK_LOG),
+        FISHING    ("Fishing",    "fishing",    Material.FISHING_ROD),
+        ENCHANTING ("Enchanting", "enchanting", Material.BOOKSHELF),
+        ALCHEMY    ("Alchemy",    "alchemy",    Material.BREWING_STAND),
+        TAMING     ("Taming",     "taming",     Material.BONE);
 
         private final String displayName;
         private final String key;
@@ -42,13 +33,13 @@ public class SkillsMenu extends Menu {
         }
     }
 
-    /** Fixed inner slots: cols 1,3,5,7 across rows 1–3 (12 icons). */
-    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32, 34};
+    /** Two inner rows, alternating columns: 8 icons for 8 skills. */
+    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25};
 
     private final UUID playerId;
 
     public SkillsMenu(UUID playerId) {
-        super("§aSkills", 6);
+        super("§aYour Skills", 6);
         this.playerId = playerId;
     }
 
@@ -56,23 +47,20 @@ public class SkillsMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        SkillsManager skills = SkillsManager.getInstance();
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(playerId);
+        SkillManager skillManager = SkillManager.getInstance();
         Skill[] values = Skill.values();
         for (int i = 0; i < values.length; i++) {
             Skill skill = values[i];
-            long totalXP = skills.getSkillXP(playerId, skill.key);
-            int level = skills.getSkillLevel(playerId, skill.key);
+            long xp = profile.getSkillXp(skill.key);
+            int level = skillManager.levelForXp(skill.key, xp);
             setItem(SLOTS[i], new ItemBuilder(skill.icon)
                     .displayName("§a" + skill.displayName)
                     .lore(
                             "§7Level: §e" + level,
-                            "§7Total XP: §e" + totalXP)
+                            "§7Total XP: §e" + xp)
                     .build(),
-                    e -> {
-                        e.setCancelled(true);
-                        new SkillDetailMenu(playerId, skill.displayName, skill.key, skill.icon)
-                                .open((org.bukkit.entity.Player) e.getWhoClicked());
-                    });
+                    e -> e.setCancelled(true));
         }
     }
 
