@@ -1,8 +1,8 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.gui.GuiBuilder;
+import com.skyblock.core.menu.Menu;
 import com.skyblock.core.menu.MenuManager;
-import com.skyblock.core.menu.MenuManager.SkyBlockMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -57,7 +57,7 @@ public final class SkyBlockMenuCommand implements TabExecutor {
         return item;
     }
 
-    private static final class MainMenu extends SkyBlockMenu {
+    private static final class MainMenu extends Menu {
 
         @Override
         public void open(Player player) {
@@ -85,7 +85,7 @@ public final class SkyBlockMenuCommand implements TabExecutor {
         }
 
         @Override
-        public void onClick(InventoryClickEvent event) {
+        public void handleClick(InventoryClickEvent event) {
             if (event.getClickedInventory() != null
                     && event.getClickedInventory().getHolder() instanceof GuiBuilder.GuiHolder holder) {
                 holder.handleClick(event);
