@@ -1,6 +1,7 @@
 package com.skyblock.plugin.minions;
 
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,6 +10,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
@@ -16,18 +19,20 @@ import java.util.UUID;
  * Listener that places a minion when a player right-clicks while holding a
  * minion item.
  *
- * <p>The held item is recognised as a minion by its display name, which ends
- * in "Minion" (e.g. "Wheat Minion"). The minion is placed on top of the
- * right-clicked block; right-clicks in the air are ignored so accidental
+ * <p>The held item is recognised as a minion by the {@code skyblock:minion_type}
+ * key stored in its {@link PersistentDataContainer}. The minion is placed on top
+ * of the right-clicked block; right-clicks in the air are ignored so accidental
  * swings do not consume the item. A player may have at most
- * {@link #MAX_MINIONS} minions placed at once (per the Hypixel wiki). The
- * minion is registered with {@link MinionManager} at tier 1 and one item is
- * consumed from the hand.</p>
+ * {@link #MAX_MINIONS} minions placed at once. The minion is registered with
+ * {@link MinionManager} at tier 1 and one item is consumed from the hand.</p>
  */
 public final class MinionPlacementListener implements Listener {
 
     /** Maximum number of minions a single player may have placed at once. */
     private static final int MAX_MINIONS = 5;
+
+    private static final NamespacedKey MINION_TYPE_KEY =
+            new NamespacedKey("skyblock", "minion_type");
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -36,9 +41,9 @@ public final class MinionPlacementListener implements Listener {
         ItemStack item = event.getItem();
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
-        if (meta == null || !meta.hasDisplayName()) return;
+        if (meta == null) return;
 
-        String type = matchType(meta.getDisplayName());
+        String type = matchType(meta.getPersistentDataContainer());
         if (type == null) return;
 
         Block block = event.getClickedBlock();
@@ -62,10 +67,10 @@ public final class MinionPlacementListener implements Listener {
     }
 
     /**
-     * Returns the minion type for a held item's display name, or {@code null}
-     * if the name does not denote a minion.
+     * Returns the minion type stored in the item's PDC under
+     * {@code skyblock:minion_type}, or {@code null} if absent.
      */
-    private static String matchType(String displayName) {
-        return displayName.endsWith("Minion") ? displayName : null;
+    private static String matchType(PersistentDataContainer pdc) {
+        return pdc.get(MINION_TYPE_KEY, PersistentDataType.STRING);
     }
 }
