@@ -21,12 +21,7 @@ import java.util.Map;
  */
 public final class FishingXpListener implements Listener {
 
-    private static final Map<Material, Long> FISH_XP = Map.of(
-            Material.COD,            6L,
-            Material.SALMON,         6L,
-            Material.TROPICAL_FISH,  6L,
-            Material.PUFFERFISH,     6L
-    );
+    private static final long CAUGHT_FISH_XP = 10L;
 
     private static final Map<EntityType, Long> SEA_CREATURE_XP = Map.ofEntries(
             Map.entry(EntityType.SQUID,          8L),
@@ -45,12 +40,11 @@ public final class FishingXpListener implements Listener {
         Entity caught = event.getCaught();
 
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-            if (!(caught instanceof Item)) return;
-            Material type = ((Item) caught).getItemStack().getType();
-            long xp = FISH_XP.getOrDefault(type, 6L);
+            if (!(caught instanceof Item item)) return;
+            Material type = item.getItemStack().getType();
             SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-            profile.addSkillXp("fishing", xp);
-            XpActionBar.send(player, "fishing", xp, profile.getSkillXp("fishing"));
+            profile.addSkillXp("fishing", CAUGHT_FISH_XP);
+            XpActionBar.send(player, "fishing", CAUGHT_FISH_XP, profile.getSkillXp("fishing"));
             CollectionManager.getInstance().addCount(player.getUniqueId(), type.name(), 1);
 
         } else if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY && caught != null) {
