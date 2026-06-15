@@ -370,6 +370,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (shop-domain and collections-domain package layout normalization — round 72)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ShopManager / NpcShopManager / ShopListener / ShopCommand | `com.skyblock.core.manager.ShopManager` | Normalized shop-domain package layout: every class across every module containing shop or NPC-shop-related classes (`ShopManager`, `ShopListener`, `ShopCommand`, `NpcShopManager`, `NPCShopListener`, and related model types) moved into correct `.manager`/`.listener`/`.command`/`.model` sub-packages; flat-package strays eliminated; canonical `com.skyblock.core.manager.ShopManager` confirmed as sole manager implementation | #2718 |
+| CollectionManager / CollectionListener / CollectionCommand | `com.skyblock.core.manager.CollectionManager` | Normalized collections-domain package layout: every class across every module containing collection-related classes (`CollectionManager`, `CollectionListener`, `CollectionCommand`, and related model types) moved into correct `.manager`/`.listener`/`.command`/`.model` sub-packages; 21 orphan/duplicate files deleted (deprecated stubs in `skyblock-core.collection`/`skyblock-core.collections`, the entire `collections` module, and `core.command.CollectionsCommand` duplicate); canonical `com.skyblock.core.manager.CollectionManager` confirmed as sole manager implementation | #2720 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
