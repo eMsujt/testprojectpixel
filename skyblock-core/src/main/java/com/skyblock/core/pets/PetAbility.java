@@ -1,6 +1,6 @@
 package com.skyblock.core.pets;
 
-import com.skyblock.core.pets.PetManager.PetType;
+import com.skyblock.core.manager.PetManager.PetType;
 
 import java.util.EnumMap;
 import java.util.Map;

@@ -12,7 +12,7 @@ import com.skyblock.plugin.managers.GardenManager;
 import com.skyblock.plugin.managers.HOTMManager;
 import com.skyblock.plugin.managers.IslandManager;
 import com.skyblock.plugin.managers.KuudraManager;
-import com.skyblock.plugin.managers.PetsManager;
+import com.skyblock.core.manager.PetManager;
 import com.skyblock.plugin.managers.ProfileManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.SlayerManager;
@@ -82,7 +82,8 @@ public final class HubCommand implements CommandExecutor {
 
         String activeProfile = ProfileManager.getInstance().getActiveProfile(id);
 
-        PetsManager.Pet activePet = PetsManager.getInstance().getActivePet(id);
+        PetManager petMgr = PetManager.getInstance();
+        PetManager.Pet activePet = petMgr.getActivePet(id);
 
         int kuudraTier      = KuudraManager.getInstance().getKuudraTier(id);
 
@@ -133,7 +134,7 @@ public final class HubCommand implements CommandExecutor {
                 "Active: " + (activeProfile != null ? activeProfile : "None")));
 
         String petLine = activePet != null
-                ? activePet.getName() + " (" + activePet.getRarity() + ") Lv" + activePet.getLevel()
+                ? activePet.type.getDisplayName() + " (" + activePet.rarity.name() + ") Lv" + petMgr.getLevel(id, activePet.type)
                 : "No active pet";
         inv.setItem(9, makeItem(Material.BONE, "Pets",
                 "Active pet: " + petLine));

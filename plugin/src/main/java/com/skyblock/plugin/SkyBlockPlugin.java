@@ -7,7 +7,6 @@ import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.plugin.managers.FishingManager;
 import com.skyblock.plugin.managers.EnchantingManager;
-import com.skyblock.plugin.managers.PetsManager;
 import com.skyblock.plugin.managers.HOTMManager;
 import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.plugin.managers.GardenManager;
@@ -104,7 +103,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         AlchemyManager.getInstance().load(getDataFolder());
         FishingManager.getInstance().load(getDataFolder());
         MayorManager.getInstance().load(getDataFolder());
-        PetsManager.getInstance().load(getDataFolder());
+        com.skyblock.core.manager.PetManager.getInstance().load(getDataFolder());
         HOTMManager.getInstance().load(getDataFolder());
         WarpManager.getInstance().load(getDataFolder());
         SkillManager.getInstance().load(getDataFolder());
@@ -128,7 +127,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.accessory.AccessoryManager.getInstance();
 
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.collection.CollectionListener(), this);
-        com.skyblock.plugin.pets.PetManager.getInstance().load(this);
+        com.skyblock.core.manager.PetManager.getInstance();
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand());
         getCommand("mayor").setExecutor(new MayorCommand());
@@ -155,7 +154,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(profileManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.profile.ProfileJoinListener(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.PlayerDataManager.getInstance(), this);
-        getServer().getPluginManager().registerEvents(com.skyblock.plugin.pets.PetManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.EnchantingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.HubClickListener(), this);
@@ -239,7 +237,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         AlchemyManager.getInstance().save(getDataFolder());
         FishingManager.getInstance().save(getDataFolder());
         MayorManager.getInstance().save(getDataFolder());
-        PetsManager.getInstance().save(getDataFolder());
+        com.skyblock.core.manager.PetManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
         SkillManager.getInstance().save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
