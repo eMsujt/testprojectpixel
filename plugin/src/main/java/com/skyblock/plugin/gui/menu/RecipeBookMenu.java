@@ -32,7 +32,7 @@ public class RecipeBookMenu extends Menu {
     }
 
     private RecipeBookMenu(Player player, int page) {
-        super("§fRecipe Book", 6);
+        super("§6Recipe Book", 6);
         this.player = player;
         this.page = page;
         this.recipes = loadRecipes();
@@ -53,6 +53,11 @@ public class RecipeBookMenu extends Menu {
     @Override
     protected void build() {
         fillBorder();
+
+        setItem(4, new ItemBuilder(Material.BOOK)
+                .displayName("§6Recipe Book")
+                .lore("§7Browse all available crafting recipes.")
+                .build());
 
         int totalPages = Math.max(1, (int) Math.ceil((double) recipes.size() / SLOTS_PER_PAGE));
         int start = page * SLOTS_PER_PAGE;
