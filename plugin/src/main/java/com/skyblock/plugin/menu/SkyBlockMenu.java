@@ -86,7 +86,7 @@ public final class SkyBlockMenu implements InventoryHolder, Listener {
             case 20 -> new AuctionHouseMenu().open(player);
             case 21 -> new BazaarMenu().open(player);
             case 22 -> new CalendarMenu(SkyBlockPlugin.getInstance()).open(player);
-            case 23 -> new QuestsMenu().open(player);
+            case 23 -> new com.skyblock.core.menu.QuestsMenu(player).open(player);
             case 25 -> new FastTravelMenu().open(player);
             default -> { }
         }
