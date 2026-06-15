@@ -13,12 +13,12 @@ import java.util.UUID;
 
 public class WardrobeMenu extends Menu {
 
-    private static final int[] WARDROBE_SLOTS = {10, 12, 14, 16, 22, 28, 30, 32, 34};
+    private static final int[] WARDROBE_SLOTS = {10, 13, 16, 19, 22, 25, 28, 31, 34};
 
     private final UUID playerId;
 
     public WardrobeMenu(Player player) {
-        super("§6Wardrobe", 6);
+        super("§aWardrobe", 6);
         this.playerId = Objects.requireNonNull(player, "player").getUniqueId();
     }
 
