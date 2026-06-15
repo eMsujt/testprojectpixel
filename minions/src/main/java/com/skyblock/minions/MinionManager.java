@@ -16,7 +16,10 @@ import org.bukkit.Location;
  * {@link #MAX_MINIONS_PER_PLAYER} minions. Access the shared instance via
  * {@link #getInstance()}. Not thread-safe; synchronize externally if accessed
  * from multiple threads.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.MinionManager} instead.
  */
+@Deprecated
 public final class MinionManager {
 
     /** The maximum number of minions a single player may place. */

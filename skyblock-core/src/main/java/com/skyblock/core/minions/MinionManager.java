@@ -9,6 +9,10 @@ import java.util.Objects;
 import java.util.UUID;
 import org.bukkit.Location;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.manager.MinionManager} instead.
+ */
+@Deprecated
 public final class MinionManager {
 
     public static final int MAX_MINIONS_PER_PLAYER = 25;
