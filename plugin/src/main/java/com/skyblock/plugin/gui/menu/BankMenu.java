@@ -23,7 +23,7 @@ public class BankMenu extends Menu {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
 
-        setItem(22, new ItemBuilder(Material.SUNFLOWER)
+        setItem(13, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Purse")
                 .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getPurse()) + " Coins")
                 .build());
