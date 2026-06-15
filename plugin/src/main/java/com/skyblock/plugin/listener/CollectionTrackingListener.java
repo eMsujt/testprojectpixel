@@ -18,24 +18,23 @@ import java.util.Map;
  */
 public final class CollectionTrackingListener implements Listener {
 
-    /** Maps a slain mob to the collection material it contributes to. */
-    private static final Map<EntityType, Material> MOB_COLLECTION = new EnumMap<>(EntityType.class);
+    private static final Map<EntityType, String> MOB_COLLECTION = new EnumMap<>(EntityType.class);
 
     static {
-        MOB_COLLECTION.put(EntityType.ZOMBIE,   Material.ROTTEN_FLESH);
-        MOB_COLLECTION.put(EntityType.SKELETON, Material.BONE);
-        MOB_COLLECTION.put(EntityType.SPIDER,   Material.STRING);
-        MOB_COLLECTION.put(EntityType.CREEPER,  Material.GUNPOWDER);
-        MOB_COLLECTION.put(EntityType.ENDERMAN, Material.ENDER_PEARL);
-        MOB_COLLECTION.put(EntityType.SLIME,    Material.SLIME_BALL);
-        MOB_COLLECTION.put(EntityType.BLAZE,    Material.BLAZE_ROD);
+        MOB_COLLECTION.put(EntityType.ZOMBIE,   "ROTTEN_FLESH");
+        MOB_COLLECTION.put(EntityType.SKELETON, "BONE");
+        MOB_COLLECTION.put(EntityType.SPIDER,   "STRING");
+        MOB_COLLECTION.put(EntityType.CREEPER,  "GUNPOWDER");
+        MOB_COLLECTION.put(EntityType.ENDERMAN, "ENDER_PEARL");
+        MOB_COLLECTION.put(EntityType.SLIME,    "SLIME_BALL");
+        MOB_COLLECTION.put(EntityType.BLAZE,    "BLAZE_ROD");
     }
 
     private final CollectionManager collectionManager = CollectionManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        award(event.getPlayer(), event.getBlock().getType());
+        award(event.getPlayer(), event.getBlock().getType().name());
     }
 
     @EventHandler
@@ -44,18 +43,18 @@ public final class CollectionTrackingListener implements Listener {
         if (killer == null) {
             return;
         }
-        Material material = MOB_COLLECTION.get(event.getEntityType());
-        if (material == null) {
+        String collection = MOB_COLLECTION.get(event.getEntityType());
+        if (collection == null) {
             return;
         }
-        award(killer, material);
+        award(killer, collection);
     }
 
-    private void award(Player player, Material material) {
-        int unlocked = collectionManager.addCollection(player.getUniqueId(), material, 1L);
+    private void award(Player player, String collection) {
+        int unlocked = collectionManager.addCollection(player.getUniqueId(), collection, 1L);
         if (unlocked > 0) {
-            int tier = collectionManager.getTier(player.getUniqueId(), material);
-            player.sendMessage("§a§lCOLLECTION UNLOCKED §7" + material.name().toLowerCase() + " §eTier " + tier);
+            int tier = collectionManager.getTier(player.getUniqueId(), collection);
+            player.sendMessage("§a§lCOLLECTION UNLOCKED §7" + collection.toLowerCase() + " §eTier " + tier);
         }
     }
 }
