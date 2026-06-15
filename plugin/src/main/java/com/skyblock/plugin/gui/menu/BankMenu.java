@@ -13,7 +13,7 @@ public class BankMenu extends Menu {
     private final Player player;
 
     public BankMenu(Player player) {
-        super("§6Bank Account", 6);
+        super("§6Bank", 6);
         this.player = player;
     }
 
