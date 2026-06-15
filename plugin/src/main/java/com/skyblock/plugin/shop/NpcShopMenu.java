@@ -22,14 +22,13 @@ import java.util.Objects;
 /**
  * YAML-driven 54-slot (6-row) chest GUI for a single NPC shop.
  *
- * <p>The shop's stock is read from {@code shops/<shopName>.yml} in the plugin
- * data folder, with the bundled default copied out of the jar on first run. Each
- * top-level key under the {@code items} section defines one entry via its
- * {@code material}, {@code amount} (default 1) and {@code price}. Entries are laid
- * out left-to-right from slot 0 (capped at the 54 available slots), each showing
- * its price as appended lore. Clicking an entry withdraws its price from the
- * clicking player's purse (via {@link CoinManager}) and grants the item; if they
- * can't afford it, the purchase is rejected with a message.</p>
+ * <p>The shop's stock is read from {@code shops.yml} in the plugin data folder,
+ * with the bundled default copied out of the jar on first run. Each entry under
+ * {@code shops.<shopName>.items} is a {@code "MATERIAL:price"} string. Entries
+ * are laid out left-to-right from slot 0 (capped at the 54 available slots),
+ * each showing its price as appended lore. Clicking an entry withdraws its price
+ * from the clicking player's purse (via {@link CoinManager}) and grants the item;
+ * if they can't afford it, the purchase is rejected with a message.</p>
  */
 public class NpcShopMenu extends Menu {
 
@@ -41,7 +40,7 @@ public class NpcShopMenu extends Menu {
      * Loads the named shop using the shared {@link CoinManager} instance.
      *
      * @param plugin   the owning plugin, used for resource extraction and logging
-     * @param shopName the shop's name, used as the title and config file name
+     * @param shopName the key under {@code shops} in shops.yml
      */
     public NpcShopMenu(JavaPlugin plugin, String shopName) {
         this(plugin, shopName, CoinManager.getInstance());
@@ -51,11 +50,11 @@ public class NpcShopMenu extends Menu {
      * Loads the named shop backed by the given {@link CoinManager}.
      *
      * @param plugin      the owning plugin, used for resource extraction and logging
-     * @param shopName    the shop's name, used as the title and config file name
+     * @param shopName    the key under {@code shops} in shops.yml
      * @param coinManager the coin source charged on purchase
      */
     public NpcShopMenu(JavaPlugin plugin, String shopName, CoinManager coinManager) {
-        super("§6" + Objects.requireNonNull(shopName, "shopName"), 6);
+        super(resolveTitle(plugin, Objects.requireNonNull(shopName, "shopName")), 6);
         this.coinManager = Objects.requireNonNull(coinManager, "coinManager");
         load(plugin, shopName);
         Map<Integer, ShopEntry> map = new LinkedHashMap<>();
@@ -65,35 +64,62 @@ public class NpcShopMenu extends Menu {
         this.slotMap = Collections.unmodifiableMap(map);
     }
 
-    /**
-     * Reads {@code shops/<shopName>.yml} from the plugin data folder, copying the
-     * bundled default out of the jar on first run, then parses each defined entry.
-     */
-    private void load(JavaPlugin plugin, String shopName) {
-        String path = "shops/" + shopName + ".yml";
-        File file = new File(plugin.getDataFolder(), path);
-        if (!file.exists() && plugin.getResource(path) != null) {
-            plugin.saveResource(path, false);
+    private static String resolveTitle(JavaPlugin plugin, String shopName) {
+        File file = ensureFile(plugin);
+        if (file == null) {
+            return "§6Shop";
         }
-        if (!file.exists()) {
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection shops = cfg.isConfigurationSection("shops")
+                ? cfg.getConfigurationSection("shops") : null;
+        if (shops == null || !shops.isConfigurationSection(shopName)) {
+            return "§6Shop";
+        }
+        String title = shops.getConfigurationSection(shopName).getString("title");
+        return title != null ? title : "§6Shop";
+    }
+
+    private static File ensureFile(JavaPlugin plugin) {
+        File file = new File(plugin.getDataFolder(), "shops.yml");
+        if (!file.exists() && plugin.getResource("shops.yml") != null) {
+            plugin.saveResource("shops.yml", false);
+        }
+        return file.exists() ? file : null;
+    }
+
+    private void load(JavaPlugin plugin, String shopName) {
+        File file = ensureFile(plugin);
+        if (file == null) {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        ConfigurationSection items = cfg.isConfigurationSection("items")
-                ? cfg.getConfigurationSection("items")
-                : cfg;
-        for (String id : items.getKeys(false)) {
-            if (!items.isConfigurationSection(id)) {
+        ConfigurationSection shops = cfg.isConfigurationSection("shops")
+                ? cfg.getConfigurationSection("shops") : null;
+        if (shops == null || !shops.isConfigurationSection(shopName)) {
+            return;
+        }
+        List<String> itemList = shops.getConfigurationSection(shopName).getStringList("items");
+        for (String entry : itemList) {
+            // strip trailing comments (e.g. "WHEAT:6  # sell 3")
+            String clean = entry.contains("#") ? entry.substring(0, entry.indexOf('#')).trim() : entry.trim();
+            int colon = clean.lastIndexOf(':');
+            if (colon < 1) {
                 continue;
             }
-            ConfigurationSection section = items.getConfigurationSection(id);
-            Material material = Material.matchMaterial(
-                    section.getString("material", id).toUpperCase(Locale.ROOT));
+            String materialName = clean.substring(0, colon).toUpperCase(Locale.ROOT);
+            Material material = Material.matchMaterial(materialName);
             if (material == null) {
+                plugin.getLogger().warning("Skipping shop entry '" + entry + "': unknown material.");
                 continue;
             }
-            ItemStack item = new ItemStack(material, Math.max(1, section.getInt("amount", 1)));
-            entries.add(new ShopEntry(item, section.getLong("price")));
+            long price;
+            try {
+                price = Long.parseLong(clean.substring(colon + 1).trim());
+            } catch (NumberFormatException e) {
+                plugin.getLogger().warning("Skipping shop entry '" + entry + "': invalid price.");
+                continue;
+            }
+            entries.add(new ShopEntry(new ItemStack(material, 1), price));
         }
         plugin.getLogger().info("Loaded " + entries.size() + " entries for shop " + shopName + ".");
     }
