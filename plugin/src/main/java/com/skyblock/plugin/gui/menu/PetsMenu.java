@@ -35,7 +35,7 @@ public class PetsMenu extends Menu {
     private final UUID playerId;
 
     public PetsMenu(UUID playerId) {
-        super("§aPets", 6);
+        super("§dPets", 6);
         this.playerId = Objects.requireNonNull(playerId, "playerId");
     }
 
