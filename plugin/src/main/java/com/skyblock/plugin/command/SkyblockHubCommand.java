@@ -169,7 +169,7 @@ public final class SkyblockHubCommand implements CommandExecutor {
         GardenManager garden = GardenManager.getInstance();
         int avgSkillLevel = 0;
         SkillType[] skillTypes = SkillType.values();
-        for (SkillsManager.SkillType s : skillTypes) {
+        for (SkillManager.SkillType s : skillTypes) {
             avgSkillLevel += skills.getLevel(id, s);
         }
         if (skillTypes.length > 0) avgSkillLevel /= skillTypes.length;
@@ -271,7 +271,7 @@ public final class SkyblockHubCommand implements CommandExecutor {
 
     private void handleSkills(Player player) {
         UUID id = player.getUniqueId();
-        SkillsManager manager = SkillsManager.getInstance();
+        SkillManager manager = SkillManager.getInstance();
         player.sendMessage("=== Your Skills ===");
         for (SkillType skill : SkillType.values()) {
             int level = manager.getLevel(id, skill);
