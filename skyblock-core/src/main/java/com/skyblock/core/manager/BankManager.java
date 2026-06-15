@@ -1,6 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.bank.BankAccount;
+import com.skyblock.core.bank.model.BankAccount;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
