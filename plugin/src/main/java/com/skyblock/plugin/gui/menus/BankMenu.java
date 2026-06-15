@@ -1,6 +1,6 @@
 package com.skyblock.plugin.gui.menus;
 
-import com.skyblock.plugin.economy.CoinManager;
+import com.skyblock.core.economy.EconomyManager;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import com.skyblock.plugin.managers.BankManager;
@@ -14,7 +14,7 @@ import java.util.UUID;
  * The SkyBlock Bank menu.
  *
  * <p>A 54-slot (6-row) menu showing the viewing player's coins: their purse
- * balance (from {@link CoinManager}) as a {@code GOLD_NUGGET} and their stored
+ * balance (from {@link EconomyManager}) as a {@code GOLD_NUGGET} and their stored
  * bank balance (from {@link BankManager}) as the Bank Account {@code GOLD_BLOCK},
  * matching Hypixel's layout.</p>
  */
@@ -26,13 +26,13 @@ public class BankMenu extends Menu {
     private static final int BANK_SLOT = 15;
 
     private final UUID playerId;
-    private final CoinManager coinManager;
+    private final EconomyManager economyManager;
     private final BankManager bankManager;
 
-    public BankMenu(UUID playerId, CoinManager coinManager, BankManager bankManager) {
+    public BankMenu(UUID playerId, EconomyManager economyManager, BankManager bankManager) {
         super("§6Bank Account", 6);
         this.playerId = Objects.requireNonNull(playerId, "playerId");
-        this.coinManager = Objects.requireNonNull(coinManager, "coinManager");
+        this.economyManager = Objects.requireNonNull(economyManager, "economyManager");
         this.bankManager = Objects.requireNonNull(bankManager, "bankManager");
     }
 
@@ -40,7 +40,7 @@ public class BankMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        long purse = coinManager.getPurse(playerId);
+        long purse = economyManager.getPurse(playerId);
         double bank = bankManager.getBalance(playerId);
         setItem(PURSE_SLOT, new ItemBuilder(Material.GOLD_NUGGET)
                 .displayName("§6Purse")
