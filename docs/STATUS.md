@@ -1,7 +1,7 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-39: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep, ItemBuilder/SkullItemUtil deep sweep, Skill/Stat/Rarity/Collection enum collapse, additional pom.xml dead-module pruning, plugin.util/plugin.managers zero-caller stub sweep, persistence/DataManager consolidation, config-loader consolidation, zero-caller stub sweeps across plugin.items/combat/enchantment/model/data, duplicate listener sweeps across plugin.items/combat/enchantment/world, plugin.combat DamageListener/CombatDamageListener/CombatListener deletion, Menu/GUI base class consolidation, BazaarManager/BazaarHandler stub fixes and zero-caller deletions).
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-40: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep, ItemBuilder/SkullItemUtil deep sweep, Skill/Stat/Rarity/Collection enum collapse, additional pom.xml dead-module pruning, plugin.util/plugin.managers zero-caller stub sweep, persistence/DataManager consolidation, config-loader consolidation, zero-caller stub sweeps across plugin.items/combat/enchantment/model/data, duplicate listener sweeps across plugin.items/combat/enchantment/world, plugin.combat DamageListener/CombatDamageListener/CombatListener deletion, Menu/GUI base class consolidation, BazaarManager/BazaarHandler stub fixes and zero-caller deletions, plugin.gui/menu/world/event zero-caller stub sweep, sub-package layout enforcement for items/combat/skills modules, ShopManager/NpcShopManager zero-caller stub deletion).
 > Counts: **~63 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion`, `skills` pruned), **~554 `.java` source files** (23+ zero-caller `@Deprecated` stubs deleted: 16 in #2553 + 4 in #2600 + additional in #2608–#2610 + 3 in #2615).
 
 ## How to read this document
@@ -112,6 +112,19 @@ table.
 | `com.skyblock.core.commands.IslandCommand` | `com.skyblock.core.island.IslandCommand` | ✅ `@Deprecated` stub (#2574) |
 
 Command registration in `SkyBlockPlugin.java` fixed to import canonical `com.skyblock.plugin.command.menu.SkyblockMenuCommand` (#2575). Zero-caller stubs from this round are being removed by Forge.
+
+---
+
+## Post-cleanup sub-package layout registry (round 40)
+
+Zero-caller stub sweep in `plugin.gui`/`plugin.menu`/`plugin.world`/`plugin.event` (#2617) and sub-package layout enforcement across items, combat, and skills modules (#2618, #2620); `ShopManager`/`NpcShopManager` zero-caller stubs deleted (#2619).
+
+| Module | Work done | Status |
+|--------|-----------|--------|
+| `plugin.gui` / `plugin.menu` / `plugin.world` / `plugin.event` zero-caller stubs | Remaining `@Deprecated` zero-caller stub classes deleted outright | ✅ swept (#2617) |
+| `com.skyblock.core.items` / `com.skyblock.core.combat` sub-package layout | All command and listener classes moved into `command.*` / `listener.*` sub-packages; zero-caller strays deleted | ✅ enforced (#2618) |
+| `com.skyblock.core.shop.ShopManager` / `com.skyblock.core.shop.ShopCommand` | Zero-caller deprecated stubs deleted; `com.skyblock.core.manager.ShopManager` and `com.skyblock.core.command.ShopCommand` are sole survivors | ✅ deleted (#2619) |
+| `com.skyblock.core.skills` sub-package layout | `SkillCommand` → `skills.command.SkillCommand`; `SkillListener` → `skills.listener.SkillListener`; old `skill.*` entries replaced with `@Deprecated` delegation stubs | ✅ enforced (#2620) |
 
 ---
 

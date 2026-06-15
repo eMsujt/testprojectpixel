@@ -129,6 +129,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (zero-caller stub sweeps and sub-package layout enforcement — round 40)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Zero-caller stub sweep (`plugin.gui` / `plugin.menu` / `plugin.world` / `plugin.event`) | *(class files deleted)* | Remaining `@Deprecated` zero-caller stub classes in `plugin.gui`, `plugin.menu`, `plugin.world`, and `plugin.event` packages deleted outright | #2617 |
+| Sub-package layout enforcement — items and combat modules | `com.skyblock.core.items.command.*`, `com.skyblock.core.combat.command.*` (and `listener.*`) | All command and listener classes outside their canonical `command`/`listener` sub-packages moved or deprecated into proper sub-packages; zero-caller strays deleted | #2618 |
+| ShopManager / NpcShopManager zero-caller stub deletion | `com.skyblock.core.manager.ShopManager` | `com.skyblock.core.shop.ShopManager` and `com.skyblock.core.shop.ShopCommand` zero-caller deprecated stubs deleted; `com.skyblock.core.command.ShopCommand` is now the sole command entry | #2619 |
+| Sub-package layout enforcement — skills module | `com.skyblock.core.skills.command.SkillCommand`, `com.skyblock.core.skills.listener.SkillListener` | `SkillCommand` and `SkillListener` moved into proper `skills.command` / `skills.listener` sub-packages; old `skill.*` files replaced with `@Deprecated` delegation stubs; zero-caller strays deleted | #2620 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
