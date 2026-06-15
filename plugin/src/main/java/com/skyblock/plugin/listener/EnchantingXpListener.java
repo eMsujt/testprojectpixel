@@ -22,5 +22,6 @@ public final class EnchantingXpListener implements Listener {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("enchanting", 3L);
+        XpActionBar.send(player, "enchanting", 3L, profile.getSkillXp("enchanting"));
     }
 }
