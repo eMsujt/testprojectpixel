@@ -6,17 +6,8 @@ import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * The Calendar &amp; Events menu.
- *
- * <p>A 54-slot (6-row) chest GUI with a gray glass-pane border. A clock at the
- * centre shows the current SkyBlock date (via {@link SkyBlockCalendar}), and the
- * recurring SkyBlock events are listed as thematic icons across centred rows,
- * matching Hypixel's layout.</p>
- */
 public class CalendarMenu extends Menu {
 
-    /** The recurring SkyBlock events, in display order. */
     private static final String[][] EVENTS = {
             {"Spooky Festival", "JACK_O_LANTERN"},
             {"Jerry's Workshop", "SNOW_BLOCK"},
@@ -29,23 +20,22 @@ public class CalendarMenu extends Menu {
             {"Election Over", "PAPER"}
     };
 
-    /** The nine centred content slots, one per event. */
     private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34, 37, 38};
 
     public CalendarMenu() {
-        super("§bSkyBlock Calendar", 6);
+        super("§eCalendar & Events", 6);
     }
 
     @Override
     protected void build() {
         fillBorder();
 
-        setItem(13, new ItemBuilder(Material.CLOCK)
-                .displayName("§a" + SkyBlockCalendar.formatDate())
+        setItem(4, new ItemBuilder(Material.CLOCK)
+                .displayName("§eSkyBlock Calendar")
                 .lore(
-                        "§7Day: §a" + SkyBlockCalendar.getDayOfMonth(),
-                        "§7Month: §a" + SkyBlockCalendar.getMonthName(),
-                        "§7Year: §a" + SkyBlockCalendar.getYear(),
+                        "§7Day: §e" + SkyBlockCalendar.getDayOfMonth(),
+                        "§7Month: §e" + SkyBlockCalendar.getMonthName(),
+                        "§7Year: §e" + SkyBlockCalendar.getYear(),
                         "",
                         "§e" + SkyBlockCalendar.currentSkyBlockDate())
                 .build());
@@ -58,7 +48,6 @@ public class CalendarMenu extends Menu {
         }
     }
 
-    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
