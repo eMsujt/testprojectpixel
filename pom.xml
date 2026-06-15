@@ -38,7 +38,6 @@
         <module>fishing</module>
         <module>bazaar</module>
         <module>foraging</module>
-        <module>auctions</module>
         <module>accessories</module>
         <module>guilds</module>
         <module>fairysouls</module>
@@ -62,7 +61,6 @@
         <module>pets</module>
         <module>farming</module>
         <module>guild</module>
-        <module>auction_house</module>
         <module>garden</module>
         <module>trading</module>
         <module>plugin</module>
