@@ -83,8 +83,8 @@ public final class MinionManager implements Listener {
         if (task != null) {
             return;
         }
-        task = new MinionTicker(this)
-                .runTaskTimer(plugin, MinionTicker.PERIOD_TICKS, MinionTicker.PERIOD_TICKS);
+        task = new MinionTickTask(this)
+                .runTaskTimer(plugin, MinionTickTask.PERIOD_TICKS, MinionTickTask.PERIOD_TICKS);
     }
 
     /** Cancels the repeating production task. Call from the plugin's {@code onDisable}. */
