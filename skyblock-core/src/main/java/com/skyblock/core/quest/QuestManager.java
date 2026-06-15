@@ -11,12 +11,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton tracking per-player quest progress and completion state.
+ * Underlying implementation for {@link com.skyblock.core.manager.QuestManager}.
  *
- * <p>Progress is stored per player as an {@link EnumMap} of quest type to
- * current progress value. Not thread-safe; synchronize externally if accessed
- * from multiple threads.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.QuestManager} instead.
  */
+@Deprecated
 public final class QuestManager {
 
     /** All quest types available in SkyBlock. */

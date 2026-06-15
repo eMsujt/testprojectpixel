@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.manager.QuestManager} instead.
+ */
+@Deprecated
 public final class QuestManager {
 
     public enum Quest {

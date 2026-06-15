@@ -9,13 +9,9 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Tracks each player's quest progression: which quests are active, the
- * progress made towards each quest's objective, and which quests have been
- * completed.
- *
- * <p>Players start with no active and no completed quests. Not thread-safe;
- * synchronize externally if accessed from multiple threads.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.QuestManager} instead.
  */
+@Deprecated
 public final class QuestManager {
 
     /**
