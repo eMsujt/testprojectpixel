@@ -1,6 +1,5 @@
 package com.skyblock.plugin.gui.menu;
 
-import com.skyblock.plugin.collections.CollectionCategoryMenu;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
