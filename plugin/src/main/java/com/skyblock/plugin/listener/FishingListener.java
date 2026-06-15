@@ -15,15 +15,15 @@ import java.util.Set;
 public final class FishingListener implements Listener {
 
     private static final Set<Material> COMMON_FISH = Set.of(
-            Material.COD,
-            Material.SALMON,
+            Material.RAW_COD,
+            Material.RAW_SALMON,
             Material.TROPICAL_FISH,
             Material.PUFFERFISH
     );
 
     private static final Map<Material, String> FISH_COLLECTION = Map.of(
-            Material.COD,            "cod",
-            Material.SALMON,         "salmon",
+            Material.RAW_COD,        "cod",
+            Material.RAW_SALMON,     "salmon",
             Material.TROPICAL_FISH,  "tropical_fish",
             Material.PUFFERFISH,     "pufferfish"
     );
