@@ -23,7 +23,10 @@ import java.util.UUID;
  *
  * <p>The island map is mutated only on the server main thread; access it from
  * the main thread or guard it externally.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.IslandManager} instead.
  */
+@Deprecated
 public final class IslandManager {
 
     private static final IslandManager INSTANCE = new IslandManager();

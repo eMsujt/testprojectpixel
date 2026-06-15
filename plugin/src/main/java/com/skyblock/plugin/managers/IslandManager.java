@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.manager.IslandManager} instead.
+ */
+@Deprecated
 public final class IslandManager {
 
     private static final IslandManager INSTANCE = new IslandManager();
