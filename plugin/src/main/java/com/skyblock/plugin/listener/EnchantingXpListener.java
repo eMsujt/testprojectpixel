@@ -18,7 +18,7 @@ public final class EnchantingXpListener implements Listener {
     public void onEnchant(EnchantItemEvent event) {
         if (!(event.getEnchanter() instanceof Player player)) return;
 
-        long xp = (long) event.getExpLevelCost() * 3L;
+        double xp = event.getExpLevelCost() * 3.5;
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("enchanting", xp);
         XpActionBar.send(player, "enchanting", xp, profile.getSkillXp("enchanting"));
