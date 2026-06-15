@@ -35,12 +35,17 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§bFast Travel", 6);
+        super("§aFast Travel", 6);
     }
 
     @Override
     protected void build() {
         fillBorder();
+
+        setItem(4, new ItemBuilder(Material.COMPASS)
+                .displayName("§aFast Travel")
+                .lore("§7Click a destination to warp there.")
+                .build());
 
         for (Destination destination : Destination.values()) {
             setItem(destination.slot, new ItemBuilder(destination.material)
@@ -59,8 +64,7 @@ public class FastTravelMenu extends Menu {
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 45) {
                 setItem(slot, pane);
             }
         }
