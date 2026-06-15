@@ -37,7 +37,7 @@ import com.skyblock.plugin.hud.ActionBarManager;
 import com.skyblock.plugin.command.dungeon.DungeonCommand;
 import com.skyblock.plugin.command.fairy.FairyCommand;
 import com.skyblock.plugin.commands.BankCommand;
-import com.skyblock.plugin.commands.BazaarCommand;
+import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.plugin.commands.CollectionsCommand;
 import com.skyblock.plugin.commands.EnchantingCommand;
 import com.skyblock.plugin.commands.FishingCommand;
@@ -136,7 +136,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("island").setExecutor(new IslandCommand());
         getCommand("auctionhouse").setExecutor(new AuctionHouseCommand());
         getCommand("kuudra").setExecutor(new KuudraCommand());
-        getCommand("bazaar").setExecutor(new BazaarCommand());
+        getCommand("bazaar").setExecutor(new BazaarCommand(BazaarManager.getInstance()));
         getCommand("profile").setExecutor(new ProfileCommand());
         getCommand("dungeon").setExecutor(new DungeonCommand());
         getCommand("fairy").setExecutor(new FairyCommand());
