@@ -110,9 +110,6 @@ commands:
   npc:
     description: Interact with NPCs and their shops.
     usage: /npc <list|shop <npc>|buy <npc> <item>>
-  npcmanager:
-    description: Admin commands for managing registered NPCs.
-    usage: /npcmanager <list|types|info <uuid>|unregister <uuid>>
   minion:
     description: Manage your placed minions.
     usage: /minion <list|place|upgrade|remove|info>
