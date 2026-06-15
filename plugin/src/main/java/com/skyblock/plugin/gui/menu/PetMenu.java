@@ -9,32 +9,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
-/**
- * The Pet menu.
- *
- * <p>A 54-slot (6-row) chest GUI titled {@code §6Pets} with a gray glass-pane
- * border. Owned pets are placed in the 28 inner content slots as
- * {@code PLAYER_HEAD} items; clicking one equips it and refreshes the view,
- * matching Hypixel's layout.</p>
- */
 public class PetMenu extends Menu {
 
-    /** Inner content slots across rows 2–5 (columns 2–8), one per owned pet. */
-    private static final int[] SLOTS = {
+    private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34,
             37, 38, 39, 40, 41, 42, 43
     };
+    private static final int SLOTS_PER_PAGE = INNER_SLOTS.length;
 
-    private final UUID playerId;
+    private final Player player;
+    private final int page;
 
-    public PetMenu(UUID playerId) {
-        super("§aPets", 6);
-        this.playerId = Objects.requireNonNull(playerId, "playerId");
+    public PetMenu(Player player) {
+        this(player, 0);
+    }
+
+    private PetMenu(Player player, int page) {
+        super("§5Pets", 6);
+        this.player = player;
+        this.page = page;
     }
 
     @Override
@@ -42,14 +38,19 @@ public class PetMenu extends Menu {
         fillBorder();
 
         PetManager pets = PetManager.getInstance();
-        UUID activeId = pets.getActivePetId(playerId);
+        java.util.UUID playerId = player.getUniqueId();
+        java.util.UUID activeId = pets.getActivePetId(playerId);
         List<ActivePet> owned = pets.getPets(playerId);
 
-        int count = Math.min(owned.size(), SLOTS.length);
-        for (int i = 0; i < count; i++) {
-            ActivePet pet = owned.get(i);
+        int totalPages = Math.max(1, (int) Math.ceil((double) owned.size() / SLOTS_PER_PAGE));
+        int start = page * SLOTS_PER_PAGE;
+
+        for (int i = 0; i < SLOTS_PER_PAGE; i++) {
+            int contentIndex = start + i;
+            if (contentIndex >= owned.size()) break;
+            ActivePet pet = owned.get(contentIndex);
             boolean equipped = pet.getId().equals(activeId);
-            setItem(SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
+            setItem(INNER_SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
                             .displayName((equipped ? "§a" : "§f") + pet.getName())
                             .lore(
                                     "§7Rarity: §f" + pet.getRarity(),
@@ -58,21 +59,50 @@ public class PetMenu extends Menu {
                             .build(),
                     event -> {
                         pets.equip(playerId, pet.getId());
-                        open((Player) event.getWhoClicked());
+                        new PetMenu(player, page).open(player);
                     });
+        }
+
+        if (owned.isEmpty()) {
+            setItem(22, new ItemBuilder(Material.BARRIER)
+                    .displayName("§cNo Pets")
+                    .lore("§7You don't own any pets yet.")
+                    .build());
+        }
+
+        setItem(49, new ItemBuilder(Material.BONE)
+                .displayName("§5Pets")
+                .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
+                .build());
+
+        if (page > 0) {
+            int prevPage = page - 1;
+            setItem(45, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Go to page §e" + (prevPage + 1))
+                    .build(),
+                    event -> new PetMenu(player, prevPage).open(player));
+        }
+
+        if ((page + 1) < totalPages) {
+            int nextPage = page + 1;
+            setItem(53, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Go to page §e" + (nextPage + 1))
+                    .build(),
+                    event -> new PetMenu(player, nextPage).open(player));
         }
     }
 
-    /** Fills the outer edge with gray glass panes, matching Hypixel. */
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
-            }
+        for (int slot = 0; slot < 9; slot++) {
+            setItem(slot, pane);
+        }
+        for (int slot = 45; slot < 54; slot++) {
+            setItem(slot, pane);
         }
     }
 }
