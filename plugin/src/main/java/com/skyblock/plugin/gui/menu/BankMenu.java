@@ -8,18 +8,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * The SkyBlock Bank menu.
- *
- * <p>A 54-slot (6-row) chest GUI titled {@code §6Bank Account} with a gray
- * glass-pane border. Slot 13 shows the player's bank balance (gold nugget).</p>
- */
 public class BankMenu extends Menu {
 
     private final Player player;
 
     public BankMenu(Player player) {
-        super("§6Bank", 6);
+        super("§6Bank of SkyBlock", 6);
         this.player = player;
     }
 
@@ -29,7 +23,7 @@ public class BankMenu extends Menu {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
 
-        setItem(13, new ItemBuilder(Material.GOLD_NUGGET)
+        setItem(2, new ItemBuilder(Material.GOLD_NUGGET)
                 .displayName("§6Bank Account")
                 .lore(
                         "§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins",
