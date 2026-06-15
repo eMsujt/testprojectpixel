@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+/** @deprecated Use {@link com.skyblock.core.menu.ShopMenu} instead. */
+@Deprecated
 public final class NpcShopMenu implements InventoryHolder, Listener {
 
     private static final int FIRST_ITEM_SLOT = 10;
