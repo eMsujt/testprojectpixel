@@ -43,6 +43,12 @@ public final class SkillsManager {
         XP_REQUIREMENTS = Collections.unmodifiableMap(m);
     }
 
+    private static final SkillsManager INSTANCE = new SkillsManager();
+
+    public static SkillsManager getInstance() {
+        return INSTANCE;
+    }
+
     private final Map<UUID, Map<String, Integer>> skillLevels = new HashMap<>();
     private final Map<UUID, Map<String, Long>> skillXp = new HashMap<>();
     private final Map<UUID, List<String>> skillsHistory = new HashMap<>();

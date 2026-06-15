@@ -43,7 +43,7 @@ public final class SkillsManager {
         XP_REQUIREMENTS = Collections.unmodifiableMap(m);
     }
 
-    private final SkillManager delegate = new SkillManager();
+    private final SkillManager delegate = SkillManager.getInstance();
     private final Map<UUID, List<String>> skillsHistory = new HashMap<>();
 
     /**
