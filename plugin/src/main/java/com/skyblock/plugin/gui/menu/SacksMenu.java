@@ -15,7 +15,7 @@ public class SacksMenu extends Menu {
     private final Player player;
 
     public SacksMenu(Player player) {
-        super("§aSacks", 6);
+        super("§2Sacks", 6);
         this.player = player;
     }
 
