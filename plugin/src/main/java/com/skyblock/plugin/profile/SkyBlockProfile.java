@@ -33,6 +33,7 @@ public final class SkyBlockProfile implements Serializable {
     private final List<ItemStack> potionBagContents = new ArrayList<>();
     private final List<ItemStack> accessoryBagContents = new ArrayList<>();
     private final List<ItemStack> storageContents = new ArrayList<>();
+    private final List<ItemStack> sacksContents = new ArrayList<>();
     private long purse = 0L;
     private long bank = 0L;
     private boolean showSkillNotifications = true;
@@ -238,6 +239,15 @@ public final class SkyBlockProfile implements Serializable {
      */
     public List<ItemStack> getStorageContents() {
         return storageContents;
+    }
+
+    /**
+     * Returns the player's sacks contents, one stack per slot (up to 36).
+     *
+     * @return the live, mutable list of sacks stacks
+     */
+    public List<ItemStack> getSacksContents() {
+        return sacksContents;
     }
 
     public long getPurse() { return purse; }

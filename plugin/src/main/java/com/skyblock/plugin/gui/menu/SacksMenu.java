@@ -15,7 +15,7 @@ public class SacksMenu extends Menu {
     private final Player player;
 
     public SacksMenu(Player player) {
-        super("§2Sacks of Holding", 6);
+        super("§aSacks", 6);
         this.player = player;
     }
 
@@ -24,7 +24,7 @@ public class SacksMenu extends Menu {
         fillBorder();
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        List<ItemStack> contents = profile.getSackContents();
+        List<ItemStack> contents = profile.getSacksContents();
 
         int itemIndex = 0;
         for (int slot = 0; slot < 54 && itemIndex < contents.size(); slot++) {
@@ -40,7 +40,7 @@ public class SacksMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
