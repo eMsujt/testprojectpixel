@@ -16,14 +16,14 @@ import java.util.Map;
 public final class ForagingXpListener implements Listener {
 
     private static final Map<Material, Long> LOG_XP = Map.ofEntries(
-            Map.entry(Material.OAK_LOG,      6L),
-            Map.entry(Material.SPRUCE_LOG,   6L),
-            Map.entry(Material.BIRCH_LOG,    6L),
-            Map.entry(Material.JUNGLE_LOG,   6L),
-            Map.entry(Material.ACACIA_LOG,   6L),
-            Map.entry(Material.DARK_OAK_LOG, 6L),
-            Map.entry(Material.MANGROVE_LOG, 6L),
-            Map.entry(Material.CHERRY_LOG,   6L)
+            Map.entry(Material.OAK_LOG,       6L),
+            Map.entry(Material.BIRCH_LOG,     6L),
+            Map.entry(Material.SPRUCE_LOG,    6L),
+            Map.entry(Material.JUNGLE_LOG,    8L),
+            Map.entry(Material.ACACIA_LOG,    8L),
+            Map.entry(Material.DARK_OAK_LOG,  8L),
+            Map.entry(Material.MANGROVE_LOG, 10L),
+            Map.entry(Material.CHERRY_LOG,   10L)
     );
 
     private static final Map<Material, String> LOG_DROP = Map.ofEntries(
