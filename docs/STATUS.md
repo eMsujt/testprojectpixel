@@ -1,8 +1,8 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-28: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep).
-> Counts: **64 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion` pruned), **~561 `.java` source files** (16 zero-caller `@Deprecated` stubs deleted in #2553).
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-33: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep, ItemBuilder/SkullItemUtil deep sweep, Skill/Stat/Rarity/Collection enum collapse, additional pom.xml dead-module pruning, plugin.util/plugin.managers zero-caller stub sweep).
+> Counts: **~63 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion`, `skills` pruned), **~557 `.java` source files** (20 zero-caller `@Deprecated` stubs deleted: 16 in #2553 + 4 in #2600).
 
 ## How to read this document
 
@@ -309,7 +309,7 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
 
 ## Summary of findings
 
-- **Ongoing consolidation has eliminated 21 duplicate manager surfaces, 12 duplicate menu GUI surfaces, 23 duplicate command class stubs, and 4 duplicate listener package pairs.** Canonical managers for
+- **Ongoing consolidation has eliminated 21 duplicate manager surfaces, 12 duplicate menu GUI surfaces, 23 duplicate command class stubs, 4 duplicate listener package pairs, and 5 utility/enum/dead-code sweeps (rounds 29-33).** Canonical managers for
   AuctionHouseManager, Rarity, ItemBuilder/SkullUtil, CollectionManager, Menu, SkillManager,
   EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
   DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, PetManager,
@@ -322,10 +322,17 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
   (#2574 / #2575). Rounds 26-28 consolidated `plugin.collection`/`plugin.collections`,
   `plugin.skill`/`plugin.skills`, and `plugin.minion`/`plugin.minions` listener packages (#2579,
   #2580, #2581) and swept the `plugin/listeners/` directory of all remaining stray duplicates
-  (#2578). The `auctionhouse`, `auction`, `dungeon`, `stats`, and `minion` leaf modules
-  have been pruned from the parent `pom.xml`; **16 zero-caller `@Deprecated` stub files were
-  deleted outright** (#2553), reducing the source tree from 577 to ~561 files. The parent
-  `pom.xml` now declares **64 modules** (down from 66 before rounds 20–21).
+  (#2578). Rounds 29-30 completed deep sweeps of `ItemBuilder`/`ItemStackBuilder` and
+  `SkullItemUtil`/`SkullCreator`/`SkullBuilder` duplicates across all modules (#2596 / #2597).
+  Round 31 collapsed all duplicate `Skill`, `Stat`, `Rarity`, and `Collection` enum/registry
+  definitions into single canonical enums under `com.skyblock.core.*` (#2598). Round 32 pruned
+  the `skills` module (and any other empty/stub-only modules) from the root `pom.xml` (#2599).
+  Round 33 deleted 4 zero-caller `@Deprecated` stubs from `plugin.managers.*` and
+  `plugin.manager.*` and updated 3 stale `{@link}` javadoc references (#2600).
+  The `auctionhouse`, `auction`, `dungeon`, `stats`, `minion`, and `skills` leaf modules
+  have been pruned from the parent `pom.xml`; **20 zero-caller `@Deprecated` stub files were
+  deleted outright** (16 in #2553 + 4 in #2600), reducing the source tree from 577 to ~557 files.
+  The parent `pom.xml` now declares **~63 modules** (down from 66 before rounds 20–21).
 - **6 domains remain unconsolidated** (SlayerManager, EnchantingManager, NPCManager,
   GuildManager, TradingManager, BrewingManager) — tracked in [`CLEANUP.md`](./CLEANUP.md).
 - **Naming is inconsistent** — singular vs plural module names (`auction`/`auctions`,

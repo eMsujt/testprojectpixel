@@ -89,6 +89,18 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (utility class, enum, and dead-code consolidations — rounds 29-33)
+
+| Domain | Canonical class | Duplicates removed | PR / commit |
+|--------|-----------------|-------------------|-------------|
+| ItemBuilder (deep sweep) | `com.skyblock.core.util.ItemBuilder` | All remaining `ItemBuilder`/`ItemStackBuilder` duplicates across all modules eliminated; every caller imports canonical | #2596 / fa614b2d |
+| SkullItemUtil / SkullCreator / SkullBuilder | `com.skyblock.core.util.SkullItemUtil` | All `SkullCreator`/`SkullBuilder`/`SkullItemUtil` duplicates eliminated; zero-caller `@Deprecated` `plugin.util.SkullItemUtil` stub deleted outright | #2597 / df70948d |
+| Skill / Stat / Rarity / Collection enums (deep sweep) | `com.skyblock.core.skills.Skill`, `com.skyblock.core.stat.Stat`, `com.skyblock.core.model.Rarity`, `com.skyblock.core.model.Collection` | All duplicate enum/registry definitions across modules collapsed into single canonical enums; remaining stubs deleted | #2598 / ba91d57e |
+| Dead-module pruning (pom.xml sweep) | *(removed from `pom.xml`)* | Every `<module>` entry whose `src/main/java` tree is empty or contains only `@Deprecated` zero-caller stubs removed from root `pom.xml` (e.g. `skills` module) | #2599 / 286a90f7 |
+| Zero-caller `@Deprecated` stub sweep (`plugin.util` / `plugin.utils` / `plugin.helper` / `plugin.common` / `plugin.managers` / `plugin.manager`) | *(class files deleted)* | 4 zero-caller `@Deprecated` stubs deleted (`plugin.managers.AuctionHouseManager`, `plugin.managers.CraftingManager`, `plugin.managers.SkillsManager`, `plugin.manager.SkillManager`); 3 stale `{@link}` javadoc references updated | #2600 / d6c14e37 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
