@@ -1,7 +1,9 @@
 package com.skyblock.plugin.command;
 
 import com.skyblock.core.auction.AuctionHouseManager;
-import com.skyblock.core.bank.BankManager;
+import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.bank.BankTier;
+import com.skyblock.core.bank.BankType;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.collections.CollectionsManager;
 import com.skyblock.core.manager.DungeonManager;
@@ -194,8 +196,8 @@ public final class SkyblockHubCommand implements CommandExecutor {
         UUID id = player.getUniqueId();
         BankManager manager = BankManager.getInstance();
         double balance = manager.getBalance(id);
-        BankManager.BankTier tier = manager.getTier(id);
-        BankManager.BankType type = manager.getBankType(id);
+        BankTier tier = manager.getTier(id);
+        BankType type = manager.getBankType(id);
         player.sendMessage("=== Bank ===");
         player.sendMessage("Balance: " + balance);
         player.sendMessage("Tier: " + tier.getDisplayName());

@@ -2,7 +2,7 @@ package com.skyblock.plugin;
 
 import com.skyblock.plugin.managers.AuctionHouseManager;
 import com.skyblock.plugin.managers.AuctionManager;
-import com.skyblock.plugin.managers.BankManager;
+import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.plugin.managers.CollectionsManager;
 import com.skyblock.core.alchemy.AlchemyManager;
