@@ -131,6 +131,9 @@ public final class MinionManager {
     /** Per-player placements: location key "world,x,y,z" → MinionType. */
     private final Map<UUID, Map<String, MinionType>> placements = new HashMap<>();
 
+    /** Location key → minion UUID for placed-minion lookup by block position. */
+    private final Map<String, UUID> locationIndex = new HashMap<>();
+
     private MinionManager() {
     }
 
@@ -166,6 +169,7 @@ public final class MinionManager {
                 ownerIndex.remove(data.owner);
             }
         }
+        locationIndex.values().remove(minionId);
         return true;
     }
 
@@ -203,8 +207,34 @@ public final class MinionManager {
         }
         for (UUID id : list) {
             minions.remove(id);
+            locationIndex.values().remove(id);
         }
         return list.size();
+    }
+
+    /** Returns an unmodifiable view of all placed minions across all owners. */
+    public java.util.Collection<MinionData> getAllMinions() {
+        return Collections.unmodifiableCollection(minions.values());
+    }
+
+    /**
+     * Associates a placed minion with its block location key ("world,x,y,z").
+     * Used to support fast lookup by block position.
+     */
+    public void setMinionLocation(UUID minionId, String locationKey) {
+        Objects.requireNonNull(minionId, "minionId");
+        Objects.requireNonNull(locationKey, "locationKey");
+        locationIndex.put(locationKey, minionId);
+    }
+
+    /**
+     * Returns the {@link MinionData} for the minion placed at the given location
+     * key, or {@code null} if no minion is tracked there.
+     */
+    public MinionData getMinionAtLocation(String locationKey) {
+        Objects.requireNonNull(locationKey, "locationKey");
+        UUID id = locationIndex.get(locationKey);
+        return id == null ? null : minions.get(id);
     }
 
     public MinionType getPlacement(UUID owner, String location) {
@@ -246,6 +276,7 @@ public final class MinionManager {
         minions.clear();
         ownerIndex.clear();
         placements.clear();
+        locationIndex.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID id = UUID.fromString(key);
@@ -289,6 +320,18 @@ public final class MinionManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("locations")) {
+            for (String locKey : cfg.getConfigurationSection("locations").getKeys(false)) {
+                String minionIdStr = cfg.getString("locations." + locKey);
+                if (minionIdStr != null) {
+                    try {
+                        locationIndex.put(locKey, UUID.fromString(minionIdStr));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip malformed UUID
+                    }
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -305,6 +348,9 @@ public final class MinionManager {
             for (Map.Entry<String, MinionType> loc : entry.getValue().entrySet()) {
                 cfg.set(path + "." + loc.getKey(), loc.getValue().name());
             }
+        }
+        for (Map.Entry<String, UUID> entry : locationIndex.entrySet()) {
+            cfg.set("locations." + entry.getKey(), entry.getValue().toString());
         }
         try {
             cfg.save(file);

@@ -1,14 +1,13 @@
 package com.skyblock.plugin.minion;
 
+import com.skyblock.core.manager.MinionManager;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
- * Periodic task that ticks every online player's placed {@link Minion}s.
+ * Periodic task that ticks every placed {@link MinionManager.MinionData}.
  *
  * <p>Scheduled once per second (every 20 ticks) from
- * {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}. Each run walks the
- * online players and steps every minion they have tracked in the
- * {@link MinionManager}.</p>
+ * {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}.</p>
  */
 public final class MinionTickTask extends BukkitRunnable {
 
@@ -23,17 +22,12 @@ public final class MinionTickTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        for (MinionManager.MinionData data : manager.getMinions()) {
-            tick(data.getMinion());
+        for (MinionManager.MinionData data : manager.getAllMinions()) {
+            tick(data);
         }
     }
 
-    /**
-     * Advances a single minion's production by one tick.
-     *
-     * @param minion the minion to tick
-     */
-    private void tick(Minion minion) {
+    private void tick(MinionManager.MinionData data) {
         // Production hook: per-tier output is applied here as the minion model grows.
     }
 }
