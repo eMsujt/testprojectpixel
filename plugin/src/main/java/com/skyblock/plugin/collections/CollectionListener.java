@@ -5,6 +5,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.collection.CollectionListener} instead.
+ */
+@Deprecated
 public final class CollectionListener implements Listener {
 
     private final CollectionManager collectionManager = CollectionManager.getInstance();

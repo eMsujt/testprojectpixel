@@ -10,6 +10,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.collection.CollectionListener} instead.
+ */
+@Deprecated
 public final class CollectionsListener implements Listener {
 
     private static final Map<Material, String> BLOCK_COLLECTION = Map.ofEntries(
