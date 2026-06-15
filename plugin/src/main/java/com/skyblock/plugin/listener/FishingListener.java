@@ -1,41 +1,45 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.skills.SkillManager;
-import com.skyblock.plugin.skills.SkillManager.SkillType;
+import com.skyblock.plugin.manager.ProfileManager;
+import com.skyblock.plugin.profile.SkyBlockProfile;
+import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
-import java.util.UUID;
+import java.util.Set;
 
 /**
- * Awards Fishing XP through {@link SkillManager} whenever a player reels in a
- * catch and fires level-up rewards when the player's level increases.
+ * Awards Fishing XP and increments fish collections on the player's
+ * {@link SkyBlockProfile} whenever a player reels in a catch.
  */
 public final class FishingListener implements Listener {
 
-    /** Fishing XP granted per successful catch. */
-    private static final long CATCH_XP = 6L;
+    private static final Set<Material> COMMON_FISH = Set.of(
+            Material.COD,
+            Material.SALMON,
+            Material.TROPICAL_FISH,
+            Material.PUFFERFISH
+    );
 
-    private final SkillManager skillManager = SkillManager.getInstance();
+    private static final long COMMON_XP  = 5L;
+    private static final long TREASURE_XP = 20L;
 
     @EventHandler
     public void onFish(PlayerFishEvent event) {
         if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
             return;
         }
-        grantXP(event.getPlayer(), CATCH_XP);
-    }
-
-    private void grantXP(Player player, long amount) {
-        UUID id = player.getUniqueId();
-        int before = skillManager.getLevel(id, SkillType.FISHING);
-        skillManager.addXP(id, SkillType.FISHING, amount);
-        int after = skillManager.getLevel(id, SkillType.FISHING);
-        if (after > before) {
-            skillManager.grantLevelUpRewards(id, SkillType.FISHING, before, after);
-            player.sendTitle("§aSkill Level Up!", "§eFishing §a→ §eLVL " + after, 10, 60, 20);
+        if (!(event.getCaught() instanceof Item caught)) {
+            return;
         }
+        Player player = event.getPlayer();
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        Material type = caught.getItemStack().getType();
+        long xp = COMMON_FISH.contains(type) ? COMMON_XP : TREASURE_XP;
+        profile.addSkillXp("fishing", xp);
+        profile.incrementCollection(type.name().toLowerCase());
     }
 }
