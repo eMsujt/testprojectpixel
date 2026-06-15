@@ -1,6 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.plugin.managers.BankManager;
+import com.skyblock.core.manager.BankManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -87,7 +87,7 @@ public final class BankCommand implements CommandExecutor {
     }
 
     private void handleHistory(Player player) {
-        List<String> history = BankManager.getInstance().getTransactionHistory(player.getUniqueId());
+        List<String> history = BankManager.getInstance().getBankHistory(player.getUniqueId());
         if (history.isEmpty()) {
             player.sendMessage("No transaction history found.");
             return;

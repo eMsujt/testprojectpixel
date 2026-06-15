@@ -1,5 +1,8 @@
 package com.skyblock.core.bank;
 
+import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.bank.BankTier;
+import com.skyblock.core.bank.BankType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -77,14 +80,14 @@ public final class BankCommand implements TabExecutor {
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("type")) {
             String lower = args[1].toLowerCase();
-            return Arrays.stream(BankManager.BankType.values())
+            return Arrays.stream(BankType.values())
                     .map(t -> t.name().toLowerCase())
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("tier")) {
             String lower = args[1].toLowerCase();
-            return Arrays.stream(BankManager.BankTier.values())
+            return Arrays.stream(BankTier.values())
                     .map(t -> t.name().toLowerCase())
                     .filter(s -> s.startsWith(lower))
                     .toList();
@@ -139,12 +142,12 @@ public final class BankCommand implements TabExecutor {
 
     private void handleTier(Player player, String[] args) {
         if (args.length < 2) {
-            BankManager.BankTier tier = bankManager.getTier(player.getUniqueId());
+            BankTier tier = bankManager.getTier(player.getUniqueId());
             player.sendMessage("Your bank tier: " + tier.getDisplayName() + " (interest rate: " + tier.getInterestRate() + "%)");
             return;
         }
         try {
-            BankManager.BankTier tier = BankManager.BankTier.valueOf(args[1].toUpperCase());
+            BankTier tier = BankTier.valueOf(args[1].toUpperCase());
             bankManager.setTier(player.getUniqueId(), tier);
             player.sendMessage("Bank tier set to: " + tier.getDisplayName());
         } catch (IllegalArgumentException e) {
@@ -154,12 +157,12 @@ public final class BankCommand implements TabExecutor {
 
     private void handleType(Player player, String[] args) {
         if (args.length < 2) {
-            BankManager.BankType type = bankManager.getBankType(player.getUniqueId());
+            BankType type = bankManager.getBankType(player.getUniqueId());
             player.sendMessage("Your bank type: " + type.getDisplayName() + (type.isShared() ? " (shared with island)" : ""));
             return;
         }
         try {
-            BankManager.BankType type = BankManager.BankType.valueOf(args[1].toUpperCase());
+            BankType type = BankType.valueOf(args[1].toUpperCase());
             bankManager.setBankType(player.getUniqueId(), type);
             player.sendMessage("Bank type set to: " + type.getDisplayName());
         } catch (IllegalArgumentException e) {

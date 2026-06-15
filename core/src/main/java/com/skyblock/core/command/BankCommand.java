@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.bank.BankManager;
+import com.skyblock.core.manager.BankManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -92,15 +92,10 @@ public final class BankCommand implements TabExecutor {
             player.sendMessage("Invalid amount: " + args[1]);
             return;
         }
-        boolean success;
         try {
-            success = manager.withdraw(player.getUniqueId(), amount);
+            manager.withdraw(player.getUniqueId(), amount);
         } catch (IllegalArgumentException e) {
             player.sendMessage(e.getMessage());
-            return;
-        }
-        if (!success) {
-            player.sendMessage("Insufficient funds.");
             return;
         }
         player.sendMessage("Withdrew " + String.format("%.2f", amount) + ". Balance: " + String.format("%.2f", manager.getBalance(player.getUniqueId())));

@@ -22,9 +22,9 @@ import java.util.List;
  */
 public final class BankingCommand implements TabExecutor {
 
-    private final BankingManager bankingManager;
+    private final com.skyblock.core.manager.BankManager bankingManager;
 
-    public BankingCommand(BankingManager bankingManager) {
+    public BankingCommand(com.skyblock.core.manager.BankManager bankingManager) {
         this.bankingManager = bankingManager;
     }
 
