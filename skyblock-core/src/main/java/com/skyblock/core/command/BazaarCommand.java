@@ -1,8 +1,8 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.bazaar.BazaarManager;
-import com.skyblock.core.bazaar.BazaarManager.BuyOrder;
-import com.skyblock.core.bazaar.BazaarManager.SellOrder;
+import com.skyblock.core.manager.BazaarManager;
+import com.skyblock.core.manager.BazaarManager.BuyOrder;
+import com.skyblock.core.manager.BazaarManager.SellOrder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

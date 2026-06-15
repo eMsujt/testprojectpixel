@@ -12,7 +12,7 @@ import java.util.List;
 @Deprecated
 public final class BazaarCommand implements TabExecutor {
     private final com.skyblock.core.command.BazaarCommand delegate;
-    public BazaarCommand(BazaarManager manager) {
+    public BazaarCommand(com.skyblock.core.manager.BazaarManager manager) {
         this.delegate = new com.skyblock.core.command.BazaarCommand(manager);
     }
     @Override public boolean onCommand(CommandSender s, Command c, String l, String[] a) { return delegate.onCommand(s, c, l, a); }

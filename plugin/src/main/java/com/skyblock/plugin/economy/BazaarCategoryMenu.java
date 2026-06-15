@@ -2,7 +2,7 @@ package com.skyblock.plugin.economy;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.managers.BazaarManager;
+import com.skyblock.core.manager.BazaarManager;
 import org.bukkit.Material;
 
 import java.util.ArrayList;

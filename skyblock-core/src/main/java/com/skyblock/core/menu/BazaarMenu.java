@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.bazaar.BazaarManager;
-import com.skyblock.core.bazaar.BazaarManager.BazaarProduct;
+import com.skyblock.core.manager.BazaarManager;
+import com.skyblock.core.manager.BazaarManager.BazaarProduct;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

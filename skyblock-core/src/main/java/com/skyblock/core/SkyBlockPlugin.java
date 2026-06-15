@@ -17,7 +17,7 @@ import com.skyblock.core.island.IslandCommand;
 import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.island.IslandUpgradeCommand;
 import com.skyblock.core.island.IslandUpgradeManager;
-import com.skyblock.core.bazaar.BazaarManager;
+import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.collection.CollectionListener;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.combat.CombatCommand;
