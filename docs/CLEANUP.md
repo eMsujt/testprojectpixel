@@ -198,6 +198,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkyBlockPlugin wiring fix, top-level menu consolidation, and zero-caller @Deprecated stub deletion — round 52)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkyBlockPlugin onEnable wiring + FarmingListener regression | `com.skyblock.plugin.SkyBlockPlugin` | Re-wired every canonical manager registration in `onEnable`; restored missing `FarmingListener` registration and fixed additional listener gaps exposed by the rounds 50-51 consolidation | #2654 |
+| SkyBlock top-level menu class consolidation | `com.skyblock.core.menu.Menu` | Remaining duplicate top-level menu classes (`SkyBlockMenu`, `SkyBlockMainMenu`, `MainMenu`, and analogues) collapsed; all concrete subclasses now extend the single canonical base | #2652 |
+| Zero-caller `@Deprecated` stub/delegate class deletion sweep | *(deleted)* | 6 zero-caller `@Deprecated` stub/delegate classes deleted outright: `core.combat.CombatListener`, `core.skill.SkillListener`, `core.collections.CollectionCommand`, `core.ability.AbilityManager`, `core.island.IslandUpgradeCommand`, and `crafting.CraftingManager` | pending |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
