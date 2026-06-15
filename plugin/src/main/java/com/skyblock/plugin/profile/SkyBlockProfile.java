@@ -36,6 +36,7 @@ public final class SkyBlockProfile implements Serializable {
     private final List<ItemStack> storageContents = new ArrayList<>();
     private final List<ItemStack> sacksContents = new ArrayList<>();
     private final List<String> ownedPets = new ArrayList<>();
+    private final List<ItemStack[]> wardrobeSlots = new ArrayList<>();
     private String activePet = null;
     private long purse = 0L;
     private long bank = 0L;
@@ -251,6 +252,10 @@ public final class SkyBlockProfile implements Serializable {
      */
     public List<ItemStack> getSacksContents() {
         return sacksContents;
+    }
+
+    public List<ItemStack[]> getWardrobeSlots() {
+        return wardrobeSlots;
     }
 
     public List<String> getOwnedPets() {
