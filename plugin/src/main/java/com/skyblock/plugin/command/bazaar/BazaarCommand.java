@@ -1,6 +1,6 @@
 package com.skyblock.plugin.command.bazaar;
 
-import com.skyblock.core.bazaar.BazaarManager;
+import com.skyblock.core.manager.BazaarManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

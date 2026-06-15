@@ -1,6 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.plugin.managers.BazaarManager;
+import com.skyblock.core.manager.BazaarManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -88,10 +88,10 @@ public final class BazaarCommand implements CommandExecutor {
         }
         player.sendMessage("=== Buy Orders: " + item + " (" + orders.size() + ") ===");
         orders.stream()
-                .sorted((a, b) -> Double.compare(b.pricePerUnit(), a.pricePerUnit()))
+                .sorted((a, b) -> Double.compare(b.priceEach(), a.priceEach()))
                 .forEach(o -> player.sendMessage(
                         "[" + o.id().toString().substring(0, 8) + "] x" + o.quantity()
-                        + " @ " + o.pricePerUnit() + " coins each"));
+                        + " @ " + o.priceEach() + " coins each"));
     }
 
     private void handleSell(Player player, String[] args) {
@@ -107,10 +107,10 @@ public final class BazaarCommand implements CommandExecutor {
         }
         player.sendMessage("=== Sell Orders: " + item + " (" + orders.size() + ") ===");
         orders.stream()
-                .sorted((a, b) -> Double.compare(a.pricePerUnit(), b.pricePerUnit()))
+                .sorted((a, b) -> Double.compare(a.priceEach(), b.priceEach()))
                 .forEach(o -> player.sendMessage(
                         "[" + o.id().toString().substring(0, 8) + "] x" + o.quantity()
-                        + " @ " + o.pricePerUnit() + " coins each"));
+                        + " @ " + o.priceEach() + " coins each"));
     }
 
     private void handleOrders(Player player, String[] args) {
@@ -124,8 +124,8 @@ public final class BazaarCommand implements CommandExecutor {
         List<BazaarManager.SellOrder> sellOrders = manager.getSellOrders(item);
         player.sendMessage("=== Orders: " + item + " ===");
         player.sendMessage("Buy orders: " + buyOrders.size() + " | Sell orders: " + sellOrders.size());
-        double bestBuy = buyOrders.stream().mapToDouble(BazaarManager.BuyOrder::pricePerUnit).max().orElse(0.0);
-        double bestSell = sellOrders.stream().mapToDouble(BazaarManager.SellOrder::pricePerUnit).min().orElse(0.0);
+        double bestBuy = buyOrders.stream().mapToDouble(BazaarManager.BuyOrder::priceEach).max().orElse(0.0);
+        double bestSell = sellOrders.stream().mapToDouble(BazaarManager.SellOrder::priceEach).min().orElse(0.0);
         player.sendMessage("Best buy offer: " + bestBuy + " coins | Best sell offer: " + bestSell + " coins");
     }
 

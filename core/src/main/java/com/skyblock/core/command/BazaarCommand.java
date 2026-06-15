@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.bazaar.BazaarManager;
+import com.skyblock.core.manager.BazaarManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
