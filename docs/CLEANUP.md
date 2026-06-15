@@ -46,11 +46,29 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (Menu GUI consolidations — rounds 20-24)
+
+| Domain | Canonical class | Duplicates removed | PR / commit |
+|--------|-----------------|-------------------|-------------|
+| CollectionsMenu / CollectionMenu / CollectionGui | `com.skyblock.core.menu.CollectionsMenu` | 3+ duplicates → 1 canonical (54-slot chest, paginated collection categories) | #2527 |
+| AuctionHouseMenu / AuctionMenu / BidMenu / AuctionGui | `com.skyblock.core.menu.AuctionHouseMenu` | 3+ duplicates → 1 canonical (54-slot chest, category filter row, 28 listing slots, gray-pane separators) | #2528 / #2566 |
+| CraftingMenu / CraftingGui / CraftingTable | `com.skyblock.core.menu.CraftingMenu` | 3+ duplicates → 1 canonical (54-slot chest, 3×3 crafting grid, recipe browser) | #2529 |
+| BazaarMenu / BazaarGui / ShopMenu (bazaar) | `com.skyblock.core.menu.BazaarMenu` | 3+ duplicates → 1 canonical (54-slot chest, buy/sell tabs backed by `BazaarManager`) | #2530 |
+| EnchantingMenu / EnchantmentMenu / EnchantGui | `com.skyblock.core.menu.EnchantingMenu` | 3+ duplicates → 1 canonical (54-slot chest, enchantment book slots backed by `EnchantmentManager`) | #2531 |
+| BankMenu / BankingMenu / BankGui | `com.skyblock.core.menu.BankMenu` | 3+ duplicates → 1 canonical (54-slot chest, purse/bank display, Deposit All, Withdraw All backed by `EconomyManager`); InventoryHolder removed from legacy stubs (#2536) | #2532 / #2536 |
+| MinionMenu / MinionsMenu / MinionGui | `com.skyblock.core.menu.MinionMenu` | 3+ duplicates → 1 canonical (54-slot chest, paginated minion list backed by `MinionManager`) | #2533 |
+| DungeonMenu / DungeonsMenu / DungeonGui | `com.skyblock.core.menu.DungeonMenu` | 3+ duplicates → 1 canonical (54-slot chest, floor selection backed by `DungeonManager`) | #2534 |
+| IslandMenu / IslandGui / IslandMainMenu | `com.skyblock.core.menu.IslandMenu` | 3+ duplicates → 1 canonical (54-slot chest, info + 8 upgrade slots, members, history, close) | #2535 |
+| SkillsMenu / SkillMenu / SkillGui / SkillsGui | `com.skyblock.core.menu.SkillsMenu` | 4+ duplicates → 1 canonical (54-slot chest, skull icon per skill backed by `SkillManager`; re-consolidated to fix stubs) | #2523 / #2563 |
+| PetsMenu / PetMenu / PetGui / PetsGui | `com.skyblock.core.menu.PetsMenu` | 4+ duplicates → 1 canonical (paginated 54-slot chest, equip/unequip toggle, XP display backed by `PetManager`; re-consolidated to fix stubs) | #2522 / #2565 |
+| QuestsMenu / QuestMenu / QuestGui / QuestsGui | `com.skyblock.core.menu.QuestsMenu` | 4+ duplicates → 1 canonical (54-slot chest, active/completed quest display backed by `QuestManager`; re-consolidated to fix stubs) | #2524 / #2567 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
 |--------|-----------------|-----------------|-------|
-| IslandMenu / IslandGui / IslandMainMenu | `com.skyblock.core.menu.IslandMenu` | Created canonical 54-slot island management GUI (info, all 8 upgrades, members, history, close); no pre-existing duplicate classes to stub out | In progress |
 | SlayerManager | `com.skyblock.core.slayer.SlayerManager` | `slayer`, `slayers`, `skyblock-slayer`, `core`, `plugin` | `slayer` module most complete |
 | EnchantingManager | `com.skyblock.core.enchanting.EnchantingManager` | `enchanting`, `enchantments`, `enchants`, `core`, `plugin` | `enchanting` module most complete |
 | NPCManager | `com.skyblock.core.npc.NPCManager` | `npc` (NpcManager), `npcs` (NPCManager + NpcManager) | Inconsistent casing within `npcs` module |

@@ -1,7 +1,7 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-21: stub removal, pom.xml pruning).
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-24: stub removal, pom.xml pruning, 12 menu GUI consolidations).
 > Counts: **64 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion` pruned), **~561 `.java` source files** (16 zero-caller `@Deprecated` stubs deleted in #2553).
 
 ## How to read this document
@@ -56,6 +56,27 @@ carry a `@Deprecated` delegating stub or have been deleted.
 Pending consolidations: `SlayerManager`, `EnchantingManager`, `NPCManager`, `GuildManager`,
 `TradingManager`, `BrewingManager`. See [`CLEANUP.md`](./CLEANUP.md) for the full pending
 table.
+
+---
+
+## Post-cleanup canonical menu GUI registry (rounds 20-24)
+
+12 duplicate GUI class families consolidated to single canonical menus under `com.skyblock.core.menu.*`.
+
+| Domain | Canonical class | Status |
+|--------|-----------------|--------|
+| CollectionsMenu / CollectionMenu / CollectionGui | `com.skyblock.core.menu.CollectionsMenu` | ✅ consolidated (#2527) |
+| AuctionHouseMenu / AuctionMenu / BidMenu / AuctionGui | `com.skyblock.core.menu.AuctionHouseMenu` | ✅ consolidated (#2528 / #2566) |
+| CraftingMenu / CraftingGui / CraftingTable | `com.skyblock.core.menu.CraftingMenu` | ✅ consolidated (#2529) |
+| BazaarMenu / BazaarGui / ShopMenu (bazaar) | `com.skyblock.core.menu.BazaarMenu` | ✅ consolidated (#2530) |
+| EnchantingMenu / EnchantmentMenu / EnchantGui | `com.skyblock.core.menu.EnchantingMenu` | ✅ consolidated (#2531) |
+| BankMenu / BankingMenu / BankGui | `com.skyblock.core.menu.BankMenu` | ✅ consolidated (#2532 / #2536) |
+| MinionMenu / MinionsMenu / MinionGui | `com.skyblock.core.menu.MinionMenu` | ✅ consolidated (#2533) |
+| DungeonMenu / DungeonsMenu / DungeonGui | `com.skyblock.core.menu.DungeonMenu` | ✅ consolidated (#2534) |
+| IslandMenu / IslandGui / IslandMainMenu | `com.skyblock.core.menu.IslandMenu` | ✅ consolidated (#2535) |
+| SkillsMenu / SkillMenu / SkillGui / SkillsGui | `com.skyblock.core.menu.SkillsMenu` | ✅ consolidated (#2523 / #2563) |
+| PetsMenu / PetMenu / PetGui / PetsGui | `com.skyblock.core.menu.PetsMenu` | ✅ consolidated (#2522 / #2565) |
+| QuestsMenu / QuestMenu / QuestGui / QuestsGui | `com.skyblock.core.menu.QuestsMenu` | ✅ consolidated (#2524 / #2567) |
 
 ---
 
@@ -253,15 +274,18 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
 
 ## Summary of findings
 
-- **Ongoing consolidation has eliminated 20 duplicate surfaces.** Canonical managers for
+- **Ongoing consolidation has eliminated 20 duplicate manager surfaces and 12 duplicate menu GUI surfaces.** Canonical managers for
   AuctionHouseManager, Rarity, ItemBuilder/SkullUtil, CollectionManager, Menu, SkillManager,
   EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
   DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, ShopManager,
   and ProfileManager are now single classes with `@Deprecated` delegating stubs replacing
-  all duplicates. The `auctionhouse`, `auction`, `dungeon`, `stats`, and `minion` leaf
-  modules have been pruned from the parent `pom.xml`; **16 zero-caller `@Deprecated` stub
-  files were deleted outright** (#2553), reducing the source tree from 577 to ~561 files.
-  The parent `pom.xml` now declares **64 modules** (down from 66 before rounds 20–21).
+  all duplicates. Rounds 20-24 added 12 canonical menu GUI classes under `com.skyblock.core.menu.*`
+  (CollectionsMenu, AuctionHouseMenu, CraftingMenu, BazaarMenu, EnchantingMenu, BankMenu,
+  MinionMenu, DungeonMenu, IslandMenu, SkillsMenu, PetsMenu, QuestsMenu). The `auctionhouse`,
+  `auction`, `dungeon`, `stats`, and `minion` leaf modules have been pruned from the parent
+  `pom.xml`; **16 zero-caller `@Deprecated` stub files were deleted outright** (#2553),
+  reducing the source tree from 577 to ~561 files. The parent `pom.xml` now declares
+  **64 modules** (down from 66 before rounds 20–21).
 - **6 domains remain unconsolidated** (SlayerManager, EnchantingManager, NPCManager,
   GuildManager, TradingManager, BrewingManager) — tracked in [`CLEANUP.md`](./CLEANUP.md).
 - **Naming is inconsistent** — singular vs plural module names (`auction`/`auctions`,
