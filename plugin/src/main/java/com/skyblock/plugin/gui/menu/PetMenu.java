@@ -19,6 +19,7 @@ public class PetMenu extends Menu {
             37, 38, 39, 40, 41, 42, 43
     };
     private static final int SLOTS_PER_PAGE = INNER_SLOTS.length;
+    private static final int MAX_PETS = SLOTS_PER_PAGE;
 
     private final Player player;
     private final int page;
@@ -28,9 +29,13 @@ public class PetMenu extends Menu {
     }
 
     private PetMenu(Player player, int page) {
-        super("§5Pets", 6);
+        super(buildTitle(PetManager.getInstance().getPets(player.getUniqueId()).size()), 6);
         this.player = player;
         this.page = page;
+    }
+
+    private static String buildTitle(int count) {
+        return "§5Pets §8(§7" + count + "§8/§7" + MAX_PETS + "§8)";
     }
 
     @Override
@@ -95,7 +100,7 @@ public class PetMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 9; slot++) {
