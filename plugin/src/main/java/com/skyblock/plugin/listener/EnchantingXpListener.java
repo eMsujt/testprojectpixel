@@ -9,16 +9,17 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 
 /**
  * Awards Enchanting XP directly to the player's {@link SkyBlockProfile} whenever
- * a player enchants an item; XP equals the exp-level cost multiplied by 3,
- * matching Hypixel SkyBlock's tier-scaled enchanting formula.
+ * a player enchants an item.
  */
 public final class EnchantingXpListener implements Listener {
+
+    private static final long ENCHANT_XP = 150L;
 
     @EventHandler
     public void onEnchant(EnchantItemEvent event) {
         if (!(event.getEnchanter() instanceof Player player)) return;
 
-        double xp = event.getExpLevelCost() * 3.5;
+        double xp = ENCHANT_XP;
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("enchanting", xp);
         XpActionBar.send(player, "enchanting", xp, profile.getSkillXp("enchanting"));
