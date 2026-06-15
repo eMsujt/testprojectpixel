@@ -8,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -25,7 +24,7 @@ import java.util.function.Consumer;
  * <p>All other PetsMenu/PetMenu classes in the project are deprecated stubs that
  * delegate here.</p>
  */
-public final class PetsMenu extends Menu implements InventoryHolder {
+public final class PetsMenu extends Menu {
 
     private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
