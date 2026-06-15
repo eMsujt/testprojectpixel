@@ -113,6 +113,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (Menu/GUI base class consolidations — rounds 37-38)
+
+| Domain | Canonical class | Duplicates removed | PR / commit |
+|--------|-----------------|-------------------|-------------|
+| SkyBlockMenu / SkyBlockMainMenu / plugin.gui.Menu (base class) | `com.skyblock.core.menu.Menu` | `plugin.menu.SkyBlockMenu` and `plugin.gui.menu.SkyBlockMainMenu` deleted (zero-caller deprecated stubs); `plugin.gui.Menu` collapsed into `@Deprecated` thin wrapper extending canonical; stale listener registration removed from `SkyBlockPlugin` | #2613 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
