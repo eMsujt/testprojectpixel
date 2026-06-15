@@ -5,9 +5,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 /**
- * Routes inventory click and close events to the active {@link Menu} for each player.
+ * Routes inventory click and close events to every {@link Menu} instance,
+ * whether opened via {@link MenuManager} or directly via {@link Menu#open}.
  */
 public final class MenuListener implements Listener {
 
@@ -19,14 +21,12 @@ public final class MenuListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) {
+        InventoryHolder holder = event.getInventory().getHolder();
+        if (!(holder instanceof Menu menu)) {
             return;
         }
-        Menu menu = menuManager.getOpenMenu(player);
-        if (menu != null) {
-            event.setCancelled(true);
-            menu.handleClick(event);
-        }
+        event.setCancelled(true);
+        menu.handleClick(event);
     }
 
     @EventHandler
