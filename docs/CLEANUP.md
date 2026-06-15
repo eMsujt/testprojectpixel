@@ -140,6 +140,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (sub-package layout enforcement — round 41)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Sub-package layout enforcement — islands module | `com.skyblock.core.island.command.*` | `IslandCommand` and `IslandUpgradeCommand` moved from `com.skyblock.core.island` into `com.skyblock.core.island.command`; old locations replaced with `@Deprecated` delegation stubs | #2623 |
+| Sub-package layout enforcement — minions and pets modules | `com.skyblock.core.minion.command.*`, `com.skyblock.core.pet.command.*`, `com.skyblock.core.pets.command.*` | `MinionCommand`, `PetCommand` (both `pet` and `pets` packages), and `PetsCommand` moved into their respective `command` sub-packages; old flat-package files replaced with `@Deprecated` delegation stubs | #2624 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
