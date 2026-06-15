@@ -64,11 +64,21 @@ public class WardrobeMenu extends Menu {
 
     @Override
     protected void build() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        for (int slot = 0; slot < 9; slot++) {
+            setItem(slot, pane);
+        }
+        for (int slot = 45; slot < 54; slot++) {
+            setItem(slot, pane);
+        }
+
         for (int col = 0; col < 9; col++) {
             ItemStack[] set = wardrobeSlots.get(col);
             int setNumber = col + 1;
             for (int row = 0; row < 4; row++) {
-                int slot = row * 9 + col;
+                int slot = (row + 1) * 9 + col;
                 ItemStack stored = set[row];
                 if (stored != null) {
                     setItem(slot, stored, event -> event.setCancelled(true));
@@ -80,13 +90,6 @@ public class WardrobeMenu extends Menu {
                             event -> event.setCancelled(true));
                 }
             }
-        }
-
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-        for (int slot = 36; slot < 54; slot++) {
-            setItem(slot, pane);
         }
     }
 }
