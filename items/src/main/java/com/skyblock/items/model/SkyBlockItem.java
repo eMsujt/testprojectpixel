@@ -1,4 +1,4 @@
-package com.skyblock.items;
+package com.skyblock.items.model;
 
 import java.util.Map;
 
@@ -6,7 +6,7 @@ import java.util.Map;
  * An immutable custom item: a unique id, a display name, a rarity tier name,
  * and the stat bonuses the item grants.
  *
- * <p>Unlike {@link ItemManager.ItemDefinition}, which lives in the registry,
+ * <p>Unlike {@link com.skyblock.items.manager.ItemManager.ItemDefinition}, which lives in the registry,
  * this record is a self-contained value, e.g. for items attached to player
  * data or sent across module boundaries.</p>
  *

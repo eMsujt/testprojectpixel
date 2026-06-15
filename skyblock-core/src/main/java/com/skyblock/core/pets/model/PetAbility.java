@@ -1,4 +1,4 @@
-package com.skyblock.core.pets;
+package com.skyblock.core.pets.model;
 
 import com.skyblock.core.manager.PetManager.PetType;
 
@@ -6,9 +6,10 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * @deprecated Use {@link com.skyblock.core.pets.model.PetAbility} instead.
+ * Passive ability associated with each {@link PetType}.
+ *
+ * <p>Use {@link #forPet(PetType)} to look up the ability for a given pet.</p>
  */
-@Deprecated
 public enum PetAbility {
 
     HONEY_TRANSMISSION("Honey Transmission"),

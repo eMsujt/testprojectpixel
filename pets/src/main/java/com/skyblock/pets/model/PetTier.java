@@ -1,4 +1,4 @@
-package com.skyblock.pets;
+package com.skyblock.pets.model;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;

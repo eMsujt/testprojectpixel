@@ -1,11 +1,13 @@
-package com.skyblock.core.item;
+package com.skyblock.core.item.model;
 
 import com.skyblock.core.model.Rarity;
 
 /**
- * @deprecated Use {@link com.skyblock.core.item.model.SkyBlockItem} instead.
+ * Lightweight value type representing a SkyBlock item definition.
+ *
+ * <p>Use {@link ItemBuilder} to create a live {@link SkyBlockItemStack}
+ * from a definition.</p>
  */
-@Deprecated
 public record SkyBlockItem(String id, String displayName, Rarity rarity) {
 
     public SkyBlockItem {

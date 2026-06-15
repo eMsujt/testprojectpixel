@@ -1,4 +1,4 @@
-package com.skyblock.core.item;
+package com.skyblock.core.item.manager;
 
 import com.skyblock.core.SkyBlockPlugin;
 import com.skyblock.core.items.CustomItemManager;
@@ -12,9 +12,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * @deprecated Use {@link com.skyblock.core.item.manager.SkyBlockItemManager} instead.
+ * Singleton that stamps a SkyBlock item id onto an {@link ItemStack} via
+ * {@link PersistentDataContainer} and reads it back.
  */
-@Deprecated
 public final class SkyBlockItemManager {
 
     private static final SkyBlockItemManager INSTANCE = new SkyBlockItemManager();
