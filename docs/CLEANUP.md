@@ -208,6 +208,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (skills-domain, economy-domain, and core-module package layout normalization — round 53)
+
+| Domain | Work done | PR / commit |
+|--------|-----------|-------------|
+| `com.skyblock.skills` / `skyblock-skills` package layout | All classes in every skills-domain module moved into correct sub-packages: manager classes → `.manager`, listener classes → `.listener`, command classes → `.command`, model/enum types → `.model`; misplaced strays deleted or restubbed | #2660 |
+| `com.skyblock.economy` / bazaar, auction, bank, shop modules package layout | All classes across economy-domain modules moved into correct sub-packages: manager classes → `.manager`, command classes → `.command`, listener classes → `.listener`, model types → `.model`; flat-package strays eliminated | #2662 |
+| `com.skyblock.core` core-module package layout | Misplaced classes in `skyblock-core` root corrected: manager classes not under `.manager` moved in, util classes not under `.util` moved in; `PlayerData` and any other misplaced types relocated to canonical sub-packages | #2661 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
