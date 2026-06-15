@@ -2,8 +2,10 @@ package com.skyblock.plugin.manager;
 
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,33 +13,51 @@ import java.util.UUID;
 /**
  * In-memory registry of every active minion players have placed.
  *
- * <p>Holds placed minions in a nested {@link Map} keyed first by the owning
- * player's UUID and then by the world location the minion occupies, so a placed
- * minion can be resolved from its owner and position. A minion is tracked when
- * it is placed and removed when it is picked up. Not thread-safe; access from
- * the main server thread.</p>
+ * <p>Keyed by the owning player's UUID, each mapping to the list of that
+ * player's {@link PlacedMinion}s in placement order. Not thread-safe;
+ * access from the main server thread.</p>
  */
 public final class MinionManager {
 
-    /**
-     * A single placed minion.
-     *
-     * @param owner the owning player's UUID
-     * @param loc   the world location the minion is placed at
-     * @param type  the minion type (e.g. {@code COBBLESTONE}, {@code WHEAT})
-     * @param tier  the minion's upgrade tier
-     */
-    public record MinionData(UUID owner, Location loc, String type, int tier) {
-        public MinionData {
-            Objects.requireNonNull(owner, "owner");
-            Objects.requireNonNull(loc, "loc");
-            Objects.requireNonNull(type, "type");
+    /** A single placed minion. */
+    public static final class PlacedMinion {
+
+        private final UUID owner;
+        private final Location location;
+        private final String type;
+        private int tier;
+
+        public PlacedMinion(UUID owner, Location location, String type, int tier) {
+            this.owner = Objects.requireNonNull(owner, "owner");
+            this.location = Objects.requireNonNull(location, "location");
+            this.type = Objects.requireNonNull(type, "type");
+            this.tier = tier;
+        }
+
+        public UUID getOwner() {
+            return owner;
+        }
+
+        public Location getLocation() {
+            return location;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public int getTier() {
+            return tier;
+        }
+
+        public void setTier(int tier) {
+            this.tier = tier;
         }
     }
 
     private static final MinionManager INSTANCE = new MinionManager();
 
-    private final Map<UUID, Map<Location, MinionData>> minions = new HashMap<>();
+    private final Map<UUID, List<PlacedMinion>> minions = new HashMap<>();
 
     private MinionManager() {
     }
@@ -51,56 +71,67 @@ public final class MinionManager {
      *
      * @param minion the minion to add
      */
-    public void addMinion(MinionData minion) {
+    public void addMinion(PlacedMinion minion) {
         Objects.requireNonNull(minion, "minion");
-        minions.computeIfAbsent(minion.owner(), k -> new HashMap<>()).put(minion.loc(), minion);
+        minions.computeIfAbsent(minion.getOwner(), k -> new ArrayList<>()).add(minion);
     }
 
     /**
-     * Stops tracking the minion placed at the given location by the given owner.
+     * Stops tracking a placed minion.
      *
-     * @param owner the owning player's UUID
-     * @param loc   the location the minion occupies
-     * @return the removed minion, or {@code null} if none was tracked there
+     * @param minion the minion to remove
+     * @return {@code true} if the minion was tracked and removed
      */
-    public MinionData removeMinion(UUID owner, Location loc) {
-        Objects.requireNonNull(owner, "owner");
-        Objects.requireNonNull(loc, "loc");
-        Map<Location, MinionData> owned = minions.get(owner);
-        if (owned == null) {
-            return null;
+    public boolean removeMinion(PlacedMinion minion) {
+        Objects.requireNonNull(minion, "minion");
+        List<PlacedMinion> list = minions.get(minion.getOwner());
+        if (list == null) {
+            return false;
         }
-        MinionData removed = owned.remove(loc);
-        if (owned.isEmpty()) {
-            minions.remove(owner);
+        boolean removed = list.remove(minion);
+        if (list.isEmpty()) {
+            minions.remove(minion.getOwner());
         }
         return removed;
     }
 
     /**
-     * Returns the owner's minion placed at the given location, or {@code null}.
+     * Returns the first minion owned by the given player at the given block
+     * location, or {@code null} if none.
      *
-     * @param owner the owning player's UUID
-     * @param loc   the location to look up
-     * @return the tracked minion, or {@code null} if none is there
+     * @param owner    the owning player's UUID
+     * @param location the block location to look up
+     * @return the matching {@link PlacedMinion}, or {@code null}
      */
-    public MinionData getMinion(UUID owner, Location loc) {
+    public PlacedMinion getMinion(UUID owner, Location location) {
         Objects.requireNonNull(owner, "owner");
-        Objects.requireNonNull(loc, "loc");
-        Map<Location, MinionData> owned = minions.get(owner);
-        return owned == null ? null : owned.get(loc);
+        Objects.requireNonNull(location, "location");
+        List<PlacedMinion> list = minions.get(owner);
+        if (list == null) {
+            return null;
+        }
+        for (PlacedMinion m : list) {
+            Location loc = m.getLocation();
+            if (loc.getWorld() == location.getWorld()
+                    && loc.getBlockX() == location.getBlockX()
+                    && loc.getBlockY() == location.getBlockY()
+                    && loc.getBlockZ() == location.getBlockZ()) {
+                return m;
+            }
+        }
+        return null;
     }
 
     /**
      * Returns an unmodifiable view of the minions placed by the given player,
-     * keyed by location.
+     * in placement order.
      *
      * @param owner the owning player's UUID
      * @return the player's minions, empty if they have none
      */
-    public Map<Location, MinionData> getMinions(UUID owner) {
+    public List<PlacedMinion> getMinions(UUID owner) {
         Objects.requireNonNull(owner, "owner");
-        Map<Location, MinionData> owned = minions.get(owner);
-        return owned == null ? Collections.emptyMap() : Collections.unmodifiableMap(owned);
+        List<PlacedMinion> list = minions.get(owner);
+        return list == null ? Collections.emptyList() : Collections.unmodifiableList(list);
     }
 }
