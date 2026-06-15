@@ -34,7 +34,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§dFast Travel", 6);
+        super("§bFast Travel", 6);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class FastTravelMenu extends Menu {
 
         for (Destination destination : Destination.values()) {
             setItem(destination.slot, new ItemBuilder(destination.icon)
-                            .displayName("§d" + destination.displayName)
+                            .displayName("§b" + destination.displayName)
                             .lore("§7Click to travel to " + destination.displayName + ".")
                             .build(),
                     event -> {
@@ -62,10 +62,6 @@ public class FastTravelMenu extends Menu {
         }
         for (int slot = 45; slot < 54; slot++) {
             setItem(slot, pane);
-        }
-        for (int row = 1; row <= 4; row++) {
-            setItem(row * 9, pane);
-            setItem(row * 9 + 8, pane);
         }
     }
 }
