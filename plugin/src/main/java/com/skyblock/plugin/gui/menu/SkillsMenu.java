@@ -21,8 +21,7 @@ public class SkillsMenu extends Menu {
         FORAGING   ("Foraging",   "foraging",   Color.fromRGB(  0, 128,   0)),
         FISHING    ("Fishing",    "fishing",    Color.fromRGB(  0, 191, 255)),
         ENCHANTING ("Enchanting", "enchanting", Color.fromRGB(138,  43, 226)),
-        ALCHEMY    ("Alchemy",    "alchemy",    Color.fromRGB( 50, 205,  50)),
-        TAMING     ("Taming",     "taming",     Color.fromRGB(255, 165,   0));
+        ALCHEMY    ("Alchemy",    "alchemy",    Color.fromRGB( 50, 205,  50));
 
         private final String displayName;
         private final String key;
@@ -35,13 +34,12 @@ public class SkillsMenu extends Menu {
         }
     }
 
-    /** Two inner rows, alternating columns: 8 icons for 8 skills. */
-    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25};
+    private static final int[] SLOTS = {10, 11, 12, 13, 14, 15, 16};
 
     private final UUID playerId;
 
     public SkillsMenu(UUID playerId) {
-        super("§aSkills", 6);
+        super("§2Skills", 6);
         this.playerId = playerId;
     }
 
