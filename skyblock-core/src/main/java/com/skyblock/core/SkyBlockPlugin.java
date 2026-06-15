@@ -9,7 +9,7 @@ import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.auction.AuctionCommand;
 import com.skyblock.core.auction.AuctionHouseCommand;
 import com.skyblock.core.manager.AuctionHouseManager;
-import com.skyblock.core.bank.BankingCommand;
+import com.skyblock.core.bank.command.BankingCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.island.IslandUpgradeManager;

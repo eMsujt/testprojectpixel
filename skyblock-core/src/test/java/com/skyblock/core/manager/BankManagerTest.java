@@ -1,6 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.bank.BankManager.BankTier;
+import com.skyblock.core.manager.BankManager.BankTier;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
