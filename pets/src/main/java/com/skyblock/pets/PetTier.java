@@ -4,13 +4,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 /**
- * Pet tiers, ordered from least to most rare.
- *
- * <p>Each tier carries the display name and chat color used when rendering
- * pet names and lore. Ordinal order is meaningful: {@link #compareTo(Enum)}
- * ranks tiers, and {@link #next()} steps one tier up (e.g. for tier
- * upgrades).</p>
+ * @deprecated Use {@code com.skyblock.core.model.Rarity} instead.
  */
+@Deprecated
 public enum PetTier {
 
     COMMON("Common", NamedTextColor.WHITE),

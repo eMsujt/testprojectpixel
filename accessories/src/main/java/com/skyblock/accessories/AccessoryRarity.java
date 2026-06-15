@@ -4,13 +4,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 /**
- * Accessory rarities, ordered from least to most rare.
- *
- * <p>Each rarity carries the display name and chat color used when rendering
- * accessory names and lore, plus the magical power a single accessory of that
- * rarity grants. Ordinal order is meaningful: {@link #compareTo(Enum)} ranks
- * rarities.</p>
+ * @deprecated Use {@code com.skyblock.core.model.Rarity} instead.
  */
+@Deprecated
 public enum AccessoryRarity {
 
     COMMON("Common", NamedTextColor.WHITE, 3),
