@@ -13,7 +13,7 @@ public class BankMenu extends Menu {
     private final Player player;
 
     public BankMenu(Player player) {
-        super("§6Bank Account", 6);
+        super("§6Bank", 6);
         this.player = player;
     }
 
@@ -38,10 +38,10 @@ public class BankMenu extends Menu {
             }
         });
 
-        setItem(22, new ItemBuilder(Material.GOLD_INGOT)
+        setItem(20, new ItemBuilder(Material.GOLD_NUGGET)
                 .displayName("§6Purse")
                 .lore(
-                        "§6Purse: §f" + String.format("%,.0f", (double) profile.getPurse()) + " Coins",
+                        "Purse: §6" + String.format("%,.0f", (double) profile.getPurse()) + " Coins",
                         "",
                         "§eClick to deposit all coins!")
                 .build(), event -> {
