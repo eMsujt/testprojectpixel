@@ -35,7 +35,7 @@ public class PetMenu extends Menu {
     }
 
     private static String buildTitle(int count) {
-        return "§5Pets §8(§7" + count + "§8/§7" + MAX_PETS + "§8)";
+        return "§dPets §8(§7" + count + "§8/§7" + MAX_PETS + "§8)";
     }
 
     @Override
