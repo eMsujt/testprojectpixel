@@ -23,7 +23,7 @@ import com.skyblock.core.combat.command.CombatCommand;
 import com.skyblock.core.combat.listener.CombatListener;
 import com.skyblock.core.command.BankCommand;
 import com.skyblock.core.command.BazaarCommand;
-import com.skyblock.core.collection.CollectionCommand;
+import com.skyblock.core.collection.command.CollectionCommand;
 import com.skyblock.core.command.DungeonCommand;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.command.LeaderboardCommand;
