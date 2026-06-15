@@ -1,6 +1,8 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.managers.QuestManager;
+import com.skyblock.core.manager.QuestManager;
+import com.skyblock.core.quest.QuestManager.QuestStatus;
+import com.skyblock.core.quest.QuestManager.QuestType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,12 +20,8 @@ public final class QuestProgressListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
-        if (!questManager.hasActiveQuest(playerId)) {
-            return;
-        }
-        QuestManager.Quest quest = questManager.getActiveQuest(playerId);
-        if (quest == QuestManager.Quest.MINING_QUEST || quest == QuestManager.Quest.FARMING_QUEST
-                || quest == QuestManager.Quest.FORAGING_QUEST) {
+        if (questManager.getStatus(playerId, QuestType.MINE_ORES) == QuestStatus.IN_PROGRESS
+                || questManager.getStatus(playerId, QuestType.MINE_500_BLOCKS) == QuestStatus.IN_PROGRESS) {
             player.sendMessage("[Quest] Block broken — keep going!");
         }
     }
@@ -34,12 +32,9 @@ public final class QuestProgressListener implements Listener {
             return;
         }
         UUID playerId = player.getUniqueId();
-        if (!questManager.hasActiveQuest(playerId)) {
-            return;
-        }
-        QuestManager.Quest quest = questManager.getActiveQuest(playerId);
-        if (quest == QuestManager.Quest.SLAYER_QUEST || quest == QuestManager.Quest.COMBAT_QUEST
-                || quest == QuestManager.Quest.DUNGEON_QUEST) {
+        if (questManager.getStatus(playerId, QuestType.KILL_MOBS) == QuestStatus.IN_PROGRESS
+                || questManager.getStatus(playerId, QuestType.KILL_100_MOBS) == QuestStatus.IN_PROGRESS
+                || questManager.getStatus(playerId, QuestType.COMPLETE_DUNGEONS) == QuestStatus.IN_PROGRESS) {
             player.sendMessage("[Quest] Kill registered — keep going!");
         }
     }
@@ -51,10 +46,8 @@ public final class QuestProgressListener implements Listener {
         }
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
-        if (!questManager.hasActiveQuest(playerId)) {
-            return;
-        }
-        if (questManager.getActiveQuest(playerId) == QuestManager.Quest.FISHING_QUEST) {
+        if (questManager.getStatus(playerId, QuestType.CATCH_FISH) == QuestStatus.IN_PROGRESS
+                || questManager.getStatus(playerId, QuestType.FISH_50_FISH) == QuestStatus.IN_PROGRESS) {
             player.sendMessage("[Quest] Fish caught — keep going!");
         }
     }

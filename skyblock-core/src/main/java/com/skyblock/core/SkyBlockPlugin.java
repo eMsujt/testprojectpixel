@@ -47,7 +47,6 @@ import com.skyblock.core.enchant.SkyBlockEnchantFacade;
 import com.skyblock.core.enchant.SkyBlockEnchantManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.enchanting.EnchantingManager;
-import com.skyblock.core.enchanting.EnchantmentManager;
 import com.skyblock.core.fishing.FishingCommand;
 import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.fishing.TrophyFishingManager;
@@ -232,7 +231,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         EnchantCommand enchantCommand = new EnchantCommand(enchantManager);
         getCommand("enchant").setExecutor(enchantCommand);
         getCommand("enchant").setTabCompleter(enchantCommand);
-        com.skyblock.core.enchant.EnchantmentManager enchantmentManager = com.skyblock.core.enchant.EnchantmentManager.getInstance();
+        com.skyblock.core.manager.EnchantmentManager enchantmentManager = com.skyblock.core.manager.EnchantmentManager.getInstance();
         EnchantmentCommand enchantmentCommand = new EnchantmentCommand(enchantmentManager);
         getCommand("enchantment").setExecutor(enchantmentCommand);
         getCommand("enchantment").setTabCompleter(enchantmentCommand);
@@ -440,8 +439,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
                 new com.skyblock.core.enchantment.EnchantCommand(skyBlockEnchantManager);
         getCommand("skyblockenchant").setExecutor(enchantmentEnchantCommand);
         getCommand("skyblockenchant").setTabCompleter(enchantmentEnchantCommand);
-        com.skyblock.core.enchant.EnchantmentManager.getInstance();
-        com.skyblock.core.enchanting.EnchantmentManager.getInstance();
         CollectionManager.getInstance();
         com.skyblock.core.manager.QuestManager.getInstance();
         NPCCommand npcManagerCommand = new NPCCommand(NPCManager.getInstance());

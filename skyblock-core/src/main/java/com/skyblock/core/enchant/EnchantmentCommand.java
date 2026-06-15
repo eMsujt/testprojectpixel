@@ -1,5 +1,7 @@
 package com.skyblock.core.enchant;
 
+import com.skyblock.core.enchanting.EnchantingManager;
+import com.skyblock.core.manager.EnchantmentManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -62,7 +64,7 @@ public final class EnchantmentCommand implements TabExecutor {
             String sub = args[0].toLowerCase();
             if (sub.equals("info") || sub.equals("apply") || sub.equals("remove")) {
                 String prefix = args[1].toLowerCase();
-                return Arrays.stream(EnchantmentManager.SkyBlockEnchantment.values())
+                return Arrays.stream(EnchantingManager.SkyBlockEnchantment.values())
                         .map(e -> e.name().toLowerCase())
                         .filter(n -> n.startsWith(prefix))
                         .sorted()
@@ -74,7 +76,7 @@ public final class EnchantmentCommand implements TabExecutor {
 
     private void handleList(Player player) {
         player.sendMessage("=== SkyBlock Enchantments ===");
-        Arrays.stream(EnchantmentManager.SkyBlockEnchantment.values())
+        Arrays.stream(EnchantingManager.SkyBlockEnchantment.values())
                 .forEach(e -> player.sendMessage(String.format(
                         "%s (max level: %d)",
                         e.getDisplayName(),
@@ -86,7 +88,7 @@ public final class EnchantmentCommand implements TabExecutor {
             player.sendMessage("Usage: /enchantment info <enchantment>");
             return;
         }
-        EnchantmentManager.SkyBlockEnchantment type = parseType(args[1]);
+        EnchantingManager.SkyBlockEnchantment type = parseType(args[1]);
         if (type == null) {
             player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchantment list to see available enchantments.");
             return;
@@ -102,7 +104,7 @@ public final class EnchantmentCommand implements TabExecutor {
             player.sendMessage("Usage: /enchantment apply <enchantment> <level>");
             return;
         }
-        EnchantmentManager.SkyBlockEnchantment type = parseType(args[1]);
+        EnchantingManager.SkyBlockEnchantment type = parseType(args[1]);
         if (type == null) {
             player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchantment list to see available enchantments.");
             return;
@@ -127,7 +129,7 @@ public final class EnchantmentCommand implements TabExecutor {
             player.sendMessage("Usage: /enchantment remove <enchantment>");
             return;
         }
-        EnchantmentManager.SkyBlockEnchantment type = parseType(args[1]);
+        EnchantingManager.SkyBlockEnchantment type = parseType(args[1]);
         if (type == null) {
             player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchantment list to see available enchantments.");
             return;
@@ -141,7 +143,7 @@ public final class EnchantmentCommand implements TabExecutor {
     }
 
     private void handleView(Player player) {
-        Map<EnchantmentManager.SkyBlockEnchantment, Integer> enchantments =
+        Map<EnchantingManager.SkyBlockEnchantment, Integer> enchantments =
                 enchantmentManager.getEnchantments(player.getUniqueId());
         if (enchantments.isEmpty()) {
             player.sendMessage("You have no active enchantments.");
@@ -153,9 +155,9 @@ public final class EnchantmentCommand implements TabExecutor {
                 .forEach(e -> player.sendMessage(e.getKey().getDisplayName() + " " + e.getValue()));
     }
 
-    private static EnchantmentManager.SkyBlockEnchantment parseType(String name) {
+    private static EnchantingManager.SkyBlockEnchantment parseType(String name) {
         try {
-            return EnchantmentManager.SkyBlockEnchantment.valueOf(name.toUpperCase());
+            return EnchantingManager.SkyBlockEnchantment.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException e) {
             return null;
         }
