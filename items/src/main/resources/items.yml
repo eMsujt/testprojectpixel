@@ -1,0 +1,60 @@
+items:
+  WOODEN_SWORD:
+    displayName: "Wooden Sword"
+    type: WEAPON
+    rarity: COMMON
+
+  STONE_SWORD:
+    displayName: "Stone Sword"
+    type: WEAPON
+    rarity: COMMON
+
+  IRON_SWORD:
+    displayName: "Iron Sword"
+    type: WEAPON
+    rarity: COMMON
+
+  GOLD_SWORD:
+    displayName: "Gold Sword"
+    type: WEAPON
+    rarity: UNCOMMON
+
+  DIAMOND_SWORD:
+    displayName: "Diamond Sword"
+    type: WEAPON
+    rarity: UNCOMMON
+
+  WOODEN_PICKAXE:
+    displayName: "Wooden Pickaxe"
+    type: TOOL
+    rarity: COMMON
+
+  STONE_PICKAXE:
+    displayName: "Stone Pickaxe"
+    type: TOOL
+    rarity: COMMON
+
+  IRON_PICKAXE:
+    displayName: "Iron Pickaxe"
+    type: TOOL
+    rarity: COMMON
+
+  ROOKIE_HOE:
+    displayName: "Rookie Hoe"
+    type: TOOL
+    rarity: COMMON
+
+  LEATHER_HELMET:
+    displayName: "Leather Helmet"
+    type: ARMOR
+    rarity: COMMON
+
+  LEATHER_CHESTPLATE:
+    displayName: "Leather Chestplate"
+    type: ARMOR
+    rarity: COMMON
+
+  SPEED_TALISMAN:
+    displayName: "Speed Talisman"
+    type: ACCESSORY
+    rarity: COMMON
