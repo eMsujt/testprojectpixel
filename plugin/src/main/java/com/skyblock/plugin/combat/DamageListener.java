@@ -17,7 +17,10 @@ import java.util.UUID;
  *
  * <p>Hypixel defense formula: {@code effective = damage × (1 - defense / (defense + 100))},
  * followed by a flat reduction of {@code trueDefense}.</p>
+ *
+ * @deprecated Use {@link com.skyblock.plugin.listener.CombatDamageListener} instead.
  */
+@Deprecated
 public final class DamageListener implements Listener {
 
     private final StatManager statManager = StatManager.getInstance();
