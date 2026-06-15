@@ -23,9 +23,11 @@ public class BankMenu extends Menu {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
 
-        setItem(1, new ItemBuilder(Material.GOLD_NUGGET)
-                .displayName("§6Bank Account")
+        setItem(20, new ItemBuilder(Material.GOLD_NUGGET)
+                .displayName("§6Purse")
                 .lore(
+                        "§6Purse: §f" + String.format("%,.0f", (double) profile.getPurse()) + " Coins",
+                        "",
                         "§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins",
                         "",
                         "§eClick to deposit or withdraw!")
