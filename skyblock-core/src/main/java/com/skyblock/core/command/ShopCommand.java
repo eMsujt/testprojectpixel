@@ -1,17 +1,18 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.economy.EconomyManager;
-import com.skyblock.core.shop.ShopManager;
-import com.skyblock.core.shop.ShopManager.ShopCategory;
-import com.skyblock.core.shop.ShopManager.ShopItem;
+import com.skyblock.core.manager.ShopManager;
+import com.skyblock.core.manager.ShopManager.Shop;
+import com.skyblock.core.manager.ShopManager.ShopEntry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -19,9 +20,9 @@ import java.util.stream.Collectors;
  *
  * <p>Usage:
  * <ul>
- *   <li>{@code /shop}                            — list categories</li>
- *   <li>{@code /shop <category>}                 — list items in that category</li>
- *   <li>{@code /shop buy <category> <item>}      — purchase one item</li>
+ *   <li>{@code /shop}                         — list shops</li>
+ *   <li>{@code /shop <shopId>}                — list items in that shop</li>
+ *   <li>{@code /shop buy <shopId> <itemId>}   — purchase one item</li>
  * </ul>
  * </p>
  */
@@ -43,7 +44,7 @@ public final class ShopCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            sendCategoryList(player);
+            sendShopList(player);
             return true;
         }
 
@@ -52,12 +53,12 @@ public final class ShopCommand implements TabExecutor {
             return true;
         }
 
-        ShopCategory category = parseCategory(args[0]);
-        if (category == null) {
-            player.sendMessage("Unknown category: " + args[0] + ". Use /shop to see categories.");
+        Optional<Shop> shop = shopManager.getShop(args[0].toUpperCase());
+        if (shop.isEmpty()) {
+            player.sendMessage("Unknown shop: " + args[0] + ". Use /shop to see shops.");
             return true;
         }
-        sendItemList(player, category);
+        sendItemList(player, shop.get());
         return true;
     }
 
@@ -65,26 +66,25 @@ public final class ShopCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            List<String> options = Arrays.stream(ShopCategory.values())
-                    .map(c -> c.name().toLowerCase())
-                    .collect(Collectors.toList());
+            List<String> options = new ArrayList<>(shopManager.getShops().keySet().stream()
+                    .map(String::toLowerCase).collect(Collectors.toList()));
             options.add("buy");
             return options.stream().filter(s -> s.startsWith(lower)).collect(Collectors.toList());
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
             String lower = args[1].toLowerCase();
-            return Arrays.stream(ShopCategory.values())
-                    .map(c -> c.name().toLowerCase())
+            return shopManager.getShops().keySet().stream()
+                    .map(String::toLowerCase)
                     .filter(s -> s.startsWith(lower))
                     .collect(Collectors.toList());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("buy")) {
-            ShopCategory category = parseCategory(args[1]);
-            if (category == null) return Collections.emptyList();
+            Optional<Shop> shop = shopManager.getShop(args[1].toUpperCase());
+            if (shop.isEmpty()) return Collections.emptyList();
             String lower = args[2].toLowerCase();
-            return shopManager.getItems(category).stream()
-                    .map(ShopItem::name)
-                    .filter(n -> n.toLowerCase().startsWith(lower))
+            return shop.get().entries().stream()
+                    .map(e -> e.itemId().toLowerCase())
+                    .filter(s -> s.startsWith(lower))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
@@ -92,54 +92,45 @@ public final class ShopCommand implements TabExecutor {
 
     private void handleBuy(Player player, String[] args) {
         if (args.length < 3) {
-            player.sendMessage("Usage: /shop buy <category> <item>");
+            player.sendMessage("Usage: /shop buy <shop> <item>");
             return;
         }
-        ShopCategory category = parseCategory(args[1]);
-        if (category == null) {
-            player.sendMessage("Unknown category: " + args[1] + ". Use /shop to see categories.");
+        String shopId = args[1].toUpperCase();
+        Optional<Shop> shopOpt = shopManager.getShop(shopId);
+        if (shopOpt.isEmpty()) {
+            player.sendMessage("Unknown shop: " + args[1] + ". Use /shop to see shops.");
             return;
         }
-        String itemName = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-        ShopItem item = shopManager.findByName(category, itemName);
-        if (item == null) {
-            player.sendMessage("Item '" + itemName + "' not found in " + category.name().toLowerCase() + ".");
+        String itemId = args[2].toUpperCase();
+        Optional<ShopEntry> entryOpt = shopManager.getEntry(shopId, itemId);
+        if (entryOpt.isEmpty()) {
+            player.sendMessage("Item '" + itemId + "' not found in " + shopOpt.get().title() + ".");
             return;
         }
-        if (!economyManager.withdraw(player.getUniqueId(), item.price())) {
-            player.sendMessage("You don't have enough coins. " + item.name() + " costs " + item.price() + " coins.");
+        ShopEntry entry = entryOpt.get();
+        if (!economyManager.withdraw(player.getUniqueId(), entry.buyPrice())) {
+            player.sendMessage("You don't have enough coins. " + entry.itemId() + " costs " + entry.buyPrice() + " coins.");
             return;
         }
-        player.sendMessage("You purchased " + item.name() + " for " + item.price() + " coins.");
+        player.sendMessage("You purchased " + entry.itemId() + " for " + entry.buyPrice() + " coins.");
     }
 
-    private void sendCategoryList(Player player) {
-        player.sendMessage("=== Shop Categories ===");
-        for (ShopCategory category : ShopCategory.values()) {
-            int count = shopManager.getItems(category).size();
-            player.sendMessage("- " + category.name().toLowerCase() + " (" + count + " items)");
+    private void sendShopList(Player player) {
+        player.sendMessage("=== Shops ===");
+        for (Shop shop : shopManager.getShops().values()) {
+            player.sendMessage("- " + shop.id().toLowerCase() + " (" + shop.entries().size() + " items)");
         }
-        player.sendMessage("Use /shop <category> to browse, or /shop buy <category> <item> to purchase.");
+        player.sendMessage("Use /shop <shop> to browse, or /shop buy <shop> <item> to purchase.");
     }
 
-    private void sendItemList(Player player, ShopCategory category) {
-        List<ShopItem> items = shopManager.getItems(category);
-        player.sendMessage("=== Shop: " + category.name().toLowerCase() + " ===");
-        if (items.isEmpty()) {
-            player.sendMessage("No items available in this category.");
+    private void sendItemList(Player player, Shop shop) {
+        player.sendMessage("=== Shop: " + shop.title() + " ===");
+        if (shop.entries().isEmpty()) {
+            player.sendMessage("No items available in this shop.");
             return;
         }
-        for (ShopItem item : items) {
-            player.sendMessage("- " + item.name() + " — " + item.price() + " coins");
+        for (ShopEntry entry : shop.entries()) {
+            player.sendMessage("- " + entry.itemId() + " — " + entry.buyPrice() + " coins");
         }
-    }
-
-    private static ShopCategory parseCategory(String input) {
-        for (ShopCategory category : ShopCategory.values()) {
-            if (category.name().equalsIgnoreCase(input)) {
-                return category;
-            }
-        }
-        return null;
     }
 }
