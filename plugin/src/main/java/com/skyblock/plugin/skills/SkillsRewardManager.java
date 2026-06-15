@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * Grants the permanent stat bonuses a player earns when a skill levels up,
  * mirroring Hypixel SkyBlock's reward tables. Invoked by the skill XP listener
- * once a level threshold from {@link com.skyblock.plugin.managers.SkillsManager}
+ * once a level threshold from {@link com.skyblock.core.skills.SkillManager}
  * is crossed.
  *
  * <p>Each skill rewards one combat stat; the per-level amount grows in the same
