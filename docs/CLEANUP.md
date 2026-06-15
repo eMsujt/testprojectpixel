@@ -255,6 +255,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkillManager/SkillsManager, CollectionManager/CollectionsManager, MinionManager/MinionHandler/MinionService deep-consolidation sweeps — round 59)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkillManager / SkillsManager (3 `@Deprecated` stubs) | `com.skyblock.core.manager.SkillManager` | All 3 `@Deprecated` `SkillManager`/`SkillsManager` stub implementations across `skills`, `core.*`, and `plugin.*` modules deleted or replaced with delegating stubs pointing to the single canonical class; every import, registration call, and `SkyBlockPlugin.onEnable` reference updated to `com.skyblock.core.manager.SkillManager` | #2684 |
+| CollectionManager / CollectionsManager | `com.skyblock.core.manager.CollectionManager` | All duplicate `CollectionManager`/`CollectionsManager` implementations across `collections`, `collection`, `core.*`, and `plugin.*` modules deleted or replaced with delegating stubs pointing to the single canonical class; every import and registration call updated to `com.skyblock.core.manager.CollectionManager` | #2682 |
+| MinionManager / MinionHandler / MinionService | `com.skyblock.core.manager.MinionManager` | All 12 duplicate `MinionManager`/`MinionHandler`/`MinionService` implementations across `minion`, `minions`, `core.*`, and `plugin.*` modules deleted or replaced with delegating stubs pointing to the single canonical class; every import, registration call, and `SkyBlockPlugin.onEnable` reference updated to `com.skyblock.core.manager.MinionManager` | #2681 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
