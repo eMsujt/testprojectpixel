@@ -17,9 +17,6 @@ import java.util.UUID;
 
 /**
  * Canonical singleton managing the bazaar order book.
- *
- * <p>All other BazaarManager/BazaarHandler duplicate classes in the project
- * are deprecated stubs that delegate here.</p>
  */
 public final class BazaarManager {
 
