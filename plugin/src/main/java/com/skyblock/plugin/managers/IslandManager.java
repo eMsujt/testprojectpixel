@@ -34,7 +34,7 @@ public final class IslandManager {
     }
 
     public Map<UUID, String> getAllIslandBiomes() {
-        return Collections.emptyMap();
+        return delegate.getAllIslandBiomes();
     }
 
     public boolean isIslandUnlocked(UUID playerId) {
@@ -46,7 +46,7 @@ public final class IslandManager {
     }
 
     public Map<UUID, Boolean> getIslandUnlocked() {
-        return Collections.emptyMap();
+        return delegate.getAllIslandUnlocked();
     }
 
     public int getIslandLevel(UUID playerId) {
@@ -62,7 +62,7 @@ public final class IslandManager {
     }
 
     public Map<UUID, Integer> getIslandLevels() {
-        return Collections.emptyMap();
+        return delegate.getAllIslandLevels();
     }
 
     public int getVisitorCount(UUID playerId) {
@@ -78,7 +78,7 @@ public final class IslandManager {
     }
 
     public Map<UUID, Integer> getVisitorCounts() {
-        return Collections.emptyMap();
+        return delegate.getAllVisitorCounts();
     }
 
     public List<String> getBuildings(UUID playerId) {
@@ -116,7 +116,7 @@ public final class IslandManager {
     }
 
     public Map<UUID, List<UUID>> getAllIslandMembers() {
-        return Collections.emptyMap();
+        return delegate.getAllIslandMembers();
     }
 
     public void recordVisit(UUID visitorId, String islandOwnerName) {
@@ -128,7 +128,7 @@ public final class IslandManager {
     }
 
     public Map<UUID, List<String>> getAllVisitLog() {
-        return Collections.emptyMap();
+        return delegate.getAllVisitLog();
     }
 
     public void recordIslandEvent(UUID playerId, String summary) {

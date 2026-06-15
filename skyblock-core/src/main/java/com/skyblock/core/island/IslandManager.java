@@ -488,6 +488,38 @@ public final class IslandManager {
         return Collections.unmodifiableList(visitLog.getOrDefault(visitorId, Collections.emptyList()));
     }
 
+    public Map<UUID, String> getAllIslandBiomes() {
+        return Collections.unmodifiableMap(islandBiome);
+    }
+
+    public Map<UUID, Boolean> getAllIslandUnlocked() {
+        return Collections.unmodifiableMap(islandUnlocked);
+    }
+
+    public Map<UUID, Integer> getAllIslandLevels() {
+        Map<UUID, Integer> result = new HashMap<>();
+        for (Map.Entry<UUID, IslandData> e : islandData.entrySet()) {
+            result.put(e.getKey(), e.getValue().level());
+        }
+        return Collections.unmodifiableMap(result);
+    }
+
+    public Map<UUID, Integer> getAllVisitorCounts() {
+        return Collections.unmodifiableMap(visitorCounts);
+    }
+
+    public Map<UUID, List<String>> getAllVisitLog() {
+        return Collections.unmodifiableMap(visitLog);
+    }
+
+    public Map<UUID, List<UUID>> getAllIslandMembers() {
+        Map<UUID, List<UUID>> result = new HashMap<>();
+        for (Map.Entry<UUID, SkyBlockIsland> e : islands.entrySet()) {
+            result.put(e.getKey(), e.getValue().getMembers());
+        }
+        return Collections.unmodifiableMap(result);
+    }
+
     // -------------------------------------------------------------------------
     // IslandData persistence
     // -------------------------------------------------------------------------
