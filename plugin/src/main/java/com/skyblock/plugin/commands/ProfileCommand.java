@@ -1,6 +1,7 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.manager.ProfileManager;
+import com.skyblock.core.profile.ProfileManager.SkyBlockProfile;
 import com.skyblock.plugin.managers.DungeonManager;
 import com.skyblock.plugin.managers.SkillsManager;
 import com.skyblock.plugin.managers.SlayerManager;
@@ -39,12 +40,12 @@ public final class ProfileCommand implements CommandExecutor {
 
         UUID id = player.getUniqueId();
         ProfileManager manager = ProfileManager.getInstance();
-        List<ProfileManager.SkyBlockProfile> profiles = manager.getProfilesForOwner(id);
+        List<SkyBlockProfile> profiles = manager.getProfilesForOwner(id);
         player.sendMessage("=== Profile ===");
         player.sendMessage("Fairy Souls: " + manager.getFairySouls(id));
         player.sendMessage("SkyBlock XP: " + manager.getSkyBlockXp(id));
         player.sendMessage("Profiles (" + profiles.size() + "):");
-        for (ProfileManager.SkyBlockProfile profile : profiles) {
+        for (SkyBlockProfile profile : profiles) {
             player.sendMessage("  " + profile.name() + " — " + profile.gameMode().getDisplayName());
         }
         return true;

@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.manager.ProfileManager;
 import com.skyblock.core.profile.ProfileManager.GameMode;
 import com.skyblock.core.profile.ProfileManager.SkyBlockProfile;
 import org.bukkit.command.Command;
