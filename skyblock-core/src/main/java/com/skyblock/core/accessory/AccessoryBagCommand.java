@@ -1,5 +1,6 @@
 package com.skyblock.core.accessory;
 
+import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.stat.Stat;
 import com.skyblock.core.talisman.TalismanManager;
 import org.bukkit.command.Command;
@@ -79,7 +80,7 @@ public final class AccessoryBagCommand implements TabExecutor {
             }
             if (sub.equals("rarity")) {
                 String prefix = args[1].toUpperCase();
-                return Arrays.stream(AccessoryBagManager.AccessoryRarity.values())
+                return Arrays.stream(AccessoryRarity.values())
                         .map(Enum::name)
                         .filter(n -> n.startsWith(prefix))
                         .sorted()
@@ -166,9 +167,9 @@ public final class AccessoryBagCommand implements TabExecutor {
             player.sendMessage("Usage: /accessorybag rarity <COMMON|UNCOMMON|RARE|EPIC|LEGENDARY|MYTHIC|SPECIAL|VERY_SPECIAL>");
             return;
         }
-        AccessoryBagManager.AccessoryRarity rarity;
+        AccessoryRarity rarity;
         try {
-            rarity = AccessoryBagManager.AccessoryRarity.valueOf(args[1].toUpperCase());
+            rarity = AccessoryRarity.valueOf(args[1].toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown rarity: " + args[1] + ". Valid values: COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, SPECIAL, VERY_SPECIAL.");
             return;

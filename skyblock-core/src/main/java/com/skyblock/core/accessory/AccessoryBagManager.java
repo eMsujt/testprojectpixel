@@ -1,5 +1,6 @@
 package com.skyblock.core.accessory;
 
+import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.stat.Stat;
 import com.skyblock.core.talisman.TalismanManager;
 
@@ -43,31 +44,6 @@ public final class AccessoryBagManager {
         AccessoryTier(String displayName, int magicPower) {
             this.displayName = displayName;
             this.magicPower = magicPower;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
-    /** Rarity tier for accessories, determining the stat multiplier applied to base bonuses. */
-    public enum AccessoryRarity {
-        COMMON       ("Common",        1.0),
-        UNCOMMON     ("Uncommon",      1.5),
-        RARE         ("Rare",          2.0),
-        EPIC         ("Epic",          3.0),
-        LEGENDARY    ("Legendary",     5.0),
-        MYTHIC       ("Mythic",        8.0),
-        SPECIAL      ("Special",       1.0),
-        VERY_SPECIAL ("Very Special",  2.0);
-
-        private final String displayName;
-        /** Multiplier applied to the accessory's base stat bonus. */
-        public final double statMultiplier;
-
-        AccessoryRarity(String displayName, double statMultiplier) {
-            this.displayName = displayName;
-            this.statMultiplier = statMultiplier;
         }
 
         public String getDisplayName() {
@@ -203,7 +179,7 @@ public final class AccessoryBagManager {
         }
         Set<TalismanManager.TalismanType> result = EnumSet.noneOf(TalismanManager.TalismanType.class);
         for (TalismanManager.TalismanType t : bag) {
-            if (t.rarity.name().equals(rarity.name())) {
+            if (t.rarity == rarity) {
                 result.add(t);
             }
         }

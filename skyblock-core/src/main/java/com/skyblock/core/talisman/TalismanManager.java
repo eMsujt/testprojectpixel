@@ -1,5 +1,6 @@
 package com.skyblock.core.talisman;
 
+import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.stat.Stat;
 
 import java.util.Collections;
@@ -39,26 +40,6 @@ public final class TalismanManager {
         public String getDisplayName() {
             return displayName;
         }
-    }
-
-    /** Rarity tier for accessories, determining the stat multiplier applied to base bonuses. */
-    public enum AccessoryRarity {
-        COMMON("Common", 1.0),
-        UNCOMMON("Uncommon", 1.5),
-        RARE("Rare", 2.0),
-        EPIC("Epic", 3.0),
-        LEGENDARY("Legendary", 5.0);
-
-        private final String displayName;
-        /** Multiplier applied to the talisman's base stat bonus. */
-        public final double statMultiplier;
-
-        AccessoryRarity(String displayName, double statMultiplier) {
-            this.displayName = displayName;
-            this.statMultiplier = statMultiplier;
-        }
-
-        public String getDisplayName() { return displayName; }
     }
 
     /** Every talisman available in SkyBlock with its stat bonuses and rarity. */

@@ -1,5 +1,6 @@
 package com.skyblock.core.talisman;
 
+import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.stat.Stat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -91,7 +92,7 @@ public final class TalismanCommand implements TabExecutor {
     private void handleRarity(Player player, String[] args) {
         if (args.length < 2) {
             player.sendMessage("=== Accessory Rarities ===");
-            for (TalismanManager.AccessoryRarity rarity : TalismanManager.AccessoryRarity.values()) {
+            for (AccessoryRarity rarity : AccessoryRarity.values()) {
                 player.sendMessage(String.format("%s — %.1fx stat multiplier", rarity.getDisplayName(), rarity.statMultiplier));
             }
             return;
