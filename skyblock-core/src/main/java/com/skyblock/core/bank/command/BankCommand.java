@@ -1,8 +1,8 @@
 package com.skyblock.core.bank.command;
 
 import com.skyblock.core.manager.BankManager;
-import com.skyblock.core.bank.BankTier;
-import com.skyblock.core.bank.BankType;
+import com.skyblock.core.manager.BankManager.BankTier;
+import com.skyblock.core.manager.BankManager.BankType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

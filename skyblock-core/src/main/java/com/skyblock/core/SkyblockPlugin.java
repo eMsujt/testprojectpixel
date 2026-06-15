@@ -8,7 +8,7 @@ import com.skyblock.core.quest.QuestManager;
 import com.skyblock.core.auction.AuctionHouseCommand;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.kuudra.KuudraCommand;
-import com.skyblock.core.bank.BankCommand;
+import com.skyblock.core.bank.command.BankCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
