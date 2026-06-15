@@ -1,7 +1,7 @@
 package com.skyblock.combat.manager;
 
 import com.skyblock.combat.engine.CombatEngine;
-import com.skyblock.combat.model.CombatStat;
+import com.skyblock.core.stat.Stat;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -14,13 +14,13 @@ import org.bukkit.entity.EntityType;
 /**
  * Tracks each player's combat stats and performs damage calculations.
  *
- * <p>Stats default to {@link CombatStat#getBaseValue()} until modified.
+ * <p>Stats default to {@link Stat#getBaseValue()} until modified.
  * Not thread-safe; synchronize externally if accessed from multiple
  * threads.</p>
  */
 public final class CombatManager {
 
-    private final Map<UUID, Map<CombatStat, Double>> playerStats = new HashMap<>();
+    private final Map<UUID, Map<Stat, Double>> playerStats = new HashMap<>();
     private final Map<UUID, Map<EntityType, Integer>> killCounts = new HashMap<>();
 
     /**
@@ -30,9 +30,9 @@ public final class CombatManager {
      * @param stat     the stat to look up
      * @return the current value, or the stat's base value if never modified
      */
-    public double getStat(UUID playerId, CombatStat stat) {
+    public double getStat(UUID playerId, Stat stat) {
         Objects.requireNonNull(stat, "stat");
-        Map<CombatStat, Double> stats = playerStats.get(playerId);
+        Map<Stat, Double> stats = playerStats.get(playerId);
         if (stats == null) {
             return stat.getBaseValue();
         }
@@ -46,9 +46,9 @@ public final class CombatManager {
      * @param stat     the stat to set
      * @param value    the new value
      */
-    public void setStat(UUID playerId, CombatStat stat, double value) {
+    public void setStat(UUID playerId, Stat stat, double value) {
         Objects.requireNonNull(stat, "stat");
-        playerStats.computeIfAbsent(playerId, id -> new EnumMap<>(CombatStat.class))
+        playerStats.computeIfAbsent(playerId, id -> new EnumMap<>(Stat.class))
                 .put(stat, value);
     }
 
@@ -60,7 +60,7 @@ public final class CombatManager {
      * @param amount   the amount to add, may be negative
      * @return the stat's value after the change
      */
-    public double addStat(UUID playerId, CombatStat stat, double amount) {
+    public double addStat(UUID playerId, Stat stat, double amount) {
         double updated = getStat(playerId, stat) + amount;
         setStat(playerId, stat, updated);
         return updated;
@@ -128,8 +128,8 @@ public final class CombatManager {
     public double calculateDamage(UUID playerId, double baseDamage) {
         return CombatEngine.calculateDamage(
                 baseDamage,
-                getStat(playerId, CombatStat.STRENGTH),
-                getStat(playerId, CombatStat.CRIT_CHANCE),
-                getStat(playerId, CombatStat.CRIT_DAMAGE));
+                getStat(playerId, Stat.STRENGTH),
+                getStat(playerId, Stat.CRIT_CHANCE),
+                getStat(playerId, Stat.CRIT_DAMAGE));
     }
 }

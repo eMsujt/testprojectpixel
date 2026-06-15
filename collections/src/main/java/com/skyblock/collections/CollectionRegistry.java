@@ -10,12 +10,10 @@ import java.util.Set;
 import org.bukkit.Material;
 
 /**
- * Registry mapping {@link Material}s to their {@link CollectionCategory}.
- *
- * <p>Modules register materials on startup; gameplay code queries category
- * membership via {@link #getCategory(Material)} and {@link
- * #getMaterials(CollectionCategory)}. All methods are thread-safe.</p>
+ * @deprecated Use {@link com.skyblock.core.util.CollectionRegistry} with
+ * {@link com.skyblock.core.model.CollectionCategory} instead.
  */
+@Deprecated
 public final class CollectionRegistry {
 
     private final Map<Material, CollectionCategory> categoryByMaterial = new HashMap<>();
