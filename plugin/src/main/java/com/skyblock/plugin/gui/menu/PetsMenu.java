@@ -14,8 +14,10 @@ import java.util.UUID;
 
 public class PetsMenu extends Menu {
 
-    private static final int[] INNER_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
+    private static final int EQUIPPED_SLOT = 13;
+
+    private static final int[] LIST_SLOTS = {
+            10, 11, 12, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34,
             37, 38, 39, 40, 41, 42, 43
@@ -24,7 +26,7 @@ public class PetsMenu extends Menu {
     private final UUID playerId;
 
     public PetsMenu(UUID playerId) {
-        super("§aPets", 6);
+        super("§5Pets", 6);
         this.playerId = Objects.requireNonNull(playerId, "playerId");
     }
 
@@ -36,15 +38,27 @@ public class PetsMenu extends Menu {
         PetEntry active = pets.getActivePet(playerId);
         List<PetEntry> owned = pets.getPets(playerId);
 
-        int count = Math.min(owned.size(), INNER_SLOTS.length);
+        if (active != null) {
+            setItem(EQUIPPED_SLOT, new ItemBuilder(Material.PLAYER_HEAD)
+                            .displayName("§5" + active.getType().name())
+                            .lore(
+                                    "§7Level: §a" + active.getLevel(),
+                                    "§7XP: §e" + active.getXp(),
+                                    "§7Rarity: §f" + active.getRarity(),
+                                    "§aCurrently equipped")
+                            .build(),
+                    e -> e.setCancelled(true));
+        }
+
+        int count = Math.min(owned.size(), LIST_SLOTS.length);
         for (int i = 0; i < count; i++) {
             PetEntry pet = owned.get(i);
             boolean equipped = active != null && pet.getId().equals(active.getId());
-            setItem(INNER_SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
+            setItem(LIST_SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
                             .displayName((equipped ? "§a" : "§f") + pet.getType().name())
                             .lore(
-                                    "§7Rarity: §f" + pet.getRarity(),
                                     "§7Level: §a" + pet.getLevel(),
+                                    "§7Rarity: §f" + pet.getRarity(),
                                     equipped ? "§aCurrently equipped" : "§eClick to equip!")
                             .build(),
                     event -> {
