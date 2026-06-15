@@ -1,7 +1,7 @@
 package com.skyblock.core.dungeon;
 
-import com.skyblock.core.dungeon.DungeonManager;
-import com.skyblock.core.dungeon.DungeonManager.FloorRecord;
+import com.skyblock.core.manager.DungeonManager;
+import com.skyblock.core.manager.DungeonManager.FloorRecord;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

@@ -21,7 +21,7 @@ import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.plugin.managers.ProfileManager;
 import com.skyblock.plugin.managers.SkillsManager;
 import com.skyblock.plugin.managers.WarpManager;
-import com.skyblock.dungeons.DungeonManager;
+import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.core.items.CustomItemManager;
 import com.skyblock.plugin.commands.AuctionHouseCommand;
@@ -89,7 +89,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         coinManager = new CoinManager();
-        dungeonManager = new DungeonManager();
+        dungeonManager = DungeonManager.getInstance();
         itemManager = new CustomItemManager();
         profileManager = com.skyblock.plugin.profile.ProfileManager.getInstance();
         profileManager.init(this);

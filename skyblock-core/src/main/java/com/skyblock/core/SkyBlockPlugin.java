@@ -40,7 +40,7 @@ import com.skyblock.core.crafting.CraftingListener;
 import com.skyblock.core.crafting.CraftingManager;
 import com.skyblock.core.crafting.SkyBlockCraftingManager;
 import com.skyblock.core.crafting.SkyBlockRecipeManager;
-import com.skyblock.core.dungeon.DungeonManager;
+import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.economy.EconomyManager;
 import com.skyblock.core.enchant.EnchantCommand;
 import com.skyblock.core.enchant.EnchantmentCommand;

@@ -4,7 +4,7 @@ import com.skyblock.core.auction.AuctionHouseManager;
 import com.skyblock.core.bank.BankManager;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collections.CollectionsManager;
-import com.skyblock.core.dungeon.DungeonManager;
+import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.core.fairy.FairyManager;

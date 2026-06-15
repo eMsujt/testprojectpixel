@@ -1,6 +1,6 @@
 package com.skyblock.plugin.command.dungeon;
 
-import com.skyblock.core.dungeon.DungeonManager;
+import com.skyblock.core.manager.DungeonManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
