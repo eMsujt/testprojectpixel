@@ -1,14 +1,21 @@
 package com.skyblock.plugin.gui;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Fluent builder for constructing {@link ItemStack}s used in GUI menus.
@@ -96,6 +103,28 @@ public final class ItemBuilder {
         if (meta != null) {
             meta.addItemFlags(flags);
             item.setItemMeta(meta);
+        }
+        return this;
+    }
+
+    /**
+     * Applies a base64-encoded skin texture to a {@link Material#PLAYER_HEAD} item.
+     * The value must be the standard Minecraft texture JSON encoded in base64,
+     * e.g. {@code {"textures":{"SKIN":{"url":"https://textures.minecraft.net/texture/..."}}}}.
+     */
+    public ItemBuilder skullTexture(String base64) {
+        ItemMeta meta = item.getItemMeta();
+        if (!(meta instanceof SkullMeta skullMeta)) return this;
+        String json = new String(Base64.getDecoder().decode(base64));
+        String url = json.replaceAll(".*\"url\"\\s*:\\s*\"([^\"]+)\".*", "$1");
+        try {
+            PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
+            PlayerTextures textures = profile.getTextures();
+            textures.setSkin(new URI(url).toURL());
+            profile.setTextures(textures);
+            skullMeta.setOwnerProfile(profile);
+            item.setItemMeta(skullMeta);
+        } catch (Exception ignored) {
         }
         return this;
     }
