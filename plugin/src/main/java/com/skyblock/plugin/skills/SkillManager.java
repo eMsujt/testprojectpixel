@@ -64,11 +64,11 @@ public final class SkillManager {
     /** No-op: XP curves are now hardcoded in {@link com.skyblock.core.skills.SkillManager}. */
     public void load(JavaPlugin plugin) {}
 
-    public long getXP(UUID playerId, SkillType skill) {
+    public long getXP(UUID playerId, com.skyblock.core.skills.SkillManager.SkillType skill) {
         return delegate.getSkillXP(playerId, skill.key());
     }
 
-    public void addXP(UUID playerId, SkillType skill, long amount) {
+    public void addXP(UUID playerId, com.skyblock.core.skills.SkillManager.SkillType skill, long amount) {
         int oldLevel = getLevel(playerId, skill);
         delegate.addSkillXP(playerId, skill.key(), amount);
         int newLevel = getLevel(playerId, skill);
@@ -77,11 +77,11 @@ public final class SkillManager {
         }
     }
 
-    public int getLevel(UUID playerId, SkillType skill) {
+    public int getLevel(UUID playerId, com.skyblock.core.skills.SkillManager.SkillType skill) {
         return delegate.getSkillLevel(playerId, skill.key());
     }
 
-    public int levelForXP(SkillType skill, long totalXP) {
+    public int levelForXP(com.skyblock.core.skills.SkillManager.SkillType skill, long totalXP) {
         return com.skyblock.core.skills.SkillManager.levelForXp(skill.key(), totalXP);
     }
 
@@ -89,7 +89,7 @@ public final class SkillManager {
         return com.skyblock.core.skills.SkillManager.levelForXp("farming", totalXP);
     }
 
-    public void grantLevelUpRewards(UUID playerId, SkillType skill, int fromLevel, int toLevel) {
+    public void grantLevelUpRewards(UUID playerId, com.skyblock.core.skills.SkillManager.SkillType skill, int fromLevel, int toLevel) {
         if (playerId == null || skill == null || toLevel <= fromLevel) return;
         CombatStat stat = SKILL_STAT.get(skill.key());
         Map<Integer, Double> rewards = LEVEL_REWARDS.get(skill.key());

@@ -1,6 +1,6 @@
 package com.skyblock.plugin.skill;
 
-import com.skyblock.plugin.skills.SkillManager.SkillType;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import com.skyblock.plugin.skills.SkillXPConfig;
 
 import org.bukkit.configuration.ConfigurationSection;

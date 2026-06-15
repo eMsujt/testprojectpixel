@@ -1,5 +1,7 @@
 package com.skyblock.core.skill;
 
+import com.skyblock.core.skills.SkillManager;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -60,11 +62,11 @@ public final class SkillListener implements Listener {
         Player player = event.getPlayer();
         Material type = event.getBlock().getType();
         if (ORE_MATERIALS.contains(type)) {
-            skillManager.addXp(player.getUniqueId(), SkillManager.SkillType.MINING, 5L);
+            skillManager.addXp(player.getUniqueId(), SkillType.MINING, 5L);
         } else if (CROP_MATERIALS.contains(type)) {
-            skillManager.addXp(player.getUniqueId(), SkillManager.SkillType.FARMING, 4L);
+            skillManager.addXp(player.getUniqueId(), SkillType.FARMING, 4L);
         } else if (LOG_MATERIALS.contains(type)) {
-            skillManager.addXp(player.getUniqueId(), SkillManager.SkillType.FORAGING, 4L);
+            skillManager.addXp(player.getUniqueId(), SkillType.FORAGING, 4L);
         }
     }
 
@@ -75,7 +77,7 @@ public final class SkillListener implements Listener {
         if (killer == null) {
             return;
         }
-        skillManager.addXp(killer.getUniqueId(), SkillManager.SkillType.COMBAT, 8L);
+        skillManager.addXp(killer.getUniqueId(), SkillType.COMBAT, 8L);
     }
 
     @EventHandler
@@ -83,12 +85,12 @@ public final class SkillListener implements Listener {
         if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
             return;
         }
-        skillManager.addXp(event.getPlayer().getUniqueId(), SkillManager.SkillType.FISHING, 6L);
+        skillManager.addXp(event.getPlayer().getUniqueId(), SkillType.FISHING, 6L);
     }
 
     @EventHandler
     public void onEnchantItem(EnchantItemEvent event) {
-        skillManager.addXp(event.getEnchanter().getUniqueId(), SkillManager.SkillType.ENCHANTING, 10L);
+        skillManager.addXp(event.getEnchanter().getUniqueId(), SkillType.ENCHANTING, 10L);
     }
 
     @EventHandler
@@ -97,6 +99,6 @@ public final class SkillListener implements Listener {
         if (!(owner instanceof Player)) {
             return;
         }
-        skillManager.addXp(owner.getUniqueId(), SkillManager.SkillType.TAMING, 10L);
+        skillManager.addXp(owner.getUniqueId(), SkillType.TAMING, 10L);
     }
 }

@@ -1,5 +1,6 @@
 package com.skyblock.core.skill;
 
+import com.skyblock.core.skills.SkillManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -83,8 +84,8 @@ public final class SkillCommand implements TabExecutor {
 
     private void sendSkillEnumList(Player player) {
         player.sendMessage("=== SkyBlock Skills ===");
-        for (SkillManager.Skill skill : SkillManager.Skill.values()) {
-            player.sendMessage(skill.getDisplayName() + " (max level: " + skill.getMaxLevel() + ")");
+        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
+            player.sendMessage(skill.getDisplayName() + " (max level: " + SkillManager.maxLevel(skill.key()) + ")");
         }
     }
 

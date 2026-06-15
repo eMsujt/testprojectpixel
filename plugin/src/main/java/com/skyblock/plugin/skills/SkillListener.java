@@ -1,6 +1,6 @@
 package com.skyblock.plugin.skills;
 
-import com.skyblock.plugin.skills.SkillManager.SkillType;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

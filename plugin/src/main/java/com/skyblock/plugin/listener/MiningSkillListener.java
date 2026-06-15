@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.skills.SkillManager;
-import com.skyblock.plugin.skills.SkillManager.SkillType;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
