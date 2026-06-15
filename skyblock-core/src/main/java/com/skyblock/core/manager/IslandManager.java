@@ -1,8 +1,8 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.island.IslandManager.IslandData;
-import com.skyblock.core.island.IslandManager.IslandUpgrade;
-import com.skyblock.core.island.IslandManager.SkyBlockIsland;
+import com.skyblock.core.island.manager.IslandManager.IslandData;
+import com.skyblock.core.island.manager.IslandManager.IslandUpgrade;
+import com.skyblock.core.island.manager.IslandManager.SkyBlockIsland;
 
 import org.bukkit.World;
 
@@ -15,15 +15,15 @@ import java.util.UUID;
 /**
  * Canonical singleton for per-player SkyBlock island management.
  *
- * <p>Delegates all state to {@link com.skyblock.core.island.IslandManager}. Use
+ * <p>Delegates all state to {@link com.skyblock.core.island.manager.IslandManager}. Use
  * {@link IslandUpgrade} for upgrade classification, {@link SkyBlockIsland} for
  * member/upgrade data, and {@link IslandData} for trustee/blocks-placed records.</p>
  */
 public final class IslandManager {
 
     private static final IslandManager INSTANCE = new IslandManager();
-    private final com.skyblock.core.island.IslandManager delegate =
-            com.skyblock.core.island.IslandManager.getInstance();
+    private final com.skyblock.core.island.manager.IslandManager delegate =
+            com.skyblock.core.island.manager.IslandManager.getInstance();
 
     private IslandManager() {}
 

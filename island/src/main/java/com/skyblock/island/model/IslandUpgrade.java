@@ -1,4 +1,4 @@
-package com.skyblock.island;
+package com.skyblock.island.model;
 
 /**
  * The upgrades players can purchase for their SkyBlock island.

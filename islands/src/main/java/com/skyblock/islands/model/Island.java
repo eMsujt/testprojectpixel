@@ -1,4 +1,4 @@
-package com.skyblock.islands;
+package com.skyblock.islands.model;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -12,7 +12,7 @@ import org.bukkit.Location;
  * <p>Tracks the island's identity, ownership, member roster, upgrade level
  * and spawn point. Instances are not thread-safe; access them from the
  * server main thread or guard them externally (e.g. via
- * {@link IslandManager}).</p>
+ * {@link com.skyblock.islands.manager.IslandUpgradeManager}).</p>
  */
 public final class Island {
 

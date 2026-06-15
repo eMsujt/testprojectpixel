@@ -1,4 +1,4 @@
-package com.skyblock.core.island;
+package com.skyblock.core.island.manager;
 
 import java.util.EnumMap;
 import java.util.HashMap;
