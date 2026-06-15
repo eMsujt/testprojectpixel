@@ -12,15 +12,10 @@ import java.util.List;
 
 public class QuiverMenu extends Menu {
 
-    private static final int[] INNER_SLOTS = {
-            9,  10, 11, 12, 13, 14, 15, 16, 17,
-            18, 19, 20, 21, 22, 23, 24, 25, 26
-    };
-
     private final Player player;
 
     public QuiverMenu(Player player) {
-        super("§bQuiver", 4);
+        super("§6Quiver", 6);
         this.player = player;
     }
 
@@ -31,10 +26,15 @@ public class QuiverMenu extends Menu {
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         List<ItemStack> contents = profile.getQuiverContents();
 
-        for (int i = 0; i < INNER_SLOTS.length && i < contents.size(); i++) {
-            ItemStack item = contents.get(i);
+        int itemIndex = 0;
+        for (int slot = 0; slot < 54 && itemIndex < contents.size(); slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                continue;
+            }
+            ItemStack item = contents.get(itemIndex++);
             if (item != null) {
-                setItem(INNER_SLOTS[i], item);
+                setItem(slot, item);
             }
         }
     }
@@ -43,11 +43,11 @@ public class QuiverMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 27; slot < 36; slot++) {
-            setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
         }
     }
 }
