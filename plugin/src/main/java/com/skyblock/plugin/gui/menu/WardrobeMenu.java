@@ -46,11 +46,11 @@ public class WardrobeMenu extends Menu {
         PlayerProfile profile = ProfileManager.getInstance().getProfile(playerId);
         ItemStack[] contents = profile != null ? profile.getWardrobeContents() : null;
 
-        for (int col = 1; col < 8; col++) {
-            int setNumber = col;
+        for (int col = 0; col < 9; col++) {
+            int setNumber = col + 1;
             for (int row = 0; row < 4; row++) {
                 int slot = (row + 1) * 9 + col;
-                int contentIndex = (col - 1) * 4 + row;
+                int contentIndex = col * 4 + row;
                 ItemStack stored = contents != null && contentIndex < contents.length
                         ? contents[contentIndex] : null;
                 if (stored != null && stored.getType() != Material.AIR) {
