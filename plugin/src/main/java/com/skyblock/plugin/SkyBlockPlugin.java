@@ -19,7 +19,7 @@ import com.skyblock.core.minion.MinionCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.plugin.managers.ProfileManager;
-import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.WarpManager;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.economy.CoinManager;
@@ -109,8 +109,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         PetsManager.getInstance().load(getDataFolder());
         HOTMManager.getInstance().load(getDataFolder());
         WarpManager.getInstance().load(getDataFolder());
-        SkillsManager.getInstance().load(getDataFolder());
-        com.skyblock.plugin.skills.SkillManager.getInstance().load(this);
+        SkillManager.getInstance().load(getDataFolder());
         IslandManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.DungeonManager.getInstance().load(getDataFolder());
         CraftingManager.getInstance().registerRecipes(this);
@@ -247,7 +246,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MayorManager.getInstance().save(getDataFolder());
         PetsManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
-        SkillsManager.getInstance().save(getDataFolder());
+        SkillManager.getInstance().save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.DungeonManager.getInstance().save(getDataFolder());
         try {

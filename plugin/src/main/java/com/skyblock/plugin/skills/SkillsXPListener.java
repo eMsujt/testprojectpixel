@@ -1,6 +1,6 @@
 package com.skyblock.plugin.skills;
 
-import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.core.manager.SkillManager;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -58,7 +58,7 @@ public final class SkillsXPListener implements Listener {
             Map.entry(Material.DARK_OAK_LOG, 6L)
     );
 
-    private final SkillsManager skillsManager = SkillsManager.getInstance();
+    private final SkillManager skillsManager = SkillManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {

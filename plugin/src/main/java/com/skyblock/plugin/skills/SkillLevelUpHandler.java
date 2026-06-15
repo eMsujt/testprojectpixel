@@ -1,6 +1,6 @@
 package com.skyblock.plugin.skills;
 
-import com.skyblock.plugin.manager.SkillManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.entity.Player;
 
