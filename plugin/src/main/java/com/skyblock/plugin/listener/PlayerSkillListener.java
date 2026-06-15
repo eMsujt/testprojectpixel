@@ -60,6 +60,34 @@ public final class PlayerSkillListener implements Listener {
             Map.entry(Material.DARK_OAK_LOG, 6L)
     );
 
+    private static final Map<Material, String> BLOCK_COLLECTION = Map.ofEntries(
+            Map.entry(Material.WHEAT,                "wheat"),
+            Map.entry(Material.CARROTS,              "carrot"),
+            Map.entry(Material.POTATOES,             "potato"),
+            Map.entry(Material.BEETROOTS,            "beetroot"),
+            Map.entry(Material.NETHER_WART,          "nether_wart"),
+            Map.entry(Material.PUMPKIN,              "pumpkin"),
+            Map.entry(Material.MELON,                "melon"),
+            Map.entry(Material.SUGAR_CANE,           "sugar_cane"),
+            Map.entry(Material.CACTUS,               "cactus"),
+            Map.entry(Material.COCOA,                "cocoa_beans"),
+            Map.entry(Material.RED_MUSHROOM_BLOCK,   "red_mushroom"),
+            Map.entry(Material.BROWN_MUSHROOM_BLOCK, "brown_mushroom"),
+            Map.entry(Material.COAL_ORE,             "coal"),
+            Map.entry(Material.IRON_ORE,             "iron_ingot"),
+            Map.entry(Material.GOLD_ORE,             "gold_ingot"),
+            Map.entry(Material.DIAMOND_ORE,          "diamond"),
+            Map.entry(Material.LAPIS_ORE,            "lapis_lazuli"),
+            Map.entry(Material.EMERALD_ORE,          "emerald"),
+            Map.entry(Material.REDSTONE_ORE,         "redstone"),
+            Map.entry(Material.OAK_LOG,              "oak_wood"),
+            Map.entry(Material.SPRUCE_LOG,           "spruce_wood"),
+            Map.entry(Material.BIRCH_LOG,            "birch_wood"),
+            Map.entry(Material.JUNGLE_LOG,           "jungle_wood"),
+            Map.entry(Material.ACACIA_LOG,           "acacia_wood"),
+            Map.entry(Material.DARK_OAK_LOG,         "dark_oak_wood")
+    );
+
     private static final Map<EntityType, Long> COMBAT_XP = Map.ofEntries(
             Map.entry(EntityType.ZOMBIE,          5L),
             Map.entry(EntityType.SKELETON,        5L),
@@ -91,16 +119,22 @@ public final class PlayerSkillListener implements Listener {
         Long farmingXp = FARMING_XP.get(block.getType());
         if (farmingXp != null && isMature(block)) {
             profile.addSkillXp("farming", farmingXp);
+            String col = BLOCK_COLLECTION.get(block.getType());
+            if (col != null) profile.addCollectionCount(col, 1L);
             return;
         }
         Long miningXp = MINING_XP.get(block.getType());
         if (miningXp != null) {
             profile.addSkillXp("mining", miningXp);
+            String col = BLOCK_COLLECTION.get(block.getType());
+            if (col != null) profile.addCollectionCount(col, 1L);
             return;
         }
         Long foragingXp = FORAGING_XP.get(block.getType());
         if (foragingXp != null) {
             profile.addSkillXp("foraging", foragingXp);
+            String col = BLOCK_COLLECTION.get(block.getType());
+            if (col != null) profile.addCollectionCount(col, 1L);
         }
     }
 
