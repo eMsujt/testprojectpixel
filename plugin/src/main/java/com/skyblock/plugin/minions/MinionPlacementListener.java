@@ -16,16 +16,9 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.UUID;
 
 /**
- * Listener that places a minion when a player right-clicks while holding a
- * minion item.
- *
- * <p>The held item is recognised as a minion by the {@code skyblock:minion_type}
- * key stored in its {@link PersistentDataContainer}. The minion is placed on top
- * of the right-clicked block; right-clicks in the air are ignored so accidental
- * swings do not consume the item. A player may have at most
- * {@link #MAX_MINIONS} minions placed at once. The minion is registered with
- * {@link MinionManager} at tier 1 and one item is consumed from the hand.</p>
+ * @deprecated Use {@link com.skyblock.plugin.minion.MinionPlacementListener} instead.
  */
+@Deprecated
 public final class MinionPlacementListener implements Listener {
 
     /** Maximum number of minions a single player may have placed at once. */

@@ -68,7 +68,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
     private CoinManager coinManager;
     private DungeonManager dungeonManager;
     private CustomItemManager itemManager;
-    private com.skyblock.plugin.minions.MinionManager minionManager;
     private com.skyblock.plugin.profile.ProfileManager profileManager;
 
     /**
@@ -104,8 +103,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         AuctionManager.getInstance().load(getDataFolder());
         FairyManager.getInstance().load(getDataFolder());
         MinionManager.getInstance().load(getDataFolder());
-        minionManager = com.skyblock.plugin.minions.MinionManager.getInstance();
-        minionManager.onEnable(this);
         WardrobeManager.getInstance().load(getDataFolder());
         AlchemyManager.getInstance().load(getDataFolder());
         FishingManager.getInstance().load(getDataFolder());
@@ -166,14 +163,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.pets.PetManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minions.MinionPlacementListener(), this);
-        getServer().getPluginManager().registerEvents(com.skyblock.plugin.minions.MinionManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.EnchantingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.HubClickListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.QuestProgressListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TimeListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.WeatherListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minions.MinionListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsXPListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillXPListener(), this);
@@ -289,8 +283,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
     }
 
     /** Returns the placed-minion production service. */
-    public com.skyblock.plugin.minions.MinionManager getMinionManager() {
-        return minionManager;
+    public com.skyblock.plugin.minion.MinionManager getMinionManager() {
+        return com.skyblock.plugin.minion.MinionManager.getInstance();
     }
 
     /** Returns the player profile registry. */

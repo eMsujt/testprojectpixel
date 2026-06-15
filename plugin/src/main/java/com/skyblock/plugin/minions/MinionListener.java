@@ -13,14 +13,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.UUID;
 
 /**
- * Listener that places a minion when a player right-clicks dirt or grass
- * while holding a minion item.
- *
- * <p>The held item is matched to a {@link MinionManager.MinionType} by its
- * display name (e.g. "Wheat Minion"). On a successful placement the minion
- * is registered with {@link MinionManager} at the clicked block's location
- * and one item is consumed from the player's hand.</p>
+ * @deprecated Use {@link com.skyblock.plugin.minion.MinionPlacementListener} instead.
  */
+@Deprecated
 public final class MinionListener implements Listener {
 
     @EventHandler
