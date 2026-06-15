@@ -32,6 +32,11 @@ public class BankMenu extends Menu {
                         "",
                         "§eClick to deposit or withdraw!")
                 .build());
+
+        setItem(24, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName("§6Bank Account")
+                .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + "§7 Coins")
+                .build());
     }
 
     private void fillBorder() {
