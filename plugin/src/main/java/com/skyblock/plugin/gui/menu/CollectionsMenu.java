@@ -19,21 +19,21 @@ import java.util.UUID;
 public class CollectionsMenu extends Menu {
 
     private enum Category {
-        FARMING("Farming", "§a", Material.WHEAT, 20,
+        FARMING("Farming", "§a", Material.WHEAT, 11,
                 new Material[]{Material.WHEAT, Material.CARROT, Material.POTATO,
                         Material.PUMPKIN, Material.MELON_SLICE, Material.SUGAR_CANE,
                         Material.CACTUS, Material.RED_MUSHROOM, Material.NETHER_WART}),
-        MINING("Mining", "§7", Material.COAL, 21,
+        MINING("Mining", "§7", Material.COBBLESTONE, 12,
                 new Material[]{Material.COBBLESTONE, Material.COAL, Material.IRON_INGOT,
                         Material.GOLD_INGOT, Material.DIAMOND, Material.LAPIS_LAZULI,
                         Material.EMERALD, Material.REDSTONE, Material.OBSIDIAN}),
-        COMBAT("Combat", "§c", Material.ROTTEN_FLESH, 22,
+        COMBAT("Combat", "§c", Material.ROTTEN_FLESH, 13,
                 new Material[]{Material.ROTTEN_FLESH, Material.BONE, Material.STRING,
                         Material.GUNPOWDER, Material.ENDER_PEARL}),
-        FORAGING("Foraging", "§2", Material.OAK_LOG, 23,
+        FORAGING("Foraging", "§2", Material.OAK_LOG, 14,
                 new Material[]{Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
                         Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG}),
-        FISHING("Fishing", "§9", Material.COD, 24,
+        FISHING("Fishing", "§9", Material.COD, 15,
                 new Material[]{Material.COD, Material.SALMON, Material.PUFFERFISH,
                         Material.TROPICAL_FISH, Material.PRISMARINE_SHARD});
 
@@ -55,7 +55,7 @@ public class CollectionsMenu extends Menu {
     private final UUID playerId;
 
     public CollectionsMenu(UUID playerId) {
-        super("§aCollections", 6);
+        super("§eCollections", 6);
         this.playerId = playerId;
     }
 
