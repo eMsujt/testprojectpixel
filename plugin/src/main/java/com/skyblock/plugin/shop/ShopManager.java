@@ -18,6 +18,8 @@ import java.util.Map;
 public final class ShopManager {
 
     private static final ShopManager INSTANCE = new ShopManager();
+    private static final com.skyblock.core.manager.ShopManager DELEGATE =
+            com.skyblock.core.manager.ShopManager.getInstance();
 
     private final Map<Material, ShopItem> items = new EnumMap<>(Material.class);
 
@@ -54,6 +56,13 @@ public final class ShopManager {
             items.put(material, new ShopItem(section.getInt("buy"), section.getInt("sell")));
         }
         plugin.getLogger().info("Loaded " + items.size() + " shop items.");
+        // write-through: register all items as a single shop in the canonical
+        List<com.skyblock.core.manager.ShopManager.ShopEntry> canonical = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<Material, ShopItem> e : items.entrySet()) {
+            canonical.add(new com.skyblock.core.manager.ShopManager.ShopEntry(
+                    e.getKey().name(), e.getValue().buy(), e.getValue().sell()));
+        }
+        DELEGATE.registerShop("shop_items", "Shop Items", canonical);
     }
 
     public ShopItem getShopItem(Material material) {

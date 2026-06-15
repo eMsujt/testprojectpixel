@@ -24,6 +24,8 @@ import java.util.Objects;
 public final class ShopManager {
 
     private static final ShopManager INSTANCE = new ShopManager();
+    private static final com.skyblock.core.manager.ShopManager DELEGATE =
+            com.skyblock.core.manager.ShopManager.getInstance();
 
     /**
      * A single loaded shop.
@@ -79,6 +81,15 @@ public final class ShopManager {
             }
         }
         plugin.getLogger().info("Loaded " + shops.size() + " shops.");
+        // write-through: keep canonical in sync
+        for (Shop shop : shops.values()) {
+            List<com.skyblock.core.manager.ShopManager.ShopEntry> canonical = new ArrayList<>();
+            for (ShopMenu.ShopEntry e : shop.entries()) {
+                canonical.add(new com.skyblock.core.manager.ShopManager.ShopEntry(
+                        e.material().name(), e.price(), 0L));
+            }
+            DELEGATE.registerShop(shop.id(), shop.title(), canonical);
+        }
     }
 
     /** Parses a single shop section, or returns {@code null} if it is invalid. */

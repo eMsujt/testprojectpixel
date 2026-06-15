@@ -59,6 +59,9 @@ public final class ShopManager {
         }
     }
 
+    private static final com.skyblock.core.manager.ShopManager DELEGATE =
+            com.skyblock.core.manager.ShopManager.getInstance();
+
     private final Map<ShopType, ConcurrentHashMap<String, ShopEntry>> catalogs;
 
     public ShopManager() {
@@ -93,6 +96,13 @@ public final class ShopManager {
         }
         ShopEntry entry = new ShopEntry(validated, buyPrice, sellPrice);
         catalogs.get(type).put(validated, entry);
+        // write-through: keep canonical in sync (shop type used as shop id)
+        List<com.skyblock.core.manager.ShopManager.ShopEntry> canonical = new java.util.ArrayList<>();
+        for (java.util.Map.Entry<String, ShopEntry> e : catalogs.get(type).entrySet()) {
+            canonical.add(new com.skyblock.core.manager.ShopManager.ShopEntry(
+                    e.getKey(), (long) e.getValue().getBuyPrice(), (long) e.getValue().getSellPrice()));
+        }
+        DELEGATE.registerShop(type.name(), type.name(), canonical);
         return entry;
     }
 

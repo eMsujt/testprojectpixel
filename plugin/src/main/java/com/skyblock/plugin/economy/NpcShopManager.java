@@ -21,6 +21,8 @@ import java.util.Objects;
 public final class NpcShopManager {
 
     private static final NpcShopManager INSTANCE = new NpcShopManager();
+    private static final com.skyblock.core.manager.ShopManager DELEGATE =
+            com.skyblock.core.manager.ShopManager.getInstance();
 
     /**
      * A single purchasable item in an NPC shop.
@@ -87,6 +89,15 @@ public final class NpcShopManager {
             }
         }
         plugin.getLogger().info("NpcShopManager loaded " + shops.size() + " shops.");
+        // write-through: keep canonical in sync
+        for (NpcShop shop : shops.values()) {
+            List<com.skyblock.core.manager.ShopManager.ShopEntry> canonical = new ArrayList<>();
+            for (NpcShopItem item : shop.items()) {
+                canonical.add(new com.skyblock.core.manager.ShopManager.ShopEntry(
+                        item.materialName().toUpperCase(), (long) item.buyPrice(), 0L));
+            }
+            DELEGATE.registerShop(shop.id(), shop.displayName(), canonical);
+        }
     }
 
     /** Parses a single shop section, or returns {@code null} if it is invalid. */
