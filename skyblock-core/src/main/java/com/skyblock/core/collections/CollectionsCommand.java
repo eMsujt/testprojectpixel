@@ -1,10 +1,14 @@
 package com.skyblock.core.collections;
 
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
+import com.skyblock.core.model.CollectionCategory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -16,16 +20,16 @@ public final class CollectionsCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS;
 
     static {
-        List<String> subs = new java.util.ArrayList<>(Arrays.asList("category", "reset", "history"));
-        for (CollectionsManager.CollectionType c : CollectionsManager.CollectionType.values()) {
+        List<String> subs = new ArrayList<>(Arrays.asList("category", "reset", "history"));
+        for (Collection c : Collection.values()) {
             subs.add(c.name().toLowerCase());
         }
         SUBCOMMANDS = Collections.unmodifiableList(subs);
     }
 
-    private final CollectionsManager collectionsManager;
+    private final CollectionManager collectionsManager;
 
-    public CollectionsCommand(CollectionsManager collectionsManager) {
+    public CollectionsCommand(CollectionManager collectionsManager) {
         if (collectionsManager == null) {
             throw new IllegalArgumentException("collectionsManager must not be null");
         }
@@ -54,12 +58,12 @@ public final class CollectionsCommand implements TabExecutor {
             case "category" -> {
                 if (args.length < 2) {
                     player.sendMessage("Usage: /collections category <" +
-                            Arrays.stream(CollectionsManager.CollectionCategory.values())
+                            Arrays.stream(CollectionCategory.values())
                                   .map(c -> c.name().toLowerCase())
                                   .collect(Collectors.joining("|")) + ">");
                     return true;
                 }
-                CollectionsManager.CollectionCategory category = parseCategory(args[1]);
+                CollectionCategory category = parseCategory(args[1]);
                 if (category == null) {
                     player.sendMessage("Unknown category: " + args[1]);
                     return true;
@@ -67,13 +71,13 @@ public final class CollectionsCommand implements TabExecutor {
                 handleCategory(player, category);
             }
             default -> {
-                CollectionsManager.CollectionType type = parseType(args[0]);
-                if (type == null) {
+                Collection collection = Collection.parse(args[0]);
+                if (collection == null) {
                     player.sendMessage("Unknown collection: " + args[0] +
                             ". Use /collections to see all collections.");
                     return true;
                 }
-                handleCollection(player, type);
+                handleCollection(player, collection);
             }
         }
         return true;
@@ -89,7 +93,7 @@ public final class CollectionsCommand implements TabExecutor {
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("category")) {
             String prefix = args[1].toLowerCase();
-            return Arrays.stream(CollectionsManager.CollectionCategory.values())
+            return Arrays.stream(CollectionCategory.values())
                     .map(c -> c.name().toLowerCase())
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
@@ -112,7 +116,7 @@ public final class CollectionsCommand implements TabExecutor {
     private void handleAll(Player player) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== Collections ===");
-        for (CollectionsManager.CollectionType c : CollectionsManager.CollectionType.values()) {
+        for (Collection c : Collection.values()) {
             long total = collectionsManager.getItems(id, c);
             int tier = collectionsManager.getTier(id, c);
             player.sendMessage(String.format("  %-22s %d  (Tier %d)", c.name(), total, tier));
@@ -120,12 +124,12 @@ public final class CollectionsCommand implements TabExecutor {
         player.sendMessage("Use /collections <name> to view a specific collection.");
     }
 
-    private void handleCollection(Player player, CollectionsManager.CollectionType type) {
+    private void handleCollection(Player player, Collection collection) {
         UUID id = player.getUniqueId();
-        long total = collectionsManager.getItems(id, type);
-        int tier = collectionsManager.getTier(id, type);
-        long toNext = collectionsManager.getItemsToNextTier(id, type);
-        player.sendMessage("=== " + type.getDisplayName() + " Collection ===");
+        long total = collectionsManager.getItems(id, collection);
+        int tier = collectionsManager.getTier(id, collection);
+        long toNext = collectionsManager.getItemsToNextTier(id, collection);
+        player.sendMessage("=== " + collection.getDisplayName() + " Collection ===");
         player.sendMessage("  Total gathered : " + total);
         player.sendMessage("  Tier           : " + tier);
         if (toNext > 0) {
@@ -133,30 +137,19 @@ public final class CollectionsCommand implements TabExecutor {
         }
     }
 
-    private void handleCategory(Player player, CollectionsManager.CollectionCategory category) {
+    private void handleCategory(Player player, CollectionCategory category) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== " + category.getDisplayName() + " Collections ===");
-        for (CollectionsManager.CollectionType c : category.getCollections()) {
+        for (Collection c : category.getCollections()) {
             long total = collectionsManager.getItems(id, c);
             int tier = collectionsManager.getTier(id, c);
             player.sendMessage(String.format("  %-22s %d  (Tier %d)", c.name(), total, tier));
         }
     }
 
-    private static CollectionsManager.CollectionType parseType(String input) {
-        for (CollectionsManager.CollectionType c : CollectionsManager.CollectionType.values()) {
-            if (c.name().equalsIgnoreCase(input)) {
-                return c;
-            }
-        }
-        return null;
-    }
-
-    private static CollectionsManager.CollectionCategory parseCategory(String input) {
-        for (CollectionsManager.CollectionCategory c : CollectionsManager.CollectionCategory.values()) {
-            if (c.name().equalsIgnoreCase(input)) {
-                return c;
-            }
+    private static CollectionCategory parseCategory(String input) {
+        for (CollectionCategory c : CollectionCategory.values()) {
+            if (c.name().equalsIgnoreCase(input)) return c;
         }
         return null;
     }

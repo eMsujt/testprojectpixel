@@ -52,7 +52,7 @@ import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.mail.MailCommand;
 import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.collections.CollectionsCommand;
-import com.skyblock.core.collections.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.combat.CombatCommand;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.coop.CoopCommand;
@@ -247,7 +247,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         CombatCommand combatCommand = new CombatCommand(combatManager);
         getCommand("combat").setExecutor(combatCommand);
         getCommand("combat").setTabCompleter(combatCommand);
-        CollectionsManager collectionsManager = CollectionsManager.getInstance();
+        CollectionManager collectionsManager = CollectionManager.getInstance();
         collectionsManager.load(getDataFolder());
         CollectionsCommand collectionsCommand = new CollectionsCommand(collectionsManager);
         getCommand("collections").setExecutor(collectionsCommand);
@@ -366,7 +366,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         QuestManager.getInstance().save(getDataFolder());
         BackpackManager.getInstance().save(getDataFolder());
         ForagingManager.getInstance().save(getDataFolder());
-        CollectionsManager.getInstance().save(getDataFolder());
+        CollectionManager.getInstance().save(getDataFolder());
         MailManager.getInstance().save(getDataFolder());
         CoopManager.getInstance().save(getDataFolder());
         CrimsonManager.getInstance().save(getDataFolder());

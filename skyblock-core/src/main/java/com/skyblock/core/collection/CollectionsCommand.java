@@ -1,12 +1,14 @@
 package com.skyblock.core.collection;
 
-import com.skyblock.core.collection.CollectionManager.CollectionCategory;
-import com.skyblock.core.collection.CollectionManager.CollectionType;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
+import com.skyblock.core.model.CollectionCategory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,14 +58,14 @@ public final class CollectionsCommand implements TabExecutor {
             return true;
         }
 
-        CollectionType type = parseType(args[0]);
-        if (type == null) {
+        Collection collection = Collection.parse(args[0]);
+        if (collection == null) {
             player.sendMessage("Unknown collection: " + args[0] + ". Use /collections to see all collections.");
             return true;
         }
 
-        long total = collectionManager.getItems(player.getUniqueId(), type);
-        player.sendMessage("=== " + type.displayName + " Collection ===");
+        long total = collectionManager.getItems(player.getUniqueId(), collection);
+        player.sendMessage("=== " + collection.getDisplayName() + " Collection ===");
         player.sendMessage("Total gathered: " + total);
         return true;
     }
@@ -72,28 +74,20 @@ public final class CollectionsCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            List<String> completions = new java.util.ArrayList<>();
-            if ("reset".startsWith(lower)) {
-                completions.add("reset");
-            }
-            if ("category".startsWith(lower)) {
-                completions.add("category");
-            }
-            for (CollectionType t : CollectionType.values()) {
-                if (t.itemKey.startsWith(lower)) {
-                    completions.add(t.itemKey);
-                }
+            List<String> completions = new ArrayList<>();
+            if ("reset".startsWith(lower)) completions.add("reset");
+            if ("category".startsWith(lower)) completions.add("category");
+            for (Collection c : Collection.values()) {
+                if (c.itemKey.startsWith(lower)) completions.add(c.itemKey);
             }
             return completions;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("category")) {
             String lower = args[1].toLowerCase();
-            List<String> completions = new java.util.ArrayList<>();
+            List<String> completions = new ArrayList<>();
             for (CollectionCategory c : CollectionCategory.values()) {
                 String name = c.name().toLowerCase();
-                if (name.startsWith(lower)) {
-                    completions.add(name);
-                }
+                if (name.startsWith(lower)) completions.add(name);
             }
             return completions;
         }
@@ -101,40 +95,29 @@ public final class CollectionsCommand implements TabExecutor {
     }
 
     private void sendCollectionList(Player player) {
-        Map<CollectionType, Long> all = collectionManager.getAll(player.getUniqueId());
+        Map<Collection, Long> all = collectionManager.getAll(player.getUniqueId());
         player.sendMessage("=== Collections ===");
-        for (CollectionType t : CollectionType.values()) {
-            long total = all.getOrDefault(t, 0L);
-            player.sendMessage("- " + t.displayName + ": " + total);
+        for (Collection c : Collection.values()) {
+            long total = all.getOrDefault(c, 0L);
+            player.sendMessage("- " + c.getDisplayName() + ": " + total);
         }
         player.sendMessage("Use /collections <name> to view a collection.");
     }
 
     private void sendCategoryList(Player player, CollectionCategory category) {
-        Map<CollectionType, Long> all = collectionManager.getAll(player.getUniqueId());
+        Map<Collection, Long> all = collectionManager.getAll(player.getUniqueId());
         player.sendMessage("=== " + category.getDisplayName() + " Collections ===");
-        for (CollectionType t : category.getTypes()) {
-            long total = all.getOrDefault(t, 0L);
-            player.sendMessage("- " + t.displayName + ": " + total);
+        for (Collection c : category.getCollections()) {
+            long total = all.getOrDefault(c, 0L);
+            player.sendMessage("- " + c.getDisplayName() + ": " + total);
         }
         long categoryTotal = collectionManager.getTotalForCategory(player.getUniqueId(), category);
         player.sendMessage("Category total: " + categoryTotal);
     }
 
-    private static CollectionType parseType(String input) {
-        for (CollectionType t : CollectionType.values()) {
-            if (t.name().equalsIgnoreCase(input) || t.itemKey.equalsIgnoreCase(input)) {
-                return t;
-            }
-        }
-        return null;
-    }
-
     private static CollectionCategory parseCategory(String input) {
         for (CollectionCategory c : CollectionCategory.values()) {
-            if (c.name().equalsIgnoreCase(input)) {
-                return c;
-            }
+            if (c.name().equalsIgnoreCase(input)) return c;
         }
         return null;
     }

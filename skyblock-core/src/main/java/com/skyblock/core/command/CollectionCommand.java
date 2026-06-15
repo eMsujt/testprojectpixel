@@ -1,7 +1,7 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.collections.CollectionManager;
-import com.skyblock.core.collections.CollectionManager.Collection;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  *
  * <p>Usage:
  * <ul>
- *   <li>{@code /collection}                  — list all collection names</li>
- *   <li>{@code /collection <name>}            — show progress for that collection</li>
+ *   <li>{@code /collection}        — list all collection names</li>
+ *   <li>{@code /collection <name>} — show progress for that collection</li>
  * </ul>
  * </p>
  */
@@ -42,7 +42,7 @@ public final class CollectionCommand implements TabExecutor {
             return true;
         }
 
-        Collection collection = parseCollection(args[0]);
+        Collection collection = Collection.parse(args[0]);
         if (collection == null) {
             sender.sendMessage("Unknown collection: " + args[0] + ". Use /collection to see all collections.");
             return true;
@@ -66,8 +66,8 @@ public final class CollectionCommand implements TabExecutor {
 
     private void sendCollectionList(CommandSender sender) {
         sender.sendMessage("=== Collections ===");
-        for (Collection collection : Collection.values()) {
-            sender.sendMessage("- " + collection.name().toLowerCase());
+        for (Collection c : Collection.values()) {
+            sender.sendMessage("- " + c.name().toLowerCase());
         }
         sender.sendMessage("Use /collection <name> to view your progress.");
     }
@@ -77,7 +77,7 @@ public final class CollectionCommand implements TabExecutor {
         int tier = collectionManager.getTier(player.getUniqueId(), collection);
         long toNext = collectionManager.getItemsToNextTier(player.getUniqueId(), collection);
 
-        player.sendMessage("=== " + collection.name().toLowerCase() + " Collection ===");
+        player.sendMessage("=== " + collection.getDisplayName() + " Collection ===");
         player.sendMessage("Tier: " + tier + " / " + CollectionManager.MAX_TIER);
         player.sendMessage("Items: " + items);
         if (tier < CollectionManager.MAX_TIER) {
@@ -85,14 +85,5 @@ public final class CollectionCommand implements TabExecutor {
         } else {
             player.sendMessage("Collection maxed out!");
         }
-    }
-
-    private static Collection parseCollection(String input) {
-        for (Collection collection : Collection.values()) {
-            if (collection.name().equalsIgnoreCase(input)) {
-                return collection;
-            }
-        }
-        return null;
     }
 }
