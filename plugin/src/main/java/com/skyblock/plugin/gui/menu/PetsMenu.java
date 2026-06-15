@@ -16,16 +16,17 @@ public class PetsMenu extends Menu {
 
     private static final int ACTIVE_SLOT = 4;
 
-    private static final int[] SLOTS = {
+    private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43
     };
 
     private final UUID playerId;
 
     public PetsMenu(UUID playerId) {
-        super("§ePets", 6);
+        super("§aPets", 6);
         this.playerId = Objects.requireNonNull(playerId, "playerId");
     }
 
@@ -52,11 +53,11 @@ public class PetsMenu extends Menu {
         }
 
         List<String> owned = profile.getOwnedPets();
-        int count = Math.min(owned.size(), SLOTS.length);
+        int count = Math.min(owned.size(), INNER_SLOTS.length);
         for (int i = 0; i < count; i++) {
             String pet = owned.get(i);
             boolean equipped = pet.equals(active);
-            setItem(SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
+            setItem(INNER_SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
                             .displayName((equipped ? "§a" : "§f") + pet)
                             .lore(equipped ? "§aCurrently equipped" : "§eClick to equip!")
                             .build(),
