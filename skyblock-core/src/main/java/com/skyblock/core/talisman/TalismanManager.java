@@ -20,28 +20,6 @@ import java.util.UUID;
  */
 public final class TalismanManager {
 
-    /** Rarity tier for talismans (full tier list including MYTHIC). */
-    public enum TalismanRarity {
-        COMMON("Common"),
-        UNCOMMON("Uncommon"),
-        RARE("Rare"),
-        EPIC("Epic"),
-        LEGENDARY("Legendary"),
-        MYTHIC("Mythic"),
-        SPECIAL("Special"),
-        VERY_SPECIAL("Very Special");
-
-        private final String displayName;
-
-        TalismanRarity(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
     /** Every talisman available in SkyBlock with its stat bonuses and rarity. */
     public enum TalismanType {
         // Speed line

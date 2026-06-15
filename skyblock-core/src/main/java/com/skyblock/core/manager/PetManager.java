@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.model.Rarity;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -22,105 +23,90 @@ import java.util.UUID;
  */
 public final class PetManager {
 
-    /** Rarity tiers for pets. */
-    public enum PetRarity {
-        COMMON("Common"), UNCOMMON("Uncommon"), RARE("Rare"), EPIC("Epic"), LEGENDARY("Legendary");
-
-        private final String displayName;
-
-        PetRarity(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
     /** Every pet type available in SkyBlock with its default rarity and display name. */
     public enum PetType {
         // Common
-        CHICKEN(PetRarity.COMMON, "Chicken"),
-        WORM(PetRarity.COMMON, "Worm"),
-        SHEEP(PetRarity.COMMON, "Sheep"),
-        PIG(PetRarity.COMMON, "Pig"),
-        COW(PetRarity.COMMON, "Cow"),
-        BAT(PetRarity.COMMON, "Bat"),
-        SNAIL(PetRarity.COMMON, "Snail"),
-        ROCK(PetRarity.COMMON, "Rock"),
-        MOSQUITO(PetRarity.COMMON, "Mosquito"),
-        SLUG(PetRarity.COMMON, "Slug"),
+        CHICKEN(Rarity.COMMON, "Chicken"),
+        WORM(Rarity.COMMON, "Worm"),
+        SHEEP(Rarity.COMMON, "Sheep"),
+        PIG(Rarity.COMMON, "Pig"),
+        COW(Rarity.COMMON, "Cow"),
+        BAT(Rarity.COMMON, "Bat"),
+        SNAIL(Rarity.COMMON, "Snail"),
+        ROCK(Rarity.COMMON, "Rock"),
+        MOSQUITO(Rarity.COMMON, "Mosquito"),
+        SLUG(Rarity.COMMON, "Slug"),
         // Uncommon
-        RABBIT(PetRarity.UNCOMMON, "Rabbit"),
-        PENGUIN(PetRarity.UNCOMMON, "Penguin"),
-        HORSE(PetRarity.UNCOMMON, "Horse"),
-        MULE(PetRarity.UNCOMMON, "Mule"),
-        DONKEY(PetRarity.UNCOMMON, "Donkey"),
-        GOAT(PetRarity.UNCOMMON, "Goat"),
-        SILVERFISH(PetRarity.UNCOMMON, "Silverfish"),
-        CAVE_SPIDER(PetRarity.UNCOMMON, "Cave Spider"),
-        MOOSHROOM_COW(PetRarity.UNCOMMON, "Mooshroom Cow"),
-        HOUND(PetRarity.UNCOMMON, "Hound"),
+        RABBIT(Rarity.UNCOMMON, "Rabbit"),
+        PENGUIN(Rarity.UNCOMMON, "Penguin"),
+        HORSE(Rarity.UNCOMMON, "Horse"),
+        MULE(Rarity.UNCOMMON, "Mule"),
+        DONKEY(Rarity.UNCOMMON, "Donkey"),
+        GOAT(Rarity.UNCOMMON, "Goat"),
+        SILVERFISH(Rarity.UNCOMMON, "Silverfish"),
+        CAVE_SPIDER(Rarity.UNCOMMON, "Cave Spider"),
+        MOOSHROOM_COW(Rarity.UNCOMMON, "Mooshroom Cow"),
+        HOUND(Rarity.UNCOMMON, "Hound"),
         // Rare
-        BEE(PetRarity.RARE, "Bee"),
-        DOG(PetRarity.RARE, "Dog"),
-        DOLPHIN(PetRarity.RARE, "Dolphin"),
-        SQUID(PetRarity.RARE, "Squid"),
-        FLYING_FISH(PetRarity.RARE, "Flying Fish"),
-        CAT(PetRarity.RARE, "Cat"),
-        PARROT(PetRarity.RARE, "Parrot"),
-        MONKEY(PetRarity.RARE, "Monkey"),
-        GUARDIAN(PetRarity.RARE, "Guardian"),
-        OCELOT(PetRarity.RARE, "Ocelot"),
-        TURTLE(PetRarity.RARE, "Turtle"),
-        ELEPHANT(PetRarity.RARE, "Elephant"),
-        GIRAFFE(PetRarity.RARE, "Giraffe"),
-        LION(PetRarity.RARE, "Lion"),
-        CREEPER(PetRarity.RARE, "Creeper"),
-        ZOMBIE(PetRarity.RARE, "Zombie"),
-        SKELETON(PetRarity.RARE, "Skeleton"),
-        SPIDER(PetRarity.RARE, "Spider"),
-        ENDERMITE(PetRarity.RARE, "Endermite"),
-        PIGMAN(PetRarity.RARE, "Pigman"),
-        JELLYFISH(PetRarity.RARE, "Jellyfish"),
-        SCARECROW(PetRarity.RARE, "Scarecrow"),
-        MITHRIL_GOLEM(PetRarity.RARE, "Mithril Golem"),
+        BEE(Rarity.RARE, "Bee"),
+        DOG(Rarity.RARE, "Dog"),
+        DOLPHIN(Rarity.RARE, "Dolphin"),
+        SQUID(Rarity.RARE, "Squid"),
+        FLYING_FISH(Rarity.RARE, "Flying Fish"),
+        CAT(Rarity.RARE, "Cat"),
+        PARROT(Rarity.RARE, "Parrot"),
+        MONKEY(Rarity.RARE, "Monkey"),
+        GUARDIAN(Rarity.RARE, "Guardian"),
+        OCELOT(Rarity.RARE, "Ocelot"),
+        TURTLE(Rarity.RARE, "Turtle"),
+        ELEPHANT(Rarity.RARE, "Elephant"),
+        GIRAFFE(Rarity.RARE, "Giraffe"),
+        LION(Rarity.RARE, "Lion"),
+        CREEPER(Rarity.RARE, "Creeper"),
+        ZOMBIE(Rarity.RARE, "Zombie"),
+        SKELETON(Rarity.RARE, "Skeleton"),
+        SPIDER(Rarity.RARE, "Spider"),
+        ENDERMITE(Rarity.RARE, "Endermite"),
+        PIGMAN(Rarity.RARE, "Pigman"),
+        JELLYFISH(Rarity.RARE, "Jellyfish"),
+        SCARECROW(Rarity.RARE, "Scarecrow"),
+        MITHRIL_GOLEM(Rarity.RARE, "Mithril Golem"),
         // Epic
-        WOLF(PetRarity.EPIC, "Wolf"),
-        BLAZE(PetRarity.EPIC, "Blaze"),
-        MAGMA_CUBE(PetRarity.EPIC, "Magma Cube"),
-        ENDERMAN(PetRarity.EPIC, "Enderman"),
-        GHAST(PetRarity.EPIC, "Ghast"),
-        GOLEM(PetRarity.EPIC, "Golem"),
-        WITHER_SKELETON(PetRarity.EPIC, "Wither Skeleton"),
-        TARANTULA(PetRarity.EPIC, "Tarantula"),
-        BABY_YETI(PetRarity.EPIC, "Baby Yeti"),
-        BLUE_WHALE(PetRarity.EPIC, "Blue Whale"),
-        TIGER(PetRarity.EPIC, "Tiger"),
-        WISP(PetRarity.EPIC, "Wisp"),
-        SNOWMAN(PetRarity.EPIC, "Snowman"),
-        ARMADILLO(PetRarity.EPIC, "Armadillo"),
-        AMMONITE(PetRarity.EPIC, "Ammonite"),
-        SPINOCLAW(PetRarity.EPIC, "Spinoclaw"),
-        GHOUL(PetRarity.EPIC, "Ghoul"),
-        DROPLET_WISP(PetRarity.EPIC, "Droplet Wisp"),
-        HEDGEHOG(PetRarity.EPIC, "Hedgehog"),
-        SUMO(PetRarity.EPIC, "Sumo"),
+        WOLF(Rarity.EPIC, "Wolf"),
+        BLAZE(Rarity.EPIC, "Blaze"),
+        MAGMA_CUBE(Rarity.EPIC, "Magma Cube"),
+        ENDERMAN(Rarity.EPIC, "Enderman"),
+        GHAST(Rarity.EPIC, "Ghast"),
+        GOLEM(Rarity.EPIC, "Golem"),
+        WITHER_SKELETON(Rarity.EPIC, "Wither Skeleton"),
+        TARANTULA(Rarity.EPIC, "Tarantula"),
+        BABY_YETI(Rarity.EPIC, "Baby Yeti"),
+        BLUE_WHALE(Rarity.EPIC, "Blue Whale"),
+        TIGER(Rarity.EPIC, "Tiger"),
+        WISP(Rarity.EPIC, "Wisp"),
+        SNOWMAN(Rarity.EPIC, "Snowman"),
+        ARMADILLO(Rarity.EPIC, "Armadillo"),
+        AMMONITE(Rarity.EPIC, "Ammonite"),
+        SPINOCLAW(Rarity.EPIC, "Spinoclaw"),
+        GHOUL(Rarity.EPIC, "Ghoul"),
+        DROPLET_WISP(Rarity.EPIC, "Droplet Wisp"),
+        HEDGEHOG(Rarity.EPIC, "Hedgehog"),
+        SUMO(Rarity.EPIC, "Sumo"),
         // Legendary
-        GRIFFIN(PetRarity.LEGENDARY, "Griffin"),
-        GOLDEN_DRAGON(PetRarity.LEGENDARY, "Golden Dragon"),
-        BLUE_SHARK(PetRarity.LEGENDARY, "Blue Shark"),
-        JERRY(PetRarity.LEGENDARY, "Jerry"),
-        BLACK_CAT(PetRarity.LEGENDARY, "Black Cat"),
-        GRANDMA_WOLF(PetRarity.LEGENDARY, "Grandma Wolf"),
-        ENDER_DRAGON(PetRarity.LEGENDARY, "Ender Dragon"),
-        PHOENIX(PetRarity.LEGENDARY, "Phoenix");
+        GRIFFIN(Rarity.LEGENDARY, "Griffin"),
+        GOLDEN_DRAGON(Rarity.LEGENDARY, "Golden Dragon"),
+        BLUE_SHARK(Rarity.LEGENDARY, "Blue Shark"),
+        JERRY(Rarity.LEGENDARY, "Jerry"),
+        BLACK_CAT(Rarity.LEGENDARY, "Black Cat"),
+        GRANDMA_WOLF(Rarity.LEGENDARY, "Grandma Wolf"),
+        ENDER_DRAGON(Rarity.LEGENDARY, "Ender Dragon"),
+        PHOENIX(Rarity.LEGENDARY, "Phoenix");
 
         /** Default rarity of this pet type. Individual instances may override it. */
-        public final PetRarity defaultRarity;
+        public final Rarity defaultRarity;
         private final String displayName;
 
-        PetType(PetRarity defaultRarity, String displayName) {
+        PetType(Rarity defaultRarity, String displayName) {
             this.defaultRarity = defaultRarity;
             this.displayName = displayName;
         }
@@ -263,15 +249,15 @@ public final class PetManager {
     public static final class Pet {
         public final UUID id;
         public final PetType type;
-        public final PetRarity rarity;
+        public final Rarity rarity;
 
-        public Pet(UUID id, PetType type, PetRarity rarity) {
+        public Pet(UUID id, PetType type, Rarity rarity) {
             this.id = Objects.requireNonNull(id, "id");
             this.type = Objects.requireNonNull(type, "type");
             this.rarity = Objects.requireNonNull(rarity, "rarity");
         }
 
-        public Pet(PetType type, PetRarity rarity) {
+        public Pet(PetType type, Rarity rarity) {
             this(UUID.randomUUID(), type, rarity);
         }
     }
@@ -279,10 +265,10 @@ public final class PetManager {
     /** Immutable snapshot of a pet's experience and computed level. */
     public static final class PetData {
         public final PetType type;
-        public final PetRarity rarity;
+        public final Rarity rarity;
         public final long experience;
 
-        public PetData(PetType type, PetRarity rarity, long experience) {
+        public PetData(PetType type, Rarity rarity, long experience) {
             this.type = Objects.requireNonNull(type, "type");
             this.rarity = Objects.requireNonNull(rarity, "rarity");
             this.experience = experience;
@@ -328,7 +314,7 @@ public final class PetManager {
      * @param rarity   the pet's rarity
      * @return the newly created {@link Pet}
      */
-    public Pet addPet(UUID playerId, PetType type, PetRarity rarity) {
+    public Pet addPet(UUID playerId, PetType type, Rarity rarity) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(rarity, "rarity");
@@ -511,7 +497,7 @@ public final class PetManager {
                                 continue;
                             }
                             PetType type = PetType.valueOf(typeName);
-                            PetRarity rarity = PetRarity.valueOf(rarityName);
+                            Rarity rarity = Rarity.valueOf(rarityName);
                             collection.put(petId, new Pet(petId, type, rarity));
                         } catch (IllegalArgumentException ignored) {
                             // skip malformed or unknown entries
