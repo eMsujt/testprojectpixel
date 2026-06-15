@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.command.fairy.FairyCommand} instead.
+ */
+@Deprecated
 public final class FairyCommand implements CommandExecutor {
 
     @Override

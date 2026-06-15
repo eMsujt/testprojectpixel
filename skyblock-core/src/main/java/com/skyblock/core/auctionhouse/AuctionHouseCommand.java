@@ -25,6 +25,10 @@ import java.util.stream.Collectors;
  * </ul>
  * </p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.auction.AuctionHouseCommand} instead.
+ */
+@Deprecated
 public final class AuctionHouseCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =

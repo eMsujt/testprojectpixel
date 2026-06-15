@@ -9,6 +9,10 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.commands.AuctionHouseCommand} instead.
+ */
+@Deprecated
 public final class AuctionHouseCommand implements CommandExecutor {
 
     @Override

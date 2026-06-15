@@ -17,6 +17,10 @@ import org.bukkit.entity.Player;
  * </ul>
  * </p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.island.IslandCommand} instead.
+ */
+@Deprecated
 public final class IslandCommand implements CommandExecutor {
 
     @Override

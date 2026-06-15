@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
  * </ul>
  * </p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.collection.CollectionCommand} instead.
+ */
+@Deprecated
 public final class CollectionCommand implements TabExecutor {
 
     private final CollectionManager collectionManager;

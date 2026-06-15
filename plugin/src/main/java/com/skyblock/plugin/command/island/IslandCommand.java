@@ -14,6 +14,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.commands.IslandCommand} instead.
+ */
+@Deprecated
 public final class IslandCommand implements CommandExecutor {
 
     @Override
