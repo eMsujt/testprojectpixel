@@ -14,7 +14,7 @@ import org.bukkit.event.inventory.InventoryType;
  */
 public final class AlchemyXpListener implements Listener {
 
-    private static final long POTION_XP = 7L;
+    private static final double POTION_XP = 22.5;
 
     @EventHandler
     public void onAlchemy(InventoryClickEvent event) {

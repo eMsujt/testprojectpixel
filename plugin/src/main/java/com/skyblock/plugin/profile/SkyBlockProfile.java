@@ -95,6 +95,20 @@ public final class SkyBlockProfile implements Serializable {
     }
 
     /**
+     * Adds experience to the given skill, truncating fractional XP.
+     *
+     * @param skill the skill name
+     * @param amount the experience to add, must not be negative
+     * @throws IllegalArgumentException if {@code amount} is negative
+     */
+    public void addSkillXp(String skill, double amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        addSkillXp(skill, (long) amount);
+    }
+
+    /**
      * Sets the player's accumulated experience in the given skill.
      *
      * @param skill the skill name
