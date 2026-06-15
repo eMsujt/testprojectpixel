@@ -19,7 +19,7 @@ import java.util.UUID;
 public class CollectionsMenu extends Menu {
 
     private enum Category {
-        FARMING("Farming", "§e", Material.WHEAT, 20,
+        FARMING("Farming", "§e", Material.WHEAT, 10,
                 new Material[]{Material.WHEAT, Material.CARROT, Material.POTATO,
                         Material.PUMPKIN, Material.MELON_SLICE, Material.SUGAR_CANE,
                         Material.CACTUS, Material.RED_MUSHROOM, Material.NETHER_WART}),
