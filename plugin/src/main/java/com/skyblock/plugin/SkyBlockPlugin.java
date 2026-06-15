@@ -167,15 +167,11 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(profileManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.profile.ProfileJoinListener(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.PlayerDataManager.getInstance(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.EnchantingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.HubClickListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.QuestProgressListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TimeListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.WeatherListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsXPListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillXPListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionPlacementListener(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.minion.MinionManager.getInstance(), this);
