@@ -446,6 +446,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (Skill/SkillType enum consolidation — round 83)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| Skill / SkillType enum | `com.skyblock.core.model.Skill` | Thorough final-pass consolidation of every `Skill`/`SkillType` enum definition across every module; created canonical `com.skyblock.core.model.Skill` merging the 12-skill `SkillManager.SkillType` inner enum and the 11-skill `Skills` enum definitions; all 18 callers across every module updated to import from `com.skyblock.core.model.Skill`; duplicate inner enums and orphaned `SkillType` variants deleted outright; one canonical `enum Skill` definition confirmed with no remaining orphan copies | #2745 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
