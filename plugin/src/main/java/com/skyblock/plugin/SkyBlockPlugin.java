@@ -124,7 +124,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.plugin.items.ItemManager.getInstance().load(this);
         com.skyblock.plugin.item.ItemRegistry.getInstance().load(this);
         com.skyblock.plugin.item.ItemManager.getInstance().load(this);
-        com.skyblock.plugin.economy.ShopManager.getInstance().load(this);
+        if (!new java.io.File(getDataFolder(), "shops.yml").exists() && getResource("shops.yml") != null) {
+            saveResource("shops.yml", false);
+        }
+        com.skyblock.core.manager.ShopManager.getInstance().load(getDataFolder());
         com.skyblock.core.accessory.AccessoryManager.getInstance();
         com.skyblock.plugin.collection.CollectionManager.getInstance().register(this);
         com.skyblock.plugin.collection.CollectionsManager.getInstance().register(this);

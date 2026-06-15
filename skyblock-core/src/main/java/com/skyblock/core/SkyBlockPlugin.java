@@ -76,7 +76,7 @@ import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.quest.QuestCommand;
 import com.skyblock.core.quest.QuestManager;
 import com.skyblock.core.scoreboard.ScoreboardManager;
-import com.skyblock.core.shop.ShopManager;
+import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.skill.SkillCommand;
 import com.skyblock.core.skill.SkillListener;
 import com.skyblock.core.skills.SkillManager;
