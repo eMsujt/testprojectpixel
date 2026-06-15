@@ -361,6 +361,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (skills-domain normalization gap fix and GUI/menu-domain package layout normalization — round 71)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkillsListener / SkillsXPListener / SkillListener orphans | `com.skyblock.core.manager.SkillManager` | Located and deleted every orphan `SkillsListener`, `SkillsXPListener`, and `SkillListener` stub missed by the round-70 pass (flagged by Oracle in the round-70 PR review); canonical `com.skyblock.core.manager.SkillManager` confirmed as the sole skills-domain implementation with no remaining duplicate listener or XP-listener stubs | #2715 |
+| MenuManager / GuiManager / InventoryClickListener / GUI menus | `com.skyblock.core.menu.Menu` | Normalized GUI/menu-domain package layout: every class across every module containing GUI or menu-related classes (`MenuManager`, `GuiManager`, `InventoryClickListener`, and all concrete menu subclasses) moved into correct `.menu`/`.listener`/`.manager`/`.util` sub-packages; flat-package strays eliminated; canonical `com.skyblock.core.menu.Menu` confirmed as sole abstract base with all subclasses in proper sub-packages | #2717 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
