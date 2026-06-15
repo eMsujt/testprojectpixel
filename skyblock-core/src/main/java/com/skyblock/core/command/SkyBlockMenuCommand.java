@@ -17,6 +17,10 @@ import java.util.List;
  * key features: Skills, Pets, Quests, Collections, Minions, Slayer,
  * Bazaar, and Auction House.</p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.hub.SkyblockHubCommand} instead.
+ */
+@Deprecated
 public final class SkyBlockMenuCommand implements TabExecutor {
 
     @Override

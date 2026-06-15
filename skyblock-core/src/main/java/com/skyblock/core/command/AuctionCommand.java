@@ -26,6 +26,10 @@ import java.util.stream.Collectors;
  * </ul>
  * </p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.auction.AuctionCommand} instead.
+ */
+@Deprecated
 public final class AuctionCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("create", "view", "cancel", "bid");

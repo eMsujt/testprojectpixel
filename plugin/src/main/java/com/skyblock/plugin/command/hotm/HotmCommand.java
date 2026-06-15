@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.commands.HOTMCommand} instead.
+ */
+@Deprecated
 public final class HotmCommand implements CommandExecutor {
 
     @Override

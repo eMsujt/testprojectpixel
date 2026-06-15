@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.commands.EnchantingCommand} instead.
+ */
+@Deprecated
 public final class EnchantingCommand implements CommandExecutor {
 
     @Override

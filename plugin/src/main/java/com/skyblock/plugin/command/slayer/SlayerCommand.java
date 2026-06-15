@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.commands.SlayerCommand} instead.
+ */
+@Deprecated
 public final class SlayerCommand implements CommandExecutor {
 
     @Override

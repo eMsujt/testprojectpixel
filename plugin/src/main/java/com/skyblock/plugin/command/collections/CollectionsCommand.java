@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.plugin.commands.CollectionsCommand} instead.
+ */
+@Deprecated
 public final class CollectionsCommand implements CommandExecutor {
 
     @Override

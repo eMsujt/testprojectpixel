@@ -16,6 +16,10 @@ import java.util.Objects;
  * <p>Opens the SkyBlock main menu GUI for the executing player via
  * {@link SkyBlockMenuManager}.</p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.hub.SkyblockHubCommand} instead.
+ */
+@Deprecated
 public final class SkyBlockCommand implements TabExecutor {
 
     private final SkyBlockMenuManager menuManager;

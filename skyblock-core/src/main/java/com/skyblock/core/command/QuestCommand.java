@@ -25,6 +25,10 @@ import java.util.List;
  * </ul>
  * </p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.quest.QuestCommand} instead.
+ */
+@Deprecated
 public final class QuestCommand implements TabExecutor {
 
     private final QuestManager questManager;

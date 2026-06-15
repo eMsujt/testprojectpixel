@@ -27,6 +27,10 @@ import java.util.stream.Collectors;
  * </ul>
  * </p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.island.IslandCommand} instead.
+ */
+@Deprecated
 public final class IslandCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("create", "home", "visit", "warp", "help");

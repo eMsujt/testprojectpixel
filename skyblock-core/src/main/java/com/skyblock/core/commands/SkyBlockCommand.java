@@ -21,6 +21,10 @@ import java.util.Objects;
  * </ul>
  * </p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.hub.SkyblockHubCommand} instead.
+ */
+@Deprecated
 public final class SkyBlockCommand implements CommandExecutor {
 
     private final PlayerDataManager playerDataManager;
