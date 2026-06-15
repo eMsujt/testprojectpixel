@@ -1,7 +1,13 @@
 package com.skyblock.items;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,6 +77,55 @@ public final class ItemManager {
     }
 
     private final ConcurrentHashMap<String, ItemDefinition> definitions = new ConcurrentHashMap<>();
+
+    /**
+     * Copies the bundled {@code items.yml} out of the jar on first run, then
+     * parses every item definition into memory.
+     *
+     * @param plugin the owning plugin, used for resource extraction and logging
+     */
+    public void load(JavaPlugin plugin) {
+        File file = new File(plugin.getDataFolder(), "items.yml");
+        if (!file.exists() && plugin.getResource("items.yml") != null) {
+            plugin.saveResource("items.yml", false);
+        }
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection root = cfg.isConfigurationSection("items")
+                ? cfg.getConfigurationSection("items")
+                : cfg;
+        int count = 0;
+        for (String id : root.getKeys(false)) {
+            if (!root.isConfigurationSection(id)) {
+                continue;
+            }
+            ConfigurationSection section = root.getConfigurationSection(id);
+            String displayName = section.getString("displayName", id);
+            ItemType type;
+            try {
+                type = ItemType.valueOf(section.getString("type", "MATERIAL").toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("Skipping item '" + id + "': unknown type.");
+                continue;
+            }
+            Rarity rarity;
+            try {
+                rarity = Rarity.valueOf(section.getString("rarity", "COMMON").toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("Skipping item '" + id + "': unknown rarity.");
+                continue;
+            }
+            try {
+                register(id, displayName, type, rarity);
+                count++;
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("Skipping item '" + id + "': " + e.getMessage());
+            }
+        }
+        plugin.getLogger().info("Loaded " + count + " item definitions.");
+    }
 
     /**
      * Registers a new item definition.
