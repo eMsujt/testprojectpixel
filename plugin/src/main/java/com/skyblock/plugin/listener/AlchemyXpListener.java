@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public final class AlchemyXpListener implements Listener {
 
-    private static final long POTION_XP = 3L;
+    private static final long POTION_XP = 35L;
     private static final double CREDIT_RADIUS = 16.0D;
 
     @EventHandler
