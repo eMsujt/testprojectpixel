@@ -1,30 +1,22 @@
 package com.skyblock.plugin.collections;
 
-import com.skyblock.plugin.SkyBlockPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton tracking how much of each collection material a player has gathered.
- *
- * <p>Mirrors the storage style of {@link CollectionManager} but exposes a
- * {@link Player}-oriented {@link #trackCollection(Player, Material, int)} entry
- * point for gameplay listeners to record collection progress.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.CollectionManager} instead.
  */
+@Deprecated
 public final class CollectionsManager {
 
     private static final CollectionsManager INSTANCE = new CollectionsManager();
-
-    private final Map<UUID, Map<Material, Long>> collections = new HashMap<>();
-
-    private SkyBlockPlugin plugin;
+    private final com.skyblock.core.manager.CollectionManager delegate =
+            com.skyblock.core.manager.CollectionManager.getInstance();
 
     private CollectionsManager() {}
 
@@ -32,38 +24,22 @@ public final class CollectionsManager {
         return INSTANCE;
     }
 
-    /**
-     * Initializes the manager with the owning plugin instance. Must be called
-     * once during plugin enable before any collection is tracked.
-     *
-     * @param plugin the owning plugin instance
-     */
-    public void init(SkyBlockPlugin plugin) {
-        this.plugin = Objects.requireNonNull(plugin, "plugin");
-    }
-
-    /**
-     * Records that the player gathered {@code amount} of {@code material},
-     * adding it to their running collection total. Non-positive amounts are
-     * ignored.
-     */
     public void trackCollection(Player player, Material material, int amount) {
         if (player == null || material == null || amount <= 0) return;
-        Map<Material, Long> counts = collections.computeIfAbsent(
-                player.getUniqueId(), k -> new EnumMap<>(Material.class));
-        counts.merge(material, (long) amount, Long::sum);
+        delegate.addItems(player.getUniqueId(), material.name(), amount);
     }
 
-    /** Total amount the player has collected of the given material. */
     public long getCollection(UUID playerId, Material material) {
-        Map<Material, Long> counts = collections.get(playerId);
-        if (counts == null) return 0L;
-        return counts.getOrDefault(material, 0L);
+        com.skyblock.core.model.Collection c = com.skyblock.core.model.Collection.parse(material.name());
+        return c == null ? 0L : delegate.getItems(playerId, c);
     }
 
-    /** Read-only snapshot of every collection total for the player. */
     public Map<Material, Long> getCollections(UUID playerId) {
-        return Collections.unmodifiableMap(
-                collections.getOrDefault(playerId, new EnumMap<>(Material.class)));
+        Map<Material, Long> result = new EnumMap<>(Material.class);
+        for (Map.Entry<com.skyblock.core.model.Collection, Long> e : delegate.getAll(playerId).entrySet()) {
+            Material mat = Material.matchMaterial(e.getKey().itemKey);
+            if (mat != null) result.put(mat, e.getValue());
+        }
+        return Collections.unmodifiableMap(result);
     }
 }
