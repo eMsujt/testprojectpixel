@@ -158,7 +158,12 @@ public final class SkillManager {
 
     /** Grants XP in the given skill, respecting the skill's max-level cap. */
     public void addXP(UUID playerId, SkillType skill, long amount) {
+        int oldLevel = getLevel(playerId, skill);
         skills.addSkillXP(playerId, skill.key(), amount);
+        int newLevel = getLevel(playerId, skill);
+        if (newLevel > oldLevel) {
+            grantLevelUpRewards(playerId, skill, oldLevel, newLevel);
+        }
     }
 
     /** The player's current level in the given skill. */
