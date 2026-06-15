@@ -23,7 +23,7 @@ public class BankMenu extends Menu {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
 
-        ItemStack bankItem = new ItemBuilder(Material.GOLD_INGOT)
+        ItemStack bankItem = new ItemBuilder(Material.GOLD_BLOCK)
                 .displayName("§6Bank Account")
                 .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins")
                 .build();
@@ -34,11 +34,11 @@ public class BankMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
-            }
+        for (int slot = 0; slot < 9; slot++) {
+            setItem(slot, pane);
+        }
+        for (int slot = 45; slot < 54; slot++) {
+            setItem(slot, pane);
         }
     }
 }
