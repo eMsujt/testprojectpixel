@@ -1,5 +1,7 @@
 package com.skyblock.plugin.items;
 
+import com.skyblock.core.model.Rarity;
+import com.skyblock.core.stat.Stat;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -55,24 +57,22 @@ public final class ItemManager {
             plugin.getLogger().warning("Skipping item '" + id + "': unknown material.");
             return null;
         }
-        SkyBlockItem.Rarity rarity;
+        Rarity rarity;
         try {
-            rarity = SkyBlockItem.Rarity.valueOf(
-                    section.getString("rarity", "COMMON").toUpperCase(Locale.ROOT));
+            rarity = Rarity.valueOf(section.getString("rarity", "COMMON").toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning("Skipping item '" + id + "': unknown rarity.");
             return null;
         }
         String displayName = section.getString("displayName", id);
-        SkyBlockItem.StatBlock stats = new SkyBlockItem.StatBlock(
-                (int) section.getDouble("health"),
-                section.getInt("defense"),
-                section.getInt("strength"),
-                section.getInt("intelligence"),
-                section.getInt("critChance"),
-                section.getInt("critDamage"),
-                section.getInt("speed"));
-        return new SkyBlockItem(id, material, rarity, displayName, stats);
+        ItemStats stats = new ItemStats();
+        for (Stat type : Stat.values()) {
+            double value = section.getDouble(type.name().toLowerCase(Locale.ROOT));
+            if (value != 0) {
+                stats.setStat(type, value);
+            }
+        }
+        return new SkyBlockItem(id, material, displayName, rarity, stats, Collections.emptyList());
     }
 
     public SkyBlockItem getItem(String id) {

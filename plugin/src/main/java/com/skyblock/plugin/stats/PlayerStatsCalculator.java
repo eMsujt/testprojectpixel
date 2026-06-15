@@ -1,7 +1,7 @@
 package com.skyblock.plugin.stats;
 
-import com.skyblock.plugin.item.ItemStatBlock;
-import com.skyblock.plugin.item.SkyBlockItem;
+import com.skyblock.plugin.items.ItemStatBlock;
+import com.skyblock.plugin.items.SkyBlockItem;
 
 import java.util.Collection;
 import java.util.Objects;
