@@ -15,14 +15,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Singleton registry of NPC shops loaded from {@code shops.yml}.
- *
- * <p>Each key under the {@code shops} section defines one shop by its shop-id,
- * carrying a {@code displayName} title and a list of {@link NpcShopItem}s.
- * Items are parsed from {@code "MATERIAL:buyPrice"} strings. Call
- * {@link #load(JavaPlugin)} on startup and {@link #openShop(String, Player)}
- * when an NPC is interacted with.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.ShopManager} (the canonical singleton).
  */
+@Deprecated
 public final class NpcShopManager {
 
     private static final NpcShopManager INSTANCE = new NpcShopManager();

@@ -11,11 +11,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Singleton managing shop inventory organised by {@link ShopCategory}.
- *
- * <p>Items are registered at startup and looked up by category at runtime.
- * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.ShopManager} (the canonical singleton).
  */
+@Deprecated
 public final class ShopManager {
 
     /** Top-level categories available in the SkyBlock shop. */

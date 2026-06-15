@@ -18,14 +18,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * YAML-driven registry of NPC shops loaded from {@code shops.yml}.
- *
- * <p>Each key under the {@code shops} section defines one shop by its shop-id,
- * carrying a display title, the world-space location of its NPC and the list of
- * items it sells. The bundled default is copied out of the jar on first run.
- * Loaded shops are held in memory and looked up by id; {@link #openShop} builds
- * a {@link ShopMenu} on demand and shows it to a player.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.ShopManager} (the canonical singleton).
  */
+@Deprecated
 public final class ShopManager {
 
     private static final ShopManager INSTANCE = new ShopManager();

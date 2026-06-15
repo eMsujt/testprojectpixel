@@ -11,6 +11,10 @@ import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.manager.ShopManager} (the canonical singleton).
+ */
+@Deprecated
 public final class ShopManager {
 
     private static final ShopManager INSTANCE = new ShopManager();

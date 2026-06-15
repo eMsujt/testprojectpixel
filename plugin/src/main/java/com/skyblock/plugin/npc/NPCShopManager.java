@@ -13,14 +13,9 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * YAML-driven registry of NPC shop items loaded from {@code npcshops.yml}.
- *
- * <p>Each key under the {@code items} section defines one sellable item by its
- * item-id, carrying the coin price a player pays to buy it and the coins they
- * receive when selling it back (the sell price is normally lower, modelling the
- * spread). The bundled default is copied out of the jar on first run. Loaded
- * items are held in memory in definition order and looked up by id.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.ShopManager} (the canonical singleton).
  */
+@Deprecated
 public final class NPCShopManager {
 
     private static final NPCShopManager INSTANCE = new NPCShopManager();
