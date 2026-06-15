@@ -1,0 +1,64 @@
+items:
+  WOODEN_SWORD:
+    displayName: "Wooden Sword"
+    material: WOODEN_SWORD
+    rarity: COMMON
+    damage: 20.0
+    strength: 0
+    description: "A basic wooden blade given to every new adventurer."
+
+  STONE_SWORD:
+    displayName: "Stone Sword"
+    material: STONE_SWORD
+    rarity: COMMON
+    damage: 30.0
+    strength: 5
+    description: "A sturdy stone blade, a step up from wood."
+
+  IRON_SWORD:
+    displayName: "Iron Sword"
+    material: IRON_SWORD
+    rarity: COMMON
+    damage: 45.0
+    strength: 10
+    description: "A reliable iron blade for early adventurers."
+
+  DIAMOND_SWORD:
+    displayName: "Diamond Sword"
+    material: DIAMOND_SWORD
+    rarity: UNCOMMON
+    damage: 60.0
+    strength: 15
+    description: "A sharp diamond blade for seasoned fighters."
+
+  EMBER_ROD:
+    displayName: "Ember Rod"
+    material: BLAZE_ROD
+    rarity: EPIC
+    damage: 100.0
+    intelligence: 100
+    description: "Hurls a fireball that ignites foes on right-click."
+
+  ZOMBIE_SWORD:
+    displayName: "Zombie Sword"
+    material: ROTTEN_FLESH
+    rarity: UNCOMMON
+    damage: 50.0
+    strength: 15
+    description: "Heals you for a portion of damage dealt to undead."
+
+  SPIDER_SWORD:
+    displayName: "Spider Sword"
+    material: SPIDER_EYE
+    rarity: UNCOMMON
+    damage: 45.0
+    strength: 20
+    description: "Poisons enemies on hit."
+
+  UNDEAD_SWORD:
+    displayName: "Undead Sword"
+    material: BONE
+    rarity: UNCOMMON
+    damage: 55.0
+    strength: 15
+    description: "Deals bonus damage to undead mobs."
