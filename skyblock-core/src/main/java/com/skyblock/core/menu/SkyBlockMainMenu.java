@@ -125,7 +125,10 @@ public final class SkyBlockMainMenu extends Menu {
                 .displayName("§6Bank")
                 .lore("§7Deposit and withdraw coins.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> {
+                    e.setCancelled(true);
+                    new BankMenu((Player) e.getWhoClicked()).open((Player) e.getWhoClicked());
+                });
 
         setItem(25, new ItemBuilder(Material.CHEST)
                 .displayName("§aStorage")
