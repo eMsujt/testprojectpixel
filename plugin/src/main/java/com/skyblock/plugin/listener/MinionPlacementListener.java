@@ -1,7 +1,9 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.minion.Minion;
-import com.skyblock.plugin.minion.MinionManager;
+import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.minion.MinionManager.MinionTier;
+import com.skyblock.core.minion.MinionManager.MinionType;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,18 +13,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.UUID;
-
 /**
- * Listener that places a {@link Minion} when a player right-clicks a block while
+ * Listener that places a minion when a player right-clicks a block while
  * holding a minion item.
  *
  * <p>The held item is recognised as a minion by its display name, which ends in
- * "Minion" (e.g. "§aWheat Minion"); the leading colour codes and the trailing
- * " Minion" are stripped to resolve the {@link Minion.MinionType}. A matched
- * minion is registered with {@link MinionManager} at {@link
- * Minion.MinionTier#TIER_1} on the block above the clicked face, and the
- * interaction is cancelled so no default block-use behaviour occurs.</p>
+ * "Minion" (e.g. "§aWheat Minion"); the leading colour codes are stripped to
+ * resolve the {@link MinionType}. A matched minion is registered with
+ * {@link MinionManager} at {@link MinionTier#TIER_1} on the block above the
+ * clicked face, and the interaction is cancelled so no default block-use
+ * behaviour occurs.</p>
  */
 public final class MinionPlacementListener implements Listener {
 
@@ -41,7 +41,7 @@ public final class MinionPlacementListener implements Listener {
             return;
         }
 
-        Minion.MinionType type = matchType(meta.getDisplayName());
+        MinionType type = matchType(meta.getDisplayName());
         if (type == null) {
             return;
         }
@@ -54,21 +54,28 @@ public final class MinionPlacementListener implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
-        Minion minion = new Minion(UUID.randomUUID(), player.getUniqueId(), type, Minion.MinionTier.TIER_1);
-        MinionManager.getInstance().placeMinion(clicked.getRelative(event.getBlockFace()).getLocation(), minion);
+        Location loc = clicked.getRelative(event.getBlockFace()).getLocation();
+        String locationKey = loc.getWorld().getName()
+                + "," + loc.getBlockX()
+                + "," + loc.getBlockY()
+                + "," + loc.getBlockZ();
+
+        MinionManager manager = MinionManager.getInstance();
+        manager.placeMinion(player.getUniqueId(), type, MinionTier.TIER_1);
+        manager.setPlacement(player.getUniqueId(), locationKey, type);
     }
 
     /**
-     * Returns the {@link Minion.MinionType} whose display name matches the held
-     * item's display name (ignoring colour codes), or {@code null} if the name
-     * does not denote a minion.
+     * Returns the {@link MinionType} whose display name matches the held item's
+     * display name (ignoring colour codes), or {@code null} if it does not denote
+     * a known minion type.
      */
-    private static Minion.MinionType matchType(String displayName) {
+    private static MinionType matchType(String displayName) {
         String stripped = displayName.replaceAll("§.", "");
         if (!stripped.endsWith("Minion")) {
             return null;
         }
-        for (Minion.MinionType type : Minion.MinionType.values()) {
+        for (MinionType type : MinionType.values()) {
             if (type.getDisplayName().equals(stripped)) {
                 return type;
             }
