@@ -24,7 +24,7 @@ import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.core.items.CustomItemManager;
 import com.skyblock.plugin.commands.AlchemyCommand;
-import com.skyblock.plugin.commands.AuctionHouseCommand;
+import com.skyblock.core.auction.command.AuctionHouseCommand;
 import com.skyblock.plugin.managers.CooldownManager;
 import com.skyblock.core.crafting.CraftingManager;
 import com.skyblock.plugin.managers.EventManager;
@@ -140,7 +140,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("bank").setExecutor(new BankCommand(BankManager.getInstance()));
         getCommand("mayor").setExecutor(new MayorCommand());
         getCommand("island").setExecutor(new IslandCommand());
-        getCommand("auctionhouse").setExecutor(new AuctionHouseCommand());
+        getCommand("auctionhouse").setExecutor(new AuctionHouseCommand(AuctionHouseManager.getInstance()));
         getCommand("kuudra").setExecutor(new KuudraCommand());
         getCommand("bazaar").setExecutor(new BazaarCommand(BazaarManager.getInstance()));
         getCommand("profile").setExecutor(new ProfileCommand());
