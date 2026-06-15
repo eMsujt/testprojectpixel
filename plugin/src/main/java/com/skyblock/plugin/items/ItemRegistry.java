@@ -1,5 +1,6 @@
 package com.skyblock.plugin.items;
 
+import com.skyblock.core.stat.Stat;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -81,7 +82,7 @@ public final class ItemRegistry {
         }
         String displayName = section.getString("displayName", id);
         ItemStats stats = new ItemStats();
-        for (StatType type : StatType.values()) {
+        for (Stat type : Stat.values()) {
             double value = section.getDouble(type.name().toLowerCase(Locale.ROOT));
             if (value != 0) {
                 stats.setStat(type, value);
