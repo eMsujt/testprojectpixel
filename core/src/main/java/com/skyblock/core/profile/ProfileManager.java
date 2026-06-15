@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.Comparator;
 
+/** @deprecated Use {@link com.skyblock.core.manager.ProfileManager} instead. */
+@Deprecated
 public final class ProfileManager {
 
     private final Map<UUID, Map<String, ProfileData>> profiles = new HashMap<>();

@@ -15,6 +15,8 @@ import java.util.UUID;
  * a profile can be resolved, created and discarded as players join and leave.
  * Not thread-safe; access from the main server thread.</p>
  */
+/** @deprecated Use {@link com.skyblock.core.manager.ProfileManager} instead. */
+@Deprecated
 public final class ProfileManager {
 
     private static final ProfileManager INSTANCE = new ProfileManager();

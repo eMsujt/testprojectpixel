@@ -18,6 +18,8 @@ import java.util.UUID;
  * their active profile. Not thread-safe; synchronize externally if
  * accessed from multiple threads.</p>
  */
+/** @deprecated Use {@link com.skyblock.core.manager.ProfileManager} instead. */
+@Deprecated
 public final class ProfileManager {
 
     /**
