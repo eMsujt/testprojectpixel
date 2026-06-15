@@ -2,30 +2,27 @@ package com.skyblock.plugin.items;
 
 import org.bukkit.Material;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * An immutable custom item: a unique id, the {@link Material} it renders as,
- * a {@link Rarity} tier, a display name and the {@link StatBlock} of bonuses
- * it grants.
- *
- * @param id          the item's unique id, non-blank
- * @param material    the Bukkit material the item renders as, never null
- * @param rarity      the item's rarity tier, never null
- * @param displayName the item's human-readable name, non-blank
- * @param statBlock   the stat bonuses the item grants, never null
+ * A custom SkyBlock item: a unique id, the {@link Material} it renders as,
+ * a display name, a {@link Rarity} tier, an {@link ItemStats} block of bonuses,
+ * and a list of ability descriptions.
  */
-public record SkyBlockItem(String id, Material material, Rarity rarity, String displayName, StatBlock statBlock) {
+public final class SkyBlockItem {
 
-    /**
-     * Validates the components.
-     *
-     * @throws IllegalArgumentException if {@code id} or {@code displayName} is
-     *                                  null or blank
-     * @throws NullPointerException     if {@code material}, {@code rarity} or
-     *                                  {@code statBlock} is null
-     */
-    public SkyBlockItem {
+    private final String id;
+    private final Material material;
+    private final String displayName;
+    private final Rarity rarity;
+    private final ItemStats stats;
+    private final List<String> abilities;
+
+    public SkyBlockItem(String id, Material material, String displayName, Rarity rarity,
+                        ItemStats stats, List<String> abilities) {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("id must be non-blank");
         }
@@ -34,14 +31,25 @@ public record SkyBlockItem(String id, Material material, Rarity rarity, String d
         }
         Objects.requireNonNull(material, "material");
         Objects.requireNonNull(rarity, "rarity");
-        Objects.requireNonNull(statBlock, "statBlock");
+        Objects.requireNonNull(stats, "stats");
+        this.id = id;
+        this.material = material;
+        this.displayName = displayName;
+        this.rarity = rarity;
+        this.stats = stats;
+        this.abilities = Collections.unmodifiableList(
+                new ArrayList<>(abilities == null ? Collections.emptyList() : abilities));
     }
+
+    public String getId() { return id; }
+    public Material getMaterial() { return material; }
+    public String getDisplayName() { return displayName; }
+    public Rarity getRarity() { return rarity; }
+    public ItemStats getStats() { return stats; }
+    public List<String> getAbilities() { return abilities; }
 
     /**
      * Item rarity tiers, ordered from least to most rare.
-     *
-     * <p>Each tier carries the display name used when rendering item names and
-     * lore.</p>
      */
     public enum Rarity {
 
@@ -60,24 +68,8 @@ public record SkyBlockItem(String id, Material material, Rarity rarity, String d
             this.displayName = displayName;
         }
 
-        /** Returns the human-readable name of this rarity, e.g. {@code "Legendary"}. */
         public String getDisplayName() {
             return displayName;
         }
-    }
-
-    /**
-     * An immutable block of stat bonuses an item grants.
-     *
-     * @param health    bonus Health
-     * @param defense   bonus Defense
-     * @param strength  bonus Strength
-     * @param intelligence bonus Intelligence
-     * @param critChance bonus Crit Chance
-     * @param critDamage bonus Crit Damage
-     * @param speed     bonus Speed
-     */
-    public record StatBlock(int health, int defense, int strength, int intelligence,
-                            int critChance, int critDamage, int speed) {
     }
 }

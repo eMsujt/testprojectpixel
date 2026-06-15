@@ -88,15 +88,15 @@ public final class ItemRegistry {
             return null;
         }
         String displayName = section.getString("displayName", id);
-        SkyBlockItem.StatBlock stats = new SkyBlockItem.StatBlock(
-                section.getInt("health"),
-                section.getInt("defense"),
-                section.getInt("strength"),
-                section.getInt("intelligence"),
-                section.getInt("critChance"),
-                section.getInt("critDamage"),
-                section.getInt("speed"));
-        return new SkyBlockItem(id, material, rarity, displayName, stats);
+        ItemStats stats = new ItemStats();
+        for (StatType type : StatType.values()) {
+            double value = section.getDouble(type.name().toLowerCase(Locale.ROOT));
+            if (value != 0) {
+                stats.setStat(type, value);
+            }
+        }
+        java.util.List<String> abilities = section.getStringList("abilities");
+        return new SkyBlockItem(id, material, displayName, rarity, stats, abilities);
     }
 
     /** Returns the registered item with the given id, or {@code null} if absent. */
