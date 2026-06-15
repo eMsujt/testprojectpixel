@@ -1,6 +1,5 @@
 package com.skyblock.plugin.managers;
 
-import com.skyblock.plugin.skill.SkillLevelUpHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -59,7 +58,8 @@ public final class SkillsManager {
             recordSkillEvent(playerId, "Leveled up " + skill + " to level " + levelAfter);
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
-                SkillLevelUpHandler.handle(player, skill, levelAfter);
+                String displayName = Character.toUpperCase(skill.charAt(0)) + skill.substring(1);
+                player.sendMessage("§6§l  SKILL LEVEL UP  §r§e" + displayName + " §8§l(§r§bLevel §e" + levelAfter + "§8§l)");
             }
         }
     }

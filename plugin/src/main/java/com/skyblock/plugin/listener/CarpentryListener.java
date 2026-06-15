@@ -2,7 +2,8 @@ package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.managers.SkillsManager;
 import com.skyblock.plugin.profile.ProfileManager;
-import com.skyblock.plugin.skill.SkillActionBar;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -51,7 +52,7 @@ public final class CarpentryListener implements Listener {
         long xp = XP_PER_PLANK * plankCount;
         skillsManager.addSkillXP(player.getUniqueId(), SKILL, xp);
         ProfileManager.getInstance().getOrCreate(player.getUniqueId()).addSkillXp(SKILL, xp);
-        SkillActionBar.getInstance().queue(player, "§a+" + xp + " Carpentry XP");
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§a+" + xp + " Carpentry XP"));
     }
 
     /** Counts the total number of plank items across all slots in the crafting matrix. */
