@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * The Accessory Bag menu.
  *
- * <p>A 54-slot (6-row) chest titled {@code §5Accessory Bag} with a gray glass-pane
- * border on rows 0 and 5. The 28 inner slots (10–16, 19–25, 28–34 and 37–43) are
+ * <p>A 45-slot (5-row) chest titled {@code §6Accessory Bag} with a gray glass-pane
+ * border on rows 0 and 4. The 21 inner slots (10–16, 19–25, 28–34) are
  * populated from the owning {@link SkyBlockProfile}'s accessory bag contents.</p>
  */
 public class AccessoryBagMenu extends Menu {
@@ -22,14 +22,13 @@ public class AccessoryBagMenu extends Menu {
     private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+            28, 29, 30, 31, 32, 33, 34
     };
 
     private final Player player;
 
     public AccessoryBagMenu(Player player) {
-        super("§5Accessory Bag", 6);
+        super("§6Accessory Bag", 5);
         this.player = player;
     }
 
@@ -55,7 +54,7 @@ public class AccessoryBagMenu extends Menu {
         for (int slot = 0; slot < 9; slot++) {
             setItem(slot, pane);
         }
-        for (int slot = 45; slot < 54; slot++) {
+        for (int slot = 36; slot < 45; slot++) {
             setItem(slot, pane);
         }
     }
