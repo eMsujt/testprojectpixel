@@ -45,6 +45,7 @@ public final class FarmingXpListener implements Listener {
         Player player = event.getPlayer();
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("farming", xp);
+        profile.incrementCollection(block.getType().name(), 1);
     }
 
     private static boolean isMature(Block block) {
