@@ -1,5 +1,6 @@
 package com.skyblock.plugin.listener;
 
+import com.skyblock.plugin.manager.CollectionManager;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
@@ -62,7 +63,7 @@ public final class FarmingXpListener implements Listener {
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("farming", xp);
         XpActionBar.send(player, "farming", xp, profile.getSkillXp("farming"));
-        profile.incrementCollection(CROP_DROP.get(block.getType()), 1);
+        CollectionManager.getInstance().addCount(player.getUniqueId(), CROP_DROP.get(block.getType()), 1);
     }
 
     private static boolean isMature(Block block) {
