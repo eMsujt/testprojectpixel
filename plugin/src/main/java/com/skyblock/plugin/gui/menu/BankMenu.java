@@ -13,7 +13,7 @@ public class BankMenu extends Menu {
     private final Player player;
 
     public BankMenu(Player player) {
-        super("§6Bank Account", 3);
+        super("§6Bank Account", 6);
         this.player = player;
     }
 
@@ -23,25 +23,35 @@ public class BankMenu extends Menu {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
 
-        setItem(10, new ItemBuilder(Material.GOLD_BLOCK)
-                .displayName("§6Bank Account")
-                .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + "§7 Coins")
-                .build());
-
-        setItem(13, new ItemBuilder(Material.GOLD_NUGGET)
+        setItem(13, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Purse")
                 .lore(
                         "§6Purse: §f" + String.format("%,.0f", (double) profile.getPurse()) + " Coins",
                         "",
+                        "§eClick to deposit all coins!")
+                .build(), event -> {
+            long amount = profile.getPurse();
+            if (amount > 0) {
+                profile.setPurse(0);
+                profile.setBank(profile.getBank() + amount);
+                open((Player) event.getWhoClicked());
+            }
+        });
+
+        setItem(22, new ItemBuilder(Material.GOLD_BLOCK)
+                .displayName("§6Bank Account")
+                .lore(
                         "§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins",
                         "",
-                        "§eClick to deposit or withdraw!")
-                .build());
-
-        setItem(16, new ItemBuilder(Material.GOLD_INGOT)
-                .displayName("§6Bank Account")
-                .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + "§7 Coins")
-                .build());
+                        "§eClick to withdraw all coins!")
+                .build(), event -> {
+            long amount = profile.getBank();
+            if (amount > 0) {
+                profile.setBank(0);
+                profile.setPurse(profile.getPurse() + amount);
+                open((Player) event.getWhoClicked());
+            }
+        });
     }
 
     private void fillBorder() {
@@ -51,7 +61,7 @@ public class BankMenu extends Menu {
         for (int slot = 0; slot < 9; slot++) {
             setItem(slot, pane);
         }
-        for (int slot = 18; slot < 27; slot++) {
+        for (int slot = 45; slot < 54; slot++) {
             setItem(slot, pane);
         }
     }
