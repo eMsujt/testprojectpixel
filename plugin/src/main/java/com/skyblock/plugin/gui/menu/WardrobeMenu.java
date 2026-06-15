@@ -13,16 +13,7 @@ import java.util.UUID;
 
 public class WardrobeMenu extends Menu {
 
-    private static final Material[] ARMOR_PIECES = {
-            Material.LEATHER_HELMET,
-            Material.LEATHER_CHESTPLATE,
-            Material.LEATHER_LEGGINGS,
-            Material.LEATHER_BOOTS
-    };
-
-    private static final String[] PIECE_NAMES = {
-            "Helmet", "Chestplate", "Leggings", "Boots"
-    };
+    private static final int[] WARDROBE_SLOTS = {10, 12, 14, 16, 22, 28, 30, 32, 34};
 
     private final UUID playerId;
 
@@ -33,37 +24,39 @@ public class WardrobeMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 45; slot < 54; slot++) {
-            setItem(slot, pane);
-        }
+        fillBorder();
 
         PlayerProfile profile = ProfileManager.getInstance().getProfile(playerId);
         ItemStack[] contents = profile != null ? profile.getWardrobeContents() : null;
 
-        for (int col = 0; col < 9; col++) {
-            int setNumber = col + 1;
-            for (int row = 0; row < 4; row++) {
-                int slot = (row + 1) * 9 + col;
-                int contentIndex = col * 4 + row;
-                ItemStack stored = contents != null && contentIndex < contents.length
-                        ? contents[contentIndex] : null;
-                if (stored != null && stored.getType() != Material.AIR) {
-                    setItem(slot, new ItemBuilder(stored)
-                                    .build(),
-                            event -> event.setCancelled(true));
-                } else {
-                    setItem(slot, new ItemBuilder(ARMOR_PIECES[row])
-                                    .displayName("§aWardrobe Slot " + setNumber + " §7- " + PIECE_NAMES[row])
-                                    .lore("§7Empty", "§eClick to equip!")
-                                    .build(),
-                            event -> event.setCancelled(true));
-                }
+        for (int i = 0; i < WARDROBE_SLOTS.length; i++) {
+            int setNumber = i + 1;
+            int contentIndex = i * 4;
+            boolean hasContent = contents != null
+                    && contentIndex < contents.length
+                    && contents[contentIndex] != null
+                    && contents[contentIndex].getType() != Material.AIR;
+            ItemStack icon = hasContent
+                    ? new ItemBuilder(contents[contentIndex])
+                            .displayName("§6Wardrobe Set " + setNumber)
+                            .lore("§7Click to equip!")
+                            .build()
+                    : new ItemBuilder(Material.LEATHER_CHESTPLATE)
+                            .displayName("§6Wardrobe Set " + setNumber)
+                            .lore("§7Empty", "§eClick to equip!")
+                            .build();
+            setItem(WARDROBE_SLOTS[i], icon, event -> event.setCancelled(true));
+        }
+    }
+
+    private void fillBorder() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
             }
         }
     }
