@@ -4,6 +4,7 @@ import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.plugin.managers.FishingManager;
 import com.skyblock.plugin.managers.EnchantingManager;
@@ -128,7 +129,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         if (!new java.io.File(getDataFolder(), "shops.yml").exists() && getResource("shops.yml") != null) {
             saveResource("shops.yml", false);
         }
-        com.skyblock.core.manager.ShopManager.getInstance().load(getDataFolder());
+        ShopManager.getInstance().load(getDataFolder());
         com.skyblock.core.accessory.AccessoryManager.getInstance();
 
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.collection.CollectionListener(), this);
@@ -253,6 +254,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         } catch (java.io.IOException e) {
             getLogger().severe("Failed to save warp data: " + e.getMessage());
         }
+        ShopManager.getInstance().save(getDataFolder());
         EventManager.getInstance().save(getDataFolder());
         QuestManager.getInstance().save(getDataFolder());
         WeatherManager.getInstance().save(getDataFolder());
