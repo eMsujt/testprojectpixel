@@ -1,6 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.manager.PetManager.PetRarity;
+import com.skyblock.core.model.Rarity;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +21,6 @@ class PetManagerTest {
 
     @Test
     void petRarity_LegendaryDisplayName() {
-        assertEquals("Legendary", PetRarity.LEGENDARY.getDisplayName());
+        assertEquals("Legendary", Rarity.LEGENDARY.getDisplayName());
     }
 }

@@ -1,8 +1,8 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.manager.PetManager;
-import com.skyblock.core.manager.PetManager.PetRarity;
 import com.skyblock.core.manager.PetManager.PetType;
+import com.skyblock.core.model.Rarity;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -74,7 +74,7 @@ public final class PetCommand implements TabExecutor {
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("equip")) {
             String prefix = args[2].toLowerCase();
-            return Arrays.stream(PetRarity.values())
+            return Arrays.stream(Rarity.values())
                     .map(r -> r.name().toLowerCase())
                     .filter(n -> n.startsWith(prefix))
                     .collect(Collectors.toList());
@@ -106,10 +106,10 @@ public final class PetCommand implements TabExecutor {
             player.sendMessage("Unknown pet type: " + args[1] + ".");
             return;
         }
-        PetRarity rarity = PetRarity.COMMON;
+        Rarity rarity = Rarity.COMMON;
         if (args.length >= 3) {
             try {
-                rarity = PetRarity.valueOf(args[2].toUpperCase());
+                rarity = Rarity.valueOf(args[2].toUpperCase());
             } catch (IllegalArgumentException e) {
                 player.sendMessage("Unknown rarity: " + args[2] + ". Defaulting to COMMON.");
             }
