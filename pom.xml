@@ -16,16 +16,13 @@
         <module>api</module>
         <module>core</module>
         <module>enchantments</module>
-        <module>islands</module>
         <module>items</module>
         <module>playerdata</module>
-        <module>collections</module>
         <module>combat</module>
         <module>quests</module>
         <module>profiles</module>
         <module>minions</module>
         <module>economy</module>
-        <module>banking</module>
         <module>slayer</module>
         <module>forging</module>
         <module>crafting</module>
@@ -36,10 +33,8 @@
         <module>slayers</module>
         <module>dungeons</module>
         <module>fishing</module>
-        <module>bazaar</module>
         <module>foraging</module>
         <module>accessories</module>
-        <module>guilds</module>
         <module>fairysouls</module>
         <module>backpacks</module>
         <module>talismans</module>
@@ -58,9 +53,7 @@
         <module>bestiary</module>
         <module>wardrobe</module>
         <module>item_forge</module>
-        <module>pets</module>
         <module>farming</module>
-        <module>guild</module>
         <module>garden</module>
         <module>trading</module>
         <module>plugin</module>
