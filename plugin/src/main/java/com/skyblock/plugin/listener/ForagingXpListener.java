@@ -1,5 +1,6 @@
 package com.skyblock.plugin.listener;
 
+import com.skyblock.plugin.manager.CollectionManager;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
@@ -49,6 +50,6 @@ public final class ForagingXpListener implements Listener {
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("foraging", xp);
         XpActionBar.send(player, "foraging", xp, profile.getSkillXp("foraging"));
-        profile.incrementCollection(LOG_DROP.get(type), 1);
+        CollectionManager.getInstance().addCount(player.getUniqueId(), LOG_DROP.get(type), 1);
     }
 }
