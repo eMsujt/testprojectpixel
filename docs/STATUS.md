@@ -1,7 +1,7 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-41: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep, ItemBuilder/SkullItemUtil deep sweep, Skill/Stat/Rarity/Collection enum collapse, additional pom.xml dead-module pruning, plugin.util/plugin.managers zero-caller stub sweep, persistence/DataManager consolidation, config-loader consolidation, zero-caller stub sweeps across plugin.items/combat/enchantment/model/data, duplicate listener sweeps across plugin.items/combat/enchantment/world, plugin.combat DamageListener/CombatDamageListener/CombatListener deletion, Menu/GUI base class consolidation, BazaarManager/BazaarHandler stub fixes and zero-caller deletions, plugin.gui/menu/world/event zero-caller stub sweep, sub-package layout enforcement for items/combat/skills modules, ShopManager/NpcShopManager zero-caller stub deletion, sub-package layout enforcement for islands/minions/pets modules — round 41).
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-42: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep, ItemBuilder/SkullItemUtil deep sweep, Skill/Stat/Rarity/Collection enum collapse, additional pom.xml dead-module pruning, plugin.util/plugin.managers zero-caller stub sweep, persistence/DataManager consolidation, config-loader consolidation, zero-caller stub sweeps across plugin.items/combat/enchantment/model/data, duplicate listener sweeps across plugin.items/combat/enchantment/world, plugin.combat DamageListener/CombatDamageListener/CombatListener deletion, Menu/GUI base class consolidation, BazaarManager/BazaarHandler stub fixes and zero-caller deletions, plugin.gui/menu/world/event zero-caller stub sweep, sub-package layout enforcement for items/combat/skills modules, ShopManager/NpcShopManager zero-caller stub deletion, sub-package layout enforcement for islands/minions/pets modules — round 41, sub-package layout enforcement for collections module — round 42).
 > Counts: **~63 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion`, `skills` pruned), **~554 `.java` source files** (23+ zero-caller `@Deprecated` stubs deleted: 16 in #2553 + 4 in #2600 + additional in #2608–#2610 + 3 in #2615).
 
 ## How to read this document
@@ -136,6 +136,16 @@ Sub-package layout enforcement for islands module (#2623) and minions/pets modul
 |--------|-----------|--------|
 | `com.skyblock.core.island` sub-package layout | `IslandCommand` and `IslandUpgradeCommand` moved from `com.skyblock.core.island` into `island.command.*` sub-package; old `island.*` files replaced with `@Deprecated` delegation stubs | ✅ enforced (#2623) |
 | `com.skyblock.core.minion` / `com.skyblock.core.pet` / `com.skyblock.core.pets` sub-package layout | `MinionCommand`, `PetCommand` (both `pet` and `pets` packages), and `PetsCommand` moved into their respective `command` sub-packages; old flat-package files replaced with `@Deprecated` delegation stubs | ✅ enforced (#2624) |
+
+---
+
+## Post-cleanup sub-package layout registry (round 42)
+
+Sub-package layout enforcement for collections module (#2626).
+
+| Module | Work done | Status |
+|--------|-----------|--------|
+| `com.skyblock.core.collection` / `com.skyblock.collection` sub-package layout | All command classes outside `com.skyblock.collection.command` and `com.skyblock.core.collection.command` moved into proper `command.*` sub-packages; old flat-package command files replaced with `@Deprecated` delegation stubs; zero-caller strays deleted | ✅ enforced (#2626) |
 
 ---
 

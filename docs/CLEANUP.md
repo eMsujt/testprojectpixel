@@ -149,6 +149,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (sub-package layout enforcement — round 42)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Sub-package layout enforcement — collections module | `com.skyblock.core.collection.command.*`, `com.skyblock.collection.command.*` | All command classes outside `com.skyblock.collection.command` and `com.skyblock.core.collection.command` moved into proper `command.*` sub-packages; old flat-package command files replaced with `@Deprecated` delegation stubs; zero-caller strays deleted | #2626 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
