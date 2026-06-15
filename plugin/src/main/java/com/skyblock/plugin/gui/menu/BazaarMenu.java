@@ -1,11 +1,9 @@
 package com.skyblock.plugin.gui.menu;
 
-import com.skyblock.plugin.bazaar.BazaarManager;
 import com.skyblock.plugin.bazaar.BazaarManager.Product;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -15,8 +13,9 @@ import java.util.List;
  *
  * <p>A 54-slot (6-row) menu titled {@code §6Bazaar}, framed by a gray glass
  * border, that lists every product loaded from {@code bazaar.yml} via
- * {@link BazaarManager}. Each product occupies one of the 28 inner slots and
- * is shown using the product's configured {@link Material} icon.</p>
+ * {@link com.skyblock.plugin.bazaar.BazaarManager}. Each product occupies one
+ * of the 28 inner slots and is shown using the product's configured
+ * {@link Material} icon.</p>
  */
 public class BazaarMenu extends Menu {
 
@@ -28,18 +27,16 @@ public class BazaarMenu extends Menu {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    private final Player player;
+    private final List<Product> products;
 
-    public BazaarMenu(Player player) {
+    public BazaarMenu(List<Product> products) {
         super("§6Bazaar", 6);
-        this.player = player;
+        this.products = products;
     }
 
     @Override
     protected void build() {
         fillBorder();
-
-        List<Product> products = BazaarManager.getInstance().getProducts();
 
         for (int i = 0; i < products.size() && i < INNER_SLOTS.length; i++) {
             Product product = products.get(i);
