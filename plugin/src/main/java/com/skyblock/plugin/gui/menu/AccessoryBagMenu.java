@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * The Accessory Bag menu.
  *
- * <p>A 54-slot (6-row) chest titled {@code §5Accessory Bag} with a purple glass-pane
- * border. The 28 inner slots (10–16, 19–25, 28–34 and 37–43) are populated from
- * the owning {@link SkyBlockProfile}'s accessory bag contents, one stack per slot.</p>
+ * <p>A 54-slot (6-row) chest titled {@code §5Accessory Bag} with a gray glass-pane
+ * border on rows 0 and 5. The 28 inner slots (10–16, 19–25, 28–34 and 37–43) are
+ * populated from the owning {@link SkyBlockProfile}'s accessory bag contents.</p>
  */
 public class AccessoryBagMenu extends Menu {
 
@@ -49,14 +49,14 @@ public class AccessoryBagMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
-            }
+        for (int slot = 0; slot < 9; slot++) {
+            setItem(slot, pane);
+        }
+        for (int slot = 45; slot < 54; slot++) {
+            setItem(slot, pane);
         }
     }
 }
