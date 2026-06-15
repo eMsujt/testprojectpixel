@@ -8,7 +8,13 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 /**
- * Singleton managing the pet each player currently has equipped.
+ * @deprecated Use {@link com.skyblock.core.manager.PetManager} directly.
+ *
+ * <p>Retained for backward compatibility. This module-local class manages
+ * Bukkit-side equip/unequip callbacks via {@link PetAbility}; for XP,
+ * persistence, and collection management use the canonical class instead.</p>
+ *
+ * <p>Singleton managing the pet each player currently has equipped.</p>
  *
  * <p>Active pets are stored in a {@link HashMap} keyed by player UUID.
  * Each player has at most one {@link ActivePet} at a time; equipping a new
@@ -18,6 +24,7 @@ import org.bukkit.entity.Player;
  * {@link #getInstance()}. Not thread-safe; synchronize externally if
  * accessed from multiple threads.</p>
  */
+@Deprecated
 public final class PetManager {
 
     private static final PetManager INSTANCE = new PetManager();

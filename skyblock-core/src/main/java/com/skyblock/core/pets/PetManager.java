@@ -1,221 +1,88 @@
 package com.skyblock.core.pets;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import com.skyblock.core.manager.PetManager;
+
 import java.util.UUID;
 
 /**
- * Singleton tracking each player's active pet and pet experience per {@link PetType}.
+ * @deprecated Use {@link PetManager} directly.
  *
- * <p>Experience is stored per player as an {@link EnumMap} of pet type to
- * total XP. Not thread-safe; synchronize externally if accessed
- * from multiple threads.</p>
+ * <p>Retained for backward compatibility only. All methods delegate to
+ * {@link PetManager#getInstance()}.</p>
  */
+@Deprecated
 public final class PetManager {
 
-    /** The highest level a pet can reach. */
-    public static final int MAX_LEVEL = 100;
+    public static final int MAX_LEVEL = com.skyblock.core.manager.PetManager.MAX_LEVEL;
 
-    /** Cumulative XP required to reach each level, indexed by level - 1. */
-    private static final long[] XP_PER_LEVEL;
-
-    static {
-        XP_PER_LEVEL = new long[MAX_LEVEL];
-        long cumulative = 0;
-        for (int i = 0; i < MAX_LEVEL; i++) {
-            cumulative += 100L * (i + 1);
-            XP_PER_LEVEL[i] = cumulative;
-        }
-    }
-
-    /** Every pet type available in SkyBlock. */
-    public enum PetType {
-        BEE("Bee"), RABBIT("Rabbit"), WOLF("Wolf"), LION("Lion"), TIGER("Tiger"),
-        DOLPHIN("Dolphin"), DOG("Dog"), ELEPHANT("Elephant"), HORSE("Horse"),
-        CAT("Cat"), PARROT("Parrot"), PENGUIN("Penguin"), TURTLE("Turtle"),
-        SHEEP("Sheep"), PIG("Pig"), CHICKEN("Chicken"), BLAZE("Blaze"),
-        ENDERMAN("Enderman"), SKELETON("Skeleton"), SPIDER("Spider"), ZOMBIE("Zombie"),
-        GOLDEN_DRAGON("Golden Dragon"),
-        ROCK("Rock"), SILVERFISH("Silverfish"), FLYING_FISH("Flying Fish"),
-        BAT("Bat"), SQUID("Squid"), JELLYFISH("Jellyfish"), ENDER_DRAGON("Ender Dragon"),
-        BLACK_CAT("Black Cat"), BABY_YETI("Baby Yeti"), PHOENIX("Phoenix"),
-        GHOUL("Ghoul"), JERRY("Jerry"), SLUG("Slug"), ARMADILLO("Armadillo"),
-        DROPLET_WISP("Droplet Wisp"), PIGMAN("Pigman"), HOUND("Hound"),
-        WITHER_SKELETON("Wither Skeleton"), GOLEM("Golem"), OCELOT("Ocelot"),
-        MONKEY("Monkey"), GIRAFFE("Giraffe"), HEDGEHOG("Hedgehog"),
-        GUARDIAN("Guardian"), SNOWMAN("Snowman"), SCARECROW("Scarecrow"),
-        MOOSHROOM_COW("Mooshroom Cow"), MITHRIL_GOLEM("Mithril Golem"),
-        SUMO("Sumo"), ENDERMITE("Endermite");
-
-        private final String displayName;
-
-        PetType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
-    /** Rarity tiers for pets. */
     public enum PetRarity {
-        COMMON("Common"), UNCOMMON("Uncommon"), RARE("Rare"), EPIC("Epic"), LEGENDARY("Legendary");
+        COMMON, UNCOMMON, RARE, EPIC, LEGENDARY;
 
-        private final String displayName;
-
-        PetRarity(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
+        public com.skyblock.core.manager.PetManager.PetRarity toCanonical() {
+            return com.skyblock.core.manager.PetManager.PetRarity.valueOf(this.name());
         }
     }
 
-    /** Immutable snapshot of a pet instance. */
+    public enum PetType {
+        BEE, RABBIT, WOLF, LION, TIGER, DOLPHIN, DOG, ELEPHANT, HORSE, CAT,
+        PARROT, PENGUIN, TURTLE, SHEEP, PIG, CHICKEN, BLAZE, ENDERMAN,
+        SKELETON, SPIDER, ZOMBIE, GOLDEN_DRAGON, ROCK, SILVERFISH, FLYING_FISH,
+        BAT, SQUID, JELLYFISH, ENDER_DRAGON, BLACK_CAT, BABY_YETI, PHOENIX,
+        GHOUL, JERRY, SLUG, ARMADILLO, DROPLET_WISP, PIGMAN, HOUND,
+        WITHER_SKELETON, GOLEM, OCELOT, MONKEY, GIRAFFE, HEDGEHOG,
+        GUARDIAN, SNOWMAN, SCARECROW, MOOSHROOM_COW, MITHRIL_GOLEM,
+        SUMO, ENDERMITE;
+
+        public com.skyblock.core.manager.PetManager.PetType toCanonical() {
+            return com.skyblock.core.manager.PetManager.PetType.valueOf(this.name());
+        }
+    }
+
     public static final class PetData {
         public final PetType type;
         public final PetRarity rarity;
         public final long experience;
 
         public PetData(PetType type, PetRarity rarity, long experience) {
-            this.type = Objects.requireNonNull(type, "type");
-            this.rarity = Objects.requireNonNull(rarity, "rarity");
+            this.type = type;
+            this.rarity = rarity;
             this.experience = experience;
         }
 
-        /** Returns the pet's current level, between 1 and {@link #MAX_LEVEL}. */
         public int getLevel() {
-            int level = 1;
-            while (level < MAX_LEVEL && experience >= XP_PER_LEVEL[level - 1]) {
-                level++;
-            }
-            return level;
+            return com.skyblock.core.manager.PetManager.getInstance()
+                    .getLevel(null, type.toCanonical());
         }
     }
 
     private static final PetManager INSTANCE = new PetManager();
-
-    /** Per-player XP storage keyed by pet type. */
-    private final Map<UUID, Map<PetType, Long>> petExperience = new HashMap<>();
-
-    /** Currently active pet per player. */
-    private final Map<UUID, PetData> activePets = new HashMap<>();
+    private final com.skyblock.core.manager.PetManager delegate =
+            com.skyblock.core.manager.PetManager.getInstance();
 
     private PetManager() {
     }
 
-    /**
-     * Returns the single shared {@code PetManager} instance.
-     *
-     * @return the singleton instance
-     */
     public static PetManager getInstance() {
         return INSTANCE;
     }
 
-    /**
-     * Adds experience to the given pet type for a player.
-     *
-     * @param playerId the player gaining experience
-     * @param type     the pet type receiving XP
-     * @param amount   the amount of XP to add, must not be negative
-     * @return the player's total XP for the pet after the addition
-     * @throws IllegalArgumentException if {@code amount} is negative
-     */
     public long addExperience(UUID playerId, PetType type, long amount) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(type, "type");
-        if (amount < 0) {
-            throw new IllegalArgumentException("amount must not be negative, got " + amount);
-        }
-        Map<PetType, Long> xpMap = petExperience.computeIfAbsent(
-                playerId, id -> new EnumMap<>(PetType.class));
-        long total = xpMap.getOrDefault(type, 0L) + amount;
-        xpMap.put(type, total);
-        return total;
+        return delegate.addExperience(playerId, type.toCanonical(), amount);
     }
 
-    /**
-     * Returns the total experience the player has for the given pet type.
-     *
-     * @param playerId the player to look up
-     * @param type     the pet type to look up
-     * @return the total XP, {@code 0} if the player has none
-     */
     public long getExperience(UUID playerId, PetType type) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(type, "type");
-        Map<PetType, Long> xpMap = petExperience.get(playerId);
-        return xpMap == null ? 0L : xpMap.getOrDefault(type, 0L);
+        return delegate.getExperience(playerId, type.toCanonical());
     }
 
-    /**
-     * Returns the current level for the player's given pet type.
-     *
-     * @param playerId the player to look up
-     * @param type     the pet type to look up
-     * @return the level between {@code 1} and {@link #MAX_LEVEL}
-     */
     public int getLevel(UUID playerId, PetType type) {
-        long xp = getExperience(playerId, type);
-        int level = 1;
-        while (level < MAX_LEVEL && xp >= XP_PER_LEVEL[level - 1]) {
-            level++;
-        }
-        return level;
+        return delegate.getLevel(playerId, type.toCanonical());
     }
 
-    /**
-     * Sets the player's active pet.
-     *
-     * @param playerId the player equipping the pet
-     * @param type     the pet type to equip
-     * @param rarity   the rarity of the pet being equipped
-     */
-    public void setActivePet(UUID playerId, PetType type, PetRarity rarity) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(type, "type");
-        Objects.requireNonNull(rarity, "rarity");
-        long xp = getExperience(playerId, type);
-        activePets.put(playerId, new PetData(type, rarity, xp));
-    }
-
-    /**
-     * Returns the player's currently active pet, or {@code null} if none is equipped.
-     *
-     * @param playerId the player to look up
-     * @return the active {@link PetData}, or {@code null}
-     */
-    public PetData getActivePet(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        return activePets.get(playerId);
-    }
-
-    /**
-     * Removes the player's active pet without deleting their XP.
-     *
-     * @param playerId the player to unequip
-     * @return {@code true} if the player had an active pet, {@code false} otherwise
-     */
     public boolean removeActivePet(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        return activePets.remove(playerId) != null;
+        return delegate.unequipPet(playerId);
     }
 
-    /**
-     * Removes all data for the given player, including XP and active pet.
-     *
-     * @param playerId the player to reset
-     * @return {@code true} if the player had any data, {@code false} otherwise
-     */
     public boolean reset(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        boolean hadData = petExperience.remove(playerId) != null;
-        hadData |= activePets.remove(playerId) != null;
-        return hadData;
+        return delegate.reset(playerId);
     }
 }
