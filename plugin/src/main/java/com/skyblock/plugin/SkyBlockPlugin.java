@@ -192,6 +192,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MinionPlacementListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.SkillListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FarmingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.ForagingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.ForagingXpListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MiningXpListener(), this);
