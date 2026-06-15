@@ -2,8 +2,8 @@ package com.skyblock.plugin.command;
 
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;
-import com.skyblock.core.bank.BankTier;
-import com.skyblock.core.bank.BankType;
+import com.skyblock.core.manager.BankManager.BankTier;
+import com.skyblock.core.manager.BankManager.BankType;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;

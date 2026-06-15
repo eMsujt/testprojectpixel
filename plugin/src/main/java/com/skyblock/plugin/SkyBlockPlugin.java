@@ -37,7 +37,7 @@ import com.skyblock.plugin.managers.WeatherManager;
 import com.skyblock.plugin.hud.ActionBarManager;
 import com.skyblock.plugin.command.dungeon.DungeonCommand;
 import com.skyblock.plugin.command.fairy.FairyCommand;
-import com.skyblock.plugin.commands.BankCommand;
+import com.skyblock.core.bank.command.BankCommand;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.plugin.commands.CollectionsCommand;
 import com.skyblock.plugin.commands.EnchantingCommand;
@@ -136,7 +136,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.collection.CollectionListener(), this);
         com.skyblock.core.manager.PetManager.getInstance();
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
-        getCommand("bank").setExecutor(new BankCommand());
+        getCommand("bank").setExecutor(new BankCommand(BankManager.getInstance()));
         getCommand("mayor").setExecutor(new MayorCommand());
         getCommand("island").setExecutor(new IslandCommand());
         getCommand("auctionhouse").setExecutor(new AuctionHouseCommand());
