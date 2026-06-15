@@ -1,29 +1,31 @@
 package com.skyblock.pets;
 
+import com.skyblock.core.model.Rarity;
+
 /**
  * Pet species available in SkyBlock, paired with their display name and
- * the highest {@link PetTier} the species can reach.
+ * the highest {@link Rarity} the species can reach.
  */
 public enum PetType {
 
-    WOLF("Wolf", PetTier.LEGENDARY),
-    BEE("Bee", PetTier.LEGENDARY),
-    ENDERMAN("Enderman", PetTier.LEGENDARY),
-    TIGER("Tiger", PetTier.LEGENDARY),
-    LION("Lion", PetTier.LEGENDARY),
-    SPIDER("Spider", PetTier.EPIC),
-    RABBIT("Rabbit", PetTier.LEGENDARY),
-    SHEEP("Sheep", PetTier.LEGENDARY),
-    ELEPHANT("Elephant", PetTier.LEGENDARY),
-    BLAZE("Blaze", PetTier.LEGENDARY),
-    SNOWMAN("Snowman", PetTier.EPIC),
-    FLYING_FISH("Flying Fish", PetTier.LEGENDARY),
-    GOLDEN_DRAGON("Golden Dragon", PetTier.LEGENDARY);
+    WOLF("Wolf", Rarity.LEGENDARY),
+    BEE("Bee", Rarity.LEGENDARY),
+    ENDERMAN("Enderman", Rarity.LEGENDARY),
+    TIGER("Tiger", Rarity.LEGENDARY),
+    LION("Lion", Rarity.LEGENDARY),
+    SPIDER("Spider", Rarity.EPIC),
+    RABBIT("Rabbit", Rarity.LEGENDARY),
+    SHEEP("Sheep", Rarity.LEGENDARY),
+    ELEPHANT("Elephant", Rarity.LEGENDARY),
+    BLAZE("Blaze", Rarity.LEGENDARY),
+    SNOWMAN("Snowman", Rarity.EPIC),
+    FLYING_FISH("Flying Fish", Rarity.LEGENDARY),
+    GOLDEN_DRAGON("Golden Dragon", Rarity.LEGENDARY);
 
     private final String displayName;
-    private final PetTier maxTier;
+    private final Rarity maxTier;
 
-    PetType(String displayName, PetTier maxTier) {
+    PetType(String displayName, Rarity maxTier) {
         this.displayName = displayName;
         this.maxTier = maxTier;
     }
@@ -32,7 +34,7 @@ public enum PetType {
         return displayName;
     }
 
-    public PetTier getMaxTier() {
+    public Rarity getMaxTier() {
         return maxTier;
     }
 }
