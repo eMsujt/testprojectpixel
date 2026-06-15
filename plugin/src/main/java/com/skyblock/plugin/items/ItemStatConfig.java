@@ -1,9 +1,12 @@
 package com.skyblock.plugin.items;
 
+import com.skyblock.core.model.Rarity;
+import com.skyblock.core.stat.Stat;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -20,11 +23,11 @@ public final class ItemStatConfig {
     private final String id;
     private final Material material;
     private final String displayName;
-    private final SkyBlockItem.Rarity rarity;
+    private final Rarity rarity;
     private final StatBlock stats;
 
     public ItemStatConfig(String id, Material material, String displayName,
-                          SkyBlockItem.Rarity rarity, StatBlock stats) {
+                          Rarity rarity, StatBlock stats) {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("id must be non-blank");
         }
@@ -53,9 +56,9 @@ public final class ItemStatConfig {
             plugin.getLogger().warning("Skipping item '" + id + "': unknown material.");
             return null;
         }
-        SkyBlockItem.Rarity rarity;
+        Rarity rarity;
         try {
-            rarity = SkyBlockItem.Rarity.valueOf(
+            rarity = Rarity.valueOf(
                     section.getString("rarity", "COMMON").toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning("Skipping item '" + id + "': unknown rarity.");
@@ -73,18 +76,23 @@ public final class ItemStatConfig {
         return new ItemStatConfig(id, material, displayName, rarity, stats);
     }
 
-    /** Converts this config into the immutable {@link SkyBlockItem} domain record. */
+    /** Converts this config into the immutable {@link SkyBlockItem} domain object. */
     public SkyBlockItem toSkyBlockItem() {
-        return new SkyBlockItem(id, material, rarity, displayName,
-                new SkyBlockItem.StatBlock(
-                        stats.health, stats.defense, stats.strength,
-                        stats.intelligence, stats.critChance, stats.critDamage, stats.speed));
+        ItemStats itemStats = new ItemStats();
+        itemStats.setStat(Stat.HEALTH, stats.getHealth());
+        itemStats.setStat(Stat.DEFENSE, stats.getDefense());
+        itemStats.setStat(Stat.STRENGTH, stats.getStrength());
+        itemStats.setStat(Stat.INTELLIGENCE, stats.getIntelligence());
+        itemStats.setStat(Stat.CRIT_CHANCE, stats.getCritChance());
+        itemStats.setStat(Stat.CRIT_DAMAGE, stats.getCritDamage());
+        itemStats.setStat(Stat.SPEED, stats.getSpeed());
+        return new SkyBlockItem(id, material, displayName, rarity, itemStats, Collections.emptyList());
     }
 
     public String getId() { return id; }
     public Material getMaterial() { return material; }
     public String getDisplayName() { return displayName; }
-    public SkyBlockItem.Rarity getRarity() { return rarity; }
+    public Rarity getRarity() { return rarity; }
     public StatBlock getStats() { return stats; }
 
     /**

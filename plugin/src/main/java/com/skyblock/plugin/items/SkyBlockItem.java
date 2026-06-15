@@ -1,11 +1,13 @@
 package com.skyblock.plugin.items;
 
 import com.skyblock.core.model.Rarity;
+import com.skyblock.core.stat.Stat;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -48,5 +50,40 @@ public final class SkyBlockItem {
     public Rarity getRarity() { return rarity; }
     public ItemStats getStats() { return stats; }
     public List<String> getAbilities() { return abilities; }
+
+    /**
+     * Returns the value for the stat named by {@code name}, mapping common
+     * camelCase names to the canonical {@link Stat} enum. Returns {@code 0.0}
+     * for unrecognised names (e.g. "damage", which has no Stat constant).
+     */
+    public double stat(String name) {
+        if (name == null) return 0.0;
+        switch (name.toLowerCase(Locale.ROOT)) {
+            case "health":        return stats.getStat(Stat.HEALTH);
+            case "defense":       return stats.getStat(Stat.DEFENSE);
+            case "strength":      return stats.getStat(Stat.STRENGTH);
+            case "intelligence":  return stats.getStat(Stat.INTELLIGENCE);
+            case "critchance":    return stats.getStat(Stat.CRIT_CHANCE);
+            case "critdamage":    return stats.getStat(Stat.CRIT_DAMAGE);
+            case "speed":         return stats.getStat(Stat.SPEED);
+            default:              return 0.0;
+        }
+    }
+
+    /**
+     * An immutable block of stat bonuses granted by a reforge, expressed as
+     * {@code int} values matching the seven SkyBlock combat stats.
+     *
+     * @param health       bonus Health
+     * @param defense      bonus Defense
+     * @param strength     bonus Strength
+     * @param intelligence bonus Intelligence
+     * @param critChance   bonus Crit Chance
+     * @param critDamage   bonus Crit Damage
+     * @param speed        bonus Speed
+     */
+    public record StatBlock(int health, int defense, int strength, int intelligence,
+                            int critChance, int critDamage, int speed) {
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.skyblock.plugin.items;
 
+import com.skyblock.core.model.Rarity;
 import com.skyblock.core.stat.Stat;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -72,9 +73,9 @@ public final class ItemRegistry {
             plugin.getLogger().warning("Skipping item '" + id + "': unknown material.");
             return null;
         }
-        SkyBlockItem.Rarity rarity;
+        Rarity rarity;
         try {
-            rarity = SkyBlockItem.Rarity.valueOf(
+            rarity = Rarity.valueOf(
                     section.getString("rarity", "COMMON").toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning("Skipping item '" + id + "': unknown rarity.");
