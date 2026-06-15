@@ -38,7 +38,7 @@ import com.skyblock.core.party.PartyManager;
 import com.skyblock.core.pets.PetsCommand;
 import com.skyblock.core.pets.PetsManager;
 import com.skyblock.core.profile.ProfileCommand;
-import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.manager.ProfileManager;
 import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.reforge.ReforgeManager;
 import com.skyblock.core.backpack.BackpackCommand;

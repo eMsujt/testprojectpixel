@@ -1,7 +1,7 @@
 package com.skyblock.plugin.commands;
 
 import com.skyblock.core.manager.ProfileManager;
-import com.skyblock.core.profile.ProfileManager.SkyBlockProfile;
+import com.skyblock.core.manager.ProfileManager.SkyBlockProfile;
 import com.skyblock.plugin.managers.DungeonManager;
 import com.skyblock.plugin.managers.SkillsManager;
 import com.skyblock.plugin.managers.SlayerManager;
