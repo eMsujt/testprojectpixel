@@ -247,6 +247,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (PetManager/PetsManager deep-consolidation sweep — round 58)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| PetManager / PetsManager (7 `@Deprecated` stubs) | `com.skyblock.core.manager.PetManager` | All 7 `@Deprecated` `PetManager`/`PetsManager` stub implementations across `pets`, `pet`, `core.*`, and `plugin.*` modules deleted or replaced with delegating stubs pointing to the single canonical class; every import, registration call, and `SkyBlockPlugin.onEnable` reference updated to `com.skyblock.core.manager.PetManager` | #2680 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
