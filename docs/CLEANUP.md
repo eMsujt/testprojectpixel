@@ -255,6 +255,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (ShopManager/NpcShopManager and BazaarManager/BazaarHandler deep-consolidation sweeps — round 60)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ShopManager / NpcShopManager | `com.skyblock.core.manager.ShopManager` | All 4 duplicate/stub files (`NPCShopListener`, `plugin.npc.NpcShopMenu`, `plugin.shop.NpcShopMenu`, `plugin.shop.ShopListener`) deleted outright; canonical `com.skyblock.plugin.shop.listener.ShopListener` wired into `SkyBlockPlugin.onEnable`; every import and registration call updated to `com.skyblock.core.manager.ShopManager` | #2685 |
+| BazaarManager / BazaarHandler | `com.skyblock.core.manager.BazaarManager` | No `BazaarHandler` implementation existed; two remaining orphaned duplicate model classes (`com.skyblock.bazaar.model.BazaarOrder` and `ProductCatalog`) confirmed zero-caller and deleted outright; canonical `com.skyblock.core.manager.BazaarManager` is now the sole implementation | #2686 |
+
+---
+
 ## Completed (SkillManager/SkillsManager, CollectionManager/CollectionsManager, MinionManager/MinionHandler/MinionService deep-consolidation sweeps — round 59)
 
 | Domain | Canonical class | Work done | PR / commit |
