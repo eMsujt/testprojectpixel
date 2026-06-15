@@ -2,7 +2,10 @@ package com.skyblock.plugin.profile;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -30,6 +33,8 @@ public final class PlayerProfile {
     private ItemStack[] fishingBagContents;
     private ItemStack[] islandStorageContents;
     private ItemStack[] wardrobeContents;
+    private final List<String> ownedPets = new ArrayList<>();
+    private String activePet = null;
 
     /**
      * Creates a new profile with no accumulated skill experience.
@@ -349,6 +354,32 @@ public final class PlayerProfile {
      */
     public void setWardrobeContents(ItemStack[] wardrobeContents) {
         this.wardrobeContents = wardrobeContents == null ? null : wardrobeContents.clone();
+    }
+
+    public List<String> getOwnedPets() {
+        return Collections.unmodifiableList(ownedPets);
+    }
+
+    public void addOwnedPet(String petName) {
+        Objects.requireNonNull(petName, "petName");
+        if (!ownedPets.contains(petName)) {
+            ownedPets.add(petName);
+        }
+    }
+
+    public void setOwnedPets(List<String> pets) {
+        ownedPets.clear();
+        if (pets != null) {
+            ownedPets.addAll(pets);
+        }
+    }
+
+    public String getActivePet() {
+        return activePet;
+    }
+
+    public void setActivePet(String activePet) {
+        this.activePet = activePet;
     }
 
     @Override
