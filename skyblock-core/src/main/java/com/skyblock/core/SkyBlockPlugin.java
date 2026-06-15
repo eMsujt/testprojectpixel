@@ -326,11 +326,10 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("skyblock").setExecutor(skyBlockCommand);
         getCommand("skyblock").setTabCompleter(skyBlockCommand);
         getCommand("skills").setExecutor(new SkillsCommand(skillManager));
-        com.skyblock.core.skill.SkillManager skillManagerV2 = com.skyblock.core.skill.SkillManager.getInstance();
-        SkillCommand skillCommand = new SkillCommand(skillManagerV2);
+        SkillCommand skillCommand = new SkillCommand(skillManager);
         getCommand("skill").setExecutor(skillCommand);
         getCommand("skill").setTabCompleter(skillCommand);
-        getServer().getPluginManager().registerEvents(new SkillListener(skillManagerV2), this);
+        getServer().getPluginManager().registerEvents(new SkillListener(skillManager), this);
         com.skyblock.core.warp.WarpManager warpManager = com.skyblock.core.warp.WarpManager.getInstance();
         warpManager.load(new java.io.File(getDataFolder(), "warps.yml"));
         getCommand("warp").setExecutor(new WarpCommand(warpManager));

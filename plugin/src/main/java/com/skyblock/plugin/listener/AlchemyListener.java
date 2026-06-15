@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.skills.SkillManager;
-import com.skyblock.plugin.skills.SkillManager.SkillType;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

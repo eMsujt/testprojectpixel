@@ -2,7 +2,7 @@ package com.skyblock.plugin.skill;
 
 import com.skyblock.plugin.managers.SkillsManager;
 import com.skyblock.plugin.profile.ProfileManager;
-import com.skyblock.plugin.skills.SkillManager.SkillType;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import com.skyblock.plugin.skills.SkillsConfig;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
