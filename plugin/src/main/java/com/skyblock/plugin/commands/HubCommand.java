@@ -10,7 +10,7 @@ import com.skyblock.plugin.managers.EnchantingManager;
 import com.skyblock.plugin.managers.FishingManager;
 import com.skyblock.plugin.managers.GardenManager;
 import com.skyblock.plugin.managers.HOTMManager;
-import com.skyblock.plugin.managers.IslandManager;
+import com.skyblock.core.manager.IslandManager;
 import com.skyblock.plugin.managers.KuudraManager;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.plugin.managers.ProfileManager;
