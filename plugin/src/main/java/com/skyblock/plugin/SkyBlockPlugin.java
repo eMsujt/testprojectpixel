@@ -206,7 +206,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.economy.BazaarMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.BankMenu(), this);
         // com.skyblock.plugin.menu.QuestsMenu listener removed — canonical com.skyblock.core.menu.QuestsMenu handles clicks via MenuListener
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.CollectionsMenu(), this);
+        // com.skyblock.plugin.menu.CollectionsMenu listener removed — canonical com.skyblock.core.menu.CollectionsMenu handles clicks via MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.FastTravelMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MiningListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TamingListener(), this);

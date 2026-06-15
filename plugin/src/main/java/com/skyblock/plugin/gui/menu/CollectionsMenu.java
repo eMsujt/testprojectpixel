@@ -1,95 +1,28 @@
 package com.skyblock.plugin.gui.menu;
 
-import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.core.util.SkullItemUtil;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 /**
- * The Collections hub menu.
- *
- * <p>A 54-slot (6-row) chest titled {@code §9Collections} with a gray glass-pane
- * border. Five category icons form a horizontal selector row (slots 20–24);
- * clicking one opens {@link CollectionCategoryMenu} for that category.</p>
+ * @deprecated Use {@link com.skyblock.core.menu.CollectionsMenu} instead.
  */
+@Deprecated
 public class CollectionsMenu extends Menu {
 
-    private enum Category {
-        FARMING("Farming", "§e", 10,
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2QyMzI0NDAxNDZhNTVhYWE4NGIzOWEyMzc3NjJkN2EzMGIzY2JhN2Y0Y2U1YjYxZTZlYWJlMDRjZDI0MzgifX19",
-                new Material[]{Material.WHEAT, Material.CARROT, Material.POTATO,
-                        Material.PUMPKIN, Material.MELON_SLICE, Material.SUGAR_CANE,
-                        Material.CACTUS, Material.RED_MUSHROOM, Material.NETHER_WART}),
-        MINING("Mining", "§7", 12,
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2YzNWYzOGM4OWZlZWI3Y2JiZDM2NWNiMzIxNzEyYTZmMzllMmJhNmZhMzA2NmZhYTFjYjgxZWM4MDZmYjgifX19",
-                new Material[]{Material.COBBLESTONE, Material.COAL, Material.IRON_INGOT,
-                        Material.GOLD_INGOT, Material.DIAMOND, Material.LAPIS_LAZULI,
-                        Material.EMERALD, Material.REDSTONE, Material.OBSIDIAN}),
-        COMBAT("Combat", "§c", 13,
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2U1YzJiMDI4NGE5YzJiYzU5NTNjMzljNGZlYzY5MDllODg4MmMwMzNmNzU0MGI4OWIwNzE2ZThhMTlkMTYifX19",
-                new Material[]{Material.ROTTEN_FLESH, Material.BONE, Material.STRING,
-                        Material.GUNPOWDER, Material.ENDER_PEARL}),
-        FORAGING("Foraging", "§2", 14,
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzY3M2UyYWE5NTU1NjkwMzBiZGYxOGIxMGMzOWE3YWI4YjViYmUxNTljNmFhMzM2ZjM0YWI4NTQ0ZDgwZjYifX19",
-                new Material[]{Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
-                        Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG}),
-        FISHING("Fishing", "§9", 15,
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHBzOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2Q3YzZhYTZiNTMwZDc4OTgzN2QxNmYyMjViZjlhYjFmMjVkMmUwOTg5YjljMjFiMjk0ZTM2MDNiNTM2ZmUifX19",
-                new Material[]{Material.COD, Material.SALMON, Material.PUFFERFISH,
-                        Material.TROPICAL_FISH, Material.PRISMARINE_SHARD});
-
-        private final String displayName;
-        private final String color;
-        private final int slot;
-        private final String texture;
-        private final Material[] items;
-
-        Category(String displayName, String color, int slot, String texture, Material[] items) {
-            this.displayName = displayName;
-            this.color = color;
-            this.slot = slot;
-            this.texture = texture;
-            this.items = items;
-        }
-    }
-
-    private final UUID playerId;
+    private final com.skyblock.core.menu.CollectionsMenu delegate;
 
     public CollectionsMenu(UUID playerId) {
         super("§6Collections", 6);
-        this.playerId = playerId;
+        this.delegate = new com.skyblock.core.menu.CollectionsMenu(playerId);
     }
 
     @Override
-    protected void build() {
-        fillBorder();
+    protected void build() {}
 
-        for (Category category : Category.values()) {
-            final Category cat = category;
-            ItemStack icon = SkullItemUtil.createSkullWithTexture(
-                    category.texture,
-                    category.color + category.displayName + " Collections",
-                    Arrays.asList(
-                            "§7View your " + category.displayName.toLowerCase() + " collections.",
-                            "§eClick to view!"));
-            setItem(category.slot, icon, event -> {
-                event.setCancelled(true);
-                new CollectionCategoryMenu(playerId, cat.displayName, cat.items)
-                        .open((Player) event.getWhoClicked());
-            });
-        }
-    }
-
-    private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-        for (int slot = 0; slot < 9; slot++)  setItem(slot, pane);
-        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+    @Override
+    public void open(Player player) {
+        delegate.open(player);
     }
 }
