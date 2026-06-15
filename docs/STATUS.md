@@ -1,7 +1,7 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-47: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep, ItemBuilder/SkullItemUtil deep sweep, Skill/Stat/Rarity/Collection enum collapse, additional pom.xml dead-module pruning, plugin.util/plugin.managers zero-caller stub sweep, persistence/DataManager consolidation, config-loader consolidation, zero-caller stub sweeps across plugin.items/combat/enchantment/model/data, duplicate listener sweeps across plugin.items/combat/enchantment/world, plugin.combat DamageListener/CombatDamageListener/CombatListener deletion, Menu/GUI base class consolidation, BazaarManager/BazaarHandler stub fixes and zero-caller deletions, plugin.gui/menu/world/event zero-caller stub sweep, sub-package layout enforcement for items/combat/skills modules, ShopManager/NpcShopManager zero-caller stub deletion, sub-package layout enforcement for islands/minions/pets modules — round 41, sub-package layout enforcement for collections module — round 42, BazaarManager/BazaarHandler full consolidation pass — round 43 #2628, CollectionManager/CollectionsManager consolidation — round 44 #2632, AuctionManager/AuctionHouseManager consolidation — round 44 #2633, BankManager deep-pass consolidation — round 45 #2637, IslandManager deep-pass consolidation and 7 stub delegation gaps fixed — rounds 45-47 #2636 / #2640, MinionManager deep-pass consolidation — round 46 #2638, PetManager deep-pass consolidation — round 47 #2639).
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-49: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep, ItemBuilder/SkullItemUtil deep sweep, Skill/Stat/Rarity/Collection enum collapse, additional pom.xml dead-module pruning, plugin.util/plugin.managers zero-caller stub sweep, persistence/DataManager consolidation, config-loader consolidation, zero-caller stub sweeps across plugin.items/combat/enchantment/model/data, duplicate listener sweeps across plugin.items/combat/enchantment/world, plugin.combat DamageListener/CombatDamageListener/CombatListener deletion, Menu/GUI base class consolidation, BazaarManager/BazaarHandler stub fixes and zero-caller deletions, plugin.gui/menu/world/event zero-caller stub sweep, sub-package layout enforcement for items/combat/skills modules, ShopManager/NpcShopManager zero-caller stub deletion, sub-package layout enforcement for islands/minions/pets modules — round 41, sub-package layout enforcement for collections module — round 42, BazaarManager/BazaarHandler full consolidation pass — round 43 #2628, CollectionManager/CollectionsManager consolidation — round 44 #2632, AuctionManager/AuctionHouseManager consolidation — round 44 #2633, BankManager deep-pass consolidation — round 45 #2637, IslandManager deep-pass consolidation and 7 stub delegation gaps fixed — rounds 45-47 #2636 / #2640, MinionManager deep-pass consolidation — round 46 #2638, PetManager deep-pass consolidation — round 47 #2639, AccessoryRarity enum consolidation — round 48 #2645, QuestManager/EnchantmentManager/NPCManager duplicate deletion sweep — rounds 48-49 #2642, dead-module pruning post-round-48 — round 49 #2643).
 > Counts: **~63 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion`, `skills` pruned), **~554 `.java` source files** (23+ zero-caller `@Deprecated` stubs deleted: 16 in #2553 + 4 in #2600 + additional in #2608–#2610 + 3 in #2615).
 
 ## How to read this document
@@ -54,8 +54,10 @@ carry a `@Deprecated` delegating stub or have been deleted.
 | PetManager / PetsManager | `com.skyblock.core.manager.PetManager` | ✅ consolidated (#2592) |
 | ShopManager / NpcShopManager / ShopHandler | `com.skyblock.core.manager.ShopManager` | ✅ consolidated (#2544) |
 | ProfileManager / PlayerProfileManager | `com.skyblock.core.manager.ProfileManager` | ✅ consolidated (#2547) |
+| AccessoryRarity / com.skyblock.accessories.AccessoryRarity | `com.skyblock.core.model.AccessoryRarity` | ✅ consolidated (#2645) |
+| NPCManager / NpcManager | `com.skyblock.core.npc.NPCManager` | ✅ consolidated (#2642) |
 
-Pending consolidations: `SlayerManager`, `EnchantingManager`, `NPCManager`, `GuildManager`,
+Pending consolidations: `SlayerManager`, `EnchantingManager`, `GuildManager`,
 `TradingManager`, `BrewingManager`. See [`CLEANUP.md`](./CLEANUP.md) for the full pending
 table.
 
@@ -147,6 +149,20 @@ Sub-package layout enforcement for collections module (#2626).
 | Module | Work done | Status |
 |--------|-----------|--------|
 | `com.skyblock.core.collection` / `com.skyblock.collection` sub-package layout | All command classes outside `com.skyblock.collection.command` and `com.skyblock.core.collection.command` moved into proper `command.*` sub-packages; old flat-package command files replaced with `@Deprecated` delegation stubs; zero-caller strays deleted | ✅ enforced (#2626) |
+
+---
+
+## Post-cleanup manager deletion sweep and enum consolidation (rounds 48-49)
+
+Duplicate manager implementations deleted outright (no stub retained), AccessoryRarity enum canonicalized, and dead modules pruned from `pom.xml`.
+
+| Domain | Canonical class | Work done | Status |
+|--------|-----------------|-----------|--------|
+| AccessoryRarity / `com.skyblock.accessories.AccessoryRarity` | `com.skyblock.core.model.AccessoryRarity` | Canonical enum created with `displayName`, `color`, and `magicalPower` fields; all `core.accessory.*` and `core.talisman.*` callers updated; `com.skyblock.accessories.AccessoryRarity` retained as `@Deprecated` stub | ✅ consolidated (#2645) |
+| QuestManager / QuestsManager (quests, plugin.managers, core.quests) | `com.skyblock.core.manager.QuestManager` | Duplicate implementations deleted from `quests`, `plugin.managers.*`, and `core.quests` modules; `QuestCommand` and `QuestProgressListener` updated to canonical import path | ✅ deleted (#2642) |
+| EnchantmentManager / EnchantManager (enchantments, enchants, core.enchant, core.enchanting) | `com.skyblock.core.manager.EnchantmentManager` | Duplicate implementations deleted from `enchantments`, `enchants`, `core.enchant`, and `core.enchanting` modules; `EnchantmentCommand` updated to single import | ✅ deleted (#2642) |
+| NPCManager / NpcManager (npc, npcs) | `com.skyblock.core.npc.NPCManager` | Duplicate `NpcManager`/`NPCManager` implementations and orphaned `NpcType` enum deleted from `npc` and `npcs` modules; `SkyBlockPlugin` registration updated | ✅ deleted (#2642) |
+| Dead-module pruning (post-round-48 pom.xml sweep) | *(removed from `pom.xml`)* | Three remaining empty/dead module entries removed from root `pom.xml` after the round-48 deletion sweep left their `src/main/java` trees empty | ✅ pruned (#2643) |
 
 ---
 
@@ -344,7 +360,7 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
 
 ## Summary of findings
 
-- **Ongoing consolidation has eliminated 23 duplicate manager surfaces, 12 duplicate menu GUI surfaces, 23 duplicate command class stubs, 4 duplicate listener package pairs, 5 utility/enum/dead-code sweeps (rounds 29-33), 5 additional dead-code/config/persistence sweeps (rounds 34-36), 1 Menu/GUI base class sweep (rounds 37-38), 1 BazaarManager/BazaarHandler stub fix sweep (round 39), 2 sub-package layout enforcements for islands/minions/pets modules (round 41), 2 manager consolidations for CollectionManager/CollectionsManager and AuctionManager/AuctionHouseManager (round 44 #2632 / #2633), and deep-pass consolidations + stub delegation gap fixes for BankManager, IslandManager, MinionManager, and PetManager (rounds 45-47 #2637 / #2636 / #2640 / #2638 / #2639).** Canonical managers for
+- **Ongoing consolidation has eliminated 23 duplicate manager surfaces, 12 duplicate menu GUI surfaces, 23 duplicate command class stubs, 4 duplicate listener package pairs, 5 utility/enum/dead-code sweeps (rounds 29-33), 5 additional dead-code/config/persistence sweeps (rounds 34-36), 1 Menu/GUI base class sweep (rounds 37-38), 1 BazaarManager/BazaarHandler stub fix sweep (round 39), 2 sub-package layout enforcements for islands/minions/pets modules (round 41), 2 manager consolidations for CollectionManager/CollectionsManager and AuctionManager/AuctionHouseManager (round 44 #2632 / #2633), deep-pass consolidations + stub delegation gap fixes for BankManager, IslandManager, MinionManager, and PetManager (rounds 45-47 #2637 / #2636 / #2640 / #2638 / #2639), AccessoryRarity enum consolidation (round 48 #2645), and QuestManager/EnchantmentManager/NPCManager duplicate deletion sweep + pom.xml dead-module pruning (rounds 48-49 #2642 / #2643).** Canonical managers for
   AuctionHouseManager, Rarity, ItemBuilder/SkullUtil, CollectionManager, Menu, SkillManager,
   EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
   DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, PetManager,
@@ -375,12 +391,14 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
   Round 43 completed the BazaarManager/BazaarHandler full consolidation pass, ensuring all duplicate variants across every module carry delegating stubs or are deleted (#2628).
   Round 44 consolidated all `CollectionManager`/`CollectionsManager` duplicates across `collections`, `collection`, `core`, and `plugin` modules into `com.skyblock.core.manager.CollectionManager` (#2632) and consolidated all `AuctionManager`/`AuctionHouseManager` duplicates across `auction`, `auctions`, `auctionhouse`, `core`, and `plugin` modules into `com.skyblock.core.manager.AuctionManager` (#2633).
   Rounds 45-47 completed deep-pass consolidations for `BankManager`/`BankingManager`/`BankHandler` (all remaining delegation stubs wired end-to-end; missing `economy` module methods merged into canonical) (#2637), `IslandManager`/`IslandHandler`/`IslandService` (7 empty-returning stub methods replaced with full delegation chain: plugin stub → `core.manager.IslandManager` → `islands.IslandManager`) (#2636 / #2640), `MinionManager`/`MinionsManager` (minion-tier and minion-type methods merged into canonical) (#2638), and `PetManager`/`PetsManager` (XP table and pet-ability methods merged into canonical) (#2639).
+  Round 48 canonicalized the `AccessoryRarity` enum into `com.skyblock.core.model.AccessoryRarity` (#2645) and deleted duplicate manager implementations outright (no stubs retained) for `QuestManager` (from `quests`, `plugin.managers`, and `core.quests`), `EnchantmentManager` (from `enchantments`, `enchants`, `core.enchant`, and `core.enchanting`), and `NPCManager`/`NpcManager` (from `npc` and `npcs`) (#2642).
+  Round 49 pruned three additional dead module entries from the root `pom.xml` after the round-48 deletion sweep left their `src/main/java` trees empty (#2643).
   The `auctionhouse`, `auction`, `dungeon`, `stats`, `minion`, and `skills` leaf modules
   have been pruned from the parent `pom.xml`; **23+ zero-caller `@Deprecated` stub files were
   deleted outright** (16 in #2553 + 4 in #2600 + additional in #2608–#2610 + 3 in #2615), reducing the source tree from 577 to ~554 files.
-  The parent `pom.xml` now declares **~63 modules** (down from 66 before rounds 20–21).
-- **6 domains remain unconsolidated** (SlayerManager, EnchantingManager, NPCManager,
-  GuildManager, TradingManager, BrewingManager) — tracked in [`CLEANUP.md`](./CLEANUP.md).
+  The parent `pom.xml` now declares **~60 modules** (down from 66 before rounds 20–21, further reduced by dead-module sweeps in rounds 32 and 49).
+- **5 domains remain unconsolidated** (SlayerManager, EnchantingManager, GuildManager,
+  TradingManager, BrewingManager) — tracked in [`CLEANUP.md`](./CLEANUP.md).
 - **Naming is inconsistent** — singular vs plural module names (`auction`/`auctions`,
   `collection`/`collections`, `minion`/`minions`) and casing (`Hotm`/`HOTM`, `Npc`/`NPC`,
   `SkyBlockPlugin`/`SkyblockPlugin`).
