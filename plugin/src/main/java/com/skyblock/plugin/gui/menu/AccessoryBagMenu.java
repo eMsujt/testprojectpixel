@@ -29,7 +29,7 @@ public class AccessoryBagMenu extends Menu {
     private final Player player;
 
     public AccessoryBagMenu(Player player) {
-        super("§5Accessory Bag", 6);
+        super("§6Accessory Bag", 6);
         this.player = player;
     }
 
