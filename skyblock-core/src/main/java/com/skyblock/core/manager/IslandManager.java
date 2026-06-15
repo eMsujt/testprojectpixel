@@ -1,4 +1,4 @@
-package com.skyblock.core.island.manager;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 

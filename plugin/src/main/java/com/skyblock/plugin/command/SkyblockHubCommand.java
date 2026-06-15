@@ -14,7 +14,7 @@ import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.core.fishing.FishingManager;
 import com.skyblock.core.garden.GardenManager;
 import com.skyblock.core.hotm.HOTMManager;
-import com.skyblock.core.island.manager.IslandManager;
+import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.manager.PetManager;
