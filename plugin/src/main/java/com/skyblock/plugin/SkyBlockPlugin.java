@@ -163,7 +163,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("trade").setExecutor(new TradingCommand());
         com.skyblock.plugin.manager.DamageManager.getInstance().register(this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.combat.manager.CombatManager.getInstance(), this);
-getServer().getPluginManager().registerEvents(profileManager, this);
+        getServer().getPluginManager().registerEvents(profileManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.profile.ProfileJoinListener(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.EnchantingListener(), this);
