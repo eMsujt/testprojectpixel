@@ -1,5 +1,7 @@
 package com.skyblock.core.auction;
 
+import com.skyblock.core.manager.AuctionHouseManager;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -31,9 +33,9 @@ public final class AuctionCommand implements TabExecutor {
     private static final List<String> SUBCOMMANDS =
             Arrays.asList("list", "create", "bid", "view", "cancel", "mine", "category");
 
-    private final AuctionManager auctionManager;
+    private final AuctionHouseManager auctionManager;
 
-    public AuctionCommand(AuctionManager auctionManager) {
+    public AuctionCommand(AuctionHouseManager auctionManager) {
         this.auctionManager = auctionManager;
     }
 
@@ -77,7 +79,7 @@ public final class AuctionCommand implements TabExecutor {
             }
             if (args.length == 5) {
                 String prefix = args[4].toLowerCase();
-                return Arrays.stream(AuctionManager.AuctionCategory.values())
+                return Arrays.stream(AuctionHouseManager.AuctionCategory.values())
                         .map(c -> c.name().toLowerCase())
                         .filter(n -> n.startsWith(prefix))
                         .collect(Collectors.toList());
@@ -85,7 +87,7 @@ public final class AuctionCommand implements TabExecutor {
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("category")) {
             String prefix = args[1].toLowerCase();
-            return Arrays.stream(AuctionManager.AuctionCategory.values())
+            return Arrays.stream(AuctionHouseManager.AuctionCategory.values())
                     .map(c -> c.name().toLowerCase())
                     .filter(n -> n.startsWith(prefix))
                     .collect(Collectors.toList());
@@ -94,7 +96,7 @@ public final class AuctionCommand implements TabExecutor {
     }
 
     private void handleList(Player player) {
-        List<AuctionManager.AuctionListing> active = auctionManager.getActiveListings();
+        List<AuctionHouseManager.AuctionListing> active = activeListings();
         if (active.isEmpty()) {
             player.sendMessage("No active auctions.");
             return;
@@ -127,19 +129,20 @@ public final class AuctionCommand implements TabExecutor {
             player.sendMessage("Price must not be negative.");
             return;
         }
-        AuctionManager.AuctionType type = (args.length >= 4 && args[3].equalsIgnoreCase("bin"))
-                ? AuctionManager.AuctionType.BIN
-                : AuctionManager.AuctionType.AUCTION;
-        AuctionManager.AuctionCategory category = AuctionManager.AuctionCategory.MISC;
+        AuctionHouseManager.AuctionType type = (args.length >= 4 && args[3].equalsIgnoreCase("bin"))
+                ? AuctionHouseManager.AuctionType.BIN
+                : AuctionHouseManager.AuctionType.AUCTION;
+        AuctionHouseManager.AuctionCategory category = AuctionHouseManager.AuctionCategory.MISC;
         if (args.length >= 5) {
             try {
-                category = AuctionManager.AuctionCategory.valueOf(args[4].toUpperCase());
+                category = AuctionHouseManager.AuctionCategory.valueOf(args[4].toUpperCase());
             } catch (IllegalArgumentException e) {
                 player.sendMessage("Unknown category: " + args[4]);
                 return;
             }
         }
-        UUID listingId = auctionManager.createListing(player.getUniqueId(), itemName, price, type, category);
+        UUID listingId = auctionManager.createListing(
+                player.getUniqueId(), null, itemName, category, price, type);
         player.sendMessage(String.format(
                 "Listed '%s' for %.1f coins as a %s auction [%s]. ID: %s",
                 itemName, price, type.getDisplayName(), category.getDisplayName(),
@@ -179,7 +182,7 @@ public final class AuctionCommand implements TabExecutor {
         }
         UUID listingId = resolveId(player, args[1]);
         if (listingId == null) return;
-        AuctionManager.AuctionListing entry = auctionManager.getListing(listingId);
+        AuctionHouseManager.AuctionListing entry = auctionManager.getListing(listingId);
         double highestBid = auctionManager.getHighestBid(listingId);
         UUID highestBidder = auctionManager.getHighestBidder(listingId);
         player.sendMessage("=== Auction: " + entry.itemName() + " ===");
@@ -187,7 +190,7 @@ public final class AuctionCommand implements TabExecutor {
         player.sendMessage("Type:     " + entry.type().getDisplayName());
         player.sendMessage("Category: " + entry.category().getDisplayName());
         player.sendMessage("Price:    " + entry.startingBid() + " coins");
-        if (entry.type() == AuctionManager.AuctionType.AUCTION) {
+        if (entry.type() == AuctionHouseManager.AuctionType.AUCTION) {
             player.sendMessage("Highest bid: " + highestBid + " coins"
                     + (highestBidder != null ? " (by " + highestBidder + ")" : " (no bids yet)"));
         }
@@ -209,8 +212,9 @@ public final class AuctionCommand implements TabExecutor {
     }
 
     private void handleMine(Player player) {
-        List<AuctionManager.AuctionListing> mine =
-                auctionManager.getListingsBySeller(player.getUniqueId());
+        List<AuctionHouseManager.AuctionListing> mine = activeListings().stream()
+                .filter(l -> l.seller().equals(player.getUniqueId()))
+                .collect(Collectors.toList());
         if (mine.isEmpty()) {
             player.sendMessage("You have no active auction listings.");
             return;
@@ -227,7 +231,7 @@ public final class AuctionCommand implements TabExecutor {
     private void handleCategory(Player player, String[] args) {
         if (args.length < 2) {
             StringBuilder sb = new StringBuilder("Usage: /auction category <");
-            AuctionManager.AuctionCategory[] cats = AuctionManager.AuctionCategory.values();
+            AuctionHouseManager.AuctionCategory[] cats = AuctionHouseManager.AuctionCategory.values();
             for (int i = 0; i < cats.length; i++) {
                 if (i > 0) sb.append('|');
                 sb.append(cats[i].name().toLowerCase());
@@ -236,14 +240,15 @@ public final class AuctionCommand implements TabExecutor {
             player.sendMessage(sb.toString());
             return;
         }
-        AuctionManager.AuctionCategory category;
+        AuctionHouseManager.AuctionCategory category;
         try {
-            category = AuctionManager.AuctionCategory.valueOf(args[1].toUpperCase());
+            category = AuctionHouseManager.AuctionCategory.valueOf(args[1].toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown category: " + args[1]);
             return;
         }
-        List<AuctionManager.AuctionListing> listings = auctionManager.getListingsByCategory(category);
+        List<AuctionHouseManager.AuctionListing> listings =
+                auctionManager.getListingsByCategory(category);
         if (listings.isEmpty()) {
             player.sendMessage("No active auctions in category: " + category.getDisplayName());
             return;
@@ -259,12 +264,17 @@ public final class AuctionCommand implements TabExecutor {
                         e.type().name())));
     }
 
+    private List<AuctionHouseManager.AuctionListing> activeListings() {
+        return auctionManager.getActiveListings().stream()
+                .map(auctionManager::getListing)
+                .collect(Collectors.toList());
+    }
+
     /** Parses a short (8-char) or full UUID string; sends an error and returns null on failure. */
     private UUID resolveId(Player player, String input) {
-        // Support both full UUIDs and the 8-char short-form shown in /auction list
-        for (AuctionManager.AuctionListing e : auctionManager.getActiveListings()) {
-            if (e.id().toString().startsWith(input) || e.id().toString().equals(input)) {
-                return e.id();
+        for (UUID id : auctionManager.getActiveListings()) {
+            if (id.toString().startsWith(input) || id.toString().equals(input)) {
+                return id;
             }
         }
         player.sendMessage("No active listing matches id: " + input);
