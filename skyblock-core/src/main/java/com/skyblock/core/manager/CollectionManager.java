@@ -2,6 +2,7 @@ package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -207,6 +208,30 @@ public final class CollectionManager {
             }
         }
         return sb.toString();
+    }
+
+    /** Returns how many items the player has collected for the given material (0 if unmapped). */
+    public long getCollection(UUID playerId, Material material) {
+        Collection c = Collection.parse(material.name());
+        return c == null ? 0L : getItems(playerId, c);
+    }
+
+    /** Returns the unlocked tier for the given material (0 if unmapped or not started). */
+    public int getTier(UUID playerId, Material material) {
+        Collection c = Collection.parse(material.name());
+        return c == null ? 0 : getTier(playerId, c);
+    }
+
+    /**
+     * Adds {@code amount} items to the player's collection for the given material and
+     * returns the number of new tiers unlocked (0 if no tier was crossed, -1 if unmapped).
+     */
+    public int addCollection(UUID playerId, Material material, long amount) {
+        Collection c = Collection.parse(material.name());
+        if (c == null) return -1;
+        int before = getTier(playerId, c);
+        addItems(playerId, c, amount);
+        return getTier(playerId, c) - before;
     }
 
     public void load(File dataFolder) {

@@ -1,5 +1,6 @@
 package com.skyblock.core.collection;
 
+import com.skyblock.core.manager.CollectionManager;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
