@@ -52,7 +52,7 @@ import com.skyblock.core.mail.MailCommand;
 import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.collections.CollectionsCommand;
 import com.skyblock.core.manager.CollectionManager;
-import com.skyblock.core.combat.CombatCommand;
+import com.skyblock.core.combat.command.CombatCommand;
 import com.skyblock.core.combat.CombatManager;
 import com.skyblock.core.coop.CoopCommand;
 import com.skyblock.core.coop.CoopManager;

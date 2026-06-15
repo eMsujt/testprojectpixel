@@ -40,6 +40,11 @@ public final class CombatManager {
     private final StatManager stats = StatManager.getInstance();
     final Random random = new Random();
 
+    /** Returns {@code true} if a crit triggers for the given crit-chance percentage. */
+    public boolean isCriticalHit(double critChance) {
+        return random.nextDouble() * 100.0 < critChance;
+    }
+
     public enum MobType {
         ZOMBIE, SKELETON, SPIDER, ENDERMAN, BLAZE, GHAST,
         SLIME, CREEPER, WITHER_SKELETON, MAGMA_CUBE, CAVE_SPIDER,
@@ -90,7 +95,7 @@ public final class CombatManager {
      * @param playerId the attacker's UUID
      * @return array: [strength, critChance, critDamage]
      */
-    double[] getAttackStats(UUID playerId) {
+    public double[] getAttackStats(UUID playerId) {
         double strength   = stats.getStat(playerId, StatManager.CombatStat.STRENGTH);
         double critChance = stats.getStat(playerId, StatManager.CombatStat.CRIT_CHANCE);
         double critDamage = stats.getStat(playerId, StatManager.CombatStat.CRIT_DAMAGE);
