@@ -65,5 +65,6 @@ public final class CarpentryXpListener implements Listener {
         if (xp == null) return;
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("carpentry", xp);
+        XpActionBar.send(player, "carpentry", xp, profile.getSkillXp("carpentry"));
     }
 }

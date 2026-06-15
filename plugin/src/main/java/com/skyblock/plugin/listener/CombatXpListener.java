@@ -59,6 +59,7 @@ public final class CombatXpListener implements Listener {
         SkyBlockProfile profile = ProfileManager.getInstance()
                 .getOrCreateProfile(killer.getUniqueId());
         profile.addSkillXp("combat", xp);
+        XpActionBar.send(killer, "combat", xp, profile.getSkillXp("combat"));
         String drop = MOB_DROP.get(event.getEntityType());
         if (drop == null) return;
         profile.incrementCollection(drop, 1);

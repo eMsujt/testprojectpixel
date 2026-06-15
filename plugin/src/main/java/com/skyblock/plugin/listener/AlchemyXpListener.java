@@ -26,5 +26,6 @@ public final class AlchemyXpListener implements Listener {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("alchemy", POTION_XP);
+        XpActionBar.send(player, "alchemy", POTION_XP, profile.getSkillXp("alchemy"));
     }
 }

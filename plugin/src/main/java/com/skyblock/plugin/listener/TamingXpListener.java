@@ -24,6 +24,7 @@ public final class TamingXpListener implements Listener {
         }
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("taming", TAME_XP);
+        XpActionBar.send(player, "taming", TAME_XP, profile.getSkillXp("taming"));
     }
 
     @EventHandler
@@ -33,5 +34,6 @@ public final class TamingXpListener implements Listener {
         }
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("taming", BREED_XP);
+        XpActionBar.send(player, "taming", BREED_XP, profile.getSkillXp("taming"));
     }
 }

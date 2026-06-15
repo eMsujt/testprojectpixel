@@ -3,6 +3,7 @@ package com.skyblock.plugin.listener;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -44,9 +45,10 @@ public final class ForagingXpListener implements Listener {
         if (xp == null) {
             return;
         }
-        SkyBlockProfile profile = ProfileManager.getInstance()
-                .getOrCreateProfile(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("foraging", xp);
+        XpActionBar.send(player, "foraging", xp, profile.getSkillXp("foraging"));
         profile.incrementCollection(LOG_DROP.get(type), 1);
     }
 }

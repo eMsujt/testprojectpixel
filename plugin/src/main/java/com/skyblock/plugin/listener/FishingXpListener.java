@@ -42,6 +42,7 @@ public final class FishingXpListener implements Listener {
         Player player = event.getPlayer();
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("fishing", xp);
+        XpActionBar.send(player, "fishing", xp, profile.getSkillXp("fishing"));
         String drop = FISH_DROP.get(type);
         if (drop != null) {
             profile.incrementCollection(drop, 1);
