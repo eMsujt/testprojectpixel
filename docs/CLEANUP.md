@@ -316,26 +316,12 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
-## Completed (CollectionManager/CollectionsManager thorough final-pass consolidation — round 66)
+## Completed (CollectionManager/CollectionsManager, SkillManager/SkillsManager, and PetManager/PetsManager thorough final-pass consolidation — round 66)
 
 | Domain | Canonical class | Work done | PR / commit |
 |--------|-----------------|-----------|-------------|
 | CollectionManager / CollectionsManager | `com.skyblock.core.manager.CollectionManager` | Thorough final-pass audit of every class named `CollectionManager` or `CollectionsManager` across every module; deleted 2 remaining `@Deprecated` stubs outright: `core/collections/CollectionsCommand.java` (referenced non-existent `CollectionsManager`) and `skyblock-core/command/CollectionCommand.java` (delegated to canonical `collection.command.CollectionCommand`); canonical `com.skyblock.core.manager.CollectionManager` confirmed as sole implementation | #2700 |
-
----
-
-## Completed (SkillManager/SkillsManager thorough final-pass consolidation — round 67)
-
-| Domain | Canonical class | Work done | PR / commit |
-|--------|-----------------|-----------|-------------|
 | SkillManager / SkillsManager | `com.skyblock.core.manager.SkillManager` | Thorough final-pass audit of every class named `SkillManager` or `SkillsManager` across every module; 2 remaining orphaned `@Deprecated` stubs deleted outright; canonical `com.skyblock.core.manager.SkillManager` confirmed as sole implementation | #2701 |
-
----
-
-## Completed (PetManager/PetsManager thorough final-pass consolidation — round 68)
-
-| Domain | Canonical class | Work done | PR / commit |
-|--------|-----------------|-----------|-------------|
 | PetManager / PetsManager | `com.skyblock.core.manager.PetManager` | Thorough final-pass audit of every class named `PetManager` or `PetsManager` across every module; 6 remaining `@Deprecated` stubs (`PetsCommand.java` ×2, `PetCommand.java` ×2, `PetAbility.java`, `PetsMenu.java`) deleted outright; canonical `com.skyblock.core.manager.PetManager` confirmed as sole implementation | #2703 |
 
 ---
