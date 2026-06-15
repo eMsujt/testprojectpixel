@@ -55,7 +55,7 @@ public class CollectionsMenu extends Menu {
     private final UUID playerId;
 
     public CollectionsMenu(UUID playerId) {
-        super("§eCollections", 6);
+        super("§eYour Collections", 6);
         this.playerId = playerId;
     }
 
