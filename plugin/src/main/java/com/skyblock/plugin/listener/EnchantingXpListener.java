@@ -5,23 +5,22 @@ import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 
 /**
  * Awards Enchanting XP directly to the player's {@link SkyBlockProfile} whenever
- * a player clicks the output slot of an enchanting table.
+ * a player enchants an item; XP equals the exp-level cost multiplied by 3,
+ * matching Hypixel SkyBlock's tier-scaled enchanting formula.
  */
 public final class EnchantingXpListener implements Listener {
 
     @EventHandler
-    public void onEnchant(InventoryClickEvent event) {
-        if (event.getInventory().getType() != InventoryType.ENCHANTING) return;
-        if (event.getRawSlot() != 0) return;
-        if (!(event.getWhoClicked() instanceof Player player)) return;
+    public void onEnchant(EnchantItemEvent event) {
+        if (!(event.getEnchanter() instanceof Player player)) return;
 
+        long xp = (long) event.getExpLevelCost() * 3L;
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        profile.addSkillXp("enchanting", 3L);
-        XpActionBar.send(player, "enchanting", 3L, profile.getSkillXp("enchanting"));
+        profile.addSkillXp("enchanting", xp);
+        XpActionBar.send(player, "enchanting", xp, profile.getSkillXp("enchanting"));
     }
 }
