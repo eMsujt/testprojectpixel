@@ -38,7 +38,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§aFast Travel", 6);
+        super("§9Fast Travel", 6);
     }
 
     @Override
@@ -60,11 +60,7 @@ public class FastTravelMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
-            }
-        }
+        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
     }
 }
