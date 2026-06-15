@@ -229,6 +229,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (GUI-domain and combat/quests-domain package layout normalization + manager wiring — rounds 55–56)
+
+| Domain | Work done | PR / commit |
+|--------|-----------|-------------|
+| `com.skyblock.gui` / `skyblock-gui` package layout | All classes in every GUI-domain module moved into correct sub-packages: menu classes → `.menu`, command classes → `.command`, listener classes → `.listener`, model/util types → `.util`; `StorageMenu`, `PotionBagMenu`, `QuiverMenu`, and `FishingBagMenu` migrated into `com.skyblock.plugin.gui.menu`; flat-package strays eliminated | #2670 |
+| `com.skyblock.combat` / `com.skyblock.quest` package layout | All classes in every combat-domain and quests-domain module moved into correct sub-packages: manager classes → `.manager`, listener classes → `.listener`, command classes → `.command`, model/enum types → `.model`; misplaced strays deleted or restubbed | #2671 |
+| AuctionHouseManager, ShopManager, BazaarManager, CollectionManager wiring | All four managers wired into `SkyBlockPlugin.onEnable` (`load()`) and `onDisable` (`save()`); `ShopManager` promoted from fully-qualified reference to a proper import; `AuctionHouseManager`, `BazaarManager`, and `CollectionManager` instantiated and registered in canonical order | #2673 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
