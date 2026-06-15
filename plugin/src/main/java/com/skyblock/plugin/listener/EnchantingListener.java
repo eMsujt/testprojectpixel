@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.skills.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,11 +28,11 @@ public final class EnchantingListener implements Listener {
 
     private void grantXP(Player player, long amount) {
         UUID id = player.getUniqueId();
-        int before = skillManager.getLevel(id, SkillType.ENCHANTING);
-        skillManager.addXP(id, SkillType.ENCHANTING, amount);
-        int after = skillManager.getLevel(id, SkillType.ENCHANTING);
+        int before = skillManager.getLevel(id, Skill.ENCHANTING);
+        skillManager.addXP(id, Skill.ENCHANTING, amount);
+        int after = skillManager.getLevel(id, Skill.ENCHANTING);
         if (after > before) {
-            skillManager.grantLevelUpRewards(id, SkillType.ENCHANTING, before, after);
+            skillManager.grantLevelUpRewards(id, Skill.ENCHANTING, before, after);
             player.sendTitle("§aSkill Level Up!", "§eEnchanting §a→ §eLVL " + after, 10, 60, 20);
         }
     }

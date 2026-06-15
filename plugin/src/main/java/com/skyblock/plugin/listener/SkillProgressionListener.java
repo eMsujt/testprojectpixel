@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.skills.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
@@ -29,7 +29,7 @@ import java.util.UUID;
 /**
  * Awards skill XP through {@link SkillManager} whenever a player breaks a block,
  * reels in a fish or kills a mob, mapping the broken {@link Material} or killed
- * {@link EntityType} to its governing {@link SkillType} (Farming, Mining, Foraging,
+ * {@link EntityType} to its governing {@link Skill} (Farming, Mining, Foraging,
  * Fishing or Combat) and firing level-up rewards when the player's level increases.
  *
  * <p>Farming crops only count once mature: {@link Ageable} crops must have reached
@@ -190,12 +190,12 @@ public final class SkillProgressionListener implements Listener {
         Long foraging = foragingXp.get(type);
         if (farming != null) {
             if (isMature(block)) {
-                grantXP(event.getPlayer(), SkillType.FARMING, farming);
+                grantXP(event.getPlayer(), Skill.FARMING, farming);
             }
         } else if (mining != null) {
-            grantXP(event.getPlayer(), SkillType.MINING, mining);
+            grantXP(event.getPlayer(), Skill.MINING, mining);
         } else if (foraging != null) {
-            grantXP(event.getPlayer(), SkillType.FORAGING, foraging);
+            grantXP(event.getPlayer(), Skill.FORAGING, foraging);
         }
     }
 
@@ -207,14 +207,14 @@ public final class SkillProgressionListener implements Listener {
         }
         Long combat = combatXp.get(event.getEntityType());
         if (combat != null) {
-            grantXP(killer, SkillType.COMBAT, combat);
+            grantXP(killer, Skill.COMBAT, combat);
         }
     }
 
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-            grantXP(event.getPlayer(), SkillType.FISHING, fishingXp);
+            grantXP(event.getPlayer(), Skill.FISHING, fishingXp);
         }
     }
 
@@ -229,7 +229,7 @@ public final class SkillProgressionListener implements Listener {
         return true;
     }
 
-    private void grantXP(Player player, SkillType skill, long amount) {
+    private void grantXP(Player player, Skill skill, long amount) {
         UUID id = player.getUniqueId();
         int before = skillManager.getLevel(id, skill);
         skillManager.addXP(id, skill, amount);

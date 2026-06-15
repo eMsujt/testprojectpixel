@@ -1,7 +1,7 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.manager.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -44,9 +44,9 @@ public final class SkillsCommand implements TabExecutor {
         }
 
         String input = args[0].toUpperCase();
-        SkillType skill;
+        Skill skill;
         try {
-            skill = SkillType.valueOf(input);
+            skill = Skill.valueOf(input);
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown skill: " + args[0] + ". Use /skills to see all skills.");
             return true;
@@ -60,7 +60,7 @@ public final class SkillsCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String prefix = args[0].toUpperCase();
-            return Arrays.stream(SkillType.values())
+            return Arrays.stream(Skill.values())
                     .map(s -> s.name().toLowerCase())
                     .filter(name -> name.startsWith(args[0].toLowerCase()))
                     .collect(Collectors.toList());
@@ -71,13 +71,13 @@ public final class SkillsCommand implements TabExecutor {
     private void sendSkillList(Player player) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== Your Skills ===");
-        for (SkillType skill : SkillType.values()) {
+        for (Skill skill : Skill.values()) {
             int level = skillManager.getLevel(id, skill);
             player.sendMessage(capitalize(skill.name()) + ": Level " + level + "/" + SkillManager.MAX_LEVEL);
         }
     }
 
-    private void sendSkillDetail(Player player, SkillType skill) {
+    private void sendSkillDetail(Player player, Skill skill) {
         UUID id = player.getUniqueId();
         int level = skillManager.getLevel(id, skill);
         long xp = skillManager.getXp(id, skill);

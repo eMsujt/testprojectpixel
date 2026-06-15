@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.skills.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -101,11 +101,11 @@ public final class MiningSkillListener implements Listener {
 
     private void grantXP(Player player, long amount) {
         UUID id = player.getUniqueId();
-        int before = skillManager.getLevel(id, SkillType.MINING);
-        skillManager.addXP(id, SkillType.MINING, amount);
-        int after = skillManager.getLevel(id, SkillType.MINING);
+        int before = skillManager.getLevel(id, Skill.MINING);
+        skillManager.addXP(id, Skill.MINING, amount);
+        int after = skillManager.getLevel(id, Skill.MINING);
         if (after > before) {
-            skillManager.grantLevelUpRewards(id, SkillType.MINING, before, after);
+            skillManager.grantLevelUpRewards(id, Skill.MINING, before, after);
             player.sendTitle("§aSkill Level Up!", "§eMining §a→ §eLVL " + after, 10, 60, 20);
         }
     }

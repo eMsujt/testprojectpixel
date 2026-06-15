@@ -1,7 +1,7 @@
 package com.skyblock.core.stats;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.manager.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import com.skyblock.core.slayer.SlayerManager;
 
 import org.bukkit.command.Command;
@@ -43,7 +43,7 @@ public final class StatsCommand implements TabExecutor {
         player.sendMessage("§6§l--- SkyBlock Stats ---");
 
         player.sendMessage("§e§lSkills:");
-        for (SkillType skill : SkillType.values()) {
+        for (Skill skill : Skill.values()) {
             int level = skillsManager.getLevel(id, skill);
             long xp = skillsManager.getXp(id, skill);
             player.sendMessage("  §7" + skill.getDisplayName() + ": §fLevel " + level + " §8(§7" + xp + " XP§8)");

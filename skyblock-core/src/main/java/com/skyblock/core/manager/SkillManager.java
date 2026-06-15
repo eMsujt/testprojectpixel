@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.model.Skill;
 import com.skyblock.core.stat.Stat;
 import com.skyblock.core.stat.StatManager;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,44 +16,13 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Canonical singleton tracking per-player skill XP and levels for every {@link SkillType}.
+ * Canonical singleton tracking per-player skill XP and levels for every {@link Skill}.
  *
  * <p>XP tables match the real Hypixel SkyBlock curves. The eight main skills
  * (Farming through Taming) use a 60-level standard curve. Carpentry and
  * Dungeoneering cap at 50. Runecrafting and Social cap at 25.</p>
  */
 public final class SkillManager {
-
-    /** Every skill tracked in SkyBlock. */
-    public enum SkillType {
-        FARMING("Farming"),
-        MINING("Mining"),
-        COMBAT("Combat"),
-        FORAGING("Foraging"),
-        FISHING("Fishing"),
-        ENCHANTING("Enchanting"),
-        ALCHEMY("Alchemy"),
-        TAMING("Taming"),
-        CARPENTRY("Carpentry"),
-        RUNECRAFTING("Runecrafting"),
-        SOCIAL("Social"),
-        DUNGEONEERING("Dungeoneering");
-
-        public final String displayName;
-
-        SkillType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        /** Lowercase storage key (e.g. {@code "farming"}). */
-        public String key() {
-            return name().toLowerCase();
-        }
-    }
 
     /** Maximum level for the standard 60-level skills. */
     public static final int MAX_LEVEL = 60;
@@ -148,7 +118,7 @@ public final class SkillManager {
     private static final SkillManager INSTANCE = new SkillManager();
 
     /** Per-player XP: player → (skill → total accumulated XP). */
-    private final Map<UUID, Map<SkillType, Long>> xpMap = new HashMap<>();
+    private final Map<UUID, Map<Skill, Long>> xpMap = new HashMap<>();
 
     private final StatManager statManager = StatManager.getInstance();
 
@@ -159,41 +129,41 @@ public final class SkillManager {
     }
 
     // -------------------------------------------------------------------------
-    // Typed API (SkillType enum)
+    // Typed API (Skill enum)
     // -------------------------------------------------------------------------
 
     /**
      * Adds XP to the player's total for the given skill and returns the new total.
      * Accepts a {@code double} for backward compatibility; the fractional part is truncated.
      */
-    public double addXp(UUID playerId, SkillType skill, double amount) {
+    public double addXp(UUID playerId, Skill skill, double amount) {
         return addXP(playerId, skill, (long) amount);
     }
 
     /** Adds XP (long) and returns the new total. */
-    public long addXP(UUID playerId, SkillType skill, long amount) {
+    public long addXP(UUID playerId, Skill skill, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(skill, "skill");
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative, got " + amount);
-        Map<SkillType, Long> xp = xpMap.computeIfAbsent(playerId, id -> new EnumMap<>(SkillType.class));
+        Map<Skill, Long> xp = xpMap.computeIfAbsent(playerId, id -> new EnumMap<>(Skill.class));
         return xp.merge(skill, amount, Long::sum);
     }
 
     /** Returns total accumulated XP for the given skill (0 if none recorded). */
-    public long getXp(UUID playerId, SkillType skill) {
+    public long getXp(UUID playerId, Skill skill) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(skill, "skill");
-        Map<SkillType, Long> xp = xpMap.get(playerId);
+        Map<Skill, Long> xp = xpMap.get(playerId);
         return xp == null ? 0L : xp.getOrDefault(skill, 0L);
     }
 
-    /** Alias for {@link #getXp(UUID, SkillType)} with uppercase name. */
-    public long getXP(UUID playerId, SkillType skill) {
+    /** Alias for {@link #getXp(UUID, Skill)} with uppercase name. */
+    public long getXP(UUID playerId, Skill skill) {
         return getXp(playerId, skill);
     }
 
     /** Returns the player's current level for the given skill. */
-    public int getLevel(UUID playerId, SkillType skill) {
+    public int getLevel(UUID playerId, Skill skill) {
         return levelForXp(skill.key(), getXp(playerId, skill));
     }
 
@@ -203,20 +173,20 @@ public final class SkillManager {
 
     /** Adds XP in the given skill (by lowercase key). Ignores unknown skills. */
     public void addSkillXP(UUID playerId, String skill, long amount) {
-        SkillType type = typeFor(skill);
+        Skill type = typeFor(skill);
         if (type != null) addXP(playerId, type, amount);
     }
 
     /** Directly sets the XP value for a player in the given skill. */
     public void setSkillXP(UUID playerId, String skill, long amount) {
-        SkillType type = typeFor(skill);
+        Skill type = typeFor(skill);
         if (type == null) return;
-        xpMap.computeIfAbsent(playerId, id -> new EnumMap<>(SkillType.class)).put(type, amount);
+        xpMap.computeIfAbsent(playerId, id -> new EnumMap<>(Skill.class)).put(type, amount);
     }
 
     /** Returns the total accumulated XP for a skill (by lowercase key). */
     public long getSkillXP(UUID playerId, String skill) {
-        SkillType type = typeFor(skill);
+        Skill type = typeFor(skill);
         return type == null ? 0L : getXp(playerId, type);
     }
 
@@ -227,10 +197,10 @@ public final class SkillManager {
 
     /** Returns all XP entries for a player as a lowercase-key map. */
     public Map<String, Long> getSkillXPs(UUID playerId) {
-        Map<SkillType, Long> xp = xpMap.get(playerId);
+        Map<Skill, Long> xp = xpMap.get(playerId);
         if (xp == null) return Collections.emptyMap();
         Map<String, Long> result = new LinkedHashMap<>();
-        for (Map.Entry<SkillType, Long> e : xp.entrySet()) {
+        for (Map.Entry<Skill, Long> e : xp.entrySet()) {
             result.put(e.getKey().key(), e.getValue());
         }
         return Collections.unmodifiableMap(result);
@@ -238,9 +208,9 @@ public final class SkillManager {
 
     /** Returns all players' XP for a single skill, keyed by player UUID. */
     public Map<UUID, Long> getAllSkillXP(String skill) {
-        SkillType type = typeFor(skill);
+        Skill type = typeFor(skill);
         Map<UUID, Long> result = new HashMap<>();
-        for (Map.Entry<UUID, Map<SkillType, Long>> entry : xpMap.entrySet()) {
+        for (Map.Entry<UUID, Map<Skill, Long>> entry : xpMap.entrySet()) {
             long xp = type == null ? 0L : entry.getValue().getOrDefault(type, 0L);
             result.put(entry.getKey(), xp);
         }
@@ -250,7 +220,7 @@ public final class SkillManager {
     /** Returns a human-readable summary of a player's levels across all skills. */
     public String getSkillsStats(UUID playerId) {
         StringBuilder sb = new StringBuilder("Skills Stats:");
-        for (SkillType skill : SkillType.values()) {
+        for (Skill skill : Skill.values()) {
             long xp = getXp(playerId, skill);
             int level = levelForXp(skill.key(), xp);
             sb.append(" | ").append(skill.displayName).append(" Lvl ").append(level)
@@ -296,7 +266,7 @@ public final class SkillManager {
     // -------------------------------------------------------------------------
 
     /** Grants accumulated stat bonuses for all levels gained between {@code fromLevel} and {@code toLevel}. */
-    public void grantLevelUpRewards(UUID playerId, SkillType skill, int fromLevel, int toLevel) {
+    public void grantLevelUpRewards(UUID playerId, Skill skill, int fromLevel, int toLevel) {
         if (playerId == null || skill == null || toLevel <= fromLevel) return;
         Stat stat = SKILL_STAT.get(skill.key());
         Map<Integer, Double> rewards = LEVEL_REWARDS.get(skill.key());
@@ -322,10 +292,10 @@ public final class SkillManager {
             try {
                 UUID uuid = UUID.fromString(key);
                 if (!cfg.isConfigurationSection(key + ".xp")) continue;
-                Map<SkillType, Long> xp = new EnumMap<>(SkillType.class);
+                Map<Skill, Long> xp = new EnumMap<>(Skill.class);
                 for (String typeName : cfg.getConfigurationSection(key + ".xp").getKeys(false)) {
                     try {
-                        xp.put(SkillType.valueOf(typeName), cfg.getLong(key + ".xp." + typeName, 0L));
+                        xp.put(Skill.valueOf(typeName), cfg.getLong(key + ".xp." + typeName, 0L));
                     } catch (IllegalArgumentException ignored) {}
                 }
                 if (!xp.isEmpty()) xpMap.put(uuid, xp);
@@ -336,9 +306,9 @@ public final class SkillManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "skills.yml");
         YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<UUID, Map<SkillType, Long>> entry : xpMap.entrySet()) {
+        for (Map.Entry<UUID, Map<Skill, Long>> entry : xpMap.entrySet()) {
             String key = entry.getKey().toString();
-            for (Map.Entry<SkillType, Long> xp : entry.getValue().entrySet()) {
+            for (Map.Entry<Skill, Long> xp : entry.getValue().entrySet()) {
                 cfg.set(key + ".xp." + xp.getKey().name(), xp.getValue());
             }
         }
@@ -353,10 +323,10 @@ public final class SkillManager {
     // Internal helpers
     // -------------------------------------------------------------------------
 
-    private static SkillType typeFor(String skill) {
+    private static Skill typeFor(String skill) {
         if (skill == null) return null;
         try {
-            return SkillType.valueOf(skill.toUpperCase());
+            return Skill.valueOf(skill.toUpperCase());
         } catch (IllegalArgumentException e) {
             return null;
         }

@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.skills.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -62,11 +62,11 @@ public final class AlchemyListener implements Listener {
 
     private void grantXP(Player player, long amount) {
         UUID id = player.getUniqueId();
-        int before = skillManager.getLevel(id, SkillType.ALCHEMY);
-        skillManager.addXP(id, SkillType.ALCHEMY, amount);
-        int after = skillManager.getLevel(id, SkillType.ALCHEMY);
+        int before = skillManager.getLevel(id, Skill.ALCHEMY);
+        skillManager.addXP(id, Skill.ALCHEMY, amount);
+        int after = skillManager.getLevel(id, Skill.ALCHEMY);
         if (after > before) {
-            skillManager.grantLevelUpRewards(id, SkillType.ALCHEMY, before, after);
+            skillManager.grantLevelUpRewards(id, Skill.ALCHEMY, before, after);
             player.sendTitle("§aSkill Level Up!", "§eAlchemy §a→ §eLVL " + after, 10, 60, 20);
         }
     }
