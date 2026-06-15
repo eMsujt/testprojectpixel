@@ -123,6 +123,42 @@ public final class IslandManager {
         delegate.addBlocksPlaced(owner, amount);
     }
 
+    public String getIslandBiome(UUID playerId) {
+        return delegate.getIslandBiome(playerId);
+    }
+
+    public void setIslandBiome(UUID playerId, String biome) {
+        delegate.setIslandBiome(playerId, biome);
+    }
+
+    public boolean isIslandUnlocked(UUID playerId) {
+        return delegate.isIslandUnlocked(playerId);
+    }
+
+    public void setIslandUnlocked(UUID playerId, boolean unlocked) {
+        delegate.setIslandUnlocked(playerId, unlocked);
+    }
+
+    public int getVisitorCount(UUID playerId) {
+        return delegate.getVisitorCount(playerId);
+    }
+
+    public void addVisitor(UUID islandOwner) {
+        delegate.addVisitor(islandOwner);
+    }
+
+    public void setVisitorCount(UUID islandOwner, int count) {
+        delegate.setVisitorCount(islandOwner, count);
+    }
+
+    public void recordVisit(UUID visitorId, String islandOwnerName) {
+        delegate.recordVisit(visitorId, islandOwnerName);
+    }
+
+    public List<String> getVisitLog(UUID visitorId) {
+        return delegate.getVisitLog(visitorId);
+    }
+
     public void load(File dataFolder) {
         delegate.load(dataFolder);
     }
