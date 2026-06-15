@@ -2,39 +2,55 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
+import com.skyblock.plugin.manager.ProfileManager;
+import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class StorageMenu extends Menu {
+import java.util.List;
 
-    private static final int STORAGE_PAGES = 18;
+public class StorageMenu extends Menu {
 
     private final Player player;
 
     public StorageMenu(Player player) {
-        super("§8SkyBlock Storage", 6);
+        super("§8Ender Chest", 6);
         this.player = player;
     }
 
     @Override
     protected void build() {
+        fillBorder();
+
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        List<ItemStack> contents = profile.getStorageContents();
+
+        int contentIndex = 0;
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                continue;
+            }
+            if (contentIndex < contents.size()) {
+                ItemStack item = contents.get(contentIndex);
+                if (item != null && item.getType() != Material.AIR) {
+                    setItem(slot, item);
+                }
+            }
+            contentIndex++;
+        }
+    }
+
+    private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 45; slot < 54; slot++) {
-            setItem(slot, pane);
-        }
-
-        for (int i = 0; i < STORAGE_PAGES; i++) {
-            setItem(9 + i, new ItemBuilder(Material.CHEST)
-                    .displayName("§6Storage " + (i + 1))
-                    .lore("§7Click to open storage page " + (i + 1) + ".")
-                    .build());
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
         }
     }
 }
