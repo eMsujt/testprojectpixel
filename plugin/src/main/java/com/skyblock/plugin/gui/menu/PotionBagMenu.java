@@ -2,13 +2,11 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.PlayerProfile;
+import com.skyblock.plugin.profile.ProfileManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 public class PotionBagMenu extends Menu {
 
@@ -30,11 +28,12 @@ public class PotionBagMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        List<ItemStack> contents = profile.getPotionBagContents();
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
+        ItemStack[] contents = profile.getPotionBagContents();
+        if (contents == null) contents = new ItemStack[0];
 
-        for (int i = 0; i < INNER_SLOTS.length && i < contents.size(); i++) {
-            ItemStack item = contents.get(i);
+        for (int i = 0; i < INNER_SLOTS.length && i < contents.length; i++) {
+            ItemStack item = contents[i];
             if (item != null) {
                 setItem(INNER_SLOTS[i], item);
             }

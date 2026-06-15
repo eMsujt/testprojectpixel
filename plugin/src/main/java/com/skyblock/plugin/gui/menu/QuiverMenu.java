@@ -2,13 +2,11 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.PlayerProfile;
+import com.skyblock.plugin.profile.ProfileManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 public class QuiverMenu extends Menu {
 
@@ -37,22 +35,23 @@ public class QuiverMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        List<ItemStack> contents = profile.getQuiverContents();
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
+        ItemStack[] contents = profile.getQuiverContents();
+        if (contents == null) contents = new ItemStack[0];
 
-        int totalPages = Math.max(1, (int) Math.ceil((double) contents.size() / SLOTS_PER_PAGE));
+        int totalPages = Math.max(1, (int) Math.ceil((double) contents.length / SLOTS_PER_PAGE));
         int start = page * SLOTS_PER_PAGE;
 
         for (int i = 0; i < SLOTS_PER_PAGE; i++) {
             int contentIndex = start + i;
-            if (contentIndex >= contents.size()) break;
-            ItemStack item = contents.get(contentIndex);
+            if (contentIndex >= contents.length) break;
+            ItemStack item = contents[contentIndex];
             if (item != null) {
                 setItem(INNER_SLOTS[i], item);
             }
         }
 
-        if (contents.isEmpty()) {
+        if (contents.length == 0) {
             setItem(22, new ItemBuilder(Material.BARRIER)
                     .displayName("§cQuiver Empty")
                     .lore("§7Add arrows to your quiver.")
