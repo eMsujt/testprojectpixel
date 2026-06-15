@@ -13,9 +13,9 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Increments per-collection counts on a player's profile when they gather
- * blocks via {@link BlockBreakEvent} or slay mobs via {@link EntityDeathEvent}.
+ * @deprecated Use {@link com.skyblock.plugin.collection.CollectionTracker} instead.
  */
+@Deprecated
 public final class CollectionTracker implements Listener {
 
     /** Maps a broken block to the collection it contributes to. */

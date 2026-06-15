@@ -12,9 +12,9 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Tracks player collections from gathering blocks via {@link BlockBreakEvent}
- * and slaying mobs via {@link EntityDeathEvent}, announcing any tiers unlocked.
+ * @deprecated Use {@link com.skyblock.plugin.collection.CollectionListener} instead.
  */
+@Deprecated
 public final class CollectionTrackingListener implements Listener {
 
     /** Maps a slain mob to the collection material it contributes to. */
