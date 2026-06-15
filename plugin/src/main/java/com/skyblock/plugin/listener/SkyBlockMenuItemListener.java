@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.menu.SkyBlockMenu;
+import com.skyblock.core.menu.SkyBlockMenuManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 /**
- * Opens the {@link SkyBlockMenu} when a player right-clicks while holding the
+ * Opens the SkyBlock main menu when a player right-clicks while holding the
  * SkyBlock Menu item (a NETHER_STAR named {@code §aSkyBlock Menu}).
  */
 public final class SkyBlockMenuItemListener implements Listener {
@@ -35,6 +35,6 @@ public final class SkyBlockMenuItemListener implements Listener {
 
         event.setCancelled(true);
         Player player = event.getPlayer();
-        new SkyBlockMenu().open(player);
+        SkyBlockMenuManager.getInstance().openMainMenu(player);
     }
 }

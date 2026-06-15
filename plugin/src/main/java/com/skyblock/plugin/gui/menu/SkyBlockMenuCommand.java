@@ -1,5 +1,6 @@
 package com.skyblock.plugin.gui.menu;
 
+import com.skyblock.core.menu.SkyBlockMenuManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +14,7 @@ public final class SkyBlockMenuCommand implements CommandExecutor {
             sender.sendMessage("This command can only be used by players.");
             return true;
         }
-        new SkyBlockMenu(player).open(player);
+        SkyBlockMenuManager.getInstance().openMainMenu(player);
         return true;
     }
 }

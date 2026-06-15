@@ -1,6 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.plugin.menus.SkyBlockMenu;
+import com.skyblock.core.menu.SkyBlockMenuManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,12 +21,12 @@ public final class SkyBlockCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 0) {
-            new SkyBlockMenu().open(player);
+            SkyBlockMenuManager.getInstance().openMainMenu(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "menu" -> new SkyBlockMenu().open(player);
+            case "menu" -> SkyBlockMenuManager.getInstance().openMainMenu(player);
             case "help" -> sendHelp(player);
             default     -> sendHelp(player);
         }
