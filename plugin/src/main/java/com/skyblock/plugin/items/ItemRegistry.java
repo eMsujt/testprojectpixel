@@ -34,39 +34,31 @@ public final class ItemRegistry {
     }
 
     /**
-     * Reads every {@code *.yml} file from the {@code items/} directory inside the
-     * plugin data folder, copying the bundled default out of the jar on first
-     * run, then parses each defined item.
+     * Reads {@code items.yml} from the plugin data folder ({@code plugins/SkyBlock/items.yml}),
+     * copying the bundled default out of the jar on first run, then parses every defined item.
      *
      * @param plugin the owning plugin, used for resource extraction and logging
      */
     public void load(JavaPlugin plugin) {
-        File dir = new File(plugin.getDataFolder(), "items");
-        if (!dir.isDirectory() && plugin.getResource("items/items.yml") != null) {
-            plugin.saveResource("items/items.yml", false);
+        File file = new File(plugin.getDataFolder(), "items.yml");
+        if (!file.exists() && plugin.getResource("items.yml") != null) {
+            plugin.saveResource("items.yml", false);
         }
-        if (!dir.isDirectory()) {
+        if (!file.exists()) {
             return;
         }
-        File[] files = dir.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml"));
-        if (files == null) {
-            return;
-        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection root = cfg.isConfigurationSection("items")
+                ? cfg.getConfigurationSection("items")
+                : cfg;
         items.clear();
-        for (File file : files) {
-            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-            // Support an "items" wrapper section, falling back to root-level keys.
-            ConfigurationSection root = cfg.isConfigurationSection("items")
-                    ? cfg.getConfigurationSection("items")
-                    : cfg;
-            for (String id : root.getKeys(false)) {
-                if (!root.isConfigurationSection(id)) {
-                    continue;
-                }
-                SkyBlockItem item = parse(plugin, id, root.getConfigurationSection(id));
-                if (item != null) {
-                    items.put(id, item);
-                }
+        for (String id : root.getKeys(false)) {
+            if (!root.isConfigurationSection(id)) {
+                continue;
+            }
+            SkyBlockItem item = parse(plugin, id, root.getConfigurationSection(id));
+            if (item != null) {
+                items.put(id, item);
             }
         }
         plugin.getLogger().info("Loaded " + items.size() + " registry items.");
