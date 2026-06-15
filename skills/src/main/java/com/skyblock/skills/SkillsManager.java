@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Facade over {@link SkillManager} providing the canonical entry point for
- * skill XP and level operations used by other modules.
+ * @deprecated Use {@code com.skyblock.core.skills.SkillManager} from skyblock-core instead.
  */
+@Deprecated
 public final class SkillsManager {
 
     /** Cumulative XP required to reach each level (index 0 = level 1) for each skill. */

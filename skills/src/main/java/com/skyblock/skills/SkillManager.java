@@ -11,11 +11,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Tracks per-player skill progression: the XP a player has earned in each
- * {@link SkillType} and the levels unlocked from those totals.
- *
- * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ * @deprecated Use {@code com.skyblock.core.skills.SkillManager} from skyblock-core instead.
  */
+@Deprecated
 public final class SkillManager {
 
     /** The highest level a skill can reach. */
