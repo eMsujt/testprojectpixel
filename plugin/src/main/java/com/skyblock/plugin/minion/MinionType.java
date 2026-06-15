@@ -9,12 +9,12 @@ import org.bukkit.Material;
  * Static definition of a minion variant.
  *
  * <p>Each constant carries an 11-element {@link TierSpec} array (indices 0–10
- * correspond to tiers I–XI). COBBLESTONE_MINION uses wiki-accurate per-tier
+ * correspond to tiers I–XI). COBBLESTONE uses wiki-accurate per-tier
  * intervals; all other types repeat a single flat spec across all 11 tiers.</p>
  */
 public enum MinionType {
 
-    COBBLESTONE_MINION(Material.COBBLESTONE, new TierSpec[]{
+    COBBLESTONE(Material.COBBLESTONE, new TierSpec[]{
         new TierSpec(280L,  1),  // Tier I
         new TierSpec(280L,  3),  // Tier II
         new TierSpec(240L,  3),  // Tier III
@@ -27,12 +27,12 @@ public enum MinionType {
         new TierSpec(180L, 15),  // Tier X
         new TierSpec(160L, 15),  // Tier XI
     }),
-    WOOD_MINION   (Material.OAK_LOG,    uniform(20L, 1)),
-    COAL_MINION   (Material.COAL,       uniform(30L, 1)),
-    IRON_MINION   (Material.IRON_INGOT, uniform(30L, 1)),
-    GOLD_MINION   (Material.GOLD_INGOT, uniform(40L, 1)),
-    DIAMOND_MINION(Material.DIAMOND,    uniform(60L, 1)),
-    WHEAT_MINION  (Material.WHEAT,      uniform(20L, 1));
+    SNOW   (Material.SNOWBALL,   uniform(20L, 1)),
+    WHEAT  (Material.WHEAT,      uniform(20L, 1)),
+    IRON   (Material.IRON_INGOT, uniform(30L, 1)),
+    GOLD   (Material.GOLD_INGOT, uniform(40L, 1)),
+    DIAMOND(Material.DIAMOND,    uniform(60L, 1)),
+    LAPIS  (Material.LAPIS_LAZULI, uniform(30L, 1));
 
     /** Production parameters for a single tier. */
     public static final class TierSpec {
