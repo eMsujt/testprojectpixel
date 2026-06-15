@@ -4,13 +4,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 /**
- * Item rarity tiers, ordered from least to most rare.
- *
- * <p>Each tier carries the display name and chat color used when rendering
- * item names and lore. Ordinal order is meaningful: {@link #compareTo(Enum)}
- * ranks rarities, and {@link #next()} steps one tier up (e.g. for rarity
- * upgrades).</p>
+ * @deprecated Use {@code com.skyblock.core.model.Rarity} instead.
  */
+@Deprecated
 public enum ItemRarity {
 
     COMMON("Common", NamedTextColor.WHITE),

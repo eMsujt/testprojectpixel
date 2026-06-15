@@ -1,5 +1,6 @@
 package com.skyblock.plugin.item;
 
+import com.skyblock.core.model.Rarity;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -103,11 +104,6 @@ public final class ItemRegistry {
     /** Returns an unmodifiable view of all registered item definitions. */
     public Map<String, ItemDefinition> getItems() {
         return Collections.unmodifiableMap(items);
-    }
-
-    /** Item rarity tiers, ordered from least to most rare. */
-    public enum Rarity {
-        COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, DIVINE, SPECIAL
     }
 
     /**

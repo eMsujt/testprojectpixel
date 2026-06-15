@@ -1,12 +1,16 @@
-package com.skyblock.items;
+package com.skyblock.core.model;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 /**
- * @deprecated Use {@code com.skyblock.core.model.Rarity} instead.
+ * Item rarity tiers, ordered from least to most rare.
+ *
+ * <p>Each tier carries the display name and chat color used when rendering
+ * item names and lore. Ordinal order is meaningful: {@link #compareTo(Enum)}
+ * ranks rarities, and {@link #next()} steps one tier up (e.g. for rarity
+ * upgrades).</p>
  */
-@Deprecated
 public enum Rarity {
 
     COMMON("Common", NamedTextColor.WHITE),
@@ -26,30 +30,14 @@ public enum Rarity {
         this.color = color;
     }
 
-    /**
-     * Returns the human-readable name of this rarity.
-     *
-     * @return the display name, e.g. {@code "Legendary"}
-     */
     public String getDisplayName() {
         return displayName;
     }
 
-    /**
-     * Returns the chat color used to render items of this rarity.
-     *
-     * @return the rarity color
-     */
     public TextColor getColor() {
         return color;
     }
 
-    /**
-     * Returns the next rarity tier, or this tier if it is already the
-     * highest.
-     *
-     * @return the upgraded rarity
-     */
     public Rarity next() {
         Rarity[] values = values();
         return ordinal() + 1 < values.length ? values[ordinal() + 1] : this;

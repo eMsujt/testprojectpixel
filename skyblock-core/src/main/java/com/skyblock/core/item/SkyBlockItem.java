@@ -1,5 +1,7 @@
 package com.skyblock.core.item;
 
+import com.skyblock.core.model.Rarity;
+
 /**
  * Lightweight value type representing a SkyBlock item definition.
  *
@@ -7,11 +9,6 @@ package com.skyblock.core.item;
  * from a definition.</p>
  */
 public record SkyBlockItem(String id, String displayName, Rarity rarity) {
-
-    /** Rarity tiers, ordered from least to most rare. */
-    public enum Rarity {
-        COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, SPECIAL
-    }
 
     public SkyBlockItem {
         if (id == null || id.isBlank()) {

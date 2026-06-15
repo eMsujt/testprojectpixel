@@ -1,5 +1,6 @@
 package com.skyblock.plugin.items;
 
+import com.skyblock.core.model.Rarity;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
@@ -48,28 +49,4 @@ public final class SkyBlockItem {
     public ItemStats getStats() { return stats; }
     public List<String> getAbilities() { return abilities; }
 
-    /**
-     * Item rarity tiers, ordered from least to most rare.
-     */
-    public enum Rarity {
-
-        COMMON("Common"),
-        UNCOMMON("Uncommon"),
-        RARE("Rare"),
-        EPIC("Epic"),
-        LEGENDARY("Legendary"),
-        MYTHIC("Mythic"),
-        DIVINE("Divine"),
-        SPECIAL("Special");
-
-        private final String displayName;
-
-        Rarity(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
 }

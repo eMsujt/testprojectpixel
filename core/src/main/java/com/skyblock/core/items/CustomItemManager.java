@@ -1,5 +1,7 @@
 package com.skyblock.core.items;
 
+import com.skyblock.core.model.Rarity;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,11 +21,6 @@ public final class CustomItemManager {
     /** The functional category of a custom item. */
     public enum ItemType {
         WEAPON, ARMOR, TOOL, ACCESSORY, CONSUMABLE, MATERIAL
-    }
-
-    /** Rarity tiers, ordered from least to most rare. */
-    public enum Rarity {
-        COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, SPECIAL
     }
 
     /** Every custom item available in SkyBlock. */
