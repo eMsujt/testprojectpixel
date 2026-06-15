@@ -152,7 +152,7 @@ public final class ProfilePersistenceManager {
         cfg.set("notifications.skills", profile.isShowSkillNotifications());
         cfg.set("notifications.collections", profile.isShowCollectionNotifications());
         cfg.set("notifications.pets", profile.isShowPetNotifications());
-        for (Map.Entry<String, Long> entry : profile.getSkillXp().entrySet()) {
+        for (Map.Entry<String, Double> entry : profile.getSkillXp().entrySet()) {
             cfg.set("skills." + entry.getKey(), entry.getValue());
         }
         for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
@@ -171,7 +171,7 @@ public final class ProfilePersistenceManager {
         ConfigurationSection skills = cfg.getConfigurationSection("skills");
         if (skills != null) {
             for (String skill : skills.getKeys(false)) {
-                profile.setSkillXp(skill, skills.getLong(skill));
+                profile.setSkillXp(skill, skills.getDouble(skill));
             }
         }
 

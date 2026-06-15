@@ -48,9 +48,9 @@ public final class MiningListener implements Listener {
         Player player = event.getPlayer();
         SkyBlockProfile profile = ProfileManager.getInstance()
                 .getOrCreateProfile(player.getUniqueId());
-        int before = SKILL_MANAGER.levelForXp("mining", profile.getSkillXp("mining"));
+        int before = SKILL_MANAGER.levelForXp("mining", (long) profile.getSkillXp("mining"));
         profile.addSkillXp("mining", xp);
-        int after = SKILL_MANAGER.levelForXp("mining", profile.getSkillXp("mining"));
+        int after = SKILL_MANAGER.levelForXp("mining", (long) profile.getSkillXp("mining"));
         if (after > before) {
             player.sendTitle("§aSkill Level Up!", "§eMining §a→ §eLVL " + after, 10, 60, 20);
         }
