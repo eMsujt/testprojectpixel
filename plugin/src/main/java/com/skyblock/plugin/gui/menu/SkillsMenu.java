@@ -5,34 +5,37 @@ import com.skyblock.plugin.gui.Menu;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.manager.SkillManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class SkillsMenu extends Menu {
 
     private enum Skill {
-        FARMING      ("Farming",      "farming",      Material.WHEAT),
-        MINING       ("Mining",       "mining",       Material.IRON_PICKAXE),
-        COMBAT       ("Combat",       "combat",       Material.IRON_SWORD),
-        FORAGING     ("Foraging",     "foraging",     Material.OAK_LOG),
-        FISHING      ("Fishing",      "fishing",      Material.FISHING_ROD),
-        ENCHANTING   ("Enchanting",   "enchanting",   Material.BOOKSHELF),
-        ALCHEMY      ("Alchemy",      "alchemy",      Material.GLASS_BOTTLE),
-        TAMING       ("Taming",       "taming",       Material.BONE),
-        CARPENTRY    ("Carpentry",    "carpentry",    Material.CRAFTING_TABLE),
-        RUNECRAFTING ("Runecrafting", "runecrafting", Material.MAGMA_CREAM),
-        SOCIAL       ("Social",       "social",       Material.FEATHER);
+        FARMING      ("Farming",      "farming",      Color.fromRGB( 85, 255,  85)),
+        MINING       ("Mining",       "mining",       Color.fromRGB(170, 170, 170)),
+        COMBAT       ("Combat",       "combat",       Color.fromRGB(255,  85,  85)),
+        FORAGING     ("Foraging",     "foraging",     Color.fromRGB(  0, 170,   0)),
+        FISHING      ("Fishing",      "fishing",      Color.fromRGB( 85,  85, 255)),
+        ENCHANTING   ("Enchanting",   "enchanting",   Color.fromRGB(170,   0, 170)),
+        ALCHEMY      ("Alchemy",      "alchemy",      Color.fromRGB(255, 255,  85)),
+        TAMING       ("Taming",       "taming",       Color.fromRGB(255, 170,   0)),
+        CARPENTRY    ("Carpentry",    "carpentry",    Color.fromRGB(150,  75,   0)),
+        RUNECRAFTING ("Runecrafting", "runecrafting", Color.fromRGB(255,  85, 255)),
+        SOCIAL       ("Social",       "social",       Color.fromRGB( 85, 255, 255));
 
         private final String displayName;
         private final String key;
-        private final Material icon;
+        private final Color color;
 
-        Skill(String displayName, String key, Material icon) {
+        Skill(String displayName, String key, Color color) {
             this.displayName = displayName;
             this.key = key;
-            this.icon = icon;
+            this.color = color;
         }
     }
 
@@ -56,12 +59,15 @@ public class SkillsMenu extends Menu {
             Skill skill = values[i];
             double xp = profile.getSkillXp(skill.key);
             int level = skillManager.levelForXp(skill.key, (long) xp);
-            setItem(SLOTS[i], new ItemBuilder(skill.icon)
-                            .displayName("§a" + skill.displayName)
-                            .lore("§7Level: §e" + level,
-                                  "§7Total XP: §e" + xp)
-                            .build(),
-                    e -> e.setCancelled(true));
+            ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+            LeatherArmorMeta meta = (LeatherArmorMeta) helmet.getItemMeta();
+            if (meta != null) {
+                meta.setColor(skill.color);
+                meta.setDisplayName("§a" + skill.displayName);
+                meta.setLore(Arrays.asList("§7Level: §e" + level, "§7Total XP: §e" + xp));
+                helmet.setItemMeta(meta);
+            }
+            setItem(SLOTS[i], helmet, e -> e.setCancelled(true));
         }
     }
 
