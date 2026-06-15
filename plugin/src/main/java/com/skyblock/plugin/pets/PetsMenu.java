@@ -1,6 +1,6 @@
 package com.skyblock.plugin.pets;
 
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import com.skyblock.plugin.managers.PetsManager;
 import org.bukkit.Material;

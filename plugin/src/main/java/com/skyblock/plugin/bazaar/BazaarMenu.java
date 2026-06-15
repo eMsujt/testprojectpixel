@@ -1,7 +1,7 @@
 package com.skyblock.plugin.bazaar;
 
 import com.skyblock.plugin.bazaar.BazaarManager.Product;
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
