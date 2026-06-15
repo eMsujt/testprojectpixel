@@ -39,11 +39,9 @@ import com.skyblock.core.crafting.SkyBlockCraftingManager;
 import com.skyblock.core.crafting.SkyBlockRecipeManager;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.economy.manager.EconomyManager;
-import com.skyblock.core.enchant.EnchantCommand;
 import com.skyblock.core.enchant.EnchantmentCommand;
 import com.skyblock.core.enchant.EnchantmentListener;
 import com.skyblock.core.enchant.SkyBlockEnchantListener;
-import com.skyblock.core.enchant.SkyBlockEnchantFacade;
 import com.skyblock.core.enchant.SkyBlockEnchantManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.enchanting.EnchantingManager;
@@ -223,13 +221,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("collection").setTabCompleter(collectionCommand);
         DungeonManager dungeonManager = DungeonManager.getInstance();
         getCommand("dungeon").setExecutor(new DungeonCommand(dungeonManager));
-        SkyBlockEnchantFacade.getInstance();
         EnchantingManager enchantingManager = EnchantingManager.getInstance();
         getCommand("enchanting").setExecutor(new EnchantingCommand(enchantingManager));
-        com.skyblock.core.enchant.EnchantManager enchantManager = com.skyblock.core.enchant.EnchantManager.getInstance();
-        EnchantCommand enchantCommand = new EnchantCommand(enchantManager);
-        getCommand("enchant").setExecutor(enchantCommand);
-        getCommand("enchant").setTabCompleter(enchantCommand);
         com.skyblock.core.manager.EnchantmentManager enchantmentManager = com.skyblock.core.manager.EnchantmentManager.getInstance();
         EnchantmentCommand enchantmentCommand = new EnchantmentCommand(enchantmentManager);
         getCommand("enchantment").setExecutor(enchantmentCommand);
@@ -431,13 +424,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("rift").setTabCompleter(riftCommand);
         getServer().getPluginManager().registerEvents(new RiftListener(riftManager), this);
 
-        com.skyblock.core.enchantment.EnchantmentManager.getInstance();
-        com.skyblock.core.enchantment.SkyBlockEnchantManager skyBlockEnchantManager =
-                com.skyblock.core.enchantment.SkyBlockEnchantManager.getInstance();
-        com.skyblock.core.enchantment.EnchantCommand enchantmentEnchantCommand =
-                new com.skyblock.core.enchantment.EnchantCommand(skyBlockEnchantManager);
-        getCommand("skyblockenchant").setExecutor(enchantmentEnchantCommand);
-        getCommand("skyblockenchant").setTabCompleter(enchantmentEnchantCommand);
         CollectionManager.getInstance();
         com.skyblock.core.manager.QuestManager.getInstance();
         NPCCommand npcManagerCommand = new NPCCommand(NPCManager.getInstance());
