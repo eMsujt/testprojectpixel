@@ -326,6 +326,23 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkyBlockPlugin.onEnable canonical manager wiring — round 67)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkyBlockPlugin / onEnable wiring | `com.skyblock.plugin.SkyBlockPlugin` | Extended `SkyBlockPlugin.java` `onEnable` to properly instantiate and wire all canonical managers in dependency order (`SkillManager` → `CollectionManager` → `MinionManager` → `PetManager` → `AuctionHouseManager` → `BankManager` → `BazaarManager` → `ShopManager` → `IslandManager`); all managers confirmed registered and `onDisable` teardown updated to match | #2706 |
+
+---
+
+## Completed (minion-domain and items-domain package layout normalization — round 68)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| MinionManager / MinionListener / MinionCommand | `com.skyblock.core.manager.MinionManager` | Normalized minion-domain package layout: every class across every module containing minion-related classes (`MinionManager`, `MinionListener`, `MinionCommand`, and related model types) moved into correct `.manager`/`.listener`/`.command`/`.model` sub-packages; flat-package strays deleted; canonical `com.skyblock.core.manager.MinionManager` confirmed as sole manager implementation | #2707 |
+| ItemManager / ItemBuilder / ItemUtil | `com.skyblock.core.util` | Normalized items-domain package layout: every class across every module containing item-related classes (excluding those already in `com.skyblock.core.util`) moved into correct `.manager`/`.listener`/`.command`/`.model`/`.util` sub-packages; flat-package strays eliminated; canonical item utilities in `com.skyblock.core.util` confirmed as sole implementations | #2709 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
