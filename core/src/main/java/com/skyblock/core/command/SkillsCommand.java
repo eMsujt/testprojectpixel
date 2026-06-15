@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.skills.SkillsManager;
+import com.skyblock.core.skills.SkillManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -14,11 +14,12 @@ import java.util.stream.Collectors;
 
 public final class SkillsCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "xp", "level", "history");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "xp", "level");
+    private static final List<String> SKILLS = List.copyOf(SkillManager.SKILL_XP_TABLE.keySet());
 
-    private final SkillsManager manager;
+    private final SkillManager manager;
 
-    public SkillsCommand(SkillsManager manager) {
+    public SkillsCommand(SkillManager manager) {
         this.manager = manager;
     }
 
@@ -35,11 +36,10 @@ public final class SkillsCommand implements TabExecutor {
         }
 
         switch (args[0].toLowerCase()) {
-            case "view"    -> handleView(player);
-            case "xp"      -> handleXp(player, args);
-            case "level"   -> handleLevel(player, args);
-            case "history" -> handleHistory(player);
-            default        -> sendHelp(player);
+            case "view"  -> handleView(player);
+            case "xp"    -> handleXp(player, args);
+            case "level" -> handleLevel(player, args);
+            default      -> sendHelp(player);
         }
         return true;
     }
@@ -54,7 +54,7 @@ public final class SkillsCommand implements TabExecutor {
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("xp") || args[0].equalsIgnoreCase("level"))) {
             String prefix = args[1].toLowerCase();
-            return SkillsManager.SKILLS.stream()
+            return SKILLS.stream()
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
@@ -62,10 +62,11 @@ public final class SkillsCommand implements TabExecutor {
     }
 
     private void handleView(Player player) {
-        Map<String, Integer> levels = manager.getSkillLevels(player.getUniqueId());
+        Map<String, Long> xps = manager.getSkillXPs(player.getUniqueId());
         player.sendMessage("=== Skills ===");
-        for (String skill : SkillsManager.SKILLS) {
-            int level = levels.getOrDefault(skill, 0);
+        for (String skill : SKILLS) {
+            long xp = xps.getOrDefault(skill, 0L);
+            int level = SkillManager.levelForXp(skill, xp);
             player.sendMessage("  " + skill + ": level " + level);
         }
     }
@@ -76,12 +77,12 @@ public final class SkillsCommand implements TabExecutor {
             return;
         }
         String skill = args[1].toLowerCase();
-        if (!SkillsManager.SKILLS.contains(skill)) {
+        if (!SKILLS.contains(skill)) {
             player.sendMessage("Unknown skill '" + skill + "'.");
             return;
         }
-        long xp = manager.getXp(player.getUniqueId(), skill);
-        int level = manager.getLevel(player.getUniqueId(), skill);
+        long xp = manager.getSkillXP(player.getUniqueId(), skill);
+        int level = manager.getSkillLevel(player.getUniqueId(), skill);
         player.sendMessage("=== " + skill + " ===");
         player.sendMessage("  Level: " + level);
         player.sendMessage("  XP: " + xp);
@@ -93,24 +94,12 @@ public final class SkillsCommand implements TabExecutor {
             return;
         }
         String skill = args[1].toLowerCase();
-        if (!SkillsManager.SKILLS.contains(skill)) {
+        if (!SKILLS.contains(skill)) {
             player.sendMessage("Unknown skill '" + skill + "'.");
             return;
         }
-        int level = manager.getLevel(player.getUniqueId(), skill);
+        int level = manager.getSkillLevel(player.getUniqueId(), skill);
         player.sendMessage("Your " + skill + " level is " + level + ".");
-    }
-
-    private void handleHistory(Player player) {
-        List<String> history = manager.getSkillsHistory(player.getUniqueId());
-        player.sendMessage("=== Skills History ===");
-        if (history.isEmpty()) {
-            player.sendMessage("No skills history found.");
-            return;
-        }
-        for (String entry : history) {
-            player.sendMessage(entry);
-        }
     }
 
     private void sendHelp(Player player) {
@@ -118,6 +107,5 @@ public final class SkillsCommand implements TabExecutor {
         player.sendMessage("/skills view — view all your skill levels");
         player.sendMessage("/skills xp <skill> — view XP and level for a skill");
         player.sendMessage("/skills level <skill> — view your level in a skill");
-        player.sendMessage("/skills history — view your skills event history");
     }
 }

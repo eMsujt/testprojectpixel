@@ -20,7 +20,8 @@ import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.ProfileManager;
 import com.skyblock.core.manager.ProfileManager.SkyBlockProfile;
-import com.skyblock.core.skills.SkillsManager;
+import com.skyblock.core.skills.SkillManager;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.warp.WarpManager;
 import org.bukkit.Location;
@@ -162,12 +163,12 @@ public final class SkyblockHubCommand implements CommandExecutor {
                 + " §7| Kuudra clears: §a" + kuudraClears);
 
         // Activities
-        SkillsManager skills = SkillsManager.getInstance();
+        SkillManager skills = SkillManager.getInstance();
         FishingManager fishing = FishingManager.getInstance();
         AlchemyManager alchemy = AlchemyManager.getInstance();
         GardenManager garden = GardenManager.getInstance();
         int avgSkillLevel = 0;
-        SkillsManager.SkillType[] skillTypes = SkillsManager.SkillType.values();
+        SkillType[] skillTypes = SkillType.values();
         for (SkillsManager.SkillType s : skillTypes) {
             avgSkillLevel += skills.getLevel(id, s);
         }
@@ -272,7 +273,7 @@ public final class SkyblockHubCommand implements CommandExecutor {
         UUID id = player.getUniqueId();
         SkillsManager manager = SkillsManager.getInstance();
         player.sendMessage("=== Your Skills ===");
-        for (SkillsManager.SkillType skill : SkillsManager.SkillType.values()) {
+        for (SkillType skill : SkillType.values()) {
             int level = manager.getLevel(id, skill);
             double xp = manager.getXp(id, skill);
             player.sendMessage("  " + skill.getDisplayName() + ": Level " + level + " (" + (long) xp + " XP)");

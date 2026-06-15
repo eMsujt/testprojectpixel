@@ -1,6 +1,7 @@
 package com.skyblock.core.stats;
 
-import com.skyblock.core.skills.SkillsManager;
+import com.skyblock.core.skills.SkillManager;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import com.skyblock.core.slayer.SlayerManager;
 
 import org.bukkit.command.Command;
@@ -14,10 +15,10 @@ import java.util.UUID;
 
 public final class StatsCommand implements TabExecutor {
 
-    private final SkillsManager skillsManager;
+    private final SkillManager skillsManager;
     private final SlayerManager slayerManager;
 
-    public StatsCommand(SkillsManager skillsManager, SlayerManager slayerManager) {
+    public StatsCommand(SkillManager skillsManager, SlayerManager slayerManager) {
         this.skillsManager = skillsManager;
         this.slayerManager = slayerManager;
     }
@@ -42,10 +43,10 @@ public final class StatsCommand implements TabExecutor {
         player.sendMessage("§6§l--- SkyBlock Stats ---");
 
         player.sendMessage("§e§lSkills:");
-        for (SkillsManager.SkillType skill : SkillsManager.SkillType.values()) {
+        for (SkillType skill : SkillType.values()) {
             int level = skillsManager.getLevel(id, skill);
-            double xp = skillsManager.getXp(id, skill);
-            player.sendMessage("  §7" + skill.getDisplayName() + ": §fLevel " + level + " §8(§7" + (long) xp + " XP§8)");
+            long xp = skillsManager.getXp(id, skill);
+            player.sendMessage("  §7" + skill.getDisplayName() + ": §fLevel " + level + " §8(§7" + xp + " XP§8)");
         }
 
         player.sendMessage("§e§lSlayer:");

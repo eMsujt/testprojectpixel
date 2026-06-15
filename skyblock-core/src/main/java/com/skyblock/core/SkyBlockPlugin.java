@@ -432,7 +432,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.hud.ScoreboardManager.getInstance();
         com.skyblock.core.minions.MinionManager.getInstance();
         com.skyblock.core.manager.PetManager.getInstance();
-        com.skyblock.core.skills.SkillsManager.getInstance();
         getServer().getPluginManager().registerEvents(new SkyBlockEnchantListener(SkyBlockEnchantManager.getInstance()), this);
 
         AchievementManager achievementManager = AchievementManager.getInstance();
