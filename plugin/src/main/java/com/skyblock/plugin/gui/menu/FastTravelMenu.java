@@ -8,34 +8,27 @@ import org.bukkit.inventory.ItemStack;
 public class FastTravelMenu extends Menu {
 
     private enum Destination {
-        THE_HUB("The Hub", Material.COMPASS, 10, "/warp hub"),
-        PRIVATE_ISLAND("Private Island", Material.GRASS_BLOCK, 11, "/warp island"),
-        THE_BARN("The Barn", Material.HAY_BLOCK, 12, "/warp barn"),
-        MUSHROOM_DESERT("Mushroom Desert", Material.RED_MUSHROOM, 13, "/warp desert"),
-        SPIDERS_DEN("Spider's Den", Material.COBWEB, 14, "/warp spider"),
-        BLAZING_FORTRESS("Blazing Fortress", Material.NETHERRACK, 15, "/warp nether"),
-        THE_END("The End", Material.END_STONE, 16, "/warp end"),
-        THE_PARK("The Park", Material.OAK_LEAVES, 19, "/warp park"),
-        GOLD_MINE("Gold Mine", Material.GOLD_ORE, 20, "/warp mine"),
-        DEEP_CAVERNS("Deep Caverns", Material.STONE, 21, "/warp deepcaverns"),
-        DWARVEN_MINES("Dwarven Mines", Material.IRON_ORE, 22, "/warp dwarven"),
-        CRYSTAL_HOLLOWS("Crystal Hollows", Material.AMETHYST_BLOCK, 23, "/warp crystals");
+        HUB("Hub Island", 13, "/warp hub"),
+        PRIVATE_ISLAND("Private Island", 20, "/warp island"),
+        THE_BARN("The Barn", 22, "/warp barn"),
+        MUSHROOM_DESERT("Mushroom Desert", 24, "/warp desert"),
+        SPIDERS_DEN("Spider's Den", 29, "/warp spider"),
+        BLAZING_FORTRESS("Blazing Fortress", 31, "/warp nether"),
+        THE_END("The End", 33, "/warp end");
 
         private final String displayName;
-        private final Material icon;
         private final int slot;
         private final String command;
 
-        Destination(String displayName, Material icon, int slot, String command) {
+        Destination(String displayName, int slot, String command) {
             this.displayName = displayName;
-            this.icon = icon;
             this.slot = slot;
             this.command = command;
         }
     }
 
     public FastTravelMenu() {
-        super("§bFast Travel", 6);
+        super("§aFast Travel", 6);
     }
 
     @Override
@@ -43,9 +36,9 @@ public class FastTravelMenu extends Menu {
         fillBorder();
 
         for (Destination destination : Destination.values()) {
-            setItem(destination.slot, new ItemBuilder(destination.icon)
-                            .displayName("§b" + destination.displayName)
-                            .lore("§7Click to travel to " + destination.displayName + ".")
+            setItem(destination.slot, new ItemBuilder(Material.MAGMA_CREAM)
+                            .displayName("§a" + destination.displayName)
+                            .lore("§7Click to warp to " + destination.displayName + ".")
                             .build(),
                     event -> {
                         event.getWhoClicked().closeInventory();
