@@ -121,6 +121,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (BazaarManager/BazaarHandler stub fixes and zero-caller deletions — round 39)
+
+| Domain | Canonical class | Duplicates removed | PR / commit |
+|--------|-----------------|-------------------|-------------|
+| BazaarManager / BazaarHandler remaining stubs | `com.skyblock.core.manager.BazaarManager` | 3 zero-caller stubs deleted outright: empty `com.skyblock.core.bazaar.BazaarProduct` placeholder, duplicate `com.skyblock.core.bazaar.BazaarCommand` (superseded by `com.skyblock.core.command.BazaarCommand`), and dead `BazaarProduct` re-export; all remaining `@Deprecated` stubs given delegating constructors or static-factory redirects | #2615 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
