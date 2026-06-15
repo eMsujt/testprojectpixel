@@ -1,46 +1,31 @@
 package com.skyblock.plugin.gui.menu;
 
-import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import org.bukkit.Material;
+import com.skyblock.plugin.manager.ProfileManager;
+import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class StorageMenu extends Menu {
 
-    private static final int[] INNER_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
-    };
-
-    private final ItemStack[] enderContents;
+    private final Player player;
 
     public StorageMenu(Player player) {
-        super("§8Ender Chest", 6);
-        this.enderContents = player.getEnderChest().getContents();
+        super("§aStorage", 6);
+        this.player = player;
     }
 
     @Override
     protected void build() {
-        fillBorder();
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        List<ItemStack> contents = profile.getStorageContents();
 
-        for (int i = 0; i < Math.min(enderContents.length, INNER_SLOTS.length); i++) {
-            if (enderContents[i] != null) {
-                setItem(INNER_SLOTS[i], enderContents[i]);
-            }
-        }
-    }
-
-    private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
+        for (int slot = 0; slot < 54 && slot < contents.size(); slot++) {
+            ItemStack item = contents.get(slot);
+            if (item != null) {
+                setItem(slot, item);
             }
         }
     }
