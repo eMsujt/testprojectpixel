@@ -18,6 +18,8 @@ import java.util.UUID;
  * automatically when their first profile is created. Not thread-safe;
  * synchronize externally if accessed from multiple threads.</p>
  */
+/** @deprecated Use {@link com.skyblock.core.manager.ProfileManager} instead. */
+@Deprecated
 public final class ProfileManager {
 
     private final Map<UUID, Map<String, SkyBlockProfile>> playerProfiles = new HashMap<>();

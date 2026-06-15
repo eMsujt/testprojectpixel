@@ -13,6 +13,8 @@ import java.util.UUID;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/** @deprecated Use {@link com.skyblock.core.manager.ProfileManager} instead. */
+@Deprecated
 public final class ProfileManager {
 
     private static final ProfileManager INSTANCE = new ProfileManager();
