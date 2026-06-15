@@ -2,14 +2,15 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.PlayerProfile;
+import com.skyblock.plugin.profile.ProfileManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ProfileManagementMenu extends Menu {
 
@@ -20,22 +21,22 @@ public class ProfileManagementMenu extends Menu {
 
     public ProfileManagementMenu(Player player) {
         super("§aProfile Management", 6);
-        this.player = player;
+        this.player = Objects.requireNonNull(player, "player");
     }
 
     @Override
     protected void build() {
         fillBorder();
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
 
-        // Slot 0: active profile (player head)
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
         if (meta != null) {
             meta.setOwningPlayer(player);
             meta.setDisplayName("§a" + player.getName());
             meta.setLore(Arrays.asList(
+                    "§7Profile: §e" + profile.getActiveProfileName(),
                     "§7Purse: §6" + String.format("%,.0f", (double) profile.getPurse()) + " Coins",
                     "§7Bank: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins",
                     "",
@@ -45,7 +46,6 @@ public class ProfileManagementMenu extends Menu {
         }
         setItem(PROFILE_SLOTS[0], skull, e -> e.setCancelled(true));
 
-        // Slots 1-4: empty profile slots
         ItemStack empty = new ItemBuilder(Material.LIGHT_GRAY_STAINED_GLASS_PANE)
                 .displayName("§7[Empty]")
                 .lore("§eClick to create a new profile!")
