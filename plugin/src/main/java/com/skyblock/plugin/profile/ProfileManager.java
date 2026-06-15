@@ -9,10 +9,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import org.bukkit.inventory.ItemStack;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -180,18 +183,7 @@ public final class ProfileManager implements Listener {
             return;
         }
 
-        YamlConfiguration cfg = new YamlConfiguration();
-        cfg.set("purse", profile.getPurse());
-        cfg.set("bank", profile.getBank());
-        for (Map.Entry<String, Long> entry : profile.getSkillXp().entrySet()) {
-            cfg.set("skills." + entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
-            cfg.set("collections." + entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, Long> entry : profile.getCollectionCounts().entrySet()) {
-            cfg.set("collectionCounts." + entry.getKey(), entry.getValue());
-        }
+        YamlConfiguration cfg = buildSnapshot(profile);
 
         File dir = new File(plugin.getDataFolder(), "profiles");
         File file = new File(dir, uuid + ".yml");
@@ -236,18 +228,7 @@ public final class ProfileManager implements Listener {
             return CompletableFuture.completedFuture(null);
         }
 
-        YamlConfiguration cfg = new YamlConfiguration();
-        cfg.set("purse", profile.getPurse());
-        cfg.set("bank", profile.getBank());
-        for (Map.Entry<String, Long> entry : profile.getSkillXp().entrySet()) {
-            cfg.set("skills." + entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
-            cfg.set("collections." + entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, Long> entry : profile.getCollectionCounts().entrySet()) {
-            cfg.set("collectionCounts." + entry.getKey(), entry.getValue());
-        }
+        YamlConfiguration cfg = buildSnapshot(profile);
 
         File dir = new File(plugin.getDataFolder(), "profiles");
         File file = new File(dir, uuid + ".yml");
@@ -270,8 +251,41 @@ public final class ProfileManager implements Listener {
     }
 
     /**
+     * Builds an immutable YAML snapshot of every persisted field in the given
+     * profile. Must be called on the main thread so that profile accessors are
+     * read under the same thread guarantee as the profile map itself.
+     *
+     * @param profile the profile to snapshot
+     * @return a fully populated configuration ready for async I/O
+     */
+    private static YamlConfiguration buildSnapshot(PlayerProfile profile) {
+        YamlConfiguration cfg = new YamlConfiguration();
+        cfg.set("purse", profile.getPurse());
+        cfg.set("bank", profile.getBank());
+        cfg.set("activeProfileName", profile.getActiveProfileName());
+        cfg.set("activePet", profile.getActivePet());
+        cfg.set("pets", profile.getOwnedPets());
+        for (Map.Entry<String, Long> entry : profile.getSkillXp().entrySet()) {
+            cfg.set("skills." + entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
+            cfg.set("collections." + entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<String, Long> entry : profile.getCollectionCounts().entrySet()) {
+            cfg.set("collectionCounts." + entry.getKey(), entry.getValue());
+        }
+        serializeInventory(cfg, "enderChest", profile.getEnderChestContents());
+        serializeInventory(cfg, "potionBag", profile.getPotionBagContents());
+        serializeInventory(cfg, "quiver", profile.getQuiverContents());
+        serializeInventory(cfg, "fishingBag", profile.getFishingBagContents());
+        serializeInventory(cfg, "islandStorage", profile.getIslandStorageContents());
+        serializeInventory(cfg, "wardrobe", profile.getWardrobeContents());
+        return cfg;
+    }
+
+    /**
      * Applies a parsed YAML snapshot to the given profile in place. The file
-     * layout mirrors what {@link ProfileSaveTask} writes. Must run on the main
+     * layout mirrors what {@link #buildSnapshot} writes. Must run on the main
      * thread.
      *
      * @param profile the profile to populate in place
@@ -280,6 +294,17 @@ public final class ProfileManager implements Listener {
     private void applyFromDisk(PlayerProfile profile, YamlConfiguration cfg) {
         profile.setPurse(cfg.getLong("purse", profile.getPurse()));
         profile.setBank(cfg.getLong("bank", profile.getBank()));
+
+        String savedProfileName = cfg.getString("activeProfileName");
+        if (savedProfileName != null) {
+            profile.setActiveProfileName(savedProfileName);
+        }
+        profile.setActivePet(cfg.getString("activePet", null));
+
+        List<String> pets = cfg.getStringList("pets");
+        if (!pets.isEmpty()) {
+            profile.setOwnedPets(pets);
+        }
 
         ConfigurationSection skills = cfg.getConfigurationSection("skills");
         if (skills != null) {
@@ -301,6 +326,37 @@ public final class ProfileManager implements Listener {
                 profile.setCollectionCount(collection, collectionCounts.getLong(collection));
             }
         }
+
+        profile.setEnderChestContents(deserializeInventory(cfg, "enderChest"));
+        profile.setPotionBagContents(deserializeInventory(cfg, "potionBag"));
+        profile.setQuiverContents(deserializeInventory(cfg, "quiver"));
+        profile.setFishingBagContents(deserializeInventory(cfg, "fishingBag"));
+        profile.setIslandStorageContents(deserializeInventory(cfg, "islandStorage"));
+        profile.setWardrobeContents(deserializeInventory(cfg, "wardrobe"));
+    }
+
+    private static void serializeInventory(YamlConfiguration cfg, String key, ItemStack[] contents) {
+        if (contents == null) {
+            return;
+        }
+        cfg.set(key + ".size", contents.length);
+        for (int i = 0; i < contents.length; i++) {
+            if (contents[i] != null) {
+                cfg.set(key + "." + i, contents[i]);
+            }
+        }
+    }
+
+    private static ItemStack[] deserializeInventory(YamlConfiguration cfg, String key) {
+        int size = cfg.getInt(key + ".size", -1);
+        if (size < 0) {
+            return null;
+        }
+        ItemStack[] contents = new ItemStack[size];
+        for (int i = 0; i < size; i++) {
+            contents[i] = cfg.getItemStack(key + "." + i);
+        }
+        return contents;
     }
 
 }
