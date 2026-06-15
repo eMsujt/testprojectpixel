@@ -59,6 +59,9 @@ public final class MinionManager implements Listener {
     /** Placed minions keyed by their owner, in placement order. */
     private final Map<UUID, List<Minion>> minionsByOwner = new HashMap<>();
 
+    /** Wheat Minion locations keyed by their owner, in placement order. */
+    private final Map<UUID, List<Location>> wheatMinionsByOwner = new HashMap<>();
+
     /** Handle to the repeating production task, {@code null} while not running. */
     private BukkitTask task;
 
@@ -103,6 +106,9 @@ public final class MinionManager implements Listener {
         Objects.requireNonNull(minion, "minion");
         minions.put(location, new MinionData(minion.owner, minion));
         minionsByOwner.computeIfAbsent(minion.owner, k -> new ArrayList<>()).add(minion);
+        if (minion.type == Minion.MinionType.WHEAT) {
+            wheatMinionsByOwner.computeIfAbsent(minion.owner, k -> new ArrayList<>()).add(location);
+        }
     }
 
     /**
@@ -120,6 +126,15 @@ public final class MinionManager implements Listener {
                 owned.remove(removed.getMinion());
                 if (owned.isEmpty()) {
                     minionsByOwner.remove(removed.getOwner());
+                }
+            }
+            if (removed.getMinion().type == Minion.MinionType.WHEAT) {
+                List<Location> wheatOwned = wheatMinionsByOwner.get(removed.getOwner());
+                if (wheatOwned != null) {
+                    wheatOwned.remove(location);
+                    if (wheatOwned.isEmpty()) {
+                        wheatMinionsByOwner.remove(removed.getOwner());
+                    }
                 }
             }
         }
@@ -167,5 +182,17 @@ public final class MinionManager implements Listener {
     /** Returns the number of minions currently placed. */
     public int getMinionCount() {
         return minions.size();
+    }
+
+    /**
+     * Returns the locations of Wheat Minions placed by the given player, in placement order.
+     *
+     * @param owner the owning player's UUID
+     * @return an unmodifiable view of that player's Wheat Minion locations, empty if none
+     */
+    public List<Location> getWheatMinions(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        List<Location> owned = wheatMinionsByOwner.get(owner);
+        return owned == null ? Collections.emptyList() : Collections.unmodifiableList(owned);
     }
 }
