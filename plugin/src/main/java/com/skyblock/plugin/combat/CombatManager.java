@@ -1,12 +1,19 @@
 package com.skyblock.plugin.combat;
 
 import com.skyblock.core.combat.StatManager;
+import com.skyblock.core.stat.StatManager.StatType;
+import com.skyblock.core.stats.PlayerStatManager;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -54,6 +61,37 @@ public final class CombatManager implements Listener {
     }
 
     /**
+     * Calculates the melee damage of a hit, resolving stats from the attacker and
+     * applying defense reduction when the target is a player.
+     *
+     * @param attacker the attacking player
+     * @param weapon   the held weapon (may be null for bare-hand hits)
+     * @param target   the entity being attacked
+     * @return the final damage dealt, never negative
+     */
+    public static double calculateDamage(Player attacker, ItemStack weapon, Entity target) {
+        PlayerStatManager stats = PlayerStatManager.getInstance();
+        UUID attackerId = attacker.getUniqueId();
+
+        double weaponDamage = getWeaponDamage(weapon);
+        double strength   = stats.getStat(attackerId, StatType.STRENGTH);
+        double critChance = stats.getStat(attackerId, StatType.CRIT_CHANCE);
+        double critDamage = stats.getStat(attackerId, StatType.CRIT_DAMAGE);
+
+        double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
+
+        if (target instanceof Player) {
+            UUID defenderId = target.getUniqueId();
+            double defense     = stats.getStat(defenderId, StatType.DEFENSE);
+            double trueDefense = stats.getStat(defenderId, StatType.TRUE_DEFENSE);
+            damage *= (1.0 - defense / (defense + 100.0));
+            damage = Math.max(0.0, damage - trueDefense);
+        }
+
+        return damage;
+    }
+
+    /**
      * Calculates the melee damage of a hit from the given combat stats.
      *
      * @param weaponDamage      base weapon damage stat, clamped to &ge; 0
@@ -64,5 +102,24 @@ public final class CombatManager implements Listener {
      */
     public static double calculateDamage(double weaponDamage, double strength, double critChancePercent, double critDamagePercent) {
         return DamageFormula.calculate(weaponDamage, strength, critChancePercent, critDamagePercent);
+    }
+
+    private static double getWeaponDamage(ItemStack weapon) {
+        if (weapon == null) {
+            return 0.0;
+        }
+        ItemMeta meta = weapon.getItemMeta();
+        if (meta == null) {
+            return 0.0;
+        }
+        Collection<AttributeModifier> mods = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE);
+        if (mods == null || mods.isEmpty()) {
+            return 0.0;
+        }
+        double total = 0.0;
+        for (AttributeModifier mod : mods) {
+            total += mod.getAmount();
+        }
+        return Math.max(0.0, total);
     }
 }
