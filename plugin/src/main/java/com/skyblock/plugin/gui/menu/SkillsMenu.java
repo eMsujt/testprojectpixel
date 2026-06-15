@@ -43,7 +43,7 @@ public class SkillsMenu extends Menu {
     private final UUID playerId;
 
     public SkillsMenu(UUID playerId) {
-        super("§aSkills", 6);
+        super("§aYour Skills", 6);
         this.playerId = playerId;
     }
 
