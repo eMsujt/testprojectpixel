@@ -13,21 +13,23 @@ import java.util.List;
 /**
  * The Potion Bag menu.
  *
- * <p>A 36-slot (4-row) chest titled {@code §dPotion Bag} with a gray glass-pane
- * border. The 14 inner slots (10–16 and 19–25) are populated from the owning
- * {@link SkyBlockProfile}'s potion bag contents, one stack per slot.</p>
+ * <p>A 54-slot (6-row) chest titled {@code §5Potion Bag} with a gray glass-pane
+ * border. The 28 inner slots (10–16, 19–25, 28–34 and 37–43) are populated from
+ * the owning {@link SkyBlockProfile}'s potion bag contents, one stack per slot.</p>
  */
 public class PotionBagMenu extends Menu {
 
     private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43
     };
 
     private final Player player;
 
     public PotionBagMenu(Player player) {
-        super("§dPotion Bag", 4);
+        super("§5Potion Bag", 6);
         this.player = player;
     }
 
@@ -50,9 +52,9 @@ public class PotionBagMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 36; slot++) {
+        for (int slot = 0; slot < 54; slot++) {
             int column = slot % 9;
-            if (slot < 9 || slot >= 27 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
                 setItem(slot, pane);
             }
         }
