@@ -15,25 +15,25 @@ class SkillsMenuTest {
 
     @Test
     void testSkillsMenuTitle() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         assertEquals("§aSkills", skillsMenu.getTitle());
     }
 
     @Test
     void testSkillsMenuRowCount() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         assertEquals(6, skillsMenu.getRows());
     }
 
     @Test
     void testSkillsMenuHasCorrectSlotCount() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         assertEquals(54, skillsMenu.getInventory().getSize());
     }
 
     @Test
     void testBorderFilledTopRow() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         Inventory inv = skillsMenu.getInventory();
         for (int slot = 0; slot < 9; slot++) {
             ItemStack item = inv.getItem(slot);
@@ -44,7 +44,7 @@ class SkillsMenuTest {
 
     @Test
     void testBorderFilledBottomRow() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         Inventory inv = skillsMenu.getInventory();
         for (int slot = 45; slot < 54; slot++) {
             ItemStack item = inv.getItem(slot);
@@ -55,7 +55,7 @@ class SkillsMenuTest {
 
     @Test
     void testBorderPaneHasEmptyName() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         Inventory inv = skillsMenu.getInventory();
         ItemStack borderPane = inv.getItem(0);
         assertTrue(borderPane.hasItemMeta());
@@ -64,7 +64,7 @@ class SkillsMenuTest {
 
     @Test
     void testSkillSlotsFilled() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         Inventory inv = skillsMenu.getInventory();
         int[] skillSlots = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32};
         for (int slot : skillSlots) {
@@ -76,7 +76,7 @@ class SkillsMenuTest {
 
     @Test
     void testSkillIconsAreMaterialPlayerHead() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         Inventory inv = skillsMenu.getInventory();
         int[] skillSlots = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32};
         for (int slot : skillSlots) {
@@ -87,7 +87,7 @@ class SkillsMenuTest {
 
     @Test
     void testSkillItemsHaveDisplayNames() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         Inventory inv = skillsMenu.getInventory();
         int[] skillSlots = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32};
         for (int slot : skillSlots) {
@@ -101,7 +101,7 @@ class SkillsMenuTest {
 
     @Test
     void testSkillItemsHaveLore() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         Inventory inv = skillsMenu.getInventory();
         int[] skillSlots = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32};
         for (int slot : skillSlots) {
@@ -114,14 +114,14 @@ class SkillsMenuTest {
 
     @Test
     void testInventoryCreatedOnGetInventory() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         assertNotNull(skillsMenu.getInventory());
         assertEquals("§aSkills", skillsMenu.getInventory().getTitle());
     }
 
     @Test
     void testInventoryItemStackSizeOne() {
-        SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
+        com.skyblock.core.menu.SkillsMenu skillsMenu = new SkillsMenu(TEST_PLAYER_ID);
         Inventory inv = skillsMenu.getInventory();
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
