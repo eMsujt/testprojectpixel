@@ -19,7 +19,7 @@ import java.util.UUID;
 public class CollectionsMenu extends Menu {
 
     private enum Category {
-        FARMING("Farming", "§a", Material.WHEAT, 11,
+        FARMING("Agriculture", "§e", Material.WHEAT, 20,
                 new Material[]{Material.WHEAT, Material.CARROT, Material.POTATO,
                         Material.PUMPKIN, Material.MELON_SLICE, Material.SUGAR_CANE,
                         Material.CACTUS, Material.RED_MUSHROOM, Material.NETHER_WART}),
@@ -55,7 +55,7 @@ public class CollectionsMenu extends Menu {
     private final UUID playerId;
 
     public CollectionsMenu(UUID playerId) {
-        super("§eCollections", 6);
+        super("§2Collections", 6);
         this.playerId = playerId;
     }
 
