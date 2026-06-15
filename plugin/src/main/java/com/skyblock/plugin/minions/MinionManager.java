@@ -81,6 +81,7 @@ public final class MinionManager implements Listener {
      */
     public void onEnable(JavaPlugin plugin) {
         this.plugin = plugin;
+        startTask();
     }
 
     /**
