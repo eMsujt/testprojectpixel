@@ -1,6 +1,6 @@
 package com.skyblock.core.storage;
 
-import com.skyblock.core.PlayerDataManager;
+import com.skyblock.core.manager.PlayerDataManager;
 import com.skyblock.core.SkyBlockPlugin;
 import org.bukkit.configuration.file.YamlConfiguration;
 
