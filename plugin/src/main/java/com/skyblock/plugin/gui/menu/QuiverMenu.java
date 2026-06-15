@@ -12,11 +12,24 @@ import java.util.List;
 
 public class QuiverMenu extends Menu {
 
+    private static final int[] INNER_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34
+    };
+    private static final int SLOTS_PER_PAGE = INNER_SLOTS.length;
+
     private final Player player;
+    private final int page;
 
     public QuiverMenu(Player player) {
-        super("§6Quiver", 6);
+        this(player, 0);
+    }
+
+    private QuiverMenu(Player player, int page) {
+        super("§3Quiver", 5);
         this.player = player;
+        this.page = page;
     }
 
     @Override
@@ -26,18 +39,47 @@ public class QuiverMenu extends Menu {
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         List<ItemStack> contents = profile.getQuiverContents();
 
-        int itemIndex = 0;
-        for (int slot = 9; slot < 45 && itemIndex < contents.size(); slot++) {
-            ItemStack item = contents.get(itemIndex++);
+        int totalPages = Math.max(1, (int) Math.ceil((double) contents.size() / SLOTS_PER_PAGE));
+        int start = page * SLOTS_PER_PAGE;
+
+        for (int i = 0; i < SLOTS_PER_PAGE; i++) {
+            int contentIndex = start + i;
+            if (contentIndex >= contents.size()) break;
+            ItemStack item = contents.get(contentIndex);
             if (item != null) {
-                setItem(slot, item);
+                setItem(INNER_SLOTS[i], item);
             }
         }
 
-        setItem(49, new ItemBuilder(Material.ARROW)
-                .displayName("§eQuiver")
-                .lore("§7Stores your arrows.")
+        if (contents.isEmpty()) {
+            setItem(22, new ItemBuilder(Material.BARRIER)
+                    .displayName("§cQuiver Empty")
+                    .lore("§7Add arrows to your quiver.")
+                    .build());
+        }
+
+        setItem(40, new ItemBuilder(Material.ARROW)
+                .displayName("§3Quiver")
+                .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
                 .build());
+
+        if (page > 0) {
+            int prevPage = page - 1;
+            setItem(36, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Go to page §e" + (prevPage + 1))
+                    .build(),
+                    event -> new QuiverMenu(player, prevPage).open(player));
+        }
+
+        if ((page + 1) < totalPages) {
+            int nextPage = page + 1;
+            setItem(44, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Go to page §e" + (nextPage + 1))
+                    .build(),
+                    event -> new QuiverMenu(player, nextPage).open(player));
+        }
     }
 
     private void fillBorder() {
@@ -47,7 +89,7 @@ public class QuiverMenu extends Menu {
         for (int slot = 0; slot < 9; slot++) {
             setItem(slot, pane);
         }
-        for (int slot = 45; slot < 54; slot++) {
+        for (int slot = 36; slot < 45; slot++) {
             setItem(slot, pane);
         }
     }
