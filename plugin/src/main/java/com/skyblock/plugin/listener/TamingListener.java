@@ -2,25 +2,37 @@ package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.skills.SkillManager;
 import com.skyblock.plugin.skills.SkillManager.SkillType;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityTameEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.UUID;
 
 public final class TamingListener implements Listener {
 
-    private static final long TAME_XP = 500L;
+    private static final long KILL_XP = 10L;
 
     private final SkillManager skillManager = SkillManager.getInstance();
 
     @EventHandler
-    public void onEntityTame(EntityTameEvent event) {
-        if (!(event.getOwner() instanceof Player)) {
+    public void onEntityDeath(EntityDeathEvent event) {
+        if (!(event.getEntity().getKiller() instanceof Wolf wolf)) {
             return;
         }
-        grantXP((Player) event.getOwner(), TAME_XP);
+        AnimalTamer owner = wolf.getOwner();
+        if (owner == null) {
+            return;
+        }
+        Player player = Bukkit.getPlayer(owner.getUniqueId());
+        if (player == null) {
+            return;
+        }
+        grantXP(player, KILL_XP);
     }
 
     private void grantXP(Player player, long amount) {
