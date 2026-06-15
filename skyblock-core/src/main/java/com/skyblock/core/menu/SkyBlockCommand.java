@@ -3,33 +3,25 @@ package com.skyblock.core.menu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
- * Handles the {@code /skyblock} (alias {@code /sb}) command.
- *
- * <p>Opens the SkyBlock main menu GUI for the executing player via
- * {@link SkyBlockMenuManager}.</p>
+ * @deprecated Moved to {@link com.skyblock.core.command.SkyblockMenuCommand}.
+ *             Use {@link com.skyblock.core.hub.SkyblockHubCommand} for the full
+ *             {@code /skyblock} router.
  */
+@Deprecated
 public final class SkyBlockCommand implements TabExecutor {
 
-    private final SkyBlockMenuManager menuManager;
-
     public SkyBlockCommand(SkyBlockMenuManager menuManager) {
-        this.menuManager = Objects.requireNonNull(menuManager, "menuManager");
+        // deprecated — menuManager arg kept for binary compatibility
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
-        menuManager.openMainMenu(player);
+        sender.sendMessage("This command is deprecated. Use /skyblock instead.");
         return true;
     }
 
