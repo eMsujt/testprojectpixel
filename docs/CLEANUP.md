@@ -77,6 +77,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (Listener and handler class consolidations — rounds 26-28)
+
+| Domain | Canonical class/package | Duplicates removed | PR / commit |
+|--------|------------------------|-------------------|-------------|
+| plugin.collection vs plugin.collections listener packages | `com.skyblock.plugin.collection.*` | `plugin.collections` listener stubs deprecated pointing to `plugin.collection` | #2579 |
+| plugin.skill vs plugin.skills listener packages | `com.skyblock.plugin.skill.*` | `plugin.skills` listener stubs deprecated pointing to `plugin.skill` | #2580 |
+| plugin.minion vs plugin.minions listener packages | `com.skyblock.plugin.minion.*` (`MinionListener`, `MinionPlacementListener`, `CobblestoneMinion`) | `plugin.minions` listener/utility stubs deprecated pointing to `plugin.minion` counterparts | #2581 |
+| Remaining duplicate listener sweep | *(canonical per-domain packages)* | `plugin/listeners/` directory emptied; all stray listener duplicates deprecated or deleted outright | #2578 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
