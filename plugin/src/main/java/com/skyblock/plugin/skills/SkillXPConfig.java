@@ -1,19 +1,11 @@
 package com.skyblock.plugin.skills;
 
 /**
- * Per-level XP requirements for every Hypixel SkyBlock skill.
- *
- * <p>Each array holds the XP needed to advance <em>from</em> the level equal
- * to the element's index to the next level ({@code STANDARD[0]} = XP to go
- * from level 0 → 1, etc.).  These values match Hypixel's live skill tables.</p>
- *
- * <ul>
- *   <li>Standard skills (Farming, Mining, Combat, Foraging, Fishing,
- *       Enchanting, Alchemy, Taming) — 60 levels</li>
- *   <li>Carpentry / Dungeoneering — 50 levels</li>
- *   <li>Runecrafting / Social — 25 levels</li>
- * </ul>
+ * @deprecated Use {@link com.skyblock.core.skills.SkillManager#SKILL_XP_TABLE} instead.
+ *     All per-level XP data lives in the canonical
+ *     {@code com.skyblock.core.skills.SkillManager}.
  */
+@Deprecated
 public final class SkillXPConfig {
 
     public static final int MAX_LEVEL_STANDARD       = 60;
