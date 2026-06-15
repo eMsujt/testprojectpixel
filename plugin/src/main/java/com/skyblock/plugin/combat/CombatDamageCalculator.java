@@ -1,5 +1,7 @@
 package com.skyblock.plugin.combat;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Static utility implementing the core Hypixel SkyBlock melee damage formula.
  *
@@ -20,6 +22,10 @@ public final class CombatDamageCalculator {
      * @param critDamage   crit damage bonus as a percentage, e.g. {@code 50} for +50 %
      * @return the final damage dealt, never negative
      */
+    private static boolean rollCrit(double critChancePercent) {
+        return ThreadLocalRandom.current().nextDouble(100.0) < critChancePercent;
+    }
+
     public static double calculateDamage(double weaponDamage, double strength, double critDamage) {
         double weapon = Math.max(0.0, weaponDamage);
         double str = Math.max(0.0, strength);
