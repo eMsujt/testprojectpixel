@@ -15,7 +15,8 @@ public class QuiverMenu extends Menu {
     private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43
     };
     private static final int SLOTS_PER_PAGE = INNER_SLOTS.length;
 
@@ -27,7 +28,7 @@ public class QuiverMenu extends Menu {
     }
 
     private QuiverMenu(Player player, int page) {
-        super("§3Quiver", 5);
+        super("§6Quiver", 6);
         this.player = player;
         this.page = page;
     }
@@ -58,14 +59,14 @@ public class QuiverMenu extends Menu {
                     .build());
         }
 
-        setItem(40, new ItemBuilder(Material.ARROW)
-                .displayName("§3Quiver")
+        setItem(49, new ItemBuilder(Material.ARROW)
+                .displayName("§6Quiver")
                 .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
                 .build());
 
         if (page > 0) {
             int prevPage = page - 1;
-            setItem(36, new ItemBuilder(Material.ARROW)
+            setItem(45, new ItemBuilder(Material.ARROW)
                     .displayName("§ePrevious Page")
                     .lore("§7Go to page §e" + (prevPage + 1))
                     .build(),
@@ -74,7 +75,7 @@ public class QuiverMenu extends Menu {
 
         if ((page + 1) < totalPages) {
             int nextPage = page + 1;
-            setItem(44, new ItemBuilder(Material.ARROW)
+            setItem(53, new ItemBuilder(Material.ARROW)
                     .displayName("§eNext Page")
                     .lore("§7Go to page §e" + (nextPage + 1))
                     .build(),
@@ -89,7 +90,7 @@ public class QuiverMenu extends Menu {
         for (int slot = 0; slot < 9; slot++) {
             setItem(slot, pane);
         }
-        for (int slot = 36; slot < 45; slot++) {
+        for (int slot = 45; slot < 54; slot++) {
             setItem(slot, pane);
         }
     }
