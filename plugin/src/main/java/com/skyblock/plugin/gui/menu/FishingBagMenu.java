@@ -1,38 +1,52 @@
 package com.skyblock.plugin.gui.menu;
 
+import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.Objects;
 
-/**
- * The Fishing Bag menu.
- *
- * <p>A 54-slot (6-row) chest titled {@code §9Fishing Bag}. Slots 0–44 are
- * populated from the owning {@link SkyBlockProfile}'s fishing bag contents, one
- * stack per slot, matching Hypixel's layout.</p>
- */
 public class FishingBagMenu extends Menu {
 
     private final Player player;
 
     public FishingBagMenu(Player player) {
         super("§9Fishing Bag", 6);
-        this.player = Objects.requireNonNull(player, "player");
+        this.player = player;
     }
 
     @Override
     protected void build() {
+        fillBorder();
+
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         List<ItemStack> contents = profile.getFishingBagContents();
-        for (int slot = 0; slot < 45 && slot < contents.size(); slot++) {
-            ItemStack item = contents.get(slot);
+
+        int itemIndex = 0;
+        for (int slot = 0; slot < 54 && itemIndex < contents.size(); slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                continue;
+            }
+            ItemStack item = contents.get(itemIndex++);
             if (item != null) {
                 setItem(slot, item);
+            }
+        }
+    }
+
+    private void fillBorder() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
             }
         }
     }
