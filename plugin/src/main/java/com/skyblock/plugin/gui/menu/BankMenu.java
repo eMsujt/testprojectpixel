@@ -23,7 +23,22 @@ public class BankMenu extends Menu {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
 
-        setItem(13, new ItemBuilder(Material.GOLD_INGOT)
+        setItem(13, new ItemBuilder(Material.GOLD_BLOCK)
+                .displayName("§6Bank Balance")
+                .lore(
+                        "§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins",
+                        "",
+                        "§eClick to withdraw all coins!")
+                .build(), event -> {
+            long amount = profile.getBank();
+            if (amount > 0) {
+                profile.setBank(0);
+                profile.setPurse(profile.getPurse() + amount);
+                open((Player) event.getWhoClicked());
+            }
+        });
+
+        setItem(22, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Purse")
                 .lore(
                         "§6Purse: §f" + String.format("%,.0f", (double) profile.getPurse()) + " Coins",
@@ -34,21 +49,6 @@ public class BankMenu extends Menu {
             if (amount > 0) {
                 profile.setPurse(0);
                 profile.setBank(profile.getBank() + amount);
-                open((Player) event.getWhoClicked());
-            }
-        });
-
-        setItem(22, new ItemBuilder(Material.GOLD_BLOCK)
-                .displayName("§6Bank Account")
-                .lore(
-                        "§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins",
-                        "",
-                        "§eClick to withdraw all coins!")
-                .build(), event -> {
-            long amount = profile.getBank();
-            if (amount > 0) {
-                profile.setBank(0);
-                profile.setPurse(profile.getPurse() + amount);
                 open((Player) event.getWhoClicked());
             }
         });
