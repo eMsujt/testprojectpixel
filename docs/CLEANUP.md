@@ -370,6 +370,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (config-domain package layout normalization and AuctionHouseManager/AuctionCommand cleanup — round 73)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ConfigManager / SkyBlockConfig / PluginConfig | `com.skyblock.core.config.ConfigManager` | Normalized config-domain package layout: every class across every module containing config-related classes (`ConfigManager`, `SkyBlockConfig`, `PluginConfig`, and related loader/watcher types) moved into correct `.config`/`.loader`/`.model` sub-packages; flat-package strays eliminated; canonical `com.skyblock.core.config.ConfigManager` confirmed as sole config-domain implementation with no remaining duplicate loaders or config-parser stubs | #2725 |
+| AuctionHouseManager / AuctionCommand | `com.skyblock.core.manager.AuctionHouseManager` | Deleted orphan `AuctionCommand.java` (the only remaining consolidation artifact): the repo already had a single canonical `AuctionHouseManager` with no duplicate `AuctionManager` or `AuctionHandler` classes; the never-instantiated `AuctionCommand` stub was the sole remaining orphan and was removed outright; canonical `com.skyblock.core.manager.AuctionHouseManager` confirmed as sole implementation | #2726 |
+
+---
+
 ## Completed (shop-domain and collections-domain package layout normalization — round 72)
 
 | Domain | Canonical class | Work done | PR / commit |
