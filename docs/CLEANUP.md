@@ -166,6 +166,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (manager consolidation deep-pass and stub delegation fixes — rounds 45-47)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| BankManager / BankingManager / BankHandler | `com.skyblock.core.manager.BankManager` | Deep-pass consolidation: all remaining delegation stubs wired end-to-end; missing `economy` module methods merged into canonical | #2637 |
+| IslandManager / IslandHandler / IslandService | `com.skyblock.core.manager.IslandManager` | Deep-pass consolidation: all delegation gaps closed; 7 empty-returning stub methods (`getAllIslandBiomes`, `getIslandUnlocked`, `getIslandLevels`, `getVisitorCounts`, `getAllVisitLog`, `getAllIslandMembers`) replaced with full delegation chain: plugin stub → `core.manager.IslandManager` → `islands.IslandManager` | #2636 / #2640 |
+| MinionManager / MinionsManager | `com.skyblock.core.manager.MinionManager` | Deep-pass consolidation: all remaining delegation stubs wired end-to-end; minion-tier and minion-type methods merged into canonical | #2638 |
+| PetManager / PetsManager | `com.skyblock.core.manager.PetManager` | Deep-pass consolidation: all remaining delegation stubs wired end-to-end; XP table and pet-ability methods merged into canonical | #2639 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
