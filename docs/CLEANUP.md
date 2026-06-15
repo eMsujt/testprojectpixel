@@ -41,6 +41,7 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 | Domain | Canonical target | Known duplicates | Notes |
 |--------|-----------------|-----------------|-------|
+| IslandMenu / IslandGui / IslandMainMenu | `com.skyblock.core.menu.IslandMenu` | Created canonical 54-slot island management GUI (info, all 8 upgrades, members, history, close); no pre-existing duplicate classes to stub out | In progress |
 | BankManager | `com.skyblock.core.bank.BankManager` | `bank`, `banking`, `economy`, `core`, `plugin` ×2 | ~7 variants; `economy` module is most complete |
 | BazaarManager | `com.skyblock.core.bazaar.BazaarManager` | `bazaar`, `economy`, `core`, `plugin` ×2 | ~7 variants; standalone `bazaar` module richest |
 | IslandManager | `com.skyblock.core.island.IslandManager` | `islands`, `island`, `core`, `plugin` ×3 | ~7 variants; `islands` module most complete |
