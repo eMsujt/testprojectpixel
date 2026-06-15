@@ -7,9 +7,6 @@ import java.util.List;
 
 /**
  * Static helper utilities for creating skull items with custom textures and metadata.
- * This is the canonical implementation — use this class directly.
- *
- * @see com.skyblock.plugin.util.SkullItemUtil deprecated stub that delegates here
  */
 public final class SkullItemUtil {
 
