@@ -1,57 +1,33 @@
 package com.skyblock.plugin.minion;
 
-import com.skyblock.core.util.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
+import com.skyblock.core.minion.MinionManager.MinionData;
+import com.skyblock.core.minion.MinionManager.MinionTier;
+import com.skyblock.core.minion.MinionManager.MinionType;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
 /**
- * The management menu for a single placed {@link Minion}.
- *
- * <p>A 27-slot (3-row) menu titled with the minion's name, e.g.
- * {@code §6Cobblestone Minion}, framed by a {@code GRAY_STAINED_GLASS_PANE}
- * border. Slot 13 shows the current minion and its tier; a close button sits on
- * the bottom row.</p>
+ * @deprecated Use {@link com.skyblock.core.menu.MinionMenu} instead.
  */
-public class MinionMenu extends Menu {
+@Deprecated
+public class MinionMenu implements InventoryHolder {
 
-    /** Slot showing the current minion. */
-    private static final int MINION_SLOT = 13;
-
-    /** Slot for the close button. */
-    private static final int CLOSE_SLOT = 22;
-
-    /** Roman numerals indexed by tier number (index 0 unused). */
-    private static final String[] ROMAN = {
-            "", "I", "II", "III", "IV", "V",
-            "VI", "VII", "VIII", "IX", "X", "XI"
-    };
-
-    private final Minion minion;
+    private final com.skyblock.core.menu.MinionMenu delegate;
 
     public MinionMenu(Minion minion) {
-        super("§6" + minion.type.getDisplayName(), 3);
-        this.minion = minion;
+        MinionType coreType = MinionType.valueOf(minion.type.name());
+        MinionTier coreTier = MinionTier.valueOf(minion.getTier().name());
+        this.delegate = new com.skyblock.core.menu.MinionMenu(
+                new MinionData(minion.id, minion.owner, coreType, coreTier));
+    }
+
+    public void open(Player player) {
+        delegate.open(player);
     }
 
     @Override
-    protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 27; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 18 || column == 0 || column == 8) {
-                setItem(slot, pane);
-            }
-        }
-
-        String tier = ROMAN[minion.getTier().ordinal() + 1];
-        setItem(MINION_SLOT, new ItemBuilder(Material.PLAYER_HEAD)
-                .displayName("§a" + minion.type.getDisplayName() + " " + tier)
-                .lore("§7Tier: §e" + tier)
-                .build());
-
-        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .build(), e -> e.getWhoClicked().closeInventory());
+    public Inventory getInventory() {
+        return delegate.getInventory();
     }
 }
