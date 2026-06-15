@@ -56,8 +56,8 @@ public class SkillsMenu extends Menu {
         Skill[] values = Skill.values();
         for (int i = 0; i < values.length; i++) {
             Skill skill = values[i];
-            long xp = profile.getSkillXp(skill.key);
-            int level = skillManager.levelForXp(skill.key, xp);
+            double xp = profile.getSkillXp(skill.key);
+            int level = skillManager.levelForXp(skill.key, (long) xp);
             setItem(SLOTS[i], dyedHelmet(skill.color, "§a" + skill.displayName,
                             "§7Level: §e" + level,
                             "§7Total XP: §e" + xp),
