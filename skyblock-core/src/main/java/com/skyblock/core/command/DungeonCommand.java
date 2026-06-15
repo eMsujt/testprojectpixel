@@ -1,9 +1,9 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.dungeon.DungeonManager;
-import com.skyblock.core.dungeon.DungeonManager.DungeonClass;
-import com.skyblock.core.dungeon.DungeonManager.DungeonRun;
-import com.skyblock.core.dungeon.DungeonManager.DungeonType;
+import com.skyblock.core.manager.DungeonManager;
+import com.skyblock.core.manager.DungeonManager.DungeonClass;
+import com.skyblock.core.manager.DungeonManager.DungeonRun;
+import com.skyblock.core.manager.DungeonManager.DungeonType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

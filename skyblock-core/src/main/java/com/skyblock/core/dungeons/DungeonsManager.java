@@ -1,19 +1,19 @@
 package com.skyblock.core.dungeons;
 
-import com.skyblock.core.dungeon.DungeonManager;
+import com.skyblock.core.manager.DungeonManager;
 
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Singleton facade over {@link DungeonManager}.
- *
- * <p>Exposes dungeon run and class API under the {@code DungeonsManager} name,
- * delegating to the underlying {@link DungeonManager} singleton.</p>
+ * @deprecated Use {@link DungeonManager} instead.
+ *             DungeonClass has moved to {@link DungeonManager.DungeonClass}.
  */
+@Deprecated
 public final class DungeonsManager {
 
-    /** Playable dungeon classes. */
+    /** @deprecated Use {@link DungeonManager.DungeonClass} instead. */
+    @Deprecated
     public enum DungeonClass {
         HEALER("Healer"),
         MAGE("Mage"),
@@ -40,6 +40,8 @@ public final class DungeonsManager {
 
     private DungeonsManager() {}
 
+    /** @deprecated Use {@link DungeonManager#getInstance()}. */
+    @Deprecated
     public static DungeonsManager getInstance() {
         return INSTANCE;
     }

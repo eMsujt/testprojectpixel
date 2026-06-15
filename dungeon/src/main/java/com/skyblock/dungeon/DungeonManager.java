@@ -1,231 +1,77 @@
 package com.skyblock.dungeon;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import com.skyblock.core.manager.DungeonManager.FloorRecord;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.UUID;
 
 /**
- * Tracks per-player dungeon floor completions and best scores.
- *
- * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.DungeonManager} instead.
  */
+@Deprecated
 public final class DungeonManager {
 
-    private final Map<UUID, Map<Integer, FloorRecord>> records = new HashMap<>();
-    private final Map<UUID, List<String>> dungeonHistory = new HashMap<>();
+    private static final com.skyblock.core.manager.DungeonManager DELEGATE =
+            com.skyblock.core.manager.DungeonManager.getInstance();
 
-    /**
-     * Records a completed dungeon run, updating the player's best score if improved.
-     *
-     * @param playerId the player who completed the run
-     * @param floor    the dungeon floor number, must be positive
-     * @param score    the run score, must not be negative
-     * @return the player's {@link FloorRecord} for the floor after this completion
-     * @throws IllegalArgumentException if floor is not positive or score is negative
-     */
+    private static final DungeonManager INSTANCE = new DungeonManager();
+
+    private DungeonManager() {}
+
+    /** @deprecated Use {@link com.skyblock.core.manager.DungeonManager#getInstance()}. */
+    @Deprecated
+    public static DungeonManager getInstance() {
+        return INSTANCE;
+    }
+
     public FloorRecord recordCompletion(UUID playerId, int floor, int score) {
-        Objects.requireNonNull(playerId, "playerId");
-        if (floor < 1) {
-            throw new IllegalArgumentException("floor must be positive: " + floor);
-        }
-        if (score < 0) {
-            throw new IllegalArgumentException("score must not be negative: " + score);
-        }
-        FloorRecord record = records
-                .computeIfAbsent(playerId, id -> new HashMap<>())
-                .computeIfAbsent(floor, f -> new FloorRecord());
-        record.completions++;
-        record.bestScore = Math.max(record.bestScore, score);
-        recordDungeonEvent(playerId, "Completed floor " + floor + " with score " + score);
-        return record;
+        return DELEGATE.recordCompletion(playerId, floor, score);
     }
 
-    /**
-     * Returns how many times the player has completed the given floor.
-     *
-     * @param playerId the player to look up
-     * @param floor    the dungeon floor number
-     * @return the completion count, 0 if the player has never completed the floor
-     */
     public int getCompletions(UUID playerId, int floor) {
-        FloorRecord record = getRecord(playerId, floor);
-        return record == null ? 0 : record.completions;
+        return DELEGATE.getCompletions(playerId, floor);
     }
 
-    /**
-     * Returns the player's best score on the given floor, or empty if never completed.
-     *
-     * @param playerId the player to look up
-     * @param floor    the dungeon floor number
-     * @return the best score wrapped in an OptionalInt
-     */
     public OptionalInt getBestScore(UUID playerId, int floor) {
-        FloorRecord record = getRecord(playerId, floor);
-        return record == null ? OptionalInt.empty() : OptionalInt.of(record.bestScore);
+        return DELEGATE.getBestScore(playerId, floor);
     }
 
-    /**
-     * Returns the highest floor the player has completed at least once.
-     *
-     * @param playerId the player to look up
-     * @return the highest completed floor, or empty if the player has no completions
-     */
     public OptionalInt getHighestCompletedFloor(UUID playerId) {
-        Map<Integer, FloorRecord> playerRecords = records.get(playerId);
-        if (playerRecords == null || playerRecords.isEmpty()) {
-            return OptionalInt.empty();
-        }
-        return playerRecords.keySet().stream().mapToInt(Integer::intValue).max();
+        return DELEGATE.getHighestCompletedFloor(playerId);
     }
 
-    /**
-     * Returns an unmodifiable view of the player's records keyed by floor number.
-     *
-     * @param playerId the player to look up
-     * @return the player's floor records, empty if none exist
-     */
     public Map<Integer, FloorRecord> getRecords(UUID playerId) {
-        return Collections.unmodifiableMap(records.getOrDefault(playerId, Collections.emptyMap()));
+        return DELEGATE.getRecords(playerId);
     }
 
-    /**
-     * Clears all records for a player.
-     *
-     * @param playerId the player whose records to remove
-     */
     public void clearRecords(UUID playerId) {
-        records.remove(playerId);
+        DELEGATE.clearRecords(playerId);
     }
 
     public void recordDungeonEvent(UUID playerUuid, String summary) {
-        dungeonHistory
-                .computeIfAbsent(playerUuid, k -> new ArrayList<>())
-                .add(summary);
+        DELEGATE.recordDungeonEvent(playerUuid, summary);
     }
 
     public List<String> getDungeonHistory(UUID playerUuid) {
-        return Collections.unmodifiableList(dungeonHistory.getOrDefault(playerUuid, Collections.emptyList()));
+        return DELEGATE.getDungeonHistory(playerUuid);
     }
 
     public Map<UUID, List<String>> getAllDungeonHistory() {
-        return Collections.unmodifiableMap(dungeonHistory);
+        return DELEGATE.getAllDungeonHistory();
     }
 
     public String getDungeonStats(UUID playerId) {
-        Map<Integer, FloorRecord> playerRecords = records.getOrDefault(playerId, Collections.emptyMap());
-        int total = playerRecords.values().stream().mapToInt(FloorRecord::getCompletions).sum();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Total: ").append(total);
-        for (int f = 1; f <= 7; f++) {
-            FloorRecord rec = playerRecords.get(f);
-            sb.append(" | F").append(f).append(": ");
-            if (rec != null) {
-                sb.append(rec.getCompletions()).append(" runs (best score: ").append(rec.getBestScore()).append(")");
-            } else {
-                sb.append("0 runs");
-            }
-        }
-        return sb.toString();
+        return DELEGATE.getDungeonStats(playerId);
     }
 
     public void load(File dataFolder) {
-        File file = new File(dataFolder, "dungeon.yml");
-        if (!file.exists()) return;
-        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        records.clear();
-        dungeonHistory.clear();
-        if (cfg.isConfigurationSection("records")) {
-            for (String uuidKey : cfg.getConfigurationSection("records").getKeys(false)) {
-                try {
-                    UUID uuid = UUID.fromString(uuidKey);
-                    if (cfg.isConfigurationSection("records." + uuidKey)) {
-                        Map<Integer, FloorRecord> playerRecords = new HashMap<>();
-                        for (String floorKey : cfg.getConfigurationSection("records." + uuidKey).getKeys(false)) {
-                            try {
-                                int floor = Integer.parseInt(floorKey);
-                                int completions = cfg.getInt("records." + uuidKey + "." + floorKey + ".completions", 0);
-                                int bestScore = cfg.getInt("records." + uuidKey + "." + floorKey + ".bestScore", 0);
-                                if (completions > 0) {
-                                    FloorRecord fr = new FloorRecord();
-                                    fr.completions = completions;
-                                    fr.bestScore = bestScore;
-                                    playerRecords.put(floor, fr);
-                                }
-                            } catch (NumberFormatException ignored) {}
-                        }
-                        if (!playerRecords.isEmpty()) {
-                            records.put(uuid, playerRecords);
-                        }
-                    }
-                } catch (IllegalArgumentException ignored) {}
-            }
-        }
-        if (cfg.isConfigurationSection("dungeonHistory")) {
-            for (String key : cfg.getConfigurationSection("dungeonHistory").getKeys(false)) {
-                try {
-                    List<String> entries = cfg.getStringList("dungeonHistory." + key);
-                    if (!entries.isEmpty()) {
-                        dungeonHistory.put(UUID.fromString(key), new ArrayList<>(entries));
-                    }
-                } catch (IllegalArgumentException ignored) {}
-            }
-        }
+        DELEGATE.load(dataFolder);
     }
 
     public void save(File dataFolder) {
-        File file = new File(dataFolder, "dungeon.yml");
-        YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<UUID, Map<Integer, FloorRecord>> playerEntry : records.entrySet()) {
-            String uuidKey = "records." + playerEntry.getKey().toString();
-            for (Map.Entry<Integer, FloorRecord> floorEntry : playerEntry.getValue().entrySet()) {
-                String path = uuidKey + "." + floorEntry.getKey();
-                cfg.set(path + ".completions", floorEntry.getValue().completions);
-                cfg.set(path + ".bestScore", floorEntry.getValue().bestScore);
-            }
-        }
-        for (Map.Entry<UUID, List<String>> entry : dungeonHistory.entrySet()) {
-            cfg.set("dungeonHistory." + entry.getKey().toString(), entry.getValue());
-        }
-        try {
-            cfg.save(file);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save dungeon.yml", e);
-        }
-    }
-
-    private FloorRecord getRecord(UUID playerId, int floor) {
-        Map<Integer, FloorRecord> playerRecords = records.get(playerId);
-        return playerRecords == null ? null : playerRecords.get(floor);
-    }
-
-    /**
-     * A player's completion statistics for a single dungeon floor.
-     */
-    public static final class FloorRecord {
-
-        private int completions;
-        private int bestScore;
-
-        private FloorRecord() {
-        }
-
-        /** Returns how many times the floor has been completed. */
-        public int getCompletions() {
-            return completions;
-        }
-
-        /** Returns the best score achieved on the floor. */
-        public int getBestScore() {
-            return bestScore;
-        }
+        DELEGATE.save(dataFolder);
     }
 }
