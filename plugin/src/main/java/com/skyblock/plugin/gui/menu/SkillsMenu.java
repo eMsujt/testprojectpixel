@@ -62,7 +62,7 @@ public class SkillsMenu extends Menu {
             ItemStack skull = new ItemBuilder(Material.PLAYER_HEAD)
                     .skullTexture(skill.texture)
                     .displayName("§a" + skill.displayName)
-                    .lore("§7Level: §e" + level, "§7Total XP: §e" + xp)
+                    .lore("§7Level: §e" + level, "§7Total XP: §e" + (long) xp)
                     .build();
             final Skill s = skill;
             setItem(SLOTS[i], skull, e -> {
