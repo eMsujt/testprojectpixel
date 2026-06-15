@@ -31,8 +31,6 @@ import java.util.concurrent.CompletableFuture;
  * <p>The profile map is mutated only on the server main thread; access it from
  * the main thread or guard it externally.</p>
  */
-/** @deprecated Use {@link com.skyblock.core.manager.ProfileManager} instead. */
-@Deprecated
 public final class ProfileManager implements Listener {
 
     private static final ProfileManager INSTANCE = new ProfileManager();

@@ -2,8 +2,8 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -37,7 +37,7 @@ public class TalismanBagMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         List<ItemStack> contents = profile.getAccessoryBagContents();
 
         int totalPages = Math.max(1, (int) Math.ceil((double) contents.size() / SLOTS_PER_PAGE));

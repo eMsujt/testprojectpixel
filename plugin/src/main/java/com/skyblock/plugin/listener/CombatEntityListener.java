@@ -1,8 +1,8 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.combat.calculator.HypixelDamageCalculator;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 /**
- * Awards Combat Skill XP to the attacker's {@link SkyBlockProfile} on every player
+ * Awards Combat Skill XP to the attacker's {@link PlayerProfile} on every player
  * hit, and replaces Minecraft's raw damage with the SkyBlock value from
  * {@link HypixelDamageCalculator}.
  */
@@ -32,7 +32,7 @@ public final class CombatEntityListener implements Listener {
         }
 
         Player player = (Player) damager;
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
 
         double damage = HypixelDamageCalculator.calculate(profile, player.getInventory().getItemInMainHand(), (LivingEntity) victim);
         event.setDamage(damage);

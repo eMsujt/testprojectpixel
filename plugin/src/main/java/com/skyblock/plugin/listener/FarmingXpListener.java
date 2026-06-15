@@ -1,8 +1,8 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.CollectionManager;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -14,7 +14,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import java.util.Map;
 
 /**
- * Awards Farming XP directly to the player's {@link SkyBlockProfile} whenever
+ * Awards Farming XP directly to the player's {@link PlayerProfile} whenever
  * a fully grown crop block is broken. {@link Ageable} crops only count at their
  * maximum age; non-ageable produce (pumpkins, melons, sugar cane, …) always counts.
  */
@@ -60,7 +60,7 @@ public final class FarmingXpListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         profile.addSkillXp("farming", xp);
         XpActionBar.send(player, "farming", xp, profile.getSkillXp("farming"));
         CollectionManager.getInstance().addItems(player.getUniqueId(), CROP_DROP.get(block.getType()), 1);

@@ -4,8 +4,8 @@ import com.skyblock.core.stat.Stat;
 import com.skyblock.core.stats.PlayerStatManager;
 import com.skyblock.plugin.combat.calculator.CombatDamageCalculator;
 import com.skyblock.plugin.economy.PlayerEconomy;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 /**
  * Bukkit listener that intercepts {@link EntityDamageByEntityEvent} and, when the
- * damager is a {@link Player}, loads their {@link SkyBlockProfile}, replaces
+ * damager is a {@link Player}, loads their {@link PlayerProfile}, replaces
  * Minecraft's raw damage with the SkyBlock value from {@link CombatDamageCalculator},
  * applies the defender's defense reduction, and awards Combat XP to the profile.
  *
@@ -41,7 +41,7 @@ public final class CombatListener implements Listener {
 
         Player player = (Player) damager;
         UUID attackerId = player.getUniqueId();
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(attackerId);
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(attackerId);
 
         double weaponDamage = event.getDamage();
         double strength     = statManager.getStat(attackerId, Stat.STRENGTH);

@@ -2,8 +2,8 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
+import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -34,7 +34,7 @@ public class WardrobeMenu extends Menu {
         for (int slot = 0; slot < 9; slot++)  setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         List<ItemStack[]> sets = profile.getWardrobeSlots();
 
         for (int col = 0; col < 9; col++) {
