@@ -1,6 +1,6 @@
 package com.skyblock.core.combat.listener;
 
-import com.skyblock.core.combat.CombatManager;
+import com.skyblock.core.combat.manager.CombatManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

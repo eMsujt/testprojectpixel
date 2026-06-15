@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.combat.HypixelDamageCalculator;
+import com.skyblock.plugin.combat.calculator.HypixelDamageCalculator;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.entity.Entity;

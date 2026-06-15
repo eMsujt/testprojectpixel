@@ -1,9 +1,9 @@
 package com.skyblock.plugin.commands;
 
 import com.skyblock.core.manager.QuestManager;
-import com.skyblock.core.quest.QuestManager.QuestData;
-import com.skyblock.core.quest.QuestManager.QuestStatus;
-import com.skyblock.core.quest.QuestManager.QuestType;
+import com.skyblock.core.quest.manager.QuestManager.QuestData;
+import com.skyblock.core.quest.manager.QuestManager.QuestStatus;
+import com.skyblock.core.quest.manager.QuestManager.QuestType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

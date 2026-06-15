@@ -1,4 +1,4 @@
-package com.skyblock.core.command;
+package com.skyblock.core.quest.command;
 
 import com.skyblock.core.quest.manager.QuestManager;
 import com.skyblock.core.quest.manager.QuestManager.QuestData;
@@ -19,16 +19,12 @@ import java.util.List;
  * <p>Subcommands:
  * <ul>
  *   <li>{@code /quest list}                   — list all available quest types</li>
- *   <li>{@code /quest start <type> <goal>}    — start a quest with a target goal</li>
+ *   <li>{@code /quest start <type>}            — start a quest using its built-in goal</li>
  *   <li>{@code /quest status [type]}          — show status/progress for one or all quests</li>
  *   <li>{@code /quest reset}                  — reset all quest progress</li>
  * </ul>
  * </p>
  */
-/**
- * @deprecated Use {@link com.skyblock.core.quest.QuestCommand} instead.
- */
-@Deprecated
 public final class QuestCommand implements TabExecutor {
 
     private final QuestManager questManager;
@@ -83,13 +79,13 @@ public final class QuestCommand implements TabExecutor {
     private void handleList(Player player) {
         player.sendMessage("=== Quest Types ===");
         for (QuestType type : QuestType.values()) {
-            player.sendMessage("- " + type.name().toLowerCase());
+            player.sendMessage("- " + type.getDisplayName());
         }
     }
 
     private void handleStart(Player player, String[] args) {
-        if (args.length < 3) {
-            player.sendMessage("Usage: /quest start <type> <goal>");
+        if (args.length < 2) {
+            player.sendMessage("Usage: /quest start <type>");
             return;
         }
         QuestType type;
@@ -99,24 +95,13 @@ public final class QuestCommand implements TabExecutor {
             player.sendMessage("Unknown quest type: " + args[1]);
             return;
         }
-        long goal;
-        try {
-            goal = Long.parseLong(args[2]);
-        } catch (NumberFormatException e) {
-            player.sendMessage("Goal must be a number, got: " + args[2]);
-            return;
-        }
-        if (goal <= 0) {
-            player.sendMessage("Goal must be a positive number.");
-            return;
-        }
         QuestData existing = questManager.getQuestData(player.getUniqueId(), type);
         if (existing != null && existing.status == QuestStatus.IN_PROGRESS) {
             player.sendMessage("Quest " + type.name() + " is already in progress.");
             return;
         }
-        questManager.startQuest(player.getUniqueId(), type, goal);
-        player.sendMessage("Quest started: " + type.name() + " (goal: " + goal + ")");
+        questManager.startQuest(player.getUniqueId(), type);
+        player.sendMessage("Quest started: " + type.getDisplayName() + " (goal: " + type.getGoal() + ")");
     }
 
     private void handleStatus(Player player, String[] args) {
@@ -136,7 +121,7 @@ public final class QuestCommand implements TabExecutor {
         for (QuestType type : QuestType.values()) {
             QuestData data = questManager.getQuestData(player.getUniqueId(), type);
             if (data != null) {
-                player.sendMessage(type.name() + ": " + data.progress + "/" + data.goal
+                player.sendMessage(type.getDisplayName() + ": " + data.progress + "/" + data.goal
                         + " [" + data.status.name() + "]");
                 any = true;
             }
@@ -152,7 +137,7 @@ public final class QuestCommand implements TabExecutor {
             player.sendMessage("Quest " + type.name() + " has not been started.");
             return;
         }
-        player.sendMessage("=== " + type.name() + " ===");
+        player.sendMessage("=== " + type.getDisplayName() + " ===");
         player.sendMessage("Progress: " + data.progress + "/" + data.goal);
         player.sendMessage("Status: " + data.status.name());
     }
@@ -165,7 +150,7 @@ public final class QuestCommand implements TabExecutor {
     private void sendHelp(Player player) {
         player.sendMessage("=== Quest Commands ===");
         player.sendMessage("/quest list — list all quest types");
-        player.sendMessage("/quest start <type> <goal> — start a quest");
+        player.sendMessage("/quest start <type> — start a quest");
         player.sendMessage("/quest status [type] — show quest progress");
         player.sendMessage("/quest reset — reset all quest progress");
     }
