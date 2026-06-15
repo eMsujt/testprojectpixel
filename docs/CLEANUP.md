@@ -34,6 +34,10 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 | AbilityManager / AbilityHandler / SpecialAbilityManager | `com.skyblock.core.manager.AbilityManager` | All `AbilityManager`/`AbilityHandler`/`SpecialAbilityManager` duplicates → 1 canonical; remaining variants replaced with `@Deprecated` stubs delegating to canonical | #2515 |
 | DungeonManager / DungeonsManager | `com.skyblock.core.manager.DungeonManager` | 7 duplicates → 1 canonical (896 lines, merging all APIs); all 6 `DungeonManager` duplicates and `DungeonsManager` replaced with `@Deprecated` delegating stubs | #2517 |
 | Stat / StatType / PlayerStat / CombatStat | `com.skyblock.core.stat.Stat` | 6 duplicates → 1 canonical (26 constants, full metadata); `PlayerStat`, `plugin.items.StatType`, `combat.CombatStat`, `core.combat.StatManager.CombatStat`, `core.stats.StatsManager.StatType`, `core.stat.StatManager.StatType` replaced with `@Deprecated` stubs or removed; 20+ caller files migrated | In progress |
+| BazaarManager / BazaarHandler | `com.skyblock.core.manager.BazaarManager` | All `BazaarManager`/`BazaarHandler` duplicates → 1 canonical; ~7 variants replaced with `@Deprecated` stubs delegating to canonical; standalone `bazaar` module richest impl preserved | #2537 / #2541 |
+| BankManager / BankingManager / BankHandler | `com.skyblock.core.manager.BankManager` | All `BankManager`/`BankingManager`/`BankHandler` duplicates → 1 canonical; ~7 variants replaced with `@Deprecated` stubs delegating to canonical; `economy` module most complete impl preserved | #2538 |
+| IslandManager / IslandHandler / IslandService | `com.skyblock.core.manager.IslandManager` | All `IslandManager`/`IslandHandler`/`IslandService` duplicates → 1 canonical; ~7 variants replaced with `@Deprecated` stubs delegating to canonical; `islands` module most complete impl preserved | #2539 |
+| MinionManager / MinionsManager | `com.skyblock.core.manager.MinionManager` | All `MinionManager`/`MinionsManager` duplicates → 1 canonical; ~9 variants replaced with `@Deprecated` stubs delegating to canonical; largest duplication surface resolved | #2540 |
 
 ---
 
@@ -42,10 +46,6 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 | Domain | Canonical target | Known duplicates | Notes |
 |--------|-----------------|-----------------|-------|
 | IslandMenu / IslandGui / IslandMainMenu | `com.skyblock.core.menu.IslandMenu` | Created canonical 54-slot island management GUI (info, all 8 upgrades, members, history, close); no pre-existing duplicate classes to stub out | In progress |
-| BankManager | `com.skyblock.core.bank.BankManager` | `bank`, `banking`, `economy`, `core`, `plugin` ×2 | ~7 variants; `economy` module is most complete |
-| BazaarManager | `com.skyblock.core.bazaar.BazaarManager` | `bazaar`, `economy`, `core`, `plugin` ×2 | ~7 variants; standalone `bazaar` module richest |
-| IslandManager | `com.skyblock.core.island.IslandManager` | `islands`, `island`, `core`, `plugin` ×3 | ~7 variants; `islands` module most complete |
-| MinionManager | `com.skyblock.core.minions.MinionManager` | `minions`, `minion`, `skyblock-minions`, `core`, `plugin` ×4 | ~9 variants; largest duplication surface |
 | ProfileManager | `com.skyblock.core.profile.ProfileManager` | `profiles`, `profile`, `playerdata`, `core`, `plugin` | Iterator.next() ordering bug tracked in ROADMAP |
 | SlayerManager | `com.skyblock.core.slayer.SlayerManager` | `slayer`, `slayers`, `skyblock-slayer`, `core`, `plugin` | `slayer` module most complete |
 | EnchantingManager | `com.skyblock.core.enchanting.EnchantingManager` | `enchanting`, `enchantments`, `enchants`, `core`, `plugin` | `enchanting` module most complete |
