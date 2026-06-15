@@ -2,8 +2,8 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.profile.PlayerProfile;
-import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.pets.PetManager;
+import com.skyblock.plugin.pets.PetManager.PetEntry;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,8 +13,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class PetsMenu extends Menu {
-
-    private static final int ACTIVE_SLOT = 4;
 
     private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -26,7 +24,7 @@ public class PetsMenu extends Menu {
     private final UUID playerId;
 
     public PetsMenu(UUID playerId) {
-        super("§aYour Pets", 6);
+        super("§aPets", 6);
         this.playerId = Objects.requireNonNull(playerId, "playerId");
     }
 
@@ -34,35 +32,23 @@ public class PetsMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        PlayerProfile profile = ProfileManager.getInstance().getProfile(playerId);
-        if (profile == null) {
-            return;
-        }
+        PetManager pets = PetManager.getInstance();
+        PetEntry active = pets.getActivePet(playerId);
+        List<PetEntry> owned = pets.getPets(playerId);
 
-        String active = profile.getActivePet();
-        if (active != null) {
-            setItem(ACTIVE_SLOT, new ItemBuilder(Material.PLAYER_HEAD)
-                    .displayName("§aActive Pet: §f" + active)
-                    .lore("§eClick a pet below to change it.")
-                    .build());
-        } else {
-            setItem(ACTIVE_SLOT, new ItemBuilder(Material.BARRIER)
-                    .displayName("§cNo Active Pet")
-                    .lore("§7Click a pet below to equip it.")
-                    .build());
-        }
-
-        List<String> owned = profile.getOwnedPets();
         int count = Math.min(owned.size(), INNER_SLOTS.length);
         for (int i = 0; i < count; i++) {
-            String pet = owned.get(i);
-            boolean equipped = pet.equals(active);
+            PetEntry pet = owned.get(i);
+            boolean equipped = active != null && pet.getId().equals(active.getId());
             setItem(INNER_SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
-                            .displayName((equipped ? "§a" : "§f") + pet)
-                            .lore(equipped ? "§aCurrently equipped" : "§eClick to equip!")
+                            .displayName((equipped ? "§a" : "§f") + pet.getType().name())
+                            .lore(
+                                    "§7Rarity: §f" + pet.getRarity(),
+                                    "§7Level: §a" + pet.getLevel(),
+                                    equipped ? "§aCurrently equipped" : "§eClick to equip!")
                             .build(),
                     event -> {
-                        profile.setActivePet(pet);
+                        pets.setActivePet(playerId, pet);
                         open((Player) event.getWhoClicked());
                     });
         }
