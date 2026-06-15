@@ -158,6 +158,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.plugin.collections.CollectionManager.getInstance().register(this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.collections.CollectionListener(), this);
         getServer().getPluginManager().registerEvents(new FarmingListener(), this);
+        com.skyblock.plugin.manager.DamageManager.getInstance().register(this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.combat.CombatManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.combat.CombatListener(), this);
         getServer().getPluginManager().registerEvents(new CollectionsListener(), this);
