@@ -462,6 +462,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (EconomyManager consolidation — round 86)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| EconomyManager / CurrencyManager | `com.skyblock.core.manager.EconomyManager` | Thorough final-pass consolidation of every class named `EconomyManager` or `CurrencyManager` across every module; all duplicate implementations and `@Deprecated` delegation stubs deleted outright; canonical `com.skyblock.core.manager.EconomyManager` confirmed as sole implementation with no remaining orphan copies | #2752 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
