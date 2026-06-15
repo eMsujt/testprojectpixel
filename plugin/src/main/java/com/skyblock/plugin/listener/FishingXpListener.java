@@ -1,5 +1,6 @@
 package com.skyblock.plugin.listener;
 
+import com.skyblock.plugin.manager.CollectionManager;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
@@ -45,7 +46,7 @@ public final class FishingXpListener implements Listener {
         XpActionBar.send(player, "fishing", xp, profile.getSkillXp("fishing"));
         String drop = FISH_DROP.get(type);
         if (drop != null) {
-            profile.incrementCollection(drop, 1);
+            CollectionManager.getInstance().addCount(player.getUniqueId(), drop, 1);
         }
     }
 }
