@@ -4,6 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ public final class SkyBlockProfile implements Serializable {
     private final List<ItemStack> accessoryBagContents = new ArrayList<>();
     private final List<ItemStack> storageContents = new ArrayList<>();
     private final List<ItemStack> sacksContents = new ArrayList<>();
+    private final List<String> ownedPets = new ArrayList<>();
+    private String activePet = null;
     private long purse = 0L;
     private long bank = 0L;
     private boolean showSkillNotifications = true;
@@ -250,6 +253,25 @@ public final class SkyBlockProfile implements Serializable {
      */
     public List<ItemStack> getSacksContents() {
         return sacksContents;
+    }
+
+    public List<String> getOwnedPets() {
+        return Collections.unmodifiableList(ownedPets);
+    }
+
+    public void addOwnedPet(String petId) {
+        Objects.requireNonNull(petId, "petId");
+        if (!ownedPets.contains(petId)) {
+            ownedPets.add(petId);
+        }
+    }
+
+    public String getActivePet() {
+        return activePet;
+    }
+
+    public void setActivePet(String petId) {
+        this.activePet = petId;
     }
 
     public long getPurse() { return purse; }
