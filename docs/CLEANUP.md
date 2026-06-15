@@ -218,6 +218,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (pets-domain/items-domain package layout normalization and ShopManager/BazaarManager consolidation — round 54)
+
+| Domain | Work done | PR / commit |
+|--------|-----------|-------------|
+| `com.skyblock.pet` / `skyblock-pets` package layout | All classes in every pets-domain module moved into correct sub-packages: manager classes → `.manager`, listener classes → `.listener`, command classes → `.command`, model/enum types → `.model`; flat-package strays eliminated | #2666 |
+| `com.skyblock.item` / `skyblock-items` package layout | All classes in every items-domain module moved into correct sub-packages: manager classes → `.manager`, listener classes → `.listener`, command classes → `.command`, model/enum types → `.model`; flat-package strays eliminated | #2666 |
+| ShopManager / NpcShopManager | `com.skyblock.core.manager.ShopManager` | `NPCShopListener` and `ShopListener` both updated to delegate to `ShopManager.getInstance().getShop()` instead of loading `shops.yml` independently; duplicate YAML-parsing logic removed from both listeners | #2667 |
+| BazaarManager / BazaarHandler zero-caller stub deletion | *(deleted)* | Two remaining zero-caller `@Deprecated` stubs (`com.skyblock.bazaar.BazaarOrder` and the second orphaned stub) deleted after confirming no callers exist outside the canonical `com.skyblock.core.manager.BazaarManager` | pending |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
