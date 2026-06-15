@@ -421,6 +421,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (utility class and command executor consolidation — rounds 79–80)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ItemBuilder / SkullItemUtil / MenuUtil | `com.skyblock.core.util.ItemBuilder`, `com.skyblock.core.util.SkullItemUtil`, `com.skyblock.core.util.MenuUtil` | Thorough final-pass consolidation of every `ItemBuilder.java`, `SkullItemUtil.java`, and `MenuUtil.java` across every module; all non-canonical duplicate implementations deleted outright; canonical classes in `com.skyblock.core.util` confirmed as sole implementations with no remaining orphan copies | #2736 |
+| Bukkit CommandExecutor duplicates | canonical per-command classes in `com.skyblock.core.command` | Thorough final-pass audit of every class implementing `CommandExecutor` across every module; all non-canonical duplicate executor implementations deleted outright; canonical command classes in `com.skyblock.core.command` confirmed as sole implementations with no remaining orphan stubs | #2737 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
