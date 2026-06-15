@@ -22,7 +22,7 @@ public class WardrobeMenu extends Menu {
     private final Player player;
 
     public WardrobeMenu(Player player) {
-        super("§5Wardrobe", 6);
+        super("§eWardrobe", 6);
         this.player = player;
     }
 
