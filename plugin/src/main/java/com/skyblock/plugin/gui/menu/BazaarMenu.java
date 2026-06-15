@@ -1,21 +1,27 @@
 package com.skyblock.plugin.gui.menu;
 
+import com.skyblock.plugin.bazaar.BazaarManager;
+import com.skyblock.plugin.bazaar.BazaarManager.Category;
 import com.skyblock.plugin.bazaar.BazaarManager.Product;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The Bazaar menu.
  *
  * <p>A 54-slot (6-row) menu titled {@code §6Bazaar}, framed by a gray glass
  * border, that lists every product loaded from {@code bazaar.yml} via
- * {@link com.skyblock.plugin.bazaar.BazaarManager}. Each product occupies one
- * of the 28 inner slots and is shown using the product's configured
- * {@link Material} icon.</p>
+ * {@link BazaarManager}. Each product occupies one of the 28 inner slots and
+ * is shown using the product's configured {@link Material} icon. Category
+ * filter buttons sit in the bottom row (slots 46–51) and re-open the menu
+ * filtered to that category; clicking a highlighted category shows all
+ * products again.</p>
  */
 public class BazaarMenu extends Menu {
 
@@ -27,19 +33,37 @@ public class BazaarMenu extends Menu {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    private final List<Product> products;
+    /** Slots used for category filter buttons (within the bottom border row). */
+    private static final int[] CATEGORY_SLOTS = {46, 47, 48, 49, 50, 51};
 
-    public BazaarMenu(List<Product> products) {
+    private final Player player;
+    private final List<Product> allProducts;
+    /** {@code null} means "show all categories". */
+    private final Category selectedCategory;
+
+    public BazaarMenu(Player player, List<Product> products) {
+        this(player, products, null);
+    }
+
+    private BazaarMenu(Player player, List<Product> products, Category selectedCategory) {
         super("§6Bazaar", 6);
-        this.products = products;
+        this.player = player;
+        this.allProducts = products;
+        this.selectedCategory = selectedCategory;
     }
 
     @Override
     protected void build() {
         fillBorder();
 
-        for (int i = 0; i < products.size() && i < INNER_SLOTS.length; i++) {
-            Product product = products.get(i);
+        List<Product> visible = selectedCategory == null
+                ? allProducts
+                : allProducts.stream()
+                        .filter(p -> p.category() == selectedCategory)
+                        .collect(Collectors.toList());
+
+        for (int i = 0; i < visible.size() && i < INNER_SLOTS.length; i++) {
+            Product product = visible.get(i);
             setItem(INNER_SLOTS[i], new ItemBuilder(product.material())
                     .displayName(product.displayName())
                     .lore(
@@ -51,11 +75,28 @@ public class BazaarMenu extends Menu {
                     .build());
         }
 
-        if (products.isEmpty()) {
+        if (visible.isEmpty()) {
             setItem(22, new ItemBuilder(Material.BARRIER)
                     .displayName("§cNo Products Available")
                     .lore("§7No bazaar products have been loaded.")
                     .build());
+        }
+
+        addCategoryButtons();
+    }
+
+    private void addCategoryButtons() {
+        Category[] categories = Category.values();
+        for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
+            Category cat = categories[i];
+            boolean active = cat == selectedCategory;
+            ItemStack icon = new ItemBuilder(cat.icon())
+                    .displayName((active ? "§a" : "§e") + cat.displayName().replaceFirst("^§.", ""))
+                    .lore(active ? "§7Click to show §aAll Products" : "§7Click to filter by this category")
+                    .build();
+            final Category next = active ? null : cat;
+            setItem(CATEGORY_SLOTS[i], icon,
+                    event -> new BazaarMenu(player, allProducts, next).open(player));
         }
     }
 
