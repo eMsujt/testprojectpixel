@@ -8,7 +8,7 @@ import com.skyblock.core.armorset.ArmorSetManager;
 import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.auction.AuctionCommand;
 import com.skyblock.core.auction.AuctionHouseCommand;
-import com.skyblock.core.auction.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.bank.BankingCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.island.IslandCommand;

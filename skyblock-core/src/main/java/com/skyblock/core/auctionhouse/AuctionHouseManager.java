@@ -1,33 +1,30 @@
 package com.skyblock.core.auctionhouse;
 
-import com.skyblock.core.auction.AuctionHouseManager;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
- * @deprecated Use {@link com.skyblock.core.auction.AuctionHouseManager} (the canonical singleton in this module).
+ * @deprecated Use {@link com.skyblock.core.manager.AuctionHouseManager} (the canonical singleton).
  */
 @Deprecated
 public final class AuctionHouseManager {
 
-    private static final com.skyblock.core.auction.AuctionHouseManager DELEGATE =
-            com.skyblock.core.auction.AuctionHouseManager.getInstance();
+    private static final com.skyblock.core.manager.AuctionHouseManager DELEGATE =
+            com.skyblock.core.manager.AuctionHouseManager.getInstance();
 
     private AuctionHouseManager() {}
 
-    /** Returns the canonical singleton. */
-    public static com.skyblock.core.auction.AuctionHouseManager getInstance() {
+    public static com.skyblock.core.manager.AuctionHouseManager getInstance() {
         return DELEGATE;
     }
 
     public UUID createListing(UUID seller, String itemName, double startingBid,
-                              com.skyblock.core.auction.AuctionHouseManager.AuctionType type) {
+                              com.skyblock.core.manager.AuctionHouseManager.AuctionType type) {
         return DELEGATE.createListing(seller, null, itemName,
-                com.skyblock.core.auction.AuctionHouseManager.AuctionCategory.MISC,
+                com.skyblock.core.manager.AuctionHouseManager.AuctionCategory.MISC,
                 startingBid, type);
     }
 
@@ -47,7 +44,7 @@ public final class AuctionHouseManager {
         return DELEGATE.isActive(listingId);
     }
 
-    public com.skyblock.core.auction.AuctionHouseManager.AuctionListing getListing(UUID listingId) {
+    public com.skyblock.core.manager.AuctionHouseManager.AuctionListing getListing(UUID listingId) {
         return DELEGATE.getListing(listingId);
     }
 
@@ -59,20 +56,17 @@ public final class AuctionHouseManager {
         return DELEGATE.getHighestBidder(listingId);
     }
 
-    public List<com.skyblock.core.auction.AuctionHouseManager.AuctionListing> getActiveListings() {
-        return DELEGATE.getActiveItems().isEmpty()
-                ? java.util.Collections.emptyList()
-                : java.util.Collections.unmodifiableList(
-                        new java.util.ArrayList<>(DELEGATE.getActiveListings().stream()
-                                .map(DELEGATE::getListing)
-                                .collect(java.util.stream.Collectors.toList())));
+    public List<com.skyblock.core.manager.AuctionHouseManager.AuctionListing> getActiveListings() {
+        return DELEGATE.getActiveListings().stream()
+                .map(DELEGATE::getListing)
+                .collect(Collectors.toList());
     }
 
-    public List<com.skyblock.core.auction.AuctionHouseManager.AuctionListing> getListingsBySeller(UUID seller) {
+    public List<com.skyblock.core.manager.AuctionHouseManager.AuctionListing> getListingsBySeller(UUID seller) {
         return DELEGATE.getActiveListings().stream()
                 .map(DELEGATE::getListing)
                 .filter(l -> seller.equals(l.seller()))
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     public void recordAuctionEvent(UUID player, String summary) {

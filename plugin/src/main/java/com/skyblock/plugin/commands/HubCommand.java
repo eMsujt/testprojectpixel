@@ -1,6 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.plugin.managers.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.plugin.managers.CollectionsManager;
@@ -72,7 +72,10 @@ public final class HubCommand implements CommandExecutor {
         Map<String, Long>    skillXps    = SkillManager.getInstance().getSkillXPs(id);
         Map<String, Integer> enchants    = EnchantingManager.getInstance().getEnchantLevels(id);
 
-        int auctionListings = AuctionHouseManager.getInstance().getListings(id).size();
+        AuctionHouseManager ahm = AuctionHouseManager.getInstance();
+        int auctionListings = (int) ahm.getActiveListings().stream()
+                .filter(lid -> id.equals(ahm.getListing(lid).seller()))
+                .count();
 
         int bazaarItems     = BazaarManager.getInstance().getBuyPrices().size();
 
