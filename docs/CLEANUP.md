@@ -292,6 +292,22 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkyBlock main-menu GUI consolidation — round 63)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkyBlockMenu / SkyBlockMainMenu / MainSkyBlockMenu / SkyBlockInventoryMenu | `com.skyblock.plugin.gui.menu.SkyBlockMenu` | All duplicate SkyBlock main-menu GUI classes (`SkyBlockMenu`, `SkyBlockMainMenu`, `MainSkyBlockMenu`, `SkyBlockInventoryMenu`, and near-duplicate variants) across every module consolidated into the single canonical `com.skyblock.plugin.gui.menu.SkyBlockMenu`; all callers, registrations, and `SkyBlockPlugin.onEnable` references updated; orphaned duplicate copies deleted outright | #2695 |
+
+---
+
+## Completed (BankManager/BankingManager/BankingService deep-consolidation sweep — round 64)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| BankManager / BankingManager / BankingService | `com.skyblock.core.manager.BankManager` | All duplicate `BankManager`/`BankingManager`/`BankingService` implementations across every module consolidated into the single canonical `com.skyblock.core.manager.BankManager`; all callers, imports, and `SkyBlockPlugin` registrations updated; orphaned duplicate copies deleted outright | #2697 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
