@@ -9,12 +9,12 @@ public class FastTravelMenu extends Menu {
 
     private enum Destination {
         HUB("Hub", 13, Material.COMPASS, "/warp hub"),
-        PRIVATE_ISLAND("Private Island", 11, Material.OAK_BED, "/warp island"),
-        THE_BARN("The Barn", 15, Material.HAY_BLOCK, "/warp barn"),
-        MUSHROOM_DESERT("Mushroom Desert", 20, Material.RED_MUSHROOM, "/warp desert"),
-        SPIDERS_DEN("Spider's Den", 22, Material.COBWEB, "/warp spider"),
-        BLAZING_FORTRESS("Blazing Fortress", 24, Material.BLAZE_POWDER, "/warp nether"),
-        THE_END("The End", 31, Material.END_STONE, "/warp end");
+        PRIVATE_ISLAND("Private Island", 11, Material.COMPASS, "/warp island"),
+        THE_BARN("The Barn", 15, Material.COMPASS, "/warp barn"),
+        MUSHROOM_DESERT("Mushroom Desert", 20, Material.COMPASS, "/warp desert"),
+        SPIDERS_DEN("Spider's Den", 22, Material.COMPASS, "/warp spider"),
+        BLAZING_FORTRESS("Blazing Fortress", 24, Material.COMPASS, "/warp nether"),
+        THE_END("The End", 31, Material.COMPASS, "/warp end");
 
         private final String displayName;
         private final int slot;
@@ -30,7 +30,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§9Fast Travel", 6);
+        super("§bFast Travel", 6);
     }
 
     @Override
