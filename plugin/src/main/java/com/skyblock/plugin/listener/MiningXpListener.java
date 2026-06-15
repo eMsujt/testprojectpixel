@@ -1,5 +1,6 @@
 package com.skyblock.plugin.listener;
 
+import com.skyblock.plugin.manager.CollectionManager;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
@@ -53,6 +54,6 @@ public final class MiningXpListener implements Listener {
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("mining", xp);
         XpActionBar.send(player, "mining", xp, profile.getSkillXp("mining"));
-        profile.incrementCollection(MINING_DROP.get(type), 1);
+        CollectionManager.getInstance().addCount(player.getUniqueId(), MINING_DROP.get(type), 1);
     }
 }
