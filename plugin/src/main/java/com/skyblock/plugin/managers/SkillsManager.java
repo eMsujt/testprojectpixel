@@ -1,7 +1,10 @@
 package com.skyblock.plugin.managers;
 
+import com.skyblock.plugin.skill.SkillLevelUpHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,6 +107,10 @@ public final class SkillsManager {
         int levelAfter = computeLevel(skill, newXP);
         if (levelAfter > levelBefore) {
             recordSkillEvent(playerId, "Leveled up " + skill + " to level " + levelAfter);
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null) {
+                SkillLevelUpHandler.handle(player, skill, levelAfter);
+            }
         }
     }
 
