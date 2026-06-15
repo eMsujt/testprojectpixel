@@ -454,6 +454,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (ItemType enum consolidation — round 85)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ItemType / Material wrapper enum | `com.skyblock.core.model.ItemType` | Thorough final-pass consolidation of every `ItemType` and `Material` wrapper enum definition across every module; all duplicate `ItemType` variants and `@Deprecated` delegation stubs deleted outright; canonical `com.skyblock.core.model.ItemType` confirmed as sole implementation with no remaining orphan copies | #2747 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
