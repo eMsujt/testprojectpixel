@@ -23,10 +23,10 @@ public class AuctionHouseMenu extends Menu {
 
     /** Inner slots across the four centre rows, left-to-right, top-to-bottom. */
     private static final int[] INNER_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+             9, 10, 11, 12, 13, 14, 15, 16, 17,
+            18, 19, 20, 21, 22, 23, 24, 25, 26,
+            27, 28, 29, 30, 31, 32, 33, 34, 35,
+            36, 37, 38, 39, 40, 41, 42, 43, 44
     };
 
     private final Player player;
@@ -84,8 +84,7 @@ public class AuctionHouseMenu extends Menu {
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+            if (slot < 9 || slot >= 45) {
                 setItem(slot, pane);
             }
         }
