@@ -2,7 +2,7 @@ package com.skyblock.plugin.shop;
 
 import com.skyblock.economy.CoinManager;
 import com.skyblock.core.util.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
+import com.skyblock.core.menu.Menu;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

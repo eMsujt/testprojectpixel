@@ -2,7 +2,7 @@ package com.skyblock.plugin.npc;
 
 import com.skyblock.economy.CoinManager;
 import com.skyblock.core.util.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
+import com.skyblock.core.menu.Menu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

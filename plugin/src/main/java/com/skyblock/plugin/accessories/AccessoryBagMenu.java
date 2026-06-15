@@ -3,7 +3,7 @@ package com.skyblock.plugin.accessories;
 import com.skyblock.core.accessory.AccessoryBagManager;
 import com.skyblock.core.talisman.TalismanManager;
 import com.skyblock.core.util.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
+import com.skyblock.core.menu.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
