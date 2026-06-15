@@ -42,6 +42,10 @@ public class WardrobeMenu extends Menu {
         for (int slot = 45; slot < 54; slot++) {
             setItem(slot, pane);
         }
+        for (int row = 1; row <= 4; row++) {
+            setItem(row * 9, pane);
+            setItem(row * 9 + 8, pane);
+        }
 
         PlayerProfile profile = ProfileManager.getInstance().getProfile(playerId);
         ItemStack[] contents = profile != null ? profile.getWardrobeContents() : null;
