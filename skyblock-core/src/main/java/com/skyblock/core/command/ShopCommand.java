@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.economy.EconomyManager;
+import com.skyblock.core.economy.manager.EconomyManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.manager.ShopManager.Shop;
 import com.skyblock.core.manager.ShopManager.ShopEntry;
