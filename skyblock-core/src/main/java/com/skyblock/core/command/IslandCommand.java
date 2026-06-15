@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * </p>
  */
 /**
- * @deprecated Use {@link com.skyblock.core.island.IslandCommand} instead.
+ * @deprecated Use {@link com.skyblock.core.island.command.IslandCommand} instead.
  */
 @Deprecated
 public final class IslandCommand implements TabExecutor {
