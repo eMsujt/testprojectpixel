@@ -10,18 +10,31 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
- * Awards Carpentry XP whenever a player crafts an item, scaling the reward by the
- * number of items produced. A shift-click bulk craft (vanilla {@code QUICK_MOVE})
- * pays out for every crafted item, not just the single result shown in the slot.
+ * Awards Carpentry XP whenever a player crafts an item that uses wood planks
+ * as ingredients, granting 1 XP per plank slot consumed in the crafting matrix.
  */
 public final class CarpentryListener implements Listener {
 
     /** Carpentry storage key in {@link SkillsManager}. */
     private static final String SKILL = "carpentry";
 
-    /** Carpentry XP granted per crafted item. */
-    private static final long XP_PER_ITEM = 1L;
+    /** Carpentry XP granted per plank ingredient slot. */
+    private static final long XP_PER_PLANK = 1L;
+
+    private static final Set<Material> PLANKS = EnumSet.of(
+            Material.OAK_PLANKS,
+            Material.BIRCH_PLANKS,
+            Material.SPRUCE_PLANKS,
+            Material.JUNGLE_PLANKS,
+            Material.ACACIA_PLANKS,
+            Material.DARK_OAK_PLANKS,
+            Material.MANGROVE_PLANKS,
+            Material.CHERRY_PLANKS
+    );
 
     private final SkillsManager skillsManager = SkillsManager.getInstance();
 
@@ -30,34 +43,25 @@ public final class CarpentryListener implements Listener {
         if (event.getRecipe() == null || !(event.getWhoClicked() instanceof Player)) {
             return;
         }
-        int crafted = craftedAmount(event);
-        if (crafted <= 0) {
+        int plankCount = countPlanks(event);
+        if (plankCount <= 0) {
             return;
         }
         Player player = (Player) event.getWhoClicked();
-        long xp = XP_PER_ITEM * crafted;
+        long xp = XP_PER_PLANK * plankCount;
         skillsManager.addSkillXP(player.getUniqueId(), SKILL, xp);
         ProfileManager.getInstance().getOrCreate(player.getUniqueId()).addSkillXp(SKILL, xp);
         SkillActionBar.getInstance().queue(player, "§a+" + xp + " Carpentry XP");
     }
 
-    /**
-     * The number of items produced by the craft. A normal click yields a single
-     * recipe output; a shift-click ({@code QUICK_MOVE}) crafts repeatedly until an
-     * ingredient runs out, so the count is bounded by the smallest ingredient stack
-     * in the crafting matrix.
-     */
-    private int craftedAmount(CraftItemEvent event) {
-        int perCraft = event.getRecipe().getResult().getAmount();
-        if (!event.isShiftClick()) {
-            return perCraft;
-        }
-        int crafts = Integer.MAX_VALUE;
+    /** Counts the total number of plank items across all slots in the crafting matrix. */
+    private int countPlanks(CraftItemEvent event) {
+        int total = 0;
         for (ItemStack ingredient : event.getInventory().getMatrix()) {
-            if (ingredient != null && ingredient.getType() != Material.AIR) {
-                crafts = Math.min(crafts, ingredient.getAmount());
+            if (ingredient != null && PLANKS.contains(ingredient.getType())) {
+                total += ingredient.getAmount();
             }
         }
-        return crafts == Integer.MAX_VALUE ? perCraft : perCraft * crafts;
+        return total;
     }
 }
