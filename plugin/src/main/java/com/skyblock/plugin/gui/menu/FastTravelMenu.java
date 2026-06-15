@@ -14,7 +14,12 @@ public class FastTravelMenu extends Menu {
         MUSHROOM_DESERT("Mushroom Desert", 20, Material.COMPASS, "/warp desert"),
         SPIDERS_DEN("Spider's Den", 22, Material.COMPASS, "/warp spider"),
         BLAZING_FORTRESS("Blazing Fortress", 24, Material.COMPASS, "/warp nether"),
-        THE_END("The End", 31, Material.COMPASS, "/warp end");
+        THE_END("The End", 29, Material.COMPASS, "/warp end"),
+        THE_PARK("The Park", 31, Material.COMPASS, "/warp park"),
+        GOLD_MINE("Gold Mine", 33, Material.COMPASS, "/warp goldmine"),
+        DEEP_CAVERNS("Deep Caverns", 38, Material.COMPASS, "/warp deepcaverns"),
+        DWARVEN_MINES("Dwarven Mines", 40, Material.COMPASS, "/warp dwarven"),
+        CRYSTAL_HOLLOWS("Crystal Hollows", 42, Material.COMPASS, "/warp crystals");
 
         private final String displayName;
         private final int slot;
@@ -30,7 +35,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§bFast Travel", 6);
+        super("§9Fast Travel", 6);
     }
 
     @Override
@@ -53,11 +58,11 @@ public class FastTravelMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 45; slot < 54; slot++) {
-            setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int column = slot % 9;
+            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+                setItem(slot, pane);
+            }
         }
     }
 }
