@@ -264,6 +264,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (IslandManager/SkyBlockIslandManager consolidation, Skill/Stat/Rarity/Collection enum consolidation, and combat-domain package layout normalization — round 61)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| IslandManager / SkyBlockIslandManager | `com.skyblock.core.manager.IslandManager` | All remaining duplicate `IslandManager`/`SkyBlockIslandManager` implementations grepped and deleted; every import, registration call, and `SkyBlockPlugin.onEnable` reference updated to `com.skyblock.core.manager.IslandManager`; delegation stubs in `islands` and `plugin.*` modules replaced with direct canonical references | #2689 |
+| Skill / Stat / Rarity / Collection enum/registry duplicates | `com.skyblock.core.model.*` | All duplicate `Skill`, `Stat`, `Rarity`, and `Collection` enum and registry classes across every module consolidated into one canonical set in `com.skyblock.core.model`; all callers updated to import the canonical classes; orphaned duplicate copies deleted outright | #2690 |
+| Combat-domain package layout (`com.skyblock.combat.*`) | `com.skyblock.combat.<sub-package>` | All classes across every `com.skyblock.combat` module moved into correct `.command`/`.listener`/`.model`/`.calculator`/`.manager` sub-packages; 2 live callers migrated from deprecated root-level stubs (`DamageCalculator`, `CombatDamageCalculator`) to canonical sub-package imports; all 15 `@Deprecated` stub files deleted; `@Deprecated` `CombatStat`, `CollectionCategory`, and `CollectionRegistry` root-level stubs (zero callers confirmed) deleted as round-61 PR-review follow-up | #2691 |
+
+---
+
 ## Completed (SkillManager/SkillsManager, CollectionManager/CollectionsManager, MinionManager/MinionHandler/MinionService deep-consolidation sweeps — round 59)
 
 | Domain | Canonical class | Work done | PR / commit |
