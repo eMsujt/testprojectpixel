@@ -31,6 +31,21 @@ public final class CombatXpListener implements Listener {
             Map.entry(EntityType.WITHER_SKELETON,15L)
     );
 
+    private static final Map<EntityType, String> MOB_DROP = Map.ofEntries(
+            Map.entry(EntityType.ZOMBIE,          "ROTTEN_FLESH"),
+            Map.entry(EntityType.SKELETON,        "BONE"),
+            Map.entry(EntityType.CREEPER,         "GUNPOWDER"),
+            Map.entry(EntityType.SPIDER,          "STRING"),
+            Map.entry(EntityType.CAVE_SPIDER,     "STRING"),
+            Map.entry(EntityType.ENDERMAN,        "ENDER_PEARL"),
+            Map.entry(EntityType.BLAZE,           "BLAZE_ROD"),
+            Map.entry(EntityType.GHAST,           "GHAST_TEAR"),
+            Map.entry(EntityType.WITCH,           "GLASS_BOTTLE"),
+            Map.entry(EntityType.SLIME,           "SLIMEBALL"),
+            Map.entry(EntityType.MAGMA_CUBE,      "MAGMA_CREAM"),
+            Map.entry(EntityType.WITHER_SKELETON, "WITHER_SKELETON_SKULL")
+    );
+
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         Player killer = event.getEntity().getKiller();
@@ -44,5 +59,6 @@ public final class CombatXpListener implements Listener {
         SkyBlockProfile profile = ProfileManager.getInstance()
                 .getOrCreateProfile(killer.getUniqueId());
         profile.addSkillXp("combat", xp);
+        profile.incrementCollection(MOB_DROP.get(event.getEntityType()), 1);
     }
 }
