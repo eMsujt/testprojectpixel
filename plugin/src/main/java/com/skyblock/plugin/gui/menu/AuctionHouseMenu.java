@@ -1,12 +1,13 @@
 package com.skyblock.plugin.gui.menu;
 
+import com.skyblock.plugin.auction.AuctionListing;
 import com.skyblock.plugin.auction.AuctionManager;
-import com.skyblock.plugin.auction.AuctionManager.AuctionEntry;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
@@ -15,7 +16,8 @@ import java.util.List;
  *
  * <p>A 54-slot (6-row) menu titled {@code §6Auction House}, framed by a gray
  * glass border, that lists every active BIN listing from {@link AuctionManager}
- * across the 28 inner slots.</p>
+ * across the 28 inner slots. Each listing displays the actual {@link ItemStack}
+ * as its icon so players can see exactly what they are buying.</p>
  */
 public class AuctionHouseMenu extends Menu {
 
@@ -38,12 +40,13 @@ public class AuctionHouseMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        List<AuctionEntry> listings = AuctionManager.getInstance().getListings();
+        List<AuctionListing> listings = AuctionManager.getInstance().getAuctionListings();
 
         for (int i = 0; i < listings.size() && i < INNER_SLOTS.length; i++) {
-            AuctionEntry entry = listings.get(i);
-            setItem(INNER_SLOTS[i], new ItemBuilder(Material.PAPER)
-                    .displayName("§e" + entry.itemName())
+            AuctionListing entry = listings.get(i);
+            String displayName = itemDisplayName(entry.item());
+            setItem(INNER_SLOTS[i], new ItemBuilder(entry.item())
+                    .displayName("§e" + displayName)
                     .lore(
                             "§7Buy It Now: §6" + (long) entry.price() + " coins",
                             "",
@@ -57,6 +60,22 @@ public class AuctionHouseMenu extends Menu {
                     .lore("§7There are no active listings right now.")
                     .build());
         }
+    }
+
+    /** Returns the item's display name, falling back to its material name. */
+    private static String itemDisplayName(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasDisplayName()) {
+            return meta.getDisplayName();
+        }
+        String name = item.getType().name().replace('_', ' ');
+        StringBuilder sb = new StringBuilder();
+        for (String word : name.split(" ")) {
+            if (sb.length() > 0) sb.append(' ');
+            sb.append(Character.toUpperCase(word.charAt(0)));
+            if (word.length() > 1) sb.append(word.substring(1).toLowerCase());
+        }
+        return sb.toString();
     }
 
     /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */

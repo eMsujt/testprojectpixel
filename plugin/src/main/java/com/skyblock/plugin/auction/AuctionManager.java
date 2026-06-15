@@ -35,6 +35,7 @@ public final class AuctionManager {
     private static final AuctionManager INSTANCE = new AuctionManager();
 
     private final List<AuctionEntry> listings = new CopyOnWriteArrayList<>();
+    private final List<AuctionListing> auctionListings = new CopyOnWriteArrayList<>();
 
     private AuctionManager() {
     }
@@ -89,5 +90,49 @@ public final class AuctionManager {
      */
     public List<AuctionEntry> getListings() {
         return Collections.unmodifiableList(listings);
+    }
+
+    /**
+     * Adds an {@link AuctionListing} (item-backed BIN listing) to the active auctions.
+     *
+     * @param listing the listing to add
+     */
+    public void addAuctionListing(AuctionListing listing) {
+        Objects.requireNonNull(listing, "listing");
+        auctionListings.add(listing);
+    }
+
+    /**
+     * Returns the {@link AuctionListing} with the given id, or {@code null} if absent.
+     *
+     * @param id the listing id
+     * @return the listing, or {@code null}
+     */
+    public AuctionListing getAuctionListing(String id) {
+        for (AuctionListing listing : auctionListings) {
+            if (listing.id().equals(id)) {
+                return listing;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Removes the {@link AuctionListing} with the given id.
+     *
+     * @param id the listing id
+     * @return {@code true} if a listing was removed
+     */
+    public boolean removeAuctionListing(String id) {
+        return auctionListings.removeIf(l -> l.id().equals(id));
+    }
+
+    /**
+     * Returns an unmodifiable view of every active {@link AuctionListing} in posting order.
+     *
+     * @return the item-backed listings
+     */
+    public List<AuctionListing> getAuctionListings() {
+        return Collections.unmodifiableList(auctionListings);
     }
 }
