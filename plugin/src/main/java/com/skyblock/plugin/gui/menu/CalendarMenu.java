@@ -33,7 +33,7 @@ public class CalendarMenu extends Menu {
     private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34, 37, 38};
 
     public CalendarMenu() {
-        super("§bCalendar & Events", 6);
+        super("§6Calendar & Events", 6);
     }
 
     @Override
