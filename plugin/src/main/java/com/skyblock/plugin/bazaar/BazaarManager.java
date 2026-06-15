@@ -1,7 +1,6 @@
 package com.skyblock.plugin.bazaar;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 
 import java.util.Objects;
 
@@ -10,8 +9,6 @@ import java.util.Objects;
  */
 @Deprecated
 public final class BazaarManager {
-
-    private static final BazaarManager INSTANCE = new BazaarManager();
 
     /**
      * The Hypixel Bazaar product categories.
@@ -53,17 +50,9 @@ public final class BazaarManager {
         }
     }
 
-    private BazaarManager() {}
-
     /** @deprecated Use {@link com.skyblock.core.manager.BazaarManager#getInstance()} */
     @Deprecated
-    public static BazaarManager getInstance() {
-        return INSTANCE;
-    }
-
-    /** @deprecated Use {@link com.skyblock.core.menu.BazaarMenu} directly. */
-    @Deprecated
-    public void openBazaar(Player player) {
-        new com.skyblock.core.menu.BazaarMenu(player).open(player);
+    public static com.skyblock.core.manager.BazaarManager getInstance() {
+        return com.skyblock.core.manager.BazaarManager.getInstance();
     }
 }
