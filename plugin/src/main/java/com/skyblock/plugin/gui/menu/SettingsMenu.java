@@ -13,7 +13,7 @@ public class SettingsMenu extends Menu {
     private final Player player;
 
     public SettingsMenu(Player player) {
-        super("§7SkyBlock Settings", 6);
+        super("§8SkyBlock Settings", 6);
         this.player = player;
     }
 
@@ -55,11 +55,7 @@ public class SettingsMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
-            }
-        }
+        for (int slot = 0; slot < 9; slot++)  setItem(slot, pane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
     }
 }
