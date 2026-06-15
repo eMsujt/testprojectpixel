@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * The Skills hub menu.
  *
- * <p>A 54-slot (6-row) chest titled {@code §bYour Skills} with a gray glass-pane
+ * <p>A 54-slot (6-row) chest titled {@code §bSkills} with a gray glass-pane
  * border. Ten skill icons are placed in alternating inner slots across rows 1–3,
  * each showing the player's current level and total XP.</p>
  */
@@ -46,7 +46,7 @@ public class SkillsMenu extends Menu {
     private final UUID playerId;
 
     public SkillsMenu(UUID playerId) {
-        super("§bYour Skills", 6);
+        super("§bSkills", 6);
         this.playerId = playerId;
     }
 
