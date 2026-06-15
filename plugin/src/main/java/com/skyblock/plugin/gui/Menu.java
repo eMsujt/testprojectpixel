@@ -122,4 +122,7 @@ public abstract class Menu implements InventoryHolder {
     public Inventory getInventory() {
         return inventory;
     }
+
+    public String getTitle() { return title; }
+    public int getRows() { return rows; }
 }
