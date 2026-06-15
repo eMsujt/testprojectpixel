@@ -1,6 +1,6 @@
 package com.skyblock.auctionhouse;
 
-import com.skyblock.core.auction.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager;
 
 import java.io.File;
 import java.util.Collections;
@@ -10,22 +10,20 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * @deprecated Use {@link com.skyblock.core.auction.AuctionHouseManager} (the canonical singleton).
+ * @deprecated Use {@link com.skyblock.core.manager.AuctionHouseManager} (the canonical singleton).
  */
 @Deprecated
 public final class AuctionHouseManager {
 
-    /** Maps each auction category name to its metadata: {maxListings, taxPercent}. */
     public static final Map<String, int[]> AUCTION_CATEGORY_DATA =
-            com.skyblock.core.auction.AuctionHouseManager.AUCTION_CATEGORY_DATA;
+            com.skyblock.core.manager.AuctionHouseManager.AUCTION_CATEGORY_DATA;
 
-    private static final com.skyblock.core.auction.AuctionHouseManager DELEGATE =
-            com.skyblock.core.auction.AuctionHouseManager.getInstance();
+    private static final com.skyblock.core.manager.AuctionHouseManager DELEGATE =
+            com.skyblock.core.manager.AuctionHouseManager.getInstance();
 
     private AuctionHouseManager() {}
 
-    /** Returns the canonical singleton. */
-    public static com.skyblock.core.auction.AuctionHouseManager getInstance() {
+    public static com.skyblock.core.manager.AuctionHouseManager getInstance() {
         return DELEGATE;
     }
 

@@ -1,6 +1,6 @@
 package com.skyblock.plugin.managers;
 
-import com.skyblock.core.auction.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager;
 
 import java.io.File;
 import java.util.Collection;
@@ -11,29 +11,28 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * @deprecated Use {@link com.skyblock.core.auction.AuctionHouseManager} (the canonical singleton).
+ * @deprecated Use {@link com.skyblock.core.manager.AuctionHouseManager} (the canonical singleton).
  */
 @Deprecated
 public final class AuctionHouseManager {
 
-    private static final com.skyblock.core.auction.AuctionHouseManager DELEGATE =
-            com.skyblock.core.auction.AuctionHouseManager.getInstance();
+    private static final com.skyblock.core.manager.AuctionHouseManager DELEGATE =
+            com.skyblock.core.manager.AuctionHouseManager.getInstance();
 
     private AuctionHouseManager() {}
 
-    /** Returns the canonical singleton. */
-    public static com.skyblock.core.auction.AuctionHouseManager getInstance() {
+    public static com.skyblock.core.manager.AuctionHouseManager getInstance() {
         return DELEGATE;
     }
 
-    public List<com.skyblock.core.auction.AuctionHouseManager.AuctionListing> getListings(UUID sellerId) {
+    public List<com.skyblock.core.manager.AuctionHouseManager.AuctionListing> getListings(UUID sellerId) {
         return DELEGATE.getActiveListings().stream()
                 .map(DELEGATE::getListing)
                 .filter(l -> sellerId.equals(l.seller()))
                 .collect(Collectors.toList());
     }
 
-    public List<com.skyblock.core.auction.AuctionHouseManager.AuctionListing> getAllListings() {
+    public List<com.skyblock.core.manager.AuctionHouseManager.AuctionListing> getAllListings() {
         return DELEGATE.getActiveListings().stream()
                 .map(DELEGATE::getListing)
                 .collect(Collectors.toList());

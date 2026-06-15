@@ -1,6 +1,6 @@
 package com.skyblock.economy;
 
-import com.skyblock.core.auction.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager;
 
 import java.io.File;
 import java.util.List;
@@ -9,28 +9,27 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * @deprecated Use {@link com.skyblock.core.auction.AuctionHouseManager} (the canonical singleton).
+ * @deprecated Use {@link com.skyblock.core.manager.AuctionHouseManager} (the canonical singleton).
  */
 @Deprecated
 public final class AuctionHouseManager {
 
-    private static final com.skyblock.core.auction.AuctionHouseManager DELEGATE =
-            com.skyblock.core.auction.AuctionHouseManager.getInstance();
+    private static final com.skyblock.core.manager.AuctionHouseManager DELEGATE =
+            com.skyblock.core.manager.AuctionHouseManager.getInstance();
 
     private AuctionHouseManager() {}
 
-    /** Returns the canonical singleton. */
-    public static com.skyblock.core.auction.AuctionHouseManager getInstance() {
+    public static com.skyblock.core.manager.AuctionHouseManager getInstance() {
         return DELEGATE;
     }
 
     public UUID createListing(UUID seller, org.bukkit.inventory.ItemStack item, String itemName,
                               double startingBid, boolean binListing) {
-        com.skyblock.core.auction.AuctionHouseManager.AuctionType type = binListing
-                ? com.skyblock.core.auction.AuctionHouseManager.AuctionType.BIN
-                : com.skyblock.core.auction.AuctionHouseManager.AuctionType.AUCTION;
+        com.skyblock.core.manager.AuctionHouseManager.AuctionType type = binListing
+                ? com.skyblock.core.manager.AuctionHouseManager.AuctionType.BIN
+                : com.skyblock.core.manager.AuctionHouseManager.AuctionType.AUCTION;
         return DELEGATE.createListing(seller, item, itemName,
-                com.skyblock.core.auction.AuctionHouseManager.AuctionCategory.MISC,
+                com.skyblock.core.manager.AuctionHouseManager.AuctionCategory.MISC,
                 startingBid, type);
     }
 
@@ -50,7 +49,7 @@ public final class AuctionHouseManager {
         return DELEGATE.isActive(listingId);
     }
 
-    public com.skyblock.core.auction.AuctionHouseManager.AuctionListing getListing(UUID listingId) {
+    public com.skyblock.core.manager.AuctionHouseManager.AuctionListing getListing(UUID listingId) {
         return DELEGATE.getListing(listingId);
     }
 
