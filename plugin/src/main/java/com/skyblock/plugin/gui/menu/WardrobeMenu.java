@@ -40,7 +40,7 @@ public class WardrobeMenu extends Menu {
     private final List<ItemStack[]> wardrobeSlots;
 
     public WardrobeMenu(Player player) {
-        super("§9Wardrobe", 6);
+        super("§6Wardrobe", 6);
         this.wardrobeSlots = buildWardrobeSlots(player);
     }
 
