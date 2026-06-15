@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.skills.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -99,11 +99,11 @@ public final class ForagingSkillListener implements Listener {
 
     private void grantXP(Player player, long amount) {
         UUID id = player.getUniqueId();
-        int before = skillManager.getLevel(id, SkillType.FORAGING);
-        skillManager.addXP(id, SkillType.FORAGING, amount);
-        int after = skillManager.getLevel(id, SkillType.FORAGING);
+        int before = skillManager.getLevel(id, Skill.FORAGING);
+        skillManager.addXP(id, Skill.FORAGING, amount);
+        int after = skillManager.getLevel(id, Skill.FORAGING);
         if (after > before) {
-            skillManager.grantLevelUpRewards(id, SkillType.FORAGING, before, after);
+            skillManager.grantLevelUpRewards(id, Skill.FORAGING, before, after);
             player.sendTitle("§aSkill Level Up!", "§eForaging §a→ §eLVL " + after, 10, 60, 20);
         }
     }

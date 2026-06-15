@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.skills.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -61,11 +61,11 @@ public final class FarmingSkillListener implements Listener {
 
     private void grantXP(Player player, long amount) {
         UUID id = player.getUniqueId();
-        int before = skillManager.getLevel(id, SkillType.FARMING);
-        skillManager.addXP(id, SkillType.FARMING, amount);
-        int after = skillManager.getLevel(id, SkillType.FARMING);
+        int before = skillManager.getLevel(id, Skill.FARMING);
+        skillManager.addXP(id, Skill.FARMING, amount);
+        int after = skillManager.getLevel(id, Skill.FARMING);
         if (after > before) {
-            skillManager.grantLevelUpRewards(id, SkillType.FARMING, before, after);
+            skillManager.grantLevelUpRewards(id, Skill.FARMING, before, after);
             player.sendTitle("§aSkill Level Up!", "§eFarming §a→ §eLVL " + after, 10, 60, 20);
         }
     }

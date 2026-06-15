@@ -5,7 +5,7 @@ package com.skyblock.plugin.util;
  *
  * <p>Each array has one entry per level; entry {@code i} (0-based) is the total
  * XP required to have reached level {@code i + 1}. Pass these directly to
- * {@link com.skyblock.core.skills.SkillManager#levelForXp} or any similar
+ * {@link com.skyblock.core.manager.SkillManager#levelForXp} or any similar
  * binary-search helper.</p>
  *
  * <ul>

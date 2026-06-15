@@ -2,6 +2,7 @@ package com.skyblock.core.skills.command;
 
 import com.skyblock.core.skill.SkillLevelManager;
 import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.model.Skill;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -48,9 +49,9 @@ public final class SkillCommand implements TabExecutor {
             return true;
         }
 
-        SkillManager.SkillType skill;
+        Skill skill;
         try {
-            skill = SkillManager.SkillType.valueOf(args[0].toUpperCase());
+            skill = Skill.valueOf(args[0].toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown skill: " + args[0] + ". Use /skill to see all skills.");
             return true;
@@ -63,7 +64,7 @@ public final class SkillCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            List<String> completions = Arrays.stream(SkillManager.SkillType.values())
+            List<String> completions = Arrays.stream(Skill.values())
                     .map(s -> s.name().toLowerCase())
                     .collect(Collectors.toList());
             completions.add("list");
@@ -77,7 +78,7 @@ public final class SkillCommand implements TabExecutor {
     private void sendSkillList(Player player) {
         UUID id = player.getUniqueId();
         player.sendMessage("=== Your Skills ===");
-        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
+        for (Skill skill : Skill.values()) {
             int level = skillManager.getLevel(id, skill);
             player.sendMessage(skill.getDisplayName() + ": Level " + level + "/" + SkillManager.MAX_LEVEL);
         }
@@ -85,12 +86,12 @@ public final class SkillCommand implements TabExecutor {
 
     private void sendSkillEnumList(Player player) {
         player.sendMessage("=== SkyBlock Skills ===");
-        for (SkillManager.SkillType skill : SkillManager.SkillType.values()) {
+        for (Skill skill : Skill.values()) {
             player.sendMessage(skill.getDisplayName() + " (max level: " + SkillManager.maxLevel(skill.key()) + ")");
         }
     }
 
-    private void sendSkillDetail(Player player, SkillManager.SkillType skill) {
+    private void sendSkillDetail(Player player, Skill skill) {
         UUID id = player.getUniqueId();
         int level = skillManager.getLevel(id, skill);
         long xp = skillManager.getXp(id, skill);

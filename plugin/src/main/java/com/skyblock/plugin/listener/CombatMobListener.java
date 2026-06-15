@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.skills.SkillManager.SkillType;
+import com.skyblock.core.model.Skill;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,11 +25,11 @@ public final class CombatMobListener implements Listener {
         }
         long xp = Math.max(1L, Math.round(event.getEntity().getMaxHealth()));
         UUID id = killer.getUniqueId();
-        int before = skillManager.getLevel(id, SkillType.COMBAT);
-        skillManager.addXP(id, SkillType.COMBAT, xp);
-        int after = skillManager.getLevel(id, SkillType.COMBAT);
+        int before = skillManager.getLevel(id, Skill.COMBAT);
+        skillManager.addXP(id, Skill.COMBAT, xp);
+        int after = skillManager.getLevel(id, Skill.COMBAT);
         if (after > before) {
-            skillManager.grantLevelUpRewards(id, SkillType.COMBAT, before, after);
+            skillManager.grantLevelUpRewards(id, Skill.COMBAT, before, after);
             killer.sendTitle("§aSkill Level Up!", "§eCombat §a→ §eLVL " + after, 10, 60, 20);
         }
     }
