@@ -34,7 +34,6 @@
         <module>enchanting</module>
         <module>enchants</module>
         <module>mining</module>
-        <module>island</module>
         <module>scoreboard</module>
         <module>events</module>
         <module>slayers</module>
@@ -47,9 +46,7 @@
         <module>guilds</module>
         <module>fairysouls</module>
         <module>backpacks</module>
-        <module>bank</module>
         <module>talismans</module>
-        <module>profile</module>
         <module>hotm</module>
         <module>brewing</module>
         <module>reforging</module>
@@ -59,11 +56,9 @@
         <module>museum</module>
         <module>calendar</module>
         <module>housing</module>
-        <module>shop</module>
         <module>trades</module>
         <module>achievements</module>
         <module>alchemy</module>
-        <module>collection</module>
         <module>skills</module>
         <module>bestiary</module>
         <module>wardrobe</module>
