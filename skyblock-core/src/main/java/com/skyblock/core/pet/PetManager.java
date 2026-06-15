@@ -1,123 +1,43 @@
 package com.skyblock.core.pet;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import com.skyblock.core.manager.PetManager;
+
 import java.util.UUID;
 
 /**
- * Singleton tracking each player's active pet and per-type experience.
+ * @deprecated Use {@link PetManager} directly.
+ *
+ * <p>Retained for backward compatibility only. All methods delegate to
+ * {@link PetManager#getInstance()}.</p>
  */
+@Deprecated
 public final class PetManager {
 
-    public static final int MAX_LEVEL = 100;
-
-    private static final long[] XP_THRESHOLD;
-
-    static {
-        XP_THRESHOLD = new long[MAX_LEVEL];
-        long cumulative = 0;
-        for (int i = 0; i < MAX_LEVEL; i++) {
-            cumulative += 100L * (i + 1);
-            XP_THRESHOLD[i] = cumulative;
-        }
-    }
+    public static final int MAX_LEVEL = com.skyblock.core.manager.PetManager.MAX_LEVEL;
 
     public enum PetRarity {
-        COMMON("Common"), UNCOMMON("Uncommon"), RARE("Rare"), EPIC("Epic"), LEGENDARY("Legendary");
+        COMMON, UNCOMMON, RARE, EPIC, LEGENDARY;
 
-        private final String displayName;
-
-        PetRarity(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
+        public com.skyblock.core.manager.PetManager.PetRarity toCanonical() {
+            return com.skyblock.core.manager.PetManager.PetRarity.valueOf(this.name());
         }
     }
 
     public enum PetType {
-        // Common
-        CHICKEN(PetRarity.COMMON,                "Chicken"),
-        WORM(PetRarity.COMMON,                   "Worm"),
-        SHEEP(PetRarity.COMMON,                  "Sheep"),
-        PIG(PetRarity.COMMON,                    "Pig"),
-        COW(PetRarity.COMMON,                    "Cow"),
-        BAT(PetRarity.COMMON,                    "Bat"),
-        SNAIL(PetRarity.COMMON,                  "Snail"),
-        ROCK(PetRarity.COMMON,                   "Rock"),
-        MOSQUITO(PetRarity.COMMON,               "Mosquito"),
-        SLUG(PetRarity.COMMON,                   "Slug"),
-        // Uncommon
-        RABBIT(PetRarity.UNCOMMON,               "Rabbit"),
-        PENGUIN(PetRarity.UNCOMMON,              "Penguin"),
-        HORSE(PetRarity.UNCOMMON,                "Horse"),
-        MULE(PetRarity.UNCOMMON,                 "Mule"),
-        DONKEY(PetRarity.UNCOMMON,               "Donkey"),
-        GOAT(PetRarity.UNCOMMON,                 "Goat"),
-        SILVERFISH(PetRarity.UNCOMMON,           "Silverfish"),
-        CAVE_SPIDER(PetRarity.UNCOMMON,          "Cave Spider"),
-        MUSHROOM_COW(PetRarity.UNCOMMON,         "Mushroom Cow"),
-        HOUND(PetRarity.UNCOMMON,                "Hound"),
-        // Rare
-        BEE(PetRarity.RARE,                      "Bee"),
-        DOLPHIN(PetRarity.RARE,                  "Dolphin"),
-        SQUID(PetRarity.RARE,                    "Squid"),
-        FLYING_FISH(PetRarity.RARE,              "Flying Fish"),
-        CAT(PetRarity.RARE,                      "Cat"),
-        PARROT(PetRarity.RARE,                   "Parrot"),
-        MONKEY(PetRarity.RARE,                   "Monkey"),
-        GUARDIAN(PetRarity.RARE,                 "Guardian"),
-        OCELOT(PetRarity.RARE,                   "Ocelot"),
-        TURTLE(PetRarity.RARE,                   "Turtle"),
-        ELEPHANT(PetRarity.RARE,                 "Elephant"),
-        GIRAFFE(PetRarity.RARE,                  "Giraffe"),
-        LION(PetRarity.RARE,                     "Lion"),
-        CREEPER(PetRarity.RARE,                  "Creeper"),
-        ZOMBIE(PetRarity.RARE,                   "Zombie"),
-        SKELETON(PetRarity.RARE,                 "Skeleton"),
-        SPIDER(PetRarity.RARE,                   "Spider"),
-        ENDERMITE(PetRarity.RARE,                "Endermite"),
-        PIGMAN(PetRarity.RARE,                   "Pigman"),
-        // Epic
-        WOLF(PetRarity.EPIC,                     "Wolf"),
-        BLAZE(PetRarity.EPIC,                    "Blaze"),
-        MAGMA_CUBE(PetRarity.EPIC,               "Magma Cube"),
-        ENDERMAN(PetRarity.EPIC,                 "Enderman"),
-        GHAST(PetRarity.EPIC,                    "Ghast"),
-        GOLEM(PetRarity.EPIC,                    "Golem"),
-        WITHER_SKELETON(PetRarity.EPIC,          "Wither Skeleton"),
-        TARANTULA(PetRarity.EPIC,                "Tarantula"),
-        BABY_YETI(PetRarity.EPIC,                "Baby Yeti"),
-        BLUE_WHALE(PetRarity.EPIC,               "Blue Whale"),
-        TIGER(PetRarity.EPIC,                    "Tiger"),
-        WISP(PetRarity.EPIC,                     "Wisp"),
-        SNOWMAN(PetRarity.EPIC,                  "Snowman"),
-        ARMADILLO(PetRarity.EPIC,                "Armadillo"),
-        AMMONITE(PetRarity.EPIC,                 "Ammonite"),
-        SPINOCLAW(PetRarity.EPIC,                "Spinoclaw"),
-        // Legendary
-        GRIFFIN(PetRarity.LEGENDARY,             "Griffin"),
-        GOLDEN_DRAGON(PetRarity.LEGENDARY,       "Golden Dragon"),
-        BLUE_SHARK(PetRarity.LEGENDARY,          "Blue Shark"),
-        JERRY(PetRarity.LEGENDARY,               "Jerry"),
-        BLACK_CAT(PetRarity.LEGENDARY,           "Black Cat"),
-        GRANDMA_WOLF(PetRarity.LEGENDARY,        "Grandma Wolf"),
-        ENDER_DRAGON(PetRarity.LEGENDARY,        "Ender Dragon"),
-        PHOENIX(PetRarity.LEGENDARY,             "Phoenix");
+        CHICKEN, WORM, SHEEP, PIG, COW, BAT, SNAIL, ROCK, MOSQUITO, SLUG,
+        RABBIT, PENGUIN, HORSE, MULE, DONKEY, GOAT, SILVERFISH, CAVE_SPIDER, MUSHROOM_COW, HOUND,
+        BEE, DOLPHIN, SQUID, FLYING_FISH, CAT, PARROT, MONKEY, GUARDIAN, OCELOT, TURTLE,
+        ELEPHANT, GIRAFFE, LION, CREEPER, ZOMBIE, SKELETON, SPIDER, ENDERMITE, PIGMAN,
+        WOLF, BLAZE, MAGMA_CUBE, ENDERMAN, GHAST, GOLEM, WITHER_SKELETON, TARANTULA,
+        BABY_YETI, BLUE_WHALE, TIGER, WISP, SNOWMAN, ARMADILLO, AMMONITE, SPINOCLAW,
+        GRIFFIN, GOLDEN_DRAGON, BLUE_SHARK, JERRY, BLACK_CAT, GRANDMA_WOLF, ENDER_DRAGON, PHOENIX;
 
-        public final PetRarity rarity;
-        private final String displayName;
-
-        PetType(PetRarity rarity, String displayName) {
-            this.rarity = rarity;
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
+        public com.skyblock.core.manager.PetManager.PetType toCanonical() {
+            // MUSHROOM_COW was renamed MOOSHROOM_COW in the canonical enum
+            if (this == MUSHROOM_COW) {
+                return com.skyblock.core.manager.PetManager.PetType.MOOSHROOM_COW;
+            }
+            return com.skyblock.core.manager.PetManager.PetType.valueOf(this.name());
         }
     }
 
@@ -127,24 +47,20 @@ public final class PetManager {
         public final long experience;
 
         public PetData(PetType type, PetRarity rarity, long experience) {
-            this.type = Objects.requireNonNull(type, "type");
-            this.rarity = Objects.requireNonNull(rarity, "rarity");
+            this.type = type;
+            this.rarity = rarity;
             this.experience = experience;
         }
 
         public int getLevel() {
-            int level = 1;
-            while (level < MAX_LEVEL && experience >= XP_THRESHOLD[level - 1]) {
-                level++;
-            }
-            return level;
+            return com.skyblock.core.manager.PetManager.getInstance()
+                    .getLevel(null, type.toCanonical());
         }
     }
 
     private static final PetManager INSTANCE = new PetManager();
-
-    private final Map<UUID, Map<PetType, Long>> petExperience = new HashMap<>();
-    private final Map<UUID, PetData> activePets = new HashMap<>();
+    private final com.skyblock.core.manager.PetManager delegate =
+            com.skyblock.core.manager.PetManager.getInstance();
 
     private PetManager() {
     }
@@ -154,55 +70,38 @@ public final class PetManager {
     }
 
     public long addExperience(UUID playerId, PetType type, long amount) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(type, "type");
-        if (amount < 0) {
-            throw new IllegalArgumentException("amount must not be negative");
-        }
-        Map<PetType, Long> xpMap = petExperience.computeIfAbsent(
-                playerId, id -> new EnumMap<>(PetType.class));
-        long total = xpMap.getOrDefault(type, 0L) + amount;
-        xpMap.put(type, total);
-        return total;
+        return delegate.addExperience(playerId, type.toCanonical(), amount);
     }
 
     public long getExperience(UUID playerId, PetType type) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(type, "type");
-        Map<PetType, Long> xpMap = petExperience.get(playerId);
-        return xpMap == null ? 0L : xpMap.getOrDefault(type, 0L);
+        return delegate.getExperience(playerId, type.toCanonical());
     }
 
     public int getLevel(UUID playerId, PetType type) {
-        long xp = getExperience(playerId, type);
-        int level = 1;
-        while (level < MAX_LEVEL && xp >= XP_THRESHOLD[level - 1]) {
-            level++;
-        }
-        return level;
+        return delegate.getLevel(playerId, type.toCanonical());
     }
 
     public void setActivePet(UUID playerId, PetType type) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(type, "type");
-        long xp = getExperience(playerId, type);
-        activePets.put(playerId, new PetData(type, type.rarity, xp));
+        com.skyblock.core.manager.PetManager.PetType canonical = type.toCanonical();
+        com.skyblock.core.manager.PetManager.Pet pet =
+                delegate.addPet(playerId, canonical, canonical.defaultRarity);
+        delegate.equipPet(playerId, pet.id);
     }
 
     public PetData getActivePet(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        return activePets.get(playerId);
+        com.skyblock.core.manager.PetManager.Pet pet = delegate.getActivePet(playerId);
+        if (pet == null) {
+            return null;
+        }
+        long xp = delegate.getExperience(playerId, pet.type);
+        return new PetData(PetType.valueOf(pet.type.name()), PetRarity.valueOf(pet.rarity.name()), xp);
     }
 
     public boolean removeActivePet(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        return activePets.remove(playerId) != null;
+        return delegate.unequipPet(playerId);
     }
 
     public boolean reset(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        boolean hadData = petExperience.remove(playerId) != null;
-        hadData |= activePets.remove(playerId) != null;
-        return hadData;
+        return delegate.reset(playerId);
     }
 }
