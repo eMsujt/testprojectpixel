@@ -1,6 +1,8 @@
 package com.skyblock.plugin.manager;
 
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +57,9 @@ public final class MinionManager {
         }
     }
 
+    /** How often (in ticks) the production tick fires for every placed minion. */
+    private static final long TICK_PERIOD = 200L;
+
     private static final MinionManager INSTANCE = new MinionManager();
 
     private final Map<UUID, List<PlacedMinion>> minions = new HashMap<>();
@@ -64,6 +69,28 @@ public final class MinionManager {
 
     public static MinionManager getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Starts the repeating production-tick task.
+     *
+     * @param plugin the owning plugin used to schedule the task
+     */
+    public void startTicking(Plugin plugin) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (List<PlacedMinion> list : minions.values()) {
+                    for (PlacedMinion minion : list) {
+                        tickMinion(minion);
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 0L, TICK_PERIOD);
+    }
+
+    private void tickMinion(PlacedMinion minion) {
+        // production logic per minion type and tier goes here
     }
 
     /**
