@@ -13,12 +13,12 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Singleton facade over {@link SkillManager}.
+ * @deprecated Use {@link SkillManager} directly.
  *
- * <p>Exposes the same XP / level API under the {@code SkillsManager} name used
- * by other modules, delegating every call to the underlying {@link SkillManager}
- * singleton so there is a single source of truth for skill data.</p>
+ * <p>Retained for backward compatibility only. All methods delegate to
+ * {@link SkillManager#getInstance()}.</p>
  */
+@Deprecated
 public final class SkillsManager {
 
     /** Canonical skill list used by this facade. */

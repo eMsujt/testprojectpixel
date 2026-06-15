@@ -80,13 +80,17 @@ public final class SkillsCommand implements TabExecutor {
     private void sendSkillDetail(Player player, SkillType skill) {
         UUID id = player.getUniqueId();
         int level = skillManager.getLevel(id, skill);
-        double xp = skillManager.getXp(id, skill);
+        long xp = skillManager.getXp(id, skill);
+        int maxLevel = SkillManager.maxLevel(skill.key());
         player.sendMessage("=== " + capitalize(skill.name()) + " ===");
-        player.sendMessage("Level: " + level + "/" + SkillManager.MAX_LEVEL);
-        player.sendMessage("Total XP: " + (long) xp);
-        if (level < SkillManager.MAX_LEVEL) {
-            double nextThreshold = 50.0 * (level + 1) * (level + 1);
-            player.sendMessage("XP to next level: " + (long) (nextThreshold - xp));
+        player.sendMessage("Level: " + level + "/" + (maxLevel > 0 ? maxLevel : SkillManager.MAX_LEVEL));
+        player.sendMessage("Total XP: " + xp);
+        if (maxLevel > 0 && level < maxLevel) {
+            long[] table = SkillManager.SKILL_XP_TABLE.get(skill.key());
+            long cumulative = 0;
+            for (int i = 0; i < level; i++) cumulative += table[i];
+            long nextThreshold = cumulative + table[level];
+            player.sendMessage("XP to next level: " + (nextThreshold - xp));
         } else {
             player.sendMessage("Max level reached!");
         }

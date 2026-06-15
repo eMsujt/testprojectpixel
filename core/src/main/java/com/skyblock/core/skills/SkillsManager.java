@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/** @deprecated Use {@code com.skyblock.core.skills.SkillManager} from skyblock-core instead. */
+@Deprecated
 public final class SkillsManager {
 
     /** Cumulative XP required to reach each level (index 0 = level 1) for each skill. */
