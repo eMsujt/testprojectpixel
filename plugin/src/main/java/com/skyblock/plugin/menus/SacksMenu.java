@@ -2,7 +2,8 @@ package com.skyblock.plugin.menus;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.managers.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -56,12 +57,13 @@ public class SacksMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        CollectionsManager collections = CollectionsManager.getInstance();
+        CollectionManager collectionManager = CollectionManager.getInstance();
         Resource[] values = Resource.values();
         for (int i = 0; i < values.length; i++) {
             Resource resource = values[i];
             int slot = slotFor(i);
-            long stored = collections.getCollectionCount(playerId, resource.key);
+            Collection c = Collection.parse(resource.key);
+            long stored = c == null ? 0L : collectionManager.getItems(playerId, c);
             setItem(slot, new ItemBuilder(resource.icon)
                     .displayName("§a" + resource.displayName)
                     .lore(

@@ -3,7 +3,7 @@ package com.skyblock.plugin;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.plugin.managers.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.plugin.managers.FishingManager;
 import com.skyblock.plugin.managers.EnchantingManager;
@@ -91,7 +91,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         profileManager.init(this);
         AuctionHouseManager.getInstance().load(getDataFolder());
         BankManager.getInstance().load(getDataFolder());
-        CollectionsManager.getInstance().load(getDataFolder());
+        CollectionManager.getInstance().load(getDataFolder());
         GardenManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().load(getDataFolder());
         KuudraManager.getInstance().load(getDataFolder());
@@ -126,8 +126,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         }
         com.skyblock.core.manager.ShopManager.getInstance().load(getDataFolder());
         com.skyblock.core.accessory.AccessoryManager.getInstance();
-        com.skyblock.plugin.collection.CollectionManager.getInstance().register(this);
-        com.skyblock.plugin.collection.CollectionsManager.getInstance().register(this);
+
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.collection.CollectionListener(), this);
         com.skyblock.plugin.pets.PetManager.getInstance().load(this);
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
@@ -227,7 +226,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
     public void onDisable() {
         AuctionHouseManager.getInstance().save(getDataFolder());
         BankManager.getInstance().save(getDataFolder());
-        CollectionsManager.getInstance().save(getDataFolder());
+        CollectionManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());

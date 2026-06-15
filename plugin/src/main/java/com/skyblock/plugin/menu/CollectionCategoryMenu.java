@@ -1,6 +1,7 @@
 package com.skyblock.plugin.menu;
 
-import com.skyblock.plugin.collection.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -65,8 +66,9 @@ public final class CollectionCategoryMenu implements InventoryHolder, Listener {
     }
 
     private ItemStack makeCollectionItem(Player player, CollectionManager cm, Material material) {
-        long count = cm.getCollection(player.getUniqueId(), material);
-        int tier = cm.getTier(player.getUniqueId(), material);
+        Collection c = Collection.parse(material.name());
+        long count = c == null ? 0L : cm.getItems(player.getUniqueId(), c);
+        int tier = c == null ? 0 : cm.getTier(player.getUniqueId(), c);
         List<String> lore = Arrays.asList(
                 "§7Collected: §e" + count,
                 "§7Tier: §e" + tier

@@ -1,6 +1,7 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.collections.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -16,9 +17,9 @@ public final class CollectionsCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("view", "amount", "tier", "history");
 
-    private final CollectionsManager manager;
+    private final CollectionManager manager;
 
-    public CollectionsCommand(CollectionsManager manager) {
+    public CollectionsCommand(CollectionManager manager) {
         this.manager = manager;
     }
 
@@ -54,7 +55,8 @@ public final class CollectionsCommand implements TabExecutor {
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("amount") || args[0].equalsIgnoreCase("tier"))) {
             String prefix = args[1].toLowerCase();
-            return CollectionsManager.COLLECTIONS.stream()
+            return Arrays.stream(Collection.values())
+                    .map(c -> c.itemKey)
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
         }
@@ -62,13 +64,12 @@ public final class CollectionsCommand implements TabExecutor {
     }
 
     private void handleView(Player player) {
-        Map<String, Long> amounts = manager.getCollectionAmounts(player.getUniqueId());
-        Map<String, Integer> tiers = manager.getCollectionTiers(player.getUniqueId());
+        Map<Collection, Long> all = manager.getAll(player.getUniqueId());
         player.sendMessage("=== Collections ===");
-        for (String collection : CollectionsManager.COLLECTIONS) {
-            long amount = amounts.getOrDefault(collection, 0L);
-            int tier = tiers.getOrDefault(collection, 0);
-            player.sendMessage("  " + collection + ": " + amount + " (tier " + tier + ")");
+        for (Collection c : Collection.values()) {
+            long amount = all.getOrDefault(c, 0L);
+            int tier = manager.getTier(player.getUniqueId(), c);
+            player.sendMessage("  " + c.itemKey + ": " + amount + " (tier " + tier + ")");
         }
     }
 
@@ -77,14 +78,15 @@ public final class CollectionsCommand implements TabExecutor {
             player.sendMessage("Usage: /collections amount <collection>");
             return;
         }
-        String collection = args[1].toLowerCase();
-        if (!CollectionsManager.COLLECTIONS.contains(collection)) {
-            player.sendMessage("Unknown collection '" + collection + "'.");
+        String key = args[1].toLowerCase();
+        Collection c = Collection.parse(key);
+        if (c == null) {
+            player.sendMessage("Unknown collection '" + key + "'.");
             return;
         }
-        long amount = manager.getAmount(player.getUniqueId(), collection);
-        int tier = manager.getTier(player.getUniqueId(), collection);
-        player.sendMessage("=== " + collection + " ===");
+        long amount = manager.getItems(player.getUniqueId(), c);
+        int tier = manager.getTier(player.getUniqueId(), c);
+        player.sendMessage("=== " + key + " ===");
         player.sendMessage("  Amount: " + amount);
         player.sendMessage("  Tier: " + tier);
     }
@@ -94,13 +96,14 @@ public final class CollectionsCommand implements TabExecutor {
             player.sendMessage("Usage: /collections tier <collection>");
             return;
         }
-        String collection = args[1].toLowerCase();
-        if (!CollectionsManager.COLLECTIONS.contains(collection)) {
-            player.sendMessage("Unknown collection '" + collection + "'.");
+        String key = args[1].toLowerCase();
+        Collection c = Collection.parse(key);
+        if (c == null) {
+            player.sendMessage("Unknown collection '" + key + "'.");
             return;
         }
-        int tier = manager.getTier(player.getUniqueId(), collection);
-        player.sendMessage("Your " + collection + " collection is tier " + tier + ".");
+        int tier = manager.getTier(player.getUniqueId(), c);
+        player.sendMessage("Your " + key + " collection is tier " + tier + ".");
     }
 
     private void handleHistory(Player player) {

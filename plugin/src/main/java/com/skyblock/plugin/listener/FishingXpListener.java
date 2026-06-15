@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.manager.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
@@ -45,7 +45,7 @@ public final class FishingXpListener implements Listener {
             SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
             profile.addSkillXp("fishing", CAUGHT_FISH_XP);
             XpActionBar.send(player, "fishing", CAUGHT_FISH_XP, profile.getSkillXp("fishing"));
-            CollectionManager.getInstance().addCount(player.getUniqueId(), type.name(), 1);
+            CollectionManager.getInstance().addItems(player.getUniqueId(), type.name(), 1);
 
         } else if (event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY && caught != null) {
             Long xp = SEA_CREATURE_XP.get(caught.getType());

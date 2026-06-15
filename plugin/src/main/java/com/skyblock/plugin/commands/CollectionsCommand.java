@@ -1,6 +1,7 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.plugin.managers.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,14 +36,14 @@ public final class CollectionsCommand implements CommandExecutor {
 
     private void handleList(Player player) {
         UUID id = player.getUniqueId();
-        Map<String, Long> counts = CollectionsManager.getInstance().getCollectionCounts(id);
+        Map<Collection, Long> counts = CollectionManager.getInstance().getAll(id);
         player.sendMessage("=== Collections ===");
         if (counts.isEmpty()) {
             player.sendMessage("No collections tracked yet.");
             return;
         }
-        for (Map.Entry<String, Long> entry : counts.entrySet()) {
-            player.sendMessage(entry.getKey() + ": " + entry.getValue());
+        for (Map.Entry<Collection, Long> entry : counts.entrySet()) {
+            player.sendMessage(entry.getKey().itemKey + ": " + entry.getValue());
         }
     }
 
@@ -52,14 +53,15 @@ public final class CollectionsCommand implements CommandExecutor {
             return;
         }
         String collection = args[1].toUpperCase();
-        long count = CollectionsManager.getInstance().getCollectionCount(player.getUniqueId(), collection);
+        Collection c = Collection.parse(collection);
+        long count = c == null ? 0L : CollectionManager.getInstance().getItems(player.getUniqueId(), c);
         player.sendMessage("=== " + collection + " ===");
         player.sendMessage("Count: " + count);
     }
 
     private void handleHistory(Player player) {
         UUID id = player.getUniqueId();
-        List<String> history = CollectionsManager.getInstance().getCollectionsHistory(id);
+        List<String> history = CollectionManager.getInstance().getCollectionsHistory(id);
         if (history.isEmpty()) {
             player.sendMessage("No collection history yet.");
             return;

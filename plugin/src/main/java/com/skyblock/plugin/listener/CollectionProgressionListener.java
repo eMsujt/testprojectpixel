@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.collections.CollectionsManager;
+import com.skyblock.core.manager.CollectionManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -52,7 +52,7 @@ public final class CollectionProgressionListener implements Listener {
             Material.CHERRY_LOG
     );
 
-    private final CollectionsManager collectionsManager = CollectionsManager.getInstance();
+    private final CollectionManager collectionManager = CollectionManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -60,7 +60,7 @@ public final class CollectionProgressionListener implements Listener {
         Material type = block.getType();
         if (!TRACKED.contains(type)) return;
         if (!isMature(block)) return;
-        collectionsManager.trackCollection(event.getPlayer(), type, 1);
+        collectionManager.addItems(event.getPlayer().getUniqueId(), type.name(), 1);
     }
 
     /**
