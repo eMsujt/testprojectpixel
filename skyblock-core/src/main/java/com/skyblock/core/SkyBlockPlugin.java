@@ -19,7 +19,7 @@ import com.skyblock.core.island.IslandUpgradeCommand;
 import com.skyblock.core.island.IslandUpgradeManager;
 import com.skyblock.core.bazaar.BazaarManager;
 import com.skyblock.core.collection.CollectionListener;
-import com.skyblock.core.collection.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.combat.CombatCommand;
 import com.skyblock.core.combat.CombatListener;
 import com.skyblock.core.combat.CombatManager;
@@ -449,7 +449,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("skyblockenchant").setTabCompleter(enchantmentEnchantCommand);
         com.skyblock.core.enchant.EnchantmentManager.getInstance();
         com.skyblock.core.enchanting.EnchantmentManager.getInstance();
-        com.skyblock.core.collections.CollectionManager.getInstance();
+        CollectionManager.getInstance();
         com.skyblock.core.quests.QuestManager.getInstance();
         NPCCommand npcManagerCommand = new NPCCommand(NPCManager.getInstance());
         getCommand("npcmanager").setExecutor(npcManagerCommand);

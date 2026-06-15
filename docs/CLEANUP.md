@@ -20,6 +20,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (continued)
+
+| Domain | Canonical class | Duplicates removed | PR / commit |
+|--------|-----------------|-------------------|-------------|
+| CollectionManager | `com.skyblock.core.manager.CollectionManager` | 3 skyblock-core duplicates → `@Deprecated` stubs; 5 command classes and 2 plugin entry points updated to use canonical + `com.skyblock.core.model.Collection` | Oracle |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |

@@ -1,28 +1,18 @@
 package com.skyblock.core.collections;
 
-import com.skyblock.core.collections.CollectionManager.Collection;
-import com.skyblock.core.collections.CollectionManager.CollectionCategory;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
+import com.skyblock.core.model.CollectionCategory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Handles the {@code /collection} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /collection}                     — list all collection types</li>
- *   <li>{@code /collection <type>}              — show the player's total for that collection</li>
- *   <li>{@code /collection category <category>} — list all collections in a category</li>
- *   <li>{@code /collection reset}               — reset all collection progress</li>
- * </ul>
- * </p>
- */
 public final class CollectionCommand implements TabExecutor {
 
     private final CollectionManager collectionManager;
@@ -39,7 +29,7 @@ public final class CollectionCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            sendCollectionList(player);
+            sendCollectionList(sender);
             return true;
         }
 
@@ -67,15 +57,13 @@ public final class CollectionCommand implements TabExecutor {
             return true;
         }
 
-        Collection collection = parseCollection(args[0]);
+        Collection collection = Collection.parse(args[0]);
         if (collection == null) {
-            player.sendMessage("Unknown collection: " + args[0] + ". Use /collection to see all collections.");
+            sender.sendMessage("Unknown collection: " + args[0] + ". Use /collection to see all collections.");
             return true;
         }
 
-        long total = collectionManager.getItems(player.getUniqueId(), collection);
-        player.sendMessage("=== " + collection.name() + " Collection ===");
-        player.sendMessage("Total gathered: " + total);
+        sendCollectionProgress(player, collection);
         return true;
     }
 
@@ -83,42 +71,46 @@ public final class CollectionCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            List<String> completions = new java.util.ArrayList<>();
-            if ("reset".startsWith(lower)) {
-                completions.add("reset");
-            }
-            if ("category".startsWith(lower)) {
-                completions.add("category");
-            }
+            List<String> completions = new ArrayList<>();
+            if ("reset".startsWith(lower)) completions.add("reset");
+            if ("category".startsWith(lower)) completions.add("category");
             for (Collection c : Collection.values()) {
-                String name = c.name().toLowerCase();
-                if (name.startsWith(lower)) {
-                    completions.add(name);
-                }
+                if (c.name().toLowerCase().startsWith(lower)) completions.add(c.name().toLowerCase());
             }
             return completions;
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("category")) {
             String lower = args[1].toLowerCase();
-            List<String> completions = new java.util.ArrayList<>();
+            List<String> completions = new ArrayList<>();
             for (CollectionCategory c : CollectionCategory.values()) {
                 String name = c.name().toLowerCase();
-                if (name.startsWith(lower)) {
-                    completions.add(name);
-                }
+                if (name.startsWith(lower)) completions.add(name);
             }
             return completions;
         }
         return Collections.emptyList();
     }
 
-    private void sendCollectionList(Player player) {
-        player.sendMessage("=== Collections ===");
+    private void sendCollectionList(CommandSender sender) {
+        sender.sendMessage("=== Collections ===");
         for (Collection c : Collection.values()) {
-            long total = collectionManager.getItems(player.getUniqueId(), c);
-            player.sendMessage("- " + c.name() + ": " + total);
+            sender.sendMessage("- " + c.name().toLowerCase());
         }
-        player.sendMessage("Use /collection <name> to view a collection.");
+        sender.sendMessage("Use /collection <name> to view your progress.");
+    }
+
+    private void sendCollectionProgress(Player player, Collection collection) {
+        long items = collectionManager.getItems(player.getUniqueId(), collection);
+        int tier = collectionManager.getTier(player.getUniqueId(), collection);
+        long toNext = collectionManager.getItemsToNextTier(player.getUniqueId(), collection);
+        player.sendMessage("=== " + collection.getDisplayName() + " Collection ===");
+        player.sendMessage("Tier: " + tier + " / " + CollectionManager.MAX_TIER);
+        player.sendMessage("Items: " + items);
+        if (tier < CollectionManager.MAX_TIER) {
+            player.sendMessage("To next tier: " + toNext);
+        } else {
+            player.sendMessage("Collection maxed out!");
+        }
     }
 
     private void sendCategoryList(Player player, CollectionCategory category) {
@@ -129,20 +121,9 @@ public final class CollectionCommand implements TabExecutor {
         }
     }
 
-    private static Collection parseCollection(String input) {
-        for (Collection c : Collection.values()) {
-            if (c.name().equalsIgnoreCase(input)) {
-                return c;
-            }
-        }
-        return null;
-    }
-
     private static CollectionCategory parseCategory(String input) {
         for (CollectionCategory c : CollectionCategory.values()) {
-            if (c.name().equalsIgnoreCase(input)) {
-                return c;
-            }
+            if (c.name().equalsIgnoreCase(input)) return c;
         }
         return null;
     }
