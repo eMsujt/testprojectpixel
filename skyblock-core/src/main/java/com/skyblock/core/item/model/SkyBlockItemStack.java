@@ -1,12 +1,12 @@
-package com.skyblock.core.item;
+package com.skyblock.core.item.model;
 
 import com.skyblock.core.items.CustomItemManager;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * @deprecated Use {@link com.skyblock.core.item.model.SkyBlockItemStack} instead.
+ * An {@link ItemStack} wrapper that carries SkyBlock-specific metadata
+ * (item id and rarity) alongside the underlying Bukkit stack.
  */
-@Deprecated
 public final class SkyBlockItemStack {
 
     private final ItemStack itemStack;

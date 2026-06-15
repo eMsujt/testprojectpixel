@@ -1,4 +1,4 @@
-package com.skyblock.items;
+package com.skyblock.items.manager;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

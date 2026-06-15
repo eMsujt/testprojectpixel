@@ -1,4 +1,4 @@
-package com.skyblock.pets;
+package com.skyblock.pets.model;
 
 import com.skyblock.core.model.Rarity;
 

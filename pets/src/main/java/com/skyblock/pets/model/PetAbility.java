@@ -1,4 +1,4 @@
-package com.skyblock.pets;
+package com.skyblock.pets.model;
 
 import org.bukkit.entity.Player;
 
