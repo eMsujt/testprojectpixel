@@ -13,7 +13,7 @@ public class BankMenu extends Menu {
     private final Player player;
 
     public BankMenu(Player player) {
-        super("§6Bank Account", 6);
+        super("§6Bank Account", 3);
         this.player = player;
     }
 
@@ -23,12 +23,12 @@ public class BankMenu extends Menu {
 
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
 
-        setItem(13, new ItemBuilder(Material.GOLD_BLOCK)
+        setItem(10, new ItemBuilder(Material.GOLD_BLOCK)
                 .displayName("§6Bank Account")
                 .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + "§7 Coins")
                 .build());
 
-        setItem(20, new ItemBuilder(Material.GOLD_NUGGET)
+        setItem(13, new ItemBuilder(Material.GOLD_NUGGET)
                 .displayName("§6Purse")
                 .lore(
                         "§6Purse: §f" + String.format("%,.0f", (double) profile.getPurse()) + " Coins",
@@ -38,7 +38,7 @@ public class BankMenu extends Menu {
                         "§eClick to deposit or withdraw!")
                 .build());
 
-        setItem(24, new ItemBuilder(Material.GOLD_INGOT)
+        setItem(16, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Bank Account")
                 .lore("§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + "§7 Coins")
                 .build());
@@ -51,7 +51,7 @@ public class BankMenu extends Menu {
         for (int slot = 0; slot < 9; slot++) {
             setItem(slot, pane);
         }
-        for (int slot = 45; slot < 54; slot++) {
+        for (int slot = 18; slot < 27; slot++) {
             setItem(slot, pane);
         }
     }
