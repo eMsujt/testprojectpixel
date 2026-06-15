@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.skills.SkillManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.skills.SkillManager.SkillType;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
