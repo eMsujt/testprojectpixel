@@ -2,7 +2,7 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.util.SkullItemUtil;
+import com.skyblock.core.util.SkullItemUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
