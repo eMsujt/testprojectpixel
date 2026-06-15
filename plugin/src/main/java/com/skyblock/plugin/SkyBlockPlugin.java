@@ -52,7 +52,7 @@ import com.skyblock.plugin.commands.PetsCommand;
 import com.skyblock.plugin.commands.ProfileCommand;
 import com.skyblock.plugin.commands.SkillsCommand;
 import com.skyblock.plugin.commands.SlayerCommand;
-import com.skyblock.plugin.menu.SkyblockMenuCommand;
+import com.skyblock.plugin.command.menu.SkyblockMenuCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**

@@ -6,10 +6,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * @deprecated Use {@link com.skyblock.plugin.menu.SkyblockMenuCommand} instead.
- */
-@Deprecated
 public final class SkyblockMenuCommand implements CommandExecutor {
 
     @Override
