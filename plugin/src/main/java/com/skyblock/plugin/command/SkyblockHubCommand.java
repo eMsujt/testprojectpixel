@@ -15,7 +15,8 @@ import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.pets.PetsManager;
-import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.manager.ProfileManager;
+import com.skyblock.core.profile.ProfileManager.SkyBlockProfile;
 import com.skyblock.core.skills.SkillsManager;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.warp.WarpManager;
@@ -304,12 +305,12 @@ public final class SkyblockHubCommand implements CommandExecutor {
         UUID id = player.getUniqueId();
         ProfileManager manager = ProfileManager.getInstance();
         player.sendMessage("=== Your Profiles ===");
-        List<ProfileManager.SkyBlockProfile> profiles = manager.getProfilesForOwner(id);
+        List<SkyBlockProfile> profiles = manager.getProfilesForOwner(id);
         if (profiles.isEmpty()) {
             player.sendMessage("No profiles found.");
             return;
         }
-        for (ProfileManager.SkyBlockProfile profile : profiles) {
+        for (SkyBlockProfile profile : profiles) {
             player.sendMessage("  " + profile.name() + " [" + profile.gameMode().getDisplayName() + "]");
         }
     }

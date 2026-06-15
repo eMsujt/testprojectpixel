@@ -67,7 +67,7 @@ import com.skyblock.core.minion.MinionCommand;
 import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.pets.PetManager;
-import com.skyblock.core.profile.ProfileManager;
+import com.skyblock.core.manager.ProfileManager;
 import com.skyblock.core.npc.NPCCommand;
 import com.skyblock.core.npc.NPCListener;
 import com.skyblock.core.npc.NPCManager;
