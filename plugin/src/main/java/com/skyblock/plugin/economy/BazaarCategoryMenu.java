@@ -38,8 +38,8 @@ public class BazaarCategoryMenu extends Menu {
             Material icon = materialFor(item);
             setItem(i, new ItemBuilder(icon)
                     .displayName("§a" + item)
-                    .lore("§7Buy Price: §6" + bazaar.getBuyPrice(item) + " coins",
-                            "§7Sell Price: §6" + bazaar.getSellPrice(item) + " coins")
+                    .lore("§7Buy Price: §6" + bazaar.getInstantBuyPrice(item) + " coins",
+                            "§7Sell Price: §6" + bazaar.getSellOfferPrice(item) + " coins")
                     .build());
         }
     }
