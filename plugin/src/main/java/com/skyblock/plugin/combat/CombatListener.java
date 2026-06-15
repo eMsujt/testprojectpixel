@@ -18,10 +18,10 @@ public final class CombatListener implements Listener {
             return;
         }
         UUID uuid = attacker.getUniqueId();
-        int weaponDamage = (int) event.getDamage();
-        int strength = (int) statManager.getStat(uuid, StatManager.CombatStat.STRENGTH);
-        int critDamage = (int) statManager.getStat(uuid, StatManager.CombatStat.CRIT_DAMAGE);
-        double damage = CombatDamageCalculator.calculateDamage(weaponDamage, strength, critDamage);
+        double weaponDamage = event.getDamage();
+        double strength = statManager.getStat(uuid, StatManager.CombatStat.STRENGTH);
+        double baseDamage = 5 + weaponDamage;
+        double damage = baseDamage * (1 + strength / 100.0);
         event.setDamage(damage);
     }
 }
