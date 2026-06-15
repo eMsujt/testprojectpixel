@@ -2,6 +2,8 @@ package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.profile.PlayerProfile;
 import com.skyblock.plugin.profile.ProfileManager;
+import com.skyblock.plugin.skills.SkillManager;
+import com.skyblock.plugin.skills.SkillManager.SkillType;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -10,15 +12,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerFishEvent;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
 public final class FishingListener implements Listener {
 
-    private static final Set<Material> COMMON_FISH = Set.of(
-            Material.RAW_COD,
-            Material.RAW_SALMON,
-            Material.TROPICAL_FISH,
-            Material.PUFFERFISH
+    private static final Map<Material, Long> FISH_XP = Map.of(
+            Material.RAW_COD,        5L,
+            Material.RAW_SALMON,     6L,
+            Material.TROPICAL_FISH,  6L,
+            Material.PUFFERFISH,     8L
     );
 
     private static final Map<Material, String> FISH_COLLECTION = Map.of(
@@ -28,17 +30,30 @@ public final class FishingListener implements Listener {
             Material.PUFFERFISH,     "pufferfish"
     );
 
+    private final SkillManager skillManager = SkillManager.getInstance();
+
     @EventHandler
     public void onFish(PlayerFishEvent event) {
         if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
         if (!(event.getCaught() instanceof Item caught)) return;
 
         Player player = event.getPlayer();
-        PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         Material type = caught.getItemStack().getType();
-        long xp = COMMON_FISH.contains(type) ? 5L : 20L;
-        profile.addSkillXp("fishing", xp);
+        long xp = FISH_XP.getOrDefault(type, 3L);
+
+        UUID id = player.getUniqueId();
+        int before = skillManager.getLevel(id, SkillType.FISHING);
+        skillManager.addXP(id, SkillType.FISHING, xp);
+        int after = skillManager.getLevel(id, SkillType.FISHING);
+        if (after > before) {
+            skillManager.grantLevelUpRewards(id, SkillType.FISHING, before, after);
+            player.sendTitle("§aSkill Level Up!", "§eFishing §a→ §eLVL " + after, 10, 60, 20);
+        }
+
         String col = FISH_COLLECTION.get(type);
-        if (col != null) profile.addCollectionCount(col, 1L);
+        if (col != null) {
+            PlayerProfile profile = ProfileManager.getInstance().getOrCreate(id);
+            profile.addCollectionCount(col, 1L);
+        }
     }
 }
