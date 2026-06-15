@@ -152,7 +152,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("pets").setExecutor(new PetsCommand());
         com.skyblock.plugin.manager.DamageManager.getInstance().register(this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.combat.CombatManager.getInstance(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.combat.CombatListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.collection.CollectionTracker(), this);
         getServer().getPluginManager().registerEvents(profileManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.profile.ProfileJoinListener(), this);
