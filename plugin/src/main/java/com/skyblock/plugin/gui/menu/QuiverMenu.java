@@ -15,7 +15,7 @@ public class QuiverMenu extends Menu {
     private final Player player;
 
     public QuiverMenu(Player player) {
-        super("§fQuiver", 6);
+        super("§eQuiver", 6);
         this.player = player;
     }
 
@@ -27,27 +27,28 @@ public class QuiverMenu extends Menu {
         List<ItemStack> contents = profile.getQuiverContents();
 
         int itemIndex = 0;
-        for (int slot = 0; slot < 54 && itemIndex < contents.size(); slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                continue;
-            }
+        for (int slot = 9; slot < 45 && itemIndex < contents.size(); slot++) {
             ItemStack item = contents.get(itemIndex++);
             if (item != null) {
                 setItem(slot, item);
             }
         }
+
+        setItem(49, new ItemBuilder(Material.ARROW)
+                .displayName("§eQuiver")
+                .lore("§7Stores your arrows.")
+                .build());
     }
 
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                setItem(slot, pane);
-            }
+        for (int slot = 0; slot < 9; slot++) {
+            setItem(slot, pane);
+        }
+        for (int slot = 45; slot < 54; slot++) {
+            setItem(slot, pane);
         }
     }
 }
