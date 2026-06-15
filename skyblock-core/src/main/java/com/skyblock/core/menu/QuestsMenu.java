@@ -1,8 +1,8 @@
 package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.QuestManager;
-import com.skyblock.core.quest.manager.QuestManager.QuestStatus;
-import com.skyblock.core.quest.manager.QuestManager.QuestType;
+import com.skyblock.core.manager.QuestManager.QuestStatus;
+import com.skyblock.core.manager.QuestManager.QuestType;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
