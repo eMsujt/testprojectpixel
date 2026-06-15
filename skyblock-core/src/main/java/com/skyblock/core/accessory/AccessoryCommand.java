@@ -1,6 +1,6 @@
 package com.skyblock.core.accessory;
 
-import com.skyblock.core.accessory.AccessoryManager.AccessoryRarity;
+import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.talisman.TalismanManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

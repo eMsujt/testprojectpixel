@@ -1,12 +1,9 @@
 package com.skyblock.collections;
 
 /**
- * Top-level groupings for SkyBlock collections.
- *
- * <p>Each category covers a distinct play-style. Materials are registered to
- * a category at startup via {@link CollectionRegistry}; ordinal order matches
- * the in-game tab ordering.</p>
+ * @deprecated Use {@link com.skyblock.core.model.CollectionCategory} instead.
  */
+@Deprecated
 public enum CollectionCategory {
 
     FARMING("Farming"),
@@ -22,10 +19,9 @@ public enum CollectionCategory {
     }
 
     /**
-     * Returns the human-readable name shown in menus and chat.
-     *
-     * @return the display name, e.g. {@code "Farming"}
+     * @deprecated Use {@link com.skyblock.core.model.CollectionCategory#getDisplayName()}.
      */
+    @Deprecated
     public String getDisplayName() {
         return displayName;
     }
