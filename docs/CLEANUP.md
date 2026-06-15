@@ -189,6 +189,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (abstract Menu/InventoryGUI base class and persistence-helper consolidation — rounds 50-51)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| Menu / InventoryGUI / GuiMenu abstract base classes | `com.skyblock.core.menu.Menu` | All duplicate abstract base classes (`Menu`, `InventoryGUI`, `GuiMenu`, `InventoryMenu`, `BaseMenu`) across every module collapsed into `com.skyblock.core.menu.Menu`; all concrete menu subclasses updated to `extends com.skyblock.core.menu.Menu` | #2650 |
+| PlayerDataManager / DataManager / PersistenceHelper duplicates | `com.skyblock.core.persistence.DataManager` | Remaining duplicate persistence-helper classes (`PlayerDataManager`, `DataManager`, `PersistenceHelper`, `StorageManager`, `YamlPlayerStorage` variants) not already folded into the canonical `DataManager` consolidated; dead stubs deleted | #2651 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
