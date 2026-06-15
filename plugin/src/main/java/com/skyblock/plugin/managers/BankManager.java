@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
+ */
+@Deprecated
 public final class BankManager {
 
     private static final BankManager INSTANCE = new BankManager();

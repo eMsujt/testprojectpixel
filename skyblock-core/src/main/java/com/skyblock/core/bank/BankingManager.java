@@ -9,10 +9,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Singleton managing per-player bank state via {@link BankData} objects.
- *
- * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
  */
+@Deprecated
 public final class BankingManager {
 
     private static final BankingManager INSTANCE = new BankingManager();

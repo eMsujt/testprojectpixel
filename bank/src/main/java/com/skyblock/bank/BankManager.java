@@ -12,13 +12,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Manages per-player bank accounts and their coin balances.
- *
- * <p>Each player owns at most one account, exposed as an immutable
- * {@link BankAccount} snapshot. Accounts must be opened before coins can
- * be deposited or withdrawn. Not thread-safe; synchronize externally if
- * accessed from multiple threads.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
  */
+@Deprecated
 public final class BankManager {
 
     /**

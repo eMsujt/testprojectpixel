@@ -6,8 +6,9 @@ import com.skyblock.plugin.profile.ProfileManager;
 import java.util.UUID;
 
 /**
- * Singleton that manages purse and bank balances via {@link PlayerProfile}.
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
  */
+@Deprecated
 public final class BankManager {
 
     private static final BankManager INSTANCE = new BankManager();

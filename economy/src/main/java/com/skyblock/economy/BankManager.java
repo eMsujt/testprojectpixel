@@ -12,12 +12,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Manages per-player bank accounts and maintains a full transaction history.
- *
- * <p>Bank accounts are separate from the coin purse ({@link CoinManager}):
- * coins must be explicitly deposited into or withdrawn from the bank.
- * All access is {@code synchronized} for thread safety.</p>
+ * @deprecated Use {@link com.skyblock.core.manager.BankManager} instead.
  */
+@Deprecated
 public final class BankManager {
 
     /**
