@@ -8,32 +8,23 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * The Storage menu.
- *
- * <p>A 54-slot (6-row) chest titled {@code §8Storage} with a gray glass-pane
- * border. Seven island-storage page icons sit in row 2 (slots 19–25) and seven
- * ender-chest page icons sit in row 3 (slots 28–34). Each icon reflects
- * whether that page of the player's {@link PlayerProfile} storage contains
- * items, matching Hypixel's layout.</p>
- */
 public class StorageMenu extends Menu {
 
     private static final int PAGE_SIZE = 9;
 
     private static final int[] BACKPACK_SLOTS = {
-            19, 20, 21, 22, 23, 24, 25
+            10, 11, 12, 13, 14, 15, 16
     };
 
     private static final int[] ENDER_CHEST_SLOTS = {
-            28, 29, 30, 31, 32, 33, 34
+            19, 20, 21, 22, 23, 24, 25
     };
 
     private final ItemStack[] islandStorage;
     private final ItemStack[] enderChest;
 
     public StorageMenu(Player player) {
-        super("§8Storage", 6);
+        super("§6Storage", 6);
         PlayerProfile profile = ProfileManager.getInstance().getOrCreate(player.getUniqueId());
         this.islandStorage = profile.getIslandStorageContents();
         this.enderChest = profile.getEnderChestContents();
