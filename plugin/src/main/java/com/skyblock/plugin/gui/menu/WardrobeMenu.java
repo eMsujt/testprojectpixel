@@ -22,47 +22,39 @@ public class WardrobeMenu extends Menu {
     private final Player player;
 
     public WardrobeMenu(Player player) {
-        super("§6Wardrobe", 6);
+        super("§5Wardrobe", 6);
         this.player = player;
     }
 
     @Override
     protected void build() {
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        List<ItemStack[]> sets = profile.getWardrobeSlots();
-
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
+        for (int slot = 0; slot < 9; slot++)  setItem(slot, pane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
+        List<ItemStack[]> sets = profile.getWardrobeSlots();
 
         for (int col = 0; col < 9; col++) {
             int slotNumber = col + 1;
             ItemStack[] set = col < sets.size() ? sets.get(col) : null;
 
             for (int row = 0; row < 4; row++) {
-                ItemStack piece = set != null && row < set.length
-                        ? set[row]
-                        : null;
+                ItemStack piece = set != null && row < set.length ? set[row] : null;
                 boolean hasItem = piece != null && piece.getType() != Material.AIR;
                 ItemStack icon = hasItem
                         ? new ItemBuilder(piece)
-                                .displayName("§6Slot " + slotNumber)
+                                .displayName("§5Outfit " + slotNumber)
                                 .lore("§7Click to equip!")
                                 .build()
                         : new ItemBuilder(ARMOR_PIECES[row])
-                                .displayName("§6Slot " + slotNumber)
+                                .displayName("§5Outfit " + slotNumber)
                                 .lore("§7Empty", "§eClick to equip!")
                                 .build();
-                setItem(row * 9 + col, icon, event -> event.setCancelled(true));
+                setItem((row + 1) * 9 + col, icon, event -> event.setCancelled(true));
             }
-
-            // row 4: empty separator
-            setItem(36 + col, pane);
-
-            // row 5: label
-            setItem(45 + col, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                    .displayName("§6Slot " + slotNumber)
-                    .build());
         }
     }
 }
