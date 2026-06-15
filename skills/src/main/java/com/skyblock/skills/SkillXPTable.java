@@ -1,11 +1,12 @@
 package com.skyblock.skills;
 
 /**
- * Static lookup table of the XP required to advance through each skill level.
+ * @deprecated Use {@code com.skyblock.core.skills.SkillManager.SKILL_XP_TABLE} instead.
  *
- * <p>Entry {@code i} holds the XP needed to go from level {@code i} to level
- * {@code i + 1}, covering levels 1 through 60.</p>
+ * <p>The canonical per-level XP thresholds live in {@code SkillManager.SKILL_XP_TABLE}
+ * in skyblock-core and cover all 12 skills with their correct level caps.</p>
  */
+@Deprecated
 public final class SkillXPTable {
 
     /** XP required to reach each level, indexed by level - 1. */

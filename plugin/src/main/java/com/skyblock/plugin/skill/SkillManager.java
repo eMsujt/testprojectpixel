@@ -64,9 +64,12 @@ public final class SkillManager implements Listener {
     );
 
     /**
-     * The eight main SkyBlock skills paired with their level cap. Farming and Mining
-     * extend to level 60; the remaining skills cap at 50, matching the Hypixel wiki.
+     * @deprecated Use {@link com.skyblock.core.skills.SkillManager.SkillType} instead.
+     *
+     * <p>The eight main SkyBlock skills paired with their level cap. Farming and Mining
+     * extend to level 60; the remaining skills cap at 50, matching the Hypixel wiki.</p>
      */
+    @Deprecated
     public enum Skill {
         FARMING(60), MINING(60), COMBAT(50), FORAGING(50),
         FISHING(50), ENCHANTING(50), ALCHEMY(50), TAMING(50);
