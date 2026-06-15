@@ -29,8 +29,8 @@ public class BankMenu extends Menu {
                         "§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins")
                 .build());
 
-        setItem(13, new ItemBuilder(Material.GOLD_BLOCK)
-                .displayName("§6Bank Balance")
+        setItem(13, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName("§6Piggy Bank")
                 .lore(
                         "§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins",
                         "",
