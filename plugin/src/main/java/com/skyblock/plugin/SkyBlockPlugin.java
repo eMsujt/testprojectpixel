@@ -224,7 +224,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.SkillProgressionListener(this), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.SkyBlockMenu(), this);
         // com.skyblock.plugin.menu.BazaarMenu listener removed — canonical com.skyblock.core.menu.BazaarMenu handles clicks via MenuListener
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.AuctionHouseMenu(), this);
+        // com.skyblock.plugin.menu.AuctionHouseMenu listener removed — canonical com.skyblock.core.menu.AuctionHouseMenu handles clicks via MenuListener
         new com.skyblock.plugin.minion.MinionTickTask(com.skyblock.plugin.minion.MinionManager.getInstance())
                 .runTaskTimer(this, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS);
         new com.skyblock.plugin.minion.MinionTickerTask(com.skyblock.plugin.minion.MinionManager.getInstance())
