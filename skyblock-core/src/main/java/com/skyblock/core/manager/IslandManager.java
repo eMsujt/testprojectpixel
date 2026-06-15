@@ -159,6 +159,30 @@ public final class IslandManager {
         return delegate.getVisitLog(visitorId);
     }
 
+    public Map<UUID, String> getAllIslandBiomes() {
+        return delegate.getAllIslandBiomes();
+    }
+
+    public Map<UUID, Boolean> getAllIslandUnlocked() {
+        return delegate.getAllIslandUnlocked();
+    }
+
+    public Map<UUID, Integer> getAllIslandLevels() {
+        return delegate.getAllIslandLevels();
+    }
+
+    public Map<UUID, Integer> getAllVisitorCounts() {
+        return delegate.getAllVisitorCounts();
+    }
+
+    public Map<UUID, List<String>> getAllVisitLog() {
+        return delegate.getAllVisitLog();
+    }
+
+    public Map<UUID, List<UUID>> getAllIslandMembers() {
+        return delegate.getAllIslandMembers();
+    }
+
     public void load(File dataFolder) {
         delegate.load(dataFolder);
     }
