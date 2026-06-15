@@ -18,16 +18,18 @@ import java.util.UUID;
 public class SkillsMenu extends Menu {
 
     private enum Skill {
-        FARMING   ("Farming",     "farming",     Material.WHEAT),
-        MINING    ("Mining",      "mining",      Material.IRON_PICKAXE),
-        COMBAT    ("Combat",      "combat",      Material.IRON_SWORD),
-        FORAGING  ("Foraging",    "foraging",    Material.OAK_LOG),
-        FISHING   ("Fishing",     "fishing",     Material.FISHING_ROD),
-        ENCHANTING("Enchanting",  "enchanting",  Material.BOOKSHELF),
-        ALCHEMY   ("Alchemy",     "alchemy",     Material.BREWING_STAND),
-        TAMING    ("Taming",      "taming",      Material.BONE),
-        CARPENTRY ("Carpentry",   "carpentry",   Material.CRAFTING_TABLE),
-        RUNECRAFTING("Runecrafting","runecrafting",Material.NETHER_STAR);
+        FARMING      ("Farming",      "farming",      Material.WHEAT),
+        MINING       ("Mining",       "mining",       Material.IRON_PICKAXE),
+        COMBAT       ("Combat",       "combat",       Material.IRON_SWORD),
+        FORAGING     ("Foraging",     "foraging",     Material.OAK_LOG),
+        FISHING      ("Fishing",      "fishing",      Material.FISHING_ROD),
+        ENCHANTING   ("Enchanting",   "enchanting",   Material.BOOKSHELF),
+        ALCHEMY      ("Alchemy",      "alchemy",      Material.BREWING_STAND),
+        TAMING       ("Taming",       "taming",       Material.BONE),
+        CARPENTRY    ("Carpentry",    "carpentry",    Material.CRAFTING_TABLE),
+        RUNECRAFTING ("Runecrafting", "runecrafting", Material.NETHER_STAR),
+        SOCIAL       ("Social",       "social",       Material.EMERALD),
+        DUNGEONEERING("Dungeoneering","dungeoneering",Material.ENDER_EYE);
 
         private final String displayName;
         private final String key;
@@ -40,8 +42,8 @@ public class SkillsMenu extends Menu {
         }
     }
 
-    /** Alternating inner slots across rows 1–3 (cols 1,3,5,7 then 1,3,5,7 then 1,3). */
-    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30};
+    /** Fixed inner slots: cols 1,3,5,7 across rows 1–3 (12 icons). */
+    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32, 34};
 
     private final UUID playerId;
 
