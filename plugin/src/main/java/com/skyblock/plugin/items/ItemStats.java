@@ -1,6 +1,6 @@
 package com.skyblock.plugin.items;
 
-import com.skyblock.core.stat.Stat;
+import com.skyblock.core.model.Stat;
 
 import java.util.EnumMap;
 import java.util.Map;

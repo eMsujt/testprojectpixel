@@ -1,7 +1,7 @@
 package com.skyblock.core.talisman;
 
 import com.skyblock.core.model.AccessoryRarity;
-import com.skyblock.core.stat.Stat;
+import com.skyblock.core.model.Stat;
 
 import java.util.Collections;
 import java.util.EnumMap;

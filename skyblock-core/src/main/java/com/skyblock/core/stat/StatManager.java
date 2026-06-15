@@ -1,5 +1,7 @@
 package com.skyblock.core.stat;
 
+import com.skyblock.core.model.Stat;
+
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;

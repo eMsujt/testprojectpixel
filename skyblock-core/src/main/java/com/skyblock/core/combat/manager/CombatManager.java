@@ -1,5 +1,8 @@
 package com.skyblock.core.combat.manager;
 
+import com.skyblock.core.model.Stat;
+import com.skyblock.core.stat.StatManager;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -86,7 +89,7 @@ public final class CombatManager {
         if (!(entity instanceof Player)) {
             return 0.0;
         }
-        return Math.max(0.0, stats.getStat(entity.getUniqueId(), StatManager.CombatStat.DEFENSE));
+        return Math.max(0.0, stats.getStat(entity.getUniqueId(), Stat.DEFENSE));
     }
 
     /**
@@ -97,9 +100,9 @@ public final class CombatManager {
      * @return array: [strength, critChance, critDamage]
      */
     public double[] getAttackStats(UUID playerId) {
-        double strength   = stats.getStat(playerId, StatManager.CombatStat.STRENGTH);
-        double critChance = stats.getStat(playerId, StatManager.CombatStat.CRIT_CHANCE);
-        double critDamage = stats.getStat(playerId, StatManager.CombatStat.CRIT_DAMAGE);
+        double strength   = stats.getStat(playerId, Stat.STRENGTH);
+        double critChance = stats.getStat(playerId, Stat.CRIT_CHANCE);
+        double critDamage = stats.getStat(playerId, Stat.CRIT_DAMAGE);
         return new double[]{strength, critChance, critDamage};
     }
 
@@ -114,11 +117,11 @@ public final class CombatManager {
      */
     public double computeDamage(UUID attackerId, UUID defenderId, double baseDamage) {
         Objects.requireNonNull(attackerId, "attackerId");
-        double strength = stats.getStat(attackerId, StatManager.CombatStat.STRENGTH);
+        double strength = stats.getStat(attackerId, Stat.STRENGTH);
         double effective = baseDamage * (1.0 + strength / 100.0);
 
         if (defenderId != null) {
-            double defense = Math.max(0.0, stats.getStat(defenderId, StatManager.CombatStat.DEFENSE));
+            double defense = Math.max(0.0, stats.getStat(defenderId, Stat.DEFENSE));
             effective = effective * 100.0 / (defense + 100.0);
         }
 

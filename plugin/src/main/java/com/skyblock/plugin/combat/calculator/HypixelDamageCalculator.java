@@ -1,6 +1,6 @@
 package com.skyblock.plugin.combat.calculator;
 
-import com.skyblock.core.stat.Stat;
+import com.skyblock.core.model.Stat;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
