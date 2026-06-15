@@ -88,7 +88,7 @@ commands:
     description: Manage your SkyBlock fishing skill.
     usage: /<command> [level|stats|loot|creatures]
     aliases: [fish]
-    permission: skyblock.fishing
+    permission: skyblock.command.fishing
   trade:
     description: Trade items with another SkyBlock player.
     usage: /<command> <player>
@@ -173,7 +173,7 @@ permissions:
   skyblock.command.alchemy:
     description: Allows use of the /alchemy command.
     default: true
-  skyblock.fishing:
+  skyblock.command.fishing:
     description: Allows use of the /fishing command.
     default: true
   skyblock.command.trade:
