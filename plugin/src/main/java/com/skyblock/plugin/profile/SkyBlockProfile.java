@@ -25,7 +25,7 @@ public final class SkyBlockProfile implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final UUID uuid;
-    private final Map<String, Double> skillXp = new HashMap<>();
+    private final Map<String, Long> skillXp = new HashMap<>();
     private final Map<String, Long> collectionXp = new HashMap<>();
     private final Map<String, Integer> collectionCounts = new HashMap<>();
     private final List<ItemStack> quiverContents = new ArrayList<>();
@@ -64,7 +64,7 @@ public final class SkyBlockProfile implements Serializable {
      *
      * @return the skill experience totals
      */
-    public Map<String, Double> getSkillXp() {
+    public Map<String, Long> getSkillXp() {
         return Map.copyOf(skillXp);
     }
 
@@ -74,9 +74,9 @@ public final class SkyBlockProfile implements Serializable {
      * @param skill the skill name
      * @return the experience, or 0 if the skill has never been trained
      */
-    public double getSkillXp(String skill) {
+    public long getSkillXp(String skill) {
         Objects.requireNonNull(skill, "skill");
-        return skillXp.getOrDefault(skill, 0.0);
+        return skillXp.getOrDefault(skill, 0L);
     }
 
     /**
@@ -86,26 +86,12 @@ public final class SkyBlockProfile implements Serializable {
      * @param amount the experience to add, must not be negative
      * @throws IllegalArgumentException if {@code amount} is negative
      */
-    public void addSkillXp(String skill, double amount) {
+    public void addSkillXp(String skill, long amount) {
         Objects.requireNonNull(skill, "skill");
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
         }
-        skillXp.merge(skill, amount, Double::sum);
-    }
-
-    /**
-     * Adds experience to the given skill, truncating fractional XP.
-     *
-     * @param skill the skill name
-     * @param amount the experience to add, must not be negative
-     * @throws IllegalArgumentException if {@code amount} is negative
-     */
-    public void addSkillXp(String skill, double amount) {
-        if (amount < 0) {
-            throw new IllegalArgumentException("amount must not be negative, got " + amount);
-        }
-        addSkillXp(skill, (long) amount);
+        skillXp.merge(skill, amount, Long::sum);
     }
 
     /**
@@ -115,7 +101,7 @@ public final class SkyBlockProfile implements Serializable {
      * @param amount the new experience total, must not be negative
      * @throws IllegalArgumentException if {@code amount} is negative
      */
-    public void setSkillXp(String skill, double amount) {
+    public void setSkillXp(String skill, long amount) {
         Objects.requireNonNull(skill, "skill");
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative, got " + amount);
