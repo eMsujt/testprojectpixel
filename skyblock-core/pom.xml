@@ -23,6 +23,11 @@
             <artifactId>paper-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.skyblock</groupId>
             <artifactId>skyblock-mining</artifactId>
             <version>${project.version}</version>
