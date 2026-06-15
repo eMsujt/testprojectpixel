@@ -1,36 +1,53 @@
 package com.skyblock.plugin.gui.menu;
 
+import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
+import com.skyblock.plugin.manager.ProfileManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.Objects;
 
-/**
- * The Quiver menu.
- *
- * <p>A 36-slot (4-row) chest titled {@code §eQuiver}. Slots 0–35 are populated
- * from the owning {@link SkyBlockProfile}'s quiver contents, one stack per slot,
- * matching Hypixel's layout.</p>
- */
 public class QuiverMenu extends Menu {
 
-    private final SkyBlockProfile profile;
+    private static final int[] INNER_SLOTS = {
+            9,  10, 11, 12, 13, 14, 15, 16, 17,
+            18, 19, 20, 21, 22, 23, 24, 25, 26
+    };
 
-    public QuiverMenu(SkyBlockProfile profile) {
-        super("§eQuiver", 4);
-        this.profile = Objects.requireNonNull(profile, "profile");
+    private final Player player;
+
+    public QuiverMenu(Player player) {
+        super("§bQuiver", 4);
+        this.player = player;
     }
 
     @Override
     protected void build() {
+        fillBorder();
+
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         List<ItemStack> contents = profile.getQuiverContents();
-        for (int slot = 0; slot < 36 && slot < contents.size(); slot++) {
-            ItemStack item = contents.get(slot);
+
+        for (int i = 0; i < INNER_SLOTS.length && i < contents.size(); i++) {
+            ItemStack item = contents.get(i);
             if (item != null) {
-                setItem(slot, item);
+                setItem(INNER_SLOTS[i], item);
             }
+        }
+    }
+
+    private void fillBorder() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§r")
+                .build();
+        for (int slot = 0; slot < 9; slot++) {
+            setItem(slot, pane);
+        }
+        for (int slot = 27; slot < 36; slot++) {
+            setItem(slot, pane);
         }
     }
 }
