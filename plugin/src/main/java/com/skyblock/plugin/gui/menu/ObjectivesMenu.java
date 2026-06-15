@@ -6,24 +6,23 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * The Objectives menu.
- *
- * <p>A 54-slot (6-row) menu with a gray glass-pane border. Each active
- * objective is laid out across a centred grid as a {@code BOOK} that, when
- * clicked, refreshes the menu, matching Hypixel's layout.</p>
- */
+import java.util.List;
+
 public class ObjectivesMenu extends Menu {
 
-    /** The centred content slots, one per objective. */
     private static final int[] SLOTS = {
             20, 21, 22,
             29, 30, 31,
             38, 39, 40
     };
 
-    public ObjectivesMenu() {
+    private final Player player;
+    private final List<String> completedObjectives;
+
+    public ObjectivesMenu(Player player, List<String> completedObjectives) {
         super("§eObjectives", 6);
+        this.player = player;
+        this.completedObjectives = completedObjectives;
     }
 
     @Override
@@ -31,18 +30,19 @@ public class ObjectivesMenu extends Menu {
         fillBorder();
 
         for (int i = 0; i < SLOTS.length; i++) {
-            int objective = i + 1;
-            setItem(SLOTS[i], new ItemBuilder(Material.BOOK)
-                            .displayName("§aObjective " + objective)
-                            .lore(
-                                    "§7Not started",
-                                    "§eClick to view!")
-                            .build(),
+            String name = "Objective " + (i + 1);
+            boolean done = completedObjectives.contains(name);
+
+            setItem(SLOTS[i], new ItemBuilder(done ? Material.WRITTEN_BOOK : Material.BOOK)
+                    .displayName((done ? "§a" : "§e") + name)
+                    .lore(done ? "§aCompleted" : "§7Not started",
+                            "",
+                            "§eClick to view!")
+                    .build(),
                     event -> open((Player) event.getWhoClicked()));
         }
     }
 
-    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
