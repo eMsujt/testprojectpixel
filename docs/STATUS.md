@@ -1,7 +1,7 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-25: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated).
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-28: stub removal, pom.xml pruning, 12 menu GUI consolidations, 23 command class stubs deprecated, 4 listener package consolidations and full plugin/listeners/ sweep).
 > Counts: **64 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion` pruned), **~561 `.java` source files** (16 zero-caller `@Deprecated` stubs deleted in #2553).
 
 ## How to read this document
@@ -308,7 +308,7 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
 
 ## Summary of findings
 
-- **Ongoing consolidation has eliminated 20 duplicate manager surfaces, 12 duplicate menu GUI surfaces, and 23 duplicate command class stubs.** Canonical managers for
+- **Ongoing consolidation has eliminated 20 duplicate manager surfaces, 12 duplicate menu GUI surfaces, 23 duplicate command class stubs, and 4 duplicate listener package pairs.** Canonical managers for
   AuctionHouseManager, Rarity, ItemBuilder/SkullUtil, CollectionManager, Menu, SkillManager,
   EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
   DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, ShopManager,
@@ -318,7 +318,10 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
   MinionMenu, DungeonMenu, IslandMenu, SkillsMenu, PetsMenu, QuestsMenu). Round 25 deprecated
   23 command class stubs across `plugin.command.*`, `plugin.commands.*`, `core.command.*`, and
   `core.commands.*` prefix packages, and fixed command registration in `SkyBlockPlugin.java`
-  (#2574 / #2575). The `auctionhouse`, `auction`, `dungeon`, `stats`, and `minion` leaf modules
+  (#2574 / #2575). Rounds 26-28 consolidated `plugin.collection`/`plugin.collections`,
+  `plugin.skill`/`plugin.skills`, and `plugin.minion`/`plugin.minions` listener packages (#2579,
+  #2580, #2581) and swept the `plugin/listeners/` directory of all remaining stray duplicates
+  (#2578). The `auctionhouse`, `auction`, `dungeon`, `stats`, and `minion` leaf modules
   have been pruned from the parent `pom.xml`; **16 zero-caller `@Deprecated` stub files were
   deleted outright** (#2553), reducing the source tree from 577 to ~561 files. The parent
   `pom.xml` now declares **64 modules** (down from 66 before rounds 20–21).
