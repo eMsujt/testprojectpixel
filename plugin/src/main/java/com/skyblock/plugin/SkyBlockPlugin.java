@@ -20,7 +20,6 @@ import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.WarpManager;
 import com.skyblock.core.manager.DungeonManager;
-import com.skyblock.economy.CoinManager;
 import com.skyblock.core.items.CustomItemManager;
 import com.skyblock.plugin.commands.AlchemyCommand;
 import com.skyblock.core.auction.command.AuctionHouseCommand;
@@ -67,7 +66,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
 
     private static SkyBlockPlugin instance;
 
-    private CoinManager coinManager;
     private DungeonManager dungeonManager;
     private CustomItemManager itemManager;
     private com.skyblock.plugin.profile.ProfileManager profileManager;
@@ -88,7 +86,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        coinManager = new CoinManager();
         dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
         itemManager = new CustomItemManager();
@@ -251,11 +248,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         NetworkManager.getInstance().save(getDataFolder());
         getLogger().info("SkyBlock plugin disabled.");
         instance = null;
-    }
-
-    /** Returns the coin purse service. */
-    public CoinManager getCoinManager() {
-        return coinManager;
     }
 
     /** Returns the dungeon session service. */

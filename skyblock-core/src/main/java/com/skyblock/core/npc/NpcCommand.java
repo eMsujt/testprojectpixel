@@ -1,6 +1,6 @@
 package com.skyblock.core.npc;
 
-import com.skyblock.core.economy.manager.EconomyManager;
+import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.npc.NpcManager.NpcDefinition;
 import com.skyblock.core.npc.NpcManager.ShopItem;
 import org.bukkit.command.Command;

@@ -3,7 +3,7 @@ package com.skyblock.plugin.listener;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stats.PlayerStatManager;
 import com.skyblock.plugin.combat.calculator.CombatDamageCalculator;
-import com.skyblock.plugin.economy.PlayerEconomy;
+import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.entity.Entity;
@@ -30,7 +30,7 @@ public final class CombatListener implements Listener {
     private static final double XP_PER_DAMAGE = 4.0;
 
     private final PlayerStatManager statManager = PlayerStatManager.getInstance();
-    private final PlayerEconomy economy = PlayerEconomy.getInstance();
+    private final EconomyManager economy = EconomyManager.getInstance();
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {

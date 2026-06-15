@@ -1,4 +1,4 @@
-package com.skyblock.core.economy.manager;
+package com.skyblock.core.manager;
 
 import java.util.HashMap;
 import java.util.Map;

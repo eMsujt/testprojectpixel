@@ -1,6 +1,6 @@
 package com.skyblock.plugin.collection;
 
-import com.skyblock.economy.CoinManager;
+import com.skyblock.core.manager.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public final class CollectionRewardManager {
     /** Base coins awarded per unlocked tier; the reward grows with the tier number. */
     private static final long COINS_PER_TIER = 100L;
 
-    private final CoinManager coinManager = CoinManager.getInstance();
+    private final EconomyManager coinManager = EconomyManager.getInstance();
 
     private CollectionRewardManager() {}
 
