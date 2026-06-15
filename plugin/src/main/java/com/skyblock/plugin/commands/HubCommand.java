@@ -13,7 +13,7 @@ import com.skyblock.plugin.managers.IslandManager;
 import com.skyblock.plugin.managers.KuudraManager;
 import com.skyblock.plugin.managers.PetsManager;
 import com.skyblock.plugin.managers.ProfileManager;
-import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.SlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -69,7 +69,7 @@ public final class HubCommand implements CommandExecutor {
         int dungeonFloor    = DungeonManager.getInstance().getDungeonFloor(id);
         int dungeonHighest  = DungeonManager.getInstance().getHighestFloor(id);
 
-        Map<String, Long>    skillXps    = SkillsManager.getInstance().getSkillXPs(id);
+        Map<String, Long>    skillXps    = SkillManager.getInstance().getSkillXPs(id);
         Map<String, Integer> enchants    = EnchantingManager.getInstance().getEnchantLevels(id);
 
         int auctionListings = AuctionHouseManager.getInstance().getListings(id).size();

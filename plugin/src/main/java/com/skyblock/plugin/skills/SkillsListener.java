@@ -1,6 +1,6 @@
 package com.skyblock.plugin.skills;
 
-import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.core.manager.SkillManager;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -59,7 +59,7 @@ public final class SkillsListener implements Listener {
             Map.entry(EntityType.BLAZE,        8L)
     );
 
-    private final SkillsManager skillsManager = SkillsManager.getInstance();
+    private final SkillManager skillsManager = SkillManager.getInstance();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {

@@ -83,7 +83,7 @@ import com.skyblock.core.run.RunCommand;
 import com.skyblock.core.run.RunManager;
 import com.skyblock.core.title.TitleCommand;
 import com.skyblock.core.title.TitleManager;
-import com.skyblock.core.skills.SkillsManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.stat.StatCommand;
@@ -198,7 +198,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         ReforgeCommand reforgeCommand = new ReforgeCommand(reforgeManager);
         getCommand("reforge").setExecutor(reforgeCommand);
         getCommand("reforge").setTabCompleter(reforgeCommand);
-        SkillsManager skillsManager = SkillsManager.getInstance();
+        SkillManager skillsManager = SkillManager.getInstance();
         skillsManager.load(getDataFolder());
         AccessoryManager.getInstance();
         StatsCommand statsCommand = new StatsCommand(skillsManager, slayerManager);
@@ -360,7 +360,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         EnchantingManager.getInstance().save(getDataFolder());
         ReforgeManager.getInstance().save(getDataFolder());
         MinionManager.getInstance().save(getDataFolder());
-        SkillsManager.getInstance().save(getDataFolder());
+        SkillManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
         CraftingManager.getInstance().save(getDataFolder());
         QuestManager.getInstance().save(getDataFolder());

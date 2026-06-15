@@ -3,7 +3,7 @@ package com.skyblock.plugin.commands;
 import com.skyblock.core.manager.ProfileManager;
 import com.skyblock.core.manager.ProfileManager.SkyBlockProfile;
 import com.skyblock.plugin.managers.DungeonManager;
-import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.SlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -67,11 +67,11 @@ public final class ProfileCommand implements CommandExecutor {
     private void handleStats(Player player) {
         UUID id = player.getUniqueId();
 
-        SkillsManager skills = SkillsManager.getInstance();
+        SkillManager skills = SkillManager.getInstance();
         Map<String, Long> xpMap = skills.getSkillXPs(id);
         player.sendMessage("=== Stats ===");
         player.sendMessage("-- Skills --");
-        for (Map.Entry<String, long[]> entry : SkillsManager.SKILL_XP_TABLE.entrySet()) {
+        for (Map.Entry<String, long[]> entry : SkillManager.SKILL_XP_TABLE.entrySet()) {
             String skill = entry.getKey();
             long[] table = entry.getValue();
             long totalXP = xpMap.getOrDefault(skill, 0L);
@@ -112,10 +112,10 @@ public final class ProfileCommand implements CommandExecutor {
 
     private void handleSkills(Player player) {
         UUID id = player.getUniqueId();
-        SkillsManager manager = SkillsManager.getInstance();
+        SkillManager manager = SkillManager.getInstance();
         Map<String, Long> xpMap = manager.getSkillXPs(id);
         player.sendMessage("=== Skills ===");
-        for (String skill : SkillsManager.SKILL_XP_TABLE.keySet()) {
+        for (String skill : SkillManager.SKILL_XP_TABLE.keySet()) {
             long xp = xpMap.getOrDefault(skill, 0L);
             player.sendMessage(skill + ": " + xp + " XP");
         }

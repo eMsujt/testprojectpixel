@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.profile.ProfileManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -37,7 +37,7 @@ public final class CarpentryListener implements Listener {
             Material.CHERRY_PLANKS
     );
 
-    private final SkillsManager skillsManager = SkillsManager.getInstance();
+    private final SkillManager skillsManager = SkillManager.getInstance();
 
     @EventHandler
     public void onCraftItem(CraftItemEvent event) {

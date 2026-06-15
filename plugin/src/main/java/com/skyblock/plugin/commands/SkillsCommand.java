@@ -1,6 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.plugin.managers.SkillsManager;
+import com.skyblock.core.manager.SkillManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,8 +30,6 @@ public final class SkillsCommand implements CommandExecutor {
             case "stats"       -> handleStats(player);
             case "info"        -> handleInfo(player, args);
             case "top"         -> handleTop(player, args);
-            case "xp-history"  -> handleXpHistory(player);
-            case "history"     -> handleHistory(player);
             default            -> sendHelp(player);
         }
         return true;
@@ -39,11 +37,11 @@ public final class SkillsCommand implements CommandExecutor {
 
     private void handleStats(Player player) {
         UUID id = player.getUniqueId();
-        SkillsManager manager = SkillsManager.getInstance();
+        SkillManager manager = SkillManager.getInstance();
         Map<String, Long> xpMap = manager.getSkillXPs(id);
 
         player.sendMessage("=== Skill Stats ===");
-        for (String skill : SkillsManager.SKILL_XP_TABLE.keySet()) {
+        for (String skill : SkillManager.SKILL_XP_TABLE.keySet()) {
             long xp = xpMap.getOrDefault(skill, 0L);
             int level = computeLevel(skill, xp);
             player.sendMessage(capitalize(skill) + " — Level: " + level + ", XP: " + xp);
@@ -56,7 +54,7 @@ public final class SkillsCommand implements CommandExecutor {
             return;
         }
         String skill = args[1].toLowerCase();
-        long[] table = SkillsManager.SKILL_XP_TABLE.get(skill);
+        long[] table = SkillManager.SKILL_XP_TABLE.get(skill);
         if (table == null) {
             player.sendMessage("Unknown skill: " + args[1]
                     + ". Use /skills stats to list valid skills.");
@@ -64,7 +62,7 @@ public final class SkillsCommand implements CommandExecutor {
         }
 
         UUID id = player.getUniqueId();
-        long xp = SkillsManager.getInstance().getSkillXP(id, skill);
+        long xp = SkillManager.getInstance().getSkillXP(id, skill);
         int level = computeLevel(skill, xp);
         long nextThreshold = level < table.length ? table[level] : -1L;
 
@@ -84,13 +82,13 @@ public final class SkillsCommand implements CommandExecutor {
             return;
         }
         String skill = args[1].toLowerCase();
-        if (!SkillsManager.SKILL_XP_TABLE.containsKey(skill)) {
+        if (!SkillManager.SKILL_XP_TABLE.containsKey(skill)) {
             player.sendMessage("Unknown skill: " + args[1]
                     + ". Use /skills stats to list valid skills.");
             return;
         }
 
-        Map<UUID, Long> allXP = SkillsManager.getInstance().getAllSkillXP(skill);
+        Map<UUID, Long> allXP = SkillManager.getInstance().getAllSkillXP(skill);
         List<Map.Entry<UUID, Long>> sorted = new ArrayList<>(allXP.entrySet());
         sorted.sort(Comparator.comparingLong(Map.Entry<UUID, Long>::getValue).reversed());
 
@@ -107,36 +105,8 @@ public final class SkillsCommand implements CommandExecutor {
         }
     }
 
-    private void handleXpHistory(Player player) {
-        UUID id = player.getUniqueId();
-        Map<String, Integer> history = SkillsManager.getInstance().getXpHistory(id);
-
-        player.sendMessage("=== XP History ===");
-        if (history.isEmpty()) {
-            player.sendMessage("No XP history found.");
-            return;
-        }
-        for (Map.Entry<String, Integer> entry : history.entrySet()) {
-            player.sendMessage(capitalize(entry.getKey()) + ": " + entry.getValue() + " XP gained");
-        }
-    }
-
-    private void handleHistory(Player player) {
-        UUID id = player.getUniqueId();
-        List<String> history = SkillsManager.getInstance().getSkillHistory(id);
-
-        player.sendMessage("=== Skill History ===");
-        if (history.isEmpty()) {
-            player.sendMessage("No skill history found.");
-            return;
-        }
-        for (int i = 0; i < history.size(); i++) {
-            player.sendMessage((i + 1) + ". " + history.get(i));
-        }
-    }
-
     private int computeLevel(String skill, long xp) {
-        long[] table = SkillsManager.SKILL_XP_TABLE.get(skill);
+        long[] table = SkillManager.SKILL_XP_TABLE.get(skill);
         if (table == null) return 0;
         int level = 0;
         long cumulative = 0;
@@ -161,7 +131,5 @@ public final class SkillsCommand implements CommandExecutor {
         player.sendMessage("/skills stats        — show your level and XP for all skills");
         player.sendMessage("/skills info <skill> — show detailed info for a specific skill");
         player.sendMessage("/skills top <skill>  — show top 10 players by XP for a skill");
-        player.sendMessage("/skills xp-history   — show cumulative XP gained per skill");
-        player.sendMessage("/skills history      — show your skill gain history");
     }
 }
