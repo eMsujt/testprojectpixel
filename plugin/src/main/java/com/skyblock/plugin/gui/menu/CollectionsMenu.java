@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * The Collections hub menu.
  *
- * <p>A 54-slot (6-row) chest titled {@code §aCollections} with a gray glass-pane
+ * <p>A 54-slot (6-row) chest titled {@code §9Collections} with a gray glass-pane
  * border. Five category icons form a horizontal selector row (slots 20–24);
  * clicking one opens {@link CollectionCategoryMenu} for that category.</p>
  */
@@ -55,7 +55,7 @@ public class CollectionsMenu extends Menu {
     private final UUID playerId;
 
     public CollectionsMenu(UUID playerId) {
-        super("§eYour Collections", 6);
+        super("§9Collections", 6);
         this.playerId = playerId;
     }
 
