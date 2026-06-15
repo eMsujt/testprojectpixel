@@ -18,17 +18,17 @@ public class FastTravelMenu extends Menu {
 
     /** A warp destination shown as a block in the menu. */
     private enum Destination {
-        THE_HUB("The Hub", Material.GRASS_BLOCK, 13, "/warp hub"),
-        THE_BARN("The Barn", Material.HAY_BLOCK, 20, "/warp barn"),
-        MUSHROOM_DESERT("Mushroom Desert", Material.RED_MUSHROOM_BLOCK, 21, "/warp desert"),
-        SPIDERS_DEN("Spider's Den", Material.COBWEB, 22, "/warp spider"),
-        BLAZING_FORTRESS("Blazing Fortress", Material.NETHERRACK, 23, "/warp nether"),
-        THE_END("The End", Material.END_STONE, 24, "/warp end"),
-        THE_PARK("The Park", Material.OAK_SAPLING, 29, "/warp park"),
-        GOLD_MINE("Gold Mine", Material.GOLD_ORE, 30, "/warp mine"),
-        DEEP_CAVERNS("Deep Caverns", Material.STONE, 31, "/warp deepcaverns"),
-        DWARVEN_MINES("Dwarven Mines", Material.IRON_ORE, 32, "/warp dwarven"),
-        CRYSTAL_HOLLOWS("Crystal Hollows", Material.AMETHYST_CLUSTER, 33, "/warp crystals");
+        THE_HUB("The Hub", Material.COMPASS, 13, "/warp hub"),
+        THE_BARN("The Barn", Material.COMPASS, 20, "/warp barn"),
+        MUSHROOM_DESERT("Mushroom Desert", Material.COMPASS, 21, "/warp desert"),
+        SPIDERS_DEN("Spider's Den", Material.COMPASS, 22, "/warp spider"),
+        BLAZING_FORTRESS("Blazing Fortress", Material.COMPASS, 23, "/warp nether"),
+        THE_END("The End", Material.COMPASS, 24, "/warp end"),
+        THE_PARK("The Park", Material.COMPASS, 29, "/warp park"),
+        GOLD_MINE("Gold Mine", Material.COMPASS, 30, "/warp mine"),
+        DEEP_CAVERNS("Deep Caverns", Material.COMPASS, 31, "/warp deepcaverns"),
+        DWARVEN_MINES("Dwarven Mines", Material.COMPASS, 32, "/warp dwarven"),
+        CRYSTAL_HOLLOWS("Crystal Hollows", Material.COMPASS, 33, "/warp crystals");
 
         private final String displayName;
         private final Material icon;
@@ -44,7 +44,7 @@ public class FastTravelMenu extends Menu {
     }
 
     public FastTravelMenu() {
-        super("§dFast Travel", 6);
+        super("§aFast Travel", 6);
     }
 
     @Override
