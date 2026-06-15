@@ -18,10 +18,10 @@ import java.util.Map;
 public final class FishingXpListener implements Listener {
 
     private static final Map<Material, Long> FISH_XP = Map.of(
-            Material.RAW_COD,       5L,
-            Material.RAW_SALMON,    6L,
-            Material.TROPICAL_FISH, 6L,
-            Material.PUFFERFISH,    8L
+            Material.RAW_COD,       50L,
+            Material.RAW_SALMON,    80L,
+            Material.TROPICAL_FISH, 10L,
+            Material.PUFFERFISH,    10L
     );
 
     private static final Map<Material, String> FISH_DROP = Map.of(
