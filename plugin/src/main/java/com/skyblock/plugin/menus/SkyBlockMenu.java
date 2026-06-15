@@ -2,7 +2,7 @@ package com.skyblock.plugin.menus;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.pets.PetsMenu;
+import com.skyblock.core.menu.PetsMenu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
