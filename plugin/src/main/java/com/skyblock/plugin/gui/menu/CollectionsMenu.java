@@ -37,7 +37,7 @@ public class CollectionsMenu extends Menu {
     }
 
     public CollectionsMenu() {
-        super("§2Collections", 6);
+        super("§eCollections", 6);
     }
 
     @Override
