@@ -30,7 +30,7 @@ public class BankMenu extends Menu {
                 .build());
 
         setItem(13, new ItemBuilder(Material.GOLD_NUGGET)
-                .displayName("§6Purse: §e" + profile.getPurse() + " coins")
+                .displayName("§6Purse: §e" + String.format("%,.0f", (double) profile.getPurse()) + " coins")
                 .lore(
                         "§7Balance: §6" + String.format("%,.0f", (double) profile.getBank()) + " Coins",
                         "",
