@@ -65,6 +65,8 @@ public final class ShopManager {
     }
 
     private static final ShopManager INSTANCE = new ShopManager();
+    private static final com.skyblock.core.manager.ShopManager DELEGATE =
+            com.skyblock.core.manager.ShopManager.getInstance();
 
     private final Map<ShopCategory, List<ShopItem>> items = new EnumMap<>(ShopCategory.class);
 
@@ -94,6 +96,13 @@ public final class ShopManager {
         Objects.requireNonNull(category, "category");
         Objects.requireNonNull(item, "item");
         items.get(category).add(item);
+        // write-through: keep canonical in sync (category name used as shop id)
+        List<com.skyblock.core.manager.ShopManager.ShopEntry> canonical = new ArrayList<>();
+        for (ShopItem si : items.get(category)) {
+            canonical.add(new com.skyblock.core.manager.ShopManager.ShopEntry(
+                    si.material(), (long) si.price(), 0L));
+        }
+        DELEGATE.registerShop(category.name(), category.name(), canonical);
     }
 
     /**
