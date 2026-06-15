@@ -28,7 +28,7 @@ public class AccessoryBagMenu extends Menu {
     }
 
     private AccessoryBagMenu(Player player, int page) {
-        super("§dAccessory Bag", 6);
+        super("§5Accessory Bag", 6);
         this.player = player;
         this.page = page;
     }
