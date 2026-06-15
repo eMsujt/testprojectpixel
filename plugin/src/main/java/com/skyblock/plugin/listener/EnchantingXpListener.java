@@ -9,17 +9,15 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 
 /**
  * Awards Enchanting XP directly to the player's {@link SkyBlockProfile} whenever
- * a player enchants an item.
+ * a player enchants an item. XP equals the enchantment level cost of the operation.
  */
 public final class EnchantingXpListener implements Listener {
-
-    private static final long ENCHANT_XP = 150L;
 
     @EventHandler
     public void onEnchant(EnchantItemEvent event) {
         if (!(event.getEnchanter() instanceof Player player)) return;
 
-        double xp = ENCHANT_XP;
+        double xp = event.getExpLevelCost();
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("enchanting", xp);
         XpActionBar.send(player, "enchanting", xp, profile.getSkillXp("enchanting"));
