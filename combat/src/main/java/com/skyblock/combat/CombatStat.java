@@ -1,59 +1,47 @@
 package com.skyblock.combat;
 
+import com.skyblock.core.stat.Stat;
+
 /**
- * Combat-related stats a SkyBlock player can have.
+ * @deprecated Use {@link Stat} instead.
  *
- * <p>Each stat carries its human-readable display name, the symbol shown
- * next to it in item lore and the stat menu, and the base value every
- * player starts with before any item, skill or pet bonuses.</p>
+ * <p>This enum is a subset of {@link Stat} kept for source compatibility.
+ * Each constant delegates its accessors to the corresponding {@link Stat} entry.</p>
  */
+@Deprecated
 public enum CombatStat {
 
-    HEALTH("Health", "❤", 100.0),
-    DEFENSE("Defense", "❈", 0.0),
-    STRENGTH("Strength", "❁", 0.0),
-    SPEED("Speed", "✦", 100.0),
-    CRIT_CHANCE("Crit Chance", "☣", 30.0),
-    CRIT_DAMAGE("Crit Damage", "☠", 50.0),
-    INTELLIGENCE("Intelligence", "✎", 0.0),
-    ATTACK_SPEED("Bonus Attack Speed", "⚔", 0.0),
-    FEROCITY("Ferocity", "⫽", 0.0);
+    HEALTH(Stat.HEALTH),
+    DEFENSE(Stat.DEFENSE),
+    STRENGTH(Stat.STRENGTH),
+    SPEED(Stat.SPEED),
+    CRIT_CHANCE(Stat.CRIT_CHANCE),
+    CRIT_DAMAGE(Stat.CRIT_DAMAGE),
+    INTELLIGENCE(Stat.INTELLIGENCE),
+    ATTACK_SPEED(Stat.ATTACK_SPEED),
+    FEROCITY(Stat.FEROCITY);
 
-    private final String displayName;
-    private final String symbol;
-    private final double baseValue;
+    private final Stat delegate;
 
-    CombatStat(String displayName, String symbol, double baseValue) {
-        this.displayName = displayName;
-        this.symbol = symbol;
-        this.baseValue = baseValue;
+    CombatStat(Stat delegate) {
+        this.delegate = delegate;
     }
 
-    /**
-     * Returns the human-readable name of this stat.
-     *
-     * @return the display name, e.g. {@code "Crit Chance"}
-     */
+    /** @deprecated Use {@link Stat#getDisplayName()}. */
+    @Deprecated
     public String getDisplayName() {
-        return displayName;
+        return delegate.getDisplayName();
     }
 
-    /**
-     * Returns the symbol shown next to this stat in item lore and menus.
-     *
-     * @return the stat symbol, e.g. {@code "❤"} for health
-     */
+    /** @deprecated Use {@link Stat#getSymbol()}. */
+    @Deprecated
     public String getSymbol() {
-        return symbol;
+        return delegate.getSymbol();
     }
 
-    /**
-     * Returns the value every player starts with for this stat before
-     * any item, skill or pet bonuses are applied.
-     *
-     * @return the base value, never negative
-     */
+    /** @deprecated Use {@link Stat#getBaseValue()}. */
+    @Deprecated
     public double getBaseValue() {
-        return baseValue;
+        return delegate.getBaseValue();
     }
 }

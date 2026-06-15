@@ -1,6 +1,6 @@
 package com.skyblock.core.accessory;
 
-import com.skyblock.core.combat.StatManager.CombatStat;
+import com.skyblock.core.stat.Stat;
 import com.skyblock.core.talisman.TalismanManager;
 
 import java.util.Collections;
@@ -172,15 +172,15 @@ public final class AccessoryBagManager {
      * Computes the total stat bonuses from all accessories in the player's bag.
      *
      * @param playerId the player's UUID, must not be null
-     * @return map of {@link CombatStat} to total bonus; empty if bag is empty
+     * @return map of {@link Stat} to total bonus; empty if bag is empty
      */
-    public Map<CombatStat, Double> getTotalBonuses(UUID playerId) {
+    public Map<Stat, Double> getTotalBonuses(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         Set<TalismanManager.TalismanType> bag = bags.get(playerId);
         if (bag == null || bag.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<CombatStat, Double> totals = new EnumMap<>(CombatStat.class);
+        Map<Stat, Double> totals = new EnumMap<>(Stat.class);
         for (TalismanManager.TalismanType t : bag) {
             totals.merge(t.stat, t.bonus, Double::sum);
         }

@@ -1,6 +1,6 @@
 package com.skyblock.core.accessory;
 
-import com.skyblock.core.combat.StatManager.CombatStat;
+import com.skyblock.core.stat.Stat;
 import com.skyblock.core.talisman.TalismanManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -150,7 +150,7 @@ public final class AccessoryBagCommand implements TabExecutor {
     }
 
     private void handleBonuses(Player player) {
-        Map<CombatStat, Double> bonuses = accessoryBagManager.getTotalBonuses(player.getUniqueId());
+        Map<Stat, Double> bonuses = accessoryBagManager.getTotalBonuses(player.getUniqueId());
         if (bonuses.isEmpty()) {
             player.sendMessage("Your accessory bag is empty. Add accessories with /accessorybag add <type>.");
             return;

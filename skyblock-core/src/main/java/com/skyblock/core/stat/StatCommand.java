@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public final class StatCommand implements TabExecutor {
 
-    private static final List<String> STAT_NAMES = Arrays.stream(StatManager.StatType.values())
+    private static final List<String> STAT_NAMES = Arrays.stream(Stat.values())
             .map(s -> s.name().toLowerCase())
             .collect(Collectors.toList());
 
@@ -41,7 +41,7 @@ public final class StatCommand implements TabExecutor {
 
         if (args.length == 0) {
             player.sendMessage("--- Your Stats ---");
-            for (StatManager.StatType type : StatManager.StatType.values()) {
+            for (Stat type : Stat.values()) {
                 double value = statManager.getStat(player.getUniqueId(), type);
                 player.sendMessage(formatName(type) + ": " + value);
             }
@@ -49,9 +49,9 @@ public final class StatCommand implements TabExecutor {
         }
 
         String input = args[0].toUpperCase();
-        StatManager.StatType type;
+        Stat type;
         try {
-            type = StatManager.StatType.valueOf(input);
+            type = Stat.valueOf(input);
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown stat '" + args[0] + "'. Options: " + STAT_NAMES);
             return true;
@@ -73,7 +73,7 @@ public final class StatCommand implements TabExecutor {
         return Collections.emptyList();
     }
 
-    private static String formatName(StatManager.StatType type) {
+    private static String formatName(Stat type) {
         String raw = type.name().replace('_', ' ');
         StringBuilder sb = new StringBuilder(raw.length());
         boolean cap = true;

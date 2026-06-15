@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Singleton tracking each player's stats per {@link StatType}.
+ * Singleton tracking each player's stats per {@link Stat}.
  *
  * <p>Base values represent the player's intrinsic stat; bonuses accumulate from
  * equipment, potions, and buffs on top. Not thread-safe; synchronize externally
@@ -18,48 +18,23 @@ import java.util.UUID;
  */
 public final class StatManager {
 
-    /** Every player stat tracked in SkyBlock. */
-    public enum StatType {
-        HEALTH,
-        DEFENSE,
-        STRENGTH,
-        SPEED,
-        CRIT_CHANCE,
-        CRIT_DAMAGE,
-        INTELLIGENCE,
-        FEROCITY,
-        ATTACK_SPEED,
-        MAGIC_FIND,
-        TRUE_DEFENSE,
-        VITALITY
-    }
-
     /** Default base values applied to a new player. */
-    private static final Map<StatType, Double> BASE_VALUES;
+    private static final Map<Stat, Double> BASE_VALUES;
 
     static {
-        BASE_VALUES = new EnumMap<>(StatType.class);
-        BASE_VALUES.put(StatType.HEALTH, 100.0);
-        BASE_VALUES.put(StatType.DEFENSE, 0.0);
-        BASE_VALUES.put(StatType.STRENGTH, 0.0);
-        BASE_VALUES.put(StatType.SPEED, 100.0);
-        BASE_VALUES.put(StatType.CRIT_CHANCE, 20.0);
-        BASE_VALUES.put(StatType.CRIT_DAMAGE, 50.0);
-        BASE_VALUES.put(StatType.INTELLIGENCE, 0.0);
-        BASE_VALUES.put(StatType.FEROCITY, 0.0);
-        BASE_VALUES.put(StatType.ATTACK_SPEED, 0.0);
-        BASE_VALUES.put(StatType.MAGIC_FIND, 0.0);
-        BASE_VALUES.put(StatType.TRUE_DEFENSE, 0.0);
-        BASE_VALUES.put(StatType.VITALITY, 0.0);
+        BASE_VALUES = new EnumMap<>(Stat.class);
+        for (Stat stat : Stat.values()) {
+            BASE_VALUES.put(stat, stat.getBaseValue());
+        }
     }
 
     private static final StatManager INSTANCE = new StatManager();
 
     /** Per-player base stat overrides; absent entries fall back to {@link #BASE_VALUES}. */
-    private final Map<UUID, Map<StatType, Double>> playerStats = new HashMap<>();
+    private final Map<UUID, Map<Stat, Double>> playerStats = new HashMap<>();
 
     /** Per-player bonus stats accumulated from equipment, potions, etc. */
-    private final Map<UUID, Map<StatType, Double>> playerBonuses = new HashMap<>();
+    private final Map<UUID, Map<Stat, Double>> playerBonuses = new HashMap<>();
 
     private StatManager() {
     }
@@ -80,7 +55,7 @@ public final class StatManager {
      * @param stat     the stat to retrieve
      * @return the effective stat value
      */
-    public double getStat(UUID playerId, StatType stat) {
+    public double getStat(UUID playerId, Stat stat) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
         return getBaseStat(playerId, stat) + getBonus(playerId, stat);
@@ -94,10 +69,10 @@ public final class StatManager {
      * @param stat     the stat to retrieve
      * @return the base stat value
      */
-    public double getBaseStat(UUID playerId, StatType stat) {
+    public double getBaseStat(UUID playerId, Stat stat) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
-        Map<StatType, Double> stats = playerStats.get(playerId);
+        Map<Stat, Double> stats = playerStats.get(playerId);
         if (stats != null && stats.containsKey(stat)) {
             return stats.get(stat);
         }
@@ -111,10 +86,10 @@ public final class StatManager {
      * @param stat     the stat to set
      * @param value    the new base value
      */
-    public void setBaseStat(UUID playerId, StatType stat, double value) {
+    public void setBaseStat(UUID playerId, Stat stat, double value) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
-        playerStats.computeIfAbsent(playerId, id -> new EnumMap<>(StatType.class))
+        playerStats.computeIfAbsent(playerId, id -> new EnumMap<>(Stat.class))
                 .put(stat, value);
     }
 
@@ -125,10 +100,10 @@ public final class StatManager {
      * @param stat     the stat to retrieve
      * @return the total bonus, {@code 0} if none
      */
-    public double getBonus(UUID playerId, StatType stat) {
+    public double getBonus(UUID playerId, Stat stat) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
-        Map<StatType, Double> bonuses = playerBonuses.get(playerId);
+        Map<Stat, Double> bonuses = playerBonuses.get(playerId);
         return bonuses == null ? 0.0 : bonuses.getOrDefault(stat, 0.0);
     }
 
@@ -140,11 +115,11 @@ public final class StatManager {
      * @param amount   the bonus amount to add (may be negative to remove a bonus)
      * @return the total bonus for the stat after the addition
      */
-    public double addBonus(UUID playerId, StatType stat, double amount) {
+    public double addBonus(UUID playerId, Stat stat, double amount) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
-        Map<StatType, Double> bonuses = playerBonuses.computeIfAbsent(
-                playerId, id -> new EnumMap<>(StatType.class));
+        Map<Stat, Double> bonuses = playerBonuses.computeIfAbsent(
+                playerId, id -> new EnumMap<>(Stat.class));
         double total = bonuses.getOrDefault(stat, 0.0) + amount;
         bonuses.put(stat, total);
         return total;

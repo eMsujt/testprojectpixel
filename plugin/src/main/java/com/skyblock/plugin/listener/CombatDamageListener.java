@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.core.stat.StatManager.StatType;
+import com.skyblock.core.stat.Stat;
 import com.skyblock.core.stats.PlayerStatManager;
 import com.skyblock.plugin.combat.DamageFormula;
 import com.skyblock.plugin.item.ItemRegistry;
@@ -41,17 +41,17 @@ public final class CombatDamageListener implements Listener {
         UUID attackerId = attacker.getUniqueId();
 
         double weaponDamage = heldItemDamage(attacker, event.getDamage());
-        double strength   = statManager.getStat(attackerId, StatType.STRENGTH);
-        double critChance = statManager.getStat(attackerId, StatType.CRIT_CHANCE);
-        double critDamage = statManager.getStat(attackerId, StatType.CRIT_DAMAGE);
+        double strength   = statManager.getStat(attackerId, Stat.STRENGTH);
+        double critChance = statManager.getStat(attackerId, Stat.CRIT_CHANCE);
+        double critDamage = statManager.getStat(attackerId, Stat.CRIT_DAMAGE);
 
         double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
 
         Entity victim = event.getEntity();
         if (victim instanceof Player) {
             UUID defenderId = victim.getUniqueId();
-            double defense     = statManager.getStat(defenderId, StatType.DEFENSE);
-            double trueDefense = statManager.getStat(defenderId, StatType.TRUE_DEFENSE);
+            double defense     = statManager.getStat(defenderId, Stat.DEFENSE);
+            double trueDefense = statManager.getStat(defenderId, Stat.TRUE_DEFENSE);
             // Hypixel defense formula: damage × (1 - defense / (defense + 100)), then flat true-defense reduction
             damage *= (1.0 - defense / (defense + 100.0));
             damage = Math.max(0.0, damage - trueDefense);

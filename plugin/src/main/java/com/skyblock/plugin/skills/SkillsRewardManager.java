@@ -1,7 +1,7 @@
 package com.skyblock.plugin.skills;
 
-import com.skyblock.core.combat.StatManager;
-import com.skyblock.core.combat.StatManager.CombatStat;
+import com.skyblock.core.stat.Stat;
+import com.skyblock.core.stat.StatManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -18,22 +18,22 @@ import java.util.UUID;
  * <p>Each skill rewards one combat stat; the per-level amount grows in the same
  * tiers Hypixel uses (low levels give the base amount, higher tiers give more).
  * Combat is the exception, granting a flat crit-chance bonus each level. Taming
- * rewards pet luck, which is not a combat stat, so it grants no {@link CombatStat}.</p>
+ * rewards pet luck, which is not a combat stat, so it grants no {@link Stat}.</p>
  */
 public final class SkillsRewardManager {
 
     /** The combat stat each skill permanently boosts on level-up. */
-    private static final Map<String, CombatStat> SKILL_STAT;
+    private static final Map<String, Stat> SKILL_STAT;
 
     static {
-        Map<String, CombatStat> m = new HashMap<>();
-        m.put("farming",    CombatStat.HEALTH);
-        m.put("fishing",    CombatStat.HEALTH);
-        m.put("mining",     CombatStat.DEFENSE);
-        m.put("foraging",   CombatStat.STRENGTH);
-        m.put("combat",     CombatStat.CRIT_CHANCE);
-        m.put("enchanting", CombatStat.INTELLIGENCE);
-        m.put("alchemy",    CombatStat.INTELLIGENCE);
+        Map<String, Stat> m = new HashMap<>();
+        m.put("farming",    Stat.HEALTH);
+        m.put("fishing",    Stat.HEALTH);
+        m.put("mining",     Stat.DEFENSE);
+        m.put("foraging",   Stat.STRENGTH);
+        m.put("combat",     Stat.CRIT_CHANCE);
+        m.put("enchanting", Stat.INTELLIGENCE);
+        m.put("alchemy",    Stat.INTELLIGENCE);
         // taming rewards pet luck (no combat stat) — intentionally absent.
         SKILL_STAT = m;
     }
@@ -56,7 +56,7 @@ public final class SkillsRewardManager {
         }
         String key = skill.toLowerCase();
         UUID uuid = player.getUniqueId();
-        CombatStat stat = SKILL_STAT.get(key);
+        Stat stat = SKILL_STAT.get(key);
 
         for (int level = fromLevel + 1; level <= toLevel; level++) {
             double amount = amountForLevel(key, level);
@@ -92,7 +92,7 @@ public final class SkillsRewardManager {
     }
 
     private void sendLevelUpMessage(Player player, String skill, int level,
-                                    CombatStat stat, double amount) {
+                                    Stat stat, double amount) {
         String name = skill.substring(0, 1).toUpperCase() + skill.substring(1);
         StringBuilder sb = new StringBuilder()
                 .append(ChatColor.AQUA).append(ChatColor.BOLD).append("SKILL LEVEL UP ")
@@ -111,7 +111,7 @@ public final class SkillsRewardManager {
                 : Double.toString(amount);
     }
 
-    private String statLabel(CombatStat stat) {
+    private String statLabel(Stat stat) {
         String lower = stat.name().toLowerCase().replace('_', ' ');
         return lower.substring(0, 1).toUpperCase() + lower.substring(1);
     }
