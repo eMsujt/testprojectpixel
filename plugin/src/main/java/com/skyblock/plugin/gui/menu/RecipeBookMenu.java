@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * The Recipe Book menu.
  *
- * <p>A 54-slot (6-row) menu titled {@code §aRecipe Book}, framed by a gray
+ * <p>A 54-slot (6-row) menu titled {@code §6Recipe Book}, framed by a gray
  * glass-pane border, that lists every registered {@link ShapedRecipe} across
  * paginated pages of 28 inner slots. Previous/next navigation arrows appear at
  * slots 45 and 53 when additional pages exist.</p>
@@ -41,7 +41,7 @@ public class RecipeBookMenu extends Menu {
     }
 
     private RecipeBookMenu(Player player, int page) {
-        super("§aRecipe Book", 6);
+        super("§6Recipe Book", 6);
         this.player = player;
         this.page = page;
         this.recipes = loadRecipes();
