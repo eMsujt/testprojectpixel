@@ -14,7 +14,7 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 |--------|-----------------|-------------------|-------------|
 | Auction House Manager | `com.skyblock.core.auction.AuctionHouseManager` | 9 → 1 (`auction`, `auctions`, `auctionhouse`, `auction_house`, `core` ×2, `economy`, `plugin` ×2) | 9f504bba / #2543 |
 | Rarity enum | `com.skyblock.core.model.Rarity` | 3 → 1 (`items/Rarity`, `items/ItemRarity`, `core/RarityType`) | 2e713bba |
-| Item builder utility | `com.skyblock.core.util.ItemBuilder` | 4 → 1 (`plugin.gui`, `plugin.item`, `plugin.items`, `core.item`) | 01eebf00 |
+| Item builder / SkullUtil | `com.skyblock.core.util.ItemBuilder`, `com.skyblock.core.util.SkullItemUtil` | 4 → 1 ItemBuilder (`plugin.gui`, `plugin.item`, `plugin.items`, `core.item`); SkullUtil stubs already in place | #2549 / 01eebf00 |
 | Collection / CollectionCategory enum | `com.skyblock.core.model.Collection`, `com.skyblock.core.model.CollectionCategory`, `com.skyblock.core.util.CollectionRegistry` | 4+ variants across `collection`, `collections`, `core`, `plugin` | Sentinel |
 | Menu abstract base | `com.skyblock.core.menu.Menu` | 3 → 1 (`MenuManager.SkyBlockMenu` inner class, `plugin.gui.Menu`, `core` variant) | Vega |
 | SkillManager / SkillsManager | `com.skyblock.core.skills.SkillManager` | 8 → 1 (`skills.SkillManager`, `skills.SkillsManager`, `core.skills.SkillsManager`, `core.skill.SkillManager`, `plugin.skills.SkillManager`, `plugin.skills.SkillsManager`, `plugin.managers.SkillsManager`, `plugin.manager.SkillManager`) | #2545 |
@@ -25,7 +25,7 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 | Domain | Canonical class | Duplicates removed | PR / commit |
 |--------|-----------------|-------------------|-------------|
-| CollectionManager | `com.skyblock.core.manager.CollectionManager` | 3 skyblock-core duplicates → `@Deprecated` stubs; 5 command classes and 2 plugin entry points updated to use canonical + `com.skyblock.core.model.Collection` | Oracle |
+| CollectionManager | `com.skyblock.core.manager.CollectionManager` | 3 skyblock-core duplicates → `@Deprecated` stubs; 5 command classes and 2 plugin entry points updated to use canonical + `com.skyblock.core.model.Collection` | #2550 |
 | EnchantmentManager | `com.skyblock.core.manager.EnchantmentManager` | All `EnchantmentManager`/`EnchantManager` duplicates → 1 canonical; remaining variants replaced with `@Deprecated` stubs delegating to canonical | #2512 / 64852fe2 |
 | CraftingManager / RecipeManager | `com.skyblock.core.crafting.CraftingManager` | 3 → 1 (`plugin` stub, `core` stub, `core.crafting` survivor); added `registerRecipes(JavaPlugin)` from plugin stub; all callers updated | #2510 / 3c333a9e |
 | Dead-module pruning (SkillType / SkillXPTable) | `com.skyblock.core.skills.SkillManager.SkillType` | Migrated all callers off deprecated `com.skyblock.skills.SkillType` and `com.skyblock.skills.SkillXPTable`; deprecated re-export variants removed | #2511 / c8fa794d |
@@ -39,7 +39,8 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 | IslandManager / IslandHandler / IslandService | `com.skyblock.core.manager.IslandManager` | All `IslandManager`/`IslandHandler`/`IslandService` duplicates → 1 canonical; ~7 variants replaced with `@Deprecated` stubs delegating to canonical; `islands` module most complete impl preserved | #2539 |
 | MinionManager / MinionsManager | `com.skyblock.core.manager.MinionManager` | All `MinionManager`/`MinionsManager` duplicates → 1 canonical; ~9 variants replaced with `@Deprecated` stubs delegating to canonical; largest duplication surface resolved | #2540 |
 | ShopManager / NpcShopManager / ShopHandler | `com.skyblock.core.manager.ShopManager` | All `ShopManager`/`NpcShopManager`/`ShopHandler` duplicates → 1 canonical; variants replaced with `@Deprecated` stubs delegating to canonical | #2544 |
-| ProfileManager / PlayerProfileManager | `com.skyblock.core.manager.ProfileManager` | ~7 duplicates across `profiles`, `profile`, `playerdata`, `core`, `plugin` → 1 canonical; all variants replaced with `@Deprecated` stubs delegating to canonical | Vega |
+| ProfileManager / PlayerProfileManager | `com.skyblock.core.manager.ProfileManager` | ~7 duplicates across `profiles`, `profile`, `playerdata`, `core`, `plugin` → 1 canonical; all variants replaced with `@Deprecated` stubs delegating to canonical | #2547 |
+| Dead-module pruning (`auction`, `dungeon`) | *(removed from `pom.xml`)* | Both modules contained only `@Deprecated` delegation stubs with no unique logic; removed from parent `pom.xml` to eliminate dead build surface | #2548 |
 
 ---
 

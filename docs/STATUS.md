@@ -46,9 +46,14 @@ carry a `@Deprecated` delegating stub or have been deleted.
 | EconomyManager / CoinManager / MoneyManager / PurseManager | `com.skyblock.core.manager.EconomyManager` | ✅ consolidated (#2514) |
 | AbilityManager / AbilityHandler / SpecialAbilityManager | `com.skyblock.core.manager.AbilityManager` | ✅ consolidated (#2515) |
 | DungeonManager / DungeonsManager | `com.skyblock.core.manager.DungeonManager` | ✅ consolidated (#2517) |
+| BazaarManager / BazaarHandler | `com.skyblock.core.manager.BazaarManager` | ✅ consolidated (#2537 / #2541) |
+| BankManager / BankingManager / BankHandler | `com.skyblock.core.manager.BankManager` | ✅ consolidated (#2538) |
+| IslandManager / IslandHandler / IslandService | `com.skyblock.core.manager.IslandManager` | ✅ consolidated (#2539) |
+| MinionManager / MinionsManager | `com.skyblock.core.manager.MinionManager` | ✅ consolidated (#2540) |
+| ShopManager / NpcShopManager / ShopHandler | `com.skyblock.core.manager.ShopManager` | ✅ consolidated (#2544) |
+| ProfileManager / PlayerProfileManager | `com.skyblock.core.manager.ProfileManager` | ✅ consolidated (#2547) |
 
-Pending consolidations: `BankManager`, `BazaarManager`, `IslandManager`, `MinionManager`,
-`ProfileManager`, `SlayerManager`, `EnchantingManager`, `NPCManager`, `GuildManager`,
+Pending consolidations: `SlayerManager`, `EnchantingManager`, `NPCManager`, `GuildManager`,
 `TradingManager`, `BrewingManager`. See [`CLEANUP.md`](./CLEANUP.md) for the full pending
 table.
 
@@ -69,9 +74,9 @@ table.
 | Module | Classes | Status |
 |--------|---------|--------|
 | `economy` | `CoinManager`, `BankManager`, `AuctionHouseManager`, `BazaarManager`, `CurrencyType` | ✅ Most complete economy module. Canonical `EconomyManager` consolidated into `com.skyblock.core.manager.EconomyManager`. |
-| `bank` | `BankManager` | 🔁 Bank-only variant. Pending consolidation. |
-| `banking` | `BankManager`, `BankingManager`, `BankTier` | 🔁 Declared module; overlaps `bank`/`economy`. Pending consolidation. |
-| `bazaar` | `BazaarManager`, `BazaarOrder`, `ProductCategory` | ✅ Standalone bazaar. Pending consolidation. |
+| `bank` | `BankManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.BankManager` (#2538). |
+| `banking` | `BankManager`, `BankingManager`, `BankTier` | 🔁 `@Deprecated` stubs → `com.skyblock.core.manager.BankManager` (#2538). |
+| `bazaar` | `BazaarManager`, `BazaarOrder`, `ProductCategory` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.BazaarManager` (#2537 / #2541). |
 
 ## Auction House
 
@@ -88,8 +93,8 @@ table.
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `islands` | `Island`, `IslandManager`, `IslandUpgradeManager` | ✅ Most complete. Pending consolidation. |
-| `island` | `IslandManager`, `IslandUpgrade` | 🔁 Pending consolidation. |
+| `islands` | `Island`, `IslandManager`, `IslandUpgradeManager` | ✅ Most complete. Canonical: `com.skyblock.core.manager.IslandManager` (#2539). |
+| `island` | `IslandManager`, `IslandUpgrade` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.IslandManager` (#2539). |
 
 ## Skills & gathering
 
@@ -138,16 +143,16 @@ table.
 | Module | Classes | Status |
 |--------|---------|--------|
 | `pets` | `PetManager`, `Pet`, `PetAbility`, `PetTier`, `PetType` | ✅ |
-| `minions` | `MinionManager`, `MinionInstance`, `MinionTier`, `MinionType` | ✅ Most complete. Pending consolidation. |
-| `minion` | `MinionManager` | 🔁 Pending consolidation. |
-| `skyblock-minions` | `MinionManager` | 🔁 Pending consolidation. |
+| `minions` | `MinionManager`, `MinionInstance`, `MinionTier`, `MinionType` | ✅ Most complete. Canonical: `com.skyblock.core.manager.MinionManager` (#2540). |
+| `minion` | `MinionManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.MinionManager` (#2540). |
+| `skyblock-minions` | `MinionManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.MinionManager` (#2540). |
 
 ## Profiles
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `profiles` | `ProfileManager`, `SkyBlockProfile`, `GameMode`, `ProfileMode` | ✅ Most complete. Pending consolidation into `com.skyblock.core.profile.ProfileManager`. |
-| `profile` | `ProfileManager` | 🔁 Pending consolidation. |
+| `profiles` | `ProfileManager`, `SkyBlockProfile`, `GameMode`, `ProfileMode` | ✅ Most complete. Canonical: `com.skyblock.core.manager.ProfileManager` (#2547). |
+| `profile` | `ProfileManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.ProfileManager` (#2547). |
 | `playerdata` | `PlayerProfile` | 🧩 (see app modules). |
 
 > Note: callers are bound to `PlayerProfile` (not `SkyBlockProfile`) — see memory note before converting.
@@ -222,8 +227,9 @@ package under `com.skyblock.core.*`. Notable patterns:
   `listener/CoreListeners`, `menu/MenuManager`+`MenuListener`.
 - **Consolidated canonical managers** now live in `com.skyblock.core.manager.*`:
   `QuestManager`, `EconomyManager`, `AbilityManager`, `DungeonManager`,
-  `EnchantmentManager`, `CollectionManager`. Facades in `com.skyblock.core.skills.*`:
-  `SkillManager`. See the [canonical registry](#post-cleanup-canonical-manager-registry) above.
+  `EnchantmentManager`, `CollectionManager`, `BazaarManager`, `BankManager`,
+  `IslandManager`, `MinionManager`, `ShopManager`, `ProfileManager`. Facades in
+  `com.skyblock.core.skills.*`: `SkillManager`. See the [canonical registry](#post-cleanup-canonical-manager-registry) above.
 
 ## `plugin` breakdown
 
@@ -247,13 +253,14 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
 
 ## Summary of findings
 
-- **Ongoing consolidation has eliminated 14 duplicate surfaces.** Canonical managers for
-  AuctionHouseManager, Rarity, ItemBuilder, CollectionManager, Menu, SkillManager,
+- **Ongoing consolidation has eliminated 20 duplicate surfaces.** Canonical managers for
+  AuctionHouseManager, Rarity, ItemBuilder/SkullUtil, CollectionManager, Menu, SkillManager,
   EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
-  and DungeonManager are now single classes with `@Deprecated` delegating stubs replacing
-  all duplicates. The `auctionhouse` leaf module was pruned entirely.
-- **11 domains remain unconsolidated** (BankManager, BazaarManager, IslandManager,
-  MinionManager, ProfileManager, SlayerManager, EnchantingManager, NPCManager,
+  DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, ShopManager,
+  and ProfileManager are now single classes with `@Deprecated` delegating stubs replacing
+  all duplicates. The `auctionhouse`, `auction`, and `dungeon` leaf modules have been pruned
+  or reduced to stubs.
+- **6 domains remain unconsolidated** (SlayerManager, EnchantingManager, NPCManager,
   GuildManager, TradingManager, BrewingManager) — tracked in [`CLEANUP.md`](./CLEANUP.md).
 - **Naming is inconsistent** — singular vs plural module names (`auction`/`auctions`,
   `collection`/`collections`, `minion`/`minions`) and casing (`Hotm`/`HOTM`, `Npc`/`NPC`,
