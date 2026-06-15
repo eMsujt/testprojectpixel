@@ -16,7 +16,7 @@ public final class CarpentryXpListener implements Listener {
     private static final long CRAFT_XP = 1L;
 
     @EventHandler
-    public void onCraftItem(CraftItemEvent.Post event) {
+    public void onCraftItem(CraftItemEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("carpentry", CRAFT_XP);
