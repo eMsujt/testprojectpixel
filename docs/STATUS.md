@@ -43,6 +43,7 @@ carry a `@Deprecated` delegating stub or have been deleted.
 | EnchantmentManager / EnchantManager | `com.skyblock.core.manager.EnchantmentManager` | ✅ consolidated (#2512 / 64852fe2) |
 | CraftingManager / RecipeManager | `com.skyblock.core.crafting.CraftingManager` | ✅ consolidated (#2510 / 3c333a9e) |
 | SkillType / SkillXPTable | `com.skyblock.core.skills.SkillManager.SkillType` | ✅ consolidated (#2511 / c8fa794d) |
+| Skill / SkillType enum | `com.skyblock.core.model.Skill` | ✅ consolidated (#2745) |
 | QuestManager / QuestsManager | `com.skyblock.core.manager.QuestManager` | ✅ consolidated (#2513) |
 | EconomyManager / CoinManager / MoneyManager / PurseManager | `com.skyblock.core.manager.EconomyManager` | ✅ consolidated (#2514) |
 | AbilityManager / AbilityHandler / SpecialAbilityManager | `com.skyblock.core.manager.AbilityManager` | ✅ consolidated (#2515) |
@@ -425,6 +426,7 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
   Round 80 completed a thorough final-pass audit of every class implementing `CommandExecutor` across every module; all non-canonical duplicate executor implementations deleted outright; canonical command classes in `com.skyblock.core.command` confirmed as sole implementations with no remaining orphan stubs (#2737).
   Round 81 completed a thorough final-pass consolidation of `ShopManager`/`NpcShopManager`: every class named `ShopManager` or `NpcShopManager` across every module audited; all remaining duplicate implementations and `@Deprecated` delegation stubs deleted outright; `com.skyblock.core.manager.ShopManager` confirmed as sole implementation with no remaining orphan stubs (#2734).
   Round 82 completed a thorough final-pass consolidation of `ProfileManager`: every class named `ProfileManager` across every module audited; the `profiles` module's zero-caller `@Deprecated` `ProfileManager` (a pure delegation stub to the canonical) deleted outright; `com.skyblock.core.manager.ProfileManager` confirmed as sole implementation with no remaining orphan stubs (#2741).
+  Round 83 completed a thorough final-pass consolidation of the `Skill`/`SkillType` enum: every `Skill` and `SkillType` enum definition across every module audited; canonical `com.skyblock.core.model.Skill` created by merging the 12-skill `SkillManager.SkillType` inner enum and the 11-skill `Skills` enum; all 18 callers updated to import from `com.skyblock.core.model.Skill`; duplicate inner enums and orphaned `SkillType` variants deleted outright; one canonical enum definition confirmed with no remaining orphan copies (#2745).
   The `auctionhouse`, `auction`, `dungeon`, `stats`, `minion`, and `skills` leaf modules
   have been pruned from the parent `pom.xml`; **23+ zero-caller `@Deprecated` stub files were
   deleted outright** (16 in #2553 + 4 in #2600 + additional in #2608–#2610 + 3 in #2615), reducing the source tree from 577 to ~554 files.
