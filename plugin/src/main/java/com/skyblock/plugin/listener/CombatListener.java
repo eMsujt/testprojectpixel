@@ -2,8 +2,10 @@ package com.skyblock.plugin.listener;
 
 import com.skyblock.core.stat.StatManager.StatType;
 import com.skyblock.core.stats.PlayerStatManager;
-import com.skyblock.plugin.combat.DamageFormula;
+import com.skyblock.plugin.combat.CombatDamageCalculator;
 import com.skyblock.plugin.economy.PlayerEconomy;
+import com.skyblock.plugin.manager.ProfileManager;
+import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,14 +18,16 @@ import java.util.UUID;
 
 /**
  * Bukkit listener that intercepts {@link EntityDamageByEntityEvent} and, when the
- * damager is a {@link Player}, replaces Minecraft's raw damage with the SkyBlock
- * value from {@link DamageFormula} using the attacker's combat stats, then applies
- * the defender's defense and true-defense reductions.
+ * damager is a {@link Player}, loads their {@link SkyBlockProfile}, replaces
+ * Minecraft's raw damage with the SkyBlock value from {@link CombatDamageCalculator},
+ * applies the defender's defense reduction, and awards Combat XP to the profile.
  *
  * <p>Hypixel defense formula: {@code effective = damage × (1 - defense / (defense + 100))},
  * followed by a flat reduction of {@code trueDefense}.</p>
  */
 public final class CombatListener implements Listener {
+
+    private static final double XP_PER_DAMAGE = 4.0;
 
     private final PlayerStatManager statManager = PlayerStatManager.getInstance();
     private final PlayerEconomy economy = PlayerEconomy.getInstance();
@@ -35,25 +39,30 @@ public final class CombatListener implements Listener {
             return;
         }
 
-        UUID attackerId = damager.getUniqueId();
+        Player player = (Player) damager;
+        UUID attackerId = player.getUniqueId();
+        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(attackerId);
+
         double weaponDamage = event.getDamage();
         double strength     = statManager.getStat(attackerId, StatType.STRENGTH);
-        double critChance   = statManager.getStat(attackerId, StatType.CRIT_CHANCE);
         double critDamage   = statManager.getStat(attackerId, StatType.CRIT_DAMAGE);
 
-        double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
+        double damage = CombatDamageCalculator.calculateDamage(weaponDamage, strength, critDamage);
 
         Entity victim = event.getEntity();
         if (victim instanceof Player) {
             UUID defenderId = victim.getUniqueId();
             double defense     = statManager.getStat(defenderId, StatType.DEFENSE);
             double trueDefense = statManager.getStat(defenderId, StatType.TRUE_DEFENSE);
-            // Hypixel defense formula: damage × (1 - defense / (defense + 100)), then flat true-defense reduction
             damage *= (1.0 - defense / (defense + 100.0));
             damage = Math.max(0.0, damage - trueDefense);
         }
 
         event.setDamage(damage);
+
+        long xp = Math.max(1L, (long) (damage * XP_PER_DAMAGE));
+        profile.addSkillXp("combat", xp);
+        XpActionBar.send(player, "combat", xp, profile.getSkillXp("combat"));
     }
 
     /**
