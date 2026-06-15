@@ -28,7 +28,7 @@ public class PetsMenu extends Menu {
     }
 
     private PetsMenu(Player player, int page) {
-        super("§aPets", 6);
+        super("§dPets", 6);
         this.player = player;
         this.page = page;
     }
