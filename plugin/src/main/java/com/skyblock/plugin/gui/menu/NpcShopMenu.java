@@ -27,7 +27,7 @@ import java.util.Locale;
 public class NpcShopMenu extends Menu {
 
     /** A single buyable item: its material and its coin buy price. */
-    private record ShopItem(Material material, int price) {
+    public record ShopItem(Material material, int price) {
     }
 
     /** Centred content slots across the middle rows, one per item. */
@@ -38,6 +38,17 @@ public class NpcShopMenu extends Menu {
     };
 
     private final List<ShopItem> items;
+
+    /**
+     * Constructs the shop directly from the given name and item list.
+     *
+     * @param shopName display name shown in the inventory title
+     * @param items    the wares to list; only the first {@value SLOTS#length} entries are shown
+     */
+    public NpcShopMenu(String shopName, List<ShopItem> items) {
+        super("§a" + shopName, 6);
+        this.items = new ArrayList<>(items);
+    }
 
     /**
      * Opens the named shop, reading its title and items from {@code npc_shops.yml}.
