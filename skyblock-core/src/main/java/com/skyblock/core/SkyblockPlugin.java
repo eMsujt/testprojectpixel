@@ -6,8 +6,7 @@ import com.skyblock.core.crafting.CraftingCommand;
 import com.skyblock.core.crafting.CraftingManager;
 import com.skyblock.core.quest.QuestManager;
 import com.skyblock.core.auction.AuctionHouseCommand;
-import com.skyblock.core.auction.AuctionHouseManager;
-import com.skyblock.core.auction.AuctionManager;
+import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.kuudra.KuudraCommand;
 import com.skyblock.core.bank.BankCommand;
 import com.skyblock.core.manager.BankManager;
@@ -118,7 +117,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         MayorCommand mayorCommand = new MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
         getCommand("mayor").setTabCompleter(mayorCommand);
-        AuctionManager.getInstance();
         AuctionHouseManager auctionHouseManager = AuctionHouseManager.getInstance();
         auctionHouseManager.load(getDataFolder());
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);

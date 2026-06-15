@@ -1,5 +1,6 @@
 package com.skyblock.plugin.economy;
 
+import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.entity.Player;
