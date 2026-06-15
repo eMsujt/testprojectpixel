@@ -1,174 +1,93 @@
 package com.skyblock.core.items;
 
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Fluent builder for constructing {@link ItemStack} instances with common
- * SkyBlock metadata applied in a single expression.
+ * @deprecated Use {@link ItemBuilder} directly.
  */
+@Deprecated
 public final class SkyBlockItemBuilder {
 
-    private final ItemStack item;
+    private final ItemBuilder delegate;
 
-    /**
-     * Creates a builder starting from the given material with a stack size of 1.
-     *
-     * @param material the base material, must not be null
-     * @throws IllegalArgumentException if {@code material} is null
-     */
+    /** @deprecated Use {@link ItemBuilder#ItemBuilder(Material)} */
+    @Deprecated
     public SkyBlockItemBuilder(Material material) {
-        if (material == null) {
-            throw new IllegalArgumentException("material must not be null");
-        }
-        this.item = new ItemStack(material, 1);
+        this.delegate = new ItemBuilder(material);
     }
 
-    /**
-     * Creates a builder wrapping an existing {@link ItemStack}.
-     * The stack is cloned so the original is not mutated.
-     *
-     * @param base the base item stack, must not be null
-     * @throws IllegalArgumentException if {@code base} is null
-     */
+    /** @deprecated Use {@link ItemBuilder#ItemBuilder(ItemStack)} */
+    @Deprecated
     public SkyBlockItemBuilder(ItemStack base) {
-        if (base == null) {
-            throw new IllegalArgumentException("base must not be null");
-        }
-        this.item = base.clone();
+        this.delegate = new ItemBuilder(base);
     }
 
-    /**
-     * Sets the display name shown in-game.
-     *
-     * @param name the display name (supports colour codes via {@code &})
-     * @return this builder
-     */
+    /** @deprecated Use {@link ItemBuilder#displayName(String)} */
+    @Deprecated
     public SkyBlockItemBuilder setDisplayName(String name) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(name != null ? name : "");
-            item.setItemMeta(meta);
-        }
+        delegate.displayName(name);
         return this;
     }
 
-    /**
-     * Replaces the entire lore with the provided lines.
-     *
-     * @param lines lore lines (supports colour codes via {@code &})
-     * @return this builder
-     */
+    /** @deprecated Use {@link ItemBuilder#lore(List)} */
+    @Deprecated
     public SkyBlockItemBuilder setLore(List<String> lines) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setLore(lines != null ? new ArrayList<>(lines) : new ArrayList<>());
-            item.setItemMeta(meta);
-        }
+        delegate.lore(lines);
         return this;
     }
 
-    /**
-     * Replaces the entire lore with the provided lines (varargs convenience overload).
-     *
-     * @param lines lore lines
-     * @return this builder
-     */
+    /** @deprecated Use {@link ItemBuilder#lore(String...)} */
+    @Deprecated
     public SkyBlockItemBuilder setLore(String... lines) {
-        return setLore(lines != null ? Arrays.asList(lines) : new ArrayList<>());
+        delegate.lore(lines);
+        return this;
     }
 
-    /**
-     * Appends a single line to the existing lore.
-     *
-     * @param line the line to append
-     * @return this builder
-     */
+    /** @deprecated Use {@link ItemBuilder#addLore(String)} */
+    @Deprecated
     public SkyBlockItemBuilder addLoreLine(String line) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            List<String> lore = meta.getLore();
-            if (lore == null) {
-                lore = new ArrayList<>();
-            }
-            lore.add(line != null ? line : "");
-            meta.setLore(lore);
-            item.setItemMeta(meta);
-        }
+        delegate.addLore(line);
         return this;
     }
 
-    /**
-     * Sets the stack size.
-     *
-     * @param amount number of items (1–64)
-     * @return this builder
-     */
+    /** @deprecated Use {@link ItemBuilder#amount(int)} */
+    @Deprecated
     public SkyBlockItemBuilder setAmount(int amount) {
-        item.setAmount(amount);
+        delegate.amount(amount);
         return this;
     }
 
-    /**
-     * Adds an unsafe enchantment, allowing levels beyond the vanilla cap.
-     *
-     * @param enchantment the enchantment to apply
-     * @param level       the enchantment level
-     * @return this builder
-     */
+    /** @deprecated Use {@link ItemBuilder#enchant(Enchantment, int)} */
+    @Deprecated
     public SkyBlockItemBuilder addEnchant(Enchantment enchantment, int level) {
-        if (enchantment != null) {
-            item.addUnsafeEnchantment(enchantment, level);
-        }
+        delegate.enchant(enchantment, level);
         return this;
     }
 
-    /**
-     * Adds one or more {@link ItemFlag}s to hide certain tooltip elements.
-     *
-     * @param flags the flags to add
-     * @return this builder
-     */
+    /** @deprecated Use {@link ItemBuilder#flags(ItemFlag...)} */
+    @Deprecated
     public SkyBlockItemBuilder addItemFlags(ItemFlag... flags) {
-        if (flags == null || flags.length == 0) {
-            return this;
-        }
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.addItemFlags(flags);
-            item.setItemMeta(meta);
-        }
+        delegate.flags(flags);
         return this;
     }
 
-    /**
-     * Marks the item as unbreakable.
-     *
-     * @param unbreakable {@code true} to make the item unbreakable
-     * @return this builder
-     */
+    /** @deprecated Use {@link ItemBuilder#setUnbreakable(boolean)} */
+    @Deprecated
     public SkyBlockItemBuilder setUnbreakable(boolean unbreakable) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setUnbreakable(unbreakable);
-            item.setItemMeta(meta);
-        }
+        delegate.setUnbreakable(unbreakable);
         return this;
     }
 
-    /**
-     * Builds and returns a clone of the constructed {@link ItemStack}.
-     *
-     * @return the finished item stack
-     */
+    /** @deprecated Use {@link ItemBuilder#build()} */
+    @Deprecated
     public ItemStack build() {
-        return item.clone();
+        return delegate.build();
     }
 }
