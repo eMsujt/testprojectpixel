@@ -12,11 +12,25 @@ import java.util.List;
 
 public class FishingBagMenu extends Menu {
 
+    private static final int[] INNER_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43
+    };
+    private static final int SLOTS_PER_PAGE = INNER_SLOTS.length;
+
     private final Player player;
+    private final int page;
 
     public FishingBagMenu(Player player) {
-        super("§9Fishing Bag", 6);
+        this(player, 0);
+    }
+
+    private FishingBagMenu(Player player, int page) {
+        super("§3Fishing Bag", 6);
         this.player = player;
+        this.page = page;
     }
 
     @Override
@@ -26,16 +40,46 @@ public class FishingBagMenu extends Menu {
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         List<ItemStack> contents = profile.getFishingBagContents();
 
-        int itemIndex = 0;
-        for (int slot = 0; slot < 54 && itemIndex < contents.size(); slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
-                continue;
-            }
-            ItemStack item = contents.get(itemIndex++);
+        int totalPages = Math.max(1, (int) Math.ceil((double) contents.size() / SLOTS_PER_PAGE));
+        int start = page * SLOTS_PER_PAGE;
+
+        for (int i = 0; i < SLOTS_PER_PAGE; i++) {
+            int contentIndex = start + i;
+            if (contentIndex >= contents.size()) break;
+            ItemStack item = contents.get(contentIndex);
             if (item != null) {
-                setItem(slot, item);
+                setItem(INNER_SLOTS[i], item);
             }
+        }
+
+        if (contents.isEmpty()) {
+            setItem(22, new ItemBuilder(Material.BARRIER)
+                    .displayName("§cFishing Bag Empty")
+                    .lore("§7Add fishing items to your bag.")
+                    .build());
+        }
+
+        setItem(49, new ItemBuilder(Material.FISHING_ROD)
+                .displayName("§3Fishing Bag")
+                .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
+                .build());
+
+        if (page > 0) {
+            int prevPage = page - 1;
+            setItem(45, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Go to page §e" + (prevPage + 1))
+                    .build(),
+                    event -> new FishingBagMenu(player, prevPage).open(player));
+        }
+
+        if ((page + 1) < totalPages) {
+            int nextPage = page + 1;
+            setItem(53, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Go to page §e" + (nextPage + 1))
+                    .build(),
+                    event -> new FishingBagMenu(player, nextPage).open(player));
         }
     }
 
