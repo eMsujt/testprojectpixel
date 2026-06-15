@@ -9,7 +9,6 @@ import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.auction.AuctionCommand;
 import com.skyblock.core.auction.AuctionHouseCommand;
 import com.skyblock.core.auction.AuctionHouseManager;
-import com.skyblock.core.auction.AuctionManager;
 import com.skyblock.core.bank.BankingCommand;
 import com.skyblock.core.bank.BankingManager;
 import com.skyblock.core.bank.BankManager;
@@ -208,8 +207,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
         getCommand("auctionhouse").setExecutor(auctionHouseCommand);
         getCommand("auctionhouse").setTabCompleter(auctionHouseCommand);
-        AuctionManager auctionManager = AuctionManager.getInstance();
-        AuctionCommand auctionCommand = new AuctionCommand(auctionManager);
+        AuctionCommand auctionCommand = new AuctionCommand(com.skyblock.core.manager.AuctionHouseManager.getInstance());
         getCommand("auction").setExecutor(auctionCommand);
         getCommand("auction").setTabCompleter(auctionCommand);
         BazaarManager bazaarManager = BazaarManager.getInstance();
