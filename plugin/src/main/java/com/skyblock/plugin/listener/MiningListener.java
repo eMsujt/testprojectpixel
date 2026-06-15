@@ -1,8 +1,10 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.plugin.manager.ProfileManager;
+import com.skyblock.plugin.manager.SkillManager;
 import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -28,14 +30,22 @@ public final class MiningListener implements Listener {
             Map.entry(Material.NETHER_QUARTZ_ORE, 10L)
     );
 
+    private static final SkillManager SKILL_MANAGER = SkillManager.getInstance();
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Long xp = MINING_XP.get(event.getBlock().getType());
         if (xp == null) {
             return;
         }
+        Player player = event.getPlayer();
         SkyBlockProfile profile = ProfileManager.getInstance()
-                .getOrCreateProfile(event.getPlayer().getUniqueId());
+                .getOrCreateProfile(player.getUniqueId());
+        int before = SKILL_MANAGER.levelForXp("mining", profile.getSkillXp("mining"));
         profile.addSkillXp("mining", xp);
+        int after = SKILL_MANAGER.levelForXp("mining", profile.getSkillXp("mining"));
+        if (after > before) {
+            player.sendTitle("§aSkill Level Up!", "§eMining §a→ §eLVL " + after, 10, 60, 20);
+        }
     }
 }
