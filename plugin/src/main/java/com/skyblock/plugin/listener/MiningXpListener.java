@@ -29,14 +29,29 @@ public final class MiningXpListener implements Listener {
             Map.entry(Material.NETHER_QUARTZ_ORE, 10L)
     );
 
+    private static final Map<Material, String> MINING_DROP = Map.ofEntries(
+            Map.entry(Material.STONE,              "COBBLESTONE"),
+            Map.entry(Material.COBBLESTONE,        "COBBLESTONE"),
+            Map.entry(Material.COAL_ORE,           "COAL"),
+            Map.entry(Material.IRON_ORE,           "RAW_IRON"),
+            Map.entry(Material.GOLD_ORE,           "RAW_GOLD"),
+            Map.entry(Material.DIAMOND_ORE,        "DIAMOND"),
+            Map.entry(Material.LAPIS_ORE,          "LAPIS_LAZULI"),
+            Map.entry(Material.EMERALD_ORE,        "EMERALD"),
+            Map.entry(Material.REDSTONE_ORE,       "REDSTONE"),
+            Map.entry(Material.NETHER_QUARTZ_ORE,  "QUARTZ")
+    );
+
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        Long xp = MINING_XP.get(event.getBlock().getType());
+        Material type = event.getBlock().getType();
+        Long xp = MINING_XP.get(type);
         if (xp == null) {
             return;
         }
         Player player = event.getPlayer();
         SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
         profile.addSkillXp("mining", xp);
+        profile.incrementCollection(MINING_DROP.get(type), 1);
     }
 }
