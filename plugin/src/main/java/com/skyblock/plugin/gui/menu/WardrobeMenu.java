@@ -27,7 +27,7 @@ public class WardrobeMenu extends Menu {
     private final UUID playerId;
 
     public WardrobeMenu(Player player) {
-        super("§eWardrobe", 6);
+        super("§5Wardrobe", 6);
         this.playerId = Objects.requireNonNull(player, "player").getUniqueId();
     }
 
