@@ -144,7 +144,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .displayName("§aQuests")
                 .lore("§7View your active quests.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> new QuestsMenu(player).open(player));
 
         setItem(33, new ItemBuilder(Material.COMPARATOR)
                 .displayName("§aSettings")

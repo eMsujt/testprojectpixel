@@ -8,6 +8,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.menu.QuestsMenu} instead.
+ */
+@Deprecated
 public class QuestsMenu extends Menu {
 
     private static final int STARTER_QUEST_COUNT = 8;

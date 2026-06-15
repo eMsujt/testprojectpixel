@@ -16,6 +16,10 @@ import java.util.List;
  * {@code GRAY_STAINED_GLASS_PANE} border. Each active objective is rendered as a
  * {@code PAPER} icon; a close button sits on the bottom row.</p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.menu.QuestsMenu} instead.
+ */
+@Deprecated
 public class QuestMenu extends Menu {
 
     /** Inner slots used to display active objectives (rows 2–5, columns 1–7). */

@@ -17,6 +17,10 @@ import org.bukkit.inventory.ItemStack;
  * is already active or it has been completed); an info item and a close button
  * sit on the bottom row.</p>
  */
+/**
+ * @deprecated Use {@link com.skyblock.core.menu.QuestsMenu} instead.
+ */
+@Deprecated
 public class QuestsMenu extends Menu {
 
     /** The seven starter quest slots displayed across the first inner row. */

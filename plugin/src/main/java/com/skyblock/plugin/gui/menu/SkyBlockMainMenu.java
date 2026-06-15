@@ -195,7 +195,7 @@ public class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new QuestsMenu(player).open(player);
+                    new com.skyblock.core.menu.QuestsMenu(player).open(player);
                 });
 
         setItem(33, new ItemBuilder(Material.COMPARATOR)

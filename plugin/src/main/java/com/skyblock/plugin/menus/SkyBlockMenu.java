@@ -74,7 +74,7 @@ public class SkyBlockMenu extends Menu implements Listener {
             case 12 -> new RecipeBookMenu(player).open(player);
             case 13 -> new ProfileMenu(player).open(player);
             case 14 -> new AccessoryBagMenu(player).open(player);
-            case 15 -> new QuestsMenu(player).open(player);
+            case 15 -> new com.skyblock.core.menu.QuestsMenu(player).open(player);
             case 16 -> new CalendarMenu(player).open(player);
             case 19 -> new PetsMenu(player.getUniqueId()).open(player);
             case 20 -> WardrobeMenu.open(player);
