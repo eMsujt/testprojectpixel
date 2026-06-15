@@ -20,10 +20,10 @@ public final class CombatDamageCalculator {
      * @param critDamage   crit damage bonus as a percentage, e.g. {@code 50} for +50 %
      * @return the final damage dealt, never negative
      */
-    public static double calculateDamage(int weaponDamage, int strength, int critDamage) {
-        double weapon = Math.max(0, weaponDamage);
-        double str = Math.max(0, strength);
-        double base = (5 + weapon + Math.floor(str / 5.0)) * (1 + str / 100.0);
-        return base * (1 + critDamage / 100.0);
+    public static double calculateDamage(double weaponDamage, double strength, double critDamage) {
+        double weapon = Math.max(0.0, weaponDamage);
+        double str = Math.max(0.0, strength);
+        double base = (5.0 + weapon + Math.floor(str / 5.0)) * (1.0 + str / 100.0);
+        return base * (1.0 + critDamage / 100.0);
     }
 }
