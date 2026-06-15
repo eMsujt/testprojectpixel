@@ -177,6 +177,18 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (manager deletion sweep, enum consolidation, and pom.xml pruning — rounds 48-49)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| AccessoryRarity / com.skyblock.accessories.AccessoryRarity | `com.skyblock.core.model.AccessoryRarity` | Canonical enum created with `displayName`, `color`, and `magicalPower` fields; all `core.accessory.*` and `core.talisman.*` classes updated to import from `com.skyblock.core.model`; `com.skyblock.accessories.AccessoryRarity` retained as `@Deprecated` stub | #2645 |
+| QuestManager / QuestsManager / com.skyblock.quests.QuestManager / com.skyblock.plugin.managers.QuestManager / com.skyblock.core.quests.QuestManager | `com.skyblock.core.manager.QuestManager` (via plugin delegation) | Duplicate `QuestManager` implementations deleted from `quests`, `plugin.managers.*`, and `core.quests` modules; callers in `QuestCommand` and `QuestProgressListener` updated to use canonical path | #2642 |
+| EnchantmentManager / EnchantManager | `com.skyblock.core.enchanting.EnchantmentManager` | Duplicate implementations deleted from `enchantments` (`EnchantmentManager`), `enchants` (`EnchantManager`), `core.enchant` (`EnchantmentManager`), and `core.enchanting` (`EnchantmentManager`) modules; `EnchantmentCommand` updated to single import | #2642 |
+| NPCManager / NpcManager | `com.skyblock.core.npc.NPCManager` | Duplicate `NpcManager` / `NPCManager` implementations deleted from `npc` and `npcs` modules along with orphaned `NpcType` enum; `SkyBlockPlugin` registration updated | #2642 |
+| Dead-module pruning (post-round-48 pom.xml sweep) | *(removed from `pom.xml`)* | Three remaining empty/dead module entries removed from root `pom.xml` after the round-48 deletion sweep left their `src/main/java` trees empty | #2643 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
