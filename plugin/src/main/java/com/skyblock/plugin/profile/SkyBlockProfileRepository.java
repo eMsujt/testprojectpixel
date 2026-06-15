@@ -54,7 +54,7 @@ public final class SkyBlockProfileRepository {
         cfg.set("showCollectionNotifications", profile.isShowCollectionNotifications());
         cfg.set("showPetNotifications", profile.isShowPetNotifications());
 
-        for (Map.Entry<String, Long> entry : profile.getSkillXp().entrySet()) {
+        for (Map.Entry<String, Double> entry : profile.getSkillXp().entrySet()) {
             cfg.set("skills." + entry.getKey(), entry.getValue());
         }
         for (Map.Entry<String, Long> entry : profile.getCollectionXp().entrySet()) {
@@ -115,7 +115,7 @@ public final class SkyBlockProfileRepository {
                     ConfigurationSection skills = cfg.getConfigurationSection("skills");
                     if (skills != null) {
                         for (String skill : skills.getKeys(false)) {
-                            profile.setSkillXp(skill, skills.getLong(skill));
+                            profile.setSkillXp(skill, skills.getDouble(skill));
                         }
                     }
 
