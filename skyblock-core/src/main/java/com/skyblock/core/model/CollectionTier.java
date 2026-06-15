@@ -1,15 +1,12 @@
-package com.skyblock.collections;
+package com.skyblock.core.model;
 
 /**
- * @deprecated Use {@link com.skyblock.core.model.CollectionTier} instead.
- *
  * Milestone tiers a player can reach within a single collection.
  *
  * <p>Tiers are ordered from lowest to highest; ordinal order matches the
  * in-game progression. The item thresholds for each tier vary per material
  * and are owned by gameplay code, not this enum.</p>
  */
-@Deprecated
 public enum CollectionTier {
 
     TIER_I("I", 1),
