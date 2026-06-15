@@ -1,6 +1,6 @@
 package com.skyblock.core.hud;
 
-import com.skyblock.core.PlayerDataManager;
+import com.skyblock.core.manager.PlayerDataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
