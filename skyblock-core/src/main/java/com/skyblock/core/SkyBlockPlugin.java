@@ -245,7 +245,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MinionCommand minionCommand = new MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
         getCommand("minion").setTabCompleter(minionCommand);
-        getServer().getPluginManager().registerEvents(new com.skyblock.core.minion.MinionListener(minionManager), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.minion.listener.MinionListener(minionManager), this);
         PetManager petManager = PetManager.getInstance();
         PetsCommand petsCommand = new PetsCommand(petManager);
         getCommand("pets").setExecutor(petsCommand);
@@ -430,7 +430,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("npcmanager").setExecutor(npcManagerCommand);
         getCommand("npcmanager").setTabCompleter(npcManagerCommand);
         com.skyblock.core.hud.ScoreboardManager.getInstance();
-        com.skyblock.core.minions.MinionManager.getInstance();
+        com.skyblock.core.manager.MinionManager.getInstance();
         com.skyblock.core.manager.PetManager.getInstance();
         getServer().getPluginManager().registerEvents(new SkyBlockEnchantListener(SkyBlockEnchantManager.getInstance()), this);
 

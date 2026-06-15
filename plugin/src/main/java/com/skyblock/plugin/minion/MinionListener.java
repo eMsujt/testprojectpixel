@@ -1,5 +1,6 @@
 package com.skyblock.plugin.minion;
 
+import com.skyblock.core.manager.MinionManager;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,8 +9,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 /**
- * Listener that opens a {@link MinionMenu} when a player right-clicks the block
- * occupied by one of their placed minions.
+ * Listener that opens a {@link com.skyblock.core.menu.MinionMenu} when a player
+ * right-clicks the block occupied by one of their placed minions.
  *
  * <p>Placed minions are tracked by {@link MinionManager} keyed by the block
  * location they occupy, so the clicked block is resolved straight from that map.
@@ -28,7 +29,8 @@ public final class MinionListener implements Listener {
             return;
         }
 
-        MinionManager.MinionData data = MinionManager.getInstance().getMinion(block.getLocation());
+        com.skyblock.plugin.minion.MinionManager.MinionData data =
+                com.skyblock.plugin.minion.MinionManager.getInstance().getMinion(block.getLocation());
         if (data == null) {
             return;
         }
@@ -36,6 +38,10 @@ public final class MinionListener implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
-        new MinionMenu(data.getMinion()).open(player);
+        Minion m = data.getMinion();
+        MinionManager.MinionType coreType = MinionManager.MinionType.valueOf(m.type.name());
+        MinionManager.MinionTier coreTier = MinionManager.MinionTier.valueOf(m.getTier().name());
+        MinionManager.MinionData coreData = new MinionManager.MinionData(m.id, m.owner, coreType, coreTier);
+        new com.skyblock.core.menu.MinionMenu(coreData).open(player);
     }
 }
