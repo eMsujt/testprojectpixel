@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.menu.ShopMenu} instead.
+ *
  * The Shop menu.
  *
  * <p>A 54-slot (6-row) menu titled {@code §6Shop}, backed by {@link ShopManager}.
@@ -15,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
  * {@code GRAY_STAINED_GLASS_PANE} border; clicking one opens that shop for the
  * player via {@link ShopManager#openShop(String, Player)}.</p>
  */
+@Deprecated
 public class ShopMenu extends Menu {
 
     public ShopMenu() {

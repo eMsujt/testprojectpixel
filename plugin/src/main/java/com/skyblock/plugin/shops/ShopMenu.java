@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.menu.ShopMenu} instead.
+ *
  * Reusable 54-slot (6-row) chest GUI for NPC shops.
  *
  * <p>A shop is described by a {@link List} of {@link ShopEntry}s, each pairing an
@@ -20,6 +22,7 @@ import java.util.Objects;
  * clicking player's purse (via {@link CoinManager}) and grants the item; if they
  * can't afford it, the purchase is rejected with a message.</p>
  */
+@Deprecated
 public class ShopMenu extends Menu {
 
     /**

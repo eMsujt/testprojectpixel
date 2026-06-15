@@ -9,11 +9,14 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.menu.ShopMenu} instead.
+ *
  * Concrete 54-slot chest GUI for an {@link NpcShop} loaded by
  * {@link com.skyblock.plugin.economy.NpcShopManager}. Converts each
  * {@link NpcShopItem} into a {@link NpcShopMenu.ShopItem} and delegates all
  * rendering and click-handling to {@link NpcShopMenu}.
  */
+@Deprecated
 public class NpcShopGui extends NpcShopMenu {
 
     public NpcShopGui(NpcShop shop) {

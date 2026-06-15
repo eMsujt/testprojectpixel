@@ -1,8 +1,7 @@
-package com.skyblock.plugin.gui.menu;
+package com.skyblock.core.menu;
 
+import com.skyblock.core.economy.EconomyManager;
 import com.skyblock.core.util.ItemBuilder;
-import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.manager.EconomyManager;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.ClickType;
@@ -14,32 +13,22 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * @deprecated Use {@link com.skyblock.core.menu.ShopMenu} instead.
+ * Canonical NPC shop menu. 54-slot chest with a gray glass-pane border; wares
+ * come from a caller-supplied {@link List} of {@link ShopItem}s placed in the 21
+ * centred inner slots (rows 2–4).
  *
- * Reusable NPC shop base: a 54-slot chest framed by a gray glass-pane border
- * whose wares come from a caller-supplied {@link List} of {@link ShopItem}s.
+ * <p>Left-clicking buys an item for its {@code buyPrice}; right-clicking sells
+ * one from the player's inventory for its {@code sellPrice} (0 = not sellable).
+ * Both operations use {@link EconomyManager}.</p>
  *
- * <p>Items are placed in the 21 centred inner slots (rows 2–4). Left-clicking
- * buys the item for its {@code buyPrice}; right-clicking sells one from the
- * player's inventory for its {@code sellPrice} (0 = not sellable). Both
- * operations use {@link EconomyManager} to debit/credit the player's purse.</p>
- *
- * <p>Usage:
- * <pre>{@code
- * List<ShopMenu.ShopItem> wares = List.of(
- *     new ShopMenu.ShopItem(Material.IRON_INGOT, 10, 5),
- *     new ShopMenu.ShopItem(Material.GOLD_INGOT, 25, 0)
- * );
- * new ShopMenu("§aMy Shop", wares).open(player);
- * }</pre>
- * </p>
+ * <p>All other ShopMenu / NpcShopMenu / ShopGui classes in the project are
+ * deprecated and delegate here.</p>
  */
-@Deprecated
-public class ShopMenu extends Menu {
+public final class ShopMenu extends Menu {
 
     /**
-     * A single shop entry: the material exchanged, its buy price, and its sell
-     * price. A {@code sellPrice} of {@code 0} means the item cannot be sold.
+     * A single shop entry: the material, its buy price, and its sell price.
+     * A {@code sellPrice} of {@code 0} means the item cannot be sold back.
      */
     public record ShopItem(Material material, int buyPrice, int sellPrice) {
         public ShopItem {
@@ -92,7 +81,7 @@ public class ShopMenu extends Menu {
             who.sendMessage("§cThis item is not for sale!");
             return;
         }
-        if (EconomyManager.getInstance().removeCoins(who.getUniqueId(), item.buyPrice())) {
+        if (EconomyManager.getInstance().withdraw(who.getUniqueId(), (double) item.buyPrice())) {
             who.getInventory().addItem(new ItemStack(item.material()));
             who.sendMessage("§aPurchased §6" + formatName(item.material())
                     + " §afor §6" + item.buyPrice() + " coins§a!");
@@ -112,7 +101,7 @@ public class ShopMenu extends Menu {
             return;
         }
         who.getInventory().removeItem(toRemove);
-        EconomyManager.getInstance().addCoins(who.getUniqueId(), item.sellPrice());
+        EconomyManager.getInstance().addCoins(who.getUniqueId(), (double) item.sellPrice());
         who.sendMessage("§aSold §6" + formatName(item.material())
                 + " §afor §6" + item.sellPrice() + " coins§a!");
     }
@@ -133,14 +122,13 @@ public class ShopMenu extends Menu {
                 .build();
     }
 
-    /** Fills the outer edge with gray glass panes. */
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
-            int column = slot % 9;
-            if (slot < 9 || slot >= 45 || column == 0 || column == 8) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
                 setItem(slot, pane);
             }
         }

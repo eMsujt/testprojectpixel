@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.menu.ShopMenu} instead.
+ *
  * Reusable 54-slot (6-row) menu base for NPC shops.
  *
  * <p>A shop is described by a {@link List} of {@link ShopEntry}s, each pairing an
@@ -20,6 +22,7 @@ import java.util.UUID;
  * the viewing player's purse (via {@link CoinManager}) and adds the item to their
  * inventory; if they can't afford it, the purchase is rejected with a message.</p>
  */
+@Deprecated
 public class ShopMenu extends Menu {
 
     private final UUID playerId;

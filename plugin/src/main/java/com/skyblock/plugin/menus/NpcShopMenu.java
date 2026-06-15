@@ -9,6 +9,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Objects;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.menu.ShopMenu} instead.
+ *
  * Abstract 54-slot (6-row) chest base for NPC shops.
  *
  * <p>As a {@link Menu}, an {@code NpcShopMenu} is its own
@@ -19,6 +21,7 @@ import java.util.Objects;
  * player's purse (via {@link CoinManager}) and grants the item, or rejects the
  * purchase with a message when they can't afford it.</p>
  */
+@Deprecated
 public abstract class NpcShopMenu extends Menu {
 
     private final CoinManager coinManager;

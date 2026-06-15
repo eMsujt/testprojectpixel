@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.Objects;
 
+/** @deprecated Use {@link com.skyblock.core.menu.ShopMenu} instead. */
+@Deprecated
 public class NpcShopMenu extends Menu {
 
     /**
