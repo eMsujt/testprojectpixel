@@ -29,10 +29,7 @@
         <module>slayer</module>
         <module>forging</module>
         <module>crafting</module>
-        <module>npc</module>
-        <module>npcs</module>
         <module>enchanting</module>
-        <module>enchants</module>
         <module>mining</module>
         <module>scoreboard</module>
         <module>events</module>
