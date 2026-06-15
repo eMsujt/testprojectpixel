@@ -1,5 +1,6 @@
 package com.skyblock.core.items;
 
+import com.skyblock.core.model.ItemType;
 import com.skyblock.core.model.Rarity;
 
 import java.util.Arrays;
@@ -17,11 +18,6 @@ import java.util.stream.Collectors;
  * The manager wraps that enum with an id-keyed lookup for O(1) retrieval.</p>
  */
 public final class CustomItemManager {
-
-    /** The functional category of a custom item. */
-    public enum ItemType {
-        WEAPON, ARMOR, TOOL, ACCESSORY, CONSUMABLE, MATERIAL
-    }
 
     /** Every custom item available in SkyBlock. */
     public enum SkyBlockItem {

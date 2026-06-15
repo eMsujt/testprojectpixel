@@ -1,5 +1,8 @@
 package com.skyblock.items.manager;
 
+import com.skyblock.core.model.ItemType;
+import com.skyblock.core.model.Rarity;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,24 +24,6 @@ import java.util.stream.Collectors;
  * so all operations are thread-safe.</p>
  */
 public final class ItemManager {
-
-    /** The functional category of a custom item. */
-    public enum ItemType {
-        /** Swords, bows, and other weapons. */
-        WEAPON,
-        /** Helmets, chestplates, leggings, and boots. */
-        ARMOR,
-        /** Pickaxes, axes, hoes, and other gathering tools. */
-        TOOL,
-        /** Talismans and other passive accessories. */
-        ACCESSORY,
-        /** Potions, food, and other consumables. */
-        CONSUMABLE,
-        /** Crafting ingredients and dropped materials. */
-        MATERIAL,
-        /** Blocks and decorative items. */
-        BLOCK
-    }
 
     /** A single custom item definition. */
     public static final class ItemDefinition {
