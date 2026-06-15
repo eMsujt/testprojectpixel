@@ -8,14 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Upgrade GUI for a single placed minion.
- *
- * <p>A 27-slot chest menu titled {@code §a<Type>} with a gray-glass border.
- * Slot 13 shows the minion's info (current tier and the resource it produces)
- * and slot 15 upgrades the minion to the next tier, up to {@link #MAX_TIER}.
- * Because {@link MinionData} is immutable, an upgrade replaces the tracked
- * minion in {@link MinionManager} with a higher-tier copy.</p>
+ * @deprecated Use {@link com.skyblock.core.menu.MinionMenu} instead.
  */
+@Deprecated
 public class MinionUpgradeMenu extends Menu {
 
     /** The highest tier a minion can be upgraded to. */
