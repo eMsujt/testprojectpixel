@@ -1,43 +1,62 @@
 package com.skyblock.plugin.gui.menu;
 
+import com.skyblock.plugin.collections.CollectionCategoryMenu;
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+
 /**
  * The Collections hub menu.
  *
- * <p>A 54-slot (6-row) menu with a gray glass-pane border. Each Hypixel
- * collection category is laid out across a centred grid as its representative
- * icon that, when clicked, refreshes the menu, matching Hypixel's layout.</p>
+ * <p>A 54-slot (6-row) chest titled {@code §eCollections} with a gray glass-pane
+ * border. Five category icons are placed in the inner columns; clicking one opens
+ * {@link CollectionCategoryMenu} for that category.</p>
  */
 public class CollectionsMenu extends Menu {
 
-    /** A Hypixel collection category, its colour, wool icon and content slot. */
     private enum Category {
-        FARMING("Farming", "§a", Material.LIME_WOOL, 10),
-        MINING("Mining", "§7", Material.LIGHT_GRAY_WOOL, 19),
-        COMBAT("Combat", "§c", Material.RED_WOOL, 28),
-        FORAGING("Foraging", "§2", Material.GREEN_WOOL, 37),
-        FISHING("Fishing", "§9", Material.BLUE_WOOL, 46);
+        FARMING("Farming", "§a", Material.LIME_WOOL, 10,
+                new Material[]{Material.WHEAT, Material.CARROT, Material.POTATO,
+                        Material.PUMPKIN, Material.MELON_SLICE, Material.SUGAR_CANE,
+                        Material.CACTUS, Material.RED_MUSHROOM, Material.NETHER_WART}),
+        MINING("Mining", "§7", Material.LIGHT_GRAY_WOOL, 19,
+                new Material[]{Material.COBBLESTONE, Material.COAL, Material.IRON_INGOT,
+                        Material.GOLD_INGOT, Material.DIAMOND, Material.LAPIS_LAZULI,
+                        Material.EMERALD, Material.REDSTONE, Material.OBSIDIAN}),
+        COMBAT("Combat", "§c", Material.RED_WOOL, 28,
+                new Material[]{Material.ROTTEN_FLESH, Material.BONE, Material.STRING,
+                        Material.GUNPOWDER, Material.ENDER_PEARL}),
+        FORAGING("Foraging", "§2", Material.GREEN_WOOL, 37,
+                new Material[]{Material.OAK_LOG, Material.SPRUCE_LOG, Material.BIRCH_LOG,
+                        Material.JUNGLE_LOG, Material.ACACIA_LOG, Material.DARK_OAK_LOG}),
+        FISHING("Fishing", "§9", Material.BLUE_WOOL, 46,
+                new Material[]{Material.COD, Material.SALMON, Material.PUFFERFISH,
+                        Material.TROPICAL_FISH, Material.PRISMARINE_SHARD});
 
         private final String displayName;
         private final String color;
         private final Material icon;
         private final int slot;
+        private final Material[] items;
 
-        Category(String displayName, String color, Material icon, int slot) {
+        Category(String displayName, String color, Material icon, int slot, Material[] items) {
             this.displayName = displayName;
             this.color = color;
             this.icon = icon;
             this.slot = slot;
+            this.items = items;
         }
     }
 
-    public CollectionsMenu() {
-        super("§2Collections", 6);
+    private final UUID playerId;
+
+    public CollectionsMenu(UUID playerId) {
+        super("§eCollections", 6);
+        this.playerId = playerId;
     }
 
     @Override
@@ -45,17 +64,21 @@ public class CollectionsMenu extends Menu {
         fillBorder();
 
         for (Category category : Category.values()) {
+            final Category cat = category;
             setItem(category.slot, new ItemBuilder(category.icon)
                             .displayName(category.color + category.displayName + " Collections")
                             .lore(
                                     "§7View your " + category.displayName.toLowerCase() + " collections.",
                                     "§eClick to view!")
                             .build(),
-                    event -> open((Player) event.getWhoClicked()));
+                    event -> {
+                        event.setCancelled(true);
+                        new CollectionCategoryMenu(playerId, cat.displayName, cat.items)
+                                .open((Player) event.getWhoClicked());
+                    });
         }
     }
 
-    /** Fills the menu's outer edge with gray glass panes, matching Hypixel. */
     private void fillBorder() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
