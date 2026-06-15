@@ -91,12 +91,15 @@ public final class SkyBlockPlugin extends JavaPlugin {
         instance = this;
         coinManager = new CoinManager();
         dungeonManager = DungeonManager.getInstance();
+        dungeonManager.load(getDataFolder());
         itemManager = new CustomItemManager();
         profileManager = com.skyblock.plugin.profile.ProfileManager.getInstance();
         profileManager.init(this);
         AuctionHouseManager.getInstance().load(getDataFolder());
         BankManager.getInstance().load(getDataFolder());
+        SkillManager.getInstance().load(getDataFolder());
         CollectionManager.getInstance().load(getDataFolder());
+        com.skyblock.core.manager.ProfileManager.getInstance().load(getDataFolder());
         GardenManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().load(getDataFolder());
         KuudraManager.getInstance().load(getDataFolder());
@@ -112,7 +115,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.core.manager.PetManager.getInstance().load(getDataFolder());
         HOTMManager.getInstance().load(getDataFolder());
         WarpManager.getInstance().load(getDataFolder());
-        SkillManager.getInstance().load(getDataFolder());
         IslandManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.DungeonManager.getInstance().load(getDataFolder());
         CraftingManager.getInstance().registerRecipes(this);
@@ -232,7 +234,9 @@ public final class SkyBlockPlugin extends JavaPlugin {
     public void onDisable() {
         AuctionHouseManager.getInstance().save(getDataFolder());
         BankManager.getInstance().save(getDataFolder());
+        SkillManager.getInstance().save(getDataFolder());
         CollectionManager.getInstance().save(getDataFolder());
+        com.skyblock.core.manager.ProfileManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
@@ -247,7 +251,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         MayorManager.getInstance().save(getDataFolder());
         com.skyblock.core.manager.PetManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
-        SkillManager.getInstance().save(getDataFolder());
+        dungeonManager.save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.DungeonManager.getInstance().save(getDataFolder());
         try {
