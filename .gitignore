@@ -1,0 +1,3 @@
+# Exclude Claude Code linked worktrees — these contain nested .git files that
+# git would record as dirty submodule refs if staged accidentally.
+.claude/worktrees/

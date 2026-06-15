@@ -308,6 +308,22 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (BazaarManager/BazaarHandler/BazaarService thorough final-pass consolidation — round 65)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| BazaarManager / BazaarHandler / BazaarService | `com.skyblock.core.manager.BazaarManager` | Thorough final-pass audit of every class named `BazaarManager`, `BazaarHandler`, or `BazaarService` across every module; all remaining stubs and duplicates deleted outright; canonical `com.skyblock.core.manager.BazaarManager` confirmed as sole implementation | #2698 |
+
+---
+
+## Completed (CollectionManager/CollectionsManager thorough final-pass consolidation — round 66)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| CollectionManager / CollectionsManager | `com.skyblock.core.manager.CollectionManager` | Thorough final-pass audit of every class named `CollectionManager` or `CollectionsManager` across every module; deleted 2 remaining `@Deprecated` stubs outright: `core/collections/CollectionsCommand.java` (referenced non-existent `CollectionsManager`) and `skyblock-core/command/CollectionCommand.java` (delegated to canonical `collection.command.CollectionCommand`); canonical `com.skyblock.core.manager.CollectionManager` confirmed as sole implementation | #2700 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
