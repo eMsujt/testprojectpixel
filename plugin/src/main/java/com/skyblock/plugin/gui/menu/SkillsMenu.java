@@ -39,12 +39,12 @@ public class SkillsMenu extends Menu {
         }
     }
 
-    private static final int[] SLOTS = {10, 11, 12, 13, 14, 19, 20, 21, 22, 23, 24};
+    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32};
 
     private final UUID playerId;
 
     public SkillsMenu(UUID playerId) {
-        super("§aSkills", 6);
+        super("§2Skills", 6);
         this.playerId = playerId;
     }
 
