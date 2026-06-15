@@ -1,6 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.island.IslandManager.IslandUpgrade;
+import com.skyblock.core.island.manager.IslandManager.IslandUpgrade;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

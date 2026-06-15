@@ -111,7 +111,7 @@ public final class IslandManager {
 
     public List<UUID> getIslandMembers(UUID owner) {
         return delegate.getIsland(owner)
-                .map(com.skyblock.core.island.IslandManager.SkyBlockIsland::getMembers)
+                .map(com.skyblock.core.island.manager.IslandManager.SkyBlockIsland::getMembers)
                 .orElse(Collections.emptyList());
     }
 

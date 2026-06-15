@@ -1,4 +1,4 @@
-package com.skyblock.core.island;
+package com.skyblock.core.island.model;
 
 import java.util.List;
 import java.util.UUID;
