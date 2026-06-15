@@ -1,8 +1,8 @@
 # Project Status
 
 > Audit of every module and class in the SkyBlock repository.
-> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations.
-> Counts: **66 declared Maven modules** (`pom.xml`; `auctionhouse` pruned), **577 `.java` source files**.
+> Generated 2026-06-14. Updated 2026-06-15 to reflect post-cleanup consolidations (rounds 17-21: stub removal, pom.xml pruning).
+> Counts: **64 declared Maven modules** (`pom.xml`; `auctionhouse`, `stats`, `minion` pruned), **~561 `.java` source files** (16 zero-caller `@Deprecated` stubs deleted in #2553).
 
 ## How to read this document
 
@@ -144,7 +144,7 @@ table.
 |--------|---------|--------|
 | `pets` | `PetManager`, `Pet`, `PetAbility`, `PetTier`, `PetType` | ✅ |
 | `minions` | `MinionManager`, `MinionInstance`, `MinionTier`, `MinionType` | ✅ Most complete. Canonical: `com.skyblock.core.manager.MinionManager` (#2540). |
-| `minion` | `MinionManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.MinionManager` (#2540). |
+| `minion` | `MinionManager` | ✂️ Removed from root `pom.xml` (#2554); contained only a `@Deprecated` stub with zero callers. |
 | `skyblock-minions` | `MinionManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.MinionManager` (#2540). |
 
 ## Profiles
@@ -193,7 +193,7 @@ table.
 | `housing` | `HousingManager` | ✅ |
 | `calendar` | `CalendarManager` | ✅ |
 | `scoreboard` | `ScoreboardManager`, `ScoreboardSection` | ✅ |
-| `stats` | `StatsManager`, `PlayerStat` | ✅ |
+| `stats` | `StatsManager`, `PlayerStat` | ✂️ Removed from root `pom.xml` (#2554); contained only `@Deprecated` stubs with zero callers. |
 | `events` | `EventManager`, `SkyBlockEvent` | ✅ |
 | `alchemy` | `AlchemyManager`, `BrewingIngredient` | ✅ Richest alchemy/brewing module. Pending consolidation. |
 | `brewing` | `BrewingManager` | 🔁 Pending consolidation. |
@@ -258,8 +258,10 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
   EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
   DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, ShopManager,
   and ProfileManager are now single classes with `@Deprecated` delegating stubs replacing
-  all duplicates. The `auctionhouse`, `auction`, and `dungeon` leaf modules have been pruned
-  or reduced to stubs.
+  all duplicates. The `auctionhouse`, `auction`, `dungeon`, `stats`, and `minion` leaf
+  modules have been pruned from the parent `pom.xml`; **16 zero-caller `@Deprecated` stub
+  files were deleted outright** (#2553), reducing the source tree from 577 to ~561 files.
+  The parent `pom.xml` now declares **64 modules** (down from 66 before rounds 20–21).
 - **6 domains remain unconsolidated** (SlayerManager, EnchantingManager, NPCManager,
   GuildManager, TradingManager, BrewingManager) — tracked in [`CLEANUP.md`](./CLEANUP.md).
 - **Naming is inconsistent** — singular vs plural module names (`auction`/`auctions`,

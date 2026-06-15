@@ -41,6 +41,8 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 | ShopManager / NpcShopManager / ShopHandler | `com.skyblock.core.manager.ShopManager` | All `ShopManager`/`NpcShopManager`/`ShopHandler` duplicates → 1 canonical; variants replaced with `@Deprecated` stubs delegating to canonical | #2544 |
 | ProfileManager / PlayerProfileManager | `com.skyblock.core.manager.ProfileManager` | ~7 duplicates across `profiles`, `profile`, `playerdata`, `core`, `plugin` → 1 canonical; all variants replaced with `@Deprecated` stubs delegating to canonical | #2547 |
 | Dead-module pruning (`auction`, `dungeon`) | *(removed from `pom.xml`)* | Both modules contained only `@Deprecated` delegation stubs with no unique logic; removed from parent `pom.xml` to eliminate dead build surface | #2548 |
+| Dead-module pruning (`stats`, `minion`) | *(removed from `pom.xml`)* | Both modules contained only `@Deprecated` stub classes (`StatsManager`, `PlayerStat`, `MinionManager`) with zero callers outside their own module directory; removed from parent `pom.xml` | #2554 |
+| Zero-caller `@Deprecated` stub removal | *(class files deleted)* | 16 `@Deprecated` stub files with zero live callers deleted outright; 11 stubs with live callers retained as delegating bridges | #2553 |
 
 ---
 
