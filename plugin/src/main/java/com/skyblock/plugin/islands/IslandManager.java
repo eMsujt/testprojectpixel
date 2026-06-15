@@ -20,7 +20,10 @@ import java.util.UUID;
  * created. A record is added when a player's island is generated and removed
  * if the island is deleted. Not thread-safe; access from the main server
  * thread.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.IslandManager} instead.
  */
+@Deprecated
 public final class IslandManager {
 
     /**

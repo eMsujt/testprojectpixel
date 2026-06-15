@@ -14,6 +14,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.skyblock.core.manager.IslandManager} instead.
+ */
+@Deprecated
 public class IslandManager {
 
     public static final Map<String, Integer> UPGRADES;

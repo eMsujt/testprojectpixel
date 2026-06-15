@@ -18,7 +18,10 @@ import java.util.UUID;
  *
  * <p>A player may own at most one island. Not thread-safe;
  * synchronize externally if accessed from multiple threads.</p>
+ *
+ * @deprecated Use {@link com.skyblock.core.manager.IslandManager} instead.
  */
+@Deprecated
 public final class IslandManager {
 
     public static final Map<String, int[]> UPGRADE_DATA;
