@@ -1,7 +1,10 @@
 package com.skyblock.core.crafting;
 
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -233,6 +236,32 @@ public final class CraftingManager {
         } catch (IOException e) {
             throw new RuntimeException("Failed to save crafting.yml", e);
         }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Bukkit recipe registration
+    // ---------------------------------------------------------------------------
+
+    /**
+     * Registers SkyBlock-specific enchanted crafting recipes into the Bukkit server.
+     *
+     * @param plugin the owning plugin used to create {@link NamespacedKey}s
+     */
+    public void registerRecipes(JavaPlugin plugin) {
+        registerBukkitShaped(plugin, "enchanted_cobblestone", Material.COBBLESTONE);
+        registerBukkitShaped(plugin, "enchanted_oak_log", Material.OAK_LOG);
+        registerBukkitShaped(plugin, "enchanted_iron_ingot", Material.IRON_INGOT);
+        registerBukkitShaped(plugin, "enchanted_gold_ingot", Material.GOLD_INGOT);
+        registerBukkitShaped(plugin, "enchanted_diamond", Material.DIAMOND);
+    }
+
+    private void registerBukkitShaped(JavaPlugin plugin, String id, Material material) {
+        NamespacedKey key = new NamespacedKey(plugin, id);
+        org.bukkit.inventory.ShapedRecipe recipe =
+                new org.bukkit.inventory.ShapedRecipe(key, new ItemStack(material, 1));
+        recipe.shape("AAA", "AAA", "AAA");
+        recipe.setIngredient('A', material);
+        plugin.getServer().addRecipe(recipe);
     }
 
     // ---------------------------------------------------------------------------
