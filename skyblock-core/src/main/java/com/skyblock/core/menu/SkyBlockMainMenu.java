@@ -70,7 +70,10 @@ public final class SkyBlockMainMenu extends Menu {
                 .displayName("§aPets")
                 .lore("§7Manage your pets.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> {
+                    e.setCancelled(true);
+                    new PetsMenu(e.getWhoClicked().getUniqueId()).open((Player) e.getWhoClicked());
+                });
 
         setItem(15, new ItemBuilder(Material.FISHING_ROD)
                 .displayName("§aFishing Bag")
