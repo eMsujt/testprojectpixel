@@ -1,8 +1,8 @@
 package com.skyblock.core.hotm;
 
 import com.skyblock.core.gui.GuiBuilder;
+import com.skyblock.core.menu.Menu;
 import com.skyblock.core.menu.MenuManager;
-import com.skyblock.core.menu.MenuManager.SkyBlockMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -117,7 +117,7 @@ public final class HotmCommand implements TabExecutor {
     // -------------------------------------------------------------------------
 
     /** Inner menu class that builds and handles the HOTM perk tree inventory. */
-    private final class HotmMenu extends SkyBlockMenu {
+    private final class HotmMenu extends Menu {
 
         private final Player owner;
 
@@ -175,7 +175,7 @@ public final class HotmCommand implements TabExecutor {
         }
 
         @Override
-        public void onClick(InventoryClickEvent event) {
+        public void handleClick(InventoryClickEvent event) {
             event.setCancelled(true);
             if (event.getClickedInventory() != null
                     && event.getClickedInventory().getHolder() instanceof GuiBuilder.GuiHolder holder) {

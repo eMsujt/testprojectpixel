@@ -1,7 +1,6 @@
 package com.skyblock.core.menu;
 
 import com.skyblock.core.gui.GuiBuilder;
-import com.skyblock.core.menu.MenuManager.SkyBlockMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 /**
  * Full 54-slot GUI hub for SkyBlock, opened via {@link MenuManager#openMenu}.
  */
-public final class SkyBlockMainMenu extends SkyBlockMenu {
+public final class SkyBlockMainMenu extends Menu {
 
     @Override
     public void open(Player player) {
@@ -100,7 +99,7 @@ public final class SkyBlockMainMenu extends SkyBlockMenu {
     }
 
     @Override
-    public void onClick(InventoryClickEvent event) {
+    public void handleClick(InventoryClickEvent event) {
         event.setCancelled(true);
         if (event.getClickedInventory() != null
                 && event.getClickedInventory().getHolder() instanceof GuiBuilder.GuiHolder holder) {

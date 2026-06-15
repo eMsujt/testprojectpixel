@@ -7,8 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 /**
- * Routes inventory click and close events to the active {@link MenuManager.SkyBlockMenu}
- * for each player.
+ * Routes inventory click and close events to the active {@link Menu} for each player.
  */
 public final class MenuListener implements Listener {
 
@@ -23,10 +22,10 @@ public final class MenuListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player player)) {
             return;
         }
-        MenuManager.SkyBlockMenu menu = menuManager.getOpenMenu(player);
+        Menu menu = menuManager.getOpenMenu(player);
         if (menu != null) {
             event.setCancelled(true);
-            menu.onClick(event);
+            menu.handleClick(event);
         }
     }
 
