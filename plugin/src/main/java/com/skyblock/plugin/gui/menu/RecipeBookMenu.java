@@ -2,15 +2,10 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class RecipeBookMenu extends Menu {
@@ -24,30 +19,18 @@ public class RecipeBookMenu extends Menu {
     private static final int SLOTS_PER_PAGE = INNER_SLOTS.length;
 
     private final Player player;
-    private final List<ShapedRecipe> recipes;
+    private final List<SkyBlockRecipe> recipes;
     private final int page;
 
-    public RecipeBookMenu(Player player) {
-        this(player, 0);
+    public RecipeBookMenu(Player player, List<SkyBlockRecipe> recipes) {
+        this(player, recipes, 0);
     }
 
-    private RecipeBookMenu(Player player, int page) {
+    private RecipeBookMenu(Player player, List<SkyBlockRecipe> recipes, int page) {
         super("§6Recipe Book", 6);
         this.player = player;
+        this.recipes = recipes;
         this.page = page;
-        this.recipes = loadRecipes();
-    }
-
-    private static List<ShapedRecipe> loadRecipes() {
-        List<ShapedRecipe> list = new ArrayList<>();
-        Iterator<Recipe> it = Bukkit.recipeIterator();
-        while (it.hasNext()) {
-            Recipe r = it.next();
-            if (r instanceof ShapedRecipe sr) {
-                list.add(sr);
-            }
-        }
-        return list;
     }
 
     @Override
@@ -65,12 +48,11 @@ public class RecipeBookMenu extends Menu {
         for (int i = 0; i < SLOTS_PER_PAGE; i++) {
             int recipeIndex = start + i;
             if (recipeIndex >= recipes.size()) break;
-            ShapedRecipe recipe = recipes.get(recipeIndex);
-            ItemStack result = recipe.getResult();
-            setItem(INNER_SLOTS[i], new ItemBuilder(result.getType())
-                    .displayName("§f" + formatName(result.getType()))
+            SkyBlockRecipe recipe = recipes.get(recipeIndex);
+            setItem(INNER_SLOTS[i], new ItemBuilder(recipe.result())
+                    .displayName("§e" + recipe.id())
                     .lore(
-                            "§7Output: §f" + result.getAmount() + "x " + formatName(result.getType()),
+                            "§7Produces: §f" + recipe.resultAmount() + "x " + formatName(recipe.result()),
                             "",
                             "§eClick to view!")
                     .build());
@@ -84,7 +66,7 @@ public class RecipeBookMenu extends Menu {
         }
 
         setItem(49, new ItemBuilder(Material.BOOK)
-                .displayName("§aRecipe Book")
+                .displayName("§6Recipe Book")
                 .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
                 .build());
 
@@ -94,7 +76,7 @@ public class RecipeBookMenu extends Menu {
                     .displayName("§ePrevious Page")
                     .lore("§7Go to page §e" + (prevPage + 1))
                     .build(),
-                    event -> new RecipeBookMenu(player, prevPage).open(player));
+                    event -> new RecipeBookMenu(player, recipes, prevPage).open(player));
         }
 
         if ((page + 1) < totalPages) {
@@ -103,7 +85,7 @@ public class RecipeBookMenu extends Menu {
                     .displayName("§eNext Page")
                     .lore("§7Go to page §e" + (nextPage + 1))
                     .build(),
-                    event -> new RecipeBookMenu(player, nextPage).open(player));
+                    event -> new RecipeBookMenu(player, recipes, nextPage).open(player));
         }
     }
 
