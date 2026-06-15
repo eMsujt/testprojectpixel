@@ -32,7 +32,7 @@ carry a `@Deprecated` delegating stub or have been deleted.
 
 | Domain | Canonical class | Status |
 |--------|-----------------|--------|
-| AuctionHouseManager | `com.skyblock.core.auction.AuctionHouseManager` | ✅ consolidated (#9f504bba) |
+| AuctionHouseManager | `com.skyblock.core.auction.AuctionHouseManager` | ✅ consolidated (#9f504bba / #2593) |
 | Rarity enum | `com.skyblock.core.model.Rarity` | ✅ consolidated (#2e713bba) |
 | ItemBuilder utility | `com.skyblock.core.util.ItemBuilder` | ✅ consolidated (#01eebf00) |
 | CollectionManager | `com.skyblock.core.manager.CollectionManager` | ✅ consolidated (Oracle) |
@@ -48,8 +48,9 @@ carry a `@Deprecated` delegating stub or have been deleted.
 | DungeonManager / DungeonsManager | `com.skyblock.core.manager.DungeonManager` | ✅ consolidated (#2517) |
 | BazaarManager / BazaarHandler | `com.skyblock.core.manager.BazaarManager` | ✅ consolidated (#2537 / #2541) |
 | BankManager / BankingManager / BankHandler | `com.skyblock.core.manager.BankManager` | ✅ consolidated (#2538) |
-| IslandManager / IslandHandler / IslandService | `com.skyblock.core.manager.IslandManager` | ✅ consolidated (#2539) |
-| MinionManager / MinionsManager | `com.skyblock.core.manager.MinionManager` | ✅ consolidated (#2540) |
+| IslandManager / IslandHandler / IslandService | `com.skyblock.core.manager.IslandManager` | ✅ consolidated (#2539 / #2591) |
+| MinionManager / MinionsManager | `com.skyblock.core.manager.MinionManager` | ✅ consolidated (#2540 / #2590) |
+| PetManager / PetsManager | `com.skyblock.core.manager.PetManager` | ✅ consolidated (#2592) |
 | ShopManager / NpcShopManager / ShopHandler | `com.skyblock.core.manager.ShopManager` | ✅ consolidated (#2544) |
 | ProfileManager / PlayerProfileManager | `com.skyblock.core.manager.ProfileManager` | ✅ consolidated (#2547) |
 
@@ -197,7 +198,7 @@ Command registration in `SkyBlockPlugin.java` fixed to import canonical `com.sky
 
 | Module | Classes | Status |
 |--------|---------|--------|
-| `pets` | `PetManager`, `Pet`, `PetAbility`, `PetTier`, `PetType` | ✅ |
+| `pets` | `PetManager`, `Pet`, `PetAbility`, `PetTier`, `PetType` | ✅ Most complete. Canonical: `com.skyblock.core.manager.PetManager` (#2592). |
 | `minions` | `MinionManager`, `MinionInstance`, `MinionTier`, `MinionType` | ✅ Most complete. Canonical: `com.skyblock.core.manager.MinionManager` (#2540). |
 | `minion` | `MinionManager` | ✂️ Removed from root `pom.xml` (#2554); contained only a `@Deprecated` stub with zero callers. |
 | `skyblock-minions` | `MinionManager` | 🔁 `@Deprecated` stub → `com.skyblock.core.manager.MinionManager` (#2540). |
@@ -283,7 +284,7 @@ package under `com.skyblock.core.*`. Notable patterns:
 - **Consolidated canonical managers** now live in `com.skyblock.core.manager.*`:
   `QuestManager`, `EconomyManager`, `AbilityManager`, `DungeonManager`,
   `EnchantmentManager`, `CollectionManager`, `BazaarManager`, `BankManager`,
-  `IslandManager`, `MinionManager`, `ShopManager`, `ProfileManager`. Facades in
+  `IslandManager`, `MinionManager`, `PetManager`, `ShopManager`, `ProfileManager`. Facades in
   `com.skyblock.core.skills.*`: `SkillManager`. See the [canonical registry](#post-cleanup-canonical-manager-registry) above.
 
 ## `plugin` breakdown
@@ -308,11 +309,11 @@ A self-contained Bukkit plugin stack under `com.skyblock.plugin.*`, overlapping
 
 ## Summary of findings
 
-- **Ongoing consolidation has eliminated 20 duplicate manager surfaces, 12 duplicate menu GUI surfaces, 23 duplicate command class stubs, and 4 duplicate listener package pairs.** Canonical managers for
+- **Ongoing consolidation has eliminated 21 duplicate manager surfaces, 12 duplicate menu GUI surfaces, 23 duplicate command class stubs, and 4 duplicate listener package pairs.** Canonical managers for
   AuctionHouseManager, Rarity, ItemBuilder/SkullUtil, CollectionManager, Menu, SkillManager,
   EnchantmentManager, CraftingManager, QuestManager, EconomyManager, AbilityManager,
-  DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, ShopManager,
-  and ProfileManager are now single classes with `@Deprecated` delegating stubs replacing
+  DungeonManager, BazaarManager, BankManager, IslandManager, MinionManager, PetManager,
+  ShopManager, and ProfileManager are now single classes with `@Deprecated` delegating stubs replacing
   all duplicates. Rounds 20-24 added 12 canonical menu GUI classes under `com.skyblock.core.menu.*`
   (CollectionsMenu, AuctionHouseMenu, CraftingMenu, BazaarMenu, EnchantingMenu, BankMenu,
   MinionMenu, DungeonMenu, IslandMenu, SkillsMenu, PetsMenu, QuestsMenu). Round 25 deprecated
