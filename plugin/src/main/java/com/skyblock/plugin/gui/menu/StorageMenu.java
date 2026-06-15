@@ -18,7 +18,7 @@ public class StorageMenu extends Menu {
     private final ItemStack[] enderContents;
 
     public StorageMenu(Player player) {
-        super("§6Ender Chest", 6);
+        super("§8Ender Chest", 6);
         this.enderContents = player.getEnderChest().getContents();
     }
 
