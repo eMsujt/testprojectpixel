@@ -438,6 +438,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (ProfileManager final consolidation — round 82)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ProfileManager | `com.skyblock.core.manager.ProfileManager` | Thorough final-pass consolidation of every class named `ProfileManager` across every module; the `profiles` module's zero-caller `@Deprecated` `ProfileManager` (a pure delegation stub to the canonical) deleted outright; all remaining `ProfileManager` references confirmed to point to `com.skyblock.core.manager.ProfileManager`; canonical class confirmed as sole implementation with no remaining orphan stubs | #2741 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
