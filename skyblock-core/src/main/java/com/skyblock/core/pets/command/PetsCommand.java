@@ -1,9 +1,9 @@
 package com.skyblock.core.pets.command;
 
-import com.skyblock.core.pets.PetsManager;
-import com.skyblock.core.pets.PetsManager.Pet;
-import com.skyblock.core.pets.PetsManager.PetRarity;
-import com.skyblock.core.pets.PetsManager.PetType;
+import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.PetManager.Pet;
+import com.skyblock.core.manager.PetManager.PetRarity;
+import com.skyblock.core.manager.PetManager.PetType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -33,9 +33,9 @@ public final class PetsCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("list", "add", "equip", "unequip", "active", "reset");
 
-    private final PetsManager petsManager;
+    private final PetManager petsManager;
 
-    public PetsCommand(PetsManager petsManager) {
+    public PetsCommand(PetManager petsManager) {
         this.petsManager = petsManager;
     }
 

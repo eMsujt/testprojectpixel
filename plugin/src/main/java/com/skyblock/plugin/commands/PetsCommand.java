@@ -1,7 +1,7 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.plugin.managers.PetsManager;
-import com.skyblock.plugin.managers.PetsManager.Pet;
+import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.PetManager.Pet;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,7 +33,7 @@ public final class PetsCommand implements CommandExecutor {
 
     private void handleList(Player player) {
         UUID id = player.getUniqueId();
-        PetsManager manager = PetsManager.getInstance();
+        PetManager manager = PetManager.getInstance();
         Pet active = manager.getActivePet(id);
         List<Pet> pets = manager.getPets(id);
         player.sendMessage("=== Pets ===");
@@ -42,22 +42,24 @@ public final class PetsCommand implements CommandExecutor {
             return;
         }
         for (Pet pet : pets) {
-            String marker = (active != null && pet.getId().equals(active.getId())) ? " (active)" : "";
-            player.sendMessage("  " + pet.getName() + " [" + pet.getRarity() + "] Lv" + pet.getLevel() + marker);
+            int level = manager.getLevel(id, pet.type);
+            String marker = (active != null && pet.id.equals(active.id)) ? " (active)" : "";
+            player.sendMessage("  " + pet.type.getDisplayName() + " [" + pet.rarity.name() + "] Lv" + level + marker);
         }
     }
 
     private void handleActive(Player player) {
         UUID id = player.getUniqueId();
-        PetsManager manager = PetsManager.getInstance();
+        PetManager manager = PetManager.getInstance();
         Pet pet = manager.getActivePet(id);
         player.sendMessage("=== Active Pet ===");
         if (pet == null) {
             player.sendMessage("You have no active pet.");
         } else {
-            player.sendMessage("Name: " + pet.getName());
-            player.sendMessage("Rarity: " + pet.getRarity());
-            player.sendMessage("Level: " + pet.getLevel());
+            int level = manager.getLevel(id, pet.type);
+            player.sendMessage("Name: " + pet.type.getDisplayName());
+            player.sendMessage("Rarity: " + pet.rarity.name());
+            player.sendMessage("Level: " + level);
         }
     }
 

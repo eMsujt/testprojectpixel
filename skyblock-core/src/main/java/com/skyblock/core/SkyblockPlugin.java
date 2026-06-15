@@ -35,7 +35,7 @@ import com.skyblock.core.minion.MinionManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.party.PartyManager;
 import com.skyblock.core.pets.command.PetsCommand;
-import com.skyblock.core.pets.PetsManager;
+import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.profile.ProfileCommand;
 import com.skyblock.core.manager.ProfileManager;
 import com.skyblock.core.reforge.ReforgeCommand;
@@ -176,7 +176,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         HOTMCommand hotmCommand = new HOTMCommand(hotmManager);
         getCommand("hotmtree").setExecutor(hotmCommand);
         getCommand("hotmtree").setTabCompleter(hotmCommand);
-        PetsManager petsManager = PetsManager.getInstance();
+        PetManager petsManager = PetManager.getInstance();
         petsManager.load(getDataFolder());
         PetsCommand petsCommand = new PetsCommand(petsManager);
         getCommand("pets").setExecutor(petsCommand);
@@ -351,7 +351,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         DungeonManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());
         FishingManager.getInstance().save(getDataFolder());
-        PetsManager.getInstance().save(getDataFolder());
+        PetManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
         HOTMManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());

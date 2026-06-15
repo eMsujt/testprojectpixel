@@ -1,9 +1,8 @@
 package com.skyblock.core.pets.command;
 
-import com.skyblock.core.pets.PetManager;
-import com.skyblock.core.pets.PetManager.PetData;
-import com.skyblock.core.pets.PetManager.PetRarity;
-import com.skyblock.core.pets.PetManager.PetType;
+import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.PetManager.PetRarity;
+import com.skyblock.core.manager.PetManager.PetType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -85,7 +84,7 @@ public final class PetCommand implements TabExecutor {
 
     private void handleList(Player player) {
         UUID id = player.getUniqueId();
-        PetData active = petManager.getActivePet(id);
+        PetManager.Pet active = petManager.getActivePet(id);
         player.sendMessage("=== Your Pets ===");
         for (PetType type : PetType.values()) {
             int level = petManager.getLevel(id, type);
@@ -115,12 +114,13 @@ public final class PetCommand implements TabExecutor {
                 player.sendMessage("Unknown rarity: " + args[2] + ". Defaulting to COMMON.");
             }
         }
-        petManager.setActivePet(player.getUniqueId(), type, rarity);
+        PetManager.Pet p = petManager.addPet(player.getUniqueId(), type, rarity);
+        petManager.equipPet(player.getUniqueId(), p.id);
         player.sendMessage("Equipped " + type.getDisplayName() + " (" + rarity.getDisplayName() + ").");
     }
 
     private void handleUnequip(Player player) {
-        if (petManager.removeActivePet(player.getUniqueId())) {
+        if (petManager.unequipPet(player.getUniqueId())) {
             player.sendMessage("Pet unequipped.");
         } else {
             player.sendMessage("You have no active pet.");
@@ -143,15 +143,15 @@ public final class PetCommand implements TabExecutor {
             player.sendMessage("Level: " + level + "/" + PetManager.MAX_LEVEL);
             player.sendMessage("Total XP: " + xp);
         } else {
-            PetData data = petManager.getActivePet(id);
+            PetManager.Pet data = petManager.getActivePet(id);
             if (data == null) {
                 player.sendMessage("You have no active pet. Use /pet equip <type> to equip one.");
                 return;
             }
             player.sendMessage("=== Active Pet: " + data.type.getDisplayName() + " ===");
             player.sendMessage("Rarity: " + data.rarity.getDisplayName());
-            player.sendMessage("Level: " + data.getLevel() + "/" + PetManager.MAX_LEVEL);
-            player.sendMessage("Total XP: " + data.experience);
+            player.sendMessage("Level: " + petManager.getLevel(id, data.type) + "/" + PetManager.MAX_LEVEL);
+            player.sendMessage("Total XP: " + petManager.getExperience(id, data.type));
         }
     }
 

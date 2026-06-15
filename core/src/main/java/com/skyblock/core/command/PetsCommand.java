@@ -1,7 +1,7 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.pets.PetsManager;
-import com.skyblock.core.pets.PetsManager.Pet;
+import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.PetManager.Pet;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -17,9 +17,9 @@ public final class PetsCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("list", "equip", "unequip", "level", "history");
 
-    private final PetsManager manager;
+    private final PetManager manager;
 
-    public PetsCommand(PetsManager manager) {
+    public PetsCommand(PetManager manager) {
         this.manager = manager;
     }
 
@@ -65,17 +65,19 @@ public final class PetsCommand implements TabExecutor {
     }
 
     private void handleList(Player player) {
-        List<Pet> pets = manager.getPets(player.getUniqueId());
+        UUID id = player.getUniqueId();
+        List<Pet> pets = manager.getPets(id);
         if (pets.isEmpty()) {
             player.sendMessage("You have no pets.");
             return;
         }
-        Pet active = manager.getActivePet(player.getUniqueId());
+        Pet active = manager.getActivePet(id);
         player.sendMessage("=== Your Pets ===");
         for (Pet pet : pets) {
             boolean isActive = active != null && active.id.equals(pet.id);
             String suffix = isActive ? " [ACTIVE]" : "";
-            player.sendMessage("  " + pet.type.name() + " (Lvl " + pet.level + ") — " + pet.id + suffix);
+            int level = manager.getLevel(id, pet.type);
+            player.sendMessage("  " + pet.type.name() + " (Lvl " + level + ") — " + pet.id + suffix);
         }
     }
 
@@ -118,15 +120,30 @@ public final class PetsCommand implements TabExecutor {
             player.sendMessage("Invalid pet ID: " + args[1] + ".");
             return;
         }
-        if (manager.levelUpPet(player.getUniqueId(), petId)) {
-            player.sendMessage("Pet leveled up.");
-        } else {
+        UUID playerId = player.getUniqueId();
+        Pet pet = manager.getPets(playerId).stream()
+                .filter(p -> p.id.equals(petId))
+                .findFirst().orElse(null);
+        if (pet == null) {
             player.sendMessage("No pet with that ID found in your collection.");
+            return;
         }
+        int currentLevel = manager.getLevel(playerId, pet.type);
+        if (currentLevel >= PetManager.MAX_LEVEL) {
+            player.sendMessage("That pet is already at max level.");
+            return;
+        }
+        long[] xpTable = PetManager.PET_XP_TABLE.get(pet.rarity.name());
+        long currentXp = manager.getExperience(playerId, pet.type);
+        long targetXp = (xpTable != null && currentLevel < xpTable.length) ? xpTable[currentLevel] : currentXp + 1;
+        if (targetXp > currentXp) {
+            manager.addExperience(playerId, pet.type, targetXp - currentXp);
+        }
+        player.sendMessage("Pet leveled up.");
     }
 
     private void handleHistory(Player player) {
-        List<String> history = manager.getPetsHistory(player.getUniqueId());
+        List<String> history = manager.getPetHistory(player.getUniqueId());
         if (history == null || history.isEmpty()) {
             player.sendMessage("You have no pets history.");
             return;

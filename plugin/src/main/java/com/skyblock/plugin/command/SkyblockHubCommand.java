@@ -17,7 +17,7 @@ import com.skyblock.core.hotm.HOTMManager;
 import com.skyblock.core.island.IslandManager;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorManager;
-import com.skyblock.core.pets.PetsManager;
+import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.ProfileManager;
 import com.skyblock.core.manager.ProfileManager.SkyBlockProfile;
 import com.skyblock.core.skills.SkillsManager;
@@ -178,11 +178,11 @@ public final class SkyblockHubCommand implements CommandExecutor {
                 + " §7| Garden level: §a" + garden.getPlotLevel(id));
 
         // Personal
-        PetsManager pets = PetsManager.getInstance();
+        PetManager pets = PetManager.getInstance();
         IslandManager islands = IslandManager.getInstance();
         MayorManager mayor = MayorManager.getInstance();
         EnchantingManager enchanting = EnchantingManager.getInstance();
-        PetsManager.Pet activePet = pets.getActivePet(id);
+        PetManager.Pet activePet = pets.getActivePet(id);
         String petName = activePet != null ? activePet.type.name() + " [" + activePet.rarity.name() + "]" : "None";
         String islandWarp = islands.getIsland(id).map(i -> i.getWarpName() != null ? i.getWarpName() : "None").orElse("No island");
         MayorManager.MayorCandidate currentMayor = mayor.getCurrentMayor();
@@ -249,20 +249,20 @@ public final class SkyblockHubCommand implements CommandExecutor {
 
     private void handlePets(Player player) {
         UUID id = player.getUniqueId();
-        PetsManager manager = PetsManager.getInstance();
-        PetsManager.Pet active = manager.getActivePet(id);
+        PetManager manager = PetManager.getInstance();
+        PetManager.Pet active = manager.getActivePet(id);
         if (active != null) {
             player.sendMessage("Active pet: " + active.type.name() + " [" + active.rarity.name() + "]");
         } else {
             player.sendMessage("Active pet: None");
         }
-        List<PetsManager.Pet> pets = manager.getPets(id);
+        List<PetManager.Pet> pets = manager.getPets(id);
         if (pets.isEmpty()) {
             player.sendMessage("You have no pets.");
             return;
         }
         player.sendMessage("=== Your Pets ===");
-        for (PetsManager.Pet pet : pets) {
+        for (PetManager.Pet pet : pets) {
             String marker = (active != null && pet.id.equals(active.id)) ? " *" : "";
             player.sendMessage("  " + pet.type.name() + " [" + pet.rarity.name() + "]" + marker);
         }

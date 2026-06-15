@@ -1,9 +1,8 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.pets.PetManager;
-import com.skyblock.core.pets.PetManager.PetData;
-import com.skyblock.core.pets.PetManager.PetType;
-import com.skyblock.core.pets.PetManager.Rarity;
+import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.PetManager.PetRarity;
+import com.skyblock.core.manager.PetManager.PetType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -72,7 +71,7 @@ public final class PetsCommand implements TabExecutor {
                     .collect(Collectors.toList());
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("equip")) {
-            return Arrays.stream(Rarity.values())
+            return Arrays.stream(PetRarity.values())
                     .map(r -> r.name().toLowerCase())
                     .filter(name -> name.startsWith(args[2].toLowerCase()))
                     .collect(Collectors.toList());
@@ -88,7 +87,7 @@ public final class PetsCommand implements TabExecutor {
 
     private void sendPetList(Player player) {
         UUID id = player.getUniqueId();
-        PetData active = petManager.getActivePet(id);
+        PetManager.Pet active = petManager.getActivePet(id);
         player.sendMessage("=== Your Pets ===");
         for (PetType type : PetType.values()) {
             int level = petManager.getLevel(id, type);
@@ -110,20 +109,21 @@ public final class PetsCommand implements TabExecutor {
             player.sendMessage("Unknown pet: " + args[1] + ".");
             return;
         }
-        Rarity rarity = Rarity.COMMON;
+        PetRarity rarity = PetRarity.COMMON;
         if (args.length >= 3) {
             try {
-                rarity = Rarity.valueOf(args[2].toUpperCase());
+                rarity = PetRarity.valueOf(args[2].toUpperCase());
             } catch (IllegalArgumentException e) {
                 player.sendMessage("Unknown rarity: " + args[2] + ". Defaulting to COMMON.");
             }
         }
-        petManager.setActivePet(player.getUniqueId(), type, rarity);
+        PetManager.Pet p = petManager.addPet(player.getUniqueId(), type, rarity);
+        petManager.equipPet(player.getUniqueId(), p.id);
         player.sendMessage("Equipped " + capitalize(type.name()) + " (" + capitalize(rarity.name()) + ").");
     }
 
     private void handleUnequip(Player player) {
-        boolean had = petManager.removeActivePet(player.getUniqueId());
+        boolean had = petManager.unequipPet(player.getUniqueId());
         if (had) {
             player.sendMessage("Pet unequipped.");
         } else {
@@ -133,7 +133,6 @@ public final class PetsCommand implements TabExecutor {
 
     private void handleInfo(Player player, String[] args) {
         UUID id = player.getUniqueId();
-        PetData data;
         if (args.length >= 2) {
             PetType type;
             try {
@@ -148,15 +147,15 @@ public final class PetsCommand implements TabExecutor {
             player.sendMessage("Level: " + level + "/" + PetManager.MAX_LEVEL);
             player.sendMessage("Total XP: " + xp);
         } else {
-            data = petManager.getActivePet(id);
+            PetManager.Pet data = petManager.getActivePet(id);
             if (data == null) {
                 player.sendMessage("You have no active pet. Use /pets equip <pet> to equip one.");
                 return;
             }
             player.sendMessage("=== Active Pet: " + capitalize(data.type.name()) + " ===");
             player.sendMessage("Rarity: " + capitalize(data.rarity.name()));
-            player.sendMessage("Level: " + data.getLevel() + "/" + PetManager.MAX_LEVEL);
-            player.sendMessage("Total XP: " + data.experience);
+            player.sendMessage("Level: " + petManager.getLevel(id, data.type) + "/" + PetManager.MAX_LEVEL);
+            player.sendMessage("Total XP: " + petManager.getExperience(id, data.type));
         }
     }
 
