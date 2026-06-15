@@ -1,6 +1,6 @@
 package com.skyblock.core.combat.command;
 
-import com.skyblock.core.combat.CombatManager;
+import com.skyblock.core.combat.manager.CombatManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

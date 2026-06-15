@@ -1,8 +1,8 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.quest.QuestManager.QuestData;
-import com.skyblock.core.quest.QuestManager.QuestStatus;
-import com.skyblock.core.quest.QuestManager.QuestType;
+import com.skyblock.core.quest.manager.QuestManager.QuestData;
+import com.skyblock.core.quest.manager.QuestManager.QuestStatus;
+import com.skyblock.core.quest.manager.QuestManager.QuestType;
 
 import java.io.File;
 import java.util.UUID;
@@ -17,8 +17,8 @@ import java.util.UUID;
 public final class QuestManager {
 
     private static final QuestManager INSTANCE = new QuestManager();
-    private final com.skyblock.core.quest.QuestManager delegate =
-            com.skyblock.core.quest.QuestManager.getInstance();
+    private final com.skyblock.core.quest.manager.QuestManager delegate =
+            com.skyblock.core.quest.manager.QuestManager.getInstance();
 
     private QuestManager() {}
 
