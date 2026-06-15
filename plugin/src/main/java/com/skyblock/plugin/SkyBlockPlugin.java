@@ -161,7 +161,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TimeListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.WeatherListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillsXPListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.skills.SkillXPListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionPlacementListener(), this);
@@ -174,28 +173,19 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menus.FishingBagMenu(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.fishing.FishingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerJoinSetupListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MinionPlacementListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.SkillListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FarmingListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.ForagingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.ForagingXpListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MiningXpListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FishingXpListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.ForagingFishingXpListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TamingXpListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MenuListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.CombatListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.AlchemyListener(), this);
         // com.skyblock.plugin.economy.BazaarMenu listener removed — canonical com.skyblock.core.menu.BazaarMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.BankMenu listener removed — canonical com.skyblock.core.menu.BankMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.QuestsMenu listener removed — canonical com.skyblock.core.menu.QuestsMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.CollectionsMenu listener removed — canonical com.skyblock.core.menu.CollectionsMenu handles clicks via MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.menu.FastTravelMenu(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MiningListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TamingListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FishingListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FarmingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.CollectionProgressionListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.EnchantingSkillListener(this), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MiningSkillListener(this), this);
