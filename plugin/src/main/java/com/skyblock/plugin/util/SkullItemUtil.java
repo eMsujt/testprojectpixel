@@ -1,6 +1,6 @@
 package com.skyblock.plugin.util;
 
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

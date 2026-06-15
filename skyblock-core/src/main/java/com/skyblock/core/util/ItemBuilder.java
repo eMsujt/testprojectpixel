@@ -1,6 +1,7 @@
-package com.skyblock.plugin.gui;
+package com.skyblock.core.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -15,10 +16,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Fluent builder for constructing {@link ItemStack}s used in GUI menus.
+ * Fluent builder for constructing {@link ItemStack}s used in GUI menus and elsewhere.
  */
 public final class ItemBuilder {
 
@@ -107,6 +109,16 @@ public final class ItemBuilder {
         return this;
     }
 
+    /** Marks the item as unbreakable. */
+    public ItemBuilder setUnbreakable(boolean unbreakable) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setUnbreakable(unbreakable);
+            item.setItemMeta(meta);
+        }
+        return this;
+    }
+
     /**
      * Applies a base64-encoded skin texture to a {@link Material#PLAYER_HEAD} item.
      * The value must be the standard Minecraft texture JSON encoded in base64,
@@ -127,6 +139,33 @@ public final class ItemBuilder {
         } catch (Exception ignored) {
         }
         return this;
+    }
+
+    /** Returns the {@link ChatColor} Hypixel uses for the given rarity name. */
+    public static ChatColor rarityColor(String rarity) {
+        if (rarity == null) {
+            return ChatColor.WHITE;
+        }
+        switch (rarity.toUpperCase(Locale.ROOT)) {
+            case "UNCOMMON":
+                return ChatColor.GREEN;
+            case "RARE":
+                return ChatColor.BLUE;
+            case "EPIC":
+                return ChatColor.DARK_PURPLE;
+            case "LEGENDARY":
+                return ChatColor.GOLD;
+            case "MYTHIC":
+                return ChatColor.LIGHT_PURPLE;
+            case "DIVINE":
+                return ChatColor.AQUA;
+            case "SPECIAL":
+            case "VERY_SPECIAL":
+                return ChatColor.RED;
+            case "COMMON":
+            default:
+                return ChatColor.WHITE;
+        }
     }
 
     /** Builds and returns the finished {@link ItemStack}. */

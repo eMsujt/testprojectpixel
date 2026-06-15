@@ -4,7 +4,7 @@ import com.skyblock.core.crafting.SkyBlockRecipeManager;
 import com.skyblock.core.crafting.SkyBlockRecipeManager.ShapedRecipe;
 import com.skyblock.core.crafting.SkyBlockRecipeManager.ShapelessRecipe;
 import com.skyblock.core.crafting.SkyBlockRecipeManager.SkyBlockRecipe;
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

@@ -2,7 +2,7 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.auction.AuctionListing;
 import com.skyblock.plugin.auction.AuctionManager;
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

@@ -1,7 +1,7 @@
 package com.skyblock.plugin.menus;
 
 import com.skyblock.plugin.economy.BankManager;
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

@@ -1,6 +1,6 @@
 package com.skyblock.plugin.gui.menu;
 
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import com.skyblock.plugin.manager.EconomyManager;
 import org.bukkit.Material;

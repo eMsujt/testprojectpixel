@@ -1,6 +1,6 @@
 package com.skyblock.plugin.minion;
 
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

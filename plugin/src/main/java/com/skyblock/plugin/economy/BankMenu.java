@@ -1,7 +1,7 @@
 package com.skyblock.plugin.economy;
 
 import com.skyblock.economy.CoinManager;
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

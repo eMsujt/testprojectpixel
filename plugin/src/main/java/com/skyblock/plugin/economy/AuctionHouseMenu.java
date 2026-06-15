@@ -2,7 +2,7 @@ package com.skyblock.plugin.economy;
 
 import com.skyblock.economy.CoinManager;
 import com.skyblock.plugin.economy.AuctionHouseManager.AuctionListing;
-import com.skyblock.plugin.gui.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
