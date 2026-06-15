@@ -10,13 +10,13 @@ import java.util.Objects;
  *
  * <p>Registered once from {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}
  * via {@link #start(JavaPlugin)}, which schedules it with {@code runTaskTimer}
- * to run once per second (every 20 ticks). Each run walks every minion tracked
+ * to run every 600 ticks (30 s). Each run walks every minion tracked
  * in the {@link MinionManager} and advances its production.</p>
  */
 public final class MinionTickScheduler extends BukkitRunnable {
 
-    /** One second, expressed in server ticks. */
-    public static final long PERIOD_TICKS = 20L;
+    /** Thirty seconds, expressed in server ticks. */
+    public static final long PERIOD_TICKS = 600L;
 
     private final MinionManager manager;
 
