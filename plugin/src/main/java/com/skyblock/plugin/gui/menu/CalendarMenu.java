@@ -23,12 +23,17 @@ public class CalendarMenu extends Menu {
     private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34, 37, 38};
 
     public CalendarMenu() {
-        super("§aCalendar & Events", 6);
+        super("§aSkyBlock Calendar", 6);
     }
 
     @Override
     protected void build() {
         fillBorder();
+
+        long tick = SkyBlockCalendar.getTickOfDay();
+        int hour = (int) ((tick / 1000 + 6) % 24);
+        int minute = (int) (tick % 1000 * 60 / 1000);
+        String time = String.format("%02d:%02d %s", hour % 12 == 0 ? 12 : hour % 12, minute, hour < 12 ? "AM" : "PM");
 
         setItem(4, new ItemBuilder(Material.CLOCK)
                 .displayName("§eSkyBlock Calendar")
@@ -36,6 +41,7 @@ public class CalendarMenu extends Menu {
                         "§7Day: §e" + SkyBlockCalendar.getDayOfMonth(),
                         "§7Month: §e" + SkyBlockCalendar.getMonthName(),
                         "§7Year: §e" + SkyBlockCalendar.getYear(),
+                        "§7Time: §e" + time,
                         "",
                         "§e" + SkyBlockCalendar.currentSkyBlockDate())
                 .build());
