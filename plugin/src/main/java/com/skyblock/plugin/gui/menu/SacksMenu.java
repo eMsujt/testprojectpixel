@@ -2,36 +2,44 @@ package com.skyblock.plugin.gui.menu;
 
 import com.skyblock.plugin.gui.ItemBuilder;
 import com.skyblock.plugin.gui.Menu;
-import com.skyblock.plugin.manager.ProfileManager;
-import com.skyblock.plugin.profile.SkyBlockProfile;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 public class SacksMenu extends Menu {
 
-    private final Player player;
+    private enum Sack {
+        FARMING("Farming Sack", "§a", Material.WHEAT, 10),
+        MINING("Mining Sack", "§7", Material.COAL, 11),
+        COMBAT("Combat Sack", "§c", Material.ROTTEN_FLESH, 12),
+        FORAGING("Foraging Sack", "§2", Material.OAK_LOG, 13),
+        FISHING("Fishing Sack", "§9", Material.COD, 14);
 
-    public SacksMenu(Player player) {
-        super("§2Sacks of Holding", 6);
-        this.player = player;
+        private final String displayName;
+        private final String color;
+        private final Material icon;
+        private final int slot;
+
+        Sack(String displayName, String color, Material icon, int slot) {
+            this.displayName = displayName;
+            this.color = color;
+            this.icon = icon;
+            this.slot = slot;
+        }
+    }
+
+    public SacksMenu() {
+        super("§aSacks", 6);
     }
 
     @Override
     protected void build() {
         fillBorder();
 
-        SkyBlockProfile profile = ProfileManager.getInstance().getOrCreateProfile(player.getUniqueId());
-        List<ItemStack> contents = profile.getSacksContents();
-
-        int itemIndex = 0;
-        for (int slot = 9; slot < 45 && itemIndex < contents.size(); slot++) {
-            ItemStack item = contents.get(itemIndex++);
-            if (item != null) {
-                setItem(slot, item);
-            }
+        for (Sack sack : Sack.values()) {
+            setItem(sack.slot, new ItemBuilder(sack.icon)
+                    .displayName(sack.color + sack.displayName)
+                    .lore("§7Click to view your " + sack.displayName.toLowerCase() + ".")
+                    .build());
         }
     }
 
@@ -39,11 +47,7 @@ public class SacksMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 45; slot < 54; slot++) {
-            setItem(slot, pane);
-        }
+        for (int slot = 0; slot < 9; slot++)  setItem(slot, pane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
     }
 }
