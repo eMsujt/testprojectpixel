@@ -2,6 +2,7 @@ package com.skyblock.plugin.skills;
 
 import com.skyblock.core.combat.StatManager;
 import com.skyblock.core.combat.StatManager.CombatStat;
+import com.skyblock.core.skills.SkillManager.SkillType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -16,14 +17,6 @@ import java.util.UUID;
  */
 @Deprecated
 public final class SkillManager {
-
-    /** @deprecated Use {@link com.skyblock.core.skills.SkillManager.SkillType}. */
-    @Deprecated
-    public enum SkillType {
-        FARMING, MINING, COMBAT, FORAGING, FISHING, ENCHANTING, ALCHEMY, TAMING;
-
-        public String key() { return name().toLowerCase(); }
-    }
 
     private static final Map<String, CombatStat> SKILL_STAT;
     private static final Map<String, Map<Integer, Double>> LEVEL_REWARDS;
