@@ -11,7 +11,7 @@ import java.util.UUID;
  * Singleton tracking each player's SkyBlock XP and deriving their SkyBlock level.
  *
  * <p>Level formula mirrors the standard Hypixel skill curve defined in
- * {@link com.skyblock.core.skills.manager.SkillManager}: the cumulative XP thresholds
+ * {@link com.skyblock.core.manager.SkillManager}: the cumulative XP thresholds
  * are the same, and max level is {@value #MAX_LEVEL}.</p>
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
