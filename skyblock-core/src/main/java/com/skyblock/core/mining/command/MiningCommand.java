@@ -1,6 +1,6 @@
 package com.skyblock.core.mining.command;
 
-import com.skyblock.core.mining.manager.MiningManager;
+import com.skyblock.core.manager.MiningManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

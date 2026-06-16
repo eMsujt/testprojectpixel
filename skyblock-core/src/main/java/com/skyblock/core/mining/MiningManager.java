@@ -1,7 +1,7 @@
 package com.skyblock.core.mining;
 
 /**
- * @deprecated Use {@link com.skyblock.core.mining.manager.MiningManager} instead.
+ * @deprecated Moved to {@link com.skyblock.core.manager.MiningManager}.
  */
 @Deprecated
 public final class MiningManager {

@@ -1,6 +1,6 @@
 package com.skyblock.core.mining.command;
 
-import com.skyblock.core.mining.manager.MiningManager;
+import com.skyblock.core.manager.MiningManager;
 import com.skyblock.core.mining.manager.MiningZoneManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
