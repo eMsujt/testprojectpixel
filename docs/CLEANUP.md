@@ -934,6 +934,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (AuctionHouseManager deprecated-shell deletion — round 142)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| AuctionHouseManager deprecated-shell deletion | `com.skyblock.core.auction.manager.AuctionHouseManager` | Deleted the empty `@Deprecated`, memberless, reference-free shell `com.skyblock.core.manager.AuctionHouseManager` left over from the round-141 consolidation after confirming zero non-stub callers remain across the entire repo; the live canonical implementation lives at `com.skyblock.core.auction.manager.AuctionHouseManager` | Forge / #2933 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
