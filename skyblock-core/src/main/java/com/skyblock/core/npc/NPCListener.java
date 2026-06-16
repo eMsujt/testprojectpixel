@@ -1,8 +1,8 @@
 package com.skyblock.core.npc;
 
 import com.skyblock.core.npc.NpcManager.NpcDefinition;
-import com.skyblock.core.shop.manager.ShopManager;
-import com.skyblock.core.shop.manager.ShopManager.ShopEntry;
+import com.skyblock.core.manager.ShopManager;
+import com.skyblock.core.manager.ShopManager.ShopEntry;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
