@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * <p>Usage:
  * <ul>
  *   <li>{@code /npc list}                         — list all registered NPCs</li>
- *   <li>{@code /npc shops}                        — list built-in NpcShop types</li>
+ *   <li>{@code /npc shops}                        — list all registered NPC shops</li>
  *   <li>{@code /npc shop <npc>}                   — view an NPC's shop items</li>
  *   <li>{@code /npc buy <npc> <item>}             — purchase one item from an NPC</li>
  *   <li>{@code /npc type}                         — list all NPC role types</li>
@@ -100,9 +100,8 @@ public final class NpcCommand implements TabExecutor {
 
     private void listShops(Player player) {
         player.sendMessage("=== NPC Shops ===");
-        for (NpcManager.NpcShop shop : NpcManager.NpcShop.values()) {
-            player.sendMessage("- " + shop.name().toLowerCase() + " (" + shop.getDisplayName()
-                    + ", " + shop.getPrices().size() + " items)");
+        for (NpcDefinition npc : npcManager.getAllNpcs()) {
+            player.sendMessage("- " + npc.id() + " (" + npc.name() + ", " + npc.items().size() + " items)");
         }
         player.sendMessage("Use /npc shop <id> to view a shop's items.");
     }
