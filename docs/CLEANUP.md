@@ -769,6 +769,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (abstract Menu/InventoryGUI/BaseMenu base class audit — round 123)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| Menu / InventoryGUI / BaseMenu abstract base class | `com.skyblock.core.menu.Menu` | Grepped every module for all abstract classes named `Menu`, `InventoryGUI`, `BaseMenu`, `AbstractMenu`, `GUIMenu`, or any variant; confirmed exactly one abstract base class exists in the entire repo (`com.skyblock.core.menu.Menu`); all concrete menu subclasses across `skyblock-core`, `plugin`, `islands`, `pets`, `bazaar`, `shop`, `auction`, `dungeon`, and `minion` modules already extend the single canonical base; no InventoryGUI, BaseMenu, or AbstractMenu duplicates remain — no file changes required | — |
+
+---
+
 ## Completed (MinionManager stub deletion, IslandManager stub audit, and ProfileManager stale-import fix — round 122)
 
 | Domain | Canonical class/package | Work done | PR / commit |
