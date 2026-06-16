@@ -112,7 +112,7 @@ public final class CombatListener implements Listener {
         if (meta == null) {
             return 0.0;
         }
-        Collection<AttributeModifier> mods = meta.getAttributeModifiers(Attribute.GENERIC_ATTACK_DAMAGE);
+        Collection<AttributeModifier> mods = meta.getAttributeModifiers(Attribute.ATTACK_DAMAGE);
         if (mods == null || mods.isEmpty()) {
             return 0.0;
         }

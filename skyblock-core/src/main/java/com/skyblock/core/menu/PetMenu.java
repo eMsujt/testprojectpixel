@@ -40,8 +40,14 @@ public class PetMenu extends Menu {
     }
 
     private PetMenu(UUID playerId, int page) {
+        super("§dPets", 6);
         this.playerId = playerId;
         this.page = page;
+    }
+
+    /** Unused: this menu manages its own inventory via {@link #open(Player)}. */
+    @Override
+    protected void build() {
     }
 
     @Override

@@ -40,7 +40,13 @@ public final class BankMenu extends Menu {
     }
 
     public BankMenu(UUID playerId) {
+        super("§6Bank Account", 6);
         this.playerId = playerId;
+    }
+
+    /** Unused: this menu manages its own inventory via {@link #open(Player)}. */
+    @Override
+    protected void build() {
     }
 
     @Override
