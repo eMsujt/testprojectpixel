@@ -1,4 +1,4 @@
-package com.skyblock.core.wardrobe;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;

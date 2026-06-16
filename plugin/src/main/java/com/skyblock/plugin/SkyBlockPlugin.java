@@ -21,7 +21,7 @@ import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.minion.command.MinionCommand;
-import com.skyblock.core.wardrobe.WardrobeManager;
+import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.WarpManager;
