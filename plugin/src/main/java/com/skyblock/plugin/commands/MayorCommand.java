@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Duplicate of {@link com.skyblock.core.mayor.MayorCommand}. Use that class instead.
+ */
+@Deprecated
 public final class MayorCommand implements CommandExecutor {
 
     @Override

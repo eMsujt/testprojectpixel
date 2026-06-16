@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Duplicate of {@link com.skyblock.core.hotm.HOTMCommand}. Use that class instead.
+ */
+@Deprecated
 public final class HOTMCommand implements CommandExecutor {
 
     @Override

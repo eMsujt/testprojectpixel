@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * @deprecated Duplicate of {@link com.skyblock.core.garden.GardenCommand}. Use that class instead.
+ */
+@Deprecated
 public final class GardenCommand implements CommandExecutor {
 
     @Override
