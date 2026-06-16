@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.core.skills.manager.SkillManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.model.Skill;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

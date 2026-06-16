@@ -17,7 +17,7 @@ import com.skyblock.core.minion.manager.MinionManager;
 import com.skyblock.core.minion.command.MinionCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
-import com.skyblock.core.skills.manager.SkillManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.WarpManager;
 import com.skyblock.core.dungeon.manager.DungeonManager;
 import com.skyblock.core.items.manager.CustomItemManager;
