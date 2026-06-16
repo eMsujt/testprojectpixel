@@ -779,6 +779,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (Skill/Stat/Rarity/Collection enum duplicate consolidation — round 123)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| Skill / Stat / Rarity / Collection enum duplicates (fishing + chocolate modules) | `com.skyblock.core.model.Rarity` | Grepped every module for duplicate `Skill`, `Stat`, `Rarity`, and `Collection` enum definitions; found `FishRarity` and `RabbitRarity` duplicate enum definitions in `FishingManager`, `FishingCommand`, and `ChocolateFactory`-related files; replaced all occurrences with the canonical `com.skyblock.core.model.Rarity` enum; orphaned `FishRarity` and `RabbitRarity` classes deleted outright; canonical `com.skyblock.core.model.{Skill,Stat,Rarity,Collection}` enums confirmed as sole definitions across all 4 domains | #2875 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
