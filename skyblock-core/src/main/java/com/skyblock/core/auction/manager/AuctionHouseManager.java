@@ -105,6 +105,12 @@ public final class AuctionHouseManager {
         ITEM_CATEGORIES = Collections.unmodifiableMap(m);
     }
 
+    /**
+     * Fraction of a listing's starting bid that each successive bid must add on top of the
+     * current highest bid (the automatic minimum-bid increment for ascending auctions).
+     */
+    public static final double MIN_BID_INCREMENT = 0.15;
+
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
 
     /**
@@ -234,12 +240,10 @@ public final class AuctionHouseManager {
             recordAuction(bidder, "Purchased " + state.listing.itemName() + " for " + amount + " coins");
             return true;
         }
-        boolean tooLow = state.highestBidder == null
-                ? amount < state.highestBid
-                : amount <= state.highestBid;
-        if (tooLow) {
+        double minBid = minimumBidFor(state);
+        if (amount < minBid) {
             throw new IllegalArgumentException(
-                    "bid must exceed current highest bid " + state.highestBid + ": " + amount);
+                    "bid must be at least the minimum next bid " + minBid + ": " + amount);
         }
         state.highestBid = amount;
         state.highestBidder = bidder;
@@ -309,6 +313,20 @@ public final class AuctionHouseManager {
      */
     public double getHighestBid(UUID listingId) {
         return requireListing(listingId).highestBid;
+    }
+
+    /**
+     * Returns the minimum amount the next bid must meet for a bid-based auction.
+     *
+     * <p>Until the first bid is placed this is the starting bid; afterwards each bid must add
+     * at least {@link #MIN_BID_INCREMENT} of the starting bid on top of the current highest bid.</p>
+     *
+     * @param listingId the listing UUID
+     * @return the minimum acceptable next bid amount
+     * @throws IllegalArgumentException if the listing does not exist
+     */
+    public double getMinimumBid(UUID listingId) {
+        return minimumBidFor(requireListing(listingId));
     }
 
     /**
@@ -622,6 +640,13 @@ public final class AuctionHouseManager {
         items.clear();
         auctionCounts.clear();
         auctionHistory.clear();
+    }
+
+    private static double minimumBidFor(ListingState state) {
+        if (state.highestBidder == null) {
+            return state.listing.startingBid();
+        }
+        return state.highestBid + state.listing.startingBid() * MIN_BID_INCREMENT;
     }
 
     private ListingState requireListing(UUID listingId) {
