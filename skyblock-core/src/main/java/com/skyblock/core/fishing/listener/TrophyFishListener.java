@@ -1,6 +1,6 @@
 package com.skyblock.core.fishing.listener;
 
-import com.skyblock.core.fishing.manager.FishingManager;
+import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.fishing.manager.TrophyFishManager;
 
 import org.bukkit.entity.Player;
