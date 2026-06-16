@@ -2,8 +2,7 @@ package com.skyblock.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.plugin.items.SkyBlockItem;
-import com.skyblock.plugin.reforge.ReforgeManager;
+import com.skyblock.core.manager.ReforgeManager;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,21 +18,9 @@ import java.util.List;
  */
 public class ReforgeAnvilMenu extends Menu {
 
-    private final ReforgeManager reforgeManager;
-
     /** Creates a reforge anvil menu backed by the shared registry. */
     public ReforgeAnvilMenu() {
-        this(ReforgeManager.getInstance());
-    }
-
-    /**
-     * Creates a reforge anvil menu backed by the given registry.
-     *
-     * @param reforgeManager the source of available reforges
-     */
-    public ReforgeAnvilMenu(ReforgeManager reforgeManager) {
         super("§5Reforge Anvil", 6);
-        this.reforgeManager = reforgeManager;
     }
 
     @Override
@@ -41,7 +28,10 @@ public class ReforgeAnvilMenu extends Menu {
         fillBorder();
 
         int slot = 10;
-        for (ReforgeManager.Reforge reforge : reforgeManager.getReforges().values()) {
+        for (ReforgeManager.ReforgeType reforge : ReforgeManager.ReforgeType.values()) {
+            if (reforge == ReforgeManager.ReforgeType.NONE) {
+                continue;
+            }
             // Skip the border columns, wrapping to the next row's inner slots.
             while (slot % 9 == 0 || slot % 9 == 8) {
                 slot++;
@@ -50,23 +40,19 @@ public class ReforgeAnvilMenu extends Menu {
                 break;
             }
             setItem(slot, new ItemBuilder(Material.ANVIL)
-                    .displayName("§d" + reforge.displayName())
-                    .lore(statLore(reforge.statBlock()))
+                    .displayName("§d" + reforge.getDisplayName())
+                    .lore(statLore(reforge))
                     .build());
             slot++;
         }
     }
 
     /** Builds the lore lines describing a reforge's non-zero stat bonuses. */
-    private List<String> statLore(SkyBlockItem.StatBlock stats) {
+    private List<String> statLore(ReforgeManager.ReforgeType reforge) {
         List<String> lore = new ArrayList<>();
-        addStat(lore, "§cHealth", stats.health());
-        addStat(lore, "§aDefense", stats.defense());
-        addStat(lore, "§cStrength", stats.strength());
-        addStat(lore, "§bIntelligence", stats.intelligence());
-        addStat(lore, "§9Crit Chance", stats.critChance());
-        addStat(lore, "§9Crit Damage", stats.critDamage());
-        addStat(lore, "§fSpeed", stats.speed());
+        addStat(lore, "§cStrength", reforge.getStrengthBonus());
+        addStat(lore, "§aDefense", reforge.getDefenseBonus());
+        addStat(lore, "§fSpeed", reforge.getSpeedBonus());
         if (lore.isEmpty()) {
             lore.add("§7No stat bonuses.");
         }
