@@ -591,6 +591,32 @@ public final class BazaarManager {
         return sellOrders.getOrDefault(itemId, Collections.emptyList()).size();
     }
 
+    /** Total units resting across all sell orders — the supply available to instant buyers. */
+    public long getSupply(String itemId) {
+        long total = 0;
+        for (SellOrder o : sellOrders.getOrDefault(itemId, Collections.emptyList())) {
+            total += o.quantity();
+        }
+        return total;
+    }
+
+    /** Total units resting across all buy orders — the demand available to instant sellers. */
+    public long getDemand(String itemId) {
+        long total = 0;
+        for (BuyOrder o : buyOrders.getOrDefault(itemId, Collections.emptyList())) {
+            total += o.quantity();
+        }
+        return total;
+    }
+
+    public long getSupply(BazaarProduct product) {
+        return getSupply(product.getItemId());
+    }
+
+    public long getDemand(BazaarProduct product) {
+        return getDemand(product.getItemId());
+    }
+
     public double getLowestAsk(String itemId) {
         List<SellOrder> orders = sellOrders.getOrDefault(itemId, Collections.emptyList());
         return orders.isEmpty() ? Double.MAX_VALUE : orders.get(0).priceEach();
