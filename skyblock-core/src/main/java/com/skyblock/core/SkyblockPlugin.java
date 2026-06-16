@@ -20,7 +20,7 @@ import com.skyblock.core.fishing.command.FishingCommand;
 import com.skyblock.core.fishing.manager.TrophyFishingManager;
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.garden.GardenCommand;
-import com.skyblock.core.garden.GardenManager;
+import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.command.HOTMCommand;
