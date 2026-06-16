@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Singleton managing registered NPCs and the shop items they sell.
@@ -20,49 +19,6 @@ import java.util.stream.Collectors;
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class NpcManager {
-
-    /**
-     * Built-in NPC shops, each carrying a fixed price map (item display name → coin cost).
-     */
-    public enum NpcShop {
-        SWORD_SMITH("Sword Smith", Map.of(
-                "Iron Sword",    200.0,
-                "Gold Sword",    400.0,
-                "Diamond Sword", 1500.0,
-                "Bow",           300.0
-        )),
-        POTION_BREWER("Potion Brewer", Map.of(
-                "Speed Potion",        150.0,
-                "Strength Potion",     200.0,
-                "Regeneration Potion", 250.0,
-                "Jump Boost Potion",   100.0
-        )),
-        RESOURCE_MERCHANT("Resource Merchant", Map.of(
-                "Coal",       5.0,
-                "Iron Ingot", 20.0,
-                "Gold Ingot", 40.0,
-                "Diamond",    250.0
-        )),
-        DUNGEON_VENDOR("Dungeon Vendor", Map.of(
-                "Dungeon Key",     500.0,
-                "Dungeon Compass", 1000.0,
-                "Revive Stone",    2000.0,
-                "Dungeon Orb",     750.0
-        ));
-
-        private final String displayName;
-        private final Map<String, Double> prices;
-
-        NpcShop(String displayName, Map<String, Double> prices) {
-            this.displayName = displayName;
-            this.prices = Map.copyOf(prices);
-        }
-
-        public String getDisplayName() { return displayName; }
-
-        /** Returns an unmodifiable map of item display name → coin price. */
-        public Map<String, Double> getPrices() { return prices; }
-    }
 
     /** Canonical SkyBlock NPC role types. */
     public enum NpcType {
@@ -234,15 +190,30 @@ public final class NpcManager {
     }
 
     private void registerDefaults() {
-        for (NpcShop shop : NpcShop.values()) {
-            List<ShopItem> items = shop.getPrices().entrySet().stream()
-                    .map(e -> new ShopItem(
-                            e.getKey(),
-                            e.getKey().toUpperCase().replace(" ", "_"),
-                            e.getValue()))
-                    .collect(Collectors.toList());
-            register(new NpcDefinition(shop.name().toLowerCase(), shop.getDisplayName(), items));
-        }
+        register(new NpcDefinition("sword_smith", "Sword Smith", List.of(
+                new ShopItem("Iron Sword",    "IRON_SWORD",    200.0),
+                new ShopItem("Gold Sword",    "GOLD_SWORD",    400.0),
+                new ShopItem("Diamond Sword", "DIAMOND_SWORD", 1500.0),
+                new ShopItem("Bow",           "BOW",           300.0)
+        )));
+        register(new NpcDefinition("potion_brewer", "Potion Brewer", List.of(
+                new ShopItem("Speed Potion",        "SPEED_POTION",        150.0),
+                new ShopItem("Strength Potion",     "STRENGTH_POTION",     200.0),
+                new ShopItem("Regeneration Potion", "REGENERATION_POTION", 250.0),
+                new ShopItem("Jump Boost Potion",   "JUMP_BOOST_POTION",   100.0)
+        )));
+        register(new NpcDefinition("resource_merchant", "Resource Merchant", List.of(
+                new ShopItem("Coal",       "COAL",       5.0),
+                new ShopItem("Iron Ingot", "IRON_INGOT", 20.0),
+                new ShopItem("Gold Ingot", "GOLD_INGOT", 40.0),
+                new ShopItem("Diamond",    "DIAMOND",    250.0)
+        )));
+        register(new NpcDefinition("dungeon_vendor", "Dungeon Vendor", List.of(
+                new ShopItem("Dungeon Key",     "DUNGEON_KEY",     500.0),
+                new ShopItem("Dungeon Compass", "DUNGEON_COMPASS", 1000.0),
+                new ShopItem("Revive Stone",    "REVIVE_STONE",    2000.0),
+                new ShopItem("Dungeon Orb",     "DUNGEON_ORB",     750.0)
+        )));
 
         register(new NpcDefinition("blacksmith", "Blacksmith Bob", List.of(
                 new ShopItem("Iron Sword", "IRON_SWORD", 200),
