@@ -1,4 +1,4 @@
-package com.skyblock.core.manager;
+package com.skyblock.core.profile.manager;
 
 import org.junit.jupiter.api.Test;
 
