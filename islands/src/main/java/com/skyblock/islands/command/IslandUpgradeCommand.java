@@ -1,8 +1,8 @@
-package com.skyblock.core.island.command;
+package com.skyblock.islands.command;
 
 import com.skyblock.core.economy.manager.EconomyManager;
-import com.skyblock.core.island.manager.IslandManager;
-import com.skyblock.core.island.manager.IslandUpgradeManager;
+import com.skyblock.islands.manager.IslandManager;
+import com.skyblock.islands.manager.IslandUpgradeManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

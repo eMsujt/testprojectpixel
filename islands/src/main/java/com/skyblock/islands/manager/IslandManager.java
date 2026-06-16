@@ -1,4 +1,4 @@
-package com.skyblock.core.island.manager;
+package com.skyblock.islands.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -18,7 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
-import com.skyblock.core.island.util.IslandGenerator;
+import com.skyblock.islands.util.IslandGenerator;
 
 /**
  * Singleton managing per-player SkyBlock islands.

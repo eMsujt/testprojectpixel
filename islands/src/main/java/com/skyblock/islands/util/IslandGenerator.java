@@ -1,4 +1,4 @@
-package com.skyblock.core.island.util;
+package com.skyblock.islands.util;
 
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
