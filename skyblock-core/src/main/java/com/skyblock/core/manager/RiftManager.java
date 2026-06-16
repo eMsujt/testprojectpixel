@@ -1,4 +1,4 @@
-package com.skyblock.core.rift;
+package com.skyblock.core.manager;
 
 import java.util.EnumMap;
 import java.util.HashMap;

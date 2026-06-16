@@ -1,5 +1,7 @@
 package com.skyblock.core.rift;
 
+import com.skyblock.core.manager.RiftManager;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -1,4 +1,4 @@
-package com.skyblock.core.dragon;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
