@@ -575,6 +575,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (economy/items/combat module package-layout standardizations and core-module stub consolidations — round 99)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| SkillManager / SkillsManager stub consolidation | `com.skyblock.core.skills.manager.SkillManager` | Zero-caller `com.skyblock.core.skills.command.SkillCommand` deleted; duplicate `com.skyblock.core.skill.SkillLevelManager` deleted (XP-lookup already live in canonical `SkillManager`) | #2792 |
+| ShopManager / NpcShopManager stub consolidation | `com.skyblock.core.shop.manager.ShopManager` | Deprecated stub `com.skyblock.core.manager.ShopManager` deleted — all callers already used the canonical `com.skyblock.core.shop.manager.ShopManager` | #2793 |
+| BazaarManager / BazaarHandler stub consolidation | `com.skyblock.core.bazaar.manager.BazaarManager` | Three deprecated stub files (`com.skyblock.core.manager.BazaarManager`, `com.skyblock.core.command.BazaarCommand`, `com.skyblock.core.menu.BazaarMenu`) deleted — all callers already used canonical implementations in `com.skyblock.core.bazaar.*` | #2794 |
+| Stale imports (economy/items/combat package-layout follow-up) | N/A | Fixed 3 stale `import com.skyblock.core.items.CustomItemManager` references to `import com.skyblock.core.items.manager.CustomItemManager` in `SkyBlockItemStack.java`, `SkyBlockItemManager.java`, and `SkyBlockPlugin.java` | #2795 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
