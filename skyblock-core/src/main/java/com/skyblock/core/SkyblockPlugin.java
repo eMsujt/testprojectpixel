@@ -54,6 +54,7 @@ import com.skyblock.core.coop.CoopCommand;
 import com.skyblock.core.coop.CoopManager;
 import com.skyblock.core.crimson.CrimsonCommand;
 import com.skyblock.core.manager.ReputationManager;
+import com.skyblock.core.manager.CrimsonIsleManager;
 import com.skyblock.core.vault.VaultCommand;
 import com.skyblock.core.vault.VaultManager;
 import com.skyblock.core.booster.BoosterCommand;
@@ -267,6 +268,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         CrimsonCommand crimsonCommand = new CrimsonCommand(reputationManager);
         getCommand("crimson").setExecutor(crimsonCommand);
         getCommand("crimson").setTabCompleter(crimsonCommand);
+        // Canonical Crimson Isle coordinator over faction reputation + Kuudra tiers.
+        CrimsonIsleManager.getInstance();
         VaultManager vaultManager = VaultManager.getInstance();
         vaultManager.load(getDataFolder());
         VaultCommand vaultCommand = new VaultCommand(vaultManager);
