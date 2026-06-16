@@ -1,7 +1,7 @@
 package com.skyblock.core.auction.gui;
 
-import com.skyblock.core.auction.manager.AuctionHouseManager;
-import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionListing;
+import com.skyblock.core.manager.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager.AuctionListing;
 import com.skyblock.core.menu.Menu;
 import com.skyblock.items.util.ItemBuilder;
 import org.bukkit.Material;
