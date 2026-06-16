@@ -1,17 +1,27 @@
-package com.skyblock.core.bestiary;
+package com.skyblock.core.manager;
+
+import com.skyblock.core.model.Stat;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Singleton tracking how many times each player has killed each mob type.
+ * Canonical singleton tracking each player's bestiary: per-mob kill counts, the
+ * milestone tier those kills unlock, family completion, and the permanent stat
+ * bonuses earned from total tier progress.
  *
- * <p>Kill counts are stored in memory only; they are not persisted across
- * server restarts in this implementation.</p>
+ * <p>Tiers follow a doubling threshold curve — tier {@code n} requires
+ * {@code BASE_TIER_KILLS * 2^(n-1)} cumulative kills, capped at {@link #MAX_TIER}.
+ * A {@link BestiaryFamily} is complete once every mob in it reaches
+ * {@link #MAX_TIER}. Every {@link #TIERS_PER_MILESTONE} tiers unlocked across all
+ * mobs grants the next permanent stat reward from a fixed cycle; see
+ * {@link #getStatBonuses(UUID)}.</p>
  *
- * <p>Not thread-safe; access from the main server thread only.</p>
+ * <p>Kill counts are stored in memory only; they are not persisted across server
+ * restarts. Not thread-safe; access from the main server thread only.</p>
  */
 public final class BestiaryManager {
 
@@ -160,6 +170,23 @@ public final class BestiaryManager {
         }
     }
 
+    /** Kills required to reach tier 1 of a mob's bestiary entry. */
+    public static final int BASE_TIER_KILLS = 10;
+
+    /** The highest tier a bestiary entry can reach. */
+    public static final int MAX_TIER = 10;
+
+    /** Number of bestiary tiers a player must unlock to earn the next permanent stat reward. */
+    public static final int TIERS_PER_MILESTONE = 5;
+
+    /** The permanent stat reward granted at each {@link #TIERS_PER_MILESTONE}-tier milestone, applied in order and cycling. */
+    private static final Stat[] REWARD_STATS = {
+            Stat.HEALTH, Stat.STRENGTH, Stat.CRIT_DAMAGE, Stat.DEFENSE, Stat.MAGIC_FIND
+    };
+
+    /** Amount granted for the matching entry in {@link #REWARD_STATS}. */
+    private static final double[] REWARD_AMOUNTS = {2.0, 1.0, 1.0, 1.0, 1.0};
+
     private static final BestiaryManager INSTANCE = new BestiaryManager();
 
     /** Per-player kill counts keyed by mob type name (lower-case). */
@@ -285,6 +312,146 @@ public final class BestiaryManager {
         return total;
     }
 
+    // -------------------------------------------------------------------------
+    // Tier thresholds
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the bestiary tier the player has unlocked for a mob type. Tier 0
+     * means the entry is locked; tier {@code n} requires
+     * {@code BASE_TIER_KILLS * 2^(n-1)} kills, up to {@link #MAX_TIER}.
+     *
+     * @param playerId the player's UUID
+     * @param mobType  the mob type identifier
+     * @return the unlocked tier, between 0 and {@link #MAX_TIER}
+     */
+    public int getTier(UUID playerId, String mobType) {
+        int count = getKills(playerId, mobType);
+        int tier = 0;
+        long threshold = BASE_TIER_KILLS;
+        while (tier < MAX_TIER && count >= threshold) {
+            tier++;
+            threshold *= 2;
+        }
+        return tier;
+    }
+
+    /**
+     * Returns the bestiary tier the player has unlocked for the given {@link BestiaryMob}.
+     *
+     * @param playerId the player's UUID
+     * @param mob      the mob type
+     * @return the unlocked tier, between 0 and {@link #MAX_TIER}
+     */
+    public int getTier(UUID playerId, BestiaryMob mob) {
+        return mob == null ? 0 : getTier(playerId, mob.mobKey);
+    }
+
+    /**
+     * Returns the kills still needed for the player to reach the next tier of a
+     * mob's entry, or zero if the entry is already at {@link #MAX_TIER}.
+     *
+     * @param playerId the player's UUID
+     * @param mobType  the mob type identifier
+     * @return the remaining kills, never negative
+     */
+    public int getKillsToNextTier(UUID playerId, String mobType) {
+        int tier = getTier(playerId, mobType);
+        if (tier >= MAX_TIER) {
+            return 0;
+        }
+        long threshold = BASE_TIER_KILLS * (1L << tier);
+        return (int) (threshold - getKills(playerId, mobType));
+    }
+
+    // -------------------------------------------------------------------------
+    // Family completion
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns whether the player has reached {@link #MAX_TIER} for every mob type
+     * in the given family.
+     *
+     * @param playerId the player's UUID
+     * @param family   the bestiary family
+     * @return {@code true} if the family is fully completed
+     */
+    public boolean isFamilyComplete(UUID playerId, BestiaryFamily family) {
+        if (playerId == null || family == null) {
+            return false;
+        }
+        for (String mobType : family.mobTypes) {
+            if (getTier(playerId, mobType) < MAX_TIER) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the number of bestiary families the player has fully completed.
+     *
+     * @param playerId the player's UUID
+     * @return the completed family count, between 0 and the number of families
+     */
+    public int getCompletedFamilyCount(UUID playerId) {
+        if (playerId == null) {
+            return 0;
+        }
+        int complete = 0;
+        for (BestiaryFamily family : BestiaryFamily.values()) {
+            if (isFamilyComplete(playerId, family)) {
+                complete++;
+            }
+        }
+        return complete;
+    }
+
+    // -------------------------------------------------------------------------
+    // Milestone stat bonuses
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the total number of bestiary tiers the player has unlocked across
+     * every tracked {@link BestiaryMob}.
+     *
+     * @param playerId the player's UUID
+     * @return the summed tier count
+     */
+    public int getTotalTiers(UUID playerId) {
+        if (playerId == null) {
+            return 0;
+        }
+        int total = 0;
+        for (BestiaryMob mob : BestiaryMob.values()) {
+            total += getTier(playerId, mob.mobKey);
+        }
+        return total;
+    }
+
+    /**
+     * Returns the permanent stat bonuses the player has earned from bestiary tiers.
+     *
+     * <p>Each {@link #TIERS_PER_MILESTONE} tiers unlocked grants the next reward
+     * from a fixed cycle; the returned map aggregates every reward earned so far.</p>
+     *
+     * @param playerId the player's UUID
+     * @return an unmodifiable map of stat to total bonus, never {@code null}
+     */
+    public Map<Stat, Double> getStatBonuses(UUID playerId) {
+        int rewards = getTotalTiers(playerId) / TIERS_PER_MILESTONE;
+        Map<Stat, Double> bonuses = new EnumMap<>(Stat.class);
+        for (int i = 0; i < rewards; i++) {
+            int slot = i % REWARD_STATS.length;
+            bonuses.merge(REWARD_STATS[slot], REWARD_AMOUNTS[slot], Double::sum);
+        }
+        return Collections.unmodifiableMap(bonuses);
+    }
+
+    // -------------------------------------------------------------------------
+    // Cleanup
+    // -------------------------------------------------------------------------
+
     /**
      * Resets all kill counts for the given player.
      *
@@ -293,10 +460,6 @@ public final class BestiaryManager {
     public void resetKills(UUID playerId) {
         kills.remove(playerId);
     }
-
-    // -------------------------------------------------------------------------
-    // Cleanup
-    // -------------------------------------------------------------------------
 
     /**
      * Removes all state for the given player.

@@ -9,6 +9,7 @@
  *   <li>{@link com.skyblock.core.manager.AccessoryManager} — accessory rarities, magical power, and tuning points.</li>
  *   <li>{@link com.skyblock.core.manager.BankManager} — per-player bank balance and interest tiers.</li>
  *   <li>{@link com.skyblock.core.manager.BazaarManager} — bazaar order book: instant buy/sell and buy/sell orders.</li>
+ *   <li>{@link com.skyblock.core.manager.BestiaryManager} — per-mob kill tracking, tier thresholds, family completion, and milestone stat bonuses.</li>
  *   <li>{@link com.skyblock.core.manager.CollectionManager} — per-item collection tiers and unlock progress.</li>
  *   <li>{@link com.skyblock.core.manager.DungeonManager} — dungeon runs and class progression.</li>
  *   <li>{@link com.skyblock.core.manager.EconomyManager} — coin balances (purse and bank) with deposit/withdraw.</li>

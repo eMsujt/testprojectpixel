@@ -1,4 +1,4 @@
-package com.skyblock.core.bestiary;
+package com.skyblock.core.manager;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -98,8 +98,14 @@ public final class BestiaryCommand implements TabExecutor {
             return;
         }
         String mob = args[1];
-        int count = bestiaryManager.getKills(player.getUniqueId(), mob);
-        player.sendMessage(mob + " kills: " + count);
+        UUID id = player.getUniqueId();
+        int count = bestiaryManager.getKills(id, mob);
+        int tier = bestiaryManager.getTier(id, mob);
+        player.sendMessage(mob + " kills: " + count + " (tier " + tier + "/" + BestiaryManager.MAX_TIER + ")");
+        int toNext = bestiaryManager.getKillsToNextTier(id, mob);
+        if (toNext > 0) {
+            player.sendMessage("  " + toNext + " kills to next tier");
+        }
     }
 
     private void handleReset(Player player) {
@@ -112,7 +118,8 @@ public final class BestiaryCommand implements TabExecutor {
         player.sendMessage("=== Bestiary Families ===");
         for (BestiaryManager.BestiaryFamily family : BestiaryManager.BestiaryFamily.values()) {
             int total = bestiaryManager.getKillsForFamily(id, family);
-            player.sendMessage("  " + family.getDisplayName() + ": " + total + " kills");
+            String done = bestiaryManager.isFamilyComplete(id, family) ? " [COMPLETE]" : "";
+            player.sendMessage("  " + family.getDisplayName() + ": " + total + " kills" + done);
         }
     }
 
