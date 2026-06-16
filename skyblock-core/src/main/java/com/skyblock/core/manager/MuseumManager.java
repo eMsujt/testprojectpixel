@@ -41,7 +41,35 @@ public final class MuseumManager {
     /** Per-player donated items by category. */
     private final Map<UUID, Map<MuseumCategory, Set<String>>> donations = new java.util.HashMap<>();
 
+    /** Catalog of all donatable item names per category, used to measure completion. */
+    private final Map<MuseumCategory, Set<String>> catalog = new EnumMap<>(MuseumCategory.class);
+
     private MuseumManager() {
+    }
+
+    /**
+     * Registers an item as donatable in the given category, expanding the completion catalog.
+     *
+     * @param category the museum category
+     * @param itemName the name of the donatable item
+     * @return {@code true} if the item was newly registered, {@code false} if already known
+     */
+    public boolean registerItem(MuseumCategory category, String itemName) {
+        Objects.requireNonNull(category, "category");
+        Objects.requireNonNull(itemName, "itemName");
+        return catalog.computeIfAbsent(category, c -> new HashSet<>()).add(itemName);
+    }
+
+    /**
+     * Returns the number of registered donatable items in the given category.
+     *
+     * @param category the museum category
+     * @return the catalog size for the category
+     */
+    public int getCategorySize(MuseumCategory category) {
+        Objects.requireNonNull(category, "category");
+        Set<String> items = catalog.get(category);
+        return items == null ? 0 : items.size();
     }
 
     /**
@@ -101,6 +129,40 @@ public final class MuseumManager {
             total += items.size();
         }
         return total;
+    }
+
+    /**
+     * Returns the player's completion of the given category as a fraction in {@code [0.0, 1.0]}.
+     *
+     * <p>Completion counts only donated items that are registered in the catalog. A category
+     * with no registered items is considered complete and returns {@code 1.0}.</p>
+     *
+     * @param playerId the player
+     * @param category the museum category
+     * @return the completion fraction, between {@code 0.0} and {@code 1.0}
+     */
+    public double getCategoryCompletion(UUID playerId, MuseumCategory category) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(category, "category");
+        int size = getCategorySize(category);
+        if (size == 0) return 1.0;
+        Set<String> registered = catalog.get(category);
+        int donated = 0;
+        for (String item : getDonations(playerId, category)) {
+            if (registered.contains(item)) donated++;
+        }
+        return (double) donated / size;
+    }
+
+    /**
+     * Returns whether the player has donated every registered item in the given category.
+     *
+     * @param playerId the player
+     * @param category the museum category
+     * @return {@code true} if the category is fully donated
+     */
+    public boolean isCategoryComplete(UUID playerId, MuseumCategory category) {
+        return getCategoryCompletion(playerId, category) >= 1.0;
     }
 
     /**
