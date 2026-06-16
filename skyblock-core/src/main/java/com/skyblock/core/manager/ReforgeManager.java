@@ -215,6 +215,35 @@ public final class ReforgeManager {
         }
     }
 
+    /**
+     * Coin cost of reforging an item at the Blacksmith anvil, indexed by
+     * {@link Rarity#ordinal()}. Higher-rarity items cost more to reforge.
+     */
+    private static final int[] REFORGE_COST = {
+        250,   // COMMON
+        500,   // UNCOMMON
+        1000,  // RARE
+        2500,  // EPIC
+        5000,  // LEGENDARY
+        10000, // MYTHIC
+        25000, // DIVINE
+        25000  // SPECIAL
+    };
+
+    /**
+     * Returns the coin cost to reforge an item of the given rarity at the anvil.
+     *
+     * @param rarity the item's rarity
+     * @return the reforge cost in coins
+     */
+    public static int getReforgeCost(Rarity rarity) {
+        Objects.requireNonNull(rarity, "rarity");
+        int i = rarity.ordinal();
+        return i < REFORGE_COST.length
+                ? REFORGE_COST[i]
+                : REFORGE_COST[REFORGE_COST.length - 1];
+    }
+
     private static final ReforgeManager INSTANCE = new ReforgeManager();
 
     /** Per-player active reforge. */

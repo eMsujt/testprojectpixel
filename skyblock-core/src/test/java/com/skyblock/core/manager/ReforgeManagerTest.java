@@ -62,6 +62,24 @@ class ReforgeManagerTest {
         assertThrows(NullPointerException.class, () -> ReforgeType.SUPERIOR.getStrengthBonus(null));
     }
 
+    // -------------------------------------------------------------------------
+    // Anvil reforging cost by rarity
+    // -------------------------------------------------------------------------
+
+    @Test
+    void reforgeCost_IncreasesWithRarity() {
+        assertEquals(250, ReforgeManager.getReforgeCost(Rarity.COMMON));
+        assertEquals(1000, ReforgeManager.getReforgeCost(Rarity.RARE));
+        assertEquals(5000, ReforgeManager.getReforgeCost(Rarity.LEGENDARY));
+        assertTrue(ReforgeManager.getReforgeCost(Rarity.COMMON)
+                < ReforgeManager.getReforgeCost(Rarity.MYTHIC));
+    }
+
+    @Test
+    void reforgeCost_RejectsNullRarity() {
+        assertThrows(NullPointerException.class, () -> ReforgeManager.getReforgeCost(null));
+    }
+
     @Test
     void fromName_ResolvesDisplayAndEnumNamesCaseInsensitively() {
         assertEquals(ReforgeType.SUPERIOR, ReforgeType.fromName("superior"));
