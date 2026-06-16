@@ -1,6 +1,6 @@
 package com.skyblock.core.collections.command;
 
-import com.skyblock.core.collections.manager.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import org.bukkit.command.Command;

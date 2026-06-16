@@ -1,6 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.collections.manager.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
 import org.junit.jupiter.api.Test;
 

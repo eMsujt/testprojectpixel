@@ -47,7 +47,7 @@ import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.mail.MailCommand;
 import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.collections.command.CollectionsCommand;
-import com.skyblock.core.collections.manager.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.combat.command.CombatCommand;
 import com.skyblock.core.combat.manager.CombatManager;
 import com.skyblock.core.coop.CoopCommand;

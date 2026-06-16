@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener.skills;
 
-import com.skyblock.core.collections.manager.CollectionManager;
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
