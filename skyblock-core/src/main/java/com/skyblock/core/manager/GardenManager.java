@@ -217,6 +217,9 @@ public final class GardenManager {
     /** Per-player total crops harvested per CropType. */
     private final Map<UUID, Map<CropType, Long>> harvestCounts = new HashMap<>();
 
+    /** Per-player farming-fortune stat (percent bonus crop yield). */
+    private final Map<UUID, Integer> farmingFortune = new HashMap<>();
+
     private GardenManager() {
     }
 
@@ -458,8 +461,9 @@ public final class GardenManager {
     /**
      * Harvests the given crop for the player.
      *
-     * <p>Yield = {@code baseYield * (1 + cropUpgradeLevel)}.  The result is
-     * accumulated in the player's harvest totals.</p>
+     * <p>Yield = {@code baseYield * (1 + cropUpgradeLevel)}, increased by the
+     * player's farming-fortune percentage.  The result is accumulated in the
+     * player's harvest totals.</p>
      *
      * @param playerId the player harvesting
      * @param crop     the crop being harvested
@@ -469,7 +473,8 @@ public final class GardenManager {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(crop, "crop");
         int upgradeLevel = getCropUpgrade(playerId, crop.getGardenCrop());
-        int yield = crop.getBaseYield() * (1 + upgradeLevel);
+        int base = crop.getBaseYield() * (1 + upgradeLevel);
+        int yield = base + (int) ((long) base * getFarmingFortune(playerId) / 100);
         harvestCounts.computeIfAbsent(playerId, id -> new EnumMap<>(CropType.class))
                 .merge(crop, (long) yield, Long::sum);
         return yield;
@@ -502,6 +507,117 @@ public final class GardenManager {
     }
 
     // -------------------------------------------------------------------------
+    // Farming fortune
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the player's farming-fortune stat (percent bonus crop yield).
+     *
+     * @param playerId the player to look up
+     * @return the farming fortune, {@code 0} if not set
+     */
+    public int getFarmingFortune(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return farmingFortune.getOrDefault(playerId, 0);
+    }
+
+    /**
+     * Sets the player's farming-fortune stat (clamped to {@code >= 0}).
+     *
+     * @param playerId the player to update
+     * @param fortune  the new farming fortune
+     */
+    public void setFarmingFortune(UUID playerId, int fortune) {
+        Objects.requireNonNull(playerId, "playerId");
+        farmingFortune.put(playerId, Math.max(0, fortune));
+    }
+
+    /**
+     * Adds to the player's farming-fortune stat (clamped to {@code >= 0}).
+     *
+     * @param playerId the player to update
+     * @param amount   the amount to add (may be negative)
+     * @return the new farming fortune
+     */
+    public int addFarmingFortune(UUID playerId, int amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        int updated = Math.max(0, getFarmingFortune(playerId) + amount);
+        farmingFortune.put(playerId, updated);
+        return updated;
+    }
+
+    // -------------------------------------------------------------------------
+    // Crop milestones
+    // -------------------------------------------------------------------------
+
+    /** Base factor for the per-milestone cumulative crop requirement. */
+    private static final long MILESTONE_BASE = 100L;
+
+    /**
+     * Returns the cumulative number of crops harvested required to reach the
+     * given milestone level.  Requirements scale quadratically.
+     *
+     * @param milestone the milestone level (1-based)
+     * @return the cumulative crops required, {@code 0} for {@code milestone <= 0}
+     */
+    public long getMilestoneThreshold(int milestone) {
+        if (milestone <= 0) {
+            return 0L;
+        }
+        return MILESTONE_BASE * milestone * milestone;
+    }
+
+    /**
+     * Returns the maximum milestone level attainable for the given crop.
+     *
+     * @param crop the crop type
+     * @return the maximum milestone level, {@code 0} if the crop has no milestone data
+     */
+    public int getMaxMilestone(CropType crop) {
+        Objects.requireNonNull(crop, "crop");
+        int[] data = CROP_DATA.get(crop.getGardenCrop().name());
+        return data == null ? 0 : data[2];
+    }
+
+    /**
+     * Returns the player's current milestone level for the given crop, derived
+     * from their total harvested count and capped at the crop's maximum.
+     *
+     * @param playerId the player to look up
+     * @param crop     the crop type
+     * @return the current milestone level, {@code 0} if no milestone reached
+     */
+    public int getCropMilestone(UUID playerId, CropType crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        long harvested = getHarvestCount(playerId, crop);
+        int max = getMaxMilestone(crop);
+        int level = 0;
+        while (level < max && harvested >= getMilestoneThreshold(level + 1)) {
+            level++;
+        }
+        return level;
+    }
+
+    /**
+     * Returns how many more of the given crop the player must harvest to reach
+     * their next milestone.
+     *
+     * @param playerId the player to look up
+     * @param crop     the crop type
+     * @return crops remaining until the next milestone, {@code 0} if already maxed
+     */
+    public long getCropsUntilNextMilestone(UUID playerId, CropType crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        int next = getCropMilestone(playerId, crop) + 1;
+        if (next > getMaxMilestone(crop)) {
+            return 0L;
+        }
+        return Math.max(0L, getMilestoneThreshold(next) - getHarvestCount(playerId, crop));
+    }
+
+    // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
 
@@ -517,11 +633,15 @@ public final class GardenManager {
         unlockedPlots.clear();
         cropPlotTiers.clear();
         harvestCounts.clear();
+        farmingFortune.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
                 if (cfg.isSet(key + ".plotLevel")) {
                     plotLevels.put(uuid, cfg.getInt(key + ".plotLevel", 1));
+                }
+                if (cfg.isSet(key + ".farmingFortune")) {
+                    farmingFortune.put(uuid, cfg.getInt(key + ".farmingFortune", 0));
                 }
                 if (cfg.isSet(key + ".visitorCount")) {
                     visitorCounts.put(uuid, cfg.getInt(key + ".visitorCount", 0));
@@ -586,10 +706,14 @@ public final class GardenManager {
         allUuids.addAll(unlockedPlots.keySet());
         allUuids.addAll(cropPlotTiers.keySet());
         allUuids.addAll(harvestCounts.keySet());
+        allUuids.addAll(farmingFortune.keySet());
         for (UUID uuid : allUuids) {
             String key = uuid.toString();
             if (plotLevels.containsKey(uuid)) {
                 cfg.set(key + ".plotLevel", plotLevels.get(uuid));
+            }
+            if (farmingFortune.containsKey(uuid)) {
+                cfg.set(key + ".farmingFortune", farmingFortune.get(uuid));
             }
             if (visitorCounts.containsKey(uuid)) {
                 cfg.set(key + ".visitorCount", visitorCounts.get(uuid));
@@ -648,6 +772,7 @@ public final class GardenManager {
         unlockedPlots.remove(playerId);
         cropPlotTiers.remove(playerId);
         harvestCounts.remove(playerId);
+        farmingFortune.remove(playerId);
     }
 
     /**
@@ -664,6 +789,7 @@ public final class GardenManager {
         had |= unlockedPlots.remove(playerId) != null;
         had |= cropPlotTiers.remove(playerId) != null;
         had |= harvestCounts.remove(playerId) != null;
+        had |= farmingFortune.remove(playerId) != null;
         return had;
     }
 }
