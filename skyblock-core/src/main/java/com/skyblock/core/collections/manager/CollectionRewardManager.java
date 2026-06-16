@@ -1,4 +1,4 @@
-package com.skyblock.plugin.collection;
+package com.skyblock.core.collections.manager;
 
 import com.skyblock.core.economy.manager.EconomyManager;
 import org.bukkit.ChatColor;
@@ -10,8 +10,8 @@ import java.util.UUID;
 /**
  * Grants the coin rewards a player earns when a collection tiers up, mirroring
  * Hypixel SkyBlock's collection reward tables. Invoked from
- * {@link CollectionListener} once a collection total crosses one or more of its
- * configured tier thresholds.
+ * {@link com.skyblock.core.collections.listener.CollectionListener} once a
+ * collection total crosses one or more of its configured tier thresholds.
  *
  * <p>Each unlocked tier pays out coins that scale with the tier number, so a
  * single gather that crosses several tiers still pays out each one.</p>
