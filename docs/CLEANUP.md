@@ -795,6 +795,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (ShopMenu/NpcShopMenu/ShopGUI menu consolidation — round 124)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ShopMenu / NpcShopMenu / ShopGUI menu implementations | `com.skyblock.gui.menu.ShopMenu` | Grepped every module for classes named `ShopMenu`, `NpcShopMenu`, or `ShopGUI`; identified `com.skyblock.gui.menu.ShopMenu` as the canonical survivor; all duplicate implementations across `skyblock-core`, `plugin`, `shop`, `npc`, `bazaar`, and `gui` modules consolidated into the canonical class; `@Deprecated` stubs at old locations deleted outright after confirming zero non-stub callers remain across the entire repo | #2874 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
