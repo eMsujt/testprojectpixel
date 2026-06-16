@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.model.Rarity;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -81,6 +82,37 @@ public final class ReforgeManager {
         public int getStrengthBonus() { return strengthBonus; }
         public int getDefenseBonus() { return defenseBonus; }
         public int getSpeedBonus() { return speedBonus; }
+
+        /** Returns this reforge's strength bonus scaled for the given item rarity. */
+        public int getStrengthBonus(Rarity rarity) { return scaled(strengthBonus, rarity); }
+        /** Returns this reforge's defense bonus scaled for the given item rarity. */
+        public int getDefenseBonus(Rarity rarity) { return scaled(defenseBonus, rarity); }
+        /** Returns this reforge's speed bonus scaled for the given item rarity. */
+        public int getSpeedBonus(Rarity rarity) { return scaled(speedBonus, rarity); }
+
+        /**
+         * Per-rarity stat multiplier table, indexed by {@link Rarity#ordinal()}.
+         * Higher-rarity items gain a proportionally larger bonus from the same reforge.
+         */
+        private static final double[] RARITY_MULTIPLIER = {
+            0.5,  // COMMON
+            0.7,  // UNCOMMON
+            1.0,  // RARE
+            1.3,  // EPIC
+            1.6,  // LEGENDARY
+            2.0,  // MYTHIC
+            2.4,  // DIVINE
+            2.4   // SPECIAL
+        };
+
+        private static int scaled(int base, Rarity rarity) {
+            Objects.requireNonNull(rarity, "rarity");
+            int i = rarity.ordinal();
+            double mult = i < RARITY_MULTIPLIER.length
+                    ? RARITY_MULTIPLIER[i]
+                    : RARITY_MULTIPLIER[RARITY_MULTIPLIER.length - 1];
+            return (int) Math.round(base * mult);
+        }
 
         public static ReforgeType fromName(String name) {
             for (ReforgeType r : values()) {
@@ -263,6 +295,46 @@ public final class ReforgeManager {
         } else {
             slotReforges.computeIfAbsent(playerId, k -> new HashMap<>()).put(slot, reforge);
         }
+    }
+
+    /**
+     * Applies a reforge stone to the player's active reforge, resolving the
+     * stone's reforge to a {@link ReforgeType} and setting it.
+     *
+     * @param playerId the player to update
+     * @param stone    the reforge stone being used
+     * @return the applied reforge type, or {@code null} if the stone's reforge is unknown
+     */
+    public ReforgeType applyStone(UUID playerId, ReforgeStone stone) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(stone, "stone");
+        ReforgeType type = ReforgeType.fromName(stone.getReforge());
+        if (type == null) {
+            return null;
+        }
+        setReforge(playerId, type);
+        return type;
+    }
+
+    /**
+     * Applies a reforge stone to the given item slot, resolving the stone's
+     * reforge to a {@link ReforgeType} and setting it for that slot.
+     *
+     * @param playerId the player to update
+     * @param slot     the item slot key
+     * @param stone    the reforge stone being used
+     * @return the applied reforge type, or {@code null} if the stone's reforge is unknown
+     */
+    public ReforgeType applyStone(UUID playerId, String slot, ReforgeStone stone) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(slot, "slot");
+        Objects.requireNonNull(stone, "stone");
+        ReforgeType type = ReforgeType.fromName(stone.getReforge());
+        if (type == null) {
+            return null;
+        }
+        setSlotReforge(playerId, slot, type);
+        return type;
     }
 
     /**
