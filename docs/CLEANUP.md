@@ -606,12 +606,21 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (stale-import fix sweep, zero-caller stub deletion, and EnchantmentManager consolidation — round 102)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Stale imports (round-101 IslandManager/AuctionHouseManager follow-up) | N/A | Swept every `.java` file for stale import references introduced by the round-101 IslandManager consolidation and AuctionHouseManager audit; no stale imports found — no file changes required | — |
+| Zero-caller `@Deprecated` stub deletion | *(class files deleted)* | 1 `@Deprecated` stub with zero live callers deleted outright: `com.skyblock.core.island.IslandGenerator` (delegated to `com.skyblock.core.island.util.IslandGenerator` with no callers) | #2807 |
+| EnchantManager / EnchantmentManager / EnchantHandler duplicate consolidation | `com.skyblock.core.enchant.manager.EnchantmentManager` | All duplicate `EnchantManager`, `EnchantmentManager`, and `EnchantHandler` implementations consolidated into one canonical class at `com.skyblock.core.enchant.manager.EnchantmentManager`; old `com.skyblock.core.manager.EnchantmentManager` and `SkyBlockEnchantListener` replaced with `@Deprecated` empty stubs pointing to canonical; all existing callers already used canonical implementations | #2806 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
 |--------|-----------------|-----------------|-------|
 | SlayerManager | `com.skyblock.core.slayer.SlayerManager` | `slayer`, `slayers`, `skyblock-slayer`, `core`, `plugin` | `slayer` module most complete |
-| EnchantingManager | `com.skyblock.core.enchanting.EnchantingManager` | `enchanting`, `enchantments`, `enchants`, `core`, `plugin` | `enchanting` module most complete |
 | NPCManager | `com.skyblock.core.npc.NPCManager` | `npc` (NpcManager), `npcs` (NPCManager + NpcManager) | Inconsistent casing within `npcs` module |
 | GuildManager | `com.skyblock.core.guild.GuildManager` | `guilds`, `guild` (enum-only fragment), `core`, `plugin` | Three variants referenced in ROADMAP Phase 5 |
 | TradingManager | `com.skyblock.core.trade.TradeManager` | `trades` (TradeManager), `trading` (TradingManager) | Naming inconsistency: Trade vs Trading |
