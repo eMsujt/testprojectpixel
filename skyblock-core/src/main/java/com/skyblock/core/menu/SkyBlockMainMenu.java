@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.minion.gui.MinionsMenu;
 import com.skyblock.core.quest.gui.QuestsMenu;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;

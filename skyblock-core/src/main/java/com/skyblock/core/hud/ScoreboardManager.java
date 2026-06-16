@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,7 +85,7 @@ public final class ScoreboardManager {
     public void remove(Player player) {
         Objects.requireNonNull(player, "player");
         boards.remove(player.getUniqueId());
-        ScoreboardManager bukkit = Bukkit.getScoreboardManager();
+        org.bukkit.scoreboard.ScoreboardManager bukkit = Bukkit.getScoreboardManager();
         if (bukkit != null) {
             player.setScoreboard(bukkit.getMainScoreboard());
         }
@@ -97,7 +96,7 @@ public final class ScoreboardManager {
     // -------------------------------------------------------------------------
 
     private Scoreboard createBoard(Player player) {
-        ScoreboardManager bukkit = Bukkit.getScoreboardManager();
+        org.bukkit.scoreboard.ScoreboardManager bukkit = Bukkit.getScoreboardManager();
         Objects.requireNonNull(bukkit, "Bukkit ScoreboardManager unavailable");
 
         Scoreboard board = bukkit.getNewScoreboard();
