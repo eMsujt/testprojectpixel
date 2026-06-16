@@ -37,7 +37,8 @@ public final class MayorManager {
         MARINA("Marina", "Fishing Festival", "Luck of the Sea", "Quiver", "Water Breathing"),
         FOXY("Foxy", "What the Dog Doin?", "Extra Pets", "Good Doggy"),
         AATROX("Aatrox", "Slayer XP Buff", "Slayer Quest Limit", "Slayer's Will", "Blood Thirst"),
-        DIAZ("Diaz", "Free Samples", "Barrier Street", "Inflation");
+        DIAZ("Diaz", "Free Samples", "Barrier Street", "Inflation"),
+        DERPY("Derpy", "TIME = MONEY!", "AAUUTOMATED!", "MOAR SKILLZ!!!");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
@@ -74,6 +75,7 @@ public final class MayorManager {
         m.put(MayorCandidate.FOXY, statBonus(Stat.SPEED, 20.0, Stat.PET_LUCK, 7.0));
         m.put(MayorCandidate.AATROX, statBonus(Stat.STRENGTH, 30.0, Stat.FEROCITY, 10.0));
         m.put(MayorCandidate.DIAZ, statBonus(Stat.INTELLIGENCE, 10.0));
+        m.put(MayorCandidate.DERPY, statBonus(Stat.SPEED, 10.0));
         MAYOR_STAT_PERKS = Collections.unmodifiableMap(m);
     }
 
