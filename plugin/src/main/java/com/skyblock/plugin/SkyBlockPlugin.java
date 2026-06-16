@@ -172,7 +172,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.plugin.manager.DamageManager.getInstance().register(this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.combat.listener.CombatListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(profileManager, this);
-        getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.PlayerDataManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.listener.CoreListeners(com.skyblock.core.persistence.DataManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.EnchantingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.QuestProgressListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TimeListener(), this);
