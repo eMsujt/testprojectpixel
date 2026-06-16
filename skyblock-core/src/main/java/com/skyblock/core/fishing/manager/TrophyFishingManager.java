@@ -1,5 +1,7 @@
 package com.skyblock.core.fishing.manager;
 
+import com.skyblock.core.manager.FishingManager;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

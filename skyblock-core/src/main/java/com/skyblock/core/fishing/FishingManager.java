@@ -1,7 +1,7 @@
 package com.skyblock.core.fishing;
 
 /**
- * @deprecated Use {@link com.skyblock.core.fishing.manager.FishingManager} instead.
+ * @deprecated Moved to {@link com.skyblock.core.manager.FishingManager}.
  */
 @Deprecated
 public final class FishingManager {

@@ -1,6 +1,6 @@
 package com.skyblock.core.fishing.command;
 
-import com.skyblock.core.fishing.manager.FishingManager;
+import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.fishing.manager.TrophyFishingManager;
 import com.skyblock.core.model.Rarity;
 
