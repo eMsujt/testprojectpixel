@@ -16,8 +16,6 @@
         <module>api</module>
         <module>enchantments</module>
         <module>items</module>
-        <module>playerdata</module>
-        <module>profiles</module>
         <module>enchanting</module>
         <module>mining</module>
         <module>dungeons</module>
