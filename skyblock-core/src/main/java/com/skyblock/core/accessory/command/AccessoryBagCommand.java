@@ -1,6 +1,6 @@
 package com.skyblock.core.accessory.command;
 
-import com.skyblock.core.accessory.manager.AccessoryBagManager;
+import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.talisman.manager.TalismanManager;

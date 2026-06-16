@@ -1,4 +1,4 @@
-package com.skyblock.core.accessory.manager;
+package com.skyblock.core.manager;
 
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.model.Stat;
