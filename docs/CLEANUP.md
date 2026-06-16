@@ -761,6 +761,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (AuctionHouseManager consolidation and @Deprecated stub deletion — round 121)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| AuctionHouseManager / AuctionManager | `com.skyblock.core.manager.AuctionHouseManager` | Grepped every module for classes named `AuctionHouseManager` or `AuctionManager`; identified best survivor; all duplicate implementations consolidated into canonical `com.skyblock.core.manager.AuctionHouseManager`; `@Deprecated` forwarding stub at `com.skyblock.core.auction.manager.AuctionHouseManager` deleted outright after confirming zero non-stub callers remain across the entire repo | #2863 / #2865 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
