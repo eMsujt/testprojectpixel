@@ -550,6 +550,22 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (stale-import fix sweep — round 96)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Stale imports (round-94/95 package-layout follow-up) | N/A | Swept every `.java` file for stale import references introduced by the round-94/95 package-layout standardizations (gui #2777, pets #2778, auction #2779, minions #2780, bazaar #2781, shop #2782); fixed 3 stale import references: `com.skyblock.core.dungeon.DungeonCommand` → `com.skyblock.core.dungeon.command.DungeonCommand` and `com.skyblock.core.manager.DungeonManager` → `com.skyblock.core.dungeon.manager.DungeonManager` in `SkyBlockPlugin` | #2785 |
+
+---
+
+## Completed (core-module internal package standardization — round 97)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| `com.skyblock.core` internal package layout | `com.skyblock.core.{manager,command,listener,gui,model,util}` | Audited every class in `com.skyblock.core` and moved any misplaced manager, listener, command, and GUI classes into their canonical sub-packages; flat-package strays eliminated; stale import references introduced by this restructuring assigned to Forge for round-97 follow-up fix sweep | pending |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
