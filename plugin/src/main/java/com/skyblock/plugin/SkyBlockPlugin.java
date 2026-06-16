@@ -24,7 +24,7 @@ import com.skyblock.core.items.manager.CustomItemManager;
 import com.skyblock.plugin.commands.AlchemyCommand;
 import com.skyblock.core.auction.command.AuctionHouseCommand;
 import com.skyblock.plugin.managers.CooldownManager;
-import com.skyblock.core.crafting.CraftingManager;
+import com.skyblock.core.manager.CraftingManager;
 import com.skyblock.plugin.managers.EventManager;
 import com.skyblock.core.island.manager.IslandManager;
 import com.skyblock.plugin.managers.NetworkManager;

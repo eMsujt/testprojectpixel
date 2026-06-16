@@ -1,5 +1,6 @@
 package com.skyblock.core.crafting;
 
+import com.skyblock.core.manager.CraftingManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +14,7 @@ import java.util.Map;
  * {@link CraftingManager}'s per-player craft history.
  *
  * <p>Matches the crafted item's result material against registered
- * {@link SkyBlockRecipeManager} entries and calls
+ * {@link CraftingManager} recipe entries and calls
  * {@link CraftingManager#recordCraft} on the first match.</p>
  */
 public final class CraftingListener implements Listener {
@@ -48,8 +49,8 @@ public final class CraftingListener implements Listener {
         }
 
         Material resultMaterial = event.getRecipe().getResult().getType();
-        Map<String, SkyBlockRecipeManager.SkyBlockRecipe> allRecipes = craftingManager.getAllRecipes();
-        for (SkyBlockRecipeManager.SkyBlockRecipe recipe : allRecipes.values()) {
+        Map<String, CraftingManager.SkyBlockRecipe> allRecipes = craftingManager.getAllRecipes();
+        for (CraftingManager.SkyBlockRecipe recipe : allRecipes.values()) {
             if (recipe.result() == resultMaterial) {
                 craftingManager.recordCraft(player.getUniqueId(), recipe.id());
                 break;

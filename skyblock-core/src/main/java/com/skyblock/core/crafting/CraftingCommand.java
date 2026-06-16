@@ -1,5 +1,6 @@
 package com.skyblock.core.crafting;
 
+import com.skyblock.core.manager.CraftingManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -77,7 +78,7 @@ public final class CraftingCommand implements TabExecutor {
     }
 
     private void handleList(Player player) {
-        Map<String, SkyBlockRecipeManager.SkyBlockRecipe> recipes = craftingManager.getAllRecipes();
+        Map<String, CraftingManager.SkyBlockRecipe> recipes = craftingManager.getAllRecipes();
         if (recipes.isEmpty()) {
             player.sendMessage("No crafting recipes available.");
             return;
@@ -89,7 +90,7 @@ public final class CraftingCommand implements TabExecutor {
                         r.id(),
                         r.resultAmount(),
                         r.result().name(),
-                        r instanceof SkyBlockRecipeManager.ShapedRecipe ? "shaped" : "shapeless")));
+                        r instanceof CraftingManager.ShapedRecipe ? "shaped" : "shapeless")));
     }
 
     private void handleView(Player player, String[] args) {
@@ -97,15 +98,15 @@ public final class CraftingCommand implements TabExecutor {
             player.sendMessage("Usage: /crafting view <id>");
             return;
         }
-        Optional<SkyBlockRecipeManager.SkyBlockRecipe> opt = craftingManager.getRecipe(args[1].toLowerCase());
+        Optional<CraftingManager.SkyBlockRecipe> opt = craftingManager.getRecipe(args[1].toLowerCase());
         if (opt.isEmpty()) {
             player.sendMessage("Unknown recipe: " + args[1] + ". Use /crafting list to see available recipes.");
             return;
         }
-        SkyBlockRecipeManager.SkyBlockRecipe recipe = opt.get();
+        CraftingManager.SkyBlockRecipe recipe = opt.get();
         player.sendMessage("=== Recipe: " + recipe.id() + " ===");
         player.sendMessage("Result: " + recipe.resultAmount() + "x " + recipe.result().name());
-        if (recipe instanceof SkyBlockRecipeManager.ShapedRecipe shaped) {
+        if (recipe instanceof CraftingManager.ShapedRecipe shaped) {
             player.sendMessage("Type: Shaped");
             player.sendMessage("Shape:");
             for (String row : shaped.shape()) {
@@ -114,7 +115,7 @@ public final class CraftingCommand implements TabExecutor {
             player.sendMessage("Ingredients:");
             shaped.ingredientMap().forEach((ch, mat) ->
                     player.sendMessage("  '" + ch + "' = " + mat.name()));
-        } else if (recipe instanceof SkyBlockRecipeManager.ShapelessRecipe shapeless) {
+        } else if (recipe instanceof CraftingManager.ShapelessRecipe shapeless) {
             player.sendMessage("Type: Shapeless");
             player.sendMessage("Ingredients: " + shapeless.ingredients().stream()
                     .map(Enum::name)
@@ -155,7 +156,7 @@ public final class CraftingCommand implements TabExecutor {
             return;
         }
         craftingManager.recordCraft(player.getUniqueId(), recipeId);
-        SkyBlockRecipeManager.SkyBlockRecipe recipe = craftingManager.getRecipe(recipeId).get();
+        CraftingManager.SkyBlockRecipe recipe = craftingManager.getRecipe(recipeId).get();
         player.sendMessage("Crafted " + recipe.resultAmount() + "x " + recipe.result().name()
                 + "! (Total crafted: " + craftingManager.getCraftCount(player.getUniqueId(), recipeId) + ")");
     }
