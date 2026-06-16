@@ -1,5 +1,7 @@
 package com.skyblock.dungeons;
 
+import com.skyblock.core.dungeon.model.DungeonFloor;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
