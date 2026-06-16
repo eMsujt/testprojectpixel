@@ -15,17 +15,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Handles the {@code /pets} command.
- *
- * <p>Usage:
- * <ul>
- *   <li>{@code /pets list}                    — shows all pets and their levels</li>
- *   <li>{@code /pets equip <pet> [rarity]}    — equips a pet as the active pet</li>
- *   <li>{@code /pets unequip}                 — removes the currently active pet</li>
- *   <li>{@code /pets info [pet]}              — shows details for active or specified pet</li>
- * </ul>
- * </p>
+ * @deprecated Duplicate of {@link PetCommand}. Register {@link PetCommand} for both
+ *             {@code /pet} and {@code /pets} instead of using this class.
  */
+@Deprecated
 public final class PetsCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = List.of("list", "equip", "unequip", "info");

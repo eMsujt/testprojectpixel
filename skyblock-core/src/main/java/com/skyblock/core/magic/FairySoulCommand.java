@@ -10,6 +10,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated Duplicate of {@link com.skyblock.core.fairysoul.FairySoulCommand}. Use that class instead.
+ */
+@Deprecated
 public final class FairySoulCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("info", "collect", "reset");
