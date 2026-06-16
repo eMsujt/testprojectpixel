@@ -102,7 +102,7 @@ into `skyblock-core`; new work should target `skyblock-core`.
 | `accessories` / `talismans` / `backpacks` / `wardrobe` / `fairysouls` | Items and storage |
 | `npc` / `npcs` / `shop` / `housing` / `leaderboards` / `scoreboard` | World and UI |
 | `profile` / `profiles` / `playerdata` / `stats` | Player data |
-| `core` / `plugin` | Legacy/parallel app modules — **do not extend** |
+| `plugin` | Legacy/parallel app module — **do not extend** |
 
 > Module names are intentionally inconsistent (`auction` vs `auctions` vs
 > `auctionhouse` vs `auction_house`; `npc` vs `npcs`) because they are duplicate

@@ -14,7 +14,6 @@
 
     <modules>
         <module>api</module>
-        <!-- core disabled -->
         <module>enchantments</module>
         <module>items</module>
         <module>playerdata</module>
