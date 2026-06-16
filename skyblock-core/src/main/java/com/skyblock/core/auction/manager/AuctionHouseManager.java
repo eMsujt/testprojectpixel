@@ -646,7 +646,7 @@ public final class AuctionHouseManager {
         if (state.highestBidder == null) {
             return state.listing.startingBid();
         }
-        return state.highestBid + state.listing.startingBid() * MIN_BID_INCREMENT;
+        return state.highestBid + Math.round(state.listing.startingBid() * MIN_BID_INCREMENT);
     }
 
     private ListingState requireListing(UUID listingId) {
