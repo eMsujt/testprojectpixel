@@ -1,4 +1,4 @@
-package com.skyblock.core.essence;
+package com.skyblock.core.manager;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
