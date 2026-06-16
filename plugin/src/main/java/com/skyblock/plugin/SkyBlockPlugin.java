@@ -32,7 +32,7 @@ import com.skyblock.core.auction.command.AuctionHouseCommand;
 import com.skyblock.plugin.managers.CooldownManager;
 import com.skyblock.core.manager.CraftingManager;
 import com.skyblock.plugin.managers.EventManager;
-import com.skyblock.islands.manager.IslandManager;
+import com.skyblock.core.manager.IslandManager;
 import com.skyblock.plugin.managers.NetworkManager;
 import com.skyblock.core.quest.manager.QuestManager;
 import com.skyblock.plugin.managers.TradingManager;
