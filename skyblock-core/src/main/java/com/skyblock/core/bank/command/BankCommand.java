@@ -151,7 +151,7 @@ public final class BankCommand implements TabExecutor {
             bankManager.setTier(player.getUniqueId(), tier);
             player.sendMessage("Bank tier set to: " + tier.getDisplayName());
         } catch (IllegalArgumentException e) {
-            player.sendMessage("Unknown tier. Valid tiers: PERSONAL, CO_OP");
+            player.sendMessage("Unknown tier. Valid tiers: STARTER, GOLD, DELUXE, SUPER_DELUXE, PREMIER, PREMIER_PLUS");
         }
     }
 

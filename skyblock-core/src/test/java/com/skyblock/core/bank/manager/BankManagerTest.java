@@ -20,7 +20,7 @@ class BankManagerTest {
     }
 
     @Test
-    void bankTier_PersonalInterestRateIsPositive() {
-        assertTrue(BankManager.BankTier.PERSONAL.getInterestRate() > 0);
+    void bankTier_StarterInterestRateIsPositive() {
+        assertTrue(BankManager.BankTier.STARTER.getInterestRate() > 0);
     }
 }

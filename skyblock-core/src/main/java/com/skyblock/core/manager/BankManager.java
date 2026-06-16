@@ -41,16 +41,27 @@ public final class BankManager {
         }
     }
 
+    /**
+     * Bank interest tiers, ordered by the balance required to unlock them.
+     * Each tier carries a higher interest rate and a larger balance cap.
+     */
     public enum BankTier {
-        PERSONAL("Personal Bank", 1.5),
-        CO_OP("Co-op Bank",       2.0);
+        STARTER("Starter",            50_000_000.0,    2.0),
+        GOLD("Gold",                  100_000_000.0,   2.5),
+        DELUXE("Deluxe",              250_000_000.0,   3.0),
+        SUPER_DELUXE("Super Deluxe",  500_000_000.0,   3.5),
+        PREMIER("Premier",            1_000_000_000.0, 4.0),
+        PREMIER_PLUS("Premier+",      Double.MAX_VALUE, 4.5);
 
         private final String displayName;
+        /** Maximum balance this tier can hold before the next tier is required. */
+        private final double maxBalance;
         /** Annual interest rate as a percentage (e.g. 1.5 means 1.5%). */
         private final double interestRate;
 
-        BankTier(String displayName, double interestRate) {
+        BankTier(String displayName, double maxBalance, double interestRate) {
             this.displayName = displayName;
+            this.maxBalance = maxBalance;
             this.interestRate = interestRate;
         }
 
@@ -58,8 +69,22 @@ public final class BankManager {
             return displayName;
         }
 
+        public double getMaxBalance() {
+            return maxBalance;
+        }
+
         public double getInterestRate() {
             return interestRate;
+        }
+
+        /** Returns the lowest tier whose cap can hold the given balance. */
+        public static BankTier forBalance(double balance) {
+            for (BankTier tier : values()) {
+                if (balance <= tier.maxBalance) {
+                    return tier;
+                }
+            }
+            return PREMIER_PLUS;
         }
     }
 
@@ -116,7 +141,7 @@ public final class BankManager {
     }
 
     public BankTier getTier(UUID playerId) {
-        return tiers.getOrDefault(playerId, BankTier.PERSONAL);
+        return tiers.getOrDefault(playerId, BankTier.STARTER);
     }
 
     public void setTier(UUID playerId, BankTier tier) {
