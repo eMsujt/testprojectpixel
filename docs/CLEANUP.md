@@ -744,6 +744,23 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkillManager/SkillsManager consolidation — round 119)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkillManager / SkillsManager | `com.skyblock.core.skills.manager.SkillManager` | Consolidated all duplicate `SkillManager` and `SkillsManager` implementations across every module into one canonical class at `com.skyblock.core.skills.manager.SkillManager`; `@Deprecated` stub placed at old `com.skyblock.core.manager.SkillManager` location; all callers migrated to canonical import path | #2860 |
+
+---
+
+## Completed (zero-caller @Deprecated stub deletion — round 120)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| SkillManager `@Deprecated` stub deletion (round-119 follow-up) | `com.skyblock.core.skills.manager.SkillManager` | `@Deprecated` `SkillManager` stub at `com.skyblock.core.skills.manager` left by the round-119 consolidation deleted outright after confirming zero live callers | #2861 |
+| CollectionManager / PetManager `@Deprecated` stub deletion | *(class files deleted)* | `@Deprecated` `CollectionManager` stub at `com.skyblock.core.collections.manager` and `@Deprecated` `PetManager` stub at `com.skyblock.pets.manager` both deleted outright after confirming zero live callers | #2862 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
