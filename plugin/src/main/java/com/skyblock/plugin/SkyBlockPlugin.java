@@ -16,7 +16,7 @@ import com.skyblock.core.hotm.manager.HOTMManager;
 import com.skyblock.core.kuudra.KuudraCommand;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorCommand;
-import com.skyblock.core.mayor.MayorManager;
+import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.MinionManager;
