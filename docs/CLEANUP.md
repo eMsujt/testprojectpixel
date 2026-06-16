@@ -645,6 +645,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (Menu/AbstractMenu/GuiBuilder base class consolidation and stale-import sweep — round 106)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Menu / BaseMenu / InventoryMenu / AbstractMenu / GuiBuilder duplicate base classes | `com.skyblock.core.menu.Menu` | All duplicate abstract base class implementations (`Menu`, `BaseMenu`, `InventoryMenu`, `AbstractMenu`, `GuiBuilder`) across every module consolidated into one canonical abstract at `com.skyblock.core.menu.Menu`; all concrete subclasses updated to `extends com.skyblock.core.menu.Menu`; zero-caller stubs deleted outright | #2817 |
+| Stale imports (round-105 Menu/BaseMenu/GuiBuilder consolidation follow-up) | N/A | Swept every `.java` file for stale import references introduced by the round-105 Menu/AbstractMenu/GuiBuilder consolidation; no stale imports found — no file changes required | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
