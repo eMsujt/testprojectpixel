@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.farming.manager.FarmingManager} instead.
+ *
  * Manages per-player farming progression: crop harvests and earned farming
  * experience, keyed by {@link CropType}.
  *
@@ -15,6 +17,7 @@ import java.util.UUID;
  * Not thread-safe; synchronize externally if accessed from multiple
  * threads.</p>
  */
+@Deprecated
 public final class FarmingManager {
 
     public static final Map<Material, Integer> CROP_XP_MAP;

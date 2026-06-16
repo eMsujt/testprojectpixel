@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * @deprecated Duplicate of {@link com.skyblock.core.fishing.FishingCommand}. Use that class instead.
+ * @deprecated Duplicate of {@link com.skyblock.core.fishing.command.FishingCommand}. Use that class instead.
  */
 @Deprecated
 public final class FishingCommand implements CommandExecutor {

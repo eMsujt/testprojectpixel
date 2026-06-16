@@ -1,9 +1,12 @@
 package com.skyblock.fishing;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.fishing.manager.FishingManager} loot handling instead.
+ *
  * A single entry in a fishing zone's loot table, pairing an item id with the
  * probability that the item drops on a given catch.
  */
+@Deprecated
 public final class FishingDrop {
 
     private final String itemId;
