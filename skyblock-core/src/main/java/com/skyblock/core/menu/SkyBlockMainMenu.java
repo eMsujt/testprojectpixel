@@ -72,7 +72,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new PetsMenu(e.getWhoClicked().getUniqueId()).open((Player) e.getWhoClicked());
+                    new PetMenu(e.getWhoClicked().getUniqueId()).open((Player) e.getWhoClicked());
                 });
 
         setItem(15, new ItemBuilder(Material.FISHING_ROD)
