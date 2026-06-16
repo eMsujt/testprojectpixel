@@ -1,6 +1,5 @@
-package com.skyblock.core.manager;
+package com.skyblock.core.bank.manager;
 
-import com.skyblock.core.bank.manager.BankManager.BankTier;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +20,6 @@ class BankManagerTest {
 
     @Test
     void bankTier_PersonalInterestRateIsPositive() {
-        assertTrue(BankTier.PERSONAL.getInterestRate() > 0);
+        assertTrue(BankManager.BankTier.PERSONAL.getInterestRate() > 0);
     }
 }
