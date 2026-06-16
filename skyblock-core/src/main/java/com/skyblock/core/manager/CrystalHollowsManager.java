@@ -1,4 +1,4 @@
-package com.skyblock.core.crystalhollows;
+package com.skyblock.core.manager;
 
 import java.util.HashMap;
 import java.util.Map;
