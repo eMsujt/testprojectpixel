@@ -11,9 +11,9 @@ import java.util.UUID;
  *
  * <p>Defines the minion's identity (its {@link Minion.MinionType type} and the
  * resource it produces) and provides a factory that builds the {@link Minion}
- * model {@link com.skyblock.core.minion.manager.MinionManager} tracks. It carries no
+ * model {@link com.skyblock.core.manager.MinionManager} tracks. It carries no
  * per-placement state of its own; placed minions are tracked by
- * {@link com.skyblock.core.minion.manager.MinionManager}.</p>
+ * {@link com.skyblock.core.manager.MinionManager}.</p>
  */
 public final class CobblestoneMinion {
 
