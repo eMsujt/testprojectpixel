@@ -942,6 +942,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (MinionManager consolidation — round 143)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| MinionManager | `com.skyblock.core.manager.MinionManager` | Grepped every module for classes named `MinionManager`; all remaining duplicate implementations consolidated into one canonical class at `com.skyblock.core.manager.MinionManager`; all callers updated to the canonical import path; `@Deprecated` stubs at old locations deleted outright after confirming zero non-stub callers remain | #2935 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
