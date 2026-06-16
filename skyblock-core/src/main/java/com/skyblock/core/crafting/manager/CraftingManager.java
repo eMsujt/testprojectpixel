@@ -241,6 +241,123 @@ public final class CraftingManager {
     }
 
     // -----------------------------------------------------------------------
+    // Slot-aware recipe matching
+    // -----------------------------------------------------------------------
+
+    /**
+     * Finds the first registered recipe that matches the supplied crafting grid.
+     *
+     * @param grid a (up to 3&times;3) grid of materials; {@code null} cells are
+     *             treated as empty
+     * @return the matching recipe, or empty if none match
+     */
+    public Optional<SkyBlockRecipe> findMatchingRecipe(Material[][] grid) {
+        Objects.requireNonNull(grid, "grid");
+        for (SkyBlockRecipe recipe : recipes.values()) {
+            if (matches(recipe, grid)) {
+                return Optional.of(recipe);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /** Tests whether the supplied crafting grid satisfies the given recipe. */
+    public boolean matches(SkyBlockRecipe recipe, Material[][] grid) {
+        Objects.requireNonNull(recipe, "recipe");
+        Objects.requireNonNull(grid, "grid");
+        return switch (recipe) {
+            case ShapedRecipe shaped -> matchesShaped(shaped, grid);
+            case ShapelessRecipe shapeless -> matchesShapeless(shapeless, grid);
+        };
+    }
+
+    private static boolean matchesShaped(ShapedRecipe recipe, Material[][] grid) {
+        String[] shape = recipe.shape();
+        int rCols = 0;
+        for (String row : shape) {
+            rCols = Math.max(rCols, row.length());
+        }
+        Material[][] recipeGrid = new Material[shape.length][rCols];
+        for (int r = 0; r < shape.length; r++) {
+            String row = shape[r];
+            for (int c = 0; c < rCols; c++) {
+                char ch = c < row.length() ? row.charAt(c) : ' ';
+                recipeGrid[r][c] = ch == ' ' ? null : recipe.ingredientMap().get(ch);
+            }
+        }
+        int[] rb = boundingBox(recipeGrid);
+        int[] gb = boundingBox(grid);
+        if (rb == null || gb == null) {
+            // A recipe with at least one ingredient never matches an empty grid.
+            return rb == null && gb == null;
+        }
+        int rh = rb[2] - rb[0] + 1, rw = rb[3] - rb[1] + 1;
+        int gh = gb[2] - gb[0] + 1, gw = gb[3] - gb[1] + 1;
+        if (rh != gh || rw != gw) {
+            return false;
+        }
+        for (int r = 0; r < rh; r++) {
+            for (int c = 0; c < rw; c++) {
+                if (recipeGrid[rb[0] + r][rb[1] + c] != grid[gb[0] + r][gb[1] + c]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static boolean matchesShapeless(ShapelessRecipe recipe, Material[][] grid) {
+        Map<Material, Integer> need = new HashMap<>();
+        for (Material m : recipe.ingredients()) {
+            need.merge(m, 1, Integer::sum);
+        }
+        for (Material[] row : grid) {
+            if (row == null) {
+                continue;
+            }
+            for (Material m : row) {
+                if (m == null) {
+                    continue;
+                }
+                Integer remaining = need.get(m);
+                if (remaining == null) {
+                    return false; // extraneous ingredient
+                }
+                if (remaining == 1) {
+                    need.remove(m);
+                } else {
+                    need.put(m, remaining - 1);
+                }
+            }
+        }
+        return need.isEmpty();
+    }
+
+    /**
+     * Returns the inclusive bounding box {@code {minRow, minCol, maxRow, maxCol}}
+     * of the non-empty cells of {@code grid}, or {@code null} if every cell is empty.
+     */
+    private static int[] boundingBox(Material[][] grid) {
+        int minRow = Integer.MAX_VALUE, minCol = Integer.MAX_VALUE;
+        int maxRow = Integer.MIN_VALUE, maxCol = Integer.MIN_VALUE;
+        for (int r = 0; r < grid.length; r++) {
+            Material[] row = grid[r];
+            if (row == null) {
+                continue;
+            }
+            for (int c = 0; c < row.length; c++) {
+                if (row[c] != null) {
+                    minRow = Math.min(minRow, r);
+                    minCol = Math.min(minCol, c);
+                    maxRow = Math.max(maxRow, r);
+                    maxCol = Math.max(maxCol, c);
+                }
+            }
+        }
+        return maxRow == Integer.MIN_VALUE ? null : new int[]{minRow, minCol, maxRow, maxCol};
+    }
+
+    // -----------------------------------------------------------------------
     // Crafting history
     // -----------------------------------------------------------------------
 
