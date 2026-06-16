@@ -233,16 +233,96 @@ public final class PetManager {
         PET_DATA = Collections.unmodifiableMap(m);
     }
 
-    /** Cumulative XP thresholds for each level, shared across all rarity tables. */
-    private static final long[] XP_THRESHOLD;
+    /** Whether an ability applies while the pet is summoned ({@code ACTIVE}) or merely held in the menu ({@code HELD}). */
+    public enum AbilityKind { ACTIVE, HELD }
+
+    /** A single pet ability, unlocked once the pet reaches {@link #unlockLevel}. */
+    public static final class PetAbility {
+        public final String name;
+        public final String description;
+        public final AbilityKind kind;
+        public final int unlockLevel;
+
+        public PetAbility(String name, String description, AbilityKind kind, int unlockLevel) {
+            this.name = Objects.requireNonNull(name, "name");
+            this.description = Objects.requireNonNull(description, "description");
+            this.kind = Objects.requireNonNull(kind, "kind");
+            this.unlockLevel = unlockLevel;
+        }
+    }
+
+    /** Abilities granted by each pet type, ordered by unlock level. Pets absent here have no abilities. */
+    public static final Map<PetType, List<PetAbility>> PET_ABILITIES;
 
     static {
-        XP_THRESHOLD = new long[MAX_LEVEL];
-        long cumulative = 0;
-        for (int i = 0; i < MAX_LEVEL; i++) {
-            cumulative += 100L * (i + 1);
-            XP_THRESHOLD[i] = cumulative;
-        }
+        Map<PetType, List<PetAbility>> m = new EnumMap<>(PetType.class);
+        m.put(PetType.CHICKEN, List.of(
+            new PetAbility("Light Feet", "Reduces fall damage taken", AbilityKind.ACTIVE, 1),
+            new PetAbility("Eggstra", "Chance to drop an extra egg when killing chickens", AbilityKind.HELD, 10)));
+        m.put(PetType.PIG, List.of(
+            new PetAbility("Ridable", "Right-click to ride your pig", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.RABBIT, List.of(
+            new PetAbility("Happy Feet", "Jump potions also grant farming fortune", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.CAT, List.of(
+            new PetAbility("Hunter", "Increases speed against animals", AbilityKind.ACTIVE, 1),
+            new PetAbility("Nine Lives", "Reduces fall and combat damage taken", AbilityKind.HELD, 10)));
+        m.put(PetType.DOG, List.of(
+            new PetAbility("Finder", "Increases speed and magic find", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.SHEEP, List.of(
+            new PetAbility("Mana Saver", "Reduces ability mana cost", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.SKELETON, List.of(
+            new PetAbility("Bone Zone", "Increases bow damage", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.SPIDER, List.of(
+            new PetAbility("One With The Spider", "Gain strength per nearby spider", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.ZOMBIE, List.of(
+            new PetAbility("Chomp", "Heal on melee hits", AbilityKind.ACTIVE, 1),
+            new PetAbility("Rotten Blade", "Increases damage against zombies", AbilityKind.HELD, 10)));
+        m.put(PetType.ARMADILLO, List.of(
+            new PetAbility("Mobile Tank", "Gain defense while moving on the mining island", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.ELEPHANT, List.of(
+            new PetAbility("Stomp", "Gain farming fortune per defense", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.HORSE, List.of(
+            new PetAbility("Run", "Increases movement speed", AbilityKind.ACTIVE, 1),
+            new PetAbility("Ride Into Battle", "Speed boost after riding", AbilityKind.HELD, 10)));
+        m.put(PetType.PARROT, List.of(
+            new PetAbility("Flamboyant", "Adds levels to active potion effects", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.BEE, List.of(
+            new PetAbility("Busy Buzz Buzz", "Chance to spawn a beehive when farming", AbilityKind.ACTIVE, 1),
+            new PetAbility("Hive", "Gain intelligence and strength per nearby bee", AbilityKind.HELD, 10)));
+        m.put(PetType.DOLPHIN, List.of(
+            new PetAbility("Pod Tactics", "Increases sea creature chance per nearby player", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.JELLYFISH, List.of(
+            new PetAbility("Radiant Scarf", "Increases healing potency", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.PENGUIN, List.of(
+            new PetAbility("Frozen Wave", "Increases fishing speed in cold water", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.TURTLE, List.of(
+            new PetAbility("Turtle Tactics", "Increases defense", AbilityKind.ACTIVE, 1),
+            new PetAbility("Genius Amniote", "Reflects a portion of melee damage", AbilityKind.HELD, 10)));
+        m.put(PetType.BLAZE, List.of(
+            new PetAbility("Nether Embodiment", "Boosts stats while on the Blazing Fortress", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.BLUE_WHALE, List.of(
+            new PetAbility("Ingestion", "Increases health from healing potions", AbilityKind.ACTIVE, 1),
+            new PetAbility("Bulk", "Gain max health based on missing health", AbilityKind.HELD, 10)));
+        m.put(PetType.ENDER_DRAGON, List.of(
+            new PetAbility("End Strike", "Increases damage dealt to End mobs", AbilityKind.ACTIVE, 1),
+            new PetAbility("Superior", "Boosts all stats by a percentage", AbilityKind.HELD, 10)));
+        m.put(PetType.ENDERMAN, List.of(
+            new PetAbility("Enderian", "Take reduced damage from End mobs", AbilityKind.ACTIVE, 1),
+            new PetAbility("Zealot Madness", "Increases combat XP against Zealots", AbilityKind.HELD, 10)));
+        m.put(PetType.GRIFFIN, List.of(
+            new PetAbility("Odyssey", "Gain stats per magic find", AbilityKind.ACTIVE, 1),
+            new PetAbility("King of Bloodhounds", "Increases damage on mythological kills", AbilityKind.HELD, 10)));
+        m.put(PetType.LION, List.of(
+            new PetAbility("Primal Force", "Increases strength near low-health mobs", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.ROCK, List.of(
+            new PetAbility("Fortify", "Increases defense while sitting still", AbilityKind.ACTIVE, 1),
+            new PetAbility("Sailing Stone", "Move faster while sneaking", AbilityKind.HELD, 10)));
+        m.put(PetType.TIGER, List.of(
+            new PetAbility("Merciless Swipe", "Increases ferocity", AbilityKind.ACTIVE, 1)));
+        m.put(PetType.WOLF, List.of(
+            new PetAbility("Alpha Dog", "Reduces damage taken from wolves", AbilityKind.ACTIVE, 1),
+            new PetAbility("Pack Leader", "Gain crit damage per nearby wolf", AbilityKind.HELD, 10)));
+        PET_ABILITIES = Collections.unmodifiableMap(m);
     }
 
     /** A single owned pet instance. */
