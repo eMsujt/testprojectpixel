@@ -812,6 +812,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (CollectionsMenu border fix — round 126)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| CollectionsMenu `fillBorder()` border coverage | `com.skyblock.core.menu.CollectionsMenu` | Extracted border logic from `build()` into a `private void fillBorder(ItemStack pane)` method that explicitly covers top row (`slot < 9`), bottom row (`slot >= lastRow`), left column (`col == 0`), and right column (`col == 8`), using `getRows()` for dynamic row count; previously the left and right column borders were not filled | #2887 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
