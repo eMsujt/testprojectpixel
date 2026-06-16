@@ -6,12 +6,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Data holder for a single player's SkyBlock profile.
- *
- * <p>Tracks the player's identity, coin purse and per-skill levels keyed by
- * skill name. Instances are not thread-safe; access them from the server
- * main thread or guard them externally.</p>
+ * @deprecated Use {@link com.skyblock.core.player.manager.PlayerDataManager.PlayerData} instead.
  */
+@Deprecated
 public final class PlayerProfile {
 
     private final UUID uuid;

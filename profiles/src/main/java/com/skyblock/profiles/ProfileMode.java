@@ -1,12 +1,9 @@
 package com.skyblock.profiles;
 
 /**
- * The modes a SkyBlock profile can be played in.
- *
- * <p>Each mode carries its human-readable display name and whether the
- * profile may trade with other players (auctions, bazaar and direct
- * trades) or must progress entirely on its own.</p>
+ * @deprecated Use {@link com.skyblock.core.profile.manager.ProfileManager.GameMode} instead.
  */
+@Deprecated
 public enum ProfileMode {
 
     NORMAL("Normal", true),

@@ -1,12 +1,9 @@
 package com.skyblock.profiles;
 
 /**
- * The game modes a SkyBlock profile can be created with.
- *
- * <p>Each mode carries its human-readable display name and whether the
- * profile may use the shared economy (auctions, bazaar and trading) or
- * must progress in isolation.</p>
+ * @deprecated Use {@link com.skyblock.core.profile.manager.ProfileManager.GameMode} instead.
  */
+@Deprecated
 public enum GameMode {
 
     CLASSIC("Classic", true),
