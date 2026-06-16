@@ -16,13 +16,37 @@ public final class BankManager {
     /** @deprecated Use {@link com.skyblock.core.manager.BankManager.BankType} instead. */
     @Deprecated
     public enum BankType {
-        PERSONAL, ISLAND
+        PERSONAL("Personal", false),
+        ISLAND("Island", true);
+
+        private final String displayName;
+        private final boolean shared;
+
+        BankType(String displayName, boolean shared) {
+            this.displayName = displayName;
+            this.shared = shared;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public boolean isShared() { return shared; }
     }
 
     /** @deprecated Use {@link com.skyblock.core.manager.BankManager.BankTier} instead. */
     @Deprecated
     public enum BankTier {
-        PERSONAL, CO_OP
+        PERSONAL("Personal Bank", 1.5),
+        CO_OP("Co-op Bank",       2.0);
+
+        private final String displayName;
+        private final double interestRate;
+
+        BankTier(String displayName, double interestRate) {
+            this.displayName = displayName;
+            this.interestRate = interestRate;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public double getInterestRate() { return interestRate; }
     }
 
     private static final com.skyblock.core.manager.BankManager DELEGATE =
