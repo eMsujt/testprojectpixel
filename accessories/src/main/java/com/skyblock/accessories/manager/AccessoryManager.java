@@ -1,4 +1,4 @@
-package com.skyblock.accessories;
+package com.skyblock.accessories.manager;
 
 import java.util.Collections;
 import java.util.HashMap;
