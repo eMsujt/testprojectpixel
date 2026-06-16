@@ -49,6 +49,32 @@ public final class PartyManager {
         pendingInvites.remove(invitee);
     }
 
+    /**
+     * Accepts {@code invitee}'s pending invite, joining the inviting leader's party.
+     *
+     * @return the party the invitee joined
+     * @throws IllegalStateException if there is no pending invite, the invitee is already in a
+     *                               party, or the inviting leader no longer has a party
+     */
+    public Party acceptInvite(UUID invitee) {
+        UUID leader = pendingInvites.get(invitee);
+        if (leader == null) {
+            throw new IllegalStateException("No pending invite to accept.");
+        }
+        pendingInvites.remove(invitee);
+        joinParty(leader, invitee);
+        return partyByMember.get(invitee);
+    }
+
+    /**
+     * Declines {@code invitee}'s pending invite.
+     *
+     * @return {@code true} if an invite was pending and removed, {@code false} otherwise
+     */
+    public boolean declineInvite(UUID invitee) {
+        return pendingInvites.remove(invitee) != null;
+    }
+
     // -------------------------------------------------------------------------
     // Party lifecycle
     // -------------------------------------------------------------------------
@@ -125,6 +151,41 @@ public final class PartyManager {
         }
     }
 
+    /**
+     * Transfers leadership of {@code currentLeader}'s party to {@code newLeader}. The former leader
+     * remains in the party as a regular member.
+     *
+     * @throws IllegalStateException    if {@code currentLeader} does not lead a party
+     * @throws IllegalArgumentException if {@code newLeader} is not a member of that party
+     */
+    public void transferLeadership(UUID currentLeader, UUID newLeader) {
+        Party party = partyByMember.get(currentLeader);
+        if (party == null || !party.getLeader().equals(currentLeader)) {
+            throw new IllegalStateException("Only the current leader can transfer leadership.");
+        }
+        if (!party.getAllMembers().contains(newLeader)) {
+            throw new IllegalArgumentException("New leader must be a member of the party.");
+        }
+        party.setLeader(newLeader);
+    }
+
+    /**
+     * Disbands {@code leader}'s party, removing every member. No-op if {@code leader} is not in a party.
+     *
+     * @throws IllegalStateException if {@code leader} is in a party but is not its leader
+     */
+    public void disband(UUID leader) {
+        Party party = partyByMember.get(leader);
+        if (party == null) return;
+        if (!party.getLeader().equals(leader)) {
+            throw new IllegalStateException("Only the leader can disband the party.");
+        }
+        for (UUID member : party.getAllMembers()) {
+            partyByMember.remove(member);
+        }
+        party.clear();
+    }
+
     // -------------------------------------------------------------------------
     // Inner class
     // -------------------------------------------------------------------------
@@ -132,7 +193,7 @@ public final class PartyManager {
     /** Holds the mutable state of one party. */
     public static final class Party {
 
-        private final UUID leader;
+        private UUID leader;
         /** Non-leader members; does not include the leader. */
         private final Set<UUID> members = new HashSet<>();
 
@@ -156,6 +217,14 @@ public final class PartyManager {
 
         void addMember(UUID player) {
             members.add(player);
+        }
+
+        /** Promotes {@code newLeader} (a current member) to leader; the old leader becomes a member. */
+        void setLeader(UUID newLeader) {
+            if (newLeader.equals(leader)) return;
+            members.remove(newLeader);
+            members.add(leader);
+            leader = newLeader;
         }
 
         void removeMember(UUID player) {
