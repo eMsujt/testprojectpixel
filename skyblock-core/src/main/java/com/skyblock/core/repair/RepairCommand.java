@@ -1,5 +1,6 @@
 package com.skyblock.core.repair;
 
+import com.skyblock.core.manager.RepairManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
