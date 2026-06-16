@@ -1,4 +1,4 @@
-package com.skyblock.core.shop.manager;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

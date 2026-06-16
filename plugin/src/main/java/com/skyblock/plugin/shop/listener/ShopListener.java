@@ -1,8 +1,8 @@
 package com.skyblock.plugin.shop.listener;
 
-import com.skyblock.core.shop.manager.ShopManager;
-import com.skyblock.core.shop.manager.ShopManager.Shop;
-import com.skyblock.core.shop.manager.ShopManager.ShopEntry;
+import com.skyblock.core.manager.ShopManager;
+import com.skyblock.core.manager.ShopManager.Shop;
+import com.skyblock.core.manager.ShopManager.ShopEntry;
 import com.skyblock.core.menu.ShopMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

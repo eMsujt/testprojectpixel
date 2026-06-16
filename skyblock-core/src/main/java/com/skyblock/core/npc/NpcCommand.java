@@ -2,8 +2,8 @@ package com.skyblock.core.npc;
 
 import com.skyblock.core.economy.manager.EconomyManager;
 import com.skyblock.core.npc.NpcManager.NpcDefinition;
-import com.skyblock.core.shop.manager.ShopManager;
-import com.skyblock.core.shop.manager.ShopManager.ShopEntry;
+import com.skyblock.core.manager.ShopManager;
+import com.skyblock.core.manager.ShopManager.ShopEntry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
