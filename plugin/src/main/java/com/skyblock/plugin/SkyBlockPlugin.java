@@ -161,7 +161,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         com.skyblock.plugin.manager.DamageManager.getInstance().register(this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.combat.manager.CombatManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(profileManager, this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.profile.ProfileJoinListener(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.plugin.profile.PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.EnchantingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.HubClickListener(), this);
@@ -172,7 +171,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         new com.skyblock.plugin.minion.task.MinionTickScheduler(MinionManager.getInstance()).start(this);
         // menus.StorageMenu/PotionBagMenu/QuiverMenu/FishingBagMenu listeners removed — canonical com.skyblock.gui.menu.* classes handle clicks via core MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.fishing.FishingListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerJoinSetupListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.listener.MinionPlacementListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FarmingListener(), this);
