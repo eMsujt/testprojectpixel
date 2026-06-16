@@ -676,6 +676,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkillManager/SkillsManager consolidation and PetManager audit — round 109)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| SkillManager / SkillsManager duplicate consolidation | `com.skyblock.core.manager.SkillManager` | All duplicate `SkillManager` and `SkillsManager` implementations across all modules consolidated into one canonical class at `com.skyblock.core.manager.SkillManager`; `@Deprecated` delegation stub placed at old `com.skyblock.core.skills.manager.SkillManager` path; all 25 callers updated to import from canonical package | #2825 |
+| PetManager / PetsManager duplicate consolidation audit | `com.skyblock.core.pets.manager.PetManager` | All classes named `PetManager` or `PetsManager` across every module audited; canonical `com.skyblock.core.pets.manager.PetManager` confirmed as sole implementation with all callers already on the canonical import path — no file changes required | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
