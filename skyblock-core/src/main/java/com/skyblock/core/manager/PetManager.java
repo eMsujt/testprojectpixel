@@ -325,6 +325,39 @@ public final class PetManager {
         PET_ABILITIES = Collections.unmodifiableMap(m);
     }
 
+    /**
+     * Items a pet can hold for a flat stat bonus.
+     * int layout mirrors {@link #PET_DATA}: speed, strength, health.
+     */
+    public enum PetItem {
+        NONE("None", 0, 0, 0),
+        IRON_CLAWS("Iron Claws", 0, 10, 0),
+        SHARPENED_CLAWS("Sharpened Claws", 0, 15, 0),
+        QUICK_CLAW("Quick Claw", 25, 0, 0),
+        SADDLE("Saddle", 20, 0, 0),
+        YETI_FOOT("Yeti Foot", 10, 0, 0),
+        HARDENED_SCALES("Hardened Scales", 0, 0, 25),
+        BIG_TEDDY("Big Teddy", 0, 0, 75),
+        BUBBLEGUM("Bubblegum", 0, 0, 50),
+        DWARF_TURTLE_SHELMET("Dwarf Turtle Shelmet", 0, 0, 100);
+
+        private final String displayName;
+        public final int speedBonus;
+        public final int strengthBonus;
+        public final int healthBonus;
+
+        PetItem(String displayName, int speedBonus, int strengthBonus, int healthBonus) {
+            this.displayName = displayName;
+            this.speedBonus = speedBonus;
+            this.strengthBonus = strengthBonus;
+            this.healthBonus = healthBonus;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** A single owned pet instance. */
     public static final class Pet {
         public final UUID id;
@@ -371,6 +404,9 @@ public final class PetManager {
     /** Per-player XP data keyed by pet type. */
     private final Map<UUID, Map<PetType, Long>> petExperience = new HashMap<>();
 
+    /** Held item per owned pet, keyed by player then pet UUID. */
+    private final Map<UUID, Map<UUID, PetItem>> petHeldItems = new HashMap<>();
+
     /** Event history per player. */
     private final Map<UUID, List<String>> petHistory = new HashMap<>();
 
@@ -413,6 +449,10 @@ public final class PetManager {
         }
         if (petId.equals(equippedPets.get(playerId))) {
             equippedPets.remove(playerId);
+        }
+        Map<UUID, PetItem> held = petHeldItems.get(playerId);
+        if (held != null) {
+            held.remove(petId);
         }
         return true;
     }
@@ -551,6 +591,47 @@ public final class PetManager {
         return new PetData(type, type.defaultRarity, xp);
     }
 
+    /**
+     * Sets the item held by the given pet. Passing {@link PetItem#NONE} clears it.
+     *
+     * @return {@code true} if the pet exists in the player's collection
+     */
+    public boolean setHeldItem(UUID playerId, UUID petId, PetItem item) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(petId, "petId");
+        Objects.requireNonNull(item, "item");
+        Map<UUID, Pet> collection = playerPets.get(playerId);
+        if (collection == null || !collection.containsKey(petId)) {
+            return false;
+        }
+        if (item == PetItem.NONE) {
+            Map<UUID, PetItem> held = petHeldItems.get(playerId);
+            if (held != null) {
+                held.remove(petId);
+            }
+        } else {
+            petHeldItems.computeIfAbsent(playerId, k -> new HashMap<>()).put(petId, item);
+        }
+        return true;
+    }
+
+    /** Returns the item held by the given pet, or {@link PetItem#NONE} if none. */
+    public PetItem getHeldItem(UUID playerId, UUID petId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(petId, "petId");
+        Map<UUID, PetItem> held = petHeldItems.get(playerId);
+        return held == null ? PetItem.NONE : held.getOrDefault(petId, PetItem.NONE);
+    }
+
+    /**
+     * Returns the held-item stat bonus for the given pet as {@code {speed, strength, health}},
+     * all zero if the pet holds no item.
+     */
+    public int[] getHeldItemBonus(UUID playerId, UUID petId) {
+        PetItem item = getHeldItem(playerId, petId);
+        return new int[]{item.speedBonus, item.strengthBonus, item.healthBonus};
+    }
+
     public void recordPetEvent(UUID playerId, String summary) {
         petHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
     }
@@ -577,6 +658,7 @@ public final class PetManager {
         playerPets.clear();
         equippedPets.clear();
         petExperience.clear();
+        petHeldItems.clear();
         petHistory.clear();
         for (String key : cfg.getKeys(false)) {
             if ("petHistory".equals(key)) {
@@ -594,6 +676,7 @@ public final class PetManager {
                 }
                 if (cfg.isConfigurationSection(key + ".pets")) {
                     Map<UUID, Pet> collection = new HashMap<>();
+                    Map<UUID, PetItem> held = new HashMap<>();
                     for (String petIdStr : cfg.getConfigurationSection(key + ".pets").getKeys(false)) {
                         try {
                             UUID petId = UUID.fromString(petIdStr);
@@ -605,12 +688,26 @@ public final class PetManager {
                             PetType type = PetType.valueOf(typeName);
                             Rarity rarity = Rarity.valueOf(rarityName);
                             collection.put(petId, new Pet(petId, type, rarity));
+                            String itemName = cfg.getString(key + ".pets." + petIdStr + ".item");
+                            if (itemName != null) {
+                                try {
+                                    PetItem item = PetItem.valueOf(itemName);
+                                    if (item != PetItem.NONE) {
+                                        held.put(petId, item);
+                                    }
+                                } catch (IllegalArgumentException ignored) {
+                                    // skip unknown held item
+                                }
+                            }
                         } catch (IllegalArgumentException ignored) {
                             // skip malformed or unknown entries
                         }
                     }
                     if (!collection.isEmpty()) {
                         playerPets.put(playerId, collection);
+                    }
+                    if (!held.isEmpty()) {
+                        petHeldItems.put(playerId, held);
                     }
                 }
                 if (cfg.isConfigurationSection(key + ".xp")) {
@@ -661,10 +758,15 @@ public final class PetManager {
             if (equipped != null) {
                 cfg.set(playerKey + ".equipped", equipped.toString());
             }
+            Map<UUID, PetItem> held = petHeldItems.get(entry.getKey());
             for (Map.Entry<UUID, Pet> petEntry : entry.getValue().entrySet()) {
                 String petPath = playerKey + ".pets." + petEntry.getKey().toString();
                 cfg.set(petPath + ".type", petEntry.getValue().type.name());
                 cfg.set(petPath + ".rarity", petEntry.getValue().rarity.name());
+                PetItem item = held == null ? null : held.get(petEntry.getKey());
+                if (item != null && item != PetItem.NONE) {
+                    cfg.set(petPath + ".item", item.name());
+                }
             }
         }
         for (Map.Entry<UUID, Map<PetType, Long>> entry : petExperience.entrySet()) {
@@ -695,6 +797,7 @@ public final class PetManager {
         boolean hadData = playerPets.remove(playerId) != null;
         hadData |= equippedPets.remove(playerId) != null;
         hadData |= petExperience.remove(playerId) != null;
+        hadData |= petHeldItems.remove(playerId) != null;
         petHistory.remove(playerId);
         return hadData;
     }
