@@ -732,6 +732,18 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (ShopManager/NpcShopManager and BazaarManager/BazaarHandler consolidations, ItemBuilder/SkullItemUtil stub deletion, and core/items module package standardization — round 118)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ShopManager / NpcShopManager | `com.skyblock.core.manager.ShopManager` | `NpcManager.ShopItem` inner record consolidated into `ShopManager.ShopEntry`; `ShopItem` record and `findItem()` method deleted; `withdraw(UUID, long)` overload confirmed compatible with `entry.buyPrice()` returning `long`; all remaining duplicate implementations across every module consolidated into the single canonical class | #2853 |
+| BazaarManager / BazaarHandler | `com.skyblock.core.manager.BazaarManager` | All duplicate `BazaarManager`/`BazaarHandler` implementations across every module consolidated into one canonical class; all callers (`BazaarCommand` and 4 others) updated to import from canonical package; `@Deprecated` stub placed at old `com.skyblock.core.bazaar.manager` location | #2854 |
+| ItemBuilder / SkullItemUtil `@Deprecated` forwarding stub deletion | `com.skyblock.items.util.ItemBuilder`, `com.skyblock.items.util.SkullItemUtil` | Both `@Deprecated` forwarding stubs left in `com.skyblock.core.util` by the round-117 items-module relocation deleted outright; all 36 callers confirmed migrated to `com.skyblock.items.util.*` | #2852 |
+| Items module class relocation (round-117 completion) | `com.skyblock.items.util.*` | All remaining `.java` files in flat or misplaced packages under the `skyblock-items` module relocated into canonical sub-packages (broader than the initial `ItemBuilder`/`SkullItemUtil` move); flat-package strays eliminated | #2848 |
+| Core module internal package standardization | `com.skyblock.core.{manager,listener,command,gui,...}` | Completed full audit of `com.skyblock.core` — every misplaced manager, listener, command, and GUI class moved into canonical sub-packages; flat-package strays eliminated | #2851 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
