@@ -1,7 +1,8 @@
 package com.skyblock.core.forge;
 
-import com.skyblock.core.forge.ForgeManager.ForgeJob;
-import com.skyblock.core.forge.ForgeManager.ForgeRecipe;
+import com.skyblock.core.manager.ForgeManager;
+import com.skyblock.core.manager.ForgeManager.ForgeJob;
+import com.skyblock.core.manager.ForgeManager.ForgeRecipe;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
