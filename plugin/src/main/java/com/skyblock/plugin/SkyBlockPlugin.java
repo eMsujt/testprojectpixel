@@ -166,12 +166,12 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.QuestProgressListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TimeListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.WeatherListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.MinionListener(), this);
-        new com.skyblock.plugin.minion.MinionTickScheduler(MinionManager.getInstance()).start(this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.listener.MinionListener(), this);
+        new com.skyblock.plugin.minion.task.MinionTickScheduler(MinionManager.getInstance()).start(this);
         // menus.StorageMenu/PotionBagMenu/QuiverMenu/FishingBagMenu listeners removed — canonical com.skyblock.plugin.gui.menu.* classes handle clicks via core MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.fishing.FishingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerJoinSetupListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MinionPlacementListener(), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.listener.MinionPlacementListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FarmingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.ForagingListener(), this);
@@ -204,8 +204,8 @@ public final class SkyBlockPlugin extends JavaPlugin {
         // com.skyblock.plugin.menu.SkyBlockMenu listener removed — canonical com.skyblock.core.menu.SkyBlockMainMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.BazaarMenu listener removed — canonical com.skyblock.core.menu.BazaarMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.AuctionHouseMenu listener removed — canonical com.skyblock.core.menu.AuctionHouseMenu handles clicks via MenuListener
-        new com.skyblock.plugin.minion.MinionTickTask(MinionManager.getInstance())
-                .runTaskTimer(this, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS, com.skyblock.plugin.minion.MinionTickTask.PERIOD_TICKS);
+        new com.skyblock.plugin.minion.task.MinionTickTask(MinionManager.getInstance())
+                .runTaskTimer(this, com.skyblock.plugin.minion.task.MinionTickTask.PERIOD_TICKS, com.skyblock.plugin.minion.task.MinionTickTask.PERIOD_TICKS);
         new com.skyblock.plugin.profile.ProfileSaveTask(getDataFolder(), getLogger())
                 .runTaskTimerAsynchronously(this, 6000L, 6000L);
         new ActionBarManager().start(this);
