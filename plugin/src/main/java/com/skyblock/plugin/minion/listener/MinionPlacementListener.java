@@ -1,8 +1,8 @@
 package com.skyblock.plugin.minion.listener;
 
-import com.skyblock.core.minion.manager.MinionManager;
-import com.skyblock.core.minion.manager.MinionManager.MinionTier;
-import com.skyblock.core.minion.manager.MinionManager.MinionType;
+import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.manager.MinionManager.MinionTier;
+import com.skyblock.core.manager.MinionManager.MinionType;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

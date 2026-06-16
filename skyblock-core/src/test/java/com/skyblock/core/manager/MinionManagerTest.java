@@ -1,6 +1,6 @@
-package com.skyblock.core.minion.manager;
+package com.skyblock.core.manager;
 
-import com.skyblock.core.minion.manager.MinionManager.MinionTier;
+import com.skyblock.core.manager.MinionManager.MinionTier;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
