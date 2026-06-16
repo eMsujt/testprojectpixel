@@ -74,26 +74,52 @@ public final class FishingManager {
         new LootEntry(FishType.TREASURE_MAP,        Material.MAP,                 40,   0.5),
     };
 
-    /** Sea creatures that can be summoned while fishing. */
+    /** Body of water a player can fish in; determines which sea-creature table applies. */
+    public enum WaterType {
+        /** Ordinary water (Hub, the islands, private island ponds). */
+        WATER,
+        /** Lava pools (Crimson Isle, the Magma Fields). */
+        LAVA,
+        /** The Oasis on the Jerry's Workshop / desert islands. */
+        OASIS
+    }
+
+    /** Sea creatures that can be summoned while fishing, grouped by the {@link WaterType} they spawn in. */
     public enum SeaCreature {
-        SEA_WALKER(1,  0.30),
-        NIGHT_SQUID(5,  0.25),
-        SEA_GUARDIAN(15, 0.14),
-        SEA_WITCH(20, 0.10),
-        SEA_ARCHER(25, 0.08),
-        MONSTER_OF_THE_DEEP(30, 0.06),
-        CATFISH(35, 0.04),
-        CARROT_KING(40, 0.03),
-        DEEP_SEA_PROTECTOR(45, 0.02);
+        // --- Water ---
+        SEA_WALKER(1,  0.30, WaterType.WATER),
+        NIGHT_SQUID(5,  0.25, WaterType.WATER),
+        SEA_GUARDIAN(15, 0.14, WaterType.WATER),
+        SEA_WITCH(20, 0.10, WaterType.WATER),
+        SEA_ARCHER(25, 0.08, WaterType.WATER),
+        MONSTER_OF_THE_DEEP(30, 0.06, WaterType.WATER),
+        CATFISH(35, 0.04, WaterType.WATER),
+        CARROT_KING(40, 0.03, WaterType.WATER),
+        DEEP_SEA_PROTECTOR(45, 0.02, WaterType.WATER),
+
+        // --- Lava ---
+        FLAMING_WORM(1,  0.30, WaterType.LAVA),
+        LAVA_BLAZE(10, 0.20, WaterType.LAVA),
+        LAVA_PIGMAN(20, 0.12, WaterType.LAVA),
+        MAGMA_SLUG(30, 0.06, WaterType.LAVA),
+        TAURUS(40, 0.03, WaterType.LAVA),
+
+        // --- Oasis ---
+        OASIS_RABBIT(1,  0.35, WaterType.OASIS),
+        OASIS_SHEEP(15, 0.18, WaterType.OASIS),
+        WATER_HYDRA(35, 0.05, WaterType.OASIS);
 
         /** Minimum fishing level required for this creature to appear. */
         public final int minLevel;
         /** Base spawn chance (0–1) when the player meets the level requirement. */
         public final double spawnChance;
+        /** Body of water this creature spawns in. */
+        public final WaterType waterType;
 
-        SeaCreature(int minLevel, double spawnChance) {
+        SeaCreature(int minLevel, double spawnChance, WaterType waterType) {
             this.minLevel = minLevel;
             this.spawnChance = spawnChance;
+            this.waterType = waterType;
         }
     }
 
@@ -369,21 +395,44 @@ public final class FishingManager {
     // ---------------------------------------------------------------------------
 
     /**
-     * Rolls whether a sea creature spawns for the given fishing level.
-     * Returns the chosen {@link SeaCreature}, or {@code null} if none spawns.
-     *
-     * <p>First checks the overall {@link #BASE_SEA_CREATURE_CHANCE}, then selects
-     * a random eligible creature weighted by its {@code spawnChance}.</p>
+     * Rolls whether a water sea creature spawns for the given fishing level.
+     * Equivalent to {@link #rollSeaCreature(int, WaterType, double)} with
+     * {@link WaterType#WATER} and no luck bonus.
      *
      * @param level the player's fishing level
      * @return the sea creature to spawn, or {@code null}
      */
     public SeaCreature rollSeaCreature(int level) {
-        if (random.nextDouble() >= BASE_SEA_CREATURE_CHANCE) {
+        return rollSeaCreature(level, WaterType.WATER, 0.0);
+    }
+
+    /**
+     * Rolls whether a sea creature spawns for the given fishing level in the given
+     * body of water. Returns the chosen {@link SeaCreature}, or {@code null} if none spawns.
+     *
+     * <p>First checks the overall spawn chance — {@link #BASE_SEA_CREATURE_CHANCE}
+     * scaled by the player's {@code luck} (the SkyBlock "sea creature chance" stat,
+     * expressed as a fraction, e.g. {@code 0.20} for +20%) and clamped to {@code 1.0}.
+     * It then selects a random creature from the table for {@code waterType} that the
+     * player's level unlocks, weighted by each creature's {@code spawnChance}.</p>
+     *
+     * @param level     the player's fishing level
+     * @param waterType the body of water being fished
+     * @param luck      sea-creature-chance bonus as a fraction (0 = none); must not be negative
+     * @return the sea creature to spawn, or {@code null}
+     */
+    public SeaCreature rollSeaCreature(int level, WaterType waterType, double luck) {
+        Objects.requireNonNull(waterType, "waterType");
+        if (luck < 0) {
+            throw new IllegalArgumentException("luck must not be negative, got " + luck);
+        }
+
+        double spawnChance = Math.min(1.0, BASE_SEA_CREATURE_CHANCE * (1.0 + luck));
+        if (random.nextDouble() >= spawnChance) {
             return null;
         }
 
-        List<SeaCreature> eligible = eligibleCreatures(level);
+        List<SeaCreature> eligible = eligibleCreatures(level, waterType);
         double totalWeight = 0.0;
         for (SeaCreature creature : eligible) {
             totalWeight += creature.spawnChance;
@@ -403,10 +452,10 @@ public final class FishingManager {
         return null;
     }
 
-    private List<SeaCreature> eligibleCreatures(int level) {
+    private List<SeaCreature> eligibleCreatures(int level, WaterType waterType) {
         List<SeaCreature> out = new ArrayList<>();
         for (SeaCreature creature : SeaCreature.values()) {
-            if (creature.minLevel <= level) {
+            if (creature.waterType == waterType && creature.minLevel <= level) {
                 out.add(creature);
             }
         }

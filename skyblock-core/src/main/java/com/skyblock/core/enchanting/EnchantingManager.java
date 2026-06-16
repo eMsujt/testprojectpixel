@@ -378,6 +378,28 @@ public final class EnchantingManager {
     }
 
     /**
+     * Returns an immutable snapshot of the complete enchant table: every enchant
+     * type mapped to its maximum level.
+     */
+    public Map<SkyBlockEnchantment, Integer> getEnchantTable() {
+        Map<SkyBlockEnchantment, Integer> table = new EnumMap<>(SkyBlockEnchantment.class);
+        for (SkyBlockEnchantment type : SkyBlockEnchantment.values()) {
+            table.put(type, type.getMaxLevel());
+        }
+        return Collections.unmodifiableMap(table);
+    }
+
+    /**
+     * Returns the bookshelf power required to access the given enchant at the
+     * enchanting table, or {@code -1} if no requirement is configured for it.
+     */
+    public int getRequiredBookshelfPower(SkyBlockEnchantment type) {
+        Objects.requireNonNull(type, "type");
+        int[] data = ENCHANT_DATA.get(type.name());
+        return data == null ? -1 : data[1];
+    }
+
+    /**
      * Removes all enchantment data for the given player.
      *
      * @return {@code true} if the player had data, {@code false} otherwise

@@ -45,6 +45,14 @@ public final class EnchantmentManager {
         return delegate.getMaxLevel(type);
     }
 
+    public Map<EnchantingManager.SkyBlockEnchantment, Integer> getEnchantTable() {
+        return delegate.getEnchantTable();
+    }
+
+    public int getRequiredBookshelfPower(EnchantingManager.SkyBlockEnchantment type) {
+        return delegate.getRequiredBookshelfPower(type);
+    }
+
     public boolean remove(UUID playerId) {
         return delegate.remove(playerId);
     }
