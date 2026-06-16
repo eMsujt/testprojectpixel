@@ -1,4 +1,4 @@
-package com.skyblock.core.repair;
+package com.skyblock.core.manager;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
