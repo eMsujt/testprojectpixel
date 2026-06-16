@@ -852,6 +852,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (command class consolidation — round 132)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Duplicate Bukkit command class consolidation | `com.skyblock.core.<domain>.command.*` | Grepped every module for classes implementing `CommandExecutor` or `TabCompleter`; all remaining duplicate command implementations across every module consolidated; canonical command classes in `com.skyblock.core.<domain>.command.*` confirmed as sole implementations | #2899 |
+| `@Deprecated` `plugin.commands` stub deletion (MayorCommand, KuudraCommand, SlayerCommand, HOTMCommand, GardenCommand, FishingCommand, and 1 additional) | `com.skyblock.core.*` canonical command classes | 7 `@Deprecated` stub files deleted from `com.skyblock.plugin.commands.*`; all 7 imports in `SkyBlockPlugin.java` updated to point to canonical `com.skyblock.core.*` command classes with manager instances injected via constructor; `HubCommand.java` retained (not in deletion scope) | Vega |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
