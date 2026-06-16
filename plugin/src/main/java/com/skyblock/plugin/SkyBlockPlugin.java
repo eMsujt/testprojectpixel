@@ -129,7 +129,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.shop.listener.ShopListener(), this);
         com.skyblock.core.accessory.AccessoryManager.getInstance();
 
-        getServer().getPluginManager().registerEvents(new com.skyblock.core.collection.CollectionListener(CollectionManager.getInstance()), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.collections.listener.CollectionListener(CollectionManager.getInstance()), this);
         com.skyblock.core.manager.PetManager.getInstance();
         getCommand("skyblock").setExecutor(new SkyblockMenuCommand());
         getCommand("bank").setExecutor(new BankCommand(BankManager.getInstance()));
