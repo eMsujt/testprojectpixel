@@ -52,7 +52,6 @@ import com.skyblock.pets.command.PetsCommand;
 import com.skyblock.pets.manager.PetManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.quest.command.QuestCommand;
-import com.skyblock.plugin.commands.SkillsCommand;
 import com.skyblock.plugin.commands.SlayerCommand;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeManager;
@@ -151,7 +150,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("collections").setExecutor(new CollectionsCommand(CollectionManager.getInstance()));
         getCommand("enchanting").setExecutor(new EnchantingCommand());
         getCommand("hotm").setExecutor(new HOTMCommand());
-        getCommand("skills").setExecutor(new SkillsCommand());
         getCommand("garden").setExecutor(new GardenCommand());
         getCommand("pets").setExecutor(new PetsCommand(PetManager.getInstance()));
         getCommand("pet").setExecutor(new PetCommand(PetManager.getInstance()));

@@ -79,6 +79,7 @@ import com.skyblock.core.run.RunManager;
 import com.skyblock.core.title.TitleCommand;
 import com.skyblock.core.title.TitleManager;
 import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.skills.SkillsCommand;
 import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.slayer.SlayerManager;
 import com.skyblock.core.stat.StatCommand;
@@ -187,6 +188,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         StatsCommand statsCommand = new StatsCommand(skillsManager, slayerManager);
         getCommand("stats").setExecutor(statsCommand);
         getCommand("stats").setTabCompleter(statsCommand);
+        SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
+        getCommand("skills").setExecutor(skillsCommand);
+        getCommand("skills").setTabCompleter(skillsCommand);
         ProfileManager.getInstance().load(getDataFolder());
         ProfileCommand profileCommand = new ProfileCommand(ProfileManager.getInstance());
         getCommand("profile").setExecutor(profileCommand);

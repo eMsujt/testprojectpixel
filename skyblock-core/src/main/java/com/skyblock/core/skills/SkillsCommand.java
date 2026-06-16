@@ -1,18 +1,29 @@
-package com.skyblock.plugin.commands;
+package com.skyblock.core.skills;
 
 import com.skyblock.core.manager.SkillManager;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-public final class SkillsCommand implements CommandExecutor {
+public final class SkillsCommand implements TabExecutor {
+
+    private static final List<String> SUBCOMMANDS = Arrays.asList("stats", "info", "top");
+
+    private final SkillManager skillManager;
+
+    public SkillsCommand(SkillManager skillManager) {
+        this.skillManager = skillManager;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -35,15 +46,29 @@ public final class SkillsCommand implements CommandExecutor {
         return true;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            return SUBCOMMANDS.stream()
+                    .filter(s -> s.startsWith(args[0].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 2 && (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("top"))) {
+            return SkillManager.SKILL_XP_TABLE.keySet().stream()
+                    .filter(s -> s.startsWith(args[1].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
     private void handleStats(Player player) {
         UUID id = player.getUniqueId();
-        SkillManager manager = SkillManager.getInstance();
-        Map<String, Long> xpMap = manager.getSkillXPs(id);
+        Map<String, Long> xpMap = skillManager.getSkillXPs(id);
 
         player.sendMessage("=== Skill Stats ===");
         for (String skill : SkillManager.SKILL_XP_TABLE.keySet()) {
             long xp = xpMap.getOrDefault(skill, 0L);
-            int level = computeLevel(skill, xp);
+            int level = SkillManager.levelForXp(skill, xp);
             player.sendMessage(capitalize(skill) + " — Level: " + level + ", XP: " + xp);
         }
     }
@@ -62,8 +87,8 @@ public final class SkillsCommand implements CommandExecutor {
         }
 
         UUID id = player.getUniqueId();
-        long xp = SkillManager.getInstance().getSkillXP(id, skill);
-        int level = computeLevel(skill, xp);
+        long xp = skillManager.getSkillXP(id, skill);
+        int level = SkillManager.levelForXp(skill, xp);
         long nextThreshold = level < table.length ? table[level] : -1L;
 
         player.sendMessage("=== " + capitalize(skill) + " ===");
@@ -88,7 +113,7 @@ public final class SkillsCommand implements CommandExecutor {
             return;
         }
 
-        Map<UUID, Long> allXP = SkillManager.getInstance().getAllSkillXP(skill);
+        Map<UUID, Long> allXP = skillManager.getAllSkillXP(skill);
         List<Map.Entry<UUID, Long>> sorted = new ArrayList<>(allXP.entrySet());
         sorted.sort(Comparator.comparingLong(Map.Entry<UUID, Long>::getValue).reversed());
 
@@ -97,28 +122,12 @@ public final class SkillsCommand implements CommandExecutor {
         for (Map.Entry<UUID, Long> entry : sorted) {
             player.sendMessage(rank + ". " + entry.getKey()
                     + " — XP: " + entry.getValue()
-                    + ", Level: " + computeLevel(skill, entry.getValue()));
+                    + ", Level: " + SkillManager.levelForXp(skill, entry.getValue()));
             if (++rank > 10) break;
         }
         if (sorted.isEmpty()) {
             player.sendMessage("No data found.");
         }
-    }
-
-    private int computeLevel(String skill, long xp) {
-        long[] table = SkillManager.SKILL_XP_TABLE.get(skill);
-        if (table == null) return 0;
-        int level = 0;
-        long cumulative = 0;
-        for (long threshold : table) {
-            cumulative += threshold;
-            if (xp >= cumulative) {
-                level++;
-            } else {
-                break;
-            }
-        }
-        return level;
     }
 
     private String capitalize(String s) {

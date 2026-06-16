@@ -29,10 +29,6 @@ commands:
     description: View your dungeon stats and progress.
     usage: /<command>
     permission: skyblock.command.dungeon
-  skills:
-    description: View your SkyBlock skills and XP.
-    usage: /<command>
-    permission: skyblock.command.skills
   slayer:
     description: View your Slayer quest progress
     usage: /<command> [stats]
@@ -128,9 +124,6 @@ permissions:
     default: true
   skyblock.command.dungeon:
     description: Allows use of the /dungeon command.
-    default: true
-  skyblock.command.skills:
-    description: Allows use of the /skills command.
     default: true
   skyblock.command.slayer:
     description: Allows use of the /slayer command.
