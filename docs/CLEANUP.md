@@ -704,6 +704,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (EnchantType stub deletion, /skills executor binding, and duplicate event-listener consolidation — round 115)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| EnchantType empty stub deletion | `com.skyblock.enchanting.model.EnchantType` | Empty `com.skyblock.enchanting.EnchantType` stub (zero constants, zero callers) left over from the enchanting module standardization deleted outright; canonical `com.skyblock.enchanting.model.EnchantType` confirmed as sole implementation with all enum constants (SHARPNESS, SMITE, BANE_OF_ARTHROPODS, etc.) present | #2841 |
+| /skills command executor binding | `com.skyblock.skills.command.SkillsCommand` | Verified `SkyBlockPlugin` correctly registers `SkillsCommand` as the executor for the `/skills` Bukkit command; no file changes required — binding was already present | — |
+| Duplicate event-listener consolidation (PlayerJoinListener / PlayerQuitListener / PlayerMoveListener) | `com.skyblock.plugin.profile.ProfileManager` | All redundant `PlayerJoinListener`, `PlayerQuitListener`, and `PlayerMoveListener` implementations across every module consolidated; `ProfileJoinListener`, `PlayerJoinSetupListener`, and `PlayerJoinQuitListener` deleted outright — `ProfileManager` already handles `getOrCreate` on join and all join/quit lifecycle logic; all registrations removed from `SkyBlockPlugin` | #2842 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
