@@ -1,6 +1,6 @@
 package com.skyblock.plugin.shop.gui;
 
-import com.skyblock.core.shop.gui.ShopMenu;
+import com.skyblock.core.menu.ShopMenu;
 import org.bukkit.Material;
 
 import java.util.List;
