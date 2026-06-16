@@ -50,6 +50,54 @@ plugin JAR and the canonical home for everything under `com.skyblock.core.*`. Th
 **module map**, the canonical manager registry, and guidance on where to put a change
 live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+## Feature Managers
+
+Most gameplay state is owned by a single authoritative manager under
+**`com.skyblock.core.manager`** (a few large systems keep their own feature
+sub-package — e.g. `com.skyblock.core.auction.manager.AuctionHouseManager`,
+`com.skyblock.core.crafting.manager.CraftingManager`,
+`com.skyblock.core.island.manager.IslandManager`). Import these directly — never a
+copy. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the package-layout
+conventions and the one-canonical-home rule.
+
+| Manager | Responsibility |
+|---------|----------------|
+| `AccessoryManager` / `AccessoryBagManager` | Talismans/accessories and the magical-power bag |
+| `BankManager` | Personal/co-op bank balance, interest, deposits/withdrawals |
+| `BazaarManager` | Buy/sell order book, instant buy/sell pricing, order fulfillment |
+| `BestiaryManager` | Mob-kill tracking and bestiary tiers |
+| `CalendarManager` | SkyBlock calendar, seasons, and scheduled events |
+| `CarnivalManager` | Carnival event games and rewards |
+| `CollectionManager` | Resource collections and tier-unlock thresholds |
+| `CrimsonIsleManager` | Kuudra tiers and Mage/Barbarian faction reputation |
+| `CrystalHollowsManager` | Dwarven Mines / Crystal Hollows zones, gemstones, powder |
+| `DragonManager` | Ender Dragon fights and contribution rewards |
+| `DungeonManager` | Catacombs floors F1–F7 + Master Mode, dungeon classes |
+| `EconomyManager` | Coins / purse balance |
+| `EnchantmentManager` / `EnchantingManager` | Custom enchantments and the enchant table |
+| `EssenceManager` | Essence currencies and shop upgrades |
+| `EventManager` | Server-wide event scheduling and lifecycle |
+| `FairySoulManager` | Fairy soul discovery and exchange bonuses |
+| `FishingManager` | Sea creatures, fishing XP, and treasure |
+| `ForgeManager` | Forge item recipes and processing slots |
+| `GardenManager` | Jacob's farming contests, plot unlocks, crop milestones |
+| `HotmManager` | Heart of the Mountain tree — perk nodes, tiers, powder |
+| `MayorManager` | Mayor elections and active perks |
+| `MiningManager` | Mining XP, speed, fortune, and ores |
+| `MinionManager` | Minion types/tiers, fuel, upgrade slots, hopper auto-sell |
+| `MuseumManager` | Museum donations and completion rewards |
+| `PartyManager` | Party invites, membership, and leadership |
+| `PetManager` | Pet ownership, levelling, and active-pet perks |
+| `QuestManager` | Quest tracking and completion |
+| `ReforgeManager` / `RepairManager` | Reforge stones/stats and item repair |
+| `ReputationManager` | Faction reputation tracking |
+| `RiftManager` | The Rift dimension state and currency |
+| `SacksManager` | Sack storage and auto-pickup |
+| `ShopManager` | NPC shop catalogues and transactions |
+| `SkillManager` | Skill levels and XP |
+| `SlayerManager` | Slayer quest tiers, boss spawn cost, and rewards |
+| `TradeManager` | Peer-to-peer trading sessions |
+
 ## Commands
 
 | Command | Alias | Description |
