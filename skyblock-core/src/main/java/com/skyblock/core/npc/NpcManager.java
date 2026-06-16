@@ -1,5 +1,7 @@
 package com.skyblock.core.npc;
 
+import com.skyblock.core.shop.manager.ShopManager;
+import com.skyblock.core.shop.manager.ShopManager.ShopEntry;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -48,35 +50,18 @@ public final class NpcManager {
 
 
     /**
-     * An item sold by an NPC.
+     * A registered NPC whose shop items live in {@link ShopManager} under
+     * {@link #shopId()}.
      *
-     * @param name     display name shown to players
-     * @param material Bukkit Material key (e.g. "IRON_SWORD")
-     * @param price    coin cost; must not be negative
+     * @param id     unique identifier used in commands (e.g. "blacksmith")
+     * @param name   display name shown in messages (e.g. "Blacksmith Bob")
+     * @param shopId the {@link ShopManager} shop id that holds this NPC's wares
      */
-    public record ShopItem(String name, String material, double price) {
-        public ShopItem {
-            Objects.requireNonNull(name, "name");
-            Objects.requireNonNull(material, "material");
-            if (price < 0) {
-                throw new IllegalArgumentException("price must not be negative, got " + price);
-            }
-        }
-    }
-
-    /**
-     * A registered NPC with an associated list of shop items.
-     *
-     * @param id    unique identifier used in commands (e.g. "blacksmith")
-     * @param name  display name shown in messages (e.g. "Blacksmith Bob")
-     * @param items items this NPC sells
-     */
-    public record NpcDefinition(String id, String name, List<ShopItem> items) {
+    public record NpcDefinition(String id, String name, String shopId) {
         public NpcDefinition {
             Objects.requireNonNull(id, "id");
             Objects.requireNonNull(name, "name");
-            Objects.requireNonNull(items, "items");
-            items = Collections.unmodifiableList(new ArrayList<>(items));
+            Objects.requireNonNull(shopId, "shopId");
         }
     }
 
@@ -129,25 +114,6 @@ public final class NpcManager {
     }
 
     /**
-     * Returns the first item sold by {@code npcId} whose name matches {@code itemName}
-     * (case-insensitive), or {@code null} if not found.
-     *
-     * @param npcId    the NPC id to search
-     * @param itemName the item display name
-     * @return the matching item, or {@code null}
-     */
-    public ShopItem findItem(String npcId, String itemName) {
-        NpcDefinition npc = findById(npcId);
-        if (npc == null) return null;
-        for (ShopItem item : npc.items()) {
-            if (item.name().equalsIgnoreCase(itemName)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Spawns an invisible, gravity-less {@link ArmorStand} at {@code location}
      * named after {@code npc} and tracks it so {@link NPCListener} can route
      * player interactions back to the correct {@link NpcDefinition}.
@@ -190,51 +156,56 @@ public final class NpcManager {
     }
 
     private void registerDefaults() {
-        register(new NpcDefinition("sword_smith", "Sword Smith", List.of(
-                new ShopItem("Iron Sword",    "IRON_SWORD",    200.0),
-                new ShopItem("Gold Sword",    "GOLD_SWORD",    400.0),
-                new ShopItem("Diamond Sword", "DIAMOND_SWORD", 1500.0),
-                new ShopItem("Bow",           "BOW",           300.0)
-        )));
-        register(new NpcDefinition("potion_brewer", "Potion Brewer", List.of(
-                new ShopItem("Speed Potion",        "SPEED_POTION",        150.0),
-                new ShopItem("Strength Potion",     "STRENGTH_POTION",     200.0),
-                new ShopItem("Regeneration Potion", "REGENERATION_POTION", 250.0),
-                new ShopItem("Jump Boost Potion",   "JUMP_BOOST_POTION",   100.0)
-        )));
-        register(new NpcDefinition("resource_merchant", "Resource Merchant", List.of(
-                new ShopItem("Coal",       "COAL",       5.0),
-                new ShopItem("Iron Ingot", "IRON_INGOT", 20.0),
-                new ShopItem("Gold Ingot", "GOLD_INGOT", 40.0),
-                new ShopItem("Diamond",    "DIAMOND",    250.0)
-        )));
-        register(new NpcDefinition("dungeon_vendor", "Dungeon Vendor", List.of(
-                new ShopItem("Dungeon Key",     "DUNGEON_KEY",     500.0),
-                new ShopItem("Dungeon Compass", "DUNGEON_COMPASS", 1000.0),
-                new ShopItem("Revive Stone",    "REVIVE_STONE",    2000.0),
-                new ShopItem("Dungeon Orb",     "DUNGEON_ORB",     750.0)
-        )));
+        ShopManager sm = ShopManager.getInstance();
 
-        register(new NpcDefinition("blacksmith", "Blacksmith Bob", List.of(
-                new ShopItem("Iron Sword", "IRON_SWORD", 200),
-                new ShopItem("Iron Pickaxe", "IRON_PICKAXE", 200),
-                new ShopItem("Iron Axe", "IRON_AXE", 200),
-                new ShopItem("Iron Chestplate", "IRON_CHESTPLATE", 300)
-        )));
+        sm.registerShop("sword_smith", "Sword Smith", List.of(
+                new ShopEntry("IRON_SWORD",    200,  0),
+                new ShopEntry("GOLD_SWORD",    400,  0),
+                new ShopEntry("DIAMOND_SWORD", 1500, 0),
+                new ShopEntry("BOW",           300,  0)));
+        register(new NpcDefinition("sword_smith", "Sword Smith", "sword_smith"));
 
-        register(new NpcDefinition("farmer", "Farmer Joe", List.of(
-                new ShopItem("Wheat Seeds", "WHEAT_SEEDS", 1),
-                new ShopItem("Carrot", "CARROT", 2),
-                new ShopItem("Potato", "POTATO", 2),
-                new ShopItem("Melon Seeds", "MELON_SEEDS", 3),
-                new ShopItem("Pumpkin Seeds", "PUMPKIN_SEEDS", 3),
-                new ShopItem("Nether Wart", "NETHER_WART", 10)
-        )));
+        sm.registerShop("potion_brewer", "Potion Brewer", List.of(
+                new ShopEntry("SPEED_POTION",        150,  0),
+                new ShopEntry("STRENGTH_POTION",     200,  0),
+                new ShopEntry("REGENERATION_POTION", 250,  0),
+                new ShopEntry("JUMP_BOOST_POTION",   100,  0)));
+        register(new NpcDefinition("potion_brewer", "Potion Brewer", "potion_brewer"));
 
-        register(new NpcDefinition("fisherman", "Fisherman Pete", List.of(
-                new ShopItem("Fishing Rod", "FISHING_ROD", 100),
-                new ShopItem("Raw Cod", "COD", 3),
-                new ShopItem("Raw Salmon", "SALMON", 5)
-        )));
+        sm.registerShop("resource_merchant", "Resource Merchant", List.of(
+                new ShopEntry("COAL",       5,   0),
+                new ShopEntry("IRON_INGOT", 20,  0),
+                new ShopEntry("GOLD_INGOT", 40,  0),
+                new ShopEntry("DIAMOND",    250, 0)));
+        register(new NpcDefinition("resource_merchant", "Resource Merchant", "resource_merchant"));
+
+        sm.registerShop("dungeon_vendor", "Dungeon Vendor", List.of(
+                new ShopEntry("DUNGEON_KEY",     500,  0),
+                new ShopEntry("DUNGEON_COMPASS", 1000, 0),
+                new ShopEntry("REVIVE_STONE",    2000, 0),
+                new ShopEntry("DUNGEON_ORB",     750,  0)));
+        register(new NpcDefinition("dungeon_vendor", "Dungeon Vendor", "dungeon_vendor"));
+
+        sm.registerShop("blacksmith", "Blacksmith Bob", List.of(
+                new ShopEntry("IRON_SWORD",      200, 0),
+                new ShopEntry("IRON_PICKAXE",    200, 0),
+                new ShopEntry("IRON_AXE",        200, 0),
+                new ShopEntry("IRON_CHESTPLATE", 300, 0)));
+        register(new NpcDefinition("blacksmith", "Blacksmith Bob", "blacksmith"));
+
+        sm.registerShop("farmer", "Farmer Joe", List.of(
+                new ShopEntry("WHEAT_SEEDS",  1,  0),
+                new ShopEntry("CARROT",       2,  0),
+                new ShopEntry("POTATO",       2,  0),
+                new ShopEntry("MELON_SEEDS",  3,  0),
+                new ShopEntry("PUMPKIN_SEEDS", 3, 0),
+                new ShopEntry("NETHER_WART",  10, 0)));
+        register(new NpcDefinition("farmer", "Farmer Joe", "farmer"));
+
+        sm.registerShop("fisherman", "Fisherman Pete", List.of(
+                new ShopEntry("FISHING_ROD", 100, 0),
+                new ShopEntry("COD",         3,   0),
+                new ShopEntry("SALMON",      5,   0)));
+        register(new NpcDefinition("fisherman", "Fisherman Pete", "fisherman"));
     }
 }

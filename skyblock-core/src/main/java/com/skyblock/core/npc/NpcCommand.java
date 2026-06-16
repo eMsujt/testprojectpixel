@@ -2,7 +2,8 @@ package com.skyblock.core.npc;
 
 import com.skyblock.core.economy.manager.EconomyManager;
 import com.skyblock.core.npc.NpcManager.NpcDefinition;
-import com.skyblock.core.npc.NpcManager.ShopItem;
+import com.skyblock.core.shop.manager.ShopManager;
+import com.skyblock.core.shop.manager.ShopManager.ShopEntry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -11,6 +12,8 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -90,10 +93,12 @@ public final class NpcCommand implements TabExecutor {
             NpcDefinition npc = npcManager.findById(args[1]);
             if (npc == null) return Collections.emptyList();
             String lower = args[2].toLowerCase();
-            return npc.items().stream()
-                    .map(ShopItem::name)
-                    .filter(n -> n.toLowerCase().startsWith(lower))
-                    .collect(Collectors.toList());
+            return ShopManager.getInstance().getShop(npc.shopId())
+                    .map(shop -> shop.entries().stream()
+                            .map(ShopEntry::itemId)
+                            .filter(id -> id.toLowerCase().startsWith(lower))
+                            .collect(Collectors.toList()))
+                    .orElse(Collections.emptyList());
         }
         return Collections.emptyList();
     }
@@ -101,7 +106,9 @@ public final class NpcCommand implements TabExecutor {
     private void listShops(Player player) {
         player.sendMessage("=== NPC Shops ===");
         for (NpcDefinition npc : npcManager.getAllNpcs()) {
-            player.sendMessage("- " + npc.id() + " (" + npc.name() + ", " + npc.items().size() + " items)");
+            int count = ShopManager.getInstance().getShop(npc.shopId())
+                    .map(s -> s.entries().size()).orElse(0);
+            player.sendMessage("- " + npc.id() + " (" + npc.name() + ", " + count + " items)");
         }
         player.sendMessage("Use /npc shop <id> to view a shop's items.");
     }
@@ -114,7 +121,9 @@ public final class NpcCommand implements TabExecutor {
             return;
         }
         for (NpcDefinition npc : all) {
-            player.sendMessage("- " + npc.id() + " (" + npc.name() + ", " + npc.items().size() + " items)");
+            int count = ShopManager.getInstance().getShop(npc.shopId())
+                    .map(s -> s.entries().size()).orElse(0);
+            player.sendMessage("- " + npc.id() + " (" + npc.name() + ", " + count + " items)");
         }
         player.sendMessage("Use /npc shop <npc> to view an NPC's shop.");
     }
@@ -125,13 +134,14 @@ public final class NpcCommand implements TabExecutor {
             player.sendMessage("Unknown NPC: " + npcId + ". Use /npc list to see NPCs.");
             return;
         }
+        Optional<ShopManager.Shop> shopOpt = ShopManager.getInstance().getShop(npc.shopId());
         player.sendMessage("=== " + npc.name() + "'s Shop ===");
-        if (npc.items().isEmpty()) {
+        if (shopOpt.isEmpty() || shopOpt.get().entries().isEmpty()) {
             player.sendMessage("This NPC has no items for sale.");
             return;
         }
-        for (ShopItem item : npc.items()) {
-            player.sendMessage("- " + item.name() + " — " + item.price() + " coins");
+        for (ShopEntry entry : shopOpt.get().entries()) {
+            player.sendMessage("- " + formatName(entry.itemId()) + " — " + entry.buyPrice() + " coins");
         }
         player.sendMessage("Use /npc buy " + npc.id() + " <item> to purchase.");
     }
@@ -142,16 +152,30 @@ public final class NpcCommand implements TabExecutor {
             player.sendMessage("Unknown NPC: " + npcId + ". Use /npc list to see NPCs.");
             return;
         }
-        ShopItem item = npcManager.findItem(npcId, itemName);
-        if (item == null) {
+        String itemId = itemName.toUpperCase(Locale.ROOT).replace(' ', '_');
+        Optional<ShopEntry> entryOpt = ShopManager.getInstance().getEntry(npc.shopId(), itemId);
+        if (entryOpt.isEmpty()) {
             player.sendMessage("Item '" + itemName + "' not found in " + npc.name() + "'s shop.");
             return;
         }
-        if (!economyManager.withdraw(player.getUniqueId(), item.price())) {
-            player.sendMessage("You don't have enough coins. " + item.name() + " costs " + item.price() + " coins.");
+        ShopEntry entry = entryOpt.get();
+        if (!economyManager.withdraw(player.getUniqueId(), entry.buyPrice())) {
+            player.sendMessage("You don't have enough coins. " + formatName(entry.itemId()) + " costs " + entry.buyPrice() + " coins.");
             return;
         }
-        player.sendMessage("You purchased " + item.name() + " from " + npc.name() + " for " + item.price() + " coins.");
+        player.sendMessage("You purchased " + formatName(entry.itemId()) + " from " + npc.name() + " for " + entry.buyPrice() + " coins.");
+    }
+
+    private static String formatName(String itemId) {
+        StringBuilder sb = new StringBuilder();
+        for (String word : itemId.split("_")) {
+            if (!word.isEmpty()) {
+                sb.append(Character.toUpperCase(word.charAt(0)))
+                  .append(word.substring(1).toLowerCase(Locale.ROOT))
+                  .append(' ');
+            }
+        }
+        return sb.toString().trim();
     }
 
     private void listTypes(Player player) {
