@@ -1,6 +1,6 @@
 package com.skyblock.plugin.minion.task;
 
-import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.minion.manager.MinionManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
