@@ -354,13 +354,9 @@ public final class PetManager {
             this.experience = experience;
         }
 
-        /** Returns the pet's current level, between 1 and {@link #MAX_LEVEL}. */
+        /** Returns the pet's current level, between 1 and {@link #MAX_LEVEL}, scaled by rarity. */
         public int getLevel() {
-            int level = 1;
-            while (level < MAX_LEVEL && experience >= XP_THRESHOLD[level - 1]) {
-                level++;
-            }
-            return level;
+            return computeLevel(experience, rarity);
         }
     }
 
@@ -496,8 +492,8 @@ public final class PetManager {
         long prev = xpMap.getOrDefault(type, 0L);
         long total = prev + amount;
         xpMap.put(type, total);
-        int levelBefore = computeLevel(prev);
-        int levelAfter = computeLevel(total);
+        int levelBefore = computeLevel(prev, type.defaultRarity);
+        int levelAfter = computeLevel(total, type.defaultRarity);
         if (levelAfter > levelBefore) {
             recordPetEvent(playerId, "Pet " + type.name() + " leveled up to " + levelAfter);
         }
@@ -512,9 +508,39 @@ public final class PetManager {
         return xpMap == null ? 0L : xpMap.getOrDefault(type, 0L);
     }
 
-    /** Returns the current level for the player's given pet type (1–{@link #MAX_LEVEL}). */
+    /** Returns the current level for the player's given pet type (1–{@link #MAX_LEVEL}), scaled by the pet's default rarity. */
     public int getLevel(UUID playerId, PetType type) {
-        return computeLevel(getExperience(playerId, type));
+        Objects.requireNonNull(type, "type");
+        return computeLevel(getExperience(playerId, type), type.defaultRarity);
+    }
+
+    /** Returns all abilities defined for the given pet type, in unlock order (empty if the pet has none). */
+    public static List<PetAbility> getAbilities(PetType type) {
+        Objects.requireNonNull(type, "type");
+        return PET_ABILITIES.getOrDefault(type, Collections.emptyList());
+    }
+
+    /**
+     * Returns the abilities currently unlocked for the player's pet of the given type, based on its level.
+     *
+     * @param kind {@code ACTIVE} for abilities that apply while summoned, {@code HELD} for menu-held abilities,
+     *             or {@code null} to include both kinds
+     */
+    public List<PetAbility> getUnlockedAbilities(UUID playerId, PetType type, AbilityKind kind) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(type, "type");
+        List<PetAbility> all = PET_ABILITIES.get(type);
+        if (all == null || all.isEmpty()) {
+            return Collections.emptyList();
+        }
+        int level = getLevel(playerId, type);
+        List<PetAbility> unlocked = new ArrayList<>();
+        for (PetAbility ability : all) {
+            if (level >= ability.unlockLevel && (kind == null || ability.kind == kind)) {
+                unlocked.add(ability);
+            }
+        }
+        return Collections.unmodifiableList(unlocked);
     }
 
     /** Returns a {@link PetData} snapshot for the given pet type, or a level-1 default if none. */
@@ -673,9 +699,22 @@ public final class PetManager {
         return hadData;
     }
 
-    private static int computeLevel(long xp) {
+    /** Returns the cumulative-XP threshold table for the given rarity, falling back sensibly for unmapped tiers. */
+    private static long[] xpTableFor(Rarity rarity) {
+        long[] table = PET_XP_TABLE.get(rarity.name());
+        if (table != null) {
+            return table;
+        }
+        // Rarities above LEGENDARY (MYTHIC/DIVINE/SPECIAL) reuse the LEGENDARY curve; anything else uses COMMON.
+        return rarity.compareTo(Rarity.LEGENDARY) >= 0
+                ? PET_XP_TABLE.get("LEGENDARY")
+                : PET_XP_TABLE.get("COMMON");
+    }
+
+    private static int computeLevel(long xp, Rarity rarity) {
+        long[] table = xpTableFor(rarity);
         int level = 1;
-        while (level < MAX_LEVEL && xp >= XP_THRESHOLD[level - 1]) {
+        while (level < MAX_LEVEL && xp >= table[level - 1]) {
             level++;
         }
         return level;
