@@ -1,8 +1,9 @@
 package com.skyblock.core.event;
 
-import com.skyblock.core.event.EventManager.EventStatus;
-import com.skyblock.core.event.EventManager.EventType;
-import com.skyblock.core.event.EventManager.SkyBlockEvent;
+import com.skyblock.core.manager.EventManager;
+import com.skyblock.core.manager.EventManager.EventStatus;
+import com.skyblock.core.manager.EventManager.EventType;
+import com.skyblock.core.manager.EventManager.SkyBlockEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

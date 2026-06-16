@@ -166,7 +166,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("pet").setExecutor(petCommand);
         getCommand("alchemy").setExecutor(new AlchemyCommand(AlchemyManager.getInstance()));
         getCommand("hub").setExecutor(new HubCommand());
-        getCommand("event").setExecutor(new EventCommand(com.skyblock.core.event.EventManager.getInstance()));
+        getCommand("event").setExecutor(new EventCommand(com.skyblock.core.manager.EventManager.getInstance()));
         getCommand("quest").setExecutor(new QuestCommand(QuestManager.getInstance()));
         getCommand("trade").setExecutor(new TradeCommand(TradeManager.getInstance()));
         com.skyblock.plugin.manager.DamageManager.getInstance().register(this);
