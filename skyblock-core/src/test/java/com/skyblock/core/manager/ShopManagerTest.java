@@ -1,6 +1,7 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.manager.ShopManager.TransactionResult;
+import com.skyblock.core.shop.manager.ShopManager;
+import com.skyblock.core.shop.manager.ShopManager.TransactionResult;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
