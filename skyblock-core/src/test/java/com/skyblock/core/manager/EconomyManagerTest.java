@@ -1,4 +1,4 @@
-package com.skyblock.core.economy.manager;
+package com.skyblock.core.manager;
 
 import com.skyblock.core.economy.model.CurrencyType;
 import org.junit.jupiter.api.BeforeEach;
