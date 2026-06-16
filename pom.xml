@@ -25,7 +25,6 @@
         <module>economy</module>
         <module>slayer</module>
         <module>forging</module>
-        <module>crafting</module>
         <module>enchanting</module>
         <module>mining</module>
         <module>scoreboard</module>
