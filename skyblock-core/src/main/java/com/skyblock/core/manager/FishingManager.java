@@ -81,7 +81,9 @@ public final class FishingManager {
         /** Lava pools (Crimson Isle, the Magma Fields). */
         LAVA,
         /** The Oasis on the Jerry's Workshop / desert islands. */
-        OASIS
+        OASIS,
+        /** Frozen water during the Jerry's Workshop / Winter event. */
+        WINTER
     }
 
     /** Sea creatures that can be summoned while fishing, grouped by the {@link WaterType} they spawn in. */
@@ -107,7 +109,14 @@ public final class FishingManager {
         // --- Oasis ---
         OASIS_RABBIT(1,  0.35, WaterType.OASIS),
         OASIS_SHEEP(15, 0.18, WaterType.OASIS),
-        WATER_HYDRA(35, 0.05, WaterType.OASIS);
+        WATER_HYDRA(35, 0.05, WaterType.OASIS),
+
+        // --- Winter ---
+        FROZEN_STEVE(1,  0.30, WaterType.WINTER),
+        FROSTY(10, 0.20, WaterType.WINTER),
+        GRINCH(20, 0.12, WaterType.WINTER),
+        YETI(30, 0.06, WaterType.WINTER),
+        NUTCRACKER(40, 0.03, WaterType.WINTER);
 
         /** Minimum fishing level required for this creature to appear. */
         public final int minLevel;
