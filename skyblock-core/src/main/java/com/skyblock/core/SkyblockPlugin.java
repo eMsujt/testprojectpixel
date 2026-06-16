@@ -9,7 +9,7 @@ import com.skyblock.core.auction.command.AuctionHouseCommand;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.kuudra.KuudraCommand;
 import com.skyblock.core.bank.command.BankCommand;
-import com.skyblock.core.bank.manager.BankManager;
+import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.bazaar.command.BazaarCommand;
 import com.skyblock.core.bazaar.manager.BazaarManager;
 import com.skyblock.core.dungeon.command.DungeonCommand;
