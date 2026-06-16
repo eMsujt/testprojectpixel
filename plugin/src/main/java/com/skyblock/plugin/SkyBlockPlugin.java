@@ -19,7 +19,7 @@ import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.WarpManager;
-import com.skyblock.core.manager.DungeonManager;
+import com.skyblock.core.dungeon.manager.DungeonManager;
 import com.skyblock.core.items.CustomItemManager;
 import com.skyblock.plugin.commands.AlchemyCommand;
 import com.skyblock.core.auction.command.AuctionHouseCommand;
