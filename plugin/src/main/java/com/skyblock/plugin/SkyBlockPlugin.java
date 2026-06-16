@@ -7,7 +7,7 @@ import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.plugin.managers.FishingManager;
-import com.skyblock.core.enchant.manager.EnchantmentManager;
+import com.skyblock.core.manager.EnchantmentManager;
 import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.core.garden.GardenCommand;
 import com.skyblock.core.garden.GardenManager;

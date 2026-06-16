@@ -1,7 +1,7 @@
 package com.skyblock.core.enchant;
 
 import com.skyblock.core.enchanting.EnchantingManager;
-import com.skyblock.core.enchant.manager.EnchantmentManager;
+import com.skyblock.core.manager.EnchantmentManager;
 
 import java.util.Objects;
 import java.util.UUID;
