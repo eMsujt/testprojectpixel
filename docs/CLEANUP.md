@@ -836,6 +836,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (BazaarManager/BazaarHandler consolidation audit — round 129)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| BazaarManager / BazaarHandler | `com.skyblock.core.manager.BazaarManager` | Grepped every module for classes named `BazaarManager` or `BazaarHandler`; confirmed canonical at `com.skyblock.core.manager.BazaarManager` as sole implementation; no duplicate implementations found requiring consolidation — `@Deprecated` delegation stubs identified for deletion by Forge in round 130; no file changes required | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
