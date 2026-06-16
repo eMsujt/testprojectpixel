@@ -2,7 +2,7 @@ package com.skyblock.gui.menu;
 
 import com.skyblock.core.collections.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.items.util.ItemBuilder;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.Menu;
 import org.bukkit.Material;

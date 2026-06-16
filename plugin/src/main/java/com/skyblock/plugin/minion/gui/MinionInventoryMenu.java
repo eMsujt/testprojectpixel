@@ -1,6 +1,6 @@
 package com.skyblock.plugin.minion.gui;
 
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.items.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
 import com.skyblock.plugin.minion.model.Minion;
 import org.bukkit.Material;

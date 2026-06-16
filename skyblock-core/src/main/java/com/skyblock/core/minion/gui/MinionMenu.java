@@ -4,7 +4,7 @@ import com.skyblock.core.minion.manager.MinionManager;
 import com.skyblock.core.minion.manager.MinionManager.MinionData;
 import com.skyblock.core.minion.manager.MinionManager.MinionTier;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.items.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

@@ -3,7 +3,7 @@ package com.skyblock.core.bazaar.gui;
 import com.skyblock.core.bazaar.manager.BazaarManager;
 import com.skyblock.core.bazaar.manager.BazaarManager.BazaarProduct;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.items.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
