@@ -29,7 +29,7 @@ import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.items.manager.CustomItemManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.auction.command.AuctionHouseCommand;
-import com.skyblock.plugin.managers.CooldownManager;
+import com.skyblock.core.cooldown.CooldownManager;
 import com.skyblock.core.manager.CraftingManager;
 import com.skyblock.plugin.managers.EventManager;
 import com.skyblock.core.manager.IslandManager;
