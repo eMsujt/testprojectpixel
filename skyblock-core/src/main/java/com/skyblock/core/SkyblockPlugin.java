@@ -31,7 +31,7 @@ import com.skyblock.core.mayor.MayorManager;
 import com.skyblock.core.minion.command.MinionCommand;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.party.PartyCommand;
-import com.skyblock.core.party.PartyManager;
+import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
