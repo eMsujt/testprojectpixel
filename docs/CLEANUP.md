@@ -694,6 +694,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (gui/pets/skills module sub-package layout standardization — rounds 112–114)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| gui module package layout (`com.skyblock.gui`) | `com.skyblock.gui.{menu,util,listener,builder}` | All `.java` files in the `gui` module moved into canonical sub-packages; flat-package strays eliminated; all callers updated to new import paths | #2836 |
+| pets module package layout (`com.skyblock.pets`) | `com.skyblock.pets.{command,listener,gui,manager,model}` | All `.java` files in the `pets` module moved into canonical sub-packages; flat-package strays eliminated; all callers updated to new import paths | #2835 |
+| skills module package layout (`com.skyblock.skills`) | `com.skyblock.skills.{command,listener,gui,manager,model,util}` | All `.java` files currently in flat or misplaced packages under the `skills` module moved into canonical sub-packages; flat-package strays eliminated; all callers updated to new import paths | #2834 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
