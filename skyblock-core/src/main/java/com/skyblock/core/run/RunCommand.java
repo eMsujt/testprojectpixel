@@ -1,5 +1,6 @@
 package com.skyblock.core.run;
 
+import com.skyblock.core.dungeon.manager.RunManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -70,7 +71,7 @@ public final class RunCommand implements TabExecutor {
             int count = runManager.getRunCount(player.getUniqueId(), floor);
             player.sendMessage("Runs on " + floor + ": " + count);
         } else {
-            Map<String, Integer> runs = runManager.getRuns(player.getUniqueId());
+            Map<String, Integer> runs = runManager.getRunCounts(player.getUniqueId());
             if (runs.isEmpty()) {
                 player.sendMessage("You have no recorded dungeon runs.");
                 return;
@@ -87,13 +88,12 @@ public final class RunCommand implements TabExecutor {
             return;
         }
         String floor = args[1];
-        runManager.addRun(player.getUniqueId(), floor);
-        player.sendMessage("Run added for floor: " + floor
-                + " (total: " + runManager.getRunCount(player.getUniqueId(), floor) + ")");
+        int total = runManager.incrementRunCount(player.getUniqueId(), floor);
+        player.sendMessage("Run added for floor: " + floor + " (total: " + total + ")");
     }
 
     private void handleReset(Player player) {
-        runManager.resetRuns(player.getUniqueId());
+        runManager.reset(player.getUniqueId());
         player.sendMessage("Your dungeon run statistics have been reset.");
     }
 
