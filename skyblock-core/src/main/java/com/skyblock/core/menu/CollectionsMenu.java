@@ -38,13 +38,7 @@ public final class CollectionsMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                setItem(slot, pane);
-            }
-        }
+        fillBorder(new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build());
 
         CollectionManager manager = CollectionManager.getInstance();
         CollectionCategory[] categories = CollectionCategory.values();
@@ -57,6 +51,17 @@ public final class CollectionsMenu extends Menu {
                             "§7Total collected: §e" + total,
                             "§7View your " + category.getDisplayName().toLowerCase() + " collections.")
                     .build());
+        }
+    }
+
+    private void fillBorder(ItemStack pane) {
+        int size = getRows() * 9;
+        int lastRow = size - 9;
+        for (int slot = 0; slot < size; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= lastRow || col == 0 || col == 8) {
+                setItem(slot, pane);
+            }
         }
     }
 }
