@@ -518,6 +518,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (stale-import fix sweep + dead-code deletion — round 93)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| Stale imports (round-92 follow-up) | N/A | Swept every `.java` file for stale import references introduced by the round-92 Bukkit command-class consolidation; no stale imports found — no file changes required | — |
+| Package layout (skills + collections modules) | `com.skyblock.core.manager.SkillManager`, `com.skyblock.core.manager.CollectionManager` | Standardized package layout in the `skills` and `collections` modules: moved every misplaced command, listener, GUI, manager, model, and util class into the correct sub-package; flat-package strays eliminated; canonical managers confirmed as sole implementations | #2772 |
+| Dead-code sweep (rounds 75–92 follow-up) | N/A | Deleted 8 dead `.java` files whose bodies contained only empty constructors, `@Deprecated` annotations with no callers, or pure no-op stubs: three `ProfileManager` delegation stubs (`core.profile`, `plugin.managers`, `profile` modules), `DungeonsManager` delegation stub, `SkyBlockItemStack`/`SkyBlockItemManager` stubs (canonical replacements already exist), and two additional zero-caller orphan files not caught in earlier sweeps | #2773 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
