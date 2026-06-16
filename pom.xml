@@ -19,10 +19,8 @@
         <module>items</module>
         <module>playerdata</module>
         <module>profiles</module>
-        <module>slayer</module>
         <module>enchanting</module>
         <module>mining</module>
-        <module>slayers</module>
         <module>dungeons</module>
         <module>foraging</module>
         <module>farming</module>
