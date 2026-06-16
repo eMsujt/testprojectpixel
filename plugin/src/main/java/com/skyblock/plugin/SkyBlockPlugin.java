@@ -2,7 +2,7 @@ package com.skyblock.plugin;
 
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;
-import com.skyblock.core.manager.BazaarManager;
+import com.skyblock.core.bazaar.manager.BazaarManager;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.alchemy.AlchemyManager;
@@ -36,7 +36,7 @@ import com.skyblock.plugin.hud.ActionBarManager;
 import com.skyblock.plugin.command.dungeon.DungeonCommand;
 import com.skyblock.plugin.command.fairy.FairyCommand;
 import com.skyblock.core.bank.command.BankCommand;
-import com.skyblock.core.command.BazaarCommand;
+import com.skyblock.core.bazaar.command.BazaarCommand;
 import com.skyblock.core.collections.command.CollectionsCommand;
 import com.skyblock.plugin.commands.EnchantingCommand;
 import com.skyblock.plugin.commands.EventCommand;
