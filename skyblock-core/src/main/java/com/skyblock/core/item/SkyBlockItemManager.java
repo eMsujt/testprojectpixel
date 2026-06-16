@@ -1,7 +1,7 @@
 package com.skyblock.core.item;
 
 import com.skyblock.core.SkyBlockPlugin;
-import com.skyblock.core.items.CustomItemManager;
+import com.skyblock.core.items.manager.CustomItemManager;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

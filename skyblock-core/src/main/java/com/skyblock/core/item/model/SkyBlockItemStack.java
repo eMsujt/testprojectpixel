@@ -1,6 +1,6 @@
 package com.skyblock.core.item.model;
 
-import com.skyblock.core.items.CustomItemManager;
+import com.skyblock.core.items.manager.CustomItemManager;
 import org.bukkit.inventory.ItemStack;
 
 /**
