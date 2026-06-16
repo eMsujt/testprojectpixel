@@ -20,6 +20,7 @@
         <dependency>
             <groupId>com.skyblock</groupId>
             <artifactId>skyblock-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
@@ -28,14 +29,17 @@
         <dependency>
             <groupId>com.skyblock</groupId>
             <artifactId>skyblock-mining</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.skyblock</groupId>
             <artifactId>skyblock-farming</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.skyblock</groupId>
             <artifactId>skyblock-foraging</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

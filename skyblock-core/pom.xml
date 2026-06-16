@@ -19,11 +19,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.skyblock</groupId>
-            <artifactId>skyblock-items</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
         </dependency>
@@ -31,21 +26,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.skyblock</groupId>
-            <artifactId>skyblock-mining</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.skyblock</groupId>
-            <artifactId>skyblock-farming</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.skyblock</groupId>
-            <artifactId>skyblock-foraging</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
