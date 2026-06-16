@@ -154,6 +154,36 @@ public final class CollectionManager {
         return thresholds[tier] - getItems(playerId, collection);
     }
 
+    /** Returns {@code true} once the player has unlocked the given tier (1-based) for the collection. */
+    public boolean hasUnlockedTier(UUID playerId, Collection collection, int tier) {
+        return getTier(playerId, collection) >= tier;
+    }
+
+    /** Returns {@code true} when the player has reached the maximum tier for the collection. */
+    public boolean isMaxed(UUID playerId, Collection collection) {
+        int[] thresholds = TIER_DATA.get(collection);
+        return thresholds != null && getTier(playerId, collection) >= thresholds.length;
+    }
+
+    /** Returns progress toward the next tier as a fraction in {@code [0, 1]} (1 if maxed). */
+    public double getProgressToNextTier(UUID playerId, Collection collection) {
+        int[] thresholds = TIER_DATA.get(collection);
+        if (thresholds == null) return 0.0;
+        int tier = getTier(playerId, collection);
+        if (tier >= thresholds.length) return 1.0;
+        long items = getItems(playerId, collection);
+        long floor = tier == 0 ? 0L : thresholds[tier - 1];
+        long ceil = thresholds[tier];
+        return ceil == floor ? 1.0 : (double) (items - floor) / (ceil - floor);
+    }
+
+    /** Returns the total number of collection tiers the player has unlocked across all collections. */
+    public int getTotalTiersUnlocked(UUID playerId) {
+        int total = 0;
+        for (Collection c : TIER_DATA.keySet()) total += getTier(playerId, c);
+        return total;
+    }
+
     /** Returns an unmodifiable view of all collection totals for the player. */
     public Map<Collection, Long> getAll(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
