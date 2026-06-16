@@ -1,4 +1,4 @@
-package com.skyblock.core.trade;
+package com.skyblock.core.manager;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -128,6 +128,9 @@ public final class TradeManager {
         private final List<ItemStack> offeredByA = new ArrayList<>();
         private final List<ItemStack> offeredByB = new ArrayList<>();
 
+        private double coinsByA = 0.0;
+        private double coinsByB = 0.0;
+
         private boolean confirmedA = false;
         private boolean confirmedB = false;
 
@@ -159,6 +162,19 @@ public final class TradeManager {
 
         public List<ItemStack> getOfferedItems(UUID playerId) {
             return Collections.unmodifiableList(getOffered(playerId));
+        }
+
+        // Offered coins (escrow)
+
+        /** Sets the coins {@code playerId} is offering. Negative amounts are clamped to zero. */
+        public void setOfferedCoins(UUID playerId, double coins) {
+            double amount = coins < 0 ? 0.0 : coins;
+            if (playerId.equals(playerA)) coinsByA = amount;
+            else coinsByB = amount;
+        }
+
+        public double getOfferedCoins(UUID playerId) {
+            return playerId.equals(playerA) ? coinsByA : coinsByB;
         }
 
         // Confirmation

@@ -1,5 +1,6 @@
 package com.skyblock.core.trade;
 
+import com.skyblock.core.manager.TradeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

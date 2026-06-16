@@ -1,5 +1,6 @@
 package com.skyblock.core.trade;
 
+import com.skyblock.core.manager.TradeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 public final class TradeCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS =
-            Arrays.asList("accept", "decline", "add", "remove", "view", "confirm", "cancel");
+            Arrays.asList("accept", "decline", "add", "remove", "coins", "view", "confirm", "cancel");
 
     private final TradeManager tradeManager;
 
@@ -57,6 +58,7 @@ public final class TradeCommand implements TabExecutor {
             case "decline" -> handleDecline(player, args);
             case "add"     -> handleAdd(player, args);
             case "remove"  -> handleRemove(player, args);
+            case "coins"   -> handleCoins(player, args);
             case "view"    -> handleView(player);
             case "confirm" -> handleConfirm(player);
             case "cancel"  -> handleCancel(player);
@@ -212,6 +214,40 @@ public final class TradeCommand implements TabExecutor {
         player.sendMessage("Item removed from your trade offer.");
     }
 
+    private void handleCoins(Player player, String[] args) {
+        TradeManager.TradeSession session = tradeManager.getSession(player.getUniqueId());
+        if (session == null) {
+            player.sendMessage("You do not have an active trade session.");
+            return;
+        }
+        if (args.length < 2) {
+            player.sendMessage("Usage: /trade coins <amount>");
+            return;
+        }
+        double coins;
+        try {
+            coins = Double.parseDouble(args[1]);
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid coin amount.");
+            return;
+        }
+        if (coins < 0) {
+            player.sendMessage("Coin amount cannot be negative.");
+            return;
+        }
+        // Changing the offer voids both confirmations
+        session.unconfirm(player.getUniqueId());
+        session.unconfirm(session.getOther(player.getUniqueId()));
+
+        session.setOfferedCoins(player.getUniqueId(), coins);
+        player.sendMessage("You are now offering " + coins + " coins.");
+
+        Player partner = Bukkit.getPlayer(session.getOther(player.getUniqueId()));
+        if (partner != null) {
+            partner.sendMessage(player.getName() + " is now offering " + coins + " coins.");
+        }
+    }
+
     private void handleView(Player player) {
         TradeManager.TradeSession session = tradeManager.getSession(player.getUniqueId());
         if (session == null) {
@@ -225,8 +261,10 @@ public final class TradeCommand implements TabExecutor {
         player.sendMessage("=== Trade Session ===");
         player.sendMessage("Your offer:");
         listItems(player, session.getOfferedItems(player.getUniqueId()));
+        player.sendMessage("  Coins: " + session.getOfferedCoins(player.getUniqueId()));
         player.sendMessage(partnerName + "'s offer:");
         listItems(player, session.getOfferedItems(partnerId));
+        player.sendMessage("  Coins: " + session.getOfferedCoins(partnerId));
         player.sendMessage("Your confirmation: " + (session.isConfirmed(player.getUniqueId()) ? "YES" : "NO"));
         player.sendMessage(partnerName + "'s confirmation: " + (session.isConfirmed(partnerId) ? "YES" : "NO"));
     }
@@ -310,6 +348,7 @@ public final class TradeCommand implements TabExecutor {
         player.sendMessage("/trade decline <player> — decline a trade request");
         player.sendMessage("/trade add [slot]       — add item from hotbar slot (default: slot 1)");
         player.sendMessage("/trade remove <index>   — remove item from your offer by index");
+        player.sendMessage("/trade coins <amount>   — set the coins you offer");
         player.sendMessage("/trade view             — view current trade offers");
         player.sendMessage("/trade confirm          — confirm your side of the trade");
         player.sendMessage("/trade cancel           — cancel the trade");

@@ -53,8 +53,8 @@ import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.quest.command.QuestCommand;
+import com.skyblock.core.manager.TradeManager;
 import com.skyblock.core.trade.TradeCommand;
-import com.skyblock.core.trade.TradeManager;
 import com.skyblock.core.command.SkyblockMenuCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
