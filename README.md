@@ -2,6 +2,18 @@
 
 A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven multi-module project targeting Paper 1.21+.
 
+## Documentation
+
+All project documentation lives under [`docs/`](docs/):
+
+| Document | What it covers |
+|----------|----------------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | How the repo is laid out — the canonical `com.skyblock.core.*` package, the **module map**, the manager registry, and where to put a change. **Read this first.** |
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Planned features and milestones. |
+| [`docs/STATUS.md`](docs/STATUS.md) | Implementation status and the duplicate inventory. |
+| [`docs/CLEANUP.md`](docs/CLEANUP.md) | Consolidation history. |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to build, test, and submit changes. |
+
 ## Prerequisites
 
 | Requirement | Version |
@@ -33,89 +45,10 @@ mvn clean package -DskipTests
 
 ## Module Structure
 
-The parent POM (`pom.xml`) aggregates all modules. Key modules:
-
-| Module | Purpose |
-|--------|---------|
-| `api` | Shared API interfaces (`skyblock-api`) |
-| `skyblock-core` | Main plugin JAR — wires all managers and commands |
-| `economy` / `banking` / `bank` | Coin economy and banking |
-| `island` / `islands` | Void-world island generation and management |
-| `auction` / `auctionhouse` / `auctions` | Auction House (BIN + bid) |
-| `bazaar` | Buy/sell order bazaar |
-| `slayer` / `slayers` | Slayer quest system |
-| `dungeons` / `dungeon` | Dungeon runs |
-| `skills` | Skill XP and leveling |
-| `collections` / `collection` | Item collection tracking |
-| `minions` / `minion` | Placed minion management |
-| `pets` | Pet system |
-| `crafting` | Custom SkyBlock recipes |
-| `enchanting` / `enchants` / `enchantments` | Custom enchantment system |
-| `fishing` / `foraging` / `farming` / `mining` | Gathering skills |
-| `party` | Party invites and membership |
-| `trade` / `trades` / `trading` | Peer-to-peer item trading |
-| `wardrobe` | Named armor outfit storage |
-| `bestiary` | Per-player mob kill tracking |
-| `quests` | Quest lifecycle |
-| `achievements` | Achievement tracking |
-| `leaderboards` | Player leaderboards |
-| `npc` / `npcs` | NPC shops |
-| `shop` | General item shop |
-| `storage` | Personal paged storage |
-| `museum` | Item museum |
-| `hotm` | Heart of the Mountain progression |
-| `garden` | Garden plots |
-| `guild` / `guilds` | Guild management |
-| `alchemy` / `brewing` | Potion brewing |
-| `reforging` / `forging` / `item_forge` | Item reforging and forge |
-| `talismans` / `accessories` | Talisman/accessory bag |
-| `fairysouls` | Fairy soul tracking |
-| `calendar` | In-game seasonal calendar |
-| `housing` | Player housing |
-| `scoreboard` | Sidebar scoreboard |
-| `stats` | Player stat aggregation |
-| `combat` | Combat system hooks |
-| `profile` / `profiles` / `playerdata` | Player profile persistence |
-| `backpacks` | Portable backpacks |
-
-## Core Managers
-
-All gameplay state is owned by a canonical set of singleton managers under
-`com.skyblock.core.manager` (in the `skyblock-core` module). Each is a process-wide
-singleton — obtain it via its static `getInstance()` accessor. These are the single
-source of truth for their domain; feature modules and commands delegate to them rather
-than holding their own state.
-
-| Manager | Responsibility |
-|---------|----------------|
-| `AccessoryManager` | Accessory rarities, magical power, and tuning points |
-| `BankManager` | Per-player bank balance and interest tiers |
-| `BazaarManager` | Bazaar order book — instant buy/sell and buy/sell orders |
-| `CollectionManager` | Per-item collection tiers and unlock progress |
-| `DungeonManager` | Dungeon runs and class progression |
-| `EconomyManager` | Coin balances (purse and bank) with deposit/withdraw |
-| `EnchantmentManager` | Per-player enchantment levels and the enchant table |
-| `EventManager` | Server-wide bonus events |
-| `FishingManager` | Fishing progression, sea-creature spawn pools, and loot rolls |
-| `GardenManager` | Garden plots, crop milestones, and farming contests |
-| `IslandManager` | Per-player island creation and management |
-| `MiningManager` | Mining progression and speed bonuses |
-| `MinionManager` | Placed minion management |
-| `MuseumManager` | Museum donation flow and per-category completion |
-| `PartyManager` | Party invites, membership, and leader transfer |
-| `PetManager` | Pet collections, active pets, and XP curves |
-| `QuestManager` | Quest definitions and objective tracking |
-| `ReforgeManager` | Item reforges and reforge stones |
-| `ShopManager` | NPC shops with buy/sell pricing |
-| `SkillManager` | Per-player skill XP and levels |
-| `SlayerManager` | Slayer quests, boss spawning, and tier escalation |
-
-Two managers live in their own feature sub-packages but follow the same singleton contract:
-
-| Manager | Package | Responsibility |
-|---------|---------|----------------|
-| `AuctionHouseManager` | `com.skyblock.core.auction.manager` | BIN listings and ascending-auction bidding |
-| `CraftingManager` | `com.skyblock.core.crafting.manager` | Custom SkyBlock recipes and crafting history |
+The parent POM (`pom.xml`) aggregates all modules; `skyblock-core` is the deployable
+plugin JAR and the canonical home for everything under `com.skyblock.core.*`. The full
+**module map**, the canonical manager registry, and guidance on where to put a change
+live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Commands
 
