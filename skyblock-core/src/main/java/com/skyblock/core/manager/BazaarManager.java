@@ -597,21 +597,6 @@ public final class BazaarManager {
         setSellOfferPrice(product.getItemId(), price);
     }
 
-    // --- Compatibility aliases used by legacy callers ---
-
-    /** @deprecated Use {@link #getInstantBuyPrice(String)} */
-    @Deprecated public double getBuyPrice(String itemId) { return getInstantBuyPrice(itemId); }
-    /** @deprecated Use {@link #getSellOfferPrice(String)} */
-    @Deprecated public double getSellPrice(String itemId) { return getSellOfferPrice(itemId); }
-    /** @deprecated Use {@link #setInstantBuyPrice(String, double)} */
-    @Deprecated public void setBuyPrice(String itemId, double price) { setInstantBuyPrice(itemId, price); }
-    /** @deprecated Use {@link #setSellOfferPrice(String, double)} */
-    @Deprecated public void setSellPrice(String itemId, double price) { setSellOfferPrice(itemId, price); }
-    /** @deprecated Use {@link #instantBuyPrices} via {@link #getInstantBuyPrice(String)} */
-    @Deprecated public Map<String, Double> getBuyPrices() { return Collections.unmodifiableMap(instantBuyPrices); }
-    /** @deprecated Use {@link #sellOfferPrices} via {@link #getSellOfferPrice(String)} */
-    @Deprecated public Map<String, Double> getSellPrices() { return Collections.unmodifiableMap(sellOfferPrices); }
-
     // --- Persistence ---
 
     public void load(File dataFolder) {
