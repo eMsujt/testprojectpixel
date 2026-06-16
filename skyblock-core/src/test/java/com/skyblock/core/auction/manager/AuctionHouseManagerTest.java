@@ -1,25 +1,8 @@
 package com.skyblock.core.auction.manager;
 
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * @deprecated Tests moved to {@link com.skyblock.core.manager.AuctionHouseManagerTest}.
+ */
+@Deprecated
 class AuctionHouseManagerTest {
-
-    @Test
-    void getInstance_ReturnsSameInstance() {
-        AuctionHouseManager a = AuctionHouseManager.getInstance();
-        AuctionHouseManager b = AuctionHouseManager.getInstance();
-        assertSame(a, b);
-    }
-
-    @Test
-    void getInstance_ReturnsNonNull() {
-        assertNotNull(AuctionHouseManager.getInstance());
-    }
-
-    @Test
-    void auctionCategoryData_IsNonEmpty() {
-        assertFalse(AuctionHouseManager.AUCTION_CATEGORY_DATA.isEmpty());
-    }
 }

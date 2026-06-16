@@ -1,6 +1,6 @@
 package com.skyblock.core.auction.command;
 
-import com.skyblock.core.auction.manager.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
