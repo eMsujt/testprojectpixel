@@ -627,6 +627,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (duplicate command class consolidation and zero-caller stub deletion — round 104)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Duplicate plugin command class consolidation | Rich `com.skyblock.core.<domain>.command.*` implementations | 5 plugin-level duplicate command classes (`ProfileCommand`, `IslandCommand`, `QuestCommand`, `TradingCommand`, `DungeonCommand`) deleted; `SkyBlockPlugin.java` updated to wire all 5 commands to their canonical rich implementations in `com.skyblock.core.<domain>.command.*` | #2813 |
+| Zero-caller `@Deprecated` stub deletion | *(class files deleted)* | `@Deprecated` stub command classes left over from the round-104 command consolidation with zero live callers deleted outright: `com.skyblock.core.dungeon.DungeonCommand` (superseded by `com.skyblock.core.dungeon.command.DungeonCommand`) | #2814 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
