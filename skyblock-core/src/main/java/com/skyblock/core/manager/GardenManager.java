@@ -181,6 +181,26 @@ public final class GardenManager {
         }
     }
 
+    /** Medal tiers awarded for placement in a Jacob's Farming Contest. */
+    public enum ContestMedal {
+        NONE("None"),
+        BRONZE("Bronze"),
+        SILVER("Silver"),
+        GOLD("Gold"),
+        PLATINUM("Platinum"),
+        DIAMOND("Diamond");
+
+        private final String displayName;
+
+        ContestMedal(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     private static final GardenManager INSTANCE = new GardenManager();
 
     /** Static metadata for each SkyBlock garden crop: {baseYield, maxUpgradeLevel, milestoneCount}. */
@@ -219,6 +239,15 @@ public final class GardenManager {
 
     /** Per-player farming-fortune stat (percent bonus crop yield). */
     private final Map<UUID, Integer> farmingFortune = new HashMap<>();
+
+    /** Per-player count of Jacob's contest medals earned, indexed by ContestMedal ordinal. */
+    private final Map<UUID, int[]> contestMedals = new HashMap<>();
+
+    /** Per-player number of Jacob's Farming Contests participated in. */
+    private final Map<UUID, Integer> contestsParticipated = new HashMap<>();
+
+    /** Per-player best contest collection achieved per crop. */
+    private final Map<UUID, Map<GardenCrop, Long>> bestContestCollection = new HashMap<>();
 
     private GardenManager() {
     }
@@ -637,6 +666,105 @@ public final class GardenManager {
     }
 
     // -------------------------------------------------------------------------
+    // Jacob's Farming Contests
+    // -------------------------------------------------------------------------
+
+    /** Minimum crops collected during a contest to earn each medal tier. */
+    private static final long CONTEST_BRONZE   = 1_000L;
+    private static final long CONTEST_SILVER   = 5_000L;
+    private static final long CONTEST_GOLD     = 10_000L;
+    private static final long CONTEST_PLATINUM = 25_000L;
+    private static final long CONTEST_DIAMOND  = 50_000L;
+
+    /**
+     * Returns the {@link ContestMedal} earned for the given contest collection.
+     *
+     * @param collected the number of crops collected during the contest
+     * @return the medal tier earned, {@link ContestMedal#NONE} if below bronze
+     */
+    public ContestMedal medalFor(long collected) {
+        if (collected >= CONTEST_DIAMOND) {
+            return ContestMedal.DIAMOND;
+        }
+        if (collected >= CONTEST_PLATINUM) {
+            return ContestMedal.PLATINUM;
+        }
+        if (collected >= CONTEST_GOLD) {
+            return ContestMedal.GOLD;
+        }
+        if (collected >= CONTEST_SILVER) {
+            return ContestMedal.SILVER;
+        }
+        if (collected >= CONTEST_BRONZE) {
+            return ContestMedal.BRONZE;
+        }
+        return ContestMedal.NONE;
+    }
+
+    /**
+     * Records the player's participation in a Jacob's Farming Contest for the
+     * given crop, updating their best collection, contest count, and medal tally.
+     *
+     * @param playerId  the player participating
+     * @param crop      the contest crop
+     * @param collected the number of crops collected during the contest
+     * @return the {@link ContestMedal} earned this contest
+     */
+    public ContestMedal recordContest(UUID playerId, GardenCrop crop, long collected) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        long amount = Math.max(0L, collected);
+        contestsParticipated.merge(playerId, 1, Integer::sum);
+        bestContestCollection.computeIfAbsent(playerId, id -> new EnumMap<>(GardenCrop.class))
+                .merge(crop, amount, Math::max);
+        ContestMedal medal = medalFor(amount);
+        if (medal != ContestMedal.NONE) {
+            int[] medals = contestMedals.computeIfAbsent(playerId, id -> new int[ContestMedal.values().length]);
+            medals[medal.ordinal()]++;
+        }
+        return medal;
+    }
+
+    /**
+     * Returns how many of the given medal the player has earned across all contests.
+     *
+     * @param playerId the player to look up
+     * @param medal    the medal tier
+     * @return the medal count, {@code 0} if none
+     */
+    public int getContestMedalCount(UUID playerId, ContestMedal medal) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(medal, "medal");
+        int[] medals = contestMedals.get(playerId);
+        return medals == null ? 0 : medals[medal.ordinal()];
+    }
+
+    /**
+     * Returns the number of Jacob's Farming Contests the player has participated in.
+     *
+     * @param playerId the player to look up
+     * @return the contest count, {@code 0} if none
+     */
+    public int getContestsParticipated(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return contestsParticipated.getOrDefault(playerId, 0);
+    }
+
+    /**
+     * Returns the player's best contest collection for the given crop.
+     *
+     * @param playerId the player to look up
+     * @param crop     the contest crop
+     * @return the highest collection recorded, {@code 0} if never contested
+     */
+    public long getBestContestCollection(UUID playerId, GardenCrop crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        Map<GardenCrop, Long> best = bestContestCollection.get(playerId);
+        return best == null ? 0L : best.getOrDefault(crop, 0L);
+    }
+
+    // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
 
@@ -653,6 +781,9 @@ public final class GardenManager {
         cropPlotTiers.clear();
         harvestCounts.clear();
         farmingFortune.clear();
+        contestMedals.clear();
+        contestsParticipated.clear();
+        bestContestCollection.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -711,6 +842,31 @@ public final class GardenManager {
                         harvestCounts.put(uuid, counts);
                     }
                 }
+                if (cfg.isSet(key + ".contestsParticipated")) {
+                    contestsParticipated.put(uuid, cfg.getInt(key + ".contestsParticipated", 0));
+                }
+                if (cfg.isConfigurationSection(key + ".contestMedals")) {
+                    int[] medals = new int[ContestMedal.values().length];
+                    for (String medalName : cfg.getConfigurationSection(key + ".contestMedals").getKeys(false)) {
+                        try {
+                            ContestMedal medal = ContestMedal.valueOf(medalName);
+                            medals[medal.ordinal()] = cfg.getInt(key + ".contestMedals." + medalName, 0);
+                        } catch (IllegalArgumentException ignored) {}
+                    }
+                    contestMedals.put(uuid, medals);
+                }
+                if (cfg.isConfigurationSection(key + ".bestContest")) {
+                    Map<GardenCrop, Long> best = new EnumMap<>(GardenCrop.class);
+                    for (String cropName : cfg.getConfigurationSection(key + ".bestContest").getKeys(false)) {
+                        try {
+                            GardenCrop crop = GardenCrop.valueOf(cropName);
+                            best.put(crop, cfg.getLong(key + ".bestContest." + cropName, 0L));
+                        } catch (IllegalArgumentException ignored) {}
+                    }
+                    if (!best.isEmpty()) {
+                        bestContestCollection.put(uuid, best);
+                    }
+                }
             } catch (IllegalArgumentException ignored) {}
         }
     }
@@ -726,6 +882,9 @@ public final class GardenManager {
         allUuids.addAll(cropPlotTiers.keySet());
         allUuids.addAll(harvestCounts.keySet());
         allUuids.addAll(farmingFortune.keySet());
+        allUuids.addAll(contestMedals.keySet());
+        allUuids.addAll(contestsParticipated.keySet());
+        allUuids.addAll(bestContestCollection.keySet());
         for (UUID uuid : allUuids) {
             String key = uuid.toString();
             if (plotLevels.containsKey(uuid)) {
@@ -766,6 +925,24 @@ public final class GardenManager {
                     cfg.set(key + ".harvests." + hc.getKey().name(), hc.getValue());
                 }
             }
+            if (contestsParticipated.containsKey(uuid)) {
+                cfg.set(key + ".contestsParticipated", contestsParticipated.get(uuid));
+            }
+            int[] medals = contestMedals.get(uuid);
+            if (medals != null) {
+                ContestMedal[] medalTypes = ContestMedal.values();
+                for (int i = 0; i < medalTypes.length; i++) {
+                    if (medals[i] != 0) {
+                        cfg.set(key + ".contestMedals." + medalTypes[i].name(), medals[i]);
+                    }
+                }
+            }
+            Map<GardenCrop, Long> best = bestContestCollection.get(uuid);
+            if (best != null) {
+                for (Map.Entry<GardenCrop, Long> bc : best.entrySet()) {
+                    cfg.set(key + ".bestContest." + bc.getKey().name(), bc.getValue());
+                }
+            }
         }
         try {
             cfg.save(file);
@@ -792,6 +969,9 @@ public final class GardenManager {
         cropPlotTiers.remove(playerId);
         harvestCounts.remove(playerId);
         farmingFortune.remove(playerId);
+        contestMedals.remove(playerId);
+        contestsParticipated.remove(playerId);
+        bestContestCollection.remove(playerId);
     }
 
     /**
@@ -809,6 +989,9 @@ public final class GardenManager {
         had |= cropPlotTiers.remove(playerId) != null;
         had |= harvestCounts.remove(playerId) != null;
         had |= farmingFortune.remove(playerId) != null;
+        had |= contestMedals.remove(playerId) != null;
+        had |= contestsParticipated.remove(playerId) != null;
+        had |= bestContestCollection.remove(playerId) != null;
         return had;
     }
 }
