@@ -1,8 +1,8 @@
-package com.skyblock.plugin.combat.manager;
+package com.skyblock.core.combat.listener;
 
+import com.skyblock.core.combat.calculator.DamageFormula;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stat.StatManager;
-import com.skyblock.plugin.combat.calculator.DamageFormula;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
@@ -26,15 +26,15 @@ import java.util.UUID;
  * <p>This type is registered as an event listener in
  * {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}.</p>
  */
-public final class CombatManager implements Listener {
+public final class CombatListener implements Listener {
 
-    private static final CombatManager INSTANCE = new CombatManager();
+    private static final CombatListener INSTANCE = new CombatListener();
 
     private final StatManager statManager = StatManager.getInstance();
 
-    private CombatManager() {}
+    private CombatListener() {}
 
-    public static CombatManager getInstance() {
+    public static CombatListener getInstance() {
         return INSTANCE;
     }
 

@@ -2,7 +2,7 @@ package com.skyblock.plugin.listener;
 
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stat.StatManager;
-import com.skyblock.plugin.combat.calculator.DamageFormula;
+import com.skyblock.core.combat.calculator.DamageFormula;
 import com.skyblock.plugin.item.ItemRegistry;
 import com.skyblock.plugin.item.ItemRegistry.ItemDefinition;
 import org.bukkit.ChatColor;

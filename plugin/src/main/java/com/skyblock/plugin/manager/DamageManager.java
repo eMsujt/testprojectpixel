@@ -2,7 +2,7 @@ package com.skyblock.plugin.manager;
 
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stat.StatManager;
-import com.skyblock.plugin.combat.calculator.DamageFormula;
+import com.skyblock.core.combat.calculator.DamageFormula;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
