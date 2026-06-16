@@ -1,6 +1,6 @@
 package com.skyblock.plugin.util;
 
-import com.skyblock.items.util.SkullItemUtil;
+import com.skyblock.core.util.SkullItemUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
