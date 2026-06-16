@@ -390,5 +390,3 @@ public final class MayorManager {
         }
     }
 }
-</content>
-</invoke>
