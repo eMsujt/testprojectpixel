@@ -1,8 +1,11 @@
 package com.skyblock.fishing;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.fishing.manager.FishingManager} zone handling instead.
+ *
  * The distinct zones in which a player can fish, each with its own loot table.
  */
+@Deprecated
 public enum FishingZone {
 
     HUB("Hub"),

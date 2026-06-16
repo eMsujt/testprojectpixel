@@ -1,11 +1,14 @@
 package com.skyblock.fishing;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.fishing.manager.FishingManager.FishingTreasure} instead.
+ *
  * The treasures a player can fish up instead of a regular catch.
  *
  * <p>Each treasure carries its human-readable display name and the chance,
  * as a fraction between 0 and 1, that a single catch yields it.</p>
  */
+@Deprecated
 public enum FishTreasure {
 
     SPONGE("Sponge", 0.04),

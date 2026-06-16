@@ -1,8 +1,11 @@
 package com.skyblock.fishing;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.fishing.manager.TrophyFishManager.TrophyFish} instead.
+ *
  * The trophy fish that can be caught in the Crimson Isle waters.
  */
+@Deprecated
 public enum TrophyFishType {
 
     SULPHUR_SKITTER("Sulphur Skitter"),

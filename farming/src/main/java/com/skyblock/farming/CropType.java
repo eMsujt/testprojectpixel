@@ -1,8 +1,11 @@
 package com.skyblock.farming;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.farming.manager.FarmingManager.CropType} instead.
+ *
  * The crops that can be farmed for the Farming skill.
  */
+@Deprecated
 public enum CropType {
 
     WHEAT("Wheat", 6),

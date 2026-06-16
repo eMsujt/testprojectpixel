@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
+ * @deprecated Use {@link com.skyblock.core.fishing.manager.FishingManager} instead.
+ *
  * Manages fishing loot tables per {@link FishingZone} and tracks each
  * player's fishing progression: total catches and earned fishing experience.
  *
@@ -18,6 +20,7 @@ import java.util.UUID;
  * catches and zero experience. Not thread-safe; synchronize externally if
  * accessed from multiple threads.</p>
  */
+@Deprecated
 public final class FishingManager {
 
     /** Maps fish ID to the fishing XP awarded when that fish is caught. */
