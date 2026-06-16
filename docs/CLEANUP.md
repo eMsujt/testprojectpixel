@@ -905,6 +905,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (menu/listener dedup completion and accessories/talisman package layout standardization — round 139)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Duplicate menu and listener dedup | `com.skyblock.core.menu.*`, `com.skyblock.core.listener.*` | Grepped every module for remaining duplicate menu (`*Menu`/`*GUI`) and event-listener (`*Listener`) implementations; all surviving duplicates consolidated into their canonical `com.skyblock.core.menu.*` / `com.skyblock.core.listener.*` locations; old locations replaced with `@Deprecated` forwarding stubs or deleted outright where zero callers remained; all callers and `SkyBlockPlugin` registrations confirmed on the canonical import paths | Vega |
+| `com.skyblock.accessories` package layout | `com.skyblock.accessories.manager.AccessoryManager` | Standardized the accessories/talisman module internal layout; `AccessoryManager` moved from the root package into the canonical `com.skyblock.accessories.manager` sub-package; no external references required updating (nothing outside the module referenced the old location) | Forge |
+| EconomyManager / CurrencyManager consolidation audit | `com.skyblock.core.economy.manager.EconomyManager` | Grepped every module for duplicate `EconomyManager` / `CurrencyManager` implementations; canonical class confirmed as sole implementation with all callers on the canonical import path — no file changes required | Forge |
+| NetworthManager / NetworthCalculator consolidation audit | `com.skyblock.core.networth.NetworthManager` | Grepped every module for duplicate `NetworthManager` / `NetworthCalculator` implementations; canonical class confirmed as sole implementation — no file changes required | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
