@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.plugin.combat.calculator.DamageCalculator;
+import com.skyblock.core.combat.calculator.DamageCalculator;
 import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.entity.Player;
@@ -29,7 +29,10 @@ public final class CombatEventHandler implements Listener {
         double critChance   = DEFAULT_CRIT_CHANCE;
         double critDamage   = DEFAULT_CRIT_DAMAGE;
 
-        double damage = DamageCalculator.computeDamage(weaponDamage, strength, critChance, critDamage);
+        double damage = DamageCalculator.rawDamage((int) weaponDamage, (int) strength);
+        if (DamageCalculator.rollCrit(critChance)) {
+            damage = DamageCalculator.applyCrit(damage, critDamage);
+        }
         event.setDamage(damage);
 
         profile.addSkillXp("combat", COMBAT_XP_PER_HIT);
