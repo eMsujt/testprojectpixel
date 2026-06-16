@@ -28,7 +28,10 @@ import java.util.stream.Collectors;
  *   <li>{@code /trade info}               — show the current trade session</li>
  * </ul>
  * </p>
+ *
+ * @deprecated Duplicate of the canonical {@link com.skyblock.core.trade.TradeCommand}. Use that class instead.
  */
+@Deprecated
 public final class TradeCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
