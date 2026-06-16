@@ -820,6 +820,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (ShopManager consolidation — round 127)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| ShopManager / NpcShopManager / ShopHandler | `com.skyblock.core.manager.ShopManager` | Grepped every module for `ShopManager`/`NpcShopManager`/`ShopHandler`; confirmed canonical at `com.skyblock.core.manager.ShopManager`; updated all 6 import sites (NPCListener, NpcCommand, NpcManager, SkyBlockPlugin, ShopListener, ShopManagerTest); `@Deprecated` placeholder left at old `com.skyblock.core.shop.manager.ShopManager` location delegating to canonical | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
