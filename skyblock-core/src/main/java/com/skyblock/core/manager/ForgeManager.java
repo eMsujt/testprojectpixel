@@ -1,4 +1,4 @@
-package com.skyblock.core.forge;
+package com.skyblock.core.manager;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -63,7 +63,7 @@ import com.skyblock.core.mailbox.MailboxManager;
 import com.skyblock.core.friend.FriendCommand;
 import com.skyblock.core.friend.FriendManager;
 import com.skyblock.core.forge.ForgeCommand;
-import com.skyblock.core.forge.ForgeManager;
+import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.trade.TradeCommand;
