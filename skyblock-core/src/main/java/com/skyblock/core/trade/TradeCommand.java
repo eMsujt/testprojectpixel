@@ -1,5 +1,6 @@
 package com.skyblock.core.trade;
 
+import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.manager.TradeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -233,6 +234,10 @@ public final class TradeCommand implements TabExecutor {
         }
         if (coins < 0) {
             player.sendMessage("Coin amount cannot be negative.");
+            return;
+        }
+        if (!EconomyManager.getInstance().has(player.getUniqueId(), coins)) {
+            player.sendMessage("You do not have " + coins + " coins to offer.");
             return;
         }
         // Changing the offer voids both confirmations
