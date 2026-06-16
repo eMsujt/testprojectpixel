@@ -21,6 +21,7 @@ import java.util.List;
  *   <li>{@code /quest list}                   — list all available quest types</li>
  *   <li>{@code /quest start <type>}            — start a quest using its built-in goal</li>
  *   <li>{@code /quest status [type]}          — show status/progress for one or all quests</li>
+ *   <li>{@code /quest claim <type>}            — claim a completed quest's reward</li>
  *   <li>{@code /quest reset}                  — reset all quest progress</li>
  * </ul>
  * </p>
@@ -49,6 +50,7 @@ public final class QuestCommand implements TabExecutor {
             case "list"   -> handleList(player);
             case "start"  -> handleStart(player, args);
             case "status" -> handleStatus(player, args);
+            case "claim"  -> handleClaim(player, args);
             case "reset"  -> handleReset(player, args);
             default       -> sendHelp(player);
         }
@@ -59,13 +61,13 @@ public final class QuestCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return Arrays.asList("list", "start", "status", "reset").stream()
+            return Arrays.asList("list", "start", "status", "claim", "reset").stream()
                     .filter(s -> s.startsWith(lower))
                     .toList();
         }
         if (args.length == 2) {
             String sub = args[0].toLowerCase();
-            if (sub.equals("start") || sub.equals("status")) {
+            if (sub.equals("start") || sub.equals("status") || sub.equals("claim")) {
                 String lower = args[1].toLowerCase();
                 return Arrays.stream(QuestType.values())
                         .map(t -> t.name().toLowerCase())
@@ -142,6 +144,30 @@ public final class QuestCommand implements TabExecutor {
         player.sendMessage("Status: " + data.status.name());
     }
 
+    private void handleClaim(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage("Usage: /quest claim <type>");
+            return;
+        }
+        QuestType type;
+        try {
+            type = QuestType.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Unknown quest type: " + args[1]);
+            return;
+        }
+        if (questManager.getStatus(player.getUniqueId(), type) != QuestStatus.COMPLETED) {
+            player.sendMessage("Quest " + type.name() + " is not completed yet.");
+            return;
+        }
+        long reward = questManager.claimReward(player.getUniqueId(), type);
+        if (reward <= 0) {
+            player.sendMessage("You have already claimed the reward for " + type.getDisplayName() + ".");
+            return;
+        }
+        player.sendMessage("Claimed " + reward + " coins for completing " + type.getDisplayName() + "!");
+    }
+
     private void handleReset(Player player, String[] args) {
         questManager.reset(player.getUniqueId());
         player.sendMessage("All quest progress has been reset.");
@@ -152,6 +178,7 @@ public final class QuestCommand implements TabExecutor {
         player.sendMessage("/quest list — list all quest types");
         player.sendMessage("/quest start <type> — start a quest");
         player.sendMessage("/quest status [type] — show quest progress");
+        player.sendMessage("/quest claim <type> — claim a completed quest's reward");
         player.sendMessage("/quest reset — reset all quest progress");
     }
 }
