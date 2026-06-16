@@ -636,6 +636,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (stale-import fix sweep and zero-caller stub deletion — round 105)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Stale imports (round-104 ItemBuilder and SkullItemUtil consolidation follow-up) | N/A | Swept every `.java` file for stale import references introduced by the round-104 ItemBuilder and SkullItemUtil consolidations; no stale imports found — no file changes required | — |
+| Zero-caller `@Deprecated` stub deletion | *(class files deleted)* | `@Deprecated` stub files left over from the round-104 ItemBuilder and SkullItemUtil consolidations with zero live callers deleted outright: `ItemBuilder` duplicates outside `com.skyblock.core.util` and `SkullItemUtil`/`SkullUtil`/`SkullBuilder` variants in non-canonical packages | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
