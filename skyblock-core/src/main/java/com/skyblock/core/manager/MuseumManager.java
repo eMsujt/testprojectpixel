@@ -44,6 +44,9 @@ public final class MuseumManager {
     /** Catalog of all donatable item names per category, used to measure completion. */
     private final Map<MuseumCategory, Set<String>> catalog = new EnumMap<>(MuseumCategory.class);
 
+    /** Museum value contributed by each registered item, used for value totals. */
+    private final Map<String, Long> itemValues = new java.util.HashMap<>();
+
     private MuseumManager() {
     }
 
@@ -55,8 +58,21 @@ public final class MuseumManager {
      * @return {@code true} if the item was newly registered, {@code false} if already known
      */
     public boolean registerItem(MuseumCategory category, String itemName) {
+        return registerItem(category, itemName, 0L);
+    }
+
+    /**
+     * Registers an item as donatable in the given category with a museum value.
+     *
+     * @param category the museum category
+     * @param itemName the name of the donatable item
+     * @param value    the museum value the item contributes when donated
+     * @return {@code true} if the item was newly registered, {@code false} if already known
+     */
+    public boolean registerItem(MuseumCategory category, String itemName, long value) {
         Objects.requireNonNull(category, "category");
         Objects.requireNonNull(itemName, "itemName");
+        itemValues.put(itemName, value);
         return catalog.computeIfAbsent(category, c -> new HashSet<>()).add(itemName);
     }
 
@@ -127,6 +143,28 @@ public final class MuseumManager {
         int total = 0;
         for (Set<String> items : playerDonations.values()) {
             total += items.size();
+        }
+        return total;
+    }
+
+    /**
+     * Returns the total museum value of all items the player has donated.
+     *
+     * <p>Only donated items registered in the catalog contribute; each adds the value
+     * supplied at {@link #registerItem(MuseumCategory, String, long)} (zero by default).</p>
+     *
+     * @param playerId the player
+     * @return the summed museum value across all donations
+     */
+    public long getMuseumValue(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Map<MuseumCategory, Set<String>> playerDonations = donations.get(playerId);
+        if (playerDonations == null) return 0L;
+        long total = 0L;
+        for (Set<String> items : playerDonations.values()) {
+            for (String item : items) {
+                total += itemValues.getOrDefault(item, 0L);
+            }
         }
         return total;
     }
