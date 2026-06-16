@@ -1,5 +1,7 @@
 package com.skyblock.core.enchanting;
 
+import com.skyblock.core.manager.EnchantingManager;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
