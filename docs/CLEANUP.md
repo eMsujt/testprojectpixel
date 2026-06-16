@@ -510,6 +510,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (Bukkit command-class consolidation — round 92)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| Bukkit CommandExecutor / TabCompleter command classes | `com.skyblock.core.command.*` | Thorough final-pass consolidation of every class implementing `CommandExecutor` or `TabCompleter` across every module; all 37 dead duplicate command/tab-completer files in `skyblock-core`, `core`, and `plugin` modules audited; all had zero callers outside their own class and were deleted outright; canonical command classes in `com.skyblock.core.command.*` confirmed as sole implementations with no remaining orphan copies | #2770 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
