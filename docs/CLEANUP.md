@@ -894,6 +894,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (dead-module pruning and quests/slayer/dungeon/fishing/farming package layout standardization — rounds 136–137)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Dead-module pruning post-rounds 127–136 | *(removed from `pom.xml`)* | Enumerated every `<module>` entry in the root `pom.xml`; identified all dead/empty modules remaining after rounds 127–136 consolidations and removed them from the build; source tree reduced accordingly | #2918 |
+| `com.skyblock.quests` / `com.skyblock.core.quests` package layout | `com.skyblock.core.quest.{command,gui,manager}` | Audited all source files in the quests module; `QuestsMenu` moved to canonical `com.skyblock.core.quest.gui.QuestsMenu` (co-located with `command/QuestCommand` and `manager/QuestManager`); `SkyBlockMainMenu` updated to import the new location; old flat-package stub removed | #2919 |
+| `com.skyblock.slayer` / `com.skyblock.dungeon` package layout | `com.skyblock.core.slayer.{command,manager}`, `com.skyblock.core.dungeon.{command,manager,model}` | Audited all source files in the slayer and dungeon modules; canonical `SlayerCommand` placed in `command/`, `SlayerManager` in `manager/`; dungeon module reorganized into `.command`/`.manager`/`.model` sub-packages; flat-package strays eliminated | #2920 |
+| `com.skyblock.fishing` / `com.skyblock.farming` package layout | `com.skyblock.core.fishing.{command,manager,listener}`, `com.skyblock.core.farming.{command,manager,listener}` | Audited all source files in the fishing and farming modules; `command/FishingCommand` and `manager/{FishingManager,TrophyFishManager,TrophyFishingManager}` placed in canonical sub-packages; farming module classes organized into `.command`/`.manager`/`.listener` sub-packages; `@Deprecated` annotations applied to all old locations; flat-package strays eliminated | #2921 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
