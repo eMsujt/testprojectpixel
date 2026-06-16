@@ -1,4 +1,4 @@
-package com.skyblock.core.hotm.manager;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -15,15 +15,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton tracking each player's Heart of the Mountain perk levels.
+ * Canonical singleton tracking each player's Heart of the Mountain progression:
+ * perk-tree node levels, Mithril/Gemstone Powder balances, mining-XP-driven
+ * HOTM tier, and an event history.
  *
- * <p>Perk levels are stored as an {@code int[]} indexed by {@link HOTMPerk#ordinal()}.
+ * <p>Perk levels are stored as an {@code int[]} indexed by {@link HotmPerk#ordinal()}.
  * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
-public final class HOTMManager {
+public final class HotmManager {
 
     /** Every upgradeable perk in the Heart of the Mountain tree. */
-    public enum HOTMPerk {
+    public enum HotmPerk {
         MINING_SPEED(50, "Mining Speed"),
         MINING_SPEED_BOOST(1, "Mining Speed Boost"),
         PICKOBULUS(1, "Pickobulus"),
@@ -51,7 +53,7 @@ public final class HOTMManager {
         public final int maxLevel;
         private final String displayName;
 
-        HOTMPerk(int maxLevel, String displayName) {
+        HotmPerk(int maxLevel, String displayName) {
             this.maxLevel = maxLevel;
             this.displayName = displayName;
         }
@@ -60,6 +62,15 @@ public final class HOTMManager {
             return displayName;
         }
     }
+
+    /** Highest HOTM tier reachable. */
+    public static final int MAX_TIER = 7;
+
+    /**
+     * Cumulative Mining XP required to reach each HOTM tier, indexed by
+     * {@code tier - 1}. Index 0 (tier 1) is always {@code 0}.
+     */
+    private static final long[] TIER_XP_THRESHOLDS = {0L, 3000L, 9000L, 25000L, 60000L, 100000L, 150000L};
 
     /**
      * Per-level powder cost for each HOTM node.
@@ -141,12 +152,14 @@ public final class HOTMManager {
         return costs;
     }
 
-    private static final HOTMManager INSTANCE = new HOTMManager();
+    private static final HotmManager INSTANCE = new HotmManager();
 
     /** Per-player perk levels; absent entries default to all-zeros. */
     private final Map<UUID, int[]> playerPerks = new HashMap<>();
-    /** Per-player HOTM tree tier (1–7). */
+    /** Per-player HOTM tree tier (1–{@value #MAX_TIER}). */
     private final Map<UUID, Integer> hotmTier = new HashMap<>();
+    /** Per-player cumulative Mining XP driving the HOTM tier. */
+    private final Map<UUID, Long> miningXp = new HashMap<>();
     /** Per-player Mithril Powder balance. */
     private final Map<UUID, Long> mithrilPowder = new HashMap<>();
     /** Per-player Gemstone Powder balance. */
@@ -154,15 +167,15 @@ public final class HOTMManager {
     /** Per-player HOTM event history. */
     private final Map<UUID, List<String>> hotmHistory = new HashMap<>();
 
-    private HOTMManager() {
+    private HotmManager() {
     }
 
     /**
-     * Returns the single shared {@code HOTMManager} instance.
+     * Returns the single shared {@code HotmManager} instance.
      *
      * @return the singleton instance
      */
-    public static HOTMManager getInstance() {
+    public static HotmManager getInstance() {
         return INSTANCE;
     }
 
@@ -173,7 +186,7 @@ public final class HOTMManager {
      * @param perk     the perk to query
      * @return the current level, {@code 0} if not unlocked
      */
-    public int getLevel(UUID playerId, HOTMPerk perk) {
+    public int getLevel(UUID playerId, HotmPerk perk) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(perk, "perk");
         int[] levels = playerPerks.get(playerId);
@@ -188,14 +201,14 @@ public final class HOTMManager {
      * @param level    the new level (clamped to {@code [0, perk.maxLevel]})
      * @throws IllegalArgumentException if {@code level} is negative
      */
-    public void setLevel(UUID playerId, HOTMPerk perk, int level) {
+    public void setLevel(UUID playerId, HotmPerk perk, int level) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(perk, "perk");
         if (level < 0) {
             throw new IllegalArgumentException("level must not be negative");
         }
         int clamped = Math.min(level, perk.maxLevel);
-        int[] levels = playerPerks.computeIfAbsent(playerId, id -> new int[HOTMPerk.values().length]);
+        int[] levels = playerPerks.computeIfAbsent(playerId, id -> new int[HotmPerk.values().length]);
         levels[perk.ordinal()] = clamped;
     }
 
@@ -206,14 +219,14 @@ public final class HOTMManager {
      * @param perk     the perk to upgrade
      * @return the new level after the upgrade, or {@code -1} if already at max
      */
-    public int upgrade(UUID playerId, HOTMPerk perk) {
+    public int upgrade(UUID playerId, HotmPerk perk) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(perk, "perk");
         int current = getLevel(playerId, perk);
         if (current >= perk.maxLevel) {
             return -1;
         }
-        int[] levels = playerPerks.computeIfAbsent(playerId, id -> new int[HOTMPerk.values().length]);
+        int[] levels = playerPerks.computeIfAbsent(playerId, id -> new int[HotmPerk.values().length]);
         levels[perk.ordinal()] = current + 1;
         recordHotmEvent(playerId, "Upgraded " + perk.getDisplayName() + " to level " + (current + 1));
         return current + 1;
@@ -223,13 +236,13 @@ public final class HOTMManager {
      * Returns a copy of all perk levels for the given player.
      *
      * @param playerId the player to look up
-     * @return array of perk levels indexed by {@link HOTMPerk#ordinal()}, all-zeros if no data
+     * @return array of perk levels indexed by {@link HotmPerk#ordinal()}, all-zeros if no data
      */
     public int[] getAllLevels(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         int[] levels = playerPerks.get(playerId);
         if (levels == null) {
-            return new int[HOTMPerk.values().length];
+            return new int[HotmPerk.values().length];
         }
         return Arrays.copyOf(levels, levels.length);
     }
@@ -245,6 +258,38 @@ public final class HOTMManager {
         if (levels != null) {
             Arrays.fill(levels, 0);
         }
+    }
+
+    /**
+     * Returns the player's cumulative Mining XP.
+     *
+     * @param playerId the player to look up
+     * @return total Mining XP, {@code 0} if none recorded
+     */
+    public long getMiningXp(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return miningXp.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Adds Mining XP to a player, advancing their HOTM tier if a new threshold
+     * is reached.
+     *
+     * @param playerId the player to credit
+     * @param amount   the Mining XP to add (must be non-negative)
+     * @return the player's HOTM tier after the gain
+     */
+    public int addMiningXp(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
+        long total = miningXp.merge(playerId, amount, Long::sum);
+        int oldTier = getHotmTier(playerId);
+        int newTier = computeTier(total);
+        if (newTier > oldTier) {
+            hotmTier.put(playerId, newTier);
+            recordHotmEvent(playerId, "Reached HOTM Tier " + newTier);
+        }
+        return getHotmTier(playerId);
     }
 
     /**
@@ -331,7 +376,7 @@ public final class HOTMManager {
      * Returns the player's current HOTM tree tier.
      *
      * @param playerId the player to look up
-     * @return the tier (1–7), {@code 1} if not set
+     * @return the tier (1–{@value #MAX_TIER}), {@code 1} if not set
      */
     public int getHotmTier(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
@@ -342,11 +387,24 @@ public final class HOTMManager {
      * Sets the player's HOTM tree tier.
      *
      * @param playerId the player to update
-     * @param tier     the new tier (clamped to {@code [1, 7]})
+     * @param tier     the new tier (clamped to {@code [1, MAX_TIER]})
      */
     public void setHotmTier(UUID playerId, int tier) {
         Objects.requireNonNull(playerId, "playerId");
-        hotmTier.put(playerId, Math.max(1, Math.min(7, tier)));
+        hotmTier.put(playerId, Math.max(1, Math.min(MAX_TIER, tier)));
+    }
+
+    /** Computes the HOTM tier reachable with the given cumulative Mining XP. */
+    private static int computeTier(long totalXp) {
+        int tier = 1;
+        for (int i = 1; i < TIER_XP_THRESHOLDS.length; i++) {
+            if (totalXp >= TIER_XP_THRESHOLDS[i]) {
+                tier = i + 1;
+            } else {
+                break;
+            }
+        }
+        return tier;
     }
 
     /**
@@ -396,6 +454,7 @@ public final class HOTMManager {
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         hotmTier.remove(playerId);
+        miningXp.remove(playerId);
         mithrilPowder.remove(playerId);
         gemstonePowder.remove(playerId);
         hotmHistory.remove(playerId);
@@ -410,16 +469,17 @@ public final class HOTMManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerPerks.clear();
         hotmTier.clear();
+        miningXp.clear();
         mithrilPowder.clear();
         gemstonePowder.clear();
         hotmHistory.clear();
-        HOTMPerk[] perks = HOTMPerk.values();
+        HotmPerk[] perks = HotmPerk.values();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
                 int[] levels = new int[perks.length];
                 boolean hasData = false;
-                for (HOTMPerk perk : perks) {
+                for (HotmPerk perk : perks) {
                     String path = key + "." + perk.name();
                     if (cfg.contains(path)) {
                         levels[perk.ordinal()] = cfg.getInt(path, 0);
@@ -431,7 +491,11 @@ public final class HOTMManager {
                 }
                 String tierPath = key + ".hotm_tier";
                 if (cfg.contains(tierPath)) {
-                    hotmTier.put(uuid, Math.max(1, Math.min(7, cfg.getInt(tierPath, 1))));
+                    hotmTier.put(uuid, Math.max(1, Math.min(MAX_TIER, cfg.getInt(tierPath, 1))));
+                }
+                String xpPath = key + ".mining_xp";
+                if (cfg.contains(xpPath)) {
+                    miningXp.put(uuid, cfg.getLong(xpPath, 0L));
                 }
                 String powderPath = key + ".mithril_powder";
                 if (cfg.contains(powderPath)) {
@@ -460,7 +524,7 @@ public final class HOTMManager {
         for (Map.Entry<UUID, int[]> entry : playerPerks.entrySet()) {
             String key = entry.getKey().toString();
             int[] levels = entry.getValue();
-            for (HOTMPerk perk : HOTMPerk.values()) {
+            for (HotmPerk perk : HotmPerk.values()) {
                 int level = levels[perk.ordinal()];
                 if (level != 0) {
                     cfg.set(key + "." + perk.name(), level);
@@ -469,6 +533,11 @@ public final class HOTMManager {
         }
         for (Map.Entry<UUID, Integer> entry : hotmTier.entrySet()) {
             cfg.set(entry.getKey().toString() + ".hotm_tier", entry.getValue());
+        }
+        for (Map.Entry<UUID, Long> entry : miningXp.entrySet()) {
+            if (entry.getValue() != 0) {
+                cfg.set(entry.getKey().toString() + ".mining_xp", entry.getValue());
+            }
         }
         for (Map.Entry<UUID, Long> entry : mithrilPowder.entrySet()) {
             if (entry.getValue() != 0) {
