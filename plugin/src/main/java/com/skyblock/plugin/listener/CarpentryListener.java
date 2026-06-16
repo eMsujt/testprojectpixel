@@ -20,7 +20,7 @@ import java.util.Set;
  */
 public final class CarpentryListener implements Listener {
 
-    /** Carpentry storage key in {@link SkillsManager}. */
+    /** Carpentry storage key in {@link SkillManager}. */
     private static final String SKILL = "carpentry";
 
     /** Carpentry XP granted per plank ingredient slot. */
