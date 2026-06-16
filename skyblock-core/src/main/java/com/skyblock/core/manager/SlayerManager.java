@@ -136,6 +136,20 @@ public final class SlayerManager {
         KILLS_TO_SPAWN_BOSS = Collections.unmodifiableMap(m);
     }
 
+    /** Coins required to summon a slayer boss, per quest tier (T1, T2, T3, T4), keyed by slayer type. */
+    public static final Map<SlayerType, int[]> SPAWN_COST;
+
+    static {
+        Map<SlayerType, int[]> m = new EnumMap<>(SlayerType.class);
+        m.put(SlayerType.ZOMBIE,   new int[]{100,     2_000,    10_000,     50_000});
+        m.put(SlayerType.SPIDER,   new int[]{2_000,   10_000,   50_000,     100_000});
+        m.put(SlayerType.WOLF,     new int[]{10_000,  50_000,   100_000,    400_000});
+        m.put(SlayerType.ENDERMAN, new int[]{50_000,  100_000,  400_000,    1_000_000});
+        m.put(SlayerType.BLAZE,    new int[]{500_000, 2_000_000, 5_000_000, 10_000_000});
+        m.put(SlayerType.VAMPIRE,  new int[]{0,       0,        0,          0});
+        SPAWN_COST = Collections.unmodifiableMap(m);
+    }
+
     /** Maps each slayer type to its key in {@link #TIER_XP_THRESHOLDS}. */
     private static final Map<SlayerType, String> XP_KEY;
 
@@ -413,6 +427,14 @@ public final class SlayerManager {
             throw new IllegalStateException("Player has no active slayer quest");
         }
         return quest.incrementKills();
+    }
+
+    /** Returns the coin cost to summon the slayer boss for the given type and tier. */
+    public int getSpawnCost(SlayerType type, QuestTier tier) {
+        Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(tier, "tier");
+        int[] costs = SPAWN_COST.get(type);
+        return costs != null ? costs[tier.ordinal()] : 0;
     }
 
     /** Returns {@code true} when the player has killed enough mobs to summon the boss for their quest. */
