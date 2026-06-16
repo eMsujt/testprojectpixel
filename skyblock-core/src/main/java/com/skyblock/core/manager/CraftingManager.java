@@ -1,4 +1,4 @@
-package com.skyblock.core.crafting;
+package com.skyblock.core.manager;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -18,13 +18,94 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Singleton facade over {@link SkyBlockRecipeManager} that also tracks each
- * player's crafting history (which recipe IDs they have crafted and how many
- * times).
+ * Singleton registry of custom SkyBlock crafting recipes that also tracks
+ * each player's crafting history (which recipe IDs they have crafted and how
+ * many times).
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class CraftingManager {
+
+    // -----------------------------------------------------------------------
+    // Recipe model types
+    // -----------------------------------------------------------------------
+
+    /** Common contract for all SkyBlock crafting recipes. */
+    public sealed interface SkyBlockRecipe permits ShapedRecipe, ShapelessRecipe {
+        /** Unique identifier for this recipe. */
+        String id();
+        /** The {@link Material} produced when the recipe is crafted. */
+        Material result();
+        /** Number of result items produced; always &ge; 1. */
+        int resultAmount();
+    }
+
+    /**
+     * A grid-positioned recipe requiring ingredients to be placed in a specific
+     * shape inside the crafting table.
+     */
+    public record ShapedRecipe(
+            String id,
+            Material result,
+            int resultAmount,
+            String[] shape,
+            Map<Character, Material> ingredientMap) implements SkyBlockRecipe {
+
+        public ShapedRecipe {
+            Objects.requireNonNull(id, "id");
+            if (id.isBlank()) {
+                throw new IllegalArgumentException("id must not be blank");
+            }
+            Objects.requireNonNull(result, "result");
+            if (resultAmount < 1) {
+                throw new IllegalArgumentException(
+                        "resultAmount must be >= 1, got " + resultAmount);
+            }
+            Objects.requireNonNull(shape, "shape");
+            if (shape.length == 0 || shape.length > 3) {
+                throw new IllegalArgumentException(
+                        "shape must have 1–3 rows, got " + shape.length);
+            }
+            for (String row : shape) {
+                Objects.requireNonNull(row, "shape row must not be null");
+                if (row.isEmpty() || row.length() > 3) {
+                    throw new IllegalArgumentException(
+                            "each shape row must be 1–3 characters, got \"" + row + "\"");
+                }
+            }
+            shape = shape.clone();
+            Objects.requireNonNull(ingredientMap, "ingredientMap");
+            ingredientMap = Map.copyOf(ingredientMap);
+        }
+    }
+
+    /**
+     * An order-independent recipe requiring a multiset of ingredients anywhere
+     * in the crafting grid.
+     */
+    public record ShapelessRecipe(
+            String id,
+            Material result,
+            int resultAmount,
+            List<Material> ingredients) implements SkyBlockRecipe {
+
+        public ShapelessRecipe {
+            Objects.requireNonNull(id, "id");
+            if (id.isBlank()) {
+                throw new IllegalArgumentException("id must not be blank");
+            }
+            Objects.requireNonNull(result, "result");
+            if (resultAmount < 1) {
+                throw new IllegalArgumentException(
+                        "resultAmount must be >= 1, got " + resultAmount);
+            }
+            Objects.requireNonNull(ingredients, "ingredients");
+            if (ingredients.isEmpty()) {
+                throw new IllegalArgumentException("ingredients must not be empty");
+            }
+            ingredients = List.copyOf(ingredients);
+        }
+    }
 
     /** Typed SkyBlock-specific enchanted crafting recipes. */
     public enum SkyblockRecipe {
@@ -90,9 +171,22 @@ public final class CraftingManager {
         }
     }
 
+    // -----------------------------------------------------------------------
+    // Singleton
+    // -----------------------------------------------------------------------
+
     private static final CraftingManager INSTANCE = new CraftingManager();
 
-    private final SkyBlockRecipeManager recipeManager = SkyBlockRecipeManager.getInstance();
+    public static CraftingManager getInstance() {
+        return INSTANCE;
+    }
+
+    // -----------------------------------------------------------------------
+    // State
+    // -----------------------------------------------------------------------
+
+    /** Recipe catalogue keyed by recipe id. */
+    private final Map<String, SkyBlockRecipe> recipes = new HashMap<>();
 
     /** Per-player map of recipe-id → craft count. */
     private final Map<UUID, Map<String, Integer>> craftHistory = new HashMap<>();
@@ -101,67 +195,65 @@ public final class CraftingManager {
         loadDefaultRecipes();
     }
 
-    /**
-     * Returns the single shared {@code CraftingManager} instance.
-     *
-     * @return the singleton instance
-     */
-    public static CraftingManager getInstance() {
-        return INSTANCE;
+    // -----------------------------------------------------------------------
+    // Recipe registration
+    // -----------------------------------------------------------------------
+
+    public void registerShaped(String id, Material result, int resultAmount,
+                                String[] shape, Map<Character, Material> ingredientMap) {
+        register(new ShapedRecipe(id, result, resultAmount, shape, ingredientMap));
     }
 
-    // ---------------------------------------------------------------------------
-    // Recipe access
-    // ---------------------------------------------------------------------------
-
-    /**
-     * Returns an unmodifiable view of all registered recipes, keyed by id.
-     *
-     * @return all recipes
-     */
-    public Map<String, SkyBlockRecipeManager.SkyBlockRecipe> getAllRecipes() {
-        return recipeManager.getAllRecipes();
+    public void registerShapeless(String id, Material result, int resultAmount,
+                                   List<Material> ingredients) {
+        register(new ShapelessRecipe(id, result, resultAmount, new ArrayList<>(ingredients)));
     }
 
-    /**
-     * Returns the recipe registered under the given id, if any.
-     *
-     * @param id the recipe's unique id
-     * @return the registered recipe, or empty
-     */
-    public Optional<SkyBlockRecipeManager.SkyBlockRecipe> getRecipe(String id) {
+    public void registerRecipe(SkyBlockRecipe recipe) {
+        Objects.requireNonNull(recipe, "recipe");
+        register(recipe);
+    }
+
+    private void register(SkyBlockRecipe recipe) {
+        if (recipes.containsKey(recipe.id())) {
+            throw new IllegalStateException(
+                    "Recipe already registered for id: " + recipe.id());
+        }
+        recipes.put(recipe.id(), recipe);
+    }
+
+    public boolean removeRecipe(String id) {
         Objects.requireNonNull(id, "id");
-        return recipeManager.getRecipe(id);
+        return recipes.remove(id) != null;
     }
 
-    // ---------------------------------------------------------------------------
-    // Crafting history
-    // ---------------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // Recipe access
+    // -----------------------------------------------------------------------
 
-    /**
-     * Records that the player crafted the given recipe once.
-     *
-     * @param playerId the player who crafted
-     * @param recipeId the recipe that was crafted
-     * @throws IllegalArgumentException if the recipe id is not registered
-     */
+    public Map<String, SkyBlockRecipe> getAllRecipes() {
+        return Collections.unmodifiableMap(recipes);
+    }
+
+    public Optional<SkyBlockRecipe> getRecipe(String id) {
+        Objects.requireNonNull(id, "id");
+        return Optional.ofNullable(recipes.get(id));
+    }
+
+    // -----------------------------------------------------------------------
+    // Crafting history
+    // -----------------------------------------------------------------------
+
     public void recordCraft(UUID playerId, String recipeId) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(recipeId, "recipeId");
-        if (recipeManager.getRecipe(recipeId).isEmpty()) {
+        if (getRecipe(recipeId).isEmpty()) {
             throw new IllegalArgumentException("Unknown recipe: " + recipeId);
         }
         craftHistory.computeIfAbsent(playerId, id -> new HashMap<>())
                 .merge(recipeId, 1, Integer::sum);
     }
 
-    /**
-     * Returns how many times the player has crafted the given recipe.
-     *
-     * @param playerId the player to look up
-     * @param recipeId the recipe id to check
-     * @return craft count, 0 if never crafted
-     */
     public int getCraftCount(UUID playerId, String recipeId) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(recipeId, "recipeId");
@@ -169,33 +261,20 @@ public final class CraftingManager {
         return history == null ? 0 : history.getOrDefault(recipeId, 0);
     }
 
-    /**
-     * Returns an unmodifiable view of the player's crafting history
-     * (recipe-id → craft count).
-     *
-     * @param playerId the player to look up
-     * @return crafting history, empty map if none
-     */
     public Map<String, Integer> getCraftHistory(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         Map<String, Integer> history = craftHistory.get(playerId);
         return history == null ? Collections.emptyMap() : Collections.unmodifiableMap(history);
     }
 
-    /**
-     * Removes all crafting history for the given player.
-     *
-     * @param playerId the player to reset
-     * @return {@code true} if the player had any history, {@code false} otherwise
-     */
     public boolean resetHistory(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return craftHistory.remove(playerId) != null;
     }
 
-    // ---------------------------------------------------------------------------
+    // -----------------------------------------------------------------------
     // Persistence
-    // ---------------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
     public void load(File dataFolder) {
         File file = new File(dataFolder, "crafting.yml");
@@ -238,15 +317,10 @@ public final class CraftingManager {
         }
     }
 
-    // ---------------------------------------------------------------------------
+    // -----------------------------------------------------------------------
     // Bukkit recipe registration
-    // ---------------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
-    /**
-     * Registers SkyBlock-specific enchanted crafting recipes into the Bukkit server.
-     *
-     * @param plugin the owning plugin used to create {@link NamespacedKey}s
-     */
     public void registerRecipes(JavaPlugin plugin) {
         registerBukkitShaped(plugin, "enchanted_cobblestone", Material.COBBLESTONE);
         registerBukkitShaped(plugin, "enchanted_oak_log", Material.OAK_LOG);
@@ -264,146 +338,146 @@ public final class CraftingManager {
         plugin.getServer().addRecipe(recipe);
     }
 
-    // ---------------------------------------------------------------------------
-    // Default recipe registration
-    // ---------------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // Default recipe catalogue
+    // -----------------------------------------------------------------------
 
     private void loadDefaultRecipes() {
         // Shaped recipes
-        recipeManager.registerShaped("enchanted_iron_sword", Material.IRON_SWORD, 1,
+        registerShaped("enchanted_iron_sword", Material.IRON_SWORD, 1,
                 new String[]{"I", "I", "S"},
                 Map.of('I', Material.IRON_INGOT, 'S', Material.STICK));
 
-        recipeManager.registerShaped("iron_helmet", Material.IRON_HELMET, 1,
+        registerShaped("iron_helmet", Material.IRON_HELMET, 1,
                 new String[]{"III", "I I"},
                 Map.of('I', Material.IRON_INGOT));
 
-        recipeManager.registerShaped("iron_chestplate", Material.IRON_CHESTPLATE, 1,
+        registerShaped("iron_chestplate", Material.IRON_CHESTPLATE, 1,
                 new String[]{"I I", "III", "III"},
                 Map.of('I', Material.IRON_INGOT));
 
-        recipeManager.registerShaped("iron_leggings", Material.IRON_LEGGINGS, 1,
+        registerShaped("iron_leggings", Material.IRON_LEGGINGS, 1,
                 new String[]{"III", "I I", "I I"},
                 Map.of('I', Material.IRON_INGOT));
 
-        recipeManager.registerShaped("iron_boots", Material.IRON_BOOTS, 1,
+        registerShaped("iron_boots", Material.IRON_BOOTS, 1,
                 new String[]{"I I", "I I"},
                 Map.of('I', Material.IRON_INGOT));
 
-        recipeManager.registerShaped("iron_pickaxe", Material.IRON_PICKAXE, 1,
+        registerShaped("iron_pickaxe", Material.IRON_PICKAXE, 1,
                 new String[]{"III", " S ", " S "},
                 Map.of('I', Material.IRON_INGOT, 'S', Material.STICK));
 
-        recipeManager.registerShaped("iron_axe", Material.IRON_AXE, 1,
+        registerShaped("iron_axe", Material.IRON_AXE, 1,
                 new String[]{"II", "IS", " S"},
                 Map.of('I', Material.IRON_INGOT, 'S', Material.STICK));
 
-        recipeManager.registerShaped("iron_shovel", Material.IRON_SHOVEL, 1,
+        registerShaped("iron_shovel", Material.IRON_SHOVEL, 1,
                 new String[]{"I", "S", "S"},
                 Map.of('I', Material.IRON_INGOT, 'S', Material.STICK));
 
-        recipeManager.registerShaped("iron_hoe", Material.IRON_HOE, 1,
+        registerShaped("iron_hoe", Material.IRON_HOE, 1,
                 new String[]{"II", " S", " S"},
                 Map.of('I', Material.IRON_INGOT, 'S', Material.STICK));
 
-        recipeManager.registerShaped("chest", Material.CHEST, 1,
+        registerShaped("chest", Material.CHEST, 1,
                 new String[]{"WWW", "W W", "WWW"},
                 Map.of('W', Material.OAK_PLANKS));
 
         // SkyBlock-specific shaped recipes — diamond gear
-        recipeManager.registerShaped("diamond_sword", Material.DIAMOND_SWORD, 1,
+        registerShaped("diamond_sword", Material.DIAMOND_SWORD, 1,
                 new String[]{"D", "D", "S"},
                 Map.of('D', Material.DIAMOND, 'S', Material.STICK));
 
-        recipeManager.registerShaped("diamond_helmet", Material.DIAMOND_HELMET, 1,
+        registerShaped("diamond_helmet", Material.DIAMOND_HELMET, 1,
                 new String[]{"DDD", "D D"},
                 Map.of('D', Material.DIAMOND));
 
-        recipeManager.registerShaped("diamond_chestplate", Material.DIAMOND_CHESTPLATE, 1,
+        registerShaped("diamond_chestplate", Material.DIAMOND_CHESTPLATE, 1,
                 new String[]{"D D", "DDD", "DDD"},
                 Map.of('D', Material.DIAMOND));
 
-        recipeManager.registerShaped("diamond_leggings", Material.DIAMOND_LEGGINGS, 1,
+        registerShaped("diamond_leggings", Material.DIAMOND_LEGGINGS, 1,
                 new String[]{"DDD", "D D", "D D"},
                 Map.of('D', Material.DIAMOND));
 
-        recipeManager.registerShaped("diamond_boots", Material.DIAMOND_BOOTS, 1,
+        registerShaped("diamond_boots", Material.DIAMOND_BOOTS, 1,
                 new String[]{"D D", "D D"},
                 Map.of('D', Material.DIAMOND));
 
         // SkyBlock-specific shaped recipes — diamond tools
-        recipeManager.registerShaped("diamond_pickaxe", Material.DIAMOND_PICKAXE, 1,
+        registerShaped("diamond_pickaxe", Material.DIAMOND_PICKAXE, 1,
                 new String[]{"DDD", " S ", " S "},
                 Map.of('D', Material.DIAMOND, 'S', Material.STICK));
 
-        recipeManager.registerShaped("diamond_axe", Material.DIAMOND_AXE, 1,
+        registerShaped("diamond_axe", Material.DIAMOND_AXE, 1,
                 new String[]{"DD", "DS", " S"},
                 Map.of('D', Material.DIAMOND, 'S', Material.STICK));
 
-        recipeManager.registerShaped("diamond_shovel", Material.DIAMOND_SHOVEL, 1,
+        registerShaped("diamond_shovel", Material.DIAMOND_SHOVEL, 1,
                 new String[]{"D", "S", "S"},
                 Map.of('D', Material.DIAMOND, 'S', Material.STICK));
 
-        recipeManager.registerShaped("diamond_hoe", Material.DIAMOND_HOE, 1,
+        registerShaped("diamond_hoe", Material.DIAMOND_HOE, 1,
                 new String[]{"DD", " S", " S"},
                 Map.of('D', Material.DIAMOND, 'S', Material.STICK));
 
         // SkyBlock-specific shaped recipes — utility blocks
-        recipeManager.registerShaped("enchanting_table", Material.ENCHANTING_TABLE, 1,
+        registerShaped("enchanting_table", Material.ENCHANTING_TABLE, 1,
                 new String[]{" B ", "DOD", "OOO"},
                 Map.of('B', Material.BOOK, 'D', Material.DIAMOND, 'O', Material.OBSIDIAN));
 
-        recipeManager.registerShaped("ender_chest", Material.ENDER_CHEST, 1,
+        registerShaped("ender_chest", Material.ENDER_CHEST, 1,
                 new String[]{"OOO", "OEO", "OOO"},
                 Map.of('O', Material.OBSIDIAN, 'E', Material.ENDER_EYE));
 
-        recipeManager.registerShaped("anvil", Material.ANVIL, 1,
+        registerShaped("anvil", Material.ANVIL, 1,
                 new String[]{"III", " i ", "iii"},
                 Map.of('I', Material.IRON_BLOCK, 'i', Material.IRON_INGOT));
 
-        recipeManager.registerShaped("brewing_stand", Material.BREWING_STAND, 1,
+        registerShaped("brewing_stand", Material.BREWING_STAND, 1,
                 new String[]{" B ", "CCC"},
                 Map.of('B', Material.BLAZE_ROD, 'C', Material.COBBLESTONE));
 
-        recipeManager.registerShaped("beacon", Material.BEACON, 1,
+        registerShaped("beacon", Material.BEACON, 1,
                 new String[]{"GGG", "GSG", "OOO"},
                 Map.of('G', Material.GLASS, 'S', Material.NETHER_STAR, 'O', Material.OBSIDIAN));
 
         // SkyBlock-specific shaped recipes — compressed resource blocks
-        recipeManager.registerShaped("enchanted_iron_block", Material.IRON_BLOCK, 1,
+        registerShaped("enchanted_iron_block", Material.IRON_BLOCK, 1,
                 new String[]{"III", "III", "III"},
                 Map.of('I', Material.IRON_INGOT));
 
-        recipeManager.registerShaped("enchanted_gold_block", Material.GOLD_BLOCK, 1,
+        registerShaped("enchanted_gold_block", Material.GOLD_BLOCK, 1,
                 new String[]{"GGG", "GGG", "GGG"},
                 Map.of('G', Material.GOLD_INGOT));
 
-        recipeManager.registerShaped("enchanted_diamond_block", Material.DIAMOND_BLOCK, 1,
+        registerShaped("enchanted_diamond_block", Material.DIAMOND_BLOCK, 1,
                 new String[]{"DDD", "DDD", "DDD"},
                 Map.of('D', Material.DIAMOND));
 
-        recipeManager.registerShaped("enchanted_lapis_block", Material.LAPIS_BLOCK, 1,
+        registerShaped("enchanted_lapis_block", Material.LAPIS_BLOCK, 1,
                 new String[]{"LLL", "LLL", "LLL"},
                 Map.of('L', Material.LAPIS_LAZULI));
 
-        recipeManager.registerShaped("enchanted_emerald_block", Material.EMERALD_BLOCK, 1,
+        registerShaped("enchanted_emerald_block", Material.EMERALD_BLOCK, 1,
                 new String[]{"EEE", "EEE", "EEE"},
                 Map.of('E', Material.EMERALD));
 
         // Shapeless recipes
-        recipeManager.registerShapeless("torch_x4", Material.TORCH, 4,
+        registerShapeless("torch_x4", Material.TORCH, 4,
                 List.of(Material.COAL, Material.STICK));
 
-        recipeManager.registerShapeless("wooden_planks", Material.OAK_PLANKS, 4,
+        registerShapeless("wooden_planks", Material.OAK_PLANKS, 4,
                 List.of(Material.OAK_LOG));
 
-        recipeManager.registerShapeless("paper_x3", Material.PAPER, 3,
+        registerShapeless("paper_x3", Material.PAPER, 3,
                 new ArrayList<>(List.of(Material.SUGAR_CANE, Material.SUGAR_CANE, Material.SUGAR_CANE)));
 
-        recipeManager.registerShapeless("book", Material.BOOK, 1,
+        registerShapeless("book", Material.BOOK, 1,
                 List.of(Material.PAPER, Material.PAPER, Material.PAPER, Material.LEATHER));
 
-        recipeManager.registerShapeless("glass_bottle", Material.GLASS_BOTTLE, 3,
+        registerShapeless("glass_bottle", Material.GLASS_BOTTLE, 3,
                 new ArrayList<>(List.of(Material.GLASS, Material.GLASS, Material.GLASS)));
     }
 }
