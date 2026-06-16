@@ -15,11 +15,33 @@ import java.util.UUID;
 public final class KuudraManager {
 
     public enum KuudraTier {
-        BASIC("Basic"), HOT("Hot"), BURNING("Burning"), FIERY("Fiery"), INFERNAL("Infernal");
+        BASIC("Basic", 1), HOT("Hot", 2), BURNING("Burning", 3), FIERY("Fiery", 4), INFERNAL("Infernal", 5);
+
+        private final String displayName;
+        private final int tier;
+
+        KuudraTier(String displayName, int tier) {
+            this.displayName = displayName;
+            this.tier = tier;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        /** The escalation tier number, 1 (Basic) through 5 (Infernal). */
+        public int getTier() {
+            return tier;
+        }
+    }
+
+    /** The sequential combat phases of a Kuudra fight, in fight order. */
+    public enum KuudraPhase {
+        BUILD("Build"), SUPPLY("Supply"), DPS("DPS"), BURN("Burn");
 
         private final String displayName;
 
-        KuudraTier(String displayName) {
+        KuudraPhase(String displayName) {
             this.displayName = displayName;
         }
 
@@ -32,6 +54,7 @@ public final class KuudraManager {
         private final KuudraTier tier;
         private final List<UUID> participants;
         private final long startTime;
+        private KuudraPhase phase = KuudraPhase.BUILD;
 
         public KuudraRun(KuudraTier tier, List<UUID> participants, long startTime) {
             this.tier = tier;
@@ -42,6 +65,27 @@ public final class KuudraManager {
         public KuudraTier getTier() { return tier; }
         public List<UUID> getParticipants() { return participants; }
         public long getStartTime() { return startTime; }
+        public KuudraPhase getPhase() { return phase; }
+
+        /**
+         * Advance to the next combat phase (BUILD → SUPPLY → DPS → BURN).
+         *
+         * @return the phase now in progress
+         * @throws IllegalStateException if the run is already in the final BURN phase
+         */
+        public KuudraPhase advancePhase() {
+            KuudraPhase[] phases = KuudraPhase.values();
+            if (phase.ordinal() >= phases.length - 1) {
+                throw new IllegalStateException("Kuudra run is already in the final phase.");
+            }
+            phase = phases[phase.ordinal() + 1];
+            return phase;
+        }
+
+        /** True once the run has reached and is in the final BURN phase. */
+        public boolean isFinalPhase() {
+            return phase == KuudraPhase.BURN;
+        }
     }
 
     // TIER_DATA: {essenceCost, tokenReward, suppliesCost}
@@ -82,12 +126,31 @@ public final class KuudraManager {
         activeRuns.remove(playerId);
     }
 
-    public void completeRun(UUID playerId) {
+    /**
+     * Advance the combat phase of the player's active run.
+     *
+     * @return the phase now in progress
+     * @throws IllegalStateException if the player is not in a run
+     */
+    public KuudraPhase advancePhase(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        KuudraRun run = activeRuns.remove(playerId);
+        KuudraRun run = activeRuns.get(playerId);
         if (run == null) {
             throw new IllegalStateException("Player is not in a Kuudra run.");
         }
+        return run.advancePhase();
+    }
+
+    public void completeRun(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        KuudraRun run = activeRuns.get(playerId);
+        if (run == null) {
+            throw new IllegalStateException("Player is not in a Kuudra run.");
+        }
+        if (!run.isFinalPhase()) {
+            throw new IllegalStateException("Kuudra run must reach the BURN phase before it can be completed.");
+        }
+        activeRuns.remove(playerId);
         completions.computeIfAbsent(playerId, k -> new HashMap<>())
                 .merge(run.getTier(), 1, Integer::sum);
         recordKuudraEvent(playerId, "Completed " + run.getTier().getDisplayName() + " Kuudra run");
