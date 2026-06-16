@@ -1,8 +1,8 @@
 package com.skyblock.islands.gui;
 
-import com.skyblock.islands.manager.IslandManager;
-import com.skyblock.islands.manager.IslandManager.IslandUpgrade;
-import com.skyblock.islands.manager.IslandManager.SkyBlockIsland;
+import com.skyblock.core.manager.IslandManager;
+import com.skyblock.core.manager.IslandManager.IslandUpgrade;
+import com.skyblock.core.manager.IslandManager.SkyBlockIsland;
 import com.skyblock.core.menu.Menu;
 import com.skyblock.items.util.ItemBuilder;
 import org.bukkit.Material;
