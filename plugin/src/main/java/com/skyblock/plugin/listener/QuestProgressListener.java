@@ -1,8 +1,8 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.core.manager.QuestManager;
-import com.skyblock.core.manager.QuestManager.QuestStatus;
-import com.skyblock.core.manager.QuestManager.QuestType;
+import com.skyblock.core.quest.manager.QuestManager;
+import com.skyblock.core.quest.manager.QuestManager.QuestStatus;
+import com.skyblock.core.quest.manager.QuestManager.QuestType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
