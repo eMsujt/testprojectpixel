@@ -1,9 +1,10 @@
-package com.skyblock.core.menu;
+package com.skyblock.core.quest.gui;
 
 import com.skyblock.core.quest.manager.QuestManager;
 import com.skyblock.core.quest.manager.QuestManager.QuestStatus;
 import com.skyblock.core.quest.manager.QuestManager.QuestType;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.menu.Menu;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -12,9 +13,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * @deprecated Use {@link com.skyblock.core.quest.gui.QuestsMenu} instead.
+ * The canonical Quests &amp; Objectives menu. A 54-slot (6-row) chest GUI titled
+ * {@code §eQuests &amp; Objectives} showing all {@link QuestType} entries across
+ * inner slots, framed by a {@code GRAY_STAINED_GLASS_PANE} border. Clicking a
+ * NOT_STARTED quest starts it; a close button sits at slot 49.
  */
-@Deprecated
 public final class QuestsMenu extends Menu {
 
     private static final String TITLE = "§eQuests & Objectives";
