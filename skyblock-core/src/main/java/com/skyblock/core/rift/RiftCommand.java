@@ -81,6 +81,10 @@ public final class RiftCommand implements TabExecutor {
             player.sendMessage("Zone: " + (data.zone != null ? data.zone.name() : "unknown"));
             player.sendMessage("Time remaining: " + data.timeRemainingSeconds + "s");
         }
+        player.sendMessage("Motes: " + data.motes);
+        player.sendMessage("Timecharms: " + data.timecharms);
+        player.sendMessage("Rift souls: " + data.riftSouls);
+        player.sendMessage("Enigma souls: " + data.enigmaSouls + "/" + RiftManager.ENIGMA_SOUL_TOTAL);
         player.sendMessage("=== Kill Counts ===");
         boolean any = false;
         for (Map.Entry<RiftMobType, Integer> entry : data.kills.entrySet()) {
