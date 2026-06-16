@@ -885,6 +885,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (auction module package layout standardization — round 136)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| `com.skyblock.auction` / `com.skyblock.core.auction` package layout | `com.skyblock.core.auction.{command,manager,gui}` | Audited all source files in the auction module; canonical `com.skyblock.core.auction` package layout established with `command/AuctionHouseCommand` (pre-existing), `manager/AuctionHouseManager`, and `gui/AuctionHouseMenu`; all callers updated to the new import paths; old locations replaced with `@Deprecated` forwarding stubs; flat-package strays eliminated | #2916 |
+| `com.skyblock.core.profile` / `com.skyblock.core.player` package layout | `com.skyblock.core.player.manager.PlayerDataManager` | Standardized profile and player module internal package layout; `plugin.profile.PlayerDataManager` corrected to reference `com.skyblock.core.player.manager.PlayerDataManager` (6 occurrences fixed — previously pointed at empty deprecated stub at `com.skyblock.core.manager`); all callers migrated to canonical import path | #2915 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
