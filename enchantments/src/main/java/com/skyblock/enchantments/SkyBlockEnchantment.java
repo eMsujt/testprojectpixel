@@ -1,12 +1,9 @@
 package com.skyblock.enchantments;
 
 /**
- * Custom enchantments available on SkyBlock items.
- *
- * <p>Each enchantment carries its human-readable display name and the
- * maximum level it can be applied at. Levels always run from 1 to
- * {@link #getMaxLevel()} inclusive.</p>
+ * @deprecated Use {@link com.skyblock.core.enchanting.EnchantingManager.SkyBlockEnchantment} instead.
  */
+@Deprecated
 public enum SkyBlockEnchantment {
 
     SHARPNESS("Sharpness", 7),

@@ -1,6 +1,6 @@
 package com.skyblock.plugin.items;
 
-import com.skyblock.items.util.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 

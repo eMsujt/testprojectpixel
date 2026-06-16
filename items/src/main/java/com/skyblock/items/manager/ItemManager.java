@@ -17,12 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Registry of custom item definitions: each item has a unique id, a display
- * name, an {@link ItemType}, and a {@link Rarity}.
- *
- * <p>Definitions are stored in a {@link ConcurrentHashMap} keyed by item id,
- * so all operations are thread-safe.</p>
+ * @deprecated Use {@link com.skyblock.core.item.manager.SkyBlockItemManager} instead.
  */
+@Deprecated
 public final class ItemManager {
 
     /** A single custom item definition. */

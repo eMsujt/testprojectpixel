@@ -1,4 +1,4 @@
-package com.skyblock.items.util;
+package com.skyblock.core.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,9 +20,8 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * @deprecated Use {@link com.skyblock.core.util.ItemBuilder} instead.
+ * Fluent builder for constructing {@link ItemStack}s used in GUI menus and elsewhere.
  */
-@Deprecated
 public class ItemBuilder {
 
     private final ItemStack item;

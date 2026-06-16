@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetManager.Pet;
-import com.skyblock.items.util.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
