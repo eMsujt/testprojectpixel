@@ -35,8 +35,7 @@
  * {@link com.skyblock.core.auction.manager.AuctionHouseManager} (BIN listings and
  * ascending-auction bidding) and
  * {@link com.skyblock.core.crafting.manager.CraftingManager} (custom recipes and
- * crafting history). The {@link com.skyblock.core.manager.CraftingManager} in this
- * package is a deprecated stub retained only for backward compatibility.</p>
+ * crafting history).</p>
  *
  * <p>Managers in this package are not thread-safe; synchronize externally if
  * accessed from multiple threads.</p>
