@@ -173,6 +173,7 @@ public final class DungeonManager {
         private final long startTimeMillis;
         private boolean completed;
         private int score;
+        private int roomsCleared;
 
         DungeonRun(DungeonType type, List<UUID> participants, long startTimeMillis) {
             this.type = type;
@@ -185,6 +186,7 @@ public final class DungeonManager {
         public long getStartTimeMillis() { return startTimeMillis; }
         public boolean isCompleted() { return completed; }
         public int getScore() { return score; }
+        public int getRoomsCleared() { return roomsCleared; }
     }
 
     // -------------------------------------------------------------------------
@@ -293,6 +295,22 @@ public final class DungeonManager {
 
     /** Selected dungeon class (enum) per player. */
     private final Map<UUID, DungeonClass> playerClasses = new HashMap<>();
+    /** Accumulated class XP per player per DungeonClass. */
+    private final Map<UUID, Map<DungeonClass, Double>> classXp = new HashMap<>();
+
+    /** Maximum dungeon class level. */
+    public static final int MAX_CLASS_LEVEL = 50;
+
+    /** Cumulative XP required to reach each class level (index = level, 0..50). */
+    private static final long[] CLASS_XP_TABLE = {
+        0L, 50L, 125L, 235L, 395L, 625L, 955L, 1425L, 2095L, 3045L, 4385L,
+        6275L, 8940L, 12700L, 17960L, 25340L, 35640L, 50040L, 70040L, 97640L,
+        135640L, 188140L, 259640L, 356640L, 488640L, 668640L, 911640L, 1239640L,
+        1684640L, 2284640L, 3084640L, 4149640L, 5559640L, 7459640L, 9959640L,
+        13259640L, 17559640L, 23159640L, 30359640L, 39559640L, 51559640L,
+        66559640L, 85559640L, 109559640L, 139559640L, 177559640L, 225559640L,
+        285559640L, 360559640L, 453559640L, 569809640L
+    };
 
     // -------------------------------------------------------------------------
     // State: integer-floor tracking
@@ -393,6 +411,24 @@ public final class DungeonManager {
         return activeRuns.get(playerId);
     }
 
+    /**
+     * Marks a room as cleared in the given player's active run, incrementing the
+     * shared room count and run score by {@code scoreReward}.
+     *
+     * @return the run's new total number of cleared rooms
+     */
+    public int clearRoom(UUID playerId, int scoreReward) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (scoreReward < 0) throw new IllegalArgumentException("scoreReward must not be negative: " + scoreReward);
+        DungeonRun run = activeRuns.get(playerId);
+        if (run == null) {
+            throw new IllegalStateException("No active dungeon run for " + playerId);
+        }
+        run.roomsCleared++;
+        run.score += scoreReward;
+        return run.roomsCleared;
+    }
+
     // -------------------------------------------------------------------------
     // DungeonType-based stats
     // -------------------------------------------------------------------------
@@ -457,6 +493,33 @@ public final class DungeonManager {
     public DungeonClass getClass(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerClasses.get(playerId);
+    }
+
+    /** Adds class XP to the given class and returns the player's new total XP for it. */
+    public double addClassXp(UUID playerId, DungeonClass dungeonClass, double amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(dungeonClass, "dungeonClass");
+        if (amount < 0) throw new IllegalArgumentException("amount must not be negative: " + amount);
+        return classXp.computeIfAbsent(playerId, k -> new HashMap<>())
+                .merge(dungeonClass, amount, Double::sum);
+    }
+
+    /** Returns the player's accumulated XP in the given class. */
+    public double getClassXp(UUID playerId, DungeonClass dungeonClass) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(dungeonClass, "dungeonClass");
+        Map<DungeonClass, Double> xp = classXp.get(playerId);
+        return xp == null ? 0.0 : xp.getOrDefault(dungeonClass, 0.0);
+    }
+
+    /** Returns the player's level (0..{@link #MAX_CLASS_LEVEL}) in the given class. */
+    public int getClassLevel(UUID playerId, DungeonClass dungeonClass) {
+        double xp = getClassXp(playerId, dungeonClass);
+        int level = 0;
+        while (level < MAX_CLASS_LEVEL && xp >= CLASS_XP_TABLE[level + 1]) {
+            level++;
+        }
+        return level;
     }
 
     // -------------------------------------------------------------------------
@@ -711,6 +774,7 @@ public final class DungeonManager {
         floorCompletionCounts.clear();
         floorBestTimes.clear();
         playerClasses.clear();
+        classXp.clear();
         floorCompletions.clear();
         dungeonHistory.clear();
         records.clear();
@@ -788,6 +852,14 @@ public final class DungeonManager {
                     try { playerClasses.put(uuid, DungeonClass.valueOf(cls)); }
                     catch (IllegalArgumentException ignored) {}
                 }
+                if (cfg.isConfigurationSection(key + ".classXp")) {
+                    Map<DungeonClass, Double> xp = new HashMap<>();
+                    for (DungeonClass dc : DungeonClass.values()) {
+                        double val = cfg.getDouble(key + ".classXp." + dc.name(), 0.0);
+                        if (val > 0) xp.put(dc, val);
+                    }
+                    if (!xp.isEmpty()) classXp.put(uuid, xp);
+                }
                 String strCls = cfg.getString(key + ".playerClass");
                 if (strCls != null && VALID_CLASSES.contains(strCls)) {
                     playerClass.put(uuid, strCls);
@@ -859,6 +931,12 @@ public final class DungeonManager {
             for (Map.Entry<Integer, FloorRecord> e : playerEntry.getValue().entrySet()) {
                 cfg.set(key + ".records." + e.getKey() + ".completions", e.getValue().completions);
                 cfg.set(key + ".records." + e.getKey() + ".bestScore", e.getValue().bestScore);
+            }
+        }
+        for (Map.Entry<UUID, Map<DungeonClass, Double>> entry : classXp.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<DungeonClass, Double> e : entry.getValue().entrySet()) {
+                cfg.set(key + ".classXp." + e.getKey().name(), e.getValue());
             }
         }
         for (Map.Entry<UUID, String> entry : playerClass.entrySet()) {
