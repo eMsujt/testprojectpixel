@@ -49,7 +49,7 @@ import com.skyblock.plugin.commands.KuudraCommand;
 import com.skyblock.plugin.commands.MayorCommand;
 import com.skyblock.pets.command.PetCommand;
 import com.skyblock.pets.command.PetsCommand;
-import com.skyblock.pets.manager.PetManager;
+import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.quest.command.QuestCommand;
 import com.skyblock.plugin.commands.SlayerCommand;

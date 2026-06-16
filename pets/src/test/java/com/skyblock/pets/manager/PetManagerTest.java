@@ -9,14 +9,14 @@ class PetManagerTest {
 
     @Test
     void getInstance_ReturnsSameInstance() {
-        PetManager a = PetManager.getInstance();
-        PetManager b = PetManager.getInstance();
+        com.skyblock.core.manager.PetManager a = com.skyblock.core.manager.PetManager.getInstance();
+        com.skyblock.core.manager.PetManager b = com.skyblock.core.manager.PetManager.getInstance();
         assertSame(a, b);
     }
 
     @Test
     void getInstance_ReturnsNonNull() {
-        assertNotNull(PetManager.getInstance());
+        assertNotNull(com.skyblock.core.manager.PetManager.getInstance());
     }
 
     @Test
