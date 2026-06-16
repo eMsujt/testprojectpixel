@@ -1,6 +1,6 @@
 package com.skyblock.core.ability;
 
-import com.skyblock.core.manager.AbilityManager;
+import com.skyblock.core.ability.manager.AbilityManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
