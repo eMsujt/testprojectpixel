@@ -828,6 +828,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (PetManager test relocation — round 128)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| PetManagerTest relocation | `com.skyblock.core.manager.PetManager` | Relocated `PetManagerTest` from `pets/src/test/java/com/skyblock/pets/manager/PetManagerTest.java` to `skyblock-core/src/test/java/com/skyblock/core/manager/PetManagerTest.java`; package declaration updated from `com.skyblock.pets.manager` to `com.skyblock.core.manager`; fully-qualified `com.skyblock.core.manager.PetManager` references simplified to simple name `PetManager` now that the test lives in the same package as the canonical class | #2891 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
