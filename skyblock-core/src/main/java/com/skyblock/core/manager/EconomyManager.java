@@ -1,5 +1,7 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.config.Constants;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +19,7 @@ public final class EconomyManager {
     private static final double DEFAULT_BALANCE = 0.0;
 
     /** Default maximum a player's bank may hold (Gold tier). */
-    private static final long DEFAULT_BANK_CAPACITY = 50_000_000L;
+    private static final long DEFAULT_BANK_CAPACITY = Constants.DEFAULT_BANK_CAPACITY;
 
     /** playerId -> purse balance */
     private final Map<UUID, Double> balances = new HashMap<>();
