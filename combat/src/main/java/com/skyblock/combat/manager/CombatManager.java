@@ -1,6 +1,6 @@
 package com.skyblock.combat.manager;
 
-import com.skyblock.combat.engine.CombatEngine;
+import com.skyblock.combat.calculator.CombatEngine;
 import com.skyblock.core.model.Stat;
 
 import java.util.EnumMap;
