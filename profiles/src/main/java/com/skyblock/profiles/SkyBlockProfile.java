@@ -4,12 +4,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Data holder for a single SkyBlock profile owned by a player.
- *
- * <p>A profile is identified by its profile id and tracks the owning
- * player, the {@link GameMode} it was created with and its creation
- * timestamp. Instances are immutable and therefore thread-safe.</p>
+ * @deprecated Use {@link com.skyblock.core.profile.manager.ProfileManager.SkyBlockProfile} instead.
  */
+@Deprecated
 public final class SkyBlockProfile {
 
     private final String profileId;

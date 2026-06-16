@@ -64,8 +64,8 @@ public final class PlayerDataManager implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         load(uuid);
 
-        com.skyblock.core.manager.PlayerDataManager.PlayerData data =
-                com.skyblock.core.manager.PlayerDataManager.getInstance().getOrCreate(uuid);
+        com.skyblock.core.player.manager.PlayerDataManager.PlayerData data =
+                com.skyblock.core.player.manager.PlayerDataManager.getInstance().getOrCreate(uuid);
 
         SkyBlockPlugin plugin = SkyBlockPlugin.getInstance();
         File file = new File(new File(plugin.getDataFolder(), "players"), uuid + ".yml");
@@ -92,9 +92,9 @@ public final class PlayerDataManager implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
-        com.skyblock.core.manager.PlayerDataManager mgr =
-                com.skyblock.core.manager.PlayerDataManager.getInstance();
-        Optional<com.skyblock.core.manager.PlayerDataManager.PlayerData> opt = mgr.get(uuid);
+        com.skyblock.core.player.manager.PlayerDataManager mgr =
+                com.skyblock.core.player.manager.PlayerDataManager.getInstance();
+        Optional<com.skyblock.core.player.manager.PlayerDataManager.PlayerData> opt = mgr.get(uuid);
         if (opt.isEmpty()) {
             return;
         }
@@ -118,7 +118,7 @@ public final class PlayerDataManager implements Listener {
     }
 
     private static YamlConfiguration buildSnapshot(
-            com.skyblock.core.manager.PlayerDataManager.PlayerData data) {
+            com.skyblock.core.player.manager.PlayerDataManager.PlayerData data) {
         YamlConfiguration cfg = new YamlConfiguration();
         cfg.set("coins", data.getCoins());
         data.getSkillLevels().forEach((skill, level) -> cfg.set("skills." + skill, level));
@@ -126,7 +126,7 @@ public final class PlayerDataManager implements Listener {
     }
 
     private static void applyFromDisk(
-            com.skyblock.core.manager.PlayerDataManager.PlayerData data, YamlConfiguration cfg) {
+            com.skyblock.core.player.manager.PlayerDataManager.PlayerData data, YamlConfiguration cfg) {
         data.setCoins(cfg.getLong("coins", 0L));
         ConfigurationSection skills = cfg.getConfigurationSection("skills");
         if (skills != null) {
