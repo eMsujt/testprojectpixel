@@ -11,7 +11,7 @@ import com.skyblock.core.kuudra.KuudraCommand;
 import com.skyblock.core.bank.command.BankCommand;
 import com.skyblock.core.bank.manager.BankManager;
 import com.skyblock.core.bazaar.command.BazaarCommand;
-import com.skyblock.core.bazaar.manager.BazaarManager;
+import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.dungeon.command.DungeonCommand;
 import com.skyblock.core.dungeon.manager.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
