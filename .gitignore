@@ -1,3 +1,21 @@
 # Exclude Claude Code linked worktrees — these contain nested .git files that
 # git would record as dirty submodule refs if staged accidentally.
 .claude/worktrees/
+
+# Maven build output
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
