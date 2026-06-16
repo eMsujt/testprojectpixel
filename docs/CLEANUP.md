@@ -470,6 +470,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (QuestManager consolidation — round 87)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| QuestManager / QuestHandler | `com.skyblock.core.manager.QuestManager` | Thorough final-pass consolidation of every class named `QuestManager` or `QuestHandler` across every module; all duplicate implementations and `@Deprecated` delegation stubs deleted outright; canonical `com.skyblock.core.manager.QuestManager` confirmed as sole implementation with no remaining orphan copies | #2753 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
