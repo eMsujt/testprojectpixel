@@ -1,5 +1,7 @@
 package com.skyblock.core.crimson;
 
+import com.skyblock.core.manager.ReputationManager;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -14,10 +16,10 @@ public final class CrimsonCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("info", "faction", "reputation");
 
-    private final CrimsonManager crimsonManager;
+    private final ReputationManager reputationManager;
 
-    public CrimsonCommand(CrimsonManager crimsonManager) {
-        this.crimsonManager = crimsonManager;
+    public CrimsonCommand(ReputationManager reputationManager) {
+        this.reputationManager = reputationManager;
     }
 
     @Override
@@ -50,7 +52,7 @@ public final class CrimsonCommand implements TabExecutor {
         if (args.length == 2 && (args[0].equalsIgnoreCase("faction")
                 || args[0].equalsIgnoreCase("reputation"))) {
             String prefix = args[1].toLowerCase();
-            return Arrays.stream(CrimsonManager.FactionType.values())
+            return Arrays.stream(ReputationManager.Faction.values())
                     .map(f -> f.name().toLowerCase())
                     .filter(n -> n.startsWith(prefix))
                     .collect(Collectors.toList());
@@ -59,47 +61,48 @@ public final class CrimsonCommand implements TabExecutor {
     }
 
     private void handleInfo(Player player) {
-        CrimsonManager.FactionType faction = crimsonManager.getFaction(player.getUniqueId());
+        ReputationManager.Faction faction = reputationManager.getFaction(player.getUniqueId());
         player.sendMessage("=== Crimson Isle ===");
         player.sendMessage("  Faction: " + (faction == null ? "None" : faction.getDisplayName()));
-        for (CrimsonManager.FactionType f : CrimsonManager.FactionType.values()) {
-            int rep = crimsonManager.getReputation(player.getUniqueId(), f);
-            player.sendMessage("  " + f.getDisplayName() + " reputation: " + rep);
+        for (ReputationManager.Faction f : ReputationManager.Faction.values()) {
+            int rep = reputationManager.getReputation(player.getUniqueId(), f);
+            player.sendMessage("  " + f.getDisplayName() + " reputation: " + rep
+                    + " (" + reputationManager.getReputationTier(player.getUniqueId(), f).getDisplayName() + ")");
         }
     }
 
     private void handleFaction(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("Usage: /crimson faction <mage|barbarian|vanquisher>");
+            player.sendMessage("Usage: /crimson faction <mage|barbarian>");
             return;
         }
-        CrimsonManager.FactionType faction;
+        ReputationManager.Faction faction;
         try {
-            faction = CrimsonManager.FactionType.valueOf(args[1].toUpperCase());
+            faction = ReputationManager.Faction.valueOf(args[1].toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown faction: " + args[1]);
             return;
         }
-        crimsonManager.setFaction(player.getUniqueId(), faction);
+        reputationManager.setFaction(player.getUniqueId(), faction);
         player.sendMessage("Joined the " + faction.getDisplayName() + ".");
     }
 
     private void handleReputation(Player player, String[] args) {
         if (args.length < 2) {
-            for (CrimsonManager.FactionType f : CrimsonManager.FactionType.values()) {
-                int rep = crimsonManager.getReputation(player.getUniqueId(), f);
+            for (ReputationManager.Faction f : ReputationManager.Faction.values()) {
+                int rep = reputationManager.getReputation(player.getUniqueId(), f);
                 player.sendMessage(f.getDisplayName() + " reputation: " + rep);
             }
             return;
         }
-        CrimsonManager.FactionType faction;
+        ReputationManager.Faction faction;
         try {
-            faction = CrimsonManager.FactionType.valueOf(args[1].toUpperCase());
+            faction = ReputationManager.Faction.valueOf(args[1].toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown faction: " + args[1]);
             return;
         }
-        int rep = crimsonManager.getReputation(player.getUniqueId(), faction);
+        int rep = reputationManager.getReputation(player.getUniqueId(), faction);
         player.sendMessage(faction.getDisplayName() + " reputation: " + rep);
     }
 
