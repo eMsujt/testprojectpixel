@@ -16,10 +16,15 @@ public final class EconomyManager {
 
     private static final double DEFAULT_BALANCE = 0.0;
 
+    /** Default maximum a player's bank may hold (Gold tier). */
+    private static final long DEFAULT_BANK_CAPACITY = 50_000_000L;
+
     /** playerId -> purse balance */
     private final Map<UUID, Double> balances = new HashMap<>();
     /** playerId -> bank balance */
     private final Map<UUID, Double> bankBalances = new HashMap<>();
+    /** playerId -> bank capacity (defaults to {@link #DEFAULT_BANK_CAPACITY}) */
+    private final Map<UUID, Long> bankCapacities = new HashMap<>();
 
     private EconomyManager() {}
 
@@ -170,6 +175,65 @@ public final class EconomyManager {
         setBank(playerId, getBank(playerId) + amount);
     }
 
+    /** Returns the maximum the player's bank may hold, defaulting to the Gold-tier capacity. */
+    public long getBankCapacity(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return bankCapacities.getOrDefault(playerId, DEFAULT_BANK_CAPACITY);
+    }
+
+    /** Sets the maximum the player's bank may hold (must be &gt;= 0). */
+    public void setBankCapacity(UUID playerId, long capacity) {
+        Objects.requireNonNull(playerId, "playerId");
+        bankCapacities.put(playerId, Math.max(0L, capacity));
+    }
+
+    /**
+     * Moves coins from the player's purse into their bank.
+     *
+     * <p>Fails if the purse lacks the funds or if the deposit would exceed the
+     * player's {@linkplain #getBankCapacity(UUID) bank capacity}.</p>
+     *
+     * @param playerId UUID of the player
+     * @param amount   the amount to move (must be &gt; 0)
+     * @return {@code true} if the deposit succeeded
+     * @throws IllegalArgumentException if amount is not positive
+     */
+    public boolean depositToBank(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("deposit amount must be positive");
+        }
+        if (getBank(playerId) + amount > getBankCapacity(playerId)) {
+            return false;
+        }
+        if (!withdraw(playerId, (double) amount)) {
+            return false;
+        }
+        addBank(playerId, amount);
+        return true;
+    }
+
+    /**
+     * Moves coins from the player's bank into their purse.
+     *
+     * @param playerId UUID of the player
+     * @param amount   the amount to move (must be &gt; 0)
+     * @return {@code true} if the bank held sufficient funds and the withdrawal succeeded
+     * @throws IllegalArgumentException if amount is not positive
+     */
+    public boolean withdrawFromBank(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("withdrawal amount must be positive");
+        }
+        if (getBank(playerId) < amount) {
+            return false;
+        }
+        addBank(playerId, -amount);
+        deposit(playerId, amount);
+        return true;
+    }
+
     // -------------------------------------------------------------------------
     // Lifecycle
     // -------------------------------------------------------------------------
@@ -178,12 +242,14 @@ public final class EconomyManager {
     public void clear() {
         balances.clear();
         bankBalances.clear();
+        bankCapacities.clear();
     }
 
     /** Removes all stored balances for a single player. */
     public long clear(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         bankBalances.remove(playerId);
+        bankCapacities.remove(playerId);
         Double removed = balances.remove(playerId);
         return removed != null ? removed.longValue() : 0L;
     }
