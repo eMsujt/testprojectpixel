@@ -169,7 +169,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.WeatherListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.listener.MinionListener(), this);
         new com.skyblock.plugin.minion.task.MinionTickScheduler(MinionManager.getInstance()).start(this);
-        // menus.StorageMenu/PotionBagMenu/QuiverMenu/FishingBagMenu listeners removed — canonical com.skyblock.plugin.gui.menu.* classes handle clicks via core MenuListener
+        // menus.StorageMenu/PotionBagMenu/QuiverMenu/FishingBagMenu listeners removed — canonical com.skyblock.gui.menu.* classes handle clicks via core MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.fishing.FishingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.PlayerJoinSetupListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.minion.listener.MinionPlacementListener(), this);
@@ -188,7 +188,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         // com.skyblock.plugin.menu.BankMenu listener removed — canonical com.skyblock.core.menu.BankMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.QuestsMenu listener removed — canonical com.skyblock.core.menu.QuestsMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.CollectionsMenu listener removed — canonical com.skyblock.core.menu.CollectionsMenu handles clicks via MenuListener
-        // com.skyblock.plugin.menu.FastTravelMenu listener removed — canonical com.skyblock.plugin.gui.menu.FastTravelMenu handles clicks via core MenuListener
+        // com.skyblock.plugin.menu.FastTravelMenu listener removed — canonical com.skyblock.gui.menu.FastTravelMenu handles clicks via core MenuListener
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.MiningListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TamingListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FishingListener(), this);

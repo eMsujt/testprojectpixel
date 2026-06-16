@@ -1,4 +1,4 @@
-package com.skyblock.plugin.gui.menu;
+package com.skyblock.gui.menu;
 
 import com.skyblock.core.collections.manager.CollectionManager;
 import com.skyblock.core.model.Collection;

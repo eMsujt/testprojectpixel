@@ -1,4 +1,4 @@
-package com.skyblock.plugin.gui.menu;
+package com.skyblock.gui.menu;
 
 import com.skyblock.plugin.calendar.SkyBlockCalendar;
 import com.skyblock.core.util.ItemBuilder;
