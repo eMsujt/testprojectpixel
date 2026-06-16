@@ -434,7 +434,8 @@ public final class SlayerManager {
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(tier, "tier");
         int[] costs = SPAWN_COST.get(type);
-        return costs != null ? costs[tier.ordinal()] : 0;
+        int ordinal = tier.ordinal();
+        return costs != null && ordinal < costs.length ? costs[ordinal] : 0;
     }
 
     /** Returns {@code true} when the player has killed enough mobs to summon the boss for their quest. */
