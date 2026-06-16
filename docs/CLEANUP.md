@@ -714,6 +714,24 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (hub-menu consolidation and async player-data load/save fix — round 116)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| SkyBlock hub-menu consolidation (SkyBlockMenuCommand / SkyBlockHubMenu / HubMenu) | `com.skyblock.core.hub.SkyblockHubCommand` | All duplicate SkyBlock main hub-menu implementations across every module found and consolidated; canonical `SkyblockHubCommand` confirmed as sole implementation; all duplicate `HubMenu`/`SkyBlockMainMenu` classes deleted outright or replaced with `@Deprecated` delegation stubs; all registrations updated in `SkyBlockPlugin` | #2846 |
+| Async player-data load/save fix (`PlayerDataManager.onQuit`) | `com.skyblock.plugin.profile.PlayerDataManager` | Added missing `onQuit` handler that snapshots player YAML on the main thread (safe, no I/O), evicts the `core.manager.PlayerDataManager` cache entry, then writes to disk asynchronously via `Bukkit.getScheduler().runTaskAsynchronously`; player data now correctly persisted on disconnect | #2845 |
+
+---
+
+## Completed (items module class relocation and combat module package standardization — round 117)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Items module class relocation (`ItemBuilder` / `SkullItemUtil`) | `com.skyblock.items.util.ItemBuilder`, `com.skyblock.items.util.SkullItemUtil` | `ItemBuilder` and `SkullItemUtil` moved from flat `com.skyblock.core.util` into `com.skyblock.items.util`; originals at old locations replaced with `@Deprecated` forwarding stubs; `skyblock-items` dependency wired into `pom.xml` for all caller modules | — |
+| Combat module package standardization completion | `com.skyblock.combat.{calculator,manager,model}` | All combat module `.java` files confirmed in correct sub-packages; deprecated `engine/CombatEngine.java` forwarding stub (zero callers) deleted outright; canonical sub-package layout fully enforced across `calculator`, `manager`, and `model` sub-packages | #2849 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
