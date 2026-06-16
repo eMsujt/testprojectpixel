@@ -78,7 +78,7 @@ import com.skyblock.core.run.RunCommand;
 import com.skyblock.core.run.RunManager;
 import com.skyblock.core.title.TitleCommand;
 import com.skyblock.core.title.TitleManager;
-import com.skyblock.core.skills.manager.SkillManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.skills.SkillsCommand;
 import com.skyblock.core.slayer.SlayerCommand;
 import com.skyblock.core.slayer.SlayerManager;
