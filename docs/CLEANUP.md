@@ -769,6 +769,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (MinionManager stub deletion, IslandManager stub audit, and ProfileManager stale-import fix — round 122)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| MinionManager `@Deprecated` stub deletion | `com.skyblock.core.minion.manager.MinionManager` | `@Deprecated` `MinionManager` stub at `com.skyblock.core.minion.manager` deleted outright after confirming zero non-stub callers across the entire repo; now-empty `manager` directory removed; two stale `{@link}` references in `CobblestoneMinion.java` updated to point to canonical class | #2870 |
+| IslandManager `@Deprecated` stub audit (round-121 follow-up) | `com.skyblock.core.island.manager.IslandManager` | Grepped all modules for `@Deprecated` IslandManager stubs left from the round-121 consolidation; confirmed zero remaining stubs or non-stub callers referencing old locations — no file changes required | — |
+| ProfileManager stale-import fix | `com.skyblock.core.profile.manager.ProfileManager` | Corrected all three stale `com.skyblock.core.manager.ProfileManager` import references in `SkyBlockPlugin.java` to the canonical `com.skyblock.core.profile.manager.ProfileManager`; canonical class confirmed as sole implementation with no remaining callers on the old path | #2871 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
