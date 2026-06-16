@@ -869,6 +869,22 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (combat module package layout standardization and CombatEngine/DamageCalculator regression fix — round 134)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| `com.skyblock.combat` package layout + CombatEngine / DamageCalculator regression fix | `com.skyblock.combat.{calculator,manager,model}` | Audited all source files in the combat module; all misplaced classes moved into canonical sub-packages (`calculator`, `manager`, `model`); `CombatEngine` and `DamageCalculator` confirmed present at canonical locations in `com.skyblock.core.combat.calculator`; `CombatEngineTest` and `DamageCalculatorTest` added at `com.skyblock.core.combat.calculator` proving canonical classes are present and functional; `DamageType.TRUE` confirmed with `reducedByDefense=false` | #2910 |
+
+---
+
+## Completed (items and enchantments module package layout standardization — round 135)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| `com.skyblock.items` / `com.skyblock.enchantments` package layout | `com.skyblock.items.{util,manager,model,command,listener}`, `com.skyblock.enchantments.{manager,model,command,listener}` | Audited all source files in the `items` and `enchantments` modules; `com.skyblock.core.util.ItemBuilder` established as canonical location (moved from the items module); all 35 callers updated to the new import; `items.util.ItemBuilder`, `items.model.SkyBlockItem`, and `items.manager.*` stubs deleted; enchantments module classes reorganized into correct `.manager`/`.model`/`.command`/`.listener` sub-packages; flat-package strays eliminated | #2911 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
