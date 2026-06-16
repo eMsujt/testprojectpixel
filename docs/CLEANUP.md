@@ -844,6 +844,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkillManager/SkillsManager consolidation audit — round 130)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| SkillManager / SkillsManager | `com.skyblock.core.skills.manager.SkillManager` | Grepped every module for classes named `SkillManager` or `SkillsManager`; confirmed canonical at `com.skyblock.core.skills.manager.SkillManager` as sole implementation; no duplicate implementations found requiring consolidation — no file changes required | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
