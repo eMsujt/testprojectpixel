@@ -925,6 +925,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (AuctionHouseManager and CollectionManager consolidation — round 141)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| AuctionHouseManager / AuctionManager | `com.skyblock.core.manager.AuctionHouseManager` | Grepped every module for classes named `AuctionHouseManager` or `AuctionManager`; all remaining duplicate implementations consolidated into one canonical class at `com.skyblock.core.manager.AuctionHouseManager`; all callers updated to the canonical import path; `@Deprecated` stubs at old locations deleted outright after confirming zero non-stub callers remain | Forge |
+| CollectionManager | `com.skyblock.core.manager.CollectionManager` | Grepped every module for classes named `CollectionManager`; all remaining duplicate implementations consolidated into one canonical class at `com.skyblock.core.manager.CollectionManager`; all callers updated to the canonical import path; `@Deprecated` stubs at old locations deleted outright after confirming zero non-stub callers remain | Oracle |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
