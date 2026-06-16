@@ -126,6 +126,44 @@ public final class MinionManager {
         }
     }
 
+    /**
+     * Items that can be placed in a minion's two upgrade slots.
+     *
+     * <p>Most upgrades alter how a minion produces or compacts its yield;
+     * the two hopper variants additionally auto-sell stored resources to the
+     * NPC at their {@code hopperSellRate} (a rate of {@code 0} means the
+     * upgrade is not a hopper). {@link #NONE} represents an empty slot.</p>
+     */
+    public enum MinionUpgrade {
+        NONE(0.0),
+        AUTO_SMELTER(0.0),
+        COMPACTOR(0.0),
+        SUPER_COMPACTOR_3000(0.0),
+        DIAMOND_SPREADING(0.0),
+        FLYCATCHER(0.0),
+        BUDGET_HOPPER(0.50),
+        ENCHANTED_HOPPER(0.90);
+
+        private final double hopperSellRate;
+
+        MinionUpgrade(double hopperSellRate) {
+            this.hopperSellRate = hopperSellRate;
+        }
+
+        /** Fraction of an item's value paid out when auto-selling; 0 if not a hopper. */
+        public double getHopperSellRate() {
+            return hopperSellRate;
+        }
+
+        /** Whether this upgrade auto-sells stored resources to the NPC. */
+        public boolean isHopper() {
+            return hopperSellRate > 0.0;
+        }
+    }
+
+    /** Number of upgrade slots every minion has. */
+    public static final int UPGRADE_SLOTS = 2;
+
     /** Mutable state for a single placed minion. */
     public static final class MinionData {
         public final UUID id;
@@ -136,12 +174,19 @@ public final class MinionManager {
         private int productionProgress;
         private MinionFuel fuel = MinionFuel.NONE;
         private int fuelTicksRemaining;
+        private final MinionUpgrade[] upgrades =
+                {MinionUpgrade.NONE, MinionUpgrade.NONE};
 
         public MinionData(UUID id, UUID owner, MinionType type, MinionTier tier) {
             this.id = Objects.requireNonNull(id, "id");
             this.owner = Objects.requireNonNull(owner, "owner");
             this.type = Objects.requireNonNull(type, "type");
             this.tier = Objects.requireNonNull(tier, "tier");
+        }
+
+        /** The upgrade installed in the given slot (0 or 1), or {@link MinionUpgrade#NONE}. */
+        public MinionUpgrade getUpgrade(int slot) {
+            return upgrades[slot];
         }
 
         public MinionTier getTier() {
@@ -289,6 +334,60 @@ public final class MinionManager {
         data.fuel = fuel;
         data.fuelTicksRemaining = fuel.getDurationTicks();
         return true;
+    }
+
+    /**
+     * Installs an upgrade in the given slot (0 or 1) of the minion, replacing
+     * whatever was there. Returns {@code false} if the minion is unknown.
+     */
+    public boolean setUpgrade(UUID minionId, int slot, MinionUpgrade upgrade) {
+        Objects.requireNonNull(minionId, "minionId");
+        Objects.requireNonNull(upgrade, "upgrade");
+        if (slot < 0 || slot >= UPGRADE_SLOTS) {
+            throw new IllegalArgumentException("slot out of range: " + slot);
+        }
+        MinionData data = minions.get(minionId);
+        if (data == null) {
+            return false;
+        }
+        data.upgrades[slot] = upgrade;
+        return true;
+    }
+
+    /**
+     * Best hopper sell rate among the minion's upgrade slots, or {@code 0.0}
+     * if no hopper is installed.
+     */
+    public double getHopperSellRate(MinionData data) {
+        Objects.requireNonNull(data, "data");
+        double rate = 0.0;
+        for (MinionUpgrade upgrade : data.upgrades) {
+            if (upgrade.getHopperSellRate() > rate) {
+                rate = upgrade.getHopperSellRate();
+            }
+        }
+        return rate;
+    }
+
+    /**
+     * Auto-sells the minion's stored resources to the NPC via an installed
+     * hopper, valuing each resource at {@code pricePerResource}. Empties storage
+     * and returns the coins earned (floored) at the hopper's sell rate, or
+     * {@code 0} if the minion is unknown, has no hopper, or is empty.
+     */
+    public long autoSell(UUID minionId, int pricePerResource) {
+        Objects.requireNonNull(minionId, "minionId");
+        MinionData data = minions.get(minionId);
+        if (data == null) {
+            return 0L;
+        }
+        double rate = getHopperSellRate(data);
+        if (rate <= 0.0 || data.storedResources == 0) {
+            return 0L;
+        }
+        long coins = (long) Math.floor((long) data.storedResources * pricePerResource * rate);
+        data.storedResources = 0;
+        return coins;
     }
 
     /**
@@ -444,6 +543,16 @@ public final class MinionManager {
                         // unknown fuel: leave at NONE
                     }
                 }
+                for (int slot = 0; slot < UPGRADE_SLOTS; slot++) {
+                    String upgradeName = cfg.getString(key + ".upgrade" + slot);
+                    if (upgradeName != null) {
+                        try {
+                            data.upgrades[slot] = MinionUpgrade.valueOf(upgradeName);
+                        } catch (IllegalArgumentException ignored) {
+                            // unknown upgrade: leave at NONE
+                        }
+                    }
+                }
                 minions.put(id, data);
                 ownerIndex.computeIfAbsent(owner, k -> new ArrayList<>()).add(id);
             } catch (IllegalArgumentException ignored) {
@@ -503,6 +612,11 @@ public final class MinionManager {
             if (data.fuel != MinionFuel.NONE) {
                 cfg.set(key + ".fuel", data.fuel.name());
                 cfg.set(key + ".fuelTicks", data.fuelTicksRemaining);
+            }
+            for (int slot = 0; slot < UPGRADE_SLOTS; slot++) {
+                if (data.upgrades[slot] != MinionUpgrade.NONE) {
+                    cfg.set(key + ".upgrade" + slot, data.upgrades[slot].name());
+                }
             }
         }
         for (Map.Entry<UUID, Map<String, MinionType>> entry : placements.entrySet()) {
