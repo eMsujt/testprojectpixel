@@ -478,6 +478,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (CollectionManager consolidation — round 88)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| CollectionManager / CollectionsManager | `com.skyblock.core.manager.CollectionManager` | Thorough final-pass consolidation of every class named `CollectionManager` or `CollectionsManager` across every module; all duplicate implementations and `@Deprecated` delegation stubs deleted outright; canonical `com.skyblock.core.manager.CollectionManager` confirmed as sole implementation with no remaining orphan copies | #2759 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
