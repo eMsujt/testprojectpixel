@@ -1,4 +1,4 @@
-package com.skyblock.core.island.command;
+package com.skyblock.islands.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import com.skyblock.core.island.manager.IslandManager;
+import com.skyblock.islands.manager.IslandManager;
 
 import java.util.Arrays;
 import java.util.Collections;
