@@ -18,40 +18,25 @@
         <module>enchantments</module>
         <module>items</module>
         <module>playerdata</module>
-        <module>quests</module>
         <module>profiles</module>
         <module>slayer</module>
-        <module>forging</module>
         <module>enchanting</module>
         <module>mining</module>
-        <module>scoreboard</module>
-        <module>events</module>
         <module>slayers</module>
         <module>dungeons</module>
         <module>fishing</module>
         <module>foraging</module>
-        <module>accessories</module>
-        <module>fairysouls</module>
-        <module>backpacks</module>
-        <module>talismans</module>
-        <module>hotm</module>
-        <module>brewing</module>
-        <module>reforging</module>
-        <module>leaderboards</module>
-
-        <module>party</module>
-        <module>museum</module>
-        <module>calendar</module>
-        <module>housing</module>
-        <module>trades</module>
-        <module>achievements</module>
-        <module>alchemy</module>
-        <module>bestiary</module>
-        <module>wardrobe</module>
-        <module>item_forge</module>
         <module>farming</module>
         <module>garden</module>
-        <module>trading</module>
+
+        <!-- Cohesive modules consolidating former thin single-feature modules -->
+        <module>storage</module>
+        <module>progression</module>
+        <module>social</module>
+        <module>combat-extras</module>
+        <module>forge</module>
+        <module>world</module>
+
         <module>plugin</module>
         <module>skyblock-core</module>
     </modules>
