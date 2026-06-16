@@ -97,7 +97,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         BankManager.getInstance().load(getDataFolder());
         SkillManager.getInstance().load(getDataFolder());
         CollectionManager.getInstance().load(getDataFolder());
-        com.skyblock.core.manager.ProfileManager.getInstance().load(getDataFolder());
+        com.skyblock.core.profile.manager.ProfileManager.getInstance().load(getDataFolder());
         GardenManager.getInstance().load(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().load(getDataFolder());
         KuudraManager.getInstance().load(getDataFolder());
@@ -140,7 +140,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getCommand("auctionhouse").setExecutor(new AuctionHouseCommand(AuctionHouseManager.getInstance()));
         getCommand("kuudra").setExecutor(new KuudraCommand());
         getCommand("bazaar").setExecutor(new BazaarCommand(BazaarManager.getInstance()));
-        getCommand("profile").setExecutor(new ProfileCommand(com.skyblock.core.manager.ProfileManager.getInstance()));
+        getCommand("profile").setExecutor(new ProfileCommand(com.skyblock.core.profile.manager.ProfileManager.getInstance()));
         getCommand("dungeon").setExecutor(new DungeonCommand(dungeonManager));
         getCommand("fairy").setExecutor(new FairyCommand());
         getCommand("minion").setExecutor(new MinionCommand(MinionManager.getInstance()));
@@ -217,7 +217,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         BankManager.getInstance().save(getDataFolder());
         SkillManager.getInstance().save(getDataFolder());
         CollectionManager.getInstance().save(getDataFolder());
-        com.skyblock.core.manager.ProfileManager.getInstance().save(getDataFolder());
+        com.skyblock.core.profile.manager.ProfileManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
         com.skyblock.plugin.managers.SlayerManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
