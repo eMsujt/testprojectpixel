@@ -596,6 +596,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (IslandManager/IslandHandler consolidation, AuctionHouseManager audit, and zero-caller stub deletion — round 101)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| IslandManager / IslandHandler duplicate consolidation | `com.skyblock.core.island.manager.IslandManager` | All 7 duplicate implementations across every module consolidated into one canonical class; all 9 references across 7 caller files updated to new import path; old `com.skyblock.core.manager.IslandManager` replaced with `@Deprecated` delegation stub | #2803 |
+| AuctionHouseManager / AuctionManager / AuctionHandler audit | `com.skyblock.core.manager.AuctionHouseManager` | Audit of all 9 duplicate implementations confirmed no surviving copies; no file changes required — canonical `com.skyblock.core.manager.AuctionHouseManager` already sole implementation after round-90 consolidation (#2763) | — |
+| Zero-caller `@Deprecated` stub deletion | *(class files deleted)* | 4 `@Deprecated` stubs with zero live callers deleted outright: `core.manager.IslandManager`, `core.manager.AbilityManager`, `core.manager.CollectionManager`, and test-dir `AuctionHouseManagerTest` | #2804 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
