@@ -10,8 +10,7 @@ import java.util.UUID;
  * Singleton that applies SkyBlock enchant effects for a given player.
  *
  * <p>Delegates per-player enchant state to {@link EnchantmentManager} and exposes
- * effect-calculation helpers consumed by {@link EnchantmentListener} and
- * {@link SkyBlockEnchantListener}.</p>
+ * effect-calculation helpers consumed by {@link EnchantmentListener}.</p>
  */
 public final class SkyBlockEnchantManager {
 
