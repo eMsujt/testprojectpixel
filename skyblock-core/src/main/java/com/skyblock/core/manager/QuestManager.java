@@ -17,29 +17,49 @@ import java.util.UUID;
  */
 public final class QuestManager {
 
+    /** The quest line (island location) a quest belongs to. */
+    public enum QuestLine {
+        HUB("Hub"),
+        ISLAND("Private Island");
+
+        private final String displayName;
+
+        QuestLine(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() { return displayName; }
+    }
+
     /** All quest types available in SkyBlock. */
     public enum QuestType {
-        KILL_MOBS(20, 100, "Kill Mobs"),
-        MINE_ORES(64, 150, "Mine Ores"),
-        CATCH_FISH(30, 120, "Catch Fish"),
-        EARN_COINS(50, 50, "Earn Coins"),
-        COMPLETE_DUNGEONS(1, 500, "Complete Dungeons"),
-        KILL_100_MOBS(100, 400, "Kill 100 Mobs"),
-        MINE_500_BLOCKS(500, 600, "Mine 500 Blocks"),
-        FISH_50_FISH(50, 250, "Fish 50 Fish"),
-        CRAFT_20_ITEMS(20, 200, "Craft 20 Items"),
-        REACH_LEVEL_25(25, 1000, "Reach Level 25");
+        KILL_MOBS(QuestLine.HUB, true, 20, 100, "Kill Mobs"),
+        MINE_ORES(QuestLine.HUB, true, 64, 150, "Mine Ores"),
+        CATCH_FISH(QuestLine.HUB, true, 30, 120, "Catch Fish"),
+        EARN_COINS(QuestLine.HUB, true, 50, 50, "Earn Coins"),
+        COMPLETE_DUNGEONS(QuestLine.ISLAND, false, 1, 500, "Complete Dungeons"),
+        KILL_100_MOBS(QuestLine.ISLAND, false, 100, 400, "Kill 100 Mobs"),
+        MINE_500_BLOCKS(QuestLine.ISLAND, false, 500, 600, "Mine 500 Blocks"),
+        FISH_50_FISH(QuestLine.ISLAND, false, 50, 250, "Fish 50 Fish"),
+        CRAFT_20_ITEMS(QuestLine.ISLAND, false, 20, 200, "Craft 20 Items"),
+        REACH_LEVEL_25(QuestLine.ISLAND, false, 25, 1000, "Reach Level 25");
 
+        private final QuestLine questLine;
+        private final boolean daily;
         private final long goal;
         private final long coinReward;
         private final String displayName;
 
-        QuestType(long goal, long coinReward, String displayName) {
+        QuestType(QuestLine questLine, boolean daily, long goal, long coinReward, String displayName) {
+            this.questLine = questLine;
+            this.daily = daily;
             this.goal = goal;
             this.coinReward = coinReward;
             this.displayName = displayName;
         }
 
+        public QuestLine getQuestLine() { return questLine; }
+        public boolean isDaily() { return daily; }
         public long getGoal() { return goal; }
         public long getCoinReward() { return coinReward; }
         public String getDisplayName() { return displayName; }
@@ -189,6 +209,55 @@ public final class QuestManager {
         Objects.requireNonNull(type, "type");
         Set<QuestType> claimed = questClaimed.get(playerId);
         return claimed != null && claimed.contains(type);
+    }
+
+    /** Returns all quest types belonging to the given quest line, in declaration order. */
+    public java.util.List<QuestType> questsInLine(QuestLine line) {
+        Objects.requireNonNull(line, "line");
+        java.util.List<QuestType> result = new java.util.ArrayList<>();
+        for (QuestType type : QuestType.values()) {
+            if (type.getQuestLine() == line) {
+                result.add(type);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Clears all progress, goals, status, and claim records for the player's daily
+     * quests so they return to {@link QuestStatus#NOT_STARTED} and can be run again.
+     *
+     * @return the number of daily quests that were reset for the player
+     */
+    public int resetDailies(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        int reset = 0;
+        for (QuestType type : QuestType.values()) {
+            if (!type.isDaily()) {
+                continue;
+            }
+            boolean had = false;
+            Map<QuestType, Long> progressMap = questProgress.get(playerId);
+            if (progressMap != null) {
+                had |= progressMap.remove(type) != null;
+            }
+            Map<QuestType, Long> goalMap = questGoals.get(playerId);
+            if (goalMap != null) {
+                goalMap.remove(type);
+            }
+            Map<QuestType, QuestStatus> statusMap = questStatus.get(playerId);
+            if (statusMap != null) {
+                had |= statusMap.remove(type) != null;
+            }
+            Set<QuestType> claimed = questClaimed.get(playerId);
+            if (claimed != null) {
+                claimed.remove(type);
+            }
+            if (had) {
+                reset++;
+            }
+        }
+        return reset;
     }
 
     public boolean reset(UUID playerId) {
