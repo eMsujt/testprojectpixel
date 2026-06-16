@@ -211,6 +211,7 @@ public final class DungeonManager {
         m.put("M4", new FloorMeta("Master 4", 26, "Thorn"));
         m.put("M5", new FloorMeta("Master 5", 28, "Livid"));
         m.put("M6", new FloorMeta("Master 6", 30, "Sadan"));
+        m.put("M7", new FloorMeta("Master 7", 32, "Necron"));
         FLOOR_META = Collections.unmodifiableMap(m);
     }
 
@@ -248,12 +249,14 @@ public final class DungeonManager {
         m.put("F4",       new int[]{  0,   2000});
         m.put("F5",       new int[]{  0,   3000});
         m.put("F6",       new int[]{  0,   4000});
+        m.put("F7",       new int[]{  0,   6000});
         m.put("M1",       new int[]{ 20,   8000});
         m.put("M2",       new int[]{ 22,  12000});
         m.put("M3",       new int[]{ 24,  18000});
         m.put("M4",       new int[]{ 26,  24000});
         m.put("M5",       new int[]{ 28,  30000});
         m.put("M6",       new int[]{ 30,  40000});
+        m.put("M7",       new int[]{ 32,  60000});
         FLOOR_DATA = Collections.unmodifiableMap(m);
     }
 
