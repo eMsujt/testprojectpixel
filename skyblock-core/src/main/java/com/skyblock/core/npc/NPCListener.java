@@ -1,12 +1,15 @@
 package com.skyblock.core.npc;
 
 import com.skyblock.core.npc.NpcManager.NpcDefinition;
-import com.skyblock.core.npc.NpcManager.ShopItem;
+import com.skyblock.core.shop.manager.ShopManager;
+import com.skyblock.core.shop.manager.ShopManager.ShopEntry;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+
+import java.util.Locale;
 
 /**
  * Bukkit listener that intercepts right-click interactions with NPC
@@ -50,13 +53,27 @@ public final class NPCListener implements Listener {
 
         Player player = event.getPlayer();
         player.sendMessage("=== " + npc.name() + " ===");
-        if (npc.items().isEmpty()) {
-            player.sendMessage("This NPC has nothing for sale.");
-        } else {
-            for (ShopItem item : npc.items()) {
-                player.sendMessage("- " + item.name() + " — " + item.price() + " coins");
+        ShopManager.getInstance().getShop(npc.shopId()).ifPresentOrElse(shop -> {
+            if (shop.entries().isEmpty()) {
+                player.sendMessage("This NPC has nothing for sale.");
+            } else {
+                for (ShopEntry entry : shop.entries()) {
+                    player.sendMessage("- " + formatName(entry.itemId()) + " — " + entry.buyPrice() + " coins");
+                }
+                player.sendMessage("Use /npc buy " + npc.id() + " <item> to purchase.");
             }
-            player.sendMessage("Use /npc buy " + npc.id() + " <item> to purchase.");
+        }, () -> player.sendMessage("This NPC has nothing for sale."));
+    }
+
+    private static String formatName(String itemId) {
+        StringBuilder sb = new StringBuilder();
+        for (String word : itemId.split("_")) {
+            if (!word.isEmpty()) {
+                sb.append(Character.toUpperCase(word.charAt(0)))
+                  .append(word.substring(1).toLowerCase(Locale.ROOT))
+                  .append(' ');
+            }
         }
+        return sb.toString().trim();
     }
 }
