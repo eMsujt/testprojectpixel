@@ -1,6 +1,6 @@
 package com.skyblock.plugin.collection;
 
-import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.economy.manager.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

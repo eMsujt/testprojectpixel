@@ -1,6 +1,6 @@
 package com.skyblock.core.island.command;
 
-import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.economy.manager.EconomyManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.island.manager.IslandUpgradeManager;
 import org.bukkit.command.Command;

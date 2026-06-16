@@ -1,6 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.core.manager.EnchantmentManager;
+import com.skyblock.core.enchant.manager.EnchantmentManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

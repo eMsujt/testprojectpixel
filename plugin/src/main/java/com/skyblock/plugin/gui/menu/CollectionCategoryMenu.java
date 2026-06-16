@@ -1,6 +1,6 @@
 package com.skyblock.plugin.gui.menu;
 
-import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.collections.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.CollectionsMenu;
