@@ -1,5 +1,6 @@
 package com.skyblock.core.reforge;
 
+import com.skyblock.core.manager.ReforgeManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
