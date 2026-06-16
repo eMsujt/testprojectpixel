@@ -14,7 +14,7 @@ import com.skyblock.core.manager.IslandManager;
 import com.skyblock.plugin.managers.KuudraManager;
 import com.skyblock.core.pets.manager.PetManager;
 import com.skyblock.plugin.profile.ProfileManager;
-import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.skills.manager.SkillManager;
 import com.skyblock.plugin.managers.SlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

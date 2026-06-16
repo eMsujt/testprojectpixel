@@ -3,7 +3,7 @@ package com.skyblock.plugin.gui.menu;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
 import com.skyblock.plugin.profile.ProfileManager;
-import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.skills.manager.SkillManager;
 import com.skyblock.plugin.profile.PlayerProfile;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

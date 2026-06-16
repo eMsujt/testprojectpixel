@@ -3,7 +3,7 @@ package com.skyblock.plugin.commands;
 import com.skyblock.core.manager.ProfileManager;
 import com.skyblock.core.manager.ProfileManager.SkyBlockProfile;
 import com.skyblock.plugin.managers.DungeonManager;
-import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.skills.manager.SkillManager;
 import com.skyblock.plugin.managers.SlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
