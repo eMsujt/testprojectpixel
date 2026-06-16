@@ -3,19 +3,9 @@ package com.skyblock.items.model;
 import java.util.Map;
 
 /**
- * An immutable custom item: a unique id, a display name, a rarity tier name,
- * and the stat bonuses the item grants.
- *
- * <p>Unlike {@link com.skyblock.items.manager.ItemManager.ItemDefinition}, which lives in the registry,
- * this record is a self-contained value, e.g. for items attached to player
- * data or sent across module boundaries.</p>
- *
- * @param itemId      the item's unique id, non-blank
- * @param displayName the item's human-readable name, non-blank
- * @param rarity      the item's rarity tier name, e.g. {@code "LEGENDARY"},
- *                    non-blank
- * @param stats       the stat bonuses keyed by stat name, never null
+ * @deprecated Use {@link com.skyblock.core.item.model.SkyBlockItem} instead.
  */
+@Deprecated
 public record SkyBlockItem(String itemId, String displayName, String rarity, Map<String, Integer> stats) {
 
     /**
