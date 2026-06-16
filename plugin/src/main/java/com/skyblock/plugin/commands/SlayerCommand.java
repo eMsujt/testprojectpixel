@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @deprecated Duplicate of {@link com.skyblock.core.slayer.SlayerCommand}. Use that class instead.
+ */
+@Deprecated
+
 public final class SlayerCommand implements CommandExecutor {
 
     @Override

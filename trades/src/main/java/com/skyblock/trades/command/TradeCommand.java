@@ -16,19 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Handles the {@code /trade} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /trade <player>}          — invite another player to trade</li>
- *   <li>{@code /trade offer <item> [qty]} — add an item to your offer</li>
- *   <li>{@code /trade coins <amount>}     — set the coins you offer</li>
- *   <li>{@code /trade confirm}            — confirm your side of the trade</li>
- *   <li>{@code /trade cancel}             — cancel the current trade</li>
- *   <li>{@code /trade info}               — show the current trade session</li>
- * </ul>
- * </p>
+ * @deprecated Duplicate of {@link com.skyblock.core.trade.TradeCommand}. Use that class instead.
+ * The canonical command is registered by {@code com.skyblock.plugin.SkyBlockPlugin} and
+ * {@code com.skyblock.core.SkyblockPlugin}.
  */
+@Deprecated
 public final class TradeCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(

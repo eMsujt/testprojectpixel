@@ -9,6 +9,10 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @deprecated Duplicate of {@link com.skyblock.core.kuudra.KuudraCommand}. Use that class instead.
+ */
+@Deprecated
 public final class KuudraCommand implements CommandExecutor {
 
     private static final String[] TIER_NAMES = {"", "Basic", "Hot", "Burning", "Fiery", "Infernal"};
