@@ -1,6 +1,6 @@
 package com.skyblock.plugin.minion;
 
-import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.minion.manager.MinionManager;
 
 /** @deprecated Use {@link com.skyblock.plugin.minion.task.MinionTickScheduler} */
 @Deprecated

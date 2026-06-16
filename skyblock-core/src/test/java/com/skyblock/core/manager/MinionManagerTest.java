@@ -1,26 +1,8 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.manager.MinionManager.MinionTier;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * @deprecated Use {@link com.skyblock.core.minion.manager.MinionManagerTest} instead.
+ */
+@Deprecated
 class MinionManagerTest {
-
-    @Test
-    void getInstance_ReturnsSameInstance() {
-        MinionManager a = MinionManager.getInstance();
-        MinionManager b = MinionManager.getInstance();
-        assertSame(a, b);
-    }
-
-    @Test
-    void getInstance_ReturnsNonNull() {
-        assertNotNull(MinionManager.getInstance());
-    }
-
-    @Test
-    void minionTier_Tier1IsFirstTier() {
-        assertEquals(MinionTier.TIER_1, MinionTier.values()[0]);
-    }
 }

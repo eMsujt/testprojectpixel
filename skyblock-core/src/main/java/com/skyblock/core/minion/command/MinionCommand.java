@@ -1,6 +1,6 @@
 package com.skyblock.core.minion.command;
 
-import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.minion.manager.MinionManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
