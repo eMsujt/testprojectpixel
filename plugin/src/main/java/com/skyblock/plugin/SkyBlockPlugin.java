@@ -34,7 +34,7 @@ import com.skyblock.core.manager.CraftingManager;
 import com.skyblock.plugin.managers.EventManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.plugin.managers.NetworkManager;
-import com.skyblock.core.quest.manager.QuestManager;
+import com.skyblock.core.manager.QuestManager;
 import com.skyblock.plugin.managers.TradingManager;
 import com.skyblock.plugin.managers.TimeManager;
 import com.skyblock.plugin.managers.WeatherManager;
