@@ -24,7 +24,7 @@ import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.command.HOTMCommand;
-import com.skyblock.core.hotm.manager.HOTMManager;
+import com.skyblock.core.manager.HotmManager;
 import com.skyblock.core.kuudra.KuudraManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.manager.MayorManager;
@@ -162,7 +162,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishingManager);
         getCommand("fishing").setExecutor(fishingCommand);
         getCommand("fishing").setTabCompleter(fishingCommand);
-        HOTMManager hotmManager = HOTMManager.getInstance();
+        HotmManager hotmManager = HotmManager.getInstance();
         hotmManager.load(getDataFolder());
         HOTMCommand hotmCommand = new HOTMCommand(hotmManager);
         getCommand("hotmtree").setExecutor(hotmCommand);
@@ -340,7 +340,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         SlayerManager.getInstance().save(getDataFolder());
         FishingManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
-        HOTMManager.getInstance().save(getDataFolder());
+        HotmManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
         ReforgeManager.getInstance().save(getDataFolder());
