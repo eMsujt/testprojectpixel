@@ -1,4 +1,4 @@
-package com.skyblock.core.calendar;
+package com.skyblock.core.manager;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /calendar info}              — show the current SkyBlock date</li>
+ *   <li>{@code /calendar info}              — show the current SkyBlock date and today's events</li>
  *   <li>{@code /calendar months}            — list all SkyBlock months</li>
  *   <li>{@code /calendar events}            — show the player's event participation count</li>
  *   <li>{@code /calendar set <day>}         — set the current year-day (admin)</li>
@@ -73,6 +73,10 @@ public final class CalendarCommand implements TabExecutor {
         player.sendMessage(String.format("=== SkyBlock Calendar ==="));
         player.sendMessage(String.format("Date: %s %d (Year Day %d / %d)",
                 month.getDisplayName(), dayOfMonth, yearDay, CalendarManager.DAYS_PER_YEAR));
+        List<String> events = calendarManager.getEventsToday();
+        if (!events.isEmpty()) {
+            player.sendMessage("Today's events: " + String.join(", ", events));
+        }
     }
 
     private void handleMonths(Player player) {
