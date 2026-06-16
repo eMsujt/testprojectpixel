@@ -78,6 +78,45 @@ The parent POM (`pom.xml`) aggregates all modules. Key modules:
 | `profile` / `profiles` / `playerdata` | Player profile persistence |
 | `backpacks` | Portable backpacks |
 
+## Core Managers
+
+All gameplay state is owned by a canonical set of singleton managers under
+`com.skyblock.core.manager` (in the `skyblock-core` module). Each is a process-wide
+singleton — obtain it via its static `getInstance()` accessor. These are the single
+source of truth for their domain; feature modules and commands delegate to them rather
+than holding their own state.
+
+| Manager | Responsibility |
+|---------|----------------|
+| `AccessoryManager` | Accessory rarities, magical power, and tuning points |
+| `BankManager` | Per-player bank balance and interest tiers |
+| `BazaarManager` | Bazaar order book — instant buy/sell and buy/sell orders |
+| `CollectionManager` | Per-item collection tiers and unlock progress |
+| `DungeonManager` | Dungeon runs and class progression |
+| `EconomyManager` | Coin balances (purse and bank) with deposit/withdraw |
+| `EnchantmentManager` | Per-player enchantment levels and the enchant table |
+| `EventManager` | Server-wide bonus events |
+| `FishingManager` | Fishing progression, sea-creature spawn pools, and loot rolls |
+| `GardenManager` | Garden plots, crop milestones, and farming contests |
+| `IslandManager` | Per-player island creation and management |
+| `MiningManager` | Mining progression and speed bonuses |
+| `MinionManager` | Placed minion management |
+| `MuseumManager` | Museum donation flow and per-category completion |
+| `PartyManager` | Party invites, membership, and leader transfer |
+| `PetManager` | Pet collections, active pets, and XP curves |
+| `QuestManager` | Quest definitions and objective tracking |
+| `ReforgeManager` | Item reforges and reforge stones |
+| `ShopManager` | NPC shops with buy/sell pricing |
+| `SkillManager` | Per-player skill XP and levels |
+| `SlayerManager` | Slayer quests, boss spawning, and tier escalation |
+
+Two managers live in their own feature sub-packages but follow the same singleton contract:
+
+| Manager | Package | Responsibility |
+|---------|---------|----------------|
+| `AuctionHouseManager` | `com.skyblock.core.auction.manager` | BIN listings and ascending-auction bidding |
+| `CraftingManager` | `com.skyblock.core.crafting.manager` | Custom SkyBlock recipes and crafting history |
+
 ## Commands
 
 | Command | Alias | Description |
