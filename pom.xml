@@ -18,7 +18,6 @@
         <module>enchantments</module>
         <module>items</module>
         <module>playerdata</module>
-        <module>combat</module>
         <module>quests</module>
         <module>profiles</module>
         <module>slayer</module>
