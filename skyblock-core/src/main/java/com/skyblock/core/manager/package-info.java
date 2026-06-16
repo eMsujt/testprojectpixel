@@ -25,7 +25,7 @@
  *   <li>{@link com.skyblock.core.manager.PetManager} — pet collections, active pets, and XP curves.</li>
  *   <li>{@link com.skyblock.core.manager.QuestManager} — quest definitions and objective tracking.</li>
  *   <li>{@link com.skyblock.core.manager.ReforgeManager} — item reforges and reforge stones.</li>
- *   <li>{@link com.skyblock.core.manager.SacksManager} — per-item sack capacity tiers, auto-pickup storage, and Sack of Sacks aggregation.</li>
+ *   <li>{@link com.skyblock.core.manager.SackManager} — per-item sack capacity tiers, auto-pickup storage, and Sack of Sacks aggregation.</li>
  *   <li>{@link com.skyblock.core.manager.ShopManager} — NPC shops with buy/sell pricing.</li>
  *   <li>{@link com.skyblock.core.manager.SkillManager} — per-player skill XP and levels.</li>
  *   <li>{@link com.skyblock.core.manager.SlayerManager} — slayer quests, boss spawning, and tier escalation.</li>

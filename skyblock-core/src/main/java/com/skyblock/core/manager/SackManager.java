@@ -18,7 +18,7 @@ import java.util.UUID;
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
-public final class SacksManager {
+public final class SackManager {
 
     /** Sack categories available to players, each with a display name. */
     public enum SackType {
@@ -61,19 +61,19 @@ public final class SacksManager {
     /** Default capacity tier applied to items with no registered tier. */
     public static final CapacityTier DEFAULT_TIER = CapacityTier.SMALL;
 
-    private static final SacksManager INSTANCE = new SacksManager();
+    private static final SackManager INSTANCE = new SackManager();
 
     private final Map<UUID, Map<SackType, Map<String, Integer>>> sackContents = new HashMap<>();
     private final Map<String, CapacityTier> itemTiers = new HashMap<>();
 
-    private SacksManager() {}
+    private SackManager() {}
 
     /**
-     * Returns the single shared {@code SacksManager} instance.
+     * Returns the single shared {@code SackManager} instance.
      *
      * @return the singleton instance
      */
-    public static SacksManager getInstance() {
+    public static SackManager getInstance() {
         return INSTANCE;
     }
 
