@@ -49,6 +49,61 @@ public final class AccessoryBagManager {
         public String getDisplayName() {
             return displayName;
         }
+
+        /**
+         * Returns the tier whose name matches the given accessory rarity.
+         *
+         * @param rarity the accessory rarity to map, must not be null
+         * @return the matching tier, or {@code null} if the rarity has no tier
+         */
+        public static AccessoryTier fromRarity(AccessoryRarity rarity) {
+            Objects.requireNonNull(rarity, "rarity");
+            for (AccessoryTier tier : values()) {
+                if (tier.name().equals(rarity.name())) {
+                    return tier;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * A power stone selected at the Thaumaturgist; it tunes the player's total
+     * magical power into stat bonuses, granting each mapped stat an amount equal
+     * to the total magical power times the stone's per-power coefficient.
+     */
+    public enum PowerStone {
+        BLOODLUST("Bloodlust", stats(Stat.CRIT_DAMAGE, 0.4)),
+        FORTITUDE("Fortitude", stats(Stat.HEALTH, 0.7, Stat.DEFENSE, 0.3)),
+        SHADOW("Shadow", stats(Stat.CRIT_DAMAGE, 0.25, Stat.CRIT_CHANCE, 0.1)),
+        MANA_FLUX("Mana Flux", stats(Stat.INTELLIGENCE, 0.6)),
+        SILKY("Silky", stats(Stat.STRENGTH, 0.5)),
+        PROTECTION("Protection", stats(Stat.DEFENSE, 0.6));
+
+        private final String displayName;
+        private final Map<Stat, Double> coefficients;
+
+        PowerStone(String displayName, Map<Stat, Double> coefficients) {
+            this.displayName = displayName;
+            this.coefficients = coefficients;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        private static Map<Stat, Double> stats(Stat stat, double coefficient) {
+            Map<Stat, Double> map = new EnumMap<>(Stat.class);
+            map.put(stat, coefficient);
+            return Collections.unmodifiableMap(map);
+        }
+
+        private static Map<Stat, Double> stats(Stat a, double ca, Stat b, double cb) {
+            Map<Stat, Double> map = new EnumMap<>(Stat.class);
+            map.put(a, ca);
+            map.put(b, cb);
+            return Collections.unmodifiableMap(map);
+        }
     }
 
     /** Maximum number of accessories a player can hold in the bag. */
@@ -58,6 +113,9 @@ public final class AccessoryBagManager {
 
     /** Per-player set of accessories stored in the bag. */
     private final Map<UUID, Set<TalismanManager.TalismanType>> bags = new HashMap<>();
+
+    /** Per-player selected power stone used to tune magical power into stats. */
+    private final Map<UUID, PowerStone> powerStones = new HashMap<>();
 
     private AccessoryBagManager() {
     }
@@ -211,13 +269,87 @@ public final class AccessoryBagManager {
     }
 
     /**
-     * Clears all accessories from the player's bag.
+     * Returns the total magical power contributed by every accessory in the
+     * player's bag, summed across all tiers.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return total magical power (0 if the bag is empty)
+     */
+    public int getTotalMagicPower(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Set<TalismanManager.TalismanType> bag = bags.get(playerId);
+        if (bag == null || bag.isEmpty()) {
+            return 0;
+        }
+        int total = 0;
+        for (TalismanManager.TalismanType t : bag) {
+            AccessoryTier tier = AccessoryTier.fromRarity(t.rarity);
+            if (tier != null) {
+                total += tier.magicPower;
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Selects the power stone used to tune the player's magical power into stats.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param stone    the power stone to equip, or {@code null} to clear the selection
+     */
+    public void selectPowerStone(UUID playerId, PowerStone stone) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (stone == null) {
+            powerStones.remove(playerId);
+        } else {
+            powerStones.put(playerId, stone);
+        }
+    }
+
+    /**
+     * Returns the player's currently selected power stone.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return the selected power stone, or {@code null} if none is selected
+     */
+    public PowerStone getSelectedPowerStone(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return powerStones.get(playerId);
+    }
+
+    /**
+     * Computes the stat bonuses produced by tuning the player's total magical
+     * power through their selected power stone.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return map of {@link Stat} to tuned bonus; empty if no stone is selected or no magical power
+     */
+    public Map<Stat, Double> getPowerStoneBonuses(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        PowerStone stone = powerStones.get(playerId);
+        if (stone == null) {
+            return Collections.emptyMap();
+        }
+        int power = getTotalMagicPower(playerId);
+        if (power == 0) {
+            return Collections.emptyMap();
+        }
+        Map<Stat, Double> bonuses = new EnumMap<>(Stat.class);
+        for (Map.Entry<Stat, Double> entry : stone.coefficients.entrySet()) {
+            bonuses.put(entry.getKey(), power * entry.getValue());
+        }
+        return bonuses;
+    }
+
+    /**
+     * Clears all accessories from the player's bag and their power stone selection.
      *
      * @param playerId the player's UUID, must not be null
      * @return {@code true} if the player had any accessories, {@code false} otherwise
      */
     public boolean clear(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        powerStones.remove(playerId);
         return bags.remove(playerId) != null;
     }
 }
