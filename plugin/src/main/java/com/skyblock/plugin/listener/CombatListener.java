@@ -2,7 +2,7 @@ package com.skyblock.plugin.listener;
 
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stat.StatManager;
-import com.skyblock.plugin.combat.calculator.CombatDamageCalculator;
+import com.skyblock.core.combat.calculator.CombatDamageCalculator;
 import com.skyblock.core.economy.manager.EconomyManager;
 import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.plugin.profile.PlayerProfile;

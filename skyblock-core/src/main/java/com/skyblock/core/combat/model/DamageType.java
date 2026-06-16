@@ -1,4 +1,4 @@
-package com.skyblock.combat.model;
+package com.skyblock.core.combat.model;
 
 /**
  * The kinds of damage that can be dealt in SkyBlock combat.

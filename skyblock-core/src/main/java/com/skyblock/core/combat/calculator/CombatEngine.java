@@ -1,4 +1,4 @@
-package com.skyblock.combat.calculator;
+package com.skyblock.core.combat.calculator;
 
 import java.util.concurrent.ThreadLocalRandom;
 

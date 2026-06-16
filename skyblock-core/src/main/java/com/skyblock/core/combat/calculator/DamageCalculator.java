@@ -1,6 +1,6 @@
-package com.skyblock.combat.calculator;
+package com.skyblock.core.combat.calculator;
 
-import com.skyblock.combat.model.DamageType;
+import com.skyblock.core.combat.model.DamageType;
 
 import java.util.concurrent.ThreadLocalRandom;
 

@@ -1,4 +1,4 @@
-package com.skyblock.combat.model;
+package com.skyblock.core.combat.model;
 
 /**
  * An immutable snapshot of a player's core combat stats.
