@@ -616,6 +616,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (QuestManager, CraftingManager consolidations, and EnchantmentManager/QuestManager follow-up — round 103)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| QuestManager / QuestsManager / QuestHandler duplicate consolidation | `com.skyblock.core.quests.manager.QuestManager` | All duplicate `QuestManager`, `QuestsManager`, and `QuestHandler` implementations consolidated into one canonical class; old stubs replaced with `@Deprecated` delegation stubs pointing to canonical | #2808 |
+| CraftingManager / RecipeManager duplicate consolidation | `com.skyblock.core.manager.CraftingManager` | All duplicate `CraftingManager` and `RecipeManager` implementations consolidated into one canonical class at `com.skyblock.core.manager.CraftingManager`; all callers updated to new import path | #2756 |
+| Stale imports (round-102 EnchantmentManager and QuestManager follow-up) | N/A | Swept every `.java` file for stale import references introduced by the round-102 EnchantmentManager and QuestManager consolidations; remediated across all modules | — |
+| Zero-caller `@Deprecated` stub deletion | *(class files deleted)* | `@Deprecated` stubs left over from the round-102 QuestManager and EnchantManager consolidations with zero live callers deleted outright | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
