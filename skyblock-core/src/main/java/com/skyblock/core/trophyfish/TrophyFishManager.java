@@ -55,6 +55,24 @@ public final class TrophyFishManager {
         }
     }
 
+    /**
+     * Trophy tier earned for a given fish, determined by how many of that fish
+     * the player has caught. Tiers ascend by catch-count threshold.
+     */
+    public enum TrophyTier {
+        BRONZE(1),
+        SILVER(50),
+        GOLD(100),
+        DIAMOND(150);
+
+        /** Minimum catch count required to reach this tier. */
+        public final int threshold;
+
+        TrophyTier(int threshold) {
+            this.threshold = threshold;
+        }
+    }
+
     /** Overall chance (0–1) that any fishing catch triggers a trophy fish roll. */
     public static final double BASE_TROPHY_CHANCE = 0.05;
 
@@ -119,6 +137,25 @@ public final class TrophyFishManager {
             return Collections.emptyMap();
         }
         return Collections.unmodifiableMap(playerCatches);
+    }
+
+    /**
+     * Returns the trophy tier the player has earned for the given fish, based on
+     * how many of it they have caught, or {@code null} if none caught yet.
+     *
+     * @param playerId the player to look up
+     * @param fish     the trophy fish type
+     * @return the highest {@link TrophyTier} reached, or {@code null} if uncaught
+     */
+    public TrophyTier getTier(UUID playerId, TrophyFish fish) {
+        int count = getCatchCount(playerId, fish);
+        TrophyTier tier = null;
+        for (TrophyTier candidate : TrophyTier.values()) {
+            if (count >= candidate.threshold) {
+                tier = candidate;
+            }
+        }
+        return tier;
     }
 
     /**
