@@ -1,6 +1,6 @@
 package com.skyblock.core.listener;
 
-import com.skyblock.core.manager.PlayerDataManager;
+import com.skyblock.core.player.manager.PlayerDataManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
