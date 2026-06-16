@@ -803,6 +803,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (CollectionsMenu and BankMenu canonical implementations — round 125)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| CollectionsMenu / CollectionMenu / CollectionGUI menu implementations | `com.skyblock.core.menu.CollectionsMenu` | Grepped every module for classes named `CollectionsMenu`, `CollectionMenu`, or `CollectionGUI`; wrote canonical implementation at `com.skyblock.core.menu.CollectionsMenu` with `fillBorder()` helper (top/bottom rows and left/right column borders), click-cancel handlers on all five category icon slots matching the `SkillsMenu` pattern, and `CollectionsMenuTest` mirroring the `SkillsMenuTest` structure; all duplicate implementations consolidated into the canonical class | — |
+| BankMenu canonical implementation | `com.skyblock.core.menu.BankMenu` | Wrote canonical `BankMenu` implementation at `com.skyblock.core.menu.BankMenu`; confirmed zero duplicate `BankMenu`/`BankingMenu`/`BankGUI` implementations remain across the entire repo | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
