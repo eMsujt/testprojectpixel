@@ -1,7 +1,9 @@
 package com.skyblock.plugin.commands;
 
 import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.menu.manager.SkyBlockMenuManager;
+import com.skyblock.pets.command.PetCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +25,7 @@ public final class HubCommand implements CommandExecutor {
                 case "bank"   -> new com.skyblock.core.bank.command.BankCommand(BankManager.getInstance()).onCommand(sender, command, label, rest);
                 case "mayor"  -> new MayorCommand().onCommand(sender, command, label, rest);
                 case "kuudra" -> new KuudraCommand().onCommand(sender, command, label, rest);
-                case "pets"   -> new PetsCommand().onCommand(sender, command, label, rest);
+                case "pets"   -> new PetCommand(PetManager.getInstance()).onCommand(sender, command, label, rest);
                 default       -> player.sendMessage("Unknown sub-command. Try /hub bank, /hub mayor, /hub kuudra, or /hub pets.");
             }
             return true;
