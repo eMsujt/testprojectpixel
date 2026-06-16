@@ -207,7 +207,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("stats").setExecutor(statsCommand);
         getCommand("stats").setTabCompleter(statsCommand);
         ProfileManager.getInstance().load(getDataFolder());
-        ProfileCommand profileCommand = new ProfileCommand();
+        ProfileCommand profileCommand = new ProfileCommand(ProfileManager.getInstance());
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
         MinionManager minionManager = MinionManager.getInstance();
