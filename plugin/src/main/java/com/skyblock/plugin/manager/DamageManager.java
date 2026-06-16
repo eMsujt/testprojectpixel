@@ -1,7 +1,7 @@
 package com.skyblock.plugin.manager;
 
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stats.PlayerStatManager;
+import com.skyblock.core.stat.StatManager;
 import com.skyblock.plugin.combat.calculator.DamageFormula;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -26,7 +26,7 @@ public final class DamageManager implements Listener {
 
     private static final DamageManager INSTANCE = new DamageManager();
 
-    private final PlayerStatManager statManager = PlayerStatManager.getInstance();
+    private final StatManager statManager = StatManager.getInstance();
 
     private DamageManager() {
     }

@@ -2,7 +2,6 @@ package com.skyblock.plugin.combat.manager;
 
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stat.StatManager;
-import com.skyblock.core.stats.PlayerStatManager;
 import com.skyblock.plugin.combat.calculator.DamageFormula;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -71,7 +70,7 @@ public final class CombatManager implements Listener {
      * @return the final damage dealt, never negative
      */
     public static double calculateDamage(Player attacker, ItemStack weapon, Entity target) {
-        PlayerStatManager stats = PlayerStatManager.getInstance();
+        StatManager stats = StatManager.getInstance();
         UUID attackerId = attacker.getUniqueId();
 
         double weaponDamage = getWeaponDamage(weapon);
