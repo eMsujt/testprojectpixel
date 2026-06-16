@@ -13,7 +13,7 @@ import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.bazaar.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.dungeon.command.DungeonCommand;
-import com.skyblock.core.dungeon.manager.DungeonManager;
+import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.enchanting.EnchantingManager;
 import com.skyblock.core.fishing.command.FishingCommand;

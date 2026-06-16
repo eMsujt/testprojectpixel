@@ -25,7 +25,7 @@ import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.WarpManager;
-import com.skyblock.core.dungeon.manager.DungeonManager;
+import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.items.manager.CustomItemManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.auction.command.AuctionHouseCommand;
@@ -113,7 +113,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         GardenManager.getInstance().load(getDataFolder());
         WarpManager.getInstance().load(getDataFolder());
         IslandManager.getInstance().load(getDataFolder());
-        com.skyblock.plugin.managers.DungeonManager.getInstance().load(getDataFolder());
+        dungeonManager.load(getDataFolder());
         CraftingManager.getInstance().registerRecipes(this);
         CooldownManager.getInstance();
         EventManager.getInstance().load(getDataFolder());
@@ -244,7 +244,6 @@ public final class SkyBlockPlugin extends JavaPlugin {
         PetManager.getInstance().save(getDataFolder());
         dungeonManager.save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
-        com.skyblock.plugin.managers.DungeonManager.getInstance().save(getDataFolder());
         try {
             WarpManager.getInstance().save(getDataFolder());
         } catch (java.io.IOException e) {
