@@ -1,5 +1,7 @@
 package com.skyblock.core.mayor;
 
+import com.skyblock.core.model.Stat;
+import com.skyblock.core.stat.StatManager;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -7,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +54,32 @@ public final class MayorManager {
         public List<String> getPerks() {
             return perks;
         }
+    }
+
+    /**
+     * Stat bonuses each mayor grants to every player while they hold office.
+     * Mayors whose perks are not stat-based are simply absent from this map.
+     */
+    private static final Map<MayorCandidate, Map<Stat, Double>> PERK_BUFFS;
+
+    static {
+        Map<MayorCandidate, Map<Stat, Double>> buffs = new EnumMap<>(MayorCandidate.class);
+        buffs.put(MayorCandidate.PAUL, statBuff(Stat.STRENGTH, 50.0));
+        buffs.put(MayorCandidate.DIANA, statBuff(Stat.MAGIC_FIND, 25.0));
+        buffs.put(MayorCandidate.COLE, statBuff(Stat.MINING_SPEED, 200.0, Stat.MINING_FORTUNE, 50.0));
+        buffs.put(MayorCandidate.FINNEGAN, statBuff(Stat.FARMING_FORTUNE, 30.0));
+        buffs.put(MayorCandidate.MARINA, statBuff(Stat.FISHING_SPEED, 30.0, Stat.SEA_CREATURE_CHANCE, 4.0));
+        buffs.put(MayorCandidate.FOXY, statBuff(Stat.PET_LUCK, 25.0));
+        PERK_BUFFS = Collections.unmodifiableMap(buffs);
+    }
+
+    /** Builds an immutable {@code Stat -> bonus} map from {@code stat, amount} pairs. */
+    private static Map<Stat, Double> statBuff(Object... pairs) {
+        Map<Stat, Double> map = new EnumMap<>(Stat.class);
+        for (int i = 0; i < pairs.length; i += 2) {
+            map.put((Stat) pairs[i], (Double) pairs[i + 1]);
+        }
+        return Collections.unmodifiableMap(map);
     }
 
     private static final MayorManager INSTANCE = new MayorManager();
@@ -140,6 +169,94 @@ public final class MayorManager {
     public boolean clearVote(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerVotes.remove(playerId) != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Election cycle
+    // -------------------------------------------------------------------------
+
+    /**
+     * Tallies every cast vote.
+     *
+     * @return a count of votes per candidate; candidates with no votes are omitted
+     */
+    public Map<MayorCandidate, Integer> tallyVotes() {
+        Map<MayorCandidate, Integer> tally = new EnumMap<>(MayorCandidate.class);
+        for (MayorCandidate vote : playerVotes.values()) {
+            tally.merge(vote, 1, Integer::sum);
+        }
+        return tally;
+    }
+
+    /**
+     * Runs an election: tallies all votes, makes the candidate with the most votes
+     * the active mayor (recording it in the election history), then clears every
+     * vote so the next cycle starts fresh. Ties are broken by enum declaration order.
+     *
+     * @return the elected mayor, or {@code null} if no votes had been cast
+     */
+    public MayorCandidate runElection() {
+        Map<MayorCandidate, Integer> tally = tallyVotes();
+        MayorCandidate winner = null;
+        int best = 0;
+        for (MayorCandidate candidate : MayorCandidate.values()) {
+            int votes = tally.getOrDefault(candidate, 0);
+            if (votes > best) {
+                best = votes;
+                winner = candidate;
+            }
+        }
+        if (winner != null) {
+            setCurrentMayor(winner);
+            playerVotes.clear();
+        }
+        return winner;
+    }
+
+    // -------------------------------------------------------------------------
+    // Active-mayor perk effects
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the stat bonuses granted by the given mayor's perks.
+     *
+     * @param mayor the mayor to inspect
+     * @return an unmodifiable {@code Stat -> bonus} map, empty if the mayor grants no stats
+     */
+    public static Map<Stat, Double> getPerkBuffs(MayorCandidate mayor) {
+        Objects.requireNonNull(mayor, "mayor");
+        return PERK_BUFFS.getOrDefault(mayor, Collections.emptyMap());
+    }
+
+    /**
+     * Applies the active mayor's perk stat bonuses to a player via the {@link StatManager}.
+     * No-op if there is no active mayor or the mayor grants no stat buffs.
+     *
+     * @param playerId the player to buff
+     */
+    public void applyPerks(UUID playerId) {
+        adjustPerks(playerId, 1);
+    }
+
+    /**
+     * Removes the active mayor's perk stat bonuses from a player (the inverse of
+     * {@link #applyPerks(UUID)}). No-op if there is no active mayor.
+     *
+     * @param playerId the player to un-buff
+     */
+    public void removePerks(UUID playerId) {
+        adjustPerks(playerId, -1);
+    }
+
+    private void adjustPerks(UUID playerId, int sign) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (currentMayor == null) {
+            return;
+        }
+        StatManager stats = StatManager.getInstance();
+        for (Map.Entry<Stat, Double> entry : getPerkBuffs(currentMayor).entrySet()) {
+            stats.addBonus(playerId, entry.getKey(), sign * entry.getValue());
+        }
     }
 
     // -------------------------------------------------------------------------

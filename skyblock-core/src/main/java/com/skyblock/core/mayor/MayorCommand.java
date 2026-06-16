@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public final class MayorCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("current", "perks", "vote", "set", "history");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("current", "perks", "vote", "set", "elect", "history");
     private static final List<String> MAYOR_NAMES = Arrays.stream(MayorManager.MayorCandidate.values())
             .map(m -> m.name().toLowerCase())
             .collect(Collectors.toList());
@@ -51,8 +51,9 @@ public final class MayorCommand implements TabExecutor {
             case "perks"   -> handlePerks(player);
             case "vote"    -> handleVote(player, args);
             case "set"     -> handleSet(player, args);
+            case "elect"   -> handleElect(player);
             case "history" -> handleHistory(player);
-            default        -> player.sendMessage("Unknown subcommand. Usage: /mayor <current|perks|vote|set|history>");
+            default        -> player.sendMessage("Unknown subcommand. Usage: /mayor <current|perks|vote|set|elect|history>");
         }
         return true;
     }
@@ -127,6 +128,19 @@ public final class MayorCommand implements TabExecutor {
         if (mayor == null) return;
         mayorManager.setCurrentMayor(mayor);
         player.sendMessage("Active mayor set to " + mayor.getDisplayName() + ".");
+    }
+
+    private void handleElect(Player player) {
+        if (!player.isOp()) {
+            player.sendMessage("You do not have permission to use this subcommand.");
+            return;
+        }
+        MayorManager.MayorCandidate winner = mayorManager.runElection();
+        if (winner == null) {
+            player.sendMessage("No votes have been cast; the election was not held.");
+            return;
+        }
+        player.sendMessage(winner.getDisplayName() + " won the election and is now the active mayor.");
     }
 
     private void handleHistory(Player player) {
