@@ -861,6 +861,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (IslandManager/SkyBlockIslandManager/PlayerIslandManager consolidation — round 133)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| IslandManager / SkyBlockIslandManager / PlayerIslandManager | `com.skyblock.core.island.manager.IslandManager` | Grepped every module for classes named `IslandManager`, `SkyBlockIslandManager`, or `PlayerIslandManager`; all remaining duplicate implementations consolidated into one canonical class at `com.skyblock.core.island.manager.IslandManager`; all callers and `SkyBlockPlugin` registrations updated to the canonical import path; orphaned duplicate copies deleted outright | #2905 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
