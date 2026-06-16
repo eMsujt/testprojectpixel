@@ -1,13 +1,13 @@
 package com.skyblock.gui.menu;
 
+import com.skyblock.core.manager.MinionManager;
 import com.skyblock.items.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.plugin.minion.model.Minion;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * The collected-resource inventory for a single placed {@link Minion}.
+ * The collected-resource inventory for a single placed minion.
  *
  * <p>A 27-slot (3-row) menu titled with the minion's name and tier, e.g.
  * {@code §aCobblestone Minion XI}, opened when a player right-clicks their
@@ -26,11 +26,11 @@ public class MinionInventoryMenu extends Menu {
             "VI", "VII", "VIII", "IX", "X", "XI"
     };
 
-    private final Minion minion;
+    private final MinionManager.MinionData data;
 
-    public MinionInventoryMenu(Minion minion) {
-        super("§a" + minion.type.getDisplayName() + " " + ROMAN[Math.min(minion.getTier().ordinal() + 1, ROMAN.length - 1)], 3);
-        this.minion = minion;
+    public MinionInventoryMenu(MinionManager.MinionData data) {
+        super("§a" + data.type.getDisplayName() + " " + ROMAN[Math.min(data.getTier().ordinal() + 1, ROMAN.length - 1)], 3);
+        this.data = data;
     }
 
     @Override
