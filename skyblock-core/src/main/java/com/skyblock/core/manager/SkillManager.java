@@ -89,6 +89,7 @@ public final class SkillManager {
         stat.put("combat",     Stat.CRIT_CHANCE);
         stat.put("enchanting", Stat.INTELLIGENCE);
         stat.put("alchemy",    Stat.INTELLIGENCE);
+        stat.put("dungeoneering", Stat.HEALTH);
         SKILL_STAT = stat;
 
         Map<String, Map<Integer, Double>> rewards = new HashMap<>();
@@ -106,7 +107,7 @@ public final class SkillManager {
 
     private static double rewardForLevel(String skill, int level) {
         if ("combat".equals(skill)) return 0.5;
-        boolean health = "farming".equals(skill) || "fishing".equals(skill);
+        boolean health = "farming".equals(skill) || "fishing".equals(skill) || "dungeoneering".equals(skill);
         int tier = level <= 14 ? 0 : level <= 19 ? 1 : level <= 25 ? 2 : 3;
         return (health ? 2 : 1) + tier;
     }
