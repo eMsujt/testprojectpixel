@@ -1,4 +1,4 @@
-package com.skyblock.plugin.gui.menu;
+package com.skyblock.gui.util;
 
 import org.bukkit.Material;
 

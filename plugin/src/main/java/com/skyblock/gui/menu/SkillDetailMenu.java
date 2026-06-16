@@ -1,7 +1,8 @@
-package com.skyblock.plugin.gui.menu;
+package com.skyblock.gui.menu;
 
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
+import com.skyblock.core.menu.SkillsMenu;
 import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.profile.PlayerProfile;
