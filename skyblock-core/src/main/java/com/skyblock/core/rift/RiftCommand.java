@@ -1,8 +1,10 @@
 package com.skyblock.core.rift;
 
-import com.skyblock.core.rift.RiftManager.RiftArea;
-import com.skyblock.core.rift.RiftManager.RiftData;
-import com.skyblock.core.rift.RiftManager.RiftMobType;
+import com.skyblock.core.manager.RiftManager;
+
+import com.skyblock.core.manager.RiftManager.RiftArea;
+import com.skyblock.core.manager.RiftManager.RiftData;
+import com.skyblock.core.manager.RiftManager.RiftMobType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
