@@ -916,6 +916,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (NetworthManager and EconomyManager final consolidation — round 140)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| NetworthManager / NetworthCalculator | `com.skyblock.core.networth.NetworthManager` | Thorough final-pass consolidation of every class named `NetworthManager` or `NetworthCalculator` across every module; canonical `com.skyblock.core.networth.NetworthManager` confirmed as sole implementation with all callers on the canonical import path; no remaining duplicate implementations or `@Deprecated` stubs found | — |
+| EconomyManager / CurrencyManager | `com.skyblock.core.economy.manager.EconomyManager` | Thorough final-pass consolidation of every class named `EconomyManager` or `CurrencyManager` across every module; canonical `com.skyblock.core.economy.manager.EconomyManager` confirmed as sole implementation with all callers on the canonical import path; no remaining duplicate implementations or `@Deprecated` stubs found | — |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
