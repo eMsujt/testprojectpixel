@@ -1,5 +1,7 @@
 package com.skyblock.core.museum;
 
+import com.skyblock.core.manager.MuseumManager;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
