@@ -13,7 +13,7 @@ import com.skyblock.core.fairy.FairyManager;
 import com.skyblock.plugin.managers.GardenManager;
 import com.skyblock.plugin.managers.KuudraManager;
 import com.skyblock.plugin.managers.MayorManager;
-import com.skyblock.core.minion.manager.MinionManager;
+import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.minion.command.MinionCommand;
 import com.skyblock.core.wardrobe.WardrobeManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
