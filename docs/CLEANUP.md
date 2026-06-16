@@ -502,6 +502,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (GUI/Menu class consolidation — round 91)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| Menu abstract base / MenuManager / all concrete menus | `com.skyblock.core.menu.Menu`, `com.skyblock.core.menu.MenuManager` | Thorough final-pass consolidation of every class implementing or extending the plugin's `Menu` base across every module; all duplicate `GuiManager`, `SkyBlockMenuManager`, and concrete menu subclasses in `com.skyblock.plugin.gui.menu.*` and other non-canonical packages audited; all duplicate implementations and `@Deprecated` delegation stubs deleted outright; canonical `com.skyblock.core.menu.Menu` confirmed as sole abstract base with all concrete menus in `com.skyblock.core.menu.*` and `com.skyblock.core.menu.MenuManager` confirmed as sole manager; no remaining orphan copies | #2764 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
