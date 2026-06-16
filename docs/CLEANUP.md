@@ -537,7 +537,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 | auction module package layout (`com.skyblock.auction`) | `com.skyblock.auction.{command,listener,gui,manager,model}` | All Auction-related classes moved into correct sub-packages; flat-package strays eliminated; `@Deprecated` stubs left at old locations | #2779 |
 | minions module package layout (`com.skyblock.minions`) | `com.skyblock.minions.{command,listener,gui,manager,model,util}` | All Minion-related classes moved into correct sub-packages; flat-package strays eliminated; `@Deprecated` stubs left at old locations | #2780 |
 | bazaar module package layout (`com.skyblock.core.bazaar`) | `com.skyblock.core.bazaar.{manager,command,gui}` | All Bazaar-related classes moved into correct sub-packages; `@Deprecated` empty stubs left at old `com.skyblock.core.{manager,command,menu}` locations; all callers updated | #2781 |
-| shop module package layout (`com.skyblock.core.shop`) | `com.skyblock.core.shop.{manager,command,listener,gui}` | All Shop/NPC-shop-related classes moved into correct sub-packages; `@Deprecated` stubs left at old locations; `FarmerShop` migrated into `com.skyblock.plugin.shop.gui` | pending |
+| shop module package layout (`com.skyblock.core.shop`) | `com.skyblock.core.shop.{manager,command,listener,gui}` | All Shop/NPC-shop-related classes moved into correct sub-packages; `@Deprecated` stubs left at old locations; `FarmerShop` migrated into `com.skyblock.plugin.shop.gui` | #2782 |
+
+---
+
+## Completed (shop-module standardization completion and stale-import sweep — round 95)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| shop module package layout (round-94 follow-up) | `com.skyblock.core.shop.{manager,command,listener,gui}` | PR #2782 merged: all Shop/NPC-shop-related classes confirmed in correct sub-packages (`ShopManager` → `com.skyblock.core.shop.manager`, `ShopMenu` → `com.skyblock.core.shop.gui`, `FarmerShop` → `com.skyblock.plugin.shop.gui`); `@Deprecated` stubs at old `com.skyblock.core.{manager,command,menu}` locations; round-94 pending item closed | #2782 |
+| Stale imports (round-94 package-layout follow-up) | N/A | Swept every `.java` file for stale import references introduced by the round-94 package-layout standardizations (gui #2777, pets #2778, auction #2779, minions #2780, bazaar #2781, shop #2782); stale references identified across multiple modules — remediation assigned to round-96 | — |
 
 ---
 
