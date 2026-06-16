@@ -1,4 +1,4 @@
-package com.skyblock.pets.command;
+package com.skyblock.core.pet;
 
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetManager.PetType;

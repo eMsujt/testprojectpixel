@@ -49,7 +49,7 @@ import com.skyblock.core.event.EventCommand;
 import com.skyblock.plugin.commands.FishingCommand;
 import com.skyblock.plugin.commands.HubCommand;
 import com.skyblock.islands.command.IslandCommand;
-import com.skyblock.pets.command.PetCommand;
+import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.quest.command.QuestCommand;
