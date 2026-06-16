@@ -4,12 +4,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 
 public final class SlayerManager {
@@ -119,6 +123,145 @@ public final class SlayerManager {
         TIER_1, TIER_2, TIER_3, TIER_4
     }
 
+    /** Mob kills required before the slayer boss can be summoned, per quest tier. */
+    public static final Map<QuestTier, Integer> KILLS_TO_SPAWN_BOSS;
+
+    static {
+        Map<QuestTier, Integer> m = new EnumMap<>(QuestTier.class);
+        m.put(QuestTier.TIER_1, 10);
+        m.put(QuestTier.TIER_2, 20);
+        m.put(QuestTier.TIER_3, 30);
+        m.put(QuestTier.TIER_4, 40);
+        KILLS_TO_SPAWN_BOSS = Collections.unmodifiableMap(m);
+    }
+
+    /** Maps each slayer type to its key in {@link #TIER_XP_THRESHOLDS}. */
+    private static final Map<SlayerType, String> XP_KEY;
+
+    static {
+        Map<SlayerType, String> m = new EnumMap<>(SlayerType.class);
+        m.put(SlayerType.ZOMBIE,   "Revenant");
+        m.put(SlayerType.SPIDER,   "Tarantula");
+        m.put(SlayerType.WOLF,     "Sven");
+        m.put(SlayerType.ENDERMAN, "Voidgloom");
+        m.put(SlayerType.BLAZE,    "Inferno");
+        m.put(SlayerType.VAMPIRE,  "Riftstalker");
+        XP_KEY = Collections.unmodifiableMap(m);
+    }
+
+    /** A single possible reward from a slain slayer boss with its base drop chance. */
+    public static final class SlayerDrop {
+        public final String item;
+        /** Base drop chance in the range {@code [0, 1]} at tier 1. */
+        public final double chance;
+
+        SlayerDrop(String item, double chance) {
+            this.item = item;
+            this.chance = chance;
+        }
+    }
+
+    /** Possible drops per slayer type. Chances scale up with the boss tier. */
+    public static final Map<SlayerType, List<SlayerDrop>> DROP_TABLE;
+
+    static {
+        Map<SlayerType, List<SlayerDrop>> m = new EnumMap<>(SlayerType.class);
+        m.put(SlayerType.ZOMBIE, Arrays.asList(
+                new SlayerDrop("Revenant Flesh", 0.30),
+                new SlayerDrop("Foul Flesh", 0.10),
+                new SlayerDrop("Beheaded Horror", 0.01)));
+        m.put(SlayerType.SPIDER, Arrays.asList(
+                new SlayerDrop("Tarantula Web", 0.30),
+                new SlayerDrop("Toxic Arrow Poison", 0.08),
+                new SlayerDrop("Digested Mosquito", 0.01)));
+        m.put(SlayerType.WOLF, Arrays.asList(
+                new SlayerDrop("Wolf Tooth", 0.30),
+                new SlayerDrop("Spirit Rune", 0.05),
+                new SlayerDrop("Red Claw Egg", 0.01)));
+        m.put(SlayerType.ENDERMAN, Arrays.asList(
+                new SlayerDrop("Null Sphere", 0.30),
+                new SlayerDrop("Mana Steal", 0.05),
+                new SlayerDrop("Judgement Core", 0.01)));
+        m.put(SlayerType.BLAZE, Arrays.asList(
+                new SlayerDrop("Derelict Ashe", 0.30),
+                new SlayerDrop("Bundle of Magma", 0.05),
+                new SlayerDrop("Hollow Wand", 0.01)));
+        m.put(SlayerType.VAMPIRE, Arrays.asList(
+                new SlayerDrop("Blood Ichor", 0.20),
+                new SlayerDrop("Chalice", 0.05),
+                new SlayerDrop("Twilight Arrow Poison", 0.01)));
+        DROP_TABLE = Collections.unmodifiableMap(m);
+    }
+
+    /** Live combat state for a summoned slayer boss, including health and phase tracking. */
+    public static final class BossFight {
+        public final SlayerType type;
+        public final QuestTier tier;
+        private final int maxHealth;
+        private final int totalPhases;
+        private int health;
+        private int phase;
+
+        BossFight(SlayerType type, QuestTier tier, int maxHealth, int totalPhases) {
+            this.type = type;
+            this.tier = tier;
+            this.maxHealth = maxHealth;
+            this.totalPhases = totalPhases;
+            this.health = maxHealth;
+            this.phase = 1;
+        }
+
+        public int getMaxHealth() {
+            return maxHealth;
+        }
+
+        public int getHealth() {
+            return health;
+        }
+
+        public int getPhase() {
+            return phase;
+        }
+
+        public int getTotalPhases() {
+            return totalPhases;
+        }
+
+        public boolean isDead() {
+            return health <= 0;
+        }
+
+        /** Applies damage, escalates the combat phase as health falls, and returns remaining health. */
+        public int damage(int amount) {
+            if (amount < 0) {
+                throw new IllegalArgumentException("amount must not be negative, got " + amount);
+            }
+            health = Math.max(0, health - amount);
+            int completed = (int) ((long) (maxHealth - health) * totalPhases / maxHealth);
+            phase = Math.min(totalPhases, completed + 1);
+            return health;
+        }
+    }
+
+    /** The outcome of slaying a slayer boss: experience gained and the items dropped. */
+    public static final class SlayerReward {
+        public final long xp;
+        public final List<String> drops;
+
+        SlayerReward(long xp, List<String> drops) {
+            this.xp = xp;
+            this.drops = Collections.unmodifiableList(drops);
+        }
+
+        public long getXp() {
+            return xp;
+        }
+
+        public List<String> getDrops() {
+            return drops;
+        }
+    }
+
     public static final class SlayerQuest {
         public final SlayerType type;
         public final QuestTier tier;
@@ -162,6 +305,8 @@ public final class SlayerManager {
     private final Map<UUID, SlayerQuest> activeQuests = new HashMap<>();
     private final Map<UUID, Map<SlayerType, Integer>> killCounts = new HashMap<>();
     private final Map<UUID, Boolean> bossActive = new HashMap<>();
+    private final Map<UUID, BossFight> activeBosses = new HashMap<>();
+    private final Random random = new Random();
 
     private SlayerManager() {}
 
@@ -198,6 +343,8 @@ public final class SlayerManager {
 
     public boolean cancelQuest(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        activeBosses.remove(playerId);
+        bossActive.remove(playerId);
         return activeQuests.remove(playerId) != null;
     }
 
@@ -257,11 +404,135 @@ public final class SlayerManager {
         return Boolean.TRUE.equals(bossActive.get(playerId));
     }
 
+    /** Records a mob kill toward the active quest's boss-spawn requirement and returns the new total. */
+    public int addQuestKill(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        SlayerQuest quest = activeQuests.get(playerId);
+        if (quest == null) {
+            throw new IllegalStateException("Player has no active slayer quest");
+        }
+        return quest.incrementKills();
+    }
+
+    /** Returns {@code true} when the player has killed enough mobs to summon the boss for their quest. */
+    public boolean canSpawnBoss(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        SlayerQuest quest = activeQuests.get(playerId);
+        if (quest == null || quest.isBossSpawned()) {
+            return false;
+        }
+        return quest.getKills() >= KILLS_TO_SPAWN_BOSS.getOrDefault(quest.tier, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Summons the slayer boss for the player's active quest, returning its fresh combat state.
+     * The boss health scales with the quest tier and the number of combat phases grows with it.
+     */
+    public BossFight spawnBoss(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        SlayerQuest quest = activeQuests.get(playerId);
+        if (quest == null) {
+            throw new IllegalStateException("Player has no active slayer quest");
+        }
+        if (quest.isBossSpawned()) {
+            throw new IllegalStateException("Boss already spawned for this quest");
+        }
+        if (!canSpawnBoss(playerId)) {
+            throw new IllegalStateException("Not enough kills to spawn the boss");
+        }
+        int tierIndex = quest.tier.ordinal();
+        int[] healthByTier = BOSS_HEALTH.get(quest.type.getDisplayName());
+        SlayerBoss boss = SlayerBoss.forType(quest.type);
+        int maxHealth = healthByTier != null
+                ? healthByTier[tierIndex]
+                : (boss != null ? boss.maxHealth : 1);
+        int totalPhases = tierIndex + 1;
+        BossFight fight = new BossFight(quest.type, quest.tier, maxHealth, totalPhases);
+        activeBosses.put(playerId, fight);
+        quest.setBossSpawned(true);
+        setBossActive(playerId, true);
+        return fight;
+    }
+
+    public BossFight getBossFight(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return activeBosses.get(playerId);
+    }
+
+    /** Applies damage to the player's active boss and returns its remaining health. */
+    public int damageBoss(UUID playerId, int amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        BossFight fight = activeBosses.get(playerId);
+        if (fight == null) {
+            throw new IllegalStateException("Player has no active boss");
+        }
+        return fight.damage(amount);
+    }
+
+    /**
+     * Finalises a defeated boss: awards tier-scaled experience, rolls the drop table, completes the
+     * quest, and clears the combat state. The boss must have been reduced to zero health first.
+     */
+    public SlayerReward killBoss(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        BossFight fight = activeBosses.get(playerId);
+        if (fight == null) {
+            throw new IllegalStateException("Player has no active boss");
+        }
+        if (!fight.isDead()) {
+            throw new IllegalStateException("Boss is not dead yet");
+        }
+        int tierIndex = fight.tier.ordinal();
+        int[] xpByTier = TIER_XP_THRESHOLDS.get(XP_KEY.get(fight.type));
+        long xpReward = xpByTier != null ? xpByTier[tierIndex] : 0L;
+
+        List<String> drops = new ArrayList<>();
+        List<SlayerDrop> table = DROP_TABLE.get(fight.type);
+        if (table != null) {
+            for (SlayerDrop drop : table) {
+                double chance = Math.min(1.0, drop.chance * (tierIndex + 1));
+                if (random.nextDouble() < chance) {
+                    drops.add(drop.item);
+                }
+            }
+        }
+
+        addKill(playerId, fight.type);
+        activeBosses.remove(playerId);
+        setBossActive(playerId, false);
+        long total = completeQuest(playerId, xpReward);
+        return new SlayerReward(total >= 0 ? xpReward : 0L, drops);
+    }
+
+    /**
+     * Escalates the player's active quest to the next tier, replacing it with a fresh quest.
+     * Only allowed before a boss has spawned and never beyond {@link QuestTier#TIER_4}.
+     */
+    public SlayerQuest escalateTier(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        SlayerQuest quest = activeQuests.get(playerId);
+        if (quest == null) {
+            throw new IllegalStateException("Player has no active slayer quest");
+        }
+        if (quest.isBossSpawned()) {
+            throw new IllegalStateException("Cannot escalate tier after the boss has spawned");
+        }
+        int nextIndex = quest.tier.ordinal() + 1;
+        QuestTier[] tiers = QuestTier.values();
+        if (nextIndex >= tiers.length) {
+            throw new IllegalStateException("Quest is already at the maximum tier");
+        }
+        SlayerQuest escalated = new SlayerQuest(quest.type, tiers[nextIndex]);
+        activeQuests.put(playerId, escalated);
+        return escalated;
+    }
+
     public boolean reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         boolean hadData = slayerExperience.remove(playerId) != null;
         hadData |= activeQuests.remove(playerId) != null;
         hadData |= killCounts.remove(playerId) != null;
+        hadData |= activeBosses.remove(playerId) != null;
         bossActive.remove(playerId);
         return hadData;
     }
@@ -275,6 +546,7 @@ public final class SlayerManager {
         slayerExperience.clear();
         killCounts.clear();
         bossActive.clear();
+        activeBosses.clear();
         activeQuests.clear();
         for (String key : cfg.getKeys(false)) {
             try {
@@ -291,6 +563,14 @@ public final class SlayerManager {
                             quest.incrementKills();
                         }
                         activeQuests.put(uuid, quest);
+                        if (cfg.contains(key + ".boss.health")) {
+                            int maxHealth = cfg.getInt(key + ".boss.maxHealth", 1);
+                            int totalPhases = cfg.getInt(key + ".boss.totalPhases", 1);
+                            int health = cfg.getInt(key + ".boss.health", maxHealth);
+                            BossFight fight = new BossFight(type, tier, maxHealth, totalPhases);
+                            fight.damage(Math.max(0, maxHealth - health));
+                            activeBosses.put(uuid, fight);
+                        }
                     } catch (IllegalArgumentException ignored) {
                         // skip malformed quest entries
                     }
@@ -343,6 +623,12 @@ public final class SlayerManager {
             cfg.set(key + ".quest.kills", quest.getKills());
             cfg.set(key + ".quest.bossSpawned", quest.isBossSpawned());
             cfg.set(key + ".quest.complete", quest.isComplete());
+            BossFight fight = activeBosses.get(entry.getKey());
+            if (fight != null) {
+                cfg.set(key + ".boss.maxHealth", fight.getMaxHealth());
+                cfg.set(key + ".boss.totalPhases", fight.getTotalPhases());
+                cfg.set(key + ".boss.health", fight.getHealth());
+            }
         }
         for (Map.Entry<UUID, Map<SlayerType, Long>> entry : slayerExperience.entrySet()) {
             String key = entry.getKey().toString();
