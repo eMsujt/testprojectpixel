@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.menu.SkyBlockMenuManager;
+import com.skyblock.core.menu.manager.SkyBlockMenuManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

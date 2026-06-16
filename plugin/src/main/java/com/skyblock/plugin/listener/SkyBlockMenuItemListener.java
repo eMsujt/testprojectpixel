@@ -1,6 +1,6 @@
 package com.skyblock.plugin.listener;
 
-import com.skyblock.core.menu.SkyBlockMenuManager;
+import com.skyblock.core.menu.manager.SkyBlockMenuManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

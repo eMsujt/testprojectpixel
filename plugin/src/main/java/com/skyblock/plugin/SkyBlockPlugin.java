@@ -180,7 +180,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.FishingXpListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.ForagingFishingXpListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.TamingXpListener(), this);
-        getServer().getPluginManager().registerEvents(new com.skyblock.core.menu.MenuListener(com.skyblock.core.menu.MenuManager.getInstance()), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.menu.listener.MenuListener(com.skyblock.core.menu.manager.MenuManager.getInstance()), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.CombatListener(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.AlchemyListener(), this);
         // com.skyblock.plugin.economy.BazaarMenu listener removed — canonical com.skyblock.core.menu.BazaarMenu handles clicks via MenuListener
