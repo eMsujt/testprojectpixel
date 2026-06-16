@@ -1,7 +1,7 @@
 package com.skyblock.core.storage;
 
 import com.skyblock.core.player.manager.PlayerDataManager;
-import com.skyblock.core.SkyBlockPlugin;
+import com.skyblock.core.SkyblockPlugin;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -25,7 +25,7 @@ public final class YamlPlayerStorage {
     private final File playersDir;
 
     private YamlPlayerStorage() {
-        playersDir = new File(SkyBlockPlugin.getInstance().getDataFolder(), "players");
+        playersDir = new File(SkyblockPlugin.getInstance().getDataFolder(), "players");
         if (!playersDir.exists()) {
             playersDir.mkdirs();
         }
@@ -34,7 +34,7 @@ public final class YamlPlayerStorage {
     /**
      * Returns the singleton instance, creating it on first call.
      *
-     * <p>Must be called after {@link SkyBlockPlugin} has been enabled.</p>
+     * <p>Must be called after {@link SkyblockPlugin} has been enabled.</p>
      *
      * @return the singleton {@link YamlPlayerStorage}
      */
@@ -66,7 +66,7 @@ public final class YamlPlayerStorage {
                 tmp.delete();
             }
         } catch (IOException e) {
-            SkyBlockPlugin.getInstance().getLogger().log(
+            SkyblockPlugin.getInstance().getLogger().log(
                     Level.SEVERE, "Failed to save player data for " + data.getUuid(), e);
         }
     }

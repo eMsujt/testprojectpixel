@@ -4,13 +4,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.UUID;
 
 /**
  * Singleton manager for SkyBlock item forging.
  *
  * <p>Holds the static {@link ForgeRecipe} catalogue and tracks each player's
- * active forge slot (one active forge per player at a time).</p>
+ * active forge slots. Each player owns a configurable number of forge slots
+ * (see {@link #getSlotCount(UUID)}), and each slot can run an independent,
+ * multi-hour forge job concurrently.</p>
+ *
+ * <p>Forge durations are reduced by the player's Quick Forge Heart of the
+ * Mountain perk level (see {@link #quickForgeReduction(int)}).</p>
  *
  * <p>Not thread-safe; synchronize externally if needed.</p>
  */
@@ -92,27 +98,40 @@ public final class ForgeManager {
         public Map<String, Integer> getIngredients() { return ingredients; }
     }
 
-    /** An active forge job for a player. */
+    /** An active forge job occupying one of a player's forge slots. */
     public static final class ForgeJob {
         private final ForgeRecipe recipe;
+        private final int slot;
         private final long startTimeMillis;
+        private final int durationSeconds;
 
-        ForgeJob(ForgeRecipe recipe, long startTimeMillis) {
+        ForgeJob(ForgeRecipe recipe, int slot, long startTimeMillis, int durationSeconds) {
             this.recipe = Objects.requireNonNull(recipe, "recipe");
+            this.slot = slot;
             this.startTimeMillis = startTimeMillis;
+            this.durationSeconds = durationSeconds;
         }
 
         public ForgeRecipe getRecipe() { return recipe; }
+        public int getSlot() { return slot; }
         public long getStartTimeMillis() { return startTimeMillis; }
+
+        /**
+         * Returns this job's effective duration in seconds, after any Quick Forge
+         * time reduction applied when the job was started.
+         *
+         * @return the effective duration in seconds
+         */
+        public int getDurationSeconds() { return durationSeconds; }
 
         /**
          * Returns whether the forge job is complete at the given wall-clock time.
          *
          * @param nowMillis current time in milliseconds
-         * @return {@code true} if the required duration has elapsed
+         * @return {@code true} if the effective duration has elapsed
          */
         public boolean isComplete(long nowMillis) {
-            return (nowMillis - startTimeMillis) >= (long) recipe.getDurationSeconds() * 1000L;
+            return (nowMillis - startTimeMillis) >= (long) durationSeconds * 1000L;
         }
     }
 
@@ -136,8 +155,23 @@ public final class ForgeManager {
 
     private static final ForgeManager INSTANCE = new ForgeManager();
 
-    /** Active forge job per player. */
-    private final Map<UUID, ForgeJob> activeJobs = new HashMap<>();
+    /** Default number of forge slots a player owns before any HOTM upgrades. */
+    public static final int DEFAULT_SLOT_COUNT = 2;
+
+    /** Maximum number of forge slots a player can unlock. */
+    public static final int MAX_SLOT_COUNT = 7;
+
+    /** Maximum Quick Forge Heart of the Mountain perk level. */
+    public static final int MAX_QUICK_FORGE_LEVEL = 20;
+
+    /** Active forge jobs per player, keyed by slot index (sorted ascending). */
+    private final Map<UUID, TreeMap<Integer, ForgeJob>> activeJobs = new HashMap<>();
+
+    /** Number of forge slots owned per player; absent means {@link #DEFAULT_SLOT_COUNT}. */
+    private final Map<UUID, Integer> slotCounts = new HashMap<>();
+
+    /** Quick Forge perk level per player; absent means {@code 0}. */
+    private final Map<UUID, Integer> quickForgeLevels = new HashMap<>();
 
     private ForgeManager() {}
 
@@ -174,70 +208,270 @@ public final class ForgeManager {
     }
 
     // ---------------------------------------------------------------------------
+    // Forge slots & Quick Forge perk
+    // ---------------------------------------------------------------------------
+
+    /**
+     * Returns the number of forge slots the player owns.
+     *
+     * @param playerId the player to look up
+     * @return the slot count (at least {@link #DEFAULT_SLOT_COUNT})
+     */
+    public int getSlotCount(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return slotCounts.getOrDefault(playerId, DEFAULT_SLOT_COUNT);
+    }
+
+    /**
+     * Sets the number of forge slots the player owns, clamped to
+     * {@code [DEFAULT_SLOT_COUNT, MAX_SLOT_COUNT]}.
+     *
+     * @param playerId the player to configure
+     * @param slots    the desired slot count
+     */
+    public void setSlotCount(UUID playerId, int slots) {
+        Objects.requireNonNull(playerId, "playerId");
+        int clamped = Math.max(DEFAULT_SLOT_COUNT, Math.min(MAX_SLOT_COUNT, slots));
+        slotCounts.put(playerId, clamped);
+    }
+
+    /**
+     * Returns the player's Quick Forge Heart of the Mountain perk level.
+     *
+     * @param playerId the player to look up
+     * @return the perk level (0 if unset)
+     */
+    public int getQuickForgeLevel(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return quickForgeLevels.getOrDefault(playerId, 0);
+    }
+
+    /**
+     * Sets the player's Quick Forge perk level, clamped to
+     * {@code [0, MAX_QUICK_FORGE_LEVEL]}.
+     *
+     * @param playerId the player to configure
+     * @param level    the desired perk level
+     */
+    public void setQuickForgeLevel(UUID playerId, int level) {
+        Objects.requireNonNull(playerId, "playerId");
+        int clamped = Math.max(0, Math.min(MAX_QUICK_FORGE_LEVEL, level));
+        quickForgeLevels.put(playerId, clamped);
+    }
+
+    /**
+     * Returns the fractional forge-time reduction granted by the Quick Forge perk
+     * at the given level. Level 1 grants 10.5%, increasing by 0.5% per level up to
+     * 19.5% at level 19, with the maximum level 20 granting 30%.
+     *
+     * @param level the Quick Forge perk level
+     * @return the reduction as a fraction in {@code [0, 0.30]}
+     */
+    public static double quickForgeReduction(int level) {
+        if (level <= 0) {
+            return 0.0;
+        }
+        if (level >= MAX_QUICK_FORGE_LEVEL) {
+            return 0.30;
+        }
+        return (10.0 + 0.5 * level) / 100.0;
+    }
+
+    /**
+     * Returns a recipe's effective forge duration after applying the Quick Forge
+     * reduction for the given perk level.
+     *
+     * @param recipe          the recipe being forged
+     * @param quickForgeLevel the player's Quick Forge perk level
+     * @return the reduced duration in seconds
+     */
+    public static int effectiveDurationSeconds(ForgeRecipe recipe, int quickForgeLevel) {
+        Objects.requireNonNull(recipe, "recipe");
+        double reduced = recipe.getDurationSeconds() * (1.0 - quickForgeReduction(quickForgeLevel));
+        return (int) Math.round(reduced);
+    }
+
+    // ---------------------------------------------------------------------------
     // Active jobs
     // ---------------------------------------------------------------------------
 
     /**
-     * Starts a forge job for the player.
+     * Starts a forge job in the player's lowest-numbered free slot.
      *
-     * @param playerId       the player starting the forge
-     * @param recipeId       the recipe to forge
-     * @param nowMillis      current wall-clock time in milliseconds
+     * @param playerId  the player starting the forge
+     * @param recipeId  the recipe to forge
+     * @param nowMillis current wall-clock time in milliseconds
+     * @return the started {@link ForgeJob}
      * @throws IllegalArgumentException if the recipe ID is unknown
-     * @throws IllegalStateException    if the player already has an active forge job
+     * @throws IllegalStateException    if all of the player's forge slots are busy
      */
-    public void startForge(UUID playerId, String recipeId, long nowMillis) {
+    public ForgeJob startForge(UUID playerId, String recipeId, long nowMillis) {
+        Objects.requireNonNull(playerId, "playerId");
+        int slot = firstFreeSlot(playerId);
+        if (slot < 0) {
+            throw new IllegalStateException("All forge slots are busy");
+        }
+        return startForge(playerId, recipeId, slot, nowMillis);
+    }
+
+    /**
+     * Starts a forge job in a specific slot.
+     *
+     * @param playerId  the player starting the forge
+     * @param recipeId  the recipe to forge
+     * @param slot      the slot index, in {@code [0, getSlotCount(playerId))}
+     * @param nowMillis current wall-clock time in milliseconds
+     * @return the started {@link ForgeJob}
+     * @throws IllegalArgumentException if the recipe ID is unknown or the slot is out of range
+     * @throws IllegalStateException    if the slot is already occupied
+     */
+    public ForgeJob startForge(UUID playerId, String recipeId, int slot, long nowMillis) {
         Objects.requireNonNull(playerId, "playerId");
         ForgeRecipe recipe = RECIPES.get(recipeId);
         if (recipe == null) {
             throw new IllegalArgumentException("Unknown recipe: " + recipeId);
         }
-        if (activeJobs.containsKey(playerId)) {
-            throw new IllegalStateException("Player already has an active forge job");
+        if (slot < 0 || slot >= getSlotCount(playerId)) {
+            throw new IllegalArgumentException("Slot out of range: " + slot);
         }
-        activeJobs.put(playerId, new ForgeJob(recipe, nowMillis));
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.computeIfAbsent(playerId, k -> new TreeMap<>());
+        if (jobs.containsKey(slot)) {
+            throw new IllegalStateException("Forge slot " + slot + " is already occupied");
+        }
+        int duration = effectiveDurationSeconds(recipe, getQuickForgeLevel(playerId));
+        ForgeJob job = new ForgeJob(recipe, slot, nowMillis, duration);
+        jobs.put(slot, job);
+        return job;
     }
 
     /**
-     * Returns the active forge job for the player, or {@code null} if none.
+     * Returns the player's active forge jobs keyed by slot, or an empty map if none.
+     *
+     * @param playerId the player to look up
+     * @return an unmodifiable, slot-ordered view of the player's active jobs
+     */
+    public Map<Integer, ForgeJob> getActiveJobs(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.get(playerId);
+        return jobs == null ? Collections.emptyMap() : Collections.unmodifiableMap(jobs);
+    }
+
+    /**
+     * Returns the job in a specific slot, or {@code null} if the slot is empty.
+     *
+     * @param playerId the player to look up
+     * @param slot     the slot index
+     * @return the {@link ForgeJob}, or {@code null}
+     */
+    public ForgeJob getJob(UUID playerId, int slot) {
+        Objects.requireNonNull(playerId, "playerId");
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.get(playerId);
+        return jobs == null ? null : jobs.get(slot);
+    }
+
+    /**
+     * Returns the player's lowest-slot active forge job, or {@code null} if none.
      *
      * @param playerId the player to look up
      * @return the {@link ForgeJob}, or {@code null}
      */
     public ForgeJob getActiveJob(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        return activeJobs.get(playerId);
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.get(playerId);
+        return (jobs == null || jobs.isEmpty()) ? null : jobs.firstEntry().getValue();
     }
 
     /**
-     * Collects a completed forge job, removing it from the active-job map.
+     * Collects the completed job in a specific slot, freeing the slot.
      *
      * @param playerId  the player collecting their item
+     * @param slot      the slot index
      * @param nowMillis current wall-clock time in milliseconds
      * @return the completed {@link ForgeJob}
-     * @throws IllegalStateException if there is no active job, or it is not yet complete
+     * @throws IllegalStateException if the slot is empty or its job is not yet complete
      */
-    public ForgeJob collectForge(UUID playerId, long nowMillis) {
+    public ForgeJob collectForge(UUID playerId, int slot, long nowMillis) {
         Objects.requireNonNull(playerId, "playerId");
-        ForgeJob job = activeJobs.get(playerId);
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.get(playerId);
+        ForgeJob job = jobs == null ? null : jobs.get(slot);
         if (job == null) {
-            throw new IllegalStateException("No active forge job for this player");
+            throw new IllegalStateException("No active forge job in slot " + slot);
         }
         if (!job.isComplete(nowMillis)) {
             throw new IllegalStateException("Forge job is not yet complete");
         }
-        activeJobs.remove(playerId);
+        jobs.remove(slot);
+        if (jobs.isEmpty()) {
+            activeJobs.remove(playerId);
+        }
         return job;
     }
 
     /**
-     * Cancels and removes the player's active forge job, if any.
+     * Collects the player's lowest-slot completed forge job.
+     *
+     * @param playerId  the player collecting their item
+     * @param nowMillis current wall-clock time in milliseconds
+     * @return the completed {@link ForgeJob}
+     * @throws IllegalStateException if there is no active job, or none is yet complete
+     */
+    public ForgeJob collectForge(UUID playerId, long nowMillis) {
+        Objects.requireNonNull(playerId, "playerId");
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.get(playerId);
+        if (jobs == null || jobs.isEmpty()) {
+            throw new IllegalStateException("No active forge job for this player");
+        }
+        for (Map.Entry<Integer, ForgeJob> entry : jobs.entrySet()) {
+            if (entry.getValue().isComplete(nowMillis)) {
+                return collectForge(playerId, entry.getKey(), nowMillis);
+            }
+        }
+        throw new IllegalStateException("Forge job is not yet complete");
+    }
+
+    /**
+     * Cancels the job in a specific slot, if any.
+     *
+     * @param playerId the player whose job to cancel
+     * @param slot     the slot index
+     * @return {@code true} if a job was cancelled, {@code false} if the slot was empty
+     */
+    public boolean cancelForge(UUID playerId, int slot) {
+        Objects.requireNonNull(playerId, "playerId");
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.get(playerId);
+        if (jobs == null || jobs.remove(slot) == null) {
+            return false;
+        }
+        if (jobs.isEmpty()) {
+            activeJobs.remove(playerId);
+        }
+        return true;
+    }
+
+    /**
+     * Cancels the player's lowest-slot active forge job, if any.
      *
      * @param playerId the player whose job to cancel
      * @return {@code true} if a job was cancelled, {@code false} if there was none
      */
     public boolean cancelForge(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        return activeJobs.remove(playerId) != null;
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.get(playerId);
+        if (jobs == null || jobs.isEmpty()) {
+            return false;
+        }
+        return cancelForge(playerId, jobs.firstKey());
+    }
+
+    /** Returns the lowest free slot index for the player, or {@code -1} if all are busy. */
+    private int firstFreeSlot(UUID playerId) {
+        TreeMap<Integer, ForgeJob> jobs = activeJobs.get(playerId);
+        int slotCount = getSlotCount(playerId);
+        for (int i = 0; i < slotCount; i++) {
+            if (jobs == null || !jobs.containsKey(i)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

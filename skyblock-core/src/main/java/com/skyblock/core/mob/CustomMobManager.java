@@ -69,7 +69,7 @@ public final class CustomMobManager {
         entity.setCustomName(definition.getDisplayName());
         entity.setCustomNameVisible(true);
 
-        AttributeInstance maxHealth = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance maxHealth = entity.getAttribute(Attribute.MAX_HEALTH);
         if (maxHealth != null) {
             maxHealth.setBaseValue(definition.getHealth());
             entity.setHealth(definition.getHealth());
