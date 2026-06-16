@@ -39,7 +39,7 @@ import com.skyblock.core.reforge.ReforgeCommand;
 import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.event.EventCommand;
-import com.skyblock.core.event.EventManager;
+import com.skyblock.core.manager.EventManager;
 import com.skyblock.core.chat.ChatCommand;
 import com.skyblock.core.chat.ChatManager;
 import com.skyblock.core.leaderboard.LeaderboardCommand;
