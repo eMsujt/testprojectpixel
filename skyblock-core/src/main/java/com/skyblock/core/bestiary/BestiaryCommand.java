@@ -1,5 +1,6 @@
 package com.skyblock.core.bestiary;
 
+import com.skyblock.core.manager.BestiaryManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
