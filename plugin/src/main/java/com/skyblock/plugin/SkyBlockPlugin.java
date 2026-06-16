@@ -1,6 +1,6 @@
 package com.skyblock.plugin;
 
-import com.skyblock.core.manager.AuctionHouseManager;
+import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.CollectionManager;
@@ -213,7 +213,7 @@ public final class SkyBlockPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.plugin.listener.SkillProgressionListener(this), this);
         // com.skyblock.plugin.menu.SkyBlockMenu listener removed — canonical com.skyblock.core.menu.SkyBlockMainMenu handles clicks via MenuListener
         // com.skyblock.plugin.menu.BazaarMenu listener removed — canonical com.skyblock.core.menu.BazaarMenu handles clicks via MenuListener
-        // com.skyblock.plugin.menu.AuctionHouseMenu listener removed — canonical com.skyblock.core.menu.AuctionHouseMenu handles clicks via MenuListener
+        // com.skyblock.plugin.menu.AuctionHouseMenu listener removed — canonical com.skyblock.core.auction.gui.AuctionHouseMenu handles clicks via MenuListener
         new com.skyblock.plugin.minion.task.MinionTickTask(MinionManager.getInstance())
                 .runTaskTimer(this, com.skyblock.plugin.minion.task.MinionTickTask.PERIOD_TICKS, com.skyblock.plugin.minion.task.MinionTickTask.PERIOD_TICKS);
         new com.skyblock.plugin.profile.ProfileSaveTask(getDataFolder(), getLogger())
