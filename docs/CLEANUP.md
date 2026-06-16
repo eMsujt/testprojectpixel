@@ -950,11 +950,19 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SlayerManager and DungeonManager consolidation — round 144)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| SlayerManager | `com.skyblock.core.manager.SlayerManager` | Grepped every module for classes named `SlayerManager`; all remaining duplicate implementations consolidated into one canonical class at `com.skyblock.core.manager.SlayerManager`; all callers updated to the canonical import path; `@Deprecated` stubs at old locations deleted outright after confirming zero non-stub callers remain | Oracle |
+| DungeonManager | `com.skyblock.core.manager.DungeonManager` | Grepped every module for classes named `DungeonManager`; the full implementation now lives at the canonical `com.skyblock.core.manager.DungeonManager` (replacing the empty stub); the duplicate `com.skyblock.core.dungeon.manager.DungeonManager` implementation and the deprecated stubs at old locations deleted outright after confirming zero non-stub callers remain | Oracle |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
 |--------|-----------------|-----------------|-------|
-| SlayerManager | `com.skyblock.core.slayer.SlayerManager` | `slayer`, `slayers`, `skyblock-slayer`, `core`, `plugin` | `slayer` module most complete |
 | NPCManager | `com.skyblock.core.npc.NPCManager` | `npc` (NpcManager), `npcs` (NPCManager + NpcManager) | Inconsistent casing within `npcs` module |
 | GuildManager | `com.skyblock.core.guild.GuildManager` | `guilds`, `guild` (enum-only fragment), `core`, `plugin` | Three variants referenced in ROADMAP Phase 5 |
 | TradingManager | `com.skyblock.core.trade.TradeManager` | `trades` (TradeManager), `trading` (TradingManager) | Naming inconsistency: Trade vs Trading |
