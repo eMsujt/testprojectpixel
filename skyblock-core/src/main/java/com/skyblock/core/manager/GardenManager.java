@@ -506,6 +506,25 @@ public final class GardenManager {
         return counts == null ? Collections.emptyMap() : Collections.unmodifiableMap(counts);
     }
 
+    /**
+     * Returns a human-readable history of the player's garden progress, derived
+     * from their harvest totals and milestones.
+     *
+     * @param playerId the player to look up
+     * @return one summary line per harvested crop (may be empty, never {@code null})
+     */
+    public List<String> getGardenHistory(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        List<String> history = new ArrayList<>();
+        for (Map.Entry<CropType, Long> entry : getHarvestCounts(playerId).entrySet()) {
+            if (entry.getValue() > 0L) {
+                history.add(entry.getKey().name() + ": " + entry.getValue()
+                        + " harvested (milestone " + getCropMilestone(playerId, entry.getKey()) + ")");
+            }
+        }
+        return history;
+    }
+
     // -------------------------------------------------------------------------
     // Farming fortune
     // -------------------------------------------------------------------------

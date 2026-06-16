@@ -5,11 +5,8 @@ import com.skyblock.core.manager.QuestManager.QuestStatus;
 import com.skyblock.core.manager.QuestManager.QuestType;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.Menu;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -30,47 +27,17 @@ public final class QuestsMenu extends Menu {
     private final Player player;
 
     public QuestsMenu(Player player) {
+        super(TITLE, 6);
         this.player = player;
     }
 
     @Override
-    public void open(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 54, TITLE);
-        build(inventory);
-        player.openInventory(inventory);
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        int slot = event.getRawSlot();
-        if (slot < 0 || slot >= 54) {
-            return;
-        }
-        if (slot == CLOSE_SLOT) {
-            event.getWhoClicked().closeInventory();
-            return;
-        }
-        QuestManager manager = QuestManager.getInstance();
-        QuestType[] types = QuestType.values();
-        for (int i = 0; i < Math.min(types.length, QUEST_SLOTS.length); i++) {
-            if (slot == QUEST_SLOTS[i]) {
-                QuestType type = types[i];
-                if (manager.getStatus(player.getUniqueId(), type) == QuestStatus.NOT_STARTED) {
-                    manager.startQuest(player.getUniqueId(), type);
-                    player.sendMessage("§aStarted quest: §f" + type.getDisplayName() + "§a!");
-                    player.closeInventory();
-                }
-                break;
-            }
-        }
-    }
-
-    private void build(Inventory inventory) {
+    protected void build() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                inventory.setItem(slot, pane);
+                setItem(slot, pane, e -> e.setCancelled(true));
             }
         }
 
@@ -96,11 +63,22 @@ public final class QuestsMenu extends Menu {
             if (status == QuestStatus.NOT_STARTED) {
                 builder.addLore("§eClick to start!");
             }
-            inventory.setItem(QUEST_SLOTS[i], builder.build());
+            setItem(QUEST_SLOTS[i], builder.build(), e -> {
+                e.setCancelled(true);
+                if (manager.getStatus(player.getUniqueId(), type) == QuestStatus.NOT_STARTED) {
+                    manager.startQuest(player.getUniqueId(), type);
+                    player.sendMessage("§aStarted quest: §f" + type.getDisplayName() + "§a!");
+                    player.closeInventory();
+                }
+            });
         }
 
-        inventory.setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
+        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
-                .build());
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    e.getWhoClicked().closeInventory();
+                });
     }
 }

@@ -166,8 +166,8 @@ public final class AlchemyManager {
 
     private static void addRecipe(Map<String, PotionRecipe> map, String id, String name,
                                   Map<String, Integer> ingredients, String output,
-                                  int duration, double xp) {
-        map.put(id, new PotionRecipe(id, name, ingredients, output, 1, duration, xp));
+                                  int level, int duration, double xp) {
+        map.put(id, new PotionRecipe(id, name, ingredients, output, level, duration, xp));
     }
 
     /**

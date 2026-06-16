@@ -2,7 +2,6 @@ package com.skyblock.core.auction.manager;
 
 import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionCategory;
 import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionType;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class AuctionHouseManagerTest {
 
@@ -21,8 +21,11 @@ class AuctionHouseManagerTest {
         ah.clear();
     }
 
+    // A real Bukkit ItemStack cannot be constructed without a running server
+    // (Paper's registry is unavailable in unit tests). The manager treats the
+    // listed item as an opaque, non-null payload, so a mock suffices here.
     private static ItemStack item() {
-        return new ItemStack(Material.DIAMOND_SWORD);
+        return mock(ItemStack.class);
     }
 
     @Test

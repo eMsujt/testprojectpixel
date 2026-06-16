@@ -80,7 +80,7 @@ import com.skyblock.core.title.TitleCommand;
 import com.skyblock.core.title.TitleManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.skills.command.SkillsCommand;
-import com.skyblock.core.slayer.SlayerCommand;
+import com.skyblock.core.slayer.command.SlayerCommand;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.stat.StatCommand;
 import com.skyblock.core.stat.StatManager;
