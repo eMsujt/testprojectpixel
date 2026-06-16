@@ -562,7 +562,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 | Domain | Canonical class/package | Work done | PR / commit |
 |--------|------------------------|-----------|-------------|
-| `com.skyblock.core` internal package layout | `com.skyblock.core.{manager,command,listener,gui,model,util}` | Audited every class in `com.skyblock.core` and moved any misplaced manager, listener, command, and GUI classes into their canonical sub-packages; flat-package strays eliminated; stale import references introduced by this restructuring assigned to Forge for round-97 follow-up fix sweep | pending |
+| `com.skyblock.core` internal package layout | `com.skyblock.core.{manager,command,listener,gui,model,util}` | Audited every class in `com.skyblock.core` and moved any misplaced manager, listener, command, and GUI classes into their canonical sub-packages; flat-package strays eliminated; 9 flat-package files replaced with `@Deprecated` stubs; 8 stale import references across 4 caller files updated to canonical sub-package paths | #2789 |
+
+---
+
+## Completed (stale-import fix sweep and dead-module pruning — round 98)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| Stale imports (round-97 core-module restructuring follow-up) | N/A | Swept every `.java` file for stale import references introduced by the round-97 core-module internal package standardization; all stale references fixed — callers now import from canonical `{domain}/manager/` and `{domain}/listener/` sub-packages | #2787 |
+| Dead-module pruning (rounds 75–96 follow-up) | *(removed from `pom.xml`)* | Pruned the parent `pom.xml` of every dead or empty module accumulated through rounds 75–96; each `<module>` entry verified against its `src/main/java` tree before removal | #2788 |
 
 ---
 
