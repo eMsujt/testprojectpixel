@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stats.PlayerStatManager;
+import com.skyblock.core.stat.StatManager;
 import com.skyblock.plugin.combat.calculator.CombatDamageCalculator;
 import com.skyblock.core.economy.manager.EconomyManager;
 import com.skyblock.plugin.profile.ProfileManager;
@@ -29,7 +29,7 @@ public final class CombatListener implements Listener {
 
     private static final double XP_PER_DAMAGE = 4.0;
 
-    private final PlayerStatManager statManager = PlayerStatManager.getInstance();
+    private final StatManager statManager = StatManager.getInstance();
     private final EconomyManager economy = EconomyManager.getInstance();
 
     @EventHandler

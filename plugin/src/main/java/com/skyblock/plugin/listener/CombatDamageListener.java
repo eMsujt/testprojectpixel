@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stats.PlayerStatManager;
+import com.skyblock.core.stat.StatManager;
 import com.skyblock.plugin.combat.calculator.DamageFormula;
 import com.skyblock.plugin.item.ItemRegistry;
 import com.skyblock.plugin.item.ItemRegistry.ItemDefinition;
@@ -28,7 +28,7 @@ import java.util.UUID;
  */
 public final class CombatDamageListener implements Listener {
 
-    private final PlayerStatManager statManager = PlayerStatManager.getInstance();
+    private final StatManager statManager = StatManager.getInstance();
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
