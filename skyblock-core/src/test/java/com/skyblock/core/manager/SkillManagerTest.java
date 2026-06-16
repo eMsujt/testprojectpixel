@@ -1,6 +1,6 @@
-package com.skyblock.core.skills.manager;
+package com.skyblock.core.manager;
 
-import com.skyblock.core.skills.manager.SkillManager;
+import com.skyblock.core.manager.SkillManager;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

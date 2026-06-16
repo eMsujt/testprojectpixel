@@ -1,6 +1,6 @@
 package com.skyblock.core.skills;
 
-import com.skyblock.core.skills.manager.SkillManager;
+import com.skyblock.core.manager.SkillManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
