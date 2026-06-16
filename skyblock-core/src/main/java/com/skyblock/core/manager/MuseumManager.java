@@ -36,6 +36,27 @@ public final class MuseumManager {
     }
 
 
+    /** Donation-count milestones, ordered by ascending threshold. */
+    public enum DonationMilestone {
+        NONE(0),
+        NOVICE(10),
+        COLLECTOR(25),
+        CURATOR(50),
+        PATRON(100);
+
+        /** Total donations required to reach this milestone. */
+        public final int threshold;
+
+        DonationMilestone(int threshold) {
+            this.threshold = threshold;
+        }
+
+        public int getThreshold() {
+            return threshold;
+        }
+    }
+
+
     private static final MuseumManager INSTANCE = new MuseumManager();
 
     /** Per-player donated items by category. */
@@ -201,6 +222,23 @@ public final class MuseumManager {
      */
     public boolean isCategoryComplete(UUID playerId, MuseumCategory category) {
         return getCategoryCompletion(playerId, category) >= 1.0;
+    }
+
+    /**
+     * Returns the highest {@link DonationMilestone} the player has reached based on
+     * their total number of unique donations across all categories.
+     *
+     * @param playerId the player
+     * @return the highest milestone whose threshold the player meets, never {@code null}
+     */
+    public DonationMilestone getMilestone(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        int total = getTotalDonations(playerId);
+        DonationMilestone reached = DonationMilestone.NONE;
+        for (DonationMilestone milestone : DonationMilestone.values()) {
+            if (total >= milestone.threshold) reached = milestone;
+        }
+        return reached;
     }
 
     /**
