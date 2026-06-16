@@ -654,6 +654,17 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (SkillManager stub fix, Collection enum audit, Skill/SkillType/Skills enum consolidation, and zero-caller stub deletion — round 107)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| SkillManager delegation stub `getInstance()` fix | `com.skyblock.core.skills.SkillManager` | `com.skyblock.core.manager.SkillManager` delegation stub had a broken `getInstance()` that returned `null`; fixed to delegate correctly to `com.skyblock.core.skills.SkillManager.getInstance()` so all `@Deprecated`-stub callers resolve the singleton without NPE | — |
+| Collection / CollectionType / Collections enum consolidation audit | `com.skyblock.core.model.Collection` | Swept every module for duplicate `Collection`, `CollectionType`, and `Collections` enum or registry-class definitions; canonical `com.skyblock.core.model.Collection` already sole implementation — no file changes required | — |
+| Skill / SkillType / Skills enum consolidation | `com.skyblock.core.model.Skill` | All remaining duplicate `Skill`, `SkillType`, and `Skills` enum or registry-class implementations across all modules collapsed into the canonical `com.skyblock.core.model.Skill`; all callers migrated; orphan copies deleted | #2819 |
+| Zero-caller `@Deprecated` stub deletion (rounds 102–106 follow-up) | *(class files deleted)* | All `@Deprecated` stub files left over from rounds 102–106 consolidations with zero live callers deleted outright: `com.skyblock.core.enchant.SkyBlockEnchantListener`, `com.skyblock.core.menu.ShopMenu`, `com.skyblock.core.menu.DungeonMenu`, `com.skyblock.core.manager.SkillManager` | #2820 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
