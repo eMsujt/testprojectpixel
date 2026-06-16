@@ -494,6 +494,14 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (AuctionHouseManager consolidation — round 90)
+
+| Domain | Canonical class | Work done | PR / commit |
+|--------|-----------------|-----------|-------------|
+| AuctionHouseManager / AuctionManager / AuctionHandler | `com.skyblock.core.manager.AuctionHouseManager` | Thorough final-pass consolidation of every class named `AuctionHouseManager`, `AuctionManager`, or `AuctionHandler` across every module; all stale import references introduced by the consolidation fixed across every `.java` file; all duplicate implementations and `@Deprecated` delegation stubs deleted outright; canonical `com.skyblock.core.manager.AuctionHouseManager` confirmed as sole implementation with no remaining orphan copies | #2763 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
