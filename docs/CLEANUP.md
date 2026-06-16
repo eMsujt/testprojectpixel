@@ -685,6 +685,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (MinionManager stub deletions and BankManager/BankingManager/BankHandler consolidation — rounds 110–111)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| MinionManager `@Deprecated` stub deletion (round-110 follow-up) | `com.skyblock.core.minion.manager.MinionManager` | All 9 zero-caller `@Deprecated` stub files left over from the round-110 MinionManager consolidation deleted outright: `MinionTickScheduler`, `MinionTickTask`, `MinionInventoryMenu`, `Minion`, `CobblestoneMinion`, and 4 additional stub classes; canonical `com.skyblock.core.minion.manager.MinionManager` confirmed as sole implementation | #2828 |
+| BankManager / BankingManager / BankHandler consolidation and stub deletion | `com.skyblock.core.manager.BankManager` | All `BankManager`/`BankingManager`/`BankHandler` duplicate implementations across all modules consolidated into one canonical class; `BankType` and `BankTier` enum fields (`displayName`, `interestRate`, `isShared()`) restored to the delegation stub to match canonical values; sole zero-caller stub (`com.skyblock.core.bank.manager.BankManager`) deleted outright | #2829 / #2830 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
