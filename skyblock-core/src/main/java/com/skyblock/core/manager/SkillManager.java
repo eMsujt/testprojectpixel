@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.config.Constants;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stat.StatManager;
@@ -27,28 +28,11 @@ public final class SkillManager {
     /** Maximum level for the standard 60-level skills. */
     public static final int MAX_LEVEL = 60;
 
-    private static final long[] STANDARD_CURVE = {
-            50, 125, 200, 300, 500, 750, 1000, 1500, 2000, 3500,
-            5000, 7500, 10000, 15000, 20000, 30000, 50000, 75000, 100000, 150000,
-            200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000, 1000000, 1100000,
-            1200000, 1300000, 1400000, 1500000, 1600000, 1700000, 1800000, 1900000, 2000000, 2100000,
-            2200000, 2300000, 2400000, 2500000, 2600000, 2750000, 2900000, 3100000, 3400000, 3700000,
-            4200000, 4700000, 5200000, 5700000, 6200000, 6700000, 7200000, 7700000, 8200000, 8700000
-    };
+    private static final long[] STANDARD_CURVE = Constants.SKILL_STANDARD_XP_CURVE;
 
-    private static final long[] FIFTY_LEVEL_CURVE = {
-            50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
-            550, 600, 650, 700, 750, 800, 850, 900, 950, 1000,
-            1100, 1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500,
-            4000, 5000, 6000, 7000, 8000, 9000, 10000, 12000, 14000, 16000,
-            18000, 20000, 22000, 24000, 26000, 28000, 30000, 35000, 40000, 50000
-    };
+    private static final long[] FIFTY_LEVEL_CURVE = Constants.SKILL_FIFTY_XP_CURVE;
 
-    private static final long[] TWENTY_FIVE_LEVEL_CURVE = {
-            50, 75, 100, 125, 150, 175, 200, 250, 300, 400,
-            500, 600, 800, 1000, 1200, 1500, 2000, 2500, 3000, 3500,
-            4000, 4500, 5000, 5500, 6000
-    };
+    private static final long[] TWENTY_FIVE_LEVEL_CURVE = Constants.SKILL_TWENTY_FIVE_XP_CURVE;
 
     /**
      * Per-level XP requirements for every skill, keyed by lowercase skill name.

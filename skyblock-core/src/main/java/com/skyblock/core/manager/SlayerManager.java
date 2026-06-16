@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.config.Constants;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -167,29 +168,29 @@ public final class SlayerManager {
     static {
         Map<SlayerType, List<SlayerDrop>> m = new EnumMap<>(SlayerType.class);
         m.put(SlayerType.ZOMBIE, Arrays.asList(
-                new SlayerDrop("Revenant Flesh", 0.30),
+                new SlayerDrop("Revenant Flesh", Constants.SLAYER_COMMON_DROP_CHANCE),
                 new SlayerDrop("Foul Flesh", 0.10),
-                new SlayerDrop("Beheaded Horror", 0.01)));
+                new SlayerDrop("Beheaded Horror", Constants.SLAYER_RARE_DROP_CHANCE)));
         m.put(SlayerType.SPIDER, Arrays.asList(
-                new SlayerDrop("Tarantula Web", 0.30),
+                new SlayerDrop("Tarantula Web", Constants.SLAYER_COMMON_DROP_CHANCE),
                 new SlayerDrop("Toxic Arrow Poison", 0.08),
-                new SlayerDrop("Digested Mosquito", 0.01)));
+                new SlayerDrop("Digested Mosquito", Constants.SLAYER_RARE_DROP_CHANCE)));
         m.put(SlayerType.WOLF, Arrays.asList(
-                new SlayerDrop("Wolf Tooth", 0.30),
+                new SlayerDrop("Wolf Tooth", Constants.SLAYER_COMMON_DROP_CHANCE),
                 new SlayerDrop("Spirit Rune", 0.05),
-                new SlayerDrop("Red Claw Egg", 0.01)));
+                new SlayerDrop("Red Claw Egg", Constants.SLAYER_RARE_DROP_CHANCE)));
         m.put(SlayerType.ENDERMAN, Arrays.asList(
-                new SlayerDrop("Null Sphere", 0.30),
+                new SlayerDrop("Null Sphere", Constants.SLAYER_COMMON_DROP_CHANCE),
                 new SlayerDrop("Mana Steal", 0.05),
-                new SlayerDrop("Judgement Core", 0.01)));
+                new SlayerDrop("Judgement Core", Constants.SLAYER_RARE_DROP_CHANCE)));
         m.put(SlayerType.BLAZE, Arrays.asList(
-                new SlayerDrop("Derelict Ashe", 0.30),
+                new SlayerDrop("Derelict Ashe", Constants.SLAYER_COMMON_DROP_CHANCE),
                 new SlayerDrop("Bundle of Magma", 0.05),
-                new SlayerDrop("Hollow Wand", 0.01)));
+                new SlayerDrop("Hollow Wand", Constants.SLAYER_RARE_DROP_CHANCE)));
         m.put(SlayerType.VAMPIRE, Arrays.asList(
                 new SlayerDrop("Blood Ichor", 0.20),
                 new SlayerDrop("Chalice", 0.05),
-                new SlayerDrop("Twilight Arrow Poison", 0.01)));
+                new SlayerDrop("Twilight Arrow Poison", Constants.SLAYER_RARE_DROP_CHANCE)));
         DROP_TABLE = Collections.unmodifiableMap(m);
     }
 
