@@ -1,5 +1,7 @@
 package com.skyblock.core.fishing;
 
+import com.skyblock.core.model.Rarity;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -149,10 +151,12 @@ public final class FishingCommand implements TabExecutor {
     private void handleRarity(Player player) {
         int level = fishingManager.getLevel(player.getUniqueId());
         player.sendMessage("=== Fish Rarities (level " + level + ") ===");
-        for (FishingManager.FishRarity rarity : FishingManager.FishRarity.values()) {
-            String status = level >= rarity.minLevel
-                    ? String.format("%.0f%%", rarity.dropChance * 100)
-                    : "Requires level " + rarity.minLevel;
+        for (Rarity rarity : FishingManager.FISH_RARITY_MIN_LEVEL.keySet()) {
+            int minLevel = FishingManager.FISH_RARITY_MIN_LEVEL.get(rarity);
+            double dropChance = FishingManager.FISH_RARITY_DROP_CHANCE.get(rarity);
+            String status = level >= minLevel
+                    ? String.format("%.0f%%", dropChance * 100)
+                    : "Requires level " + minLevel;
             player.sendMessage("  " + rarity.getDisplayName() + ": " + status);
         }
     }

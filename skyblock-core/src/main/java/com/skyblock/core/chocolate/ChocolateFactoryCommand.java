@@ -1,5 +1,7 @@
 package com.skyblock.core.chocolate;
 
+import com.skyblock.core.model.Rarity;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -68,7 +70,7 @@ public final class ChocolateFactoryCommand implements TabExecutor {
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("addrabbit")) {
             String prefix = args[1].toUpperCase();
-            return Arrays.stream(ChocolateFactoryManager.RabbitRarity.values())
+            return ChocolateFactoryManager.CHOCOLATE_PER_SECOND.keySet().stream()
                     .map(Enum::name)
                     .filter(s -> s.startsWith(prefix))
                     .collect(Collectors.toList());
@@ -89,7 +91,7 @@ public final class ChocolateFactoryCommand implements TabExecutor {
     private void handleRabbits(Player player) {
         player.sendMessage("=== Your Rabbits ===");
         boolean any = false;
-        for (ChocolateFactoryManager.RabbitRarity rarity : ChocolateFactoryManager.RabbitRarity.values()) {
+        for (Rarity rarity : ChocolateFactoryManager.CHOCOLATE_PER_SECOND.keySet()) {
             int count = chocolateFactoryManager.getRabbitCount(player.getUniqueId(), rarity);
             if (count > 0) {
                 player.sendMessage(rarity.getDisplayName() + ": " + count);
@@ -103,8 +105,9 @@ public final class ChocolateFactoryCommand implements TabExecutor {
 
     private void handleRarities(Player player) {
         player.sendMessage("=== Rabbit Rarities ===");
-        for (ChocolateFactoryManager.RabbitRarity rarity : ChocolateFactoryManager.RabbitRarity.values()) {
-            player.sendMessage(rarity.getDisplayName() + ": " + rarity.chocolatePerSecond + " chocolate/sec");
+        for (Rarity rarity : ChocolateFactoryManager.CHOCOLATE_PER_SECOND.keySet()) {
+            player.sendMessage(rarity.getDisplayName() + ": "
+                    + ChocolateFactoryManager.CHOCOLATE_PER_SECOND.get(rarity) + " chocolate/sec");
         }
     }
 
@@ -117,9 +120,12 @@ public final class ChocolateFactoryCommand implements TabExecutor {
             player.sendMessage("Usage: /chocolatefactory addrabbit <rarity>");
             return;
         }
-        ChocolateFactoryManager.RabbitRarity rarity;
+        Rarity rarity;
         try {
-            rarity = ChocolateFactoryManager.RabbitRarity.valueOf(args[1].toUpperCase());
+            rarity = Rarity.valueOf(args[1].toUpperCase());
+            if (!ChocolateFactoryManager.CHOCOLATE_PER_SECOND.containsKey(rarity)) {
+                throw new IllegalArgumentException();
+            }
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown rarity: " + args[1]);
             return;

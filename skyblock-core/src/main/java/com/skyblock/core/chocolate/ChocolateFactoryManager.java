@@ -1,5 +1,8 @@
 package com.skyblock.core.chocolate;
 
+import com.skyblock.core.model.Rarity;
+
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -13,31 +16,17 @@ import java.util.UUID;
  */
 public final class ChocolateFactoryManager {
 
-    /** Rarity tiers for rabbits in the Chocolate Factory, each with a display name and chocolate-per-second bonus. */
-    public enum RabbitRarity {
-        COMMON("Common",        1),
-        UNCOMMON("Uncommon",    2),
-        RARE("Rare",            4),
-        EPIC("Epic",            8),
-        LEGENDARY("Legendary", 20),
-        MYTHIC("Mythic",       50),
-        DIVINE("Divine",      200);
-
-        /** Human-readable display name shown to players. */
-        public final String displayName;
-        /** Chocolate per second contributed by one rabbit of this rarity. */
-        public final int chocolatePerSecond;
-
-        RabbitRarity(String displayName, int chocolatePerSecond) {
-            this.displayName = displayName;
-            this.chocolatePerSecond = chocolatePerSecond;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
+    /** Chocolate-per-second production contributed by one rabbit of each rarity. */
+    public static final EnumMap<Rarity, Integer> CHOCOLATE_PER_SECOND = new EnumMap<>(Rarity.class);
+    static {
+        CHOCOLATE_PER_SECOND.put(Rarity.COMMON,      1);
+        CHOCOLATE_PER_SECOND.put(Rarity.UNCOMMON,    2);
+        CHOCOLATE_PER_SECOND.put(Rarity.RARE,        4);
+        CHOCOLATE_PER_SECOND.put(Rarity.EPIC,        8);
+        CHOCOLATE_PER_SECOND.put(Rarity.LEGENDARY,  20);
+        CHOCOLATE_PER_SECOND.put(Rarity.MYTHIC,     50);
+        CHOCOLATE_PER_SECOND.put(Rarity.DIVINE,    200);
     }
-
 
     private static final ChocolateFactoryManager INSTANCE = new ChocolateFactoryManager();
 
@@ -45,7 +34,7 @@ public final class ChocolateFactoryManager {
     private final Map<UUID, Long> chocolateBalances = new HashMap<>();
 
     /** Per-player rabbit counts by rarity. */
-    private final Map<UUID, Map<RabbitRarity, Integer>> rabbitCounts = new HashMap<>();
+    private final Map<UUID, Map<Rarity, Integer>> rabbitCounts = new HashMap<>();
 
     private ChocolateFactoryManager() {
     }
@@ -89,10 +78,10 @@ public final class ChocolateFactoryManager {
      * @param rarity   the rabbit rarity
      * @return the rabbit count, {@code 0} if none
      */
-    public int getRabbitCount(UUID playerId, RabbitRarity rarity) {
+    public int getRabbitCount(UUID playerId, Rarity rarity) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(rarity, "rarity");
-        Map<RabbitRarity, Integer> counts = rabbitCounts.get(playerId);
+        Map<Rarity, Integer> counts = rabbitCounts.get(playerId);
         return counts == null ? 0 : counts.getOrDefault(rarity, 0);
     }
 
@@ -102,7 +91,7 @@ public final class ChocolateFactoryManager {
      * @param playerId the player
      * @param rarity   the rarity of the rabbit to add
      */
-    public void addRabbit(UUID playerId, RabbitRarity rarity) {
+    public void addRabbit(UUID playerId, Rarity rarity) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(rarity, "rarity");
         rabbitCounts.computeIfAbsent(playerId, id -> new HashMap<>())
@@ -117,11 +106,11 @@ public final class ChocolateFactoryManager {
      */
     public int getProductionRate(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Map<RabbitRarity, Integer> counts = rabbitCounts.get(playerId);
+        Map<Rarity, Integer> counts = rabbitCounts.get(playerId);
         if (counts == null) return 0;
         int rate = 0;
-        for (Map.Entry<RabbitRarity, Integer> entry : counts.entrySet()) {
-            rate += entry.getKey().chocolatePerSecond * entry.getValue();
+        for (Map.Entry<Rarity, Integer> entry : counts.entrySet()) {
+            rate += CHOCOLATE_PER_SECOND.getOrDefault(entry.getKey(), 0) * entry.getValue();
         }
         return rate;
     }
