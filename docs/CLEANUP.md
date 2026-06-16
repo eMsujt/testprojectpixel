@@ -528,6 +528,19 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (package layout standardization — round 94)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| gui module package layout (`com.skyblock.gui`) | `com.skyblock.gui.{menu,listener,model,util}` | All Menu/GUI implementation classes moved into correct sub-packages; flat-package strays eliminated; `@Deprecated` stubs left at old locations | #2777 |
+| pets module package layout (`com.skyblock.pets`) | `com.skyblock.pets.{command,listener,gui,manager,model,util}` | All Pet-related classes moved into correct sub-packages; flat-package strays eliminated; `@Deprecated` stubs left at old locations | #2778 |
+| auction module package layout (`com.skyblock.auction`) | `com.skyblock.auction.{command,listener,gui,manager,model}` | All Auction-related classes moved into correct sub-packages; flat-package strays eliminated; `@Deprecated` stubs left at old locations | #2779 |
+| minions module package layout (`com.skyblock.minions`) | `com.skyblock.minions.{command,listener,gui,manager,model,util}` | All Minion-related classes moved into correct sub-packages; flat-package strays eliminated; `@Deprecated` stubs left at old locations | #2780 |
+| bazaar module package layout (`com.skyblock.core.bazaar`) | `com.skyblock.core.bazaar.{manager,command,gui}` | All Bazaar-related classes moved into correct sub-packages; `@Deprecated` empty stubs left at old `com.skyblock.core.{manager,command,menu}` locations; all callers updated | #2781 |
+| shop module package layout (`com.skyblock.core.shop`) | `com.skyblock.core.shop.{manager,command,listener,gui}` | All Shop/NPC-shop-related classes moved into correct sub-packages; `@Deprecated` stubs left at old locations; `FarmerShop` migrated into `com.skyblock.plugin.shop.gui` | pending |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
