@@ -1,4 +1,4 @@
-package com.skyblock.core.pets.manager;
+package com.skyblock.pets.manager;
 
 import com.skyblock.core.model.Rarity;
 import org.junit.jupiter.api.Test;

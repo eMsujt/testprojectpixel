@@ -1,7 +1,7 @@
-package com.skyblock.core.pets.gui;
+package com.skyblock.pets.gui;
 
-import com.skyblock.core.pets.manager.PetManager;
-import com.skyblock.core.pets.manager.PetManager.Pet;
+import com.skyblock.pets.manager.PetManager;
+import com.skyblock.pets.manager.PetManager.Pet;
 import com.skyblock.core.menu.Menu;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Bukkit;

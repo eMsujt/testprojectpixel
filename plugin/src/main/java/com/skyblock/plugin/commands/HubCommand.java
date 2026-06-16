@@ -12,7 +12,7 @@ import com.skyblock.plugin.managers.GardenManager;
 import com.skyblock.plugin.managers.HOTMManager;
 import com.skyblock.core.island.manager.IslandManager;
 import com.skyblock.plugin.managers.KuudraManager;
-import com.skyblock.core.pets.manager.PetManager;
+import com.skyblock.pets.manager.PetManager;
 import com.skyblock.plugin.profile.ProfileManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.plugin.managers.SlayerManager;
