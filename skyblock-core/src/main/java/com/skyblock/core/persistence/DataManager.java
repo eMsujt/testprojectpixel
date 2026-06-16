@@ -1,7 +1,7 @@
 package com.skyblock.core.persistence;
 
-import com.skyblock.core.manager.PlayerDataManager;
-import com.skyblock.core.manager.PlayerDataManager.PlayerData;
+import com.skyblock.core.player.manager.PlayerDataManager;
+import com.skyblock.core.player.manager.PlayerDataManager.PlayerData;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageManager.StorageData;
 import com.skyblock.core.storage.YamlPlayerStorage;

@@ -1,8 +1,8 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.manager.ProfileManager;
-import com.skyblock.core.manager.ProfileManager.GameMode;
-import com.skyblock.core.manager.ProfileManager.SkyBlockProfile;
+import com.skyblock.core.profile.manager.ProfileManager;
+import com.skyblock.core.profile.manager.ProfileManager.GameMode;
+import com.skyblock.core.profile.manager.ProfileManager.SkyBlockProfile;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

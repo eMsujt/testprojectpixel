@@ -1,6 +1,6 @@
 package com.skyblock.core.crafting;
 
-import com.skyblock.core.manager.CraftingManager;
+import com.skyblock.core.crafting.manager.CraftingManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
