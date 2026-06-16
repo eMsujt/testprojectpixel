@@ -21,8 +21,6 @@
         <module>combat</module>
         <module>quests</module>
         <module>profiles</module>
-        <module>minions</module>
-        <module>economy</module>
         <module>slayer</module>
         <module>forging</module>
         <module>enchanting</module>
