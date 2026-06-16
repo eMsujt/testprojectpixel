@@ -1,12 +1,20 @@
-package com.skyblock.core.bestiary;
+package com.skyblock.core.manager;
+
+import com.skyblock.core.model.Stat;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Singleton tracking how many times each player has killed each mob type.
+ * Canonical singleton tracking how many times each player has killed each mob
+ * type, the milestone tier those kills unlock, family completion, and the
+ * permanent stat bonuses earned from bestiary progress.
+ *
+ * <p>Tiers follow a doubling threshold curve — tier {@code n} requires
+ * {@code BASE_TIER_KILLS * 2^(n-1)} cumulative kills, capped at {@link #MAX_TIER}.</p>
  *
  * <p>Kill counts are stored in memory only; they are not persisted across
  * server restarts in this implementation.</p>
@@ -14,6 +22,18 @@ import java.util.UUID;
  * <p>Not thread-safe; access from the main server thread only.</p>
  */
 public final class BestiaryManager {
+
+    /** Kills required to reach tier 1 of a mob's bestiary entry. */
+    public static final int BASE_TIER_KILLS = 10;
+
+    /** The highest tier a bestiary entry can reach. */
+    public static final int MAX_TIER = 10;
+
+    /** Health granted per milestone level (one level per mob tier unlocked). */
+    private static final double HEALTH_PER_MILESTONE = 2.0;
+
+    /** Bonus health granted each time a whole mob family is completed. */
+    private static final double HEALTH_PER_FAMILY = 5.0;
 
     /** Individual mob types tracked in the bestiary. */
     public enum BestiaryMob {
@@ -283,6 +303,128 @@ public final class BestiaryManager {
             total += getKillsForFamily(playerId, family);
         }
         return total;
+    }
+
+    // -------------------------------------------------------------------------
+    // Tier thresholds
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the bestiary tier the player has unlocked for a mob type. Tier 0
+     * means the entry is locked; tier {@code n} requires
+     * {@code BASE_TIER_KILLS * 2^(n-1)} kills, up to {@link #MAX_TIER}.
+     *
+     * @param playerId the player's UUID
+     * @param mobType  the mob type identifier
+     * @return the unlocked tier, between 0 and {@link #MAX_TIER}
+     */
+    public int getTier(UUID playerId, String mobType) {
+        int count = getKills(playerId, mobType);
+        int tier = 0;
+        long threshold = BASE_TIER_KILLS;
+        while (tier < MAX_TIER && count >= threshold) {
+            tier++;
+            threshold *= 2;
+        }
+        return tier;
+    }
+
+    /**
+     * Returns the kills still needed for the player to reach the next tier of a
+     * mob's entry, or 0 if the entry is already at {@link #MAX_TIER}.
+     *
+     * @param playerId the player's UUID
+     * @param mobType  the mob type identifier
+     * @return the remaining kills, never negative
+     */
+    public int getKillsToNextTier(UUID playerId, String mobType) {
+        int tier = getTier(playerId, mobType);
+        if (tier >= MAX_TIER) {
+            return 0;
+        }
+        long threshold = (long) BASE_TIER_KILLS * (1L << tier);
+        return (int) (threshold - getKills(playerId, mobType));
+    }
+
+    // -------------------------------------------------------------------------
+    // Family completion
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns whether every mob type in the family has reached {@link #MAX_TIER}.
+     *
+     * @param playerId the player's UUID
+     * @param family   the bestiary family
+     * @return {@code true} if the whole family is maxed out
+     */
+    public boolean isFamilyComplete(UUID playerId, BestiaryFamily family) {
+        if (playerId == null || family == null) {
+            return false;
+        }
+        for (String mobType : family.mobTypes) {
+            if (getTier(playerId, mobType) < MAX_TIER) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns how many bestiary families the player has fully completed.
+     *
+     * @param playerId the player's UUID
+     * @return the number of maxed-out families
+     */
+    public int getCompletedFamilyCount(UUID playerId) {
+        int completed = 0;
+        for (BestiaryFamily family : BestiaryFamily.values()) {
+            if (isFamilyComplete(playerId, family)) {
+                completed++;
+            }
+        }
+        return completed;
+    }
+
+    // -------------------------------------------------------------------------
+    // Milestone stat bonuses
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the player's bestiary milestone level: the sum of unlocked tiers
+     * across every known mob type. Each unlocked tier is one milestone.
+     *
+     * @param playerId the player's UUID
+     * @return the total number of tiers unlocked, never negative
+     */
+    public int getMilestoneLevel(UUID playerId) {
+        if (playerId == null) {
+            return 0;
+        }
+        int total = 0;
+        for (BestiaryMob mob : BestiaryMob.values()) {
+            total += getTier(playerId, mob.mobKey);
+        }
+        return total;
+    }
+
+    /**
+     * Returns the permanent stat bonuses the player has earned from bestiary
+     * progress. Every unlocked mob tier grants {@code HEALTH_PER_MILESTONE}
+     * health, and every fully completed family grants {@code HEALTH_PER_FAMILY}
+     * additional health.
+     *
+     * @param playerId the player's UUID
+     * @return map of stat to bonus value; empty if the player has no progress
+     */
+    public Map<Stat, Double> getMilestoneStats(UUID playerId) {
+        double health = getMilestoneLevel(playerId) * HEALTH_PER_MILESTONE
+                      + getCompletedFamilyCount(playerId) * HEALTH_PER_FAMILY;
+        if (health <= 0.0) {
+            return Collections.emptyMap();
+        }
+        Map<Stat, Double> stats = new EnumMap<>(Stat.class);
+        stats.put(Stat.HEALTH, health);
+        return stats;
     }
 
     /**
