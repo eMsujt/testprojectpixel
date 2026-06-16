@@ -4,15 +4,10 @@ A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven
 
 ## Documentation
 
-All project documentation lives under [`docs/`](docs/):
-
-| Document | What it covers |
-|----------|----------------|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | How the repo is laid out — the canonical `com.skyblock.core.*` package, the **module map**, the manager registry, and where to put a change. **Read this first.** |
-| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Planned features and milestones. |
-| [`docs/STATUS.md`](docs/STATUS.md) | Implementation status and the duplicate inventory. |
-| [`docs/CLEANUP.md`](docs/CLEANUP.md) | Consolidation history. |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to build, test, and submit changes. |
+All project documentation lives under [`docs/`](docs/README.md) — see the
+[documentation index](docs/README.md) for the full list. Start with
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and read
+[`CONTRIBUTING.md`](CONTRIBUTING.md) before submitting changes.
 
 ## Prerequisites
 
