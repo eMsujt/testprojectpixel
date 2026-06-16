@@ -1,7 +1,7 @@
 package com.skyblock.enchantments;
 
 /**
- * @deprecated Use {@link com.skyblock.core.enchanting.EnchantingManager.SkyBlockEnchantment} instead.
+ * @deprecated Use {@link com.skyblock.core.manager.EnchantingManager.SkyBlockEnchantment} instead.
  */
 @Deprecated
 public enum SkyBlockEnchantment {

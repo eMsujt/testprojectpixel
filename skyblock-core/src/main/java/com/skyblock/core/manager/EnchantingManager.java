@@ -1,4 +1,4 @@
-package com.skyblock.core.enchanting;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -7,14 +7,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
- * Singleton managing SkyBlock enchantments for the enchanting skill system.
+ * Canonical singleton managing SkyBlock enchantments for the enchanting skill system.
  *
  * <p>Tracks which enchant types at which levels are active for each player.
  * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
@@ -245,6 +247,28 @@ public final class EnchantingManager {
         ENCHANT_DATA = Collections.unmodifiableMap(m);
     }
 
+    /**
+     * Ultimate enchants. At most one ultimate enchant may be active on a player at a
+     * time; applying a second ultimate is rejected as a conflict.
+     */
+    public static final Set<SkyBlockEnchantment> ULTIMATE_ENCHANTS =
+            Collections.unmodifiableSet(EnumSet.of(SkyBlockEnchantment.ULTIMATE_WISE));
+
+    /** Mutually exclusive enchant pairs: a single item cannot hold both. */
+    private static final Map<SkyBlockEnchantment, Set<SkyBlockEnchantment>> CONFLICTS;
+    static {
+        Map<SkyBlockEnchantment, Set<SkyBlockEnchantment>> c = new EnumMap<>(SkyBlockEnchantment.class);
+        // Silk Touch and Fortune are mutually exclusive on the same tool.
+        addConflict(c, SkyBlockEnchantment.SILK_TOUCH, SkyBlockEnchantment.FORTUNE);
+        CONFLICTS = Collections.unmodifiableMap(c);
+    }
+
+    private static void addConflict(Map<SkyBlockEnchantment, Set<SkyBlockEnchantment>> c,
+                                    SkyBlockEnchantment a, SkyBlockEnchantment b) {
+        c.computeIfAbsent(a, k -> EnumSet.noneOf(SkyBlockEnchantment.class)).add(b);
+        c.computeIfAbsent(b, k -> EnumSet.noneOf(SkyBlockEnchantment.class)).add(a);
+    }
+
     private static final EnchantingManager INSTANCE = new EnchantingManager();
 
     /** Per-player enchanting skill levels (1–60); absent entries default to 1. */
@@ -323,7 +347,8 @@ public final class EnchantingManager {
     /**
      * Applies an enchant type at the given level to the player.
      *
-     * @throws IllegalArgumentException if the level is out of range
+     * @throws IllegalArgumentException if the level is out of range or the enchant
+     *                                  conflicts with one already applied
      */
     public void setEnchantment(UUID playerId, SkyBlockEnchantment type, int level) {
         Objects.requireNonNull(playerId, "playerId");
@@ -333,9 +358,69 @@ public final class EnchantingManager {
             throw new IllegalArgumentException(
                     "Level " + level + " out of range [1, " + max + "] for " + type);
         }
+        SkyBlockEnchantment conflict = firstConflict(playerId, type);
+        if (conflict != null) {
+            throw new IllegalArgumentException(
+                    type.getDisplayName() + " conflicts with " + conflict.getDisplayName()
+                            + "; remove it first.");
+        }
         playerEnchantments.computeIfAbsent(playerId, id -> new EnumMap<>(SkyBlockEnchantment.class))
                 .put(type, level);
         recordEnchantingEvent(playerId, "Enchanted " + type.name() + " level " + level);
+    }
+
+    /**
+     * Returns {@code true} if the given enchant is an ultimate enchant.
+     */
+    public boolean isUltimate(SkyBlockEnchantment type) {
+        Objects.requireNonNull(type, "type");
+        return ULTIMATE_ENCHANTS.contains(type);
+    }
+
+    /**
+     * Returns the set of enchants that directly conflict with the given type.
+     */
+    public Set<SkyBlockEnchantment> getConflicts(SkyBlockEnchantment type) {
+        Objects.requireNonNull(type, "type");
+        return CONFLICTS.getOrDefault(type, Collections.emptySet());
+    }
+
+    /**
+     * Returns the experience-level cost to apply the given enchant at the given level.
+     * Cost scales with the bookshelf power the enchant requires and the target level.
+     */
+    public int getEnchantCost(SkyBlockEnchantment type, int level) {
+        Objects.requireNonNull(type, "type");
+        if (level < 1 || level > type.getMaxLevel()) {
+            throw new IllegalArgumentException(
+                    "Level " + level + " out of range [1, " + type.getMaxLevel() + "] for " + type);
+        }
+        int[] data = ENCHANT_DATA.get(type.name());
+        int base = data == null ? 5 : data[1];
+        return base * level;
+    }
+
+    /**
+     * Returns the first enchant already applied to the player that conflicts with
+     * {@code type} (direct conflict, or a second ultimate), or {@code null} if none.
+     * A re-application of {@code type} itself is never a conflict.
+     */
+    private SkyBlockEnchantment firstConflict(UUID playerId, SkyBlockEnchantment type) {
+        Map<SkyBlockEnchantment, Integer> enchants = playerEnchantments.get(playerId);
+        if (enchants == null) {
+            return null;
+        }
+        Set<SkyBlockEnchantment> direct = CONFLICTS.getOrDefault(type, Collections.emptySet());
+        boolean ultimate = ULTIMATE_ENCHANTS.contains(type);
+        for (SkyBlockEnchantment applied : enchants.keySet()) {
+            if (applied == type) {
+                continue;
+            }
+            if (direct.contains(applied) || (ultimate && ULTIMATE_ENCHANTS.contains(applied))) {
+                return applied;
+            }
+        }
+        return null;
     }
 
     /**
@@ -438,12 +523,14 @@ public final class EnchantingManager {
 
     /**
      * Removes the book at the given index from the player's book inventory and applies
-     * its enchantment to the player, provided it is within level bounds.
+     * its enchantment to the player, provided it is within level bounds and does not
+     * conflict with an already-applied enchant.
      *
      * @param playerId  the player to update
      * @param bookIndex 0-based index into the player's book list
      * @return the book that was applied
      * @throws IndexOutOfBoundsException if {@code bookIndex} is out of range
+     * @throws IllegalArgumentException  if the book's enchant conflicts with an applied one
      */
     public EnchantmentBook applyBook(UUID playerId, int bookIndex) {
         Objects.requireNonNull(playerId, "playerId");
@@ -451,11 +538,13 @@ public final class EnchantingManager {
         if (books == null || bookIndex < 0 || bookIndex >= books.size()) {
             throw new IndexOutOfBoundsException("No book at index " + bookIndex);
         }
-        EnchantmentBook book = books.remove(bookIndex);
+        EnchantmentBook book = books.get(bookIndex);
+        // Apply first: if this conflicts or is out of range it throws and the book is kept.
+        setEnchantment(playerId, book.enchantment(), book.level());
+        books.remove(bookIndex);
         if (books.isEmpty()) {
             playerBooks.remove(playerId);
         }
-        setEnchantment(playerId, book.enchantment(), book.level());
         return book;
     }
 

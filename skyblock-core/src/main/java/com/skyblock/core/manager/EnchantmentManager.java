@@ -1,7 +1,5 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.enchanting.EnchantingManager;
-
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
