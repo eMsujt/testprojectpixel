@@ -235,6 +235,11 @@ public final class BazaarManager {
         }
     }
 
+    /** Outcome of an instant transaction or a crossed order: how much filled and at what total. */
+    public record FillResult(int quantityFilled, int quantityRemaining, double totalCoins, int ordersMatched) {
+        public boolean isFullyFilled() { return quantityRemaining == 0; }
+    }
+
     /** Reference market data: {@code {instantBuyPrice, sellOfferPrice}} in coins. */
     public static final Map<String, double[]> PRODUCT_DATA;
 
@@ -396,6 +401,7 @@ public final class BazaarManager {
         buyOrders.computeIfAbsent(itemId, k -> new ArrayList<>()).add(order);
         buyOrders.get(itemId).sort(Comparator.comparingDouble(BuyOrder::priceEach).reversed());
         recordBazaarEvent(buyer, "Placed buy order: " + quantity + "x " + itemId + " @ " + priceEach);
+        matchOrders(itemId);
         return orderId;
     }
 
@@ -405,6 +411,7 @@ public final class BazaarManager {
         sellOrders.computeIfAbsent(itemId, k -> new ArrayList<>()).add(order);
         sellOrders.get(itemId).sort(Comparator.comparingDouble(SellOrder::priceEach));
         recordBazaarEvent(seller, "Placed sell order: " + quantity + "x " + itemId + " @ " + priceEach);
+        matchOrders(itemId);
         return orderId;
     }
 
@@ -414,6 +421,108 @@ public final class BazaarManager {
 
     public UUID addSellOrder(UUID seller, BazaarProduct product, int quantity, double priceEach) {
         return addSellOrder(seller, product.getItemId(), quantity, priceEach);
+    }
+
+    /**
+     * Crosses the book for {@code itemId}: while the highest bid meets or exceeds the lowest ask,
+     * fills the resting orders against each other at the resting sell price. Depleted orders are
+     * removed; partially-filled orders are replaced with their reduced remainder.
+     */
+    private void matchOrders(String itemId) {
+        List<BuyOrder> buys = buyOrders.get(itemId);
+        List<SellOrder> sells = sellOrders.get(itemId);
+        if (buys == null || sells == null) return;
+        while (!buys.isEmpty() && !sells.isEmpty()) {
+            BuyOrder buy = buys.get(0);    // highest bid (sorted descending)
+            SellOrder sell = sells.get(0); // lowest ask (sorted ascending)
+            if (buy.priceEach() < sell.priceEach()) break; // no crossing trade
+            int qty = Math.min(buy.quantity(), sell.quantity());
+            double price = sell.priceEach();
+            double total = qty * price;
+            recordBazaarEvent(buy.buyer(), "Order filled: bought " + qty + "x " + itemId + " @ " + price);
+            recordBazaarEvent(sell.seller(), "Order filled: sold " + qty + "x " + itemId + " @ " + price);
+            addTransaction(buy.buyer(), "BUY " + qty + "x " + itemId + " for " + total);
+            addTransaction(sell.seller(), "SELL " + qty + "x " + itemId + " for " + total);
+
+            buys.remove(0);
+            if (buy.quantity() > qty) {
+                buys.add(0, new BuyOrder(buy.id(), buy.buyer(), itemId, buy.quantity() - qty, buy.priceEach()));
+            }
+            sells.remove(0);
+            if (sell.quantity() > qty) {
+                sells.add(0, new SellOrder(sell.id(), sell.seller(), itemId, sell.quantity() - qty, sell.priceEach()));
+            }
+        }
+    }
+
+    /**
+     * Instantly buys up to {@code quantity} units of {@code itemId}, consuming the cheapest resting
+     * sell orders first. Returns how much was filled and the total coins spent.
+     */
+    public FillResult instantBuy(UUID buyer, String itemId, int quantity) {
+        Objects.requireNonNull(buyer, "buyer");
+        Objects.requireNonNull(itemId, "itemId");
+        if (quantity <= 0) throw new IllegalArgumentException("quantity must be positive: " + quantity);
+        List<SellOrder> book = sellOrders.get(itemId);
+        int remaining = quantity;
+        double totalCost = 0;
+        int matched = 0;
+        while (remaining > 0 && book != null && !book.isEmpty()) {
+            SellOrder sell = book.get(0);
+            int fill = Math.min(remaining, sell.quantity());
+            totalCost += fill * sell.priceEach();
+            remaining -= fill;
+            matched++;
+            book.remove(0);
+            if (sell.quantity() > fill) {
+                book.add(0, new SellOrder(sell.id(), sell.seller(), itemId, sell.quantity() - fill, sell.priceEach()));
+            }
+            recordBazaarEvent(sell.seller(), "Sell order filled: " + fill + "x " + itemId + " @ " + sell.priceEach());
+            addTransaction(sell.seller(), "SELL " + fill + "x " + itemId + " for " + (fill * sell.priceEach()));
+        }
+        int filled = quantity - remaining;
+        recordBazaarEvent(buyer, "Instant buy: " + filled + "x " + itemId + " for " + totalCost);
+        addTransaction(buyer, "INSTANT_BUY " + filled + "x " + itemId + " for " + totalCost);
+        return new FillResult(filled, remaining, totalCost, matched);
+    }
+
+    /**
+     * Instantly sells up to {@code quantity} units of {@code itemId}, consuming the highest resting
+     * buy orders first. Returns how much was filled and the total coins earned.
+     */
+    public FillResult instantSell(UUID seller, String itemId, int quantity) {
+        Objects.requireNonNull(seller, "seller");
+        Objects.requireNonNull(itemId, "itemId");
+        if (quantity <= 0) throw new IllegalArgumentException("quantity must be positive: " + quantity);
+        List<BuyOrder> book = buyOrders.get(itemId);
+        int remaining = quantity;
+        double totalEarned = 0;
+        int matched = 0;
+        while (remaining > 0 && book != null && !book.isEmpty()) {
+            BuyOrder buy = book.get(0);
+            int fill = Math.min(remaining, buy.quantity());
+            totalEarned += fill * buy.priceEach();
+            remaining -= fill;
+            matched++;
+            book.remove(0);
+            if (buy.quantity() > fill) {
+                book.add(0, new BuyOrder(buy.id(), buy.buyer(), itemId, buy.quantity() - fill, buy.priceEach()));
+            }
+            recordBazaarEvent(buy.buyer(), "Buy order filled: " + fill + "x " + itemId + " @ " + buy.priceEach());
+            addTransaction(buy.buyer(), "BUY " + fill + "x " + itemId + " for " + (fill * buy.priceEach()));
+        }
+        int filled = quantity - remaining;
+        recordBazaarEvent(seller, "Instant sell: " + filled + "x " + itemId + " for " + totalEarned);
+        addTransaction(seller, "INSTANT_SELL " + filled + "x " + itemId + " for " + totalEarned);
+        return new FillResult(filled, remaining, totalEarned, matched);
+    }
+
+    public FillResult instantBuy(UUID buyer, BazaarProduct product, int quantity) {
+        return instantBuy(buyer, product.getItemId(), quantity);
+    }
+
+    public FillResult instantSell(UUID seller, BazaarProduct product, int quantity) {
+        return instantSell(seller, product.getItemId(), quantity);
     }
 
     public void cancelBuyOrder(UUID orderId) {
