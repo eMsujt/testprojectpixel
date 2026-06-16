@@ -1,6 +1,6 @@
 package com.skyblock.core.slayer.command;
 
-import com.skyblock.core.slayer.manager.SlayerManager;
+import com.skyblock.core.manager.SlayerManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

@@ -2,7 +2,7 @@ package com.skyblock.core.stats;
 
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.model.Skill;
-import com.skyblock.core.slayer.SlayerManager;
+import com.skyblock.core.manager.SlayerManager;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
