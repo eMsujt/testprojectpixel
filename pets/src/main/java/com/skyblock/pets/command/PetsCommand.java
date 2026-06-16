@@ -1,7 +1,7 @@
-package com.skyblock.core.pets.command;
+package com.skyblock.pets.command;
 
-import com.skyblock.core.pets.manager.PetManager;
-import com.skyblock.core.pets.manager.PetManager.PetType;
+import com.skyblock.pets.manager.PetManager;
+import com.skyblock.pets.manager.PetManager.PetType;
 import com.skyblock.core.model.Rarity;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
