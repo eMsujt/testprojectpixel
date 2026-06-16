@@ -3,7 +3,7 @@ package com.skyblock.plugin.commands;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.menu.manager.SkyBlockMenuManager;
-import com.skyblock.pets.command.PetCommand;
+import com.skyblock.core.pet.PetCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
