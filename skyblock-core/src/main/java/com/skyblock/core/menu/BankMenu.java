@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.BankManager;
-import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.bank.manager.BankManager;
+import com.skyblock.core.economy.manager.EconomyManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

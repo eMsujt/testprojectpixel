@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.collections.manager.CollectionManager;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;

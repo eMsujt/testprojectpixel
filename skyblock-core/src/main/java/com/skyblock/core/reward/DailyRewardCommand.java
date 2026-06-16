@@ -1,6 +1,6 @@
 package com.skyblock.core.reward;
 
-import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.economy.manager.EconomyManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
