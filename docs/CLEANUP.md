@@ -586,6 +586,16 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (PetManager, BankManager, and MinionManager stub consolidations — round 100)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| PetManager / PetsManager stub consolidation | `com.skyblock.core.pets.manager.PetManager` | Canonical `PetManager` moved to `com.skyblock.core.pets.manager`; all callers updated to the new import path; deprecated stubs at old locations removed | #2798 |
+| BankManager / BankingManager / BankHandler stub consolidation | `com.skyblock.core.bank.manager.BankManager` | Duplicate `com.skyblock.core.manager.BankManager` and its old test deleted; `BankManagerTest` created at `com.skyblock.core.bank.manager`; no caller import updates required (all live callers already used canonical path) | #2799 |
+| MinionManager / MinionsManager / MinionHandler stub consolidation | `com.skyblock.core.minion.manager.MinionManager` | Canonical `MinionManager` confirmed at `com.skyblock.core.minion.manager`; all 13 callers migrated to new import; old `com.skyblock.core.manager.MinionManager` replaced with `@Deprecated` delegation stub | #2800 |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
