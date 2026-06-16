@@ -94,12 +94,48 @@ public final class MinionManager {
         TIER_11
     }
 
+    /**
+     * Fuels that can be inserted to speed up a minion's production.
+     *
+     * <p>Each fuel multiplies the production rate while it lasts and is
+     * consumed after {@code durationTicks} production ticks; {@link #NONE}
+     * represents an empty fuel slot.</p>
+     */
+    public enum MinionFuel {
+        NONE(1.0, 0),
+        COAL(1.05, 30 * 60),
+        BLOCK_OF_COAL(1.10, 5 * 60 * 60),
+        ENCHANTED_COAL(1.10, 3 * 60 * 60),
+        ENCHANTED_LAVA_BUCKET(1.25, 24 * 60 * 60),
+        ENCHANTED_BREAD(1.05, 12 * 60 * 60);
+
+        private final double speedMultiplier;
+        private final int durationTicks;
+
+        MinionFuel(double speedMultiplier, int durationTicks) {
+            this.speedMultiplier = speedMultiplier;
+            this.durationTicks = durationTicks;
+        }
+
+        public double getSpeedMultiplier() {
+            return speedMultiplier;
+        }
+
+        public int getDurationTicks() {
+            return durationTicks;
+        }
+    }
+
     /** Mutable state for a single placed minion. */
     public static final class MinionData {
         public final UUID id;
         public final UUID owner;
         public final MinionType type;
         private MinionTier tier;
+        private int storedResources;
+        private int productionProgress;
+        private MinionFuel fuel = MinionFuel.NONE;
+        private int fuelTicksRemaining;
 
         public MinionData(UUID id, UUID owner, MinionType type, MinionTier tier) {
             this.id = Objects.requireNonNull(id, "id");
@@ -115,10 +151,31 @@ public final class MinionManager {
         public void setTier(MinionTier tier) {
             this.tier = Objects.requireNonNull(tier, "tier");
         }
+
+        /** Number of resources currently sitting in this minion's storage. */
+        public int getStoredResources() {
+            return storedResources;
+        }
+
+        /** The fuel currently powering this minion, or {@link MinionFuel#NONE}. */
+        public MinionFuel getFuel() {
+            return fuel;
+        }
+
+        /** Remaining production ticks before the active fuel is exhausted. */
+        public int getFuelTicksRemaining() {
+            return fuelTicksRemaining;
+        }
     }
 
     /** Base number of minion slots each player is allowed. */
     public static final int MAX_SLOTS = 11;
+
+    /** Production ticks a TIER_1 minion needs to produce one resource. */
+    public static final int BASE_PRODUCTION_TICKS = 14;
+
+    /** Storage capacity granted by the first tier; scales linearly per tier. */
+    public static final int BASE_STORAGE = 64;
 
     private static final MinionManager INSTANCE = new MinionManager();
 
@@ -197,6 +254,94 @@ public final class MinionManager {
         }
         data.setTier(tiers[next]);
         return true;
+    }
+
+    /** Storage capacity for a minion at the given tier. */
+    public int getStorageCapacity(MinionTier tier) {
+        Objects.requireNonNull(tier, "tier");
+        return BASE_STORAGE * (1 + tier.ordinal());
+    }
+
+    /**
+     * Effective number of production ticks the minion needs to yield one
+     * resource, accounting for its tier and any active fuel boost.
+     */
+    public int getProductionIntervalTicks(MinionData data) {
+        Objects.requireNonNull(data, "data");
+        int base = Math.max(1, BASE_PRODUCTION_TICKS - data.getTier().ordinal());
+        double mult = (data.fuel != MinionFuel.NONE && data.fuelTicksRemaining > 0)
+                ? data.fuel.getSpeedMultiplier() : 1.0;
+        return Math.max(1, (int) Math.round(base / mult));
+    }
+
+    /**
+     * Inserts fuel into the minion, replacing any currently active fuel and
+     * resetting its remaining duration. Returns {@code false} if the minion is
+     * unknown or {@code fuel} is {@link MinionFuel#NONE}.
+     */
+    public boolean addFuel(UUID minionId, MinionFuel fuel) {
+        Objects.requireNonNull(minionId, "minionId");
+        Objects.requireNonNull(fuel, "fuel");
+        MinionData data = minions.get(minionId);
+        if (data == null || fuel == MinionFuel.NONE) {
+            return false;
+        }
+        data.fuel = fuel;
+        data.fuelTicksRemaining = fuel.getDurationTicks();
+        return true;
+    }
+
+    /**
+     * Empties the minion's storage and returns the number of resources that
+     * were collected. Returns {@code 0} if the minion is unknown or empty.
+     */
+    public int collectResources(UUID minionId) {
+        Objects.requireNonNull(minionId, "minionId");
+        MinionData data = minions.get(minionId);
+        if (data == null) {
+            return 0;
+        }
+        int amount = data.storedResources;
+        data.storedResources = 0;
+        return amount;
+    }
+
+    /**
+     * Advances a single minion by one production tick: consumes fuel, accrues
+     * production progress and, once the production interval is reached, adds a
+     * resource to storage (unless full). Returns the number of resources
+     * produced this tick (0 or 1).
+     */
+    public int tick(MinionData data) {
+        Objects.requireNonNull(data, "data");
+        int interval = getProductionIntervalTicks(data);
+        if (data.fuel != MinionFuel.NONE && data.fuelTicksRemaining > 0) {
+            data.fuelTicksRemaining--;
+            if (data.fuelTicksRemaining == 0) {
+                data.fuel = MinionFuel.NONE;
+            }
+        }
+        int capacity = getStorageCapacity(data.getTier());
+        if (data.storedResources >= capacity) {
+            return 0;
+        }
+        data.productionProgress++;
+        if (data.productionProgress < interval) {
+            return 0;
+        }
+        data.productionProgress = 0;
+        data.storedResources++;
+        return 1;
+    }
+
+    /**
+     * Advances the minion with the given ID by one production tick.
+     * Returns the number of resources produced, or {@code 0} if unknown.
+     */
+    public int tick(UUID minionId) {
+        Objects.requireNonNull(minionId, "minionId");
+        MinionData data = minions.get(minionId);
+        return data == null ? 0 : tick(data);
     }
 
     public int clearMinions(UUID owner) {
@@ -288,6 +433,17 @@ public final class MinionManager {
                 MinionType type = MinionType.valueOf(typeName);
                 MinionTier tier = MinionTier.valueOf(tierName);
                 MinionData data = new MinionData(id, owner, type, tier);
+                data.storedResources = Math.max(0, cfg.getInt(key + ".stored", 0));
+                data.productionProgress = Math.max(0, cfg.getInt(key + ".progress", 0));
+                String fuelName = cfg.getString(key + ".fuel");
+                if (fuelName != null) {
+                    try {
+                        data.fuel = MinionFuel.valueOf(fuelName);
+                        data.fuelTicksRemaining = Math.max(0, cfg.getInt(key + ".fuelTicks", 0));
+                    } catch (IllegalArgumentException ignored) {
+                        // unknown fuel: leave at NONE
+                    }
+                }
                 minions.put(id, data);
                 ownerIndex.computeIfAbsent(owner, k -> new ArrayList<>()).add(id);
             } catch (IllegalArgumentException ignored) {
@@ -342,6 +498,12 @@ public final class MinionManager {
             cfg.set(key + ".owner", data.owner.toString());
             cfg.set(key + ".type", data.type.name());
             cfg.set(key + ".tier", data.getTier().name());
+            cfg.set(key + ".stored", data.storedResources);
+            cfg.set(key + ".progress", data.productionProgress);
+            if (data.fuel != MinionFuel.NONE) {
+                cfg.set(key + ".fuel", data.fuel.name());
+                cfg.set(key + ".fuelTicks", data.fuelTicksRemaining);
+            }
         }
         for (Map.Entry<UUID, Map<String, MinionType>> entry : placements.entrySet()) {
             String path = "placements." + entry.getKey().toString();

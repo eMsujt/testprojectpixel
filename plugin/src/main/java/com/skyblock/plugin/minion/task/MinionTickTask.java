@@ -28,6 +28,7 @@ public class MinionTickTask extends BukkitRunnable {
     }
 
     private void tick(MinionManager.MinionData data) {
-        // Production hook: per-tier output is applied here as the minion model grows.
+        // Advance production: consumes fuel and accrues resources into storage.
+        manager.tick(data);
     }
 }
