@@ -4,7 +4,7 @@ import com.skyblock.islands.manager.IslandManager;
 import com.skyblock.islands.manager.IslandManager.IslandUpgrade;
 import com.skyblock.islands.manager.IslandManager.SkyBlockIsland;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.items.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
