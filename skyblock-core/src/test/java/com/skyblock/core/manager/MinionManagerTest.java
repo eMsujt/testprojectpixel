@@ -4,6 +4,7 @@ import com.skyblock.core.manager.MinionManager.MinionData;
 import com.skyblock.core.manager.MinionManager.MinionFuel;
 import com.skyblock.core.manager.MinionManager.MinionTier;
 import com.skyblock.core.manager.MinionManager.MinionType;
+import com.skyblock.core.manager.MinionManager.MinionUpgrade;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -127,6 +128,70 @@ class MinionManagerTest {
         assertEquals(1, mgr.collectResources(minion.id));
         assertEquals(0, minion.getStoredResources());
         assertEquals(0, mgr.collectResources(minion.id));   // already empty
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void setUpgrade_InstallsUpgradeInSlot() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+
+        assertEquals(MinionUpgrade.NONE, minion.getUpgrade(0));
+        assertTrue(mgr.setUpgrade(minion.id, 0, MinionUpgrade.SUPER_COMPACTOR_3000));
+        assertEquals(MinionUpgrade.SUPER_COMPACTOR_3000, minion.getUpgrade(0));
+        assertEquals(MinionUpgrade.NONE, minion.getUpgrade(1));
+
+        assertFalse(mgr.setUpgrade(UUID.randomUUID(), 0, MinionUpgrade.COMPACTOR));
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void getHopperSellRate_ReturnsBestInstalledHopper() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+
+        assertEquals(0.0, mgr.getHopperSellRate(minion));
+        mgr.setUpgrade(minion.id, 0, MinionUpgrade.BUDGET_HOPPER);
+        assertEquals(0.50, mgr.getHopperSellRate(minion));
+        mgr.setUpgrade(minion.id, 1, MinionUpgrade.ENCHANTED_HOPPER);
+        assertEquals(0.90, mgr.getHopperSellRate(minion));
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void autoSell_SellsStoredResourcesViaHopperAndEmptiesStorage() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+
+        // Fill some storage by ticking, then install an enchanted hopper.
+        for (int i = 0; i < MinionManager.BASE_PRODUCTION_TICKS * 4; i++) {
+            mgr.tick(minion);
+        }
+        int stored = minion.getStoredResources();
+        assertEquals(4, stored);
+
+        mgr.setUpgrade(minion.id, 0, MinionUpgrade.ENCHANTED_HOPPER);
+        long coins = mgr.autoSell(minion.id, 10);
+        assertEquals((long) Math.floor(stored * 10 * 0.90), coins);
+        assertEquals(0, minion.getStoredResources());
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void autoSell_ReturnsZeroWithoutHopper() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+
+        for (int i = 0; i < MinionManager.BASE_PRODUCTION_TICKS; i++) {
+            mgr.tick(minion);
+        }
+        assertEquals(1, minion.getStoredResources());
+        assertEquals(0L, mgr.autoSell(minion.id, 10));   // no hopper installed
+        assertEquals(1, minion.getStoredResources());    // storage untouched
 
         mgr.removeMinion(minion.id);
     }
