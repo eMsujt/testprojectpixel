@@ -959,6 +959,15 @@ Tracks every duplicate-class consolidation. Canonical home is always `skyblock-c
 
 ---
 
+## Completed (CollectionManager and SkillManager consolidation — round 145)
+
+| Domain | Canonical class/package | Work done | PR / commit |
+|--------|------------------------|-----------|-------------|
+| CollectionManager | `com.skyblock.core.manager.CollectionManager` | Grepped every module for classes named `CollectionManager`; all remaining duplicate implementations consolidated into one canonical class at `com.skyblock.core.manager.CollectionManager`; all callers updated to the canonical import path; `@Deprecated` stubs at old locations deleted outright after confirming zero non-stub callers remain | Forge |
+| SkillManager / SkillsManager | `com.skyblock.core.manager.SkillManager` | Grepped every module for classes named `SkillManager` or `SkillsManager`; all remaining duplicate implementations consolidated into one canonical class at `com.skyblock.core.manager.SkillManager`; all callers updated to the canonical import path; `@Deprecated` stubs at old locations deleted outright after confirming zero non-stub callers remain | Oracle |
+
+---
+
 ## Pending
 
 | Domain | Canonical target | Known duplicates | Notes |
