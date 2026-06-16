@@ -21,7 +21,6 @@
         <module>dungeons</module>
         <module>foraging</module>
         <module>farming</module>
-        <module>garden</module>
 
         <!-- Cohesive modules consolidating former thin single-feature modules -->
         <module>storage</module>
