@@ -1,7 +1,6 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stat.StatManager;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 

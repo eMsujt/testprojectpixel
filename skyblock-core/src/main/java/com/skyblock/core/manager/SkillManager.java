@@ -3,7 +3,6 @@ package com.skyblock.core.manager;
 import com.skyblock.core.config.Constants;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stat.StatManager;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
