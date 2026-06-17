@@ -233,6 +233,63 @@ public final class HotmManager {
     }
 
     /**
+     * Returns the Mithril Powder cost to raise a perk from {@code currentLevel}
+     * to the next level.
+     *
+     * @param perk         the perk to price
+     * @param currentLevel the perk's current level
+     * @return the powder cost of the next level, or {@code -1} if already maxed
+     */
+    public int getUpgradeCost(HotmPerk perk, int currentLevel) {
+        Objects.requireNonNull(perk, "perk");
+        int[] costs = NODE_POWDER_COSTS.get(perk.name());
+        if (costs == null || currentLevel < 0 || currentLevel >= costs.length) {
+            return -1;
+        }
+        return costs[currentLevel];
+    }
+
+    /**
+     * Returns the cumulative stat bonus a player gains from a perk at its
+     * current level, derived from {@link #PERK_DATA}'s per-level value.
+     *
+     * @param playerId the player to look up
+     * @param perk     the perk to evaluate
+     * @return {@code bonusPerLevel * currentLevel}, {@code 0} for toggle/ability perks
+     */
+    public int getPerkBonus(UUID playerId, HotmPerk perk) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(perk, "perk");
+        int[] data = PERK_DATA.get(perk.name());
+        if (data == null || data.length < 2) {
+            return 0;
+        }
+        return data[1] * getLevel(playerId, perk);
+    }
+
+    /**
+     * Upgrades a perk by one level, deducting the required Mithril Powder.
+     *
+     * @param playerId the player to upgrade
+     * @param perk     the perk to upgrade
+     * @return the new level after the upgrade, {@code -1} if already at max,
+     *         or {@code -2} if the player cannot afford the next level
+     */
+    public int purchaseUpgrade(UUID playerId, HotmPerk perk) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(perk, "perk");
+        int current = getLevel(playerId, perk);
+        if (current >= perk.maxLevel) {
+            return -1;
+        }
+        int cost = getUpgradeCost(perk, current);
+        if (cost > 0 && !spendMithrilPowder(playerId, cost)) {
+            return -2;
+        }
+        return upgrade(playerId, perk);
+    }
+
+    /**
      * Returns a copy of all perk levels for the given player.
      *
      * @param playerId the player to look up
