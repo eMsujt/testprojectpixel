@@ -1,4 +1,4 @@
-package com.skyblock.core.stat;
+package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Stat;
 import org.bukkit.command.Command;

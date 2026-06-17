@@ -1,7 +1,7 @@
 package com.skyblock.core.stats;
 
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stat.StatManager;
+import com.skyblock.core.manager.StatManager;
 
 import java.util.EnumMap;
 import java.util.HashMap;
