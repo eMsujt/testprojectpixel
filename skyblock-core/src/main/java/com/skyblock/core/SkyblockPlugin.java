@@ -107,6 +107,10 @@ import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.HarpManager;
 import com.skyblock.core.manager.JerryWorkshopManager;
+import com.skyblock.core.manager.MuseumManager;
+import com.skyblock.core.museum.MuseumCommand;
+import com.skyblock.core.manager.EssenceManager;
+import com.skyblock.core.manager.EssenceCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -386,6 +390,18 @@ public final class SkyblockPlugin extends JavaPlugin {
         AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
         getCommand("alchemy").setExecutor(alchemyCommand);
         getCommand("alchemy").setTabCompleter(alchemyCommand);
+        MuseumManager museumManager = MuseumManager.getInstance();
+        MuseumCommand museumCommand = new MuseumCommand(museumManager);
+        if (getCommand("museum") != null) {
+            getCommand("museum").setExecutor(museumCommand);
+            getCommand("museum").setTabCompleter(museumCommand);
+        }
+        EssenceManager essenceManager = EssenceManager.getInstance();
+        EssenceCommand essenceCommand = new EssenceCommand(essenceManager);
+        if (getCommand("essence") != null) {
+            getCommand("essence").setExecutor(essenceCommand);
+            getCommand("essence").setTabCompleter(essenceCommand);
+        }
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
