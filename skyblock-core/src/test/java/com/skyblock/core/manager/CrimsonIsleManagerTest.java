@@ -1,7 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.kuudra.KuudraManager;
-import com.skyblock.core.kuudra.KuudraManager.KuudraTier;
+import com.skyblock.core.manager.KuudraManager.KuudraTier;
 import com.skyblock.core.manager.ReputationManager.Faction;
 import org.junit.jupiter.api.Test;
 

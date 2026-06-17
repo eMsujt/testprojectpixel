@@ -1,4 +1,4 @@
-package com.skyblock.core.kuudra;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 

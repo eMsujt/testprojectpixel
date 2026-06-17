@@ -25,7 +25,7 @@ import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.command.HOTMCommand;
 import com.skyblock.core.manager.HotmManager;
-import com.skyblock.core.kuudra.KuudraManager;
+import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.minion.command.MinionCommand;
