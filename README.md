@@ -1,6 +1,25 @@
 # SkyBlock
 
+[![Build](https://github.com/eMsujt/testprojectpixel/actions/workflows/build.yml/badge.svg)](https://github.com/eMsujt/testprojectpixel/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://adoptium.net/)
+[![Paper](https://img.shields.io/badge/Paper-1.21%2B-brightgreen.svg)](https://papermc.io/)
+
 A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven multi-module project targeting Paper 1.21+.
+
+## Feature Overview
+
+SkyBlock recreates the core Hypixel SkyBlock progression loop as a server-side Paper plugin:
+
+- **Private islands** — create, upgrade, and visit personal islands.
+- **Skills & collections** — level Combat, Mining, Farming, Foraging, Fishing, and more, unlocking collection tiers as you gather resources.
+- **Economy** — coins/purse, personal and co-op banking, NPC shops, the Bazaar order book, and the Auction House.
+- **Combat & dungeons** — custom mobs and stats, item/set abilities with mana, Slayer quests, and Catacombs floors F1–F7 plus Master Mode.
+- **Gear progression** — custom enchantments, reforges, the Forge, pets, talismans/accessories with magical power, and the wardrobe.
+- **End-game zones** — Crimson Isle (Kuudra & faction reputation), Crystal Hollows/Dwarven Mines with Heart of the Mountain, and The Rift.
+- **Minions & automation** — placeable minions with fuel, upgrades, and hopper auto-sell.
+
+See the [Feature Managers](#feature-managers) table below for the authoritative manager registry, and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the module map.
 
 ## Documentation
 
