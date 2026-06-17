@@ -72,7 +72,8 @@ sub-package — e.g. `com.skyblock.core.auction.manager.AuctionHouseManager`,
 `com.skyblock.core.crafting.manager.CraftingManager`,
 `com.skyblock.core.profile.manager.ProfileManager`). Import these directly — never a
 copy. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the package-layout
-conventions and the one-canonical-home rule.
+conventions and the one-canonical-home rule, and
+[`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feature list.
 
 | Manager | Responsibility |
 |---------|----------------|
