@@ -1,6 +1,6 @@
 package com.skyblock.core.leaderboard;
 
-import com.skyblock.core.level.SkyblockLevelManager;
+import com.skyblock.core.manager.SkyblockLevelManager;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.vault.VaultManager;

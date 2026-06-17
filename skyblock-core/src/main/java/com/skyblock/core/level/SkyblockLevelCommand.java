@@ -1,5 +1,6 @@
 package com.skyblock.core.level;
 
+import com.skyblock.core.manager.SkyblockLevelManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
