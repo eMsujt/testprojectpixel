@@ -171,6 +171,28 @@ class BazaarManagerTest {
     }
 
     @Test
+    void addOrders_LargeCrossingBuyConsumesCheapestSellsFirstAtRestingPrices() {
+        BazaarManager mgr = BazaarManager.getInstance();
+        String item = uniqueItem();
+        UUID cheapSeller = UUID.randomUUID();
+        UUID pricierSeller = UUID.randomUUID();
+        UUID buyer = UUID.randomUUID();
+        mgr.addSellOrder(pricierSeller, item, 10, 50.0);
+        mgr.addSellOrder(cheapSeller, item, 5, 40.0);
+        // Buyer crosses both asks; matching takes the best (lowest) ask first, each at its resting price.
+        mgr.addBuyOrder(buyer, item, 12, 60.0);
+
+        // 5 @ 40 from the cheaper seller, then 7 @ 50 from the pricier one.
+        assertEquals(5 * 40.0 - mgr.computeFee(5 * 40.0, FeeTier.BASE), mgr.getClaimableCoins(cheapSeller));
+        assertEquals(7 * 50.0 - mgr.computeFee(7 * 50.0, FeeTier.BASE), mgr.getClaimableCoins(pricierSeller));
+        assertEquals(12, mgr.getClaimableItems(buyer, item));
+        // Buy fully filled; the pricier sell keeps its 3-unit remainder.
+        assertEquals(0, mgr.getBuyOrderCount(item));
+        assertEquals(1, mgr.getSellOrderCount(item));
+        assertEquals(3, mgr.getSellOrders(item).get(0).quantity());
+    }
+
+    @Test
     void claim_InstantBuyEscrowsCoinsForRestingSeller() {
         BazaarManager mgr = BazaarManager.getInstance();
         String item = uniqueItem();
