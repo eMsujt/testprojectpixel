@@ -632,6 +632,34 @@ public final class PetManager {
         return new int[]{item.speedBonus, item.strengthBonus, item.healthBonus};
     }
 
+    /**
+     * Returns the total stat bonus the player's active pet contributes,
+     * as {@code {speed, strength, health}}: the pet type's base stats (from
+     * {@link #PET_DATA}) scaled linearly by its current level plus the bonus
+     * from any held item. All zero if the player has no active pet.
+     */
+    public int[] getActivePetStats(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        UUID petId = equippedPets.get(playerId);
+        if (petId == null) {
+            return new int[]{0, 0, 0};
+        }
+        Pet pet = getActivePet(playerId);
+        if (pet == null) {
+            return new int[]{0, 0, 0};
+        }
+        int speed = 0, strength = 0, health = 0;
+        int[] base = PET_DATA.get(pet.type.name());
+        if (base != null) {
+            double scale = (double) computeLevel(getExperience(playerId, pet.type), pet.rarity) / MAX_LEVEL;
+            speed = (int) Math.round(base[1] * scale);
+            strength = (int) Math.round(base[2] * scale);
+            health = (int) Math.round(base[3] * scale);
+        }
+        int[] held = getHeldItemBonus(playerId, petId);
+        return new int[]{speed + held[0], strength + held[1], health + held[2]};
+    }
+
     public void recordPetEvent(UUID playerId, String summary) {
         petHistory.computeIfAbsent(playerId, k -> new ArrayList<>()).add(summary);
     }
