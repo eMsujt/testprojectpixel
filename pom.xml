@@ -25,7 +25,6 @@
         <module>progression</module>
         <module>social</module>
         <module>combat-extras</module>
-        <module>forge</module>
         <module>world</module>
 
         <module>plugin</module>
