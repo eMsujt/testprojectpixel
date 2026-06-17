@@ -174,6 +174,8 @@ public final class DungeonManager {
         private boolean completed;
         private int score;
         private int roomsCleared;
+        private int secretsFound;
+        private int puzzlesSolved;
 
         DungeonRun(DungeonType type, List<UUID> participants, long startTimeMillis) {
             this.type = type;
@@ -187,6 +189,8 @@ public final class DungeonManager {
         public boolean isCompleted() { return completed; }
         public int getScore() { return score; }
         public int getRoomsCleared() { return roomsCleared; }
+        public int getSecretsFound() { return secretsFound; }
+        public int getPuzzlesSolved() { return puzzlesSolved; }
     }
 
     // -------------------------------------------------------------------------
@@ -430,6 +434,42 @@ public final class DungeonManager {
         run.roomsCleared++;
         run.score += scoreReward;
         return run.roomsCleared;
+    }
+
+    /**
+     * Records a secret found in the given player's active run, incrementing the
+     * shared secret count and run score by {@code scoreReward}.
+     *
+     * @return the run's new total number of secrets found
+     */
+    public int findSecret(UUID playerId, int scoreReward) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (scoreReward < 0) throw new IllegalArgumentException("scoreReward must not be negative: " + scoreReward);
+        DungeonRun run = activeRuns.get(playerId);
+        if (run == null) {
+            throw new IllegalStateException("No active dungeon run for " + playerId);
+        }
+        run.secretsFound++;
+        run.score += scoreReward;
+        return run.secretsFound;
+    }
+
+    /**
+     * Records a puzzle solved in the given player's active run, incrementing the
+     * shared puzzle count and run score by {@code scoreReward}.
+     *
+     * @return the run's new total number of puzzles solved
+     */
+    public int solvePuzzle(UUID playerId, int scoreReward) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (scoreReward < 0) throw new IllegalArgumentException("scoreReward must not be negative: " + scoreReward);
+        DungeonRun run = activeRuns.get(playerId);
+        if (run == null) {
+            throw new IllegalStateException("No active dungeon run for " + playerId);
+        }
+        run.puzzlesSolved++;
+        run.score += scoreReward;
+        return run.puzzlesSolved;
     }
 
     // -------------------------------------------------------------------------
