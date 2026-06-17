@@ -7,9 +7,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -82,6 +85,12 @@ public final class WardrobeManager {
     /** Maximum named outfits a player may store. */
     public static final int MAX_OUTFITS = 18;
 
+    /**
+     * Number of wardrobe slots unlocked by default (the first page's two sets).
+     * Slots with a number above this are locked until explicitly unlocked.
+     */
+    public static final int DEFAULT_UNLOCKED_SLOTS = 2;
+
     private static final WardrobeManager INSTANCE = new WardrobeManager();
 
     /** playerId → (outfitName → armor[4]) */
@@ -95,6 +104,9 @@ public final class WardrobeManager {
 
     /** playerId → armor stat bonuses currently applied to {@link StatManager}, kept for clean swaps */
     private final Map<UUID, Map<Stat, Double>> appliedStats = new HashMap<>();
+
+    /** playerId → slots unlocked beyond the {@link #DEFAULT_UNLOCKED_SLOTS} default */
+    private final Map<UUID, Set<WardrobeSlot>> unlockedSlots = new HashMap<>();
 
     private WardrobeManager() {}
 
@@ -199,8 +211,48 @@ public final class WardrobeManager {
      *         {@link #MAX_OUTFITS} outfits and the slot is a new entry
      */
     public boolean saveOutfit(UUID playerId, WardrobeSlot slot, ItemStack[] armor) {
+        Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(slot, "slot");
+        if (!isSlotUnlocked(playerId, slot)) {
+            return false;
+        }
         return saveOutfit(playerId, slot.name(), armor);
+    }
+
+    /**
+     * Returns whether the given slot is available to the player. Slots numbered
+     * at or below {@link #DEFAULT_UNLOCKED_SLOTS} are always unlocked; the rest
+     * must be unlocked via {@link #unlockSlot(UUID, WardrobeSlot)}.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param slot     the wardrobe slot, must not be null
+     * @return {@code true} if the slot is unlocked for the player
+     */
+    public boolean isSlotUnlocked(UUID playerId, WardrobeSlot slot) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(slot, "slot");
+        if (slot.getSlotNumber() <= DEFAULT_UNLOCKED_SLOTS) {
+            return true;
+        }
+        Set<WardrobeSlot> unlocked = unlockedSlots.get(playerId);
+        return unlocked != null && unlocked.contains(slot);
+    }
+
+    /**
+     * Unlocks a previously locked slot for the player.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param slot     the wardrobe slot, must not be null
+     * @return {@code true} if the slot was newly unlocked; {@code false} if it
+     *         was already available
+     */
+    public boolean unlockSlot(UUID playerId, WardrobeSlot slot) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(slot, "slot");
+        if (slot.getSlotNumber() <= DEFAULT_UNLOCKED_SLOTS) {
+            return false;
+        }
+        return unlockedSlots.computeIfAbsent(playerId, id -> EnumSet.noneOf(WardrobeSlot.class)).add(slot);
     }
 
     /**
@@ -264,7 +316,11 @@ public final class WardrobeManager {
      * @return {@code true} if saved; {@code false} if the player is at the outfit cap
      */
     public boolean saveOutfit(UUID playerId, WardrobeSlot slot, ItemStack[] armor, Map<Stat, Double> stats) {
+        Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(slot, "slot");
+        if (!isSlotUnlocked(playerId, slot)) {
+            return false;
+        }
         return saveOutfit(playerId, slot.name(), armor, stats);
     }
 
@@ -330,7 +386,11 @@ public final class WardrobeManager {
      * @return the cloned armor of the equipped slot, or {@code null} if the slot is empty
      */
     public ItemStack[] equip(UUID playerId, WardrobeSlot slot) {
+        Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(slot, "slot");
+        if (!isSlotUnlocked(playerId, slot)) {
+            return null;
+        }
         return equip(playerId, slot.name());
     }
 
@@ -418,6 +478,7 @@ public final class WardrobeManager {
         wardrobes.remove(playerId);
         activeArmorSet.remove(playerId);
         outfitStats.remove(playerId);
+        unlockedSlots.remove(playerId);
     }
 
     /**
@@ -431,6 +492,7 @@ public final class WardrobeManager {
         applyStats(playerId, Collections.emptyMap());
         activeArmorSet.remove(playerId);
         outfitStats.remove(playerId);
+        unlockedSlots.remove(playerId);
         return wardrobes.remove(playerId) != null;
     }
 
@@ -440,6 +502,7 @@ public final class WardrobeManager {
         activeArmorSet.clear();
         outfitStats.clear();
         appliedStats.clear();
+        unlockedSlots.clear();
     }
 
     public void load(File dataFolder) {
@@ -452,12 +515,21 @@ public final class WardrobeManager {
         activeArmorSet.clear();
         outfitStats.clear();
         appliedStats.clear();
+        unlockedSlots.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
                 String active = cfg.getString(key + ".active");
                 if (active != null) {
                     activeArmorSet.put(uuid, active);
+                }
+                for (String slotName : cfg.getStringList(key + ".unlocked")) {
+                    try {
+                        unlockedSlots.computeIfAbsent(uuid, id -> EnumSet.noneOf(WardrobeSlot.class))
+                                .add(WardrobeSlot.valueOf(slotName));
+                    } catch (IllegalArgumentException ignored) {
+                        // skip unknown slot names
+                    }
                 }
                 if (cfg.isConfigurationSection(key + ".outfits")) {
                     Map<String, ItemStack[]> outfits = new HashMap<>();
@@ -519,6 +591,17 @@ public final class WardrobeManager {
             if (!wardrobes.containsKey(entry.getKey())) {
                 cfg.set(key + ".active", entry.getValue());
             }
+        }
+        // persist unlocked slots
+        for (Map.Entry<UUID, Set<WardrobeSlot>> entry : unlockedSlots.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                continue;
+            }
+            List<String> names = new ArrayList<>();
+            for (WardrobeSlot slot : entry.getValue()) {
+                names.add(slot.name());
+            }
+            cfg.set(entry.getKey() + ".unlocked", names);
         }
         try {
             cfg.save(file);

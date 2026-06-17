@@ -178,6 +178,11 @@ public final class WardrobeCommand implements TabExecutor {
             player.sendMessage("Unknown slot '" + args[2] + "'. Use SLOT_1 through SLOT_18.");
             return;
         }
+        if (!wardrobeManager.isSlotUnlocked(player.getUniqueId(), slot)
+                && ("save".equalsIgnoreCase(args[1]) || "load".equalsIgnoreCase(args[1]))) {
+            player.sendMessage(slot.getDisplayName() + " is locked.");
+            return;
+        }
         switch (args[1].toLowerCase()) {
             case "save" -> {
                 ItemStack[] armor = player.getInventory().getArmorContents();
