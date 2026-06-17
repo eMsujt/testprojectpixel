@@ -42,6 +42,8 @@ import com.skyblock.core.minion.command.MinionCommand;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
+import com.skyblock.core.pet.PetCommand;
+import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
@@ -160,6 +162,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         PartyCommand partyCommand = new PartyCommand(partyManager);
         getCommand("party").setExecutor(partyCommand);
         getCommand("party").setTabCompleter(partyCommand);
+        PetManager petManager = PetManager.getInstance();
+        petManager.load(getDataFolder());
+        PetCommand petCommand = new PetCommand(petManager);
+        getCommand("pet").setExecutor(petCommand);
+        getCommand("pet").setTabCompleter(petCommand);
         GardenManager gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
         GardenCommand gardenCommand = new GardenCommand(gardenManager);
@@ -420,6 +427,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         RunManager.getInstance().save(getDataFolder());
         AlchemyManager.getInstance().save(getDataFolder());
         JerryWorkshopManager.getInstance().save(getDataFolder());
+        PetManager.getInstance().save(getDataFolder());
         try {
             WarpManager.getInstance().save(getDataFolder());
             HarpManager.getInstance().save(getDataFolder());
