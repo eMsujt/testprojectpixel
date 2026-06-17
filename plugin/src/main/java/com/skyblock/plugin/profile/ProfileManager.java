@@ -1,6 +1,5 @@
 package com.skyblock.plugin.profile;
 
-import com.skyblock.plugin.SkyBlockPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public final class ProfileManager implements Listener {
 
     private final Map<UUID, PlayerProfile> profiles = new HashMap<>();
 
-    private SkyBlockPlugin plugin;
+    private JavaPlugin plugin;
 
     private ProfileManager() {}
 
@@ -52,7 +52,7 @@ public final class ProfileManager implements Listener {
      *
      * @param plugin the owning plugin instance
      */
-    public void init(SkyBlockPlugin plugin) {
+    public void init(JavaPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin, "plugin");
     }
 
@@ -127,7 +127,7 @@ public final class ProfileManager implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         PlayerProfile profile = getOrCreate(uuid);
 
-        SkyBlockPlugin plugin = this.plugin;
+        JavaPlugin plugin = this.plugin;
         if (plugin == null) {
             return;
         }
@@ -178,7 +178,7 @@ public final class ProfileManager implements Listener {
             return;
         }
 
-        SkyBlockPlugin plugin = this.plugin;
+        JavaPlugin plugin = this.plugin;
         if (plugin == null) {
             return;
         }
@@ -223,7 +223,7 @@ public final class ProfileManager implements Listener {
             return CompletableFuture.completedFuture(null);
         }
 
-        SkyBlockPlugin plugin = this.plugin;
+        JavaPlugin plugin = this.plugin;
         if (plugin == null) {
             return CompletableFuture.completedFuture(null);
         }

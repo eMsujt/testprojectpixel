@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Repeating scheduler that drives placed-minion production.
  *
- * <p>Registered once from {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}
+ * <p>Registered once from {@link com.skyblock.core.SkyblockPlugin#onEnable()}
  * via {@link #start(JavaPlugin)}, which schedules it with {@code runTaskTimer}
  * to run every 600 ticks (30 s).</p>
  */

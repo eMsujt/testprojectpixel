@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
  * Greets players when they join the server.
  *
  * <p>Registered as an event listener in
- * {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}.</p>
+ * {@link com.skyblock.core.SkyblockPlugin#onEnable()}.</p>
  */
 public final class PlayerListener implements Listener {
 

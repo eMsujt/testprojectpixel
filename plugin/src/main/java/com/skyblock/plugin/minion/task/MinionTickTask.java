@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * Periodic task that ticks every placed {@link MinionManager.MinionData}.
  *
  * <p>Scheduled once per second (every 20 ticks) from
- * {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}.</p>
+ * {@link com.skyblock.core.SkyblockPlugin#onEnable()}.</p>
  */
 public class MinionTickTask extends BukkitRunnable {
 

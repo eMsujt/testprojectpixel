@@ -24,7 +24,7 @@ import java.util.UUID;
  * the attacker's combat stats from {@link StatManager}.</p>
  *
  * <p>This type is registered as an event listener in
- * {@link com.skyblock.plugin.SkyBlockPlugin#onEnable()}.</p>
+ * {@link com.skyblock.core.SkyblockPlugin#onEnable()}.</p>
  */
 public final class CombatListener implements Listener {
 
