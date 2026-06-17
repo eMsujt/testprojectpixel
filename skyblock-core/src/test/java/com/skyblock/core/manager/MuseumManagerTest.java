@@ -74,6 +74,34 @@ class MuseumManagerTest {
     }
 
     @Test
+    void donations_AreTrackedSeparatelyPerCategory() {
+        MuseumManager mgr = MuseumManager.getInstance();
+        UUID id = UUID.randomUUID();
+        // same item name donated under two categories is tracked independently
+        mgr.donate(id, MuseumCategory.WEAPONS, "Midas Staff");
+        mgr.donate(id, MuseumCategory.RARITIES, "Midas Staff");
+        assertTrue(mgr.getDonations(id, MuseumCategory.WEAPONS).contains("Midas Staff"));
+        assertTrue(mgr.getDonations(id, MuseumCategory.RARITIES).contains("Midas Staff"));
+        assertFalse(mgr.getDonations(id, MuseumCategory.ARMOR).contains("Midas Staff"));
+        assertEquals(1, mgr.getDonations(id, MuseumCategory.WEAPONS).size());
+    }
+
+    @Test
+    void getCategoryCompletion_ReportsPartialFraction() {
+        MuseumManager mgr = MuseumManager.getInstance();
+        UUID id = UUID.randomUUID();
+        // RARITIES is left empty by other tests, so the catalog size here is deterministic
+        mgr.registerItem(MuseumCategory.RARITIES, "Partial Relic A");
+        mgr.registerItem(MuseumCategory.RARITIES, "Partial Relic B");
+        mgr.registerItem(MuseumCategory.RARITIES, "Partial Relic C");
+        mgr.registerItem(MuseumCategory.RARITIES, "Partial Relic D");
+        mgr.donate(id, MuseumCategory.RARITIES, "Partial Relic A");
+        mgr.donate(id, MuseumCategory.RARITIES, "Partial Relic B");
+        assertEquals(0.5, mgr.getCategoryCompletion(id, MuseumCategory.RARITIES));
+        assertFalse(mgr.isCategoryComplete(id, MuseumCategory.RARITIES));
+    }
+
+    @Test
     void remove_DiscardsPlayerData() {
         MuseumManager mgr = MuseumManager.getInstance();
         UUID id = UUID.randomUUID();
