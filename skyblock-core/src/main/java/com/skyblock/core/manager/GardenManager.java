@@ -261,6 +261,15 @@ public final class GardenManager {
     /** Per-player count of visitor offers fulfilled. */
     private final Map<UUID, Integer> completedOffers = new HashMap<>();
 
+    /** Per-player composter organic-matter reserve. */
+    private final Map<UUID, Long> composterOrganicMatter = new HashMap<>();
+
+    /** Per-player composter fuel reserve. */
+    private final Map<UUID, Long> composterFuel = new HashMap<>();
+
+    /** Per-player composter compost output awaiting collection. */
+    private final Map<UUID, Long> composterCompost = new HashMap<>();
+
     private GardenManager() {
     }
 
@@ -1060,6 +1069,113 @@ public final class GardenManager {
     }
 
     // -------------------------------------------------------------------------
+    // Composter
+    // -------------------------------------------------------------------------
+
+    /** Organic matter consumed to produce a single compost. */
+    public static final long ORGANIC_MATTER_PER_COMPOST = 4_000L;
+
+    /** Fuel consumed to produce a single compost. */
+    public static final long FUEL_PER_COMPOST = 2_000L;
+
+    /**
+     * Returns the player's stored composter organic matter.
+     *
+     * @param playerId the player to look up
+     * @return the organic-matter reserve, {@code 0} if not set
+     */
+    public long getComposterOrganicMatter(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return composterOrganicMatter.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Adds to the player's composter organic matter (clamped to {@code >= 0}).
+     *
+     * @param playerId the player to update
+     * @param amount   the amount to add (may be negative)
+     * @return the new organic-matter reserve
+     */
+    public long addComposterOrganicMatter(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        long updated = Math.max(0L, getComposterOrganicMatter(playerId) + amount);
+        composterOrganicMatter.put(playerId, updated);
+        return updated;
+    }
+
+    /**
+     * Returns the player's stored composter fuel.
+     *
+     * @param playerId the player to look up
+     * @return the fuel reserve, {@code 0} if not set
+     */
+    public long getComposterFuel(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return composterFuel.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Adds to the player's composter fuel (clamped to {@code >= 0}).
+     *
+     * @param playerId the player to update
+     * @param amount   the amount to add (may be negative)
+     * @return the new fuel reserve
+     */
+    public long addComposterFuel(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        long updated = Math.max(0L, getComposterFuel(playerId) + amount);
+        composterFuel.put(playerId, updated);
+        return updated;
+    }
+
+    /**
+     * Returns the player's uncollected composter compost.
+     *
+     * @param playerId the player to look up
+     * @return the compost awaiting collection, {@code 0} if none
+     */
+    public long getComposterCompost(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return composterCompost.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Processes the player's composter, converting as much organic matter and
+     * fuel as available into compost.  Each compost consumes
+     * {@link #ORGANIC_MATTER_PER_COMPOST} organic matter and
+     * {@link #FUEL_PER_COMPOST} fuel; processing stops when either runs short.
+     *
+     * @param playerId the player whose composter to process
+     * @return the amount of compost produced this call ({@code 0} if resources were insufficient)
+     */
+    public long processComposter(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        long matter = getComposterOrganicMatter(playerId);
+        long fuel = getComposterFuel(playerId);
+        long produced = Math.min(matter / ORGANIC_MATTER_PER_COMPOST, fuel / FUEL_PER_COMPOST);
+        if (produced <= 0L) {
+            return 0L;
+        }
+        composterOrganicMatter.put(playerId, matter - produced * ORGANIC_MATTER_PER_COMPOST);
+        composterFuel.put(playerId, fuel - produced * FUEL_PER_COMPOST);
+        composterCompost.merge(playerId, produced, Long::sum);
+        return produced;
+    }
+
+    /**
+     * Collects all compost the player's composter has produced, clearing the
+     * stored amount.
+     *
+     * @param playerId the player collecting
+     * @return the amount of compost collected
+     */
+    public long collectComposterCompost(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Long collected = composterCompost.remove(playerId);
+        return collected == null ? 0L : collected;
+    }
+
+    // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
 
@@ -1083,6 +1199,9 @@ public final class GardenManager {
         gardenExperience.clear();
         copper.clear();
         completedOffers.clear();
+        composterOrganicMatter.clear();
+        composterFuel.clear();
+        composterCompost.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -1153,6 +1272,15 @@ public final class GardenManager {
                 if (cfg.isSet(key + ".completedOffers")) {
                     completedOffers.put(uuid, cfg.getInt(key + ".completedOffers", 0));
                 }
+                if (cfg.isSet(key + ".composterOrganicMatter")) {
+                    composterOrganicMatter.put(uuid, cfg.getLong(key + ".composterOrganicMatter", 0L));
+                }
+                if (cfg.isSet(key + ".composterFuel")) {
+                    composterFuel.put(uuid, cfg.getLong(key + ".composterFuel", 0L));
+                }
+                if (cfg.isSet(key + ".composterCompost")) {
+                    composterCompost.put(uuid, cfg.getLong(key + ".composterCompost", 0L));
+                }
                 if (cfg.isConfigurationSection(key + ".contestMedals")) {
                     int[] medals = new int[ContestMedal.values().length];
                     for (String medalName : cfg.getConfigurationSection(key + ".contestMedals").getKeys(false)) {
@@ -1204,6 +1332,9 @@ public final class GardenManager {
         allUuids.addAll(gardenExperience.keySet());
         allUuids.addAll(copper.keySet());
         allUuids.addAll(completedOffers.keySet());
+        allUuids.addAll(composterOrganicMatter.keySet());
+        allUuids.addAll(composterFuel.keySet());
+        allUuids.addAll(composterCompost.keySet());
         for (UUID uuid : allUuids) {
             String key = uuid.toString();
             if (plotLevels.containsKey(uuid)) {
@@ -1255,6 +1386,15 @@ public final class GardenManager {
             }
             if (completedOffers.containsKey(uuid)) {
                 cfg.set(key + ".completedOffers", completedOffers.get(uuid));
+            }
+            if (composterOrganicMatter.containsKey(uuid)) {
+                cfg.set(key + ".composterOrganicMatter", composterOrganicMatter.get(uuid));
+            }
+            if (composterFuel.containsKey(uuid)) {
+                cfg.set(key + ".composterFuel", composterFuel.get(uuid));
+            }
+            if (composterCompost.containsKey(uuid)) {
+                cfg.set(key + ".composterCompost", composterCompost.get(uuid));
             }
             int[] medals = contestMedals.get(uuid);
             if (medals != null) {
@@ -1309,6 +1449,9 @@ public final class GardenManager {
         gardenExperience.remove(playerId);
         copper.remove(playerId);
         completedOffers.remove(playerId);
+        composterOrganicMatter.remove(playerId);
+        composterFuel.remove(playerId);
+        composterCompost.remove(playerId);
     }
 
     /**
@@ -1333,6 +1476,9 @@ public final class GardenManager {
         had |= gardenExperience.remove(playerId) != null;
         had |= copper.remove(playerId) != null;
         had |= completedOffers.remove(playerId) != null;
+        had |= composterOrganicMatter.remove(playerId) != null;
+        had |= composterFuel.remove(playerId) != null;
+        had |= composterCompost.remove(playerId) != null;
         return had;
     }
 }
