@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.skyblock.core.contest.JacobsContestManager.ContestCrop;
+import com.skyblock.core.manager.GardenManager.GardenCrop;
 
 /**
  * Canonical singleton manager for the SkyBlock in-game calendar.
@@ -273,14 +273,14 @@ public final class CalendarManager {
      *         contest is scheduled that day
      * @throws IllegalArgumentException if {@code day} is out of range
      */
-    public static List<ContestCrop> getContestCrops(int day) {
+    public static List<GardenCrop> getGardenCrops(int day) {
         if (!isContestDay(day)) {
             return List.of();
         }
-        ContestCrop[] all = ContestCrop.values();
+        GardenCrop[] all = GardenCrop.values();
         // Stride of 5 is co-prime to the crop count, so the three picks are distinct.
         int base = (day * 7) % all.length;
-        List<ContestCrop> crops = new ArrayList<>(CROPS_PER_CONTEST);
+        List<GardenCrop> crops = new ArrayList<>(CROPS_PER_CONTEST);
         for (int i = 0; i < CROPS_PER_CONTEST; i++) {
             crops.add(all[(base + i * 5) % all.length]);
         }
@@ -301,8 +301,8 @@ public final class CalendarManager {
      *
      * @return an unmodifiable list of the contest's crops, empty if none is scheduled today
      */
-    public List<ContestCrop> getContestCropsToday() {
-        return getContestCrops(currentDay);
+    public List<GardenCrop> getGardenCropsToday() {
+        return getGardenCrops(currentDay);
     }
 
     /**
