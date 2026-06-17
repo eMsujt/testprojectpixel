@@ -1,7 +1,7 @@
 package com.skyblock.core.fishing.command;
 
 import com.skyblock.core.manager.FishingManager;
-import com.skyblock.core.fishing.manager.TrophyFishingManager;
+import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.model.Rarity;
 
 import org.bukkit.command.Command;
@@ -34,17 +34,17 @@ public final class FishingCommand implements TabExecutor {
     private static final List<String> TROPHY_SUBCOMMANDS = Arrays.asList("reset");
 
     private final FishingManager fishingManager;
-    private final TrophyFishingManager trophyFishingManager;
+    private final TrophyFishManager trophyFishManager;
 
-    public FishingCommand(FishingManager fishingManager, TrophyFishingManager trophyFishingManager) {
+    public FishingCommand(FishingManager fishingManager, TrophyFishManager trophyFishManager) {
         if (fishingManager == null) {
             throw new IllegalArgumentException("fishingManager must not be null");
         }
-        if (trophyFishingManager == null) {
-            throw new IllegalArgumentException("trophyFishingManager must not be null");
+        if (trophyFishManager == null) {
+            throw new IllegalArgumentException("trophyFishManager must not be null");
         }
         this.fishingManager = fishingManager;
-        this.trophyFishingManager = trophyFishingManager;
+        this.trophyFishManager = trophyFishManager;
     }
 
     @Override
@@ -112,7 +112,7 @@ public final class FishingCommand implements TabExecutor {
         UUID id = player.getUniqueId();
 
         if (args.length == 1) {
-            Map<FishingManager.TrophyFish, Integer> all = trophyFishingManager.getAllCatches(id);
+            Map<FishingManager.TrophyFish, Integer> all = trophyFishManager.getAllCatches(id);
             if (all.isEmpty()) {
                 player.sendMessage("You have not caught any trophy fish yet.");
                 return;
@@ -125,7 +125,7 @@ public final class FishingCommand implements TabExecutor {
         }
 
         if ("reset".equalsIgnoreCase(args[1])) {
-            trophyFishingManager.resetCatches(id);
+            trophyFishManager.resetCatches(id);
             player.sendMessage("Your trophy fishing records have been reset.");
             return;
         }
@@ -135,7 +135,7 @@ public final class FishingCommand implements TabExecutor {
             player.sendMessage("Unknown trophy fish: " + args[1]);
             return;
         }
-        int count = trophyFishingManager.getCatchCount(id, fish);
+        int count = trophyFishManager.getCatchCount(id, fish);
         player.sendMessage(fish.getDisplayName() + " catches: " + count);
     }
 
