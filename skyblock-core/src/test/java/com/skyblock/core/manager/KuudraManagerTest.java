@@ -1,8 +1,8 @@
-package com.skyblock.core.kuudra;
+package com.skyblock.core.manager;
 
-import com.skyblock.core.kuudra.KuudraManager.KuudraPhase;
-import com.skyblock.core.kuudra.KuudraManager.KuudraRun;
-import com.skyblock.core.kuudra.KuudraManager.KuudraTier;
+import com.skyblock.core.manager.KuudraManager.KuudraPhase;
+import com.skyblock.core.manager.KuudraManager.KuudraRun;
+import com.skyblock.core.manager.KuudraManager.KuudraTier;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

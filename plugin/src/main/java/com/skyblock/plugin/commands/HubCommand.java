@@ -1,6 +1,6 @@
 package com.skyblock.plugin.commands;
 
-import com.skyblock.core.kuudra.KuudraManager;
+import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.menu.manager.SkyBlockMenuManager;
