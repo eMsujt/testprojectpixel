@@ -111,6 +111,37 @@ public final class AuctionHouseManager {
      */
     public static final double MIN_BID_INCREMENT = 0.15;
 
+    /**
+     * Tax taken from the final sale price when a seller claims their coins
+     * (1% of the winning bid / BIN price).
+     */
+    public static final double CLAIM_TAX = 0.01;
+
+    /**
+     * Returns the fraction of the starting bid charged as an up-front listing fee,
+     * tiered by listing value. Higher-value listings pay a higher rate.
+     *
+     * @param startingBid the starting bid or BIN price
+     * @return the listing-fee rate (e.g. {@code 0.01} for 1%)
+     */
+    public static double listingFeeRate(double startingBid) {
+        if (startingBid >= 100_000_000) return 0.025;
+        if (startingBid >= 10_000_000)  return 0.02;
+        if (startingBid >= 1_000_000)   return 0.015;
+        return 0.01;
+    }
+
+    /**
+     * Returns the up-front listing fee, in whole coins, for a listing at the given
+     * starting bid using the {@linkplain #listingFeeRate(double) tiered rate}.
+     *
+     * @param startingBid the starting bid or BIN price
+     * @return the listing fee in coins (rounded to the nearest whole coin)
+     */
+    public static long calculateListingFee(double startingBid) {
+        return Math.round(startingBid * listingFeeRate(startingBid));
+    }
+
     private static final AuctionHouseManager INSTANCE = new AuctionHouseManager();
 
     /**
@@ -150,6 +181,8 @@ public final class AuctionHouseManager {
         final AuctionListing listing;
         double highestBid;
         UUID highestBidder;
+        /** Unix epoch milliseconds when the listing expires, or {@code 0} for no expiry. */
+        long endEpoch;
 
         ListingState(AuctionListing listing) {
             this.listing = listing;
@@ -161,6 +194,10 @@ public final class AuctionHouseManager {
     private final Map<UUID, AuctionItem> items = new HashMap<>();
     private final Map<UUID, Integer> auctionCounts = new HashMap<>();
     private final Map<UUID, List<String>> auctionHistory = new HashMap<>();
+    /** Coins held for players to claim: sale proceeds and refunds for outbid bidders. */
+    private final Map<UUID, Double> pendingCoins = new HashMap<>();
+    /** Items held for players to claim: won auctions and unsold listings returned to sellers. */
+    private final Map<UUID, List<ItemStack>> pendingItems = new HashMap<>();
 
     private AuctionHouseManager() {}
 
@@ -186,13 +223,38 @@ public final class AuctionHouseManager {
      */
     public UUID createListing(UUID seller, ItemStack item, String itemName,
                               AuctionCategory category, double startingBid, AuctionType type) {
+        return createListing(seller, item, itemName, category, startingBid, type, 0L);
+    }
+
+    /**
+     * Creates a new auction house listing that expires at a fixed time.
+     *
+     * <p>The item is held in escrow by the manager for the duration of the listing.
+     * Once {@code endEpoch} has passed, {@link #processExpired(long)} settles the
+     * listing: an auction with bids is awarded to the highest bidder, while an
+     * unsold listing is returned to the seller's {@linkplain #claimItems(UUID) claim queue}.</p>
+     *
+     * @param seller      the selling player's UUID, must not be null
+     * @param item        the item being listed, must not be null
+     * @param itemName    the display name of the listed item, must not be null
+     * @param category    the auction category, must not be null
+     * @param startingBid the minimum bid or BIN price, must not be negative
+     * @param type        the auction type ({@link AuctionType#BIN} or {@link AuctionType#AUCTION})
+     * @param endEpoch    unix epoch milliseconds when the listing expires, or {@code 0} for no expiry
+     * @return the UUID of the newly created listing
+     */
+    public UUID createListing(UUID seller, ItemStack item, String itemName,
+                              AuctionCategory category, double startingBid, AuctionType type, long endEpoch) {
         Objects.requireNonNull(seller, "seller");
         Objects.requireNonNull(type, "type");
         UUID listingId = UUID.randomUUID();
         AuctionListing listing = new AuctionListing(listingId, seller, item, itemName,
                 category, startingBid, type);
-        listings.put(listingId, new ListingState(listing));
-        recordAuction(seller, "Listed " + itemName + " (" + type.getDisplayName() + ") starting at " + startingBid + " coins");
+        ListingState state = new ListingState(listing);
+        state.endEpoch = endEpoch;
+        listings.put(listingId, state);
+        recordAuction(seller, "Listed " + itemName + " (" + type.getDisplayName() + ") starting at " + startingBid
+                + " coins (fee " + calculateListingFee(startingBid) + ")");
         return listingId;
     }
 
@@ -237,6 +299,7 @@ public final class AuctionHouseManager {
                         "amount must meet the BIN price " + state.listing.startingBid() + ": " + amount);
             }
             listings.remove(listingId);
+            settleSale(state, bidder, amount);
             recordAuction(bidder, "Purchased " + state.listing.itemName() + " for " + amount + " coins");
             return true;
         }
@@ -244,6 +307,10 @@ public final class AuctionHouseManager {
         if (amount < minBid) {
             throw new IllegalArgumentException(
                     "bid must be at least the minimum next bid " + minBid + ": " + amount);
+        }
+        // Refund the outbid leader's escrowed coins before recording the new top bid.
+        if (state.highestBidder != null) {
+            creditCoins(state.highestBidder, state.highestBid);
         }
         state.highestBid = amount;
         state.highestBidder = bidder;
@@ -263,6 +330,13 @@ public final class AuctionHouseManager {
             throw new IllegalArgumentException("cannot end a BIN listing as an auction: " + listingId);
         }
         listings.remove(listingId);
+        if (state.highestBidder != null) {
+            // Winner's escrowed bid pays the seller; the item is released to the winner.
+            settleSale(state, state.highestBidder, state.highestBid);
+        } else {
+            // No bids: the listing is returned to the seller.
+            creditItem(state.listing.seller(), state.listing.item());
+        }
         return state.highestBidder;
     }
 
@@ -281,6 +355,11 @@ public final class AuctionHouseManager {
             throw new IllegalArgumentException("only the seller can cancel their listing");
         }
         listings.remove(listingId);
+        // Refund any standing bid and return the item to the seller.
+        if (state.highestBidder != null) {
+            creditCoins(state.highestBidder, state.highestBid);
+        }
+        creditItem(state.listing.seller(), state.listing.item());
     }
 
     /**
@@ -347,6 +426,139 @@ public final class AuctionHouseManager {
      */
     public Set<UUID> getActiveListings() {
         return Collections.unmodifiableSet(listings.keySet());
+    }
+
+    // -------------------------------------------------------------------------
+    // Timed auctions: expiry and settlement
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the expiry time of a listing.
+     *
+     * @param listingId the listing UUID
+     * @return unix epoch milliseconds when the listing expires, or {@code 0} if it has no expiry
+     * @throws IllegalArgumentException if the listing does not exist
+     */
+    public long getEndEpoch(UUID listingId) {
+        return requireListing(listingId).endEpoch;
+    }
+
+    /**
+     * Returns whether a listing has passed its expiry time at the given moment.
+     *
+     * @param listingId the listing UUID
+     * @param now       the current time in unix epoch milliseconds
+     * @return {@code true} if the listing has a non-zero expiry that {@code now} has reached
+     * @throws IllegalArgumentException if the listing does not exist
+     */
+    public boolean isExpired(UUID listingId, long now) {
+        long end = requireListing(listingId).endEpoch;
+        return end > 0 && now >= end;
+    }
+
+    /**
+     * Settles every listing whose expiry time has passed at {@code now}, removing it from
+     * the active listings. An auction with bids is awarded to the highest bidder (the seller
+     * receives the proceeds minus {@link #CLAIM_TAX}); an unsold auction or expired BIN
+     * listing is returned to the seller's claim queue.
+     *
+     * @param now the current time in unix epoch milliseconds
+     * @return the ids of the listings that were settled
+     */
+    public List<UUID> processExpired(long now) {
+        List<UUID> settled = new ArrayList<>();
+        for (Map.Entry<UUID, ListingState> entry : new ArrayList<>(listings.entrySet())) {
+            ListingState state = entry.getValue();
+            if (state.endEpoch <= 0 || now < state.endEpoch) continue;
+            listings.remove(entry.getKey());
+            if (state.listing.type() == AuctionType.AUCTION && state.highestBidder != null) {
+                settleSale(state, state.highestBidder, state.highestBid);
+            } else {
+                creditItem(state.listing.seller(), state.listing.item());
+            }
+            settled.add(entry.getKey());
+        }
+        return settled;
+    }
+
+    // -------------------------------------------------------------------------
+    // Escrow and claim queues
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the coins currently escrowed for an active bid-based auction (the highest bid),
+     * or {@code 0} if no bid has been placed.
+     *
+     * @param listingId the listing UUID
+     * @return the escrowed bid amount
+     * @throws IllegalArgumentException if the listing does not exist
+     */
+    public double getEscrowedBid(UUID listingId) {
+        ListingState state = requireListing(listingId);
+        return state.highestBidder == null ? 0.0 : state.highestBid;
+    }
+
+    /**
+     * Returns the coins waiting to be collected by the given player (sale proceeds and
+     * refunds for outbid bids) without removing them.
+     *
+     * @param player the player's UUID, must not be null
+     * @return the pending coin balance (0 if none)
+     */
+    public double getPendingCoins(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return pendingCoins.getOrDefault(player, 0.0);
+    }
+
+    /**
+     * Collects and clears the coins waiting for the given player.
+     *
+     * @param player the player's UUID, must not be null
+     * @return the collected coin amount (0 if none were pending)
+     */
+    public double claimCoins(UUID player) {
+        Objects.requireNonNull(player, "player");
+        Double amount = pendingCoins.remove(player);
+        return amount == null ? 0.0 : amount;
+    }
+
+    /**
+     * Returns an unmodifiable view of the items waiting to be collected by the given player
+     * (won auctions and unsold listings returned to the seller) without removing them.
+     *
+     * @param player the player's UUID, must not be null
+     * @return the pending items; empty list if none
+     */
+    public List<ItemStack> getPendingItems(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return Collections.unmodifiableList(
+                pendingItems.getOrDefault(player, Collections.emptyList()));
+    }
+
+    /**
+     * Collects and clears the items waiting for the given player.
+     *
+     * @param player the player's UUID, must not be null
+     * @return the collected items; empty list if none were pending
+     */
+    public List<ItemStack> claimItems(UUID player) {
+        Objects.requireNonNull(player, "player");
+        List<ItemStack> claimed = pendingItems.remove(player);
+        return claimed == null ? new ArrayList<>() : claimed;
+    }
+
+    /** Awards a sold item to the buyer and credits the seller their proceeds less {@link #CLAIM_TAX}. */
+    private void settleSale(ListingState state, UUID buyer, double price) {
+        creditItem(buyer, state.listing.item());
+        creditCoins(state.listing.seller(), price * (1.0 - CLAIM_TAX));
+    }
+
+    private void creditCoins(UUID player, double amount) {
+        pendingCoins.merge(player, amount, Double::sum);
+    }
+
+    private void creditItem(UUID player, ItemStack item) {
+        pendingItems.computeIfAbsent(player, k -> new ArrayList<>()).add(item);
     }
 
     // -------------------------------------------------------------------------
@@ -529,6 +741,8 @@ public final class AuctionHouseManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         auctionCounts.clear();
         auctionHistory.clear();
+        pendingCoins.clear();
+        pendingItems.clear();
         if (cfg.isConfigurationSection("auctionCounts")) {
             for (String key : cfg.getConfigurationSection("auctionCounts").getKeys(false)) {
                 try {
@@ -540,7 +754,8 @@ public final class AuctionHouseManager {
         }
         items.clear();
         for (String key : cfg.getKeys(false)) {
-            if (key.equals("listings")) continue;
+            if (key.equals("listings") || key.equals("pendingCoins") || key.equals("pendingItems")
+                    || key.equals("auctionCounts") || key.equals("auctionHistory")) continue;
             try {
                 UUID id = UUID.fromString(key);
                 String itemName = cfg.getString(key + ".itemName");
@@ -583,11 +798,35 @@ public final class AuctionHouseManager {
                             id, seller, stack, itemName, category, startingBid, type);
                     ListingState state = new ListingState(listing);
                     state.highestBid = cfg.getDouble("listings." + key + ".highestBid", startingBid);
+                    state.endEpoch = cfg.getLong("listings." + key + ".endEpoch", 0L);
                     String bidderStr = cfg.getString("listings." + key + ".highestBidder");
                     if (bidderStr != null && !bidderStr.isEmpty()) {
                         state.highestBidder = UUID.fromString(bidderStr);
                     }
                     listings.put(id, state);
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("pendingCoins")) {
+            for (String key : cfg.getConfigurationSection("pendingCoins").getKeys(false)) {
+                try {
+                    pendingCoins.put(UUID.fromString(key), cfg.getDouble("pendingCoins." + key));
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed entries
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("pendingItems")) {
+            for (String key : cfg.getConfigurationSection("pendingItems").getKeys(false)) {
+                try {
+                    List<?> raw = cfg.getList("pendingItems." + key, Collections.emptyList());
+                    List<ItemStack> stacks = new ArrayList<>();
+                    for (Object o : raw) {
+                        if (o instanceof ItemStack) stacks.add((ItemStack) o);
+                    }
+                    pendingItems.put(UUID.fromString(key), stacks);
                 } catch (IllegalArgumentException ignored) {
                     // skip malformed entries
                 }
@@ -623,9 +862,16 @@ public final class AuctionHouseManager {
             cfg.set(key + ".type", listing.type().name());
             cfg.set(key + ".item", listing.item());
             cfg.set(key + ".highestBid", state.highestBid);
+            cfg.set(key + ".endEpoch", state.endEpoch);
             if (state.highestBidder != null) {
                 cfg.set(key + ".highestBidder", state.highestBidder.toString());
             }
+        }
+        for (Map.Entry<UUID, Double> entry : pendingCoins.entrySet()) {
+            cfg.set("pendingCoins." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, List<ItemStack>> entry : pendingItems.entrySet()) {
+            cfg.set("pendingItems." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
@@ -640,6 +886,8 @@ public final class AuctionHouseManager {
         items.clear();
         auctionCounts.clear();
         auctionHistory.clear();
+        pendingCoins.clear();
+        pendingItems.clear();
     }
 
     private static double minimumBidFor(ListingState state) {

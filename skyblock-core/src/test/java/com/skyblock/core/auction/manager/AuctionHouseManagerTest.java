@@ -190,4 +190,134 @@ class AuctionHouseManagerTest {
 
         assertThrows(IllegalArgumentException.class, () -> ah.endAuction(id));
     }
+
+    // -------------------------------------------------------------------------
+    // Fee tiers
+    // -------------------------------------------------------------------------
+
+    @Test
+    void listingFee_ScalesWithTier() {
+        assertEquals(0.01, AuctionHouseManager.listingFeeRate(500_000));
+        assertEquals(0.015, AuctionHouseManager.listingFeeRate(1_000_000));
+        assertEquals(0.02, AuctionHouseManager.listingFeeRate(10_000_000));
+        assertEquals(0.025, AuctionHouseManager.listingFeeRate(100_000_000));
+        // 1.5% of 2,000,000
+        assertEquals(30_000, AuctionHouseManager.calculateListingFee(2_000_000));
+    }
+
+    // -------------------------------------------------------------------------
+    // Escrow + claim queues
+    // -------------------------------------------------------------------------
+
+    @Test
+    void binPurchase_CreditsSellerNetOfTaxAndItemToBuyer() {
+        UUID seller = UUID.randomUUID();
+        UUID buyer = UUID.randomUUID();
+        UUID id = ah.createListing(seller, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+
+        ah.placeBid(id, buyer, 1000);
+
+        // seller receives 1000 minus the 1% claim tax
+        assertEquals(990.0, ah.getPendingCoins(seller));
+        assertEquals(1, ah.getPendingItems(buyer).size());
+    }
+
+    @Test
+    void claimCoinsAndItems_ReturnAndClear() {
+        UUID seller = UUID.randomUUID();
+        UUID buyer = UUID.randomUUID();
+        UUID id = ah.createListing(seller, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+        ah.placeBid(id, buyer, 1000);
+
+        assertEquals(990.0, ah.claimCoins(seller));
+        assertEquals(0.0, ah.getPendingCoins(seller), "claim must clear the balance");
+        assertEquals(1, ah.claimItems(buyer).size());
+        assertTrue(ah.getPendingItems(buyer).isEmpty(), "claim must clear the queue");
+    }
+
+    @Test
+    void outbid_RefundsPreviousLeadersEscrow() {
+        UUID seller = UUID.randomUUID();
+        UUID first = UUID.randomUUID();
+        UUID second = UUID.randomUUID();
+        UUID id = ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+        ah.placeBid(id, first, 100);
+        assertEquals(100.0, ah.getEscrowedBid(id));
+
+        ah.placeBid(id, second, 115);
+
+        assertEquals(100.0, ah.getPendingCoins(first), "outbid leader is refunded their escrow");
+        assertEquals(115.0, ah.getEscrowedBid(id));
+    }
+
+    @Test
+    void endAuction_WithBids_PaysSellerAndAwardsItemToWinner() {
+        UUID seller = UUID.randomUUID();
+        UUID bidder = UUID.randomUUID();
+        UUID id = ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+        ah.placeBid(id, bidder, 100);
+
+        ah.endAuction(id);
+
+        assertEquals(99.0, ah.getPendingCoins(seller));
+        assertEquals(1, ah.getPendingItems(bidder).size());
+    }
+
+    @Test
+    void endAuction_NoBids_ReturnsItemToSeller() {
+        UUID seller = UUID.randomUUID();
+        UUID id = ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+
+        ah.endAuction(id);
+
+        assertEquals(1, ah.getPendingItems(seller).size());
+        assertEquals(0.0, ah.getPendingCoins(seller));
+    }
+
+    @Test
+    void cancelListing_RefundsBidderAndReturnsItem() {
+        UUID seller = UUID.randomUUID();
+        UUID bidder = UUID.randomUUID();
+        UUID id = ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+        ah.placeBid(id, bidder, 100);
+
+        ah.cancelListing(id, seller);
+
+        assertEquals(100.0, ah.getPendingCoins(bidder), "standing bid is refunded");
+        assertEquals(1, ah.getPendingItems(seller).size(), "item is returned to the seller");
+    }
+
+    // -------------------------------------------------------------------------
+    // Timed auctions: expiry
+    // -------------------------------------------------------------------------
+
+    @Test
+    void timedListing_ExpiresAtEndEpoch() {
+        UUID seller = UUID.randomUUID();
+        UUID id = ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION, 1000L);
+
+        assertEquals(1000L, ah.getEndEpoch(id));
+        assertFalse(ah.isExpired(id, 999L));
+        assertTrue(ah.isExpired(id, 1000L));
+    }
+
+    @Test
+    void processExpired_SettlesAuctionWithBidsAndReturnsUnsold() {
+        UUID seller = UUID.randomUUID();
+        UUID bidder = UUID.randomUUID();
+        UUID sold = ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION, 1000L);
+        UUID unsold = ah.createListing(seller, item(), "Terminator", AuctionCategory.WEAPONS, 50, AuctionType.BIN, 1000L);
+        UUID open = ah.createListing(seller, item(), "Hyperion", AuctionCategory.WEAPONS, 200, AuctionType.BIN, 5000L);
+        ah.placeBid(sold, bidder, 100);
+
+        java.util.List<UUID> settled = ah.processExpired(2000L);
+
+        assertEquals(2, settled.size());
+        assertFalse(ah.isActive(sold));
+        assertFalse(ah.isActive(unsold));
+        assertTrue(ah.isActive(open), "listing whose end time has not passed stays active");
+        assertEquals(1, ah.getPendingItems(bidder).size(), "winner receives the sold item");
+        assertEquals(99.0, ah.getPendingCoins(seller), "seller receives proceeds for the sold auction");
+        assertEquals(1, ah.getPendingItems(seller).size(), "unsold listing returns to the seller");
+    }
 }
