@@ -90,6 +90,35 @@ class EssenceManagerTest {
     }
 
     @Test
+    void accrual_IsTrackedIndependentlyPerEssenceType() {
+        UUID player = UUID.randomUUID();
+        manager.addEssence(player, EssenceType.WITHER, 700);
+        manager.addEssence(player, EssenceType.DRAGON, 250);
+        manager.addEssence(player, EssenceType.CRIMSON, 90);
+        assertEquals(700, manager.getBalance(player, EssenceType.WITHER));
+        assertEquals(250, manager.getBalance(player, EssenceType.DRAGON));
+        assertEquals(90, manager.getBalance(player, EssenceType.CRIMSON));
+        // an untouched type is unaffected
+        assertEquals(0, manager.getBalance(player, EssenceType.ICE));
+    }
+
+    @Test
+    void purchasePerk_DeductsEscalatingCostPerLevel() {
+        UUID player = UUID.randomUUID();
+        EssenceShopPerk perk = EssenceShopPerk.HEALTH; // baseCost 100
+        // cost of level n is baseCost * (n + 1): 100, then 200
+        manager.addEssence(player, perk.getEssenceType(), 300);
+        assertTrue(manager.purchasePerk(player, perk));
+        assertEquals(200, manager.getBalance(player, perk.getEssenceType()));
+        assertTrue(manager.purchasePerk(player, perk));
+        assertEquals(0, manager.getBalance(player, perk.getEssenceType()));
+        assertEquals(2, manager.getPerkLevel(player, perk));
+        // next level would cost 300 (100 * 3) which the player can no longer afford
+        assertFalse(manager.purchasePerk(player, perk));
+        assertEquals(2, manager.getPerkLevel(player, perk));
+    }
+
+    @Test
     void canUnlock_GatesItemBehindEssenceBalance() {
         UUID player = UUID.randomUUID();
         EssenceItem item = EssenceItem.HYPERION; // 20000 wither
