@@ -61,16 +61,16 @@ class MuseumManagerTest {
     void registerItem_ExpandsCatalogOnceAndDrivesCompletion() {
         MuseumManager mgr = MuseumManager.getInstance();
         UUID id = UUID.randomUUID();
-        assertTrue(mgr.registerItem(MuseumCategory.FISHING, "Magma Lord Chestplate"));
-        assertFalse(mgr.registerItem(MuseumCategory.FISHING, "Magma Lord Chestplate"));
-        assertEquals(1, mgr.getCategorySize(MuseumCategory.FISHING));
+        assertTrue(mgr.registerItem(MuseumCategory.SPECIAL, "Magma Lord Chestplate"));
+        assertFalse(mgr.registerItem(MuseumCategory.SPECIAL, "Magma Lord Chestplate"));
+        assertEquals(1, mgr.getCategorySize(MuseumCategory.SPECIAL));
 
-        assertEquals(0.0, mgr.getCategoryCompletion(id, MuseumCategory.FISHING));
-        assertFalse(mgr.isCategoryComplete(id, MuseumCategory.FISHING));
+        assertEquals(0.0, mgr.getCategoryCompletion(id, MuseumCategory.SPECIAL));
+        assertFalse(mgr.isCategoryComplete(id, MuseumCategory.SPECIAL));
 
-        mgr.donate(id, MuseumCategory.FISHING, "Magma Lord Chestplate");
-        assertEquals(1.0, mgr.getCategoryCompletion(id, MuseumCategory.FISHING));
-        assertTrue(mgr.isCategoryComplete(id, MuseumCategory.FISHING));
+        mgr.donate(id, MuseumCategory.SPECIAL, "Magma Lord Chestplate");
+        assertEquals(1.0, mgr.getCategoryCompletion(id, MuseumCategory.SPECIAL));
+        assertTrue(mgr.isCategoryComplete(id, MuseumCategory.SPECIAL));
     }
 
     @Test

@@ -21,7 +21,7 @@ public final class MuseumManager {
         WEAPONS("Weapons"),
         ARMOR("Armor"),
         RARITIES("Rarities"),
-        FISHING("Fishing");
+        SPECIAL("Special");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
