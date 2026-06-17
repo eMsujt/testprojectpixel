@@ -29,6 +29,7 @@ public final class CoreListeners implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         dataManager.load(player.getUniqueId());
+        player.sendMessage("§aWelcome to §6SkyBlock§a!");
     }
 
     @EventHandler
