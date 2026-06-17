@@ -249,6 +249,9 @@ public final class GardenManager {
     /** Per-player best contest collection achieved per crop. */
     private final Map<UUID, Map<GardenCrop, Long>> bestContestCollection = new HashMap<>();
 
+    /** Per-player active Jacob's Farming Contest registration (the crop signed up for). */
+    private final Map<UUID, ContestRegistration> contestRegistrations = new HashMap<>();
+
     /** Per-player accumulated Garden XP (drives garden level). */
     private final Map<UUID, Long> gardenExperience = new HashMap<>();
 
@@ -289,6 +292,28 @@ public final class GardenManager {
 
         public long getCopperReward() {
             return copperReward;
+        }
+    }
+
+    /**
+     * A player's active registration for a Jacob's Farming Contest: the year-day
+     * the contest is held on and the crop the player signed up to farm.
+     */
+    public static final class ContestRegistration {
+        private final int contestDay;
+        private final GardenCrop crop;
+
+        public ContestRegistration(int contestDay, GardenCrop crop) {
+            this.contestDay = contestDay;
+            this.crop = Objects.requireNonNull(crop, "crop");
+        }
+
+        public int getContestDay() {
+            return contestDay;
+        }
+
+        public GardenCrop getCrop() {
+            return crop;
         }
     }
 
@@ -804,6 +829,78 @@ public final class GardenManager {
         return best == null ? 0L : best.getOrDefault(crop, 0L);
     }
 
+    /**
+     * Registers the player for the Jacob's Farming Contest held on the given
+     * year-day, signing them up to farm the chosen crop.
+     *
+     * <p>The contest schedule is owned by {@link CalendarManager}: the day must
+     * host a contest ({@link CalendarManager#isContestDay(int)}) and the crop
+     * must be one of the three crops featured that day
+     * ({@link CalendarManager#getGardenCrops(int)}).</p>
+     *
+     * @param playerId   the player registering
+     * @param contestDay the contest's year-day (1–{@value CalendarManager#DAYS_PER_YEAR})
+     * @param crop       the crop the player wishes to farm
+     * @return the resulting {@link ContestRegistration}
+     * @throws IllegalArgumentException if no contest is held that day or the crop is not featured
+     */
+    public ContestRegistration registerForContest(UUID playerId, int contestDay, GardenCrop crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        if (!CalendarManager.isContestDay(contestDay)) {
+            throw new IllegalArgumentException(
+                    "day " + contestDay + " does not host a Jacob's Farming Contest");
+        }
+        if (!CalendarManager.getGardenCrops(contestDay).contains(crop)) {
+            throw new IllegalArgumentException(
+                    crop.getDisplayName() + " is not featured in the contest on day " + contestDay);
+        }
+        ContestRegistration registration = new ContestRegistration(contestDay, crop);
+        contestRegistrations.put(playerId, registration);
+        return registration;
+    }
+
+    /**
+     * Returns the player's active contest registration.
+     *
+     * @param playerId the player to look up
+     * @return the registration, or {@code null} if the player is not registered
+     */
+    public ContestRegistration getContestRegistration(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return contestRegistrations.get(playerId);
+    }
+
+    /**
+     * Returns whether the player is currently registered for a contest.
+     *
+     * @param playerId the player to look up
+     * @return {@code true} if registered
+     */
+    public boolean isRegisteredForContest(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return contestRegistrations.containsKey(playerId);
+    }
+
+    /**
+     * Finalizes the player's registered contest: scores the collection against
+     * their registered crop via {@link #recordContest(UUID, GardenCrop, long)}
+     * and clears the registration.
+     *
+     * @param playerId  the player submitting their contest result
+     * @param collected the number of crops collected during the contest
+     * @return the {@link ContestMedal} earned this contest
+     * @throws IllegalStateException if the player is not registered for a contest
+     */
+    public ContestMedal submitContest(UUID playerId, long collected) {
+        Objects.requireNonNull(playerId, "playerId");
+        ContestRegistration registration = contestRegistrations.remove(playerId);
+        if (registration == null) {
+            throw new IllegalStateException("player is not registered for a contest");
+        }
+        return recordContest(playerId, registration.getCrop(), collected);
+    }
+
     // -------------------------------------------------------------------------
     // Garden level XP
     // -------------------------------------------------------------------------
@@ -982,6 +1079,7 @@ public final class GardenManager {
         contestMedals.clear();
         contestsParticipated.clear();
         bestContestCollection.clear();
+        contestRegistrations.clear();
         gardenExperience.clear();
         copper.clear();
         completedOffers.clear();
@@ -1077,6 +1175,13 @@ public final class GardenManager {
                         bestContestCollection.put(uuid, best);
                     }
                 }
+                if (cfg.isSet(key + ".contestRegistration.crop")) {
+                    try {
+                        GardenCrop crop = GardenCrop.valueOf(cfg.getString(key + ".contestRegistration.crop"));
+                        int day = cfg.getInt(key + ".contestRegistration.day", 1);
+                        contestRegistrations.put(uuid, new ContestRegistration(day, crop));
+                    } catch (IllegalArgumentException ignored) {}
+                }
             } catch (IllegalArgumentException ignored) {}
         }
     }
@@ -1095,6 +1200,7 @@ public final class GardenManager {
         allUuids.addAll(contestMedals.keySet());
         allUuids.addAll(contestsParticipated.keySet());
         allUuids.addAll(bestContestCollection.keySet());
+        allUuids.addAll(contestRegistrations.keySet());
         allUuids.addAll(gardenExperience.keySet());
         allUuids.addAll(copper.keySet());
         allUuids.addAll(completedOffers.keySet());
@@ -1165,6 +1271,11 @@ public final class GardenManager {
                     cfg.set(key + ".bestContest." + bc.getKey().name(), bc.getValue());
                 }
             }
+            ContestRegistration registration = contestRegistrations.get(uuid);
+            if (registration != null) {
+                cfg.set(key + ".contestRegistration.crop", registration.getCrop().name());
+                cfg.set(key + ".contestRegistration.day", registration.getContestDay());
+            }
         }
         try {
             cfg.save(file);
@@ -1194,6 +1305,7 @@ public final class GardenManager {
         contestMedals.remove(playerId);
         contestsParticipated.remove(playerId);
         bestContestCollection.remove(playerId);
+        contestRegistrations.remove(playerId);
         gardenExperience.remove(playerId);
         copper.remove(playerId);
         completedOffers.remove(playerId);
@@ -1217,6 +1329,7 @@ public final class GardenManager {
         had |= contestMedals.remove(playerId) != null;
         had |= contestsParticipated.remove(playerId) != null;
         had |= bestContestCollection.remove(playerId) != null;
+        had |= contestRegistrations.remove(playerId) != null;
         had |= gardenExperience.remove(playerId) != null;
         had |= copper.remove(playerId) != null;
         had |= completedOffers.remove(playerId) != null;
