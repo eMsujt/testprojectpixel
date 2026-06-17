@@ -231,6 +231,7 @@ commands:
     description: View and manage your fairy soul collection.
     usage: /fairysoul [info|collect <key>|reset]
     permission: skyblock.fairysoul
+    aliases: [fairysouls]
   mayor:
     description: View the active mayor and vote for candidates.
     usage: /mayor [vote <mayor>|set <mayor>]
@@ -251,6 +252,14 @@ commands:
     description: View your trophy fish catch counts and drop chances.
     usage: /trophyfish [info|reset]
     permission: skyblock.trophyfish
+  harp:
+    description: View Melody's Harp song progress and Intelligence bonus.
+    usage: /harp [info|stats|reset]
+    permission: skyblock.harp
+  jerryworkshop:
+    description: View your Jerry's Workshop gifts, snow minions, and snow.
+    usage: /jerryworkshop [info|reset]
+    permission: skyblock.jerryworkshop
   sacks:
     description: View and manage your item sacks.
     usage: /sacks [view <type>|list|reset]
@@ -407,6 +416,12 @@ permissions:
     default: true
   skyblock.trophyfish:
     description: Use the /trophyfish command to view trophy fish catch counts.
+    default: true
+  skyblock.harp:
+    description: Use the /harp command to view Melody's Harp song progress.
+    default: true
+  skyblock.jerryworkshop:
+    description: Use the /jerryworkshop command to view Jerry's Workshop progress.
     default: true
   skyblock.sacks:
     description: Use the /sacks command to view and manage item sacks.
