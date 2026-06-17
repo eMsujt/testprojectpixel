@@ -23,6 +23,9 @@ import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.fairysoul.FairySoulCommand;
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.BestiaryCommand;
+import com.skyblock.core.manager.HarpCommand;
+import com.skyblock.core.manager.TrophyFishCommand;
+import com.skyblock.core.manager.JerryWorkshopCommand;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.HarpManager;
 import com.skyblock.core.manager.JerryWorkshopManager;
@@ -188,10 +191,25 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("bestiary").setExecutor(bestiaryCommand);
             getCommand("bestiary").setTabCompleter(bestiaryCommand);
         }
+        TrophyFishCommand trophyFishCommand = new TrophyFishCommand(trophyFishManager);
+        if (getCommand("trophyfish") != null) {
+            getCommand("trophyfish").setExecutor(trophyFishCommand);
+            getCommand("trophyfish").setTabCompleter(trophyFishCommand);
+        }
         HarpManager harpManager = HarpManager.getInstance();
         harpManager.load(getDataFolder());
+        HarpCommand harpCommand = new HarpCommand(harpManager);
+        if (getCommand("harp") != null) {
+            getCommand("harp").setExecutor(harpCommand);
+            getCommand("harp").setTabCompleter(harpCommand);
+        }
         JerryWorkshopManager jerryWorkshopManager = JerryWorkshopManager.getInstance();
         jerryWorkshopManager.load(getDataFolder());
+        JerryWorkshopCommand jerryWorkshopCommand = new JerryWorkshopCommand(jerryWorkshopManager);
+        if (getCommand("jerryworkshop") != null) {
+            getCommand("jerryworkshop").setExecutor(jerryWorkshopCommand);
+            getCommand("jerryworkshop").setTabCompleter(jerryWorkshopCommand);
+        }
         HotmManager hotmManager = HotmManager.getInstance();
         hotmManager.load(getDataFolder());
         HOTMCommand hotmCommand = new HOTMCommand(hotmManager);
