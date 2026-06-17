@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.menu.HarpMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -16,8 +17,9 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /harp}         — list every song with its unlock status and best completion</li>
- *   <li>{@code /harp info}    — same as above</li>
+ *   <li>{@code /harp}         — open the harp GUI menu (song list, unlock state, best completion)</li>
+ *   <li>{@code /harp list}    — list every song with its unlock status and best completion in chat</li>
+ *   <li>{@code /harp info}    — same as {@code list}</li>
  *   <li>{@code /harp stats}   — show completed song count and the earned Intelligence bonus</li>
  *   <li>{@code /harp reset}   — reset all harp progress</li>
  * </ul>
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public final class HarpCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "stats", "reset");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "info", "stats", "reset");
 
     private final HarpManager harpManager;
 
@@ -41,11 +43,12 @@ public final class HarpCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            handleInfo(player);
+            new HarpMenu(player).open(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
+            case "list"  -> handleInfo(player);
             case "info"  -> handleInfo(player);
             case "stats" -> handleStats(player);
             case "reset" -> handleReset(player);
@@ -94,7 +97,8 @@ public final class HarpCommand implements TabExecutor {
 
     private void sendHelp(Player player) {
         player.sendMessage("=== Harp Commands ===");
-        player.sendMessage("/harp        — list songs and best completions");
+        player.sendMessage("/harp        — open the harp menu");
+        player.sendMessage("/harp list   — list songs and best completions");
         player.sendMessage("/harp info   — list songs and best completions");
         player.sendMessage("/harp stats  — show completed count and Intelligence bonus");
         player.sendMessage("/harp reset  — reset all harp progress");
