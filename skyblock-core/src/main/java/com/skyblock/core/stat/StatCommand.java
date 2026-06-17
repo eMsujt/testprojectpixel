@@ -1,5 +1,6 @@
 package com.skyblock.core.stat;
 
+import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

@@ -1,7 +1,7 @@
 package com.skyblock.plugin.listener;
 
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stat.StatManager;
+import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.combat.calculator.DamageFormula;
 import com.skyblock.core.item.ItemRegistry;
 import com.skyblock.core.item.ItemRegistry.ItemDefinition;

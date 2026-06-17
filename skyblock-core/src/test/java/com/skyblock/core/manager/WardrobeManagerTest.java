@@ -2,7 +2,6 @@ package com.skyblock.core.manager;
 
 import com.skyblock.core.manager.WardrobeManager.WardrobeSlot;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stat.StatManager;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
