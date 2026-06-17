@@ -1,6 +1,6 @@
 package com.skyblock.plugin.command.fairy;
 
-import com.skyblock.core.fairy.FairyManager;
+import com.skyblock.core.manager.FairySoulManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,11 +18,11 @@ public final class FairyCommand implements CommandExecutor {
         }
 
         UUID id = player.getUniqueId();
-        FairyManager manager = FairyManager.getInstance();
+        FairySoulManager manager = FairySoulManager.getInstance();
 
-        int count = manager.getCount(id);
+        int count = manager.getFoundCount(id);
         player.sendMessage("=== Fairy Souls ===");
-        player.sendMessage("Collected: " + count + " / " + FairyManager.MAX_SOULS);
+        player.sendMessage("Collected: " + count + " / " + manager.getTotalSouls());
         return true;
     }
 }
