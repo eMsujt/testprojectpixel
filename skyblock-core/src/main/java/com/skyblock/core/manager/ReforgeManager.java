@@ -129,6 +129,7 @@ public final class ReforgeManager {
         SWORD("Sword"),
         BOW("Bow"),
         ARMOR("Armor"),
+        ACCESSORY("Accessory"),
         AXE("Axe"),
         PICKAXE("Pickaxe"),
         ROD("Fishing Rod"),
