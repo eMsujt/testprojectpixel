@@ -4,8 +4,7 @@ package com.skyblock.core.model;
  * Every player stat tracked in SkyBlock, with its human-readable display name,
  * the symbol shown in item lore and menus, and the base value a fresh profile starts with.
  *
- * <p>This is the single canonical stat enum. All duplicate stat enums across the
- * project ({@code PlayerStat}, {@code CombatStat}) are deprecated stubs that delegate here.</p>
+ * <p>This is the single canonical stat enum for the entire project.</p>
  */
 public enum Stat {
 

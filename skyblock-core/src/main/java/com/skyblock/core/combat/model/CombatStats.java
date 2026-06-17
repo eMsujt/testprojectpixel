@@ -3,7 +3,7 @@ package com.skyblock.core.combat.model;
 /**
  * An immutable snapshot of a player's core combat stats.
  *
- * <p>Unlike {@link CombatStat}, which describes the stats themselves (display
+ * <p>Unlike {@link com.skyblock.core.model.Stat}, which describes the stats themselves (display
  * name, symbol, base value), this record holds the concrete values a player
  * currently has, e.g. after item, skill and pet bonuses have been summed.</p>
  *
