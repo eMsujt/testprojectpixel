@@ -19,11 +19,6 @@
     <dependencies>
         <dependency>
             <groupId>com.skyblock</groupId>
-            <artifactId>skyblock-economy</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.skyblock</groupId>
             <artifactId>skyblock-items</artifactId>
             <version>${project.version}</version>
         </dependency>
