@@ -1,6 +1,6 @@
 name: SkyBlock
 version: 1.0.0
-main: com.skyblock.plugin.SkyBlockPlugin
+main: com.skyblock.core.SkyblockPlugin
 api-version: '26.1'
 description: Hypixel-SkyBlock-style remake for Paper
 authors: [SkyBlock Team]
@@ -9,176 +9,486 @@ load: POSTWORLD
 
 commands:
   skyblock:
-    description: Root SkyBlock command.
-    usage: /<command> [help]
+    description: Open the SkyBlock main menu.
+    usage: /skyblock
     aliases: [sb]
-    permission: skyblock.command.skyblock
-  bank:
-    description: View your SkyBlock bank balance.
-    usage: /<command>
-    permission: skyblock.command.bank
-  bazaar:
-    description: Browse the SkyBlock bazaar.
-    usage: /<command>
-    permission: skyblock.command.bazaar
-  mayor:
-    description: View the current SkyBlock mayor and perks.
-    usage: /<command> [status|candidates|vote <name>|myvote]
-    permission: skyblock.command.mayor
-  dungeon:
-    description: View your dungeon stats and progress.
-    usage: /<command>
-    permission: skyblock.command.dungeon
-  slayer:
-    description: View your Slayer quest progress
-    usage: /<command> [stats]
-    aliases: [slayer, slay]
-    permission: skyblock.command.slayer
-  fairy:
-    description: View your collected fairy souls.
-    usage: /<command>
-    permission: skyblock.command.fairy
-  auctionhouse:
-    description: View your active auction house listings.
-    usage: /<command>
-    aliases: [ah]
-    permission: skyblock.command.auctionhouse
-  enchanting:
-    description: View your active enchantments.
-    usage: /<command>
-    permission: skyblock.command.enchanting
-  kuudra:
-    description: View your Kuudra stats and progress.
-    usage: /<command>
-    permission: skyblock.command.kuudra
+  menu:
+    description: Open the SkyBlock main menu.
+    usage: /menu
+  skymenu:
+    description: Open the SkyBlock main menu (54-slot GUI).
+    usage: /skymenu
+    aliases: [smenu]
   island:
-    description: Teleport to your private island.
-    usage: /<command>
-    permission: skyblock.command.island
-  hub:
-    description: Teleport to the SkyBlock hub.
-    usage: /<command>
-    permission: skyblock.command.hub
+    description: Manage your SkyBlock island.
+    usage: /island <create|home|visit|invite|kick|leave>
+  islandupgrade:
+    description: Purchase upgrades for your SkyBlock island.
+    usage: /islandupgrade <list|info|buy>
+    aliases: [iu]
+  skills:
+    description: View your SkyBlock skills.
+    usage: /skills [skill]
+  skill:
+    description: View your SkyBlock skill levels and XP.
+    usage: /skill [skill]
+    permission: skyblock.skill
+  auction:
+    description: Open the Auction House.
+    usage: /auction [create|view|cancel]
+  auctionhouse:
+    description: Manage Auction House listings (BIN and bid-based).
+    usage: /auctionhouse <list|create|bid|view|cancel|mine>
+    aliases: [ah]
+  bazaar:
+    description: Open the Bazaar.
+    usage: /bazaar [product]
   profile:
-    description: View your SkyBlock profile stats.
-    usage: /<command>
-    permission: skyblock.command.profile
+    description: View your SkyBlock profile.
+    usage: /profile [player]
+  combat:
+    description: View and manage your combat stats.
+    usage: /combat [info|kills|deaths|mobkills|reset]
+  slay:
+    description: Manage your slayer quests.
+    usage: /slay [type|start|info]
+    permission: skyblock.slayer
+  pets:
+    description: Manage your pets.
+    usage: /pets [equip|unequip|list]
+  pet:
+    description: Manage your pets.
+    usage: /pet [list|equip|unequip|info]
+  f:
+    description: Manage SkyBlock friendships.
+    usage: /f <add|remove|list|accept|deny>
+  friend:
+    description: Manage your SkyBlock friend list.
+    usage: /friend <add|remove|list> [player]
+    permission: skyblock.friend
+  mailbox:
+    description: Mailbox system
+    usage: /mailbox <list|read|delete|send>
+    permission: skyblock.mailbox
+  booster:
+    description: Activate XP or coin boosters
+    usage: /booster <status|activate|deactivate|list>
+    permission: skyblock.booster
+  warp:
+    description: Teleport to a named warp point.
+    usage: /warp [name|set <name>|delete <name>]
+    permission: skyblock.warp
+  shop:
+    description: Browse and purchase items from the SkyBlock shop.
+    usage: /shop [category|buy <category> <item>]
+  leaderboard:
+    description: View player leaderboards.
+    usage: /leaderboard [category]
+    aliases: [lb]
+  bank:
+    description: Bank system
+    usage: /bank <balance|deposit|withdraw>
+    permission: skyblock.bank
+  banking:
+    description: Manage your SkyBlock banking account.
+    usage: /banking [deposit|withdraw|balance]
+  dungeon:
+    description: Dungeon system
+    usage: /dungeon <join|leave|stats|shop>
+  essence:
+    description: View and manage your SkyBlock essence balances.
+    usage: /essence <balance|add|remove> [type] [amount]
+    permission: skyblock.essence
+  forge:
+    description: Forge items using the SkyBlock forge.
+    usage: /forge [list|start|collect]
+  itemforge:
+    description: Forge SkyBlock items with rarity-typed outputs.
+    usage: /itemforge <list|start|status|collect|cancel>
+  collection:
+    description: View your collection progress.
+    usage: /collection [name]
+    aliases: [col]
+    permission: skyblock.collection
+  npc:
+    description: Interact with NPCs and their shops.
+    usage: /npc <list|shop <npc>|buy <npc> <item>>
   minion:
-    description: Manage your SkyBlock minions.
-    usage: /<command>
-    permission: skyblock.command.minion
-  wardrobe:
-    description: Manage your SkyBlock wardrobe outfits.
-    usage: /<command>
-    permission: skyblock.command.wardrobe
+    description: Manage your placed minions.
+    usage: /minion <list|place|upgrade|remove|info>
   alchemy:
-    description: Manage your SkyBlock alchemy skill.
-    usage: /<command> [level|brew|status|cancel|recipes]
-    permission: skyblock.command.alchemy
-  fishing:
-    description: Manage your SkyBlock fishing skill.
-    usage: /<command> [level|stats|loot|creatures]
-    aliases: [fish]
-    permission: skyblock.command.fishing
-  trade:
-    description: Trade items with another SkyBlock player.
-    usage: /<command> <player>
-    permission: skyblock.command.trade
-  event:
-    description: View and join SkyBlock events.
-    usage: /<command> [current|list|join <event>|status]
-    permission: skyblock.command.event
+    description: Brew potions using the SkyBlock alchemy system.
+    usage: /alchemy [list|brew|status|collect|cancel]
+  enchanting:
+    description: View and apply SkyBlock enchantments.
+    usage: /enchanting <list|info|apply|remove|view>
+  enchantment:
+    description: View and apply SkyBlock enchantments via the enchantment manager.
+    usage: /enchantment <list|info|apply|remove|view>
+  enchant:
+    description: View and apply SkyBlock custom enchants.
+    usage: /enchant <list|info|apply|remove|view>
+  skyblockenchant:
+    description: View and apply SkyBlock enchants via the SkyBlockEnchantManager.
+    usage: /skyblockenchant <list|info|apply|remove|view>
+  talisman:
+    description: Manage your equipped talismans and view stat bonuses.
+    usage: /talisman <list|equip|unequip|equipped|bonuses>
+  crafting:
+    description: Browse SkyBlock crafting recipes and track your crafting history.
+    usage: /crafting <list|view|history|craft>
   quest:
     description: Manage your SkyBlock quests.
-    usage: /<command> [list|start <quest>|status|abandon]
-    permission: skyblock.command.quest
-  garden:
-    description: View and manage your SkyBlock garden.
-    usage: /<command>
-    permission: skyblock.command.garden
-  pets:
-    description: View and manage your SkyBlock pets.
-    usage: /<command>
-    permission: skyblock.command.pets
-  collections:
-    description: View your SkyBlock collections progress.
-    usage: /<command>
-    permission: skyblock.command.collections
+    usage: /quest <list|start|status|reset>
+  achievement:
+    description: View your SkyBlock achievements.
+    usage: /achievement [list|view]
+  dailyreward:
+    description: Claim your daily coin reward.
+    usage: /dailyreward [status]
+    aliases: [daily]
+  storage:
+    description: Manage your personal storage pages.
+    usage: /storage <info|upgrade|reset>
+  trade:
+    description: Trade items with another player.
+    usage: /trade <player|accept|decline|add|remove|view|confirm|cancel>
+  wardrobe:
+    description: Save and load named armor outfits.
+    usage: /wardrobe <save|load|delete|list>
+  mining:
+    description: View mining level, XP, speed bonus, and ore XP values.
+    usage: /mining [ores|speedbonus]
+  fishing:
+    description: View fishing stats and trophy fish catches.
+    usage: /fishing [trophy [<fish>|reset]]
+  bestiary:
+    description: Track your mob kill counts.
+    usage: /bestiary [view <mob>|reset]
+  party:
+    description: Manage your party.
+    usage: /party <invite|accept|decline|kick|leave|list>
+  accessorybag:
+    description: Manage your accessory bag and view stat bonuses.
+    usage: /accessorybag <list|add|remove|bonuses>
+    aliases: [abag]
+  accessory:
+    description: Manage accessory rarities and view stat multipliers.
+    usage: /accessory <list|info|setrarity|remove>
+  essence:
+    description: View and manage your essence balances.
+    usage: /essence <balance [type]|add <type> <amount>|remove <type> <amount>>
   hotm:
-    description: View your Heart of the Mountain progress.
-    usage: /<command>
-    permission: skyblock.command.hotm
+    description: View and manage Heart of the Mountain perk levels.
+    usage: /hotm <view [perk]|upgrade <perk>|set <perk> <level>|reset>
+    permission: skyblock.hotm
+  hotmtree:
+    description: View and manage Heart of the Mountain perk tree.
+    usage: /hotmtree <view [perk]|upgrade <perk>|set <perk> <level>|reset>
+    permission: skyblock.hotm
+  crimsonisle:
+    description: View and manage Crimson Isle faction, reputation, and Kuudra keys.
+    usage: /crimsonisle <faction [set <faction>]|reputation [add|remove <faction> <amt>]|kuudra [add|remove <tier> <amt>]>
+    permission: skyblock.crimsonisle
+  backpack:
+    description: Create and manage personal item backpacks.
+    usage: /backpack <create <name>|delete <name>|list>
+    permission: skyblock.backpack
+  kuudra:
+    description: Kuudra system
+    usage: /kuudra <join|leave|stats|shop>
+    permission: skyblock.kuudra
+  garden:
+    description: View and manage your Garden plot, visitors, and crop upgrades.
+    usage: /garden <info|plot [set|add <level>]|visitors [set|add <amount>]|crop [set|add <crop> <level>]|reset>
+    permission: skyblock.garden
+  guild:
+    description: Create and manage player guilds.
+    usage: /guild <create|invite|accept|decline|kick|leave|disband|info>
+    permission: skyblock.guild
+  reforge:
+    description: View and apply item reforges.
+    usage: /reforge [list|info <name>|apply <name>|clear]
+    permission: skyblock.reforge
+  rift:
+    description: View and manage your Rift dimension state.
+    usage: /rift <info|enter [zone]|exit|reset>
+    permission: skyblock.rift
+  jacobcontest:
+    description: View and participate in Jacob's Farming Contests.
+    usage: /jacobcontest [info|enter <crop>|pb [crop]|medals]
+    permission: skyblock.jacobcontest
+  season:
+    description: View and manage the current SkyBlock season.
+    usage: /season <current|next|set <season>|advance>
+    permission: skyblock.season
+  cooldown:
+    description: View and manage per-player per-key cooldowns.
+    usage: /cooldown <list|check <key>|set <key> <seconds>|clear <key>|clearall>
+    permission: skyblock.cooldown
+  stats:
+    description: View and manage your SkyBlock player stats.
+    usage: /stats [info|get <stat>|set <stat> <value>|reset]
+    permission: skyblock.stats
+  fairysoul:
+    description: View and manage your fairy soul collection.
+    usage: /fairysoul [info|collect <key>|reset]
+    permission: skyblock.fairysoul
+  mayor:
+    description: View the active mayor and vote for candidates.
+    usage: /mayor [vote <mayor>|set <mayor>]
+    permission: skyblock.mayor
+  slayer:
+    description: Manage your slayer quests and view boss info.
+    usage: /slayer [info|start|type]
+    permission: skyblock.slayer
+  museum:
+    description: Donate items and view your museum collection.
+    usage: /museum [info|view <category>|donate <item>|reset]
+    permission: skyblock.museum
+  trophy:
+    description: View and unlock SkyBlock trophies.
+    usage: /trophy [list|unlocked|info <trophy>|unlock <trophy>|reset]
+    permission: skyblock.trophy
+  trophyfish:
+    description: View your trophy fish catch counts and drop chances.
+    usage: /trophyfish [info|reset]
+    permission: skyblock.trophyfish
+  sacks:
+    description: View and manage your item sacks.
+    usage: /sacks [view <type>|list|reset]
+    permission: skyblock.sacks
+  hub:
+    description: Teleport to the SkyBlock hub world.
+    usage: /hub
+  jacob:
+    description: Submit scores and view history for Jacob's Farming Contests.
+    usage: /jacob [submit <crop> <score>|history|medals|crops]
+    permission: skyblock.jacob
+  ability:
+    description: View, equip, and unlock player abilities.
+    usage: /ability <list|info <type>|equip <type>|unequip|unlock <type>>
+    permission: skyblock.ability
+  chocolatefactory:
+    description: View and manage your Chocolate Factory rabbits and production.
+    usage: /chocolatefactory <balance|production|rabbits|rarities|addrabbit <rarity>>
+    permission: skyblock.chocolatefactory
+  gemstone:
+    description: View your gemstone collection counts.
+    usage: /gemstone <info|view <type>|types|add <type> <amount>>
+    permission: skyblock.gemstone
+  calendar:
+    description: View the current SkyBlock calendar and event participation.
+    usage: /calendar <info|months|events|set <day>>
+    permission: skyblock.calendar
+  event:
+    description: View and join SkyBlock events.
+    usage: /event <list|join <event>|status [event]|reset>
+    permission: skyblock.event
+  foraging:
+    description: View foraging level, XP, and log chop counts.
+    usage: /foraging [info <log>|reset]
+    permission: skyblock.foraging
+  crystalhollows:
+    description: Manage Crystal Hollows zones and crystal collection.
+    usage: /crystalhollows [zones|enter <zone>|leave|crystals|collect <crystal>]
+    permission: skyblock.crystalhollows
+  miningzone:
+    description: View and manage your mining zone assignment.
+    usage: /miningzone [list|set <zone>|clear]
+    permission: skyblock.miningzone
+  dungeons:
+    description: Start dungeon runs and view scores by type.
+    usage: /dungeons [start <type>|leave|info|scores <type>]
+    permission: skyblock.dungeons
+  collections:
+    description: View your SkyBlock collection progress.
+    usage: /collections [collection|category <cat>|reset]
+    permission: skyblock.collections
+  chat:
+    description: Switch your active chat channel.
+    usage: /chat [global|party|guild|trade]
+    permission: skyblock.chat
+  mail:
+    description: Send and read player mail messages.
+    usage: /mail <inbox|send <player> <message>|clear>
+    permission: skyblock.mail
+  coop:
+    description: Manage your co-op island group.
+    usage: /coop <invite|accept|decline|kick|leave|list>
+    permission: skyblock.coop
+  repair:
+    description: Repair items using coins based on material durability cost.
+    usage: /repair <hand|all>
+    permission: skyblock.repair
+  crimson:
+    description: View and manage Crimson Isle faction and reputation.
+    usage: /crimson [info|faction <faction>|reputation [faction]]
+    permission: skyblock.crimson
+  vault:
+    description: Manage your personal vault balance and tier.
+    usage: /vault [info|deposit <amount>|withdraw <amount>|upgrade]
+    permission: skyblock.vault
+  stat:
+    description: View your effective SkyBlock player stats.
+    usage: /stat [<stat>]
+    permission: skyblock.stat
+  skyblock-level:
+    description: View and manage your SkyBlock level and XP.
+    usage: /skyblock-level [info|addxp <amount>|setxp <amount>]
+    aliases: [sblevel]
+    permission: skyblock.skyblock-level
+  run:
+    description: Track your dungeon run statistics.
+    usage: /run [info [floor]|reset]
+    permission: skyblock.run
+  title:
+    description: Title system
+    usage: /title <list|set|remove>
+    permission: skyblock.title
 
 permissions:
-  skyblock.command.skyblock:
-    description: Allows use of the /skyblock command.
+  skyblock.warp:
+    description: Use the /warp command to teleport to warp points.
     default: true
-  skyblock.command.bank:
-    description: Allows use of the /bank command.
+  skyblock.warp.set:
+    description: Create and delete warp points via /warp set and /warp delete.
+    default: op
+  skyblock.collection:
+    description: Use the /collection command to view collection progress.
     default: true
-  skyblock.command.bazaar:
-    description: Allows use of the /bazaar command.
+  skyblock.skill:
+    description: Use the /skill command to view skill levels and XP.
     default: true
-  skyblock.command.mayor:
-    description: Allows use of the /mayor command.
+  skyblock.slayer:
+    description: Use the /slay command to manage slayer quests.
     default: true
-  skyblock.command.dungeon:
-    description: Allows use of the /dungeon command.
+  skyblock.essence:
+    description: Use the /essence command to view and manage essence balances.
     default: true
-  skyblock.command.slayer:
-    description: Allows use of the /slayer command.
+  skyblock.crimsonisle:
+    description: Use the /crimsonisle command to view and manage Crimson Isle data.
     default: true
-  skyblock.command.fairy:
-    description: Allows use of the /fairy command.
+  skyblock.backpack:
+    description: Use the /backpack command to manage personal backpacks.
     default: true
-  skyblock.command.auctionhouse:
-    description: Allows use of the /auctionhouse command.
+  skyblock.kuudra:
+    description: Use the /kuudra command to view and manage Kuudra keys and completions.
     default: true
-  skyblock.command.enchanting:
-    description: Allows use of the /enchanting command.
+  skyblock.garden:
+    description: Use the /garden command to view and manage Garden plot, visitors, and crop upgrades.
     default: true
-  skyblock.command.kuudra:
-    description: Allows use of the /kuudra command.
+  skyblock.guild:
+    description: Use the /guild command to create and manage guilds.
     default: true
-  skyblock.command.island:
-    description: Allows use of the /island command.
+  skyblock.reforge:
+    description: Use the /reforge command to view and apply item reforges.
     default: true
-  skyblock.command.hub:
-    description: Allows use of the /hub command.
+  skyblock.rift:
+    description: Use the /rift command to manage Rift dimension state.
     default: true
-  skyblock.command.profile:
-    description: Allows use of the /profile command.
+  skyblock.jacobcontest:
+    description: Use the /jacobcontest command to view and participate in Jacob's Farming Contests.
     default: true
-  skyblock.command.minion:
-    description: Allows use of the /minion command.
+  skyblock.season:
+    description: Use the /season command to view and manage the current SkyBlock season.
     default: true
-  skyblock.command.wardrobe:
-    description: Allows use of the /wardrobe command.
+  skyblock.fairysoul:
+    description: Use the /fairysoul command to view and manage fairy soul collection.
     default: true
-  skyblock.command.alchemy:
-    description: Allows use of the /alchemy command.
+  skyblock.mayor:
+    description: Use the /mayor command to view and vote for mayors.
     default: true
-  skyblock.command.fishing:
-    description: Allows use of the /fishing command.
+  skyblock.slayer:
+    description: Use the /slayer command to manage slayer quests.
     default: true
-  skyblock.command.trade:
-    description: Allows use of the /trade command.
+  skyblock.museum:
+    description: Use the /museum command to donate items and view your museum.
     default: true
-  skyblock.command.event:
-    description: Allows use of the /event command.
+  skyblock.trophy:
+    description: Use the /trophy command to view and unlock trophies.
     default: true
-  skyblock.command.quest:
-    description: Allows use of the /quest command.
+  skyblock.trophyfish:
+    description: Use the /trophyfish command to view trophy fish catch counts.
     default: true
-  skyblock.command.garden:
-    description: Allows use of the /garden command.
+  skyblock.sacks:
+    description: Use the /sacks command to view and manage item sacks.
     default: true
-  skyblock.command.pets:
-    description: Allows use of the /pets command.
+  skyblock.jacob:
+    description: Use the /jacob command to submit scores and view contest history.
     default: true
-  skyblock.command.collections:
-    description: Allows use of the /collections command.
+  skyblock.ability:
+    description: Use the /ability command to view, equip, and unlock abilities.
     default: true
-  skyblock.command.hotm:
-    description: Allows use of the /hotm command.
+  skyblock.chocolatefactory:
+    description: Use the /chocolatefactory command to manage Chocolate Factory data.
+    default: true
+  skyblock.gemstone:
+    description: Use the /gemstone command to view your gemstone collection.
+    default: true
+  skyblock.calendar:
+    description: Use the /calendar command to view the SkyBlock calendar.
+    default: true
+  skyblock.event:
+    description: Use the /event command to view and join SkyBlock events.
+    default: true
+  skyblock.foraging:
+    description: Use the /foraging command to view foraging stats.
+    default: true
+  skyblock.crystalhollows:
+    description: Use the /crystalhollows command to manage Crystal Hollows zones.
+    default: true
+  skyblock.miningzone:
+    description: Use the /miningzone command to view and manage mining zone assignment.
+    default: true
+  skyblock.dungeons:
+    description: Use the /dungeons command to start dungeon runs and view scores.
+    default: true
+  skyblock.cooldown:
+    description: Use the /cooldown command to view and manage per-player cooldowns.
+    default: true
+  skyblock.collections:
+    description: Use the /collections command to view collection progress.
+    default: true
+  skyblock.chat:
+    description: Use the /chat command to switch active chat channels.
+    default: true
+  skyblock.mail:
+    description: Use the /mail command to send and read player mail.
+    default: true
+  skyblock.coop:
+    description: Use the /coop command to manage your co-op island group.
+    default: true
+  skyblock.repair:
+    description: Use the /repair command to repair items with coins.
+    default: true
+  skyblock.crimson:
+    description: Use the /crimson command to view and manage Crimson Isle faction and reputation.
+    default: true
+  skyblock.vault:
+    description: Use the /vault command to manage vault balance and tier.
+    default: true
+  skyblock.stat:
+    description: Use the /stat command to view effective player stats.
+    default: true
+  skyblock.skyblock-level:
+    description: Use the /skyblock-level command to view and manage SkyBlock level.
+    default: true
+  skyblock.bank:
+    description: Use the /bank command to manage your SkyBlock bank account.
+    default: true
+  skyblock.friend:
+    description: Use the /friend command to manage SkyBlock friendships.
+    default: true
+  skyblock.mailbox:
+    description: Use the /mailbox command to view and manage your mailbox.
+    default: true
+  skyblock.booster:
+    description: Use the /booster command to view and activate boosters.
+    default: true
+  skyblock.run:
+    description: Use the /run command to track dungeon run statistics.
+    default: true
+  skyblock.title:
+    description: Use the /title command to manage SkyBlock titles.
     default: true
