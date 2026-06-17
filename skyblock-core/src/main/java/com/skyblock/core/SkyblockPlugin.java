@@ -12,6 +12,10 @@ import com.skyblock.core.bank.command.BankCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.bazaar.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
+import com.skyblock.core.museum.MuseumCommand;
+import com.skyblock.core.manager.MuseumManager;
+import com.skyblock.core.manager.EssenceCommand;
+import com.skyblock.core.manager.EssenceManager;
 import com.skyblock.core.dungeon.command.DungeonCommand;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
@@ -151,6 +155,18 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("bazaar") != null) {
             getCommand("bazaar").setExecutor(bazaarCommand);
             getCommand("bazaar").setTabCompleter(bazaarCommand);
+        }
+        MuseumManager museumManager = MuseumManager.getInstance();
+        MuseumCommand museumCommand = new MuseumCommand(museumManager);
+        if (getCommand("museum") != null) {
+            getCommand("museum").setExecutor(museumCommand);
+            getCommand("museum").setTabCompleter(museumCommand);
+        }
+        EssenceManager essenceManager = EssenceManager.getInstance();
+        EssenceCommand essenceCommand = new EssenceCommand(essenceManager);
+        if (getCommand("essence") != null) {
+            getCommand("essence").setExecutor(essenceCommand);
+            getCommand("essence").setTabCompleter(essenceCommand);
         }
         DungeonManager dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
