@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -49,6 +50,18 @@ public final class EnchantmentManager {
 
     public int getRequiredBookshelfPower(EnchantingManager.SkyBlockEnchantment type) {
         return delegate.getRequiredBookshelfPower(type);
+    }
+
+    public boolean isUltimate(EnchantingManager.SkyBlockEnchantment type) {
+        return delegate.isUltimate(type);
+    }
+
+    public Set<EnchantingManager.SkyBlockEnchantment> getConflicts(EnchantingManager.SkyBlockEnchantment type) {
+        return delegate.getConflicts(type);
+    }
+
+    public int getEnchantCost(EnchantingManager.SkyBlockEnchantment type, int level) {
+        return delegate.getEnchantCost(type, level);
     }
 
     public boolean remove(UUID playerId) {
