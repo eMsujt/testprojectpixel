@@ -2,6 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetManager.Pet;
+import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,6 +11,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class PetMenu extends Menu {
+
+    /** Width of the textual XP progress bar rendered in each pet's lore. */
+    private static final int XP_BAR_SEGMENTS = 20;
 
     private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -55,9 +61,15 @@ public class PetMenu extends Menu {
         handlers.clear();
 
         PetManager petManager = PetManager.getInstance();
-        List<Pet> owned = petManager.getPets(playerId);
+        List<Pet> owned = new ArrayList<>(petManager.getPets(playerId));
         Pet activePet = petManager.getActivePet(playerId);
         UUID activeId = activePet != null ? activePet.id : null;
+
+        // Group by rarity (highest tier first), then strongest pet within each group.
+        owned.sort(Comparator
+                .comparingInt((Pet p) -> p.rarity.ordinal()).reversed()
+                .thenComparing(Comparator.comparingInt((Pet p) -> petManager.getLevel(playerId, p.type)).reversed())
+                .thenComparing(p -> p.type.getDisplayName()));
 
         int totalPages = Math.max(1, (int) Math.ceil((double) owned.size() / SLOTS_PER_PAGE));
         inventory = Bukkit.createInventory(this, 54, "§dPets");
@@ -74,12 +86,13 @@ public class PetMenu extends Menu {
             boolean equipped = pet.id.equals(activeId);
             int level = petManager.getLevel(playerId, pet.type);
             long xp = petManager.getExperience(playerId, pet.type);
+            String rarityColor = ItemBuilder.rarityColor(pet.rarity.name()).toString();
             ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
-                    .displayName((equipped ? "§a" : "§f") + pet.type.getDisplayName())
+                    .displayName(rarityColor + (equipped ? "✦ " : "") + "[Lvl " + level + "] " + pet.type.getDisplayName())
                     .lore(
-                            "§7Rarity: §f" + pet.rarity.getDisplayName(),
-                            "§7Level: §a" + level,
-                            "§7XP: §e" + xp,
+                            "§7Rarity: " + rarityColor + pet.rarity.getDisplayName(),
+                            "§7Level: §a" + level + "§7/§a" + PetManager.MAX_LEVEL,
+                            "§7XP: " + xpBar(xp, level, pet.type.defaultRarity),
                             equipped ? "§aCurrently equipped" : "§eClick to equip!")
                     .build();
             int slot = INNER_SLOTS[i];
@@ -126,6 +139,29 @@ public class PetMenu extends Menu {
         }
 
         player.openInventory(inventory);
+    }
+
+    /**
+     * Renders a textual XP progress bar toward the next level, e.g.
+     * {@code §a██████§7░░░░ §e42%}. A maxed pet shows a full bar and {@code MAX}.
+     *
+     * @param xp     the pet's total accumulated experience
+     * @param level  the pet's current level (1–{@link PetManager#MAX_LEVEL})
+     * @param rarity the rarity whose XP table governs progression
+     */
+    private static String xpBar(long xp, int level, Rarity rarity) {
+        long[] table = PetManager.PET_XP_TABLE.get(rarity.name());
+        if (level >= PetManager.MAX_LEVEL || table == null) {
+            return "§a" + "█".repeat(XP_BAR_SEGMENTS) + " §6MAX";
+        }
+        long prevThreshold = level >= 2 ? table[level - 2] : 0L;
+        long nextThreshold = table[level - 1];
+        long into = xp - prevThreshold;
+        long need = nextThreshold - prevThreshold;
+        double fraction = need <= 0 ? 0.0 : Math.max(0.0, Math.min(1.0, (double) into / need));
+        int filled = (int) Math.round(fraction * XP_BAR_SEGMENTS);
+        return "§a" + "█".repeat(filled) + "§7" + "░".repeat(XP_BAR_SEGMENTS - filled)
+                + " §e" + (int) Math.round(fraction * 100) + "%";
     }
 
     @Override
