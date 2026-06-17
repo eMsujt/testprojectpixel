@@ -5,6 +5,7 @@ Index of the project's documentation. Start with **Architecture**.
 | Document | What it covers |
 |----------|----------------|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | How the repo is laid out — the canonical `com.skyblock.core.*` package, the **module map**, the manager registry, and where to put a change. **Read this first.** |
+| [`FEATURES.md`](FEATURES.md) | One-line description of every implemented `com.skyblock.core.manager` feature manager. |
 | [`ROADMAP.md`](ROADMAP.md) | Planned features and milestones. |
 | [`STATUS.md`](STATUS.md) | Implementation status and the duplicate inventory. |
 | [`CLEANUP.md`](CLEANUP.md) | Module consolidation history. |
