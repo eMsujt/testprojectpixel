@@ -46,23 +46,26 @@ public final class BankManager {
      * Each tier carries a higher interest rate and a larger balance cap.
      */
     public enum BankTier {
-        STARTER("Starter",            50_000_000.0,    2.0),
-        GOLD("Gold",                  100_000_000.0,   2.5),
-        DELUXE("Deluxe",              250_000_000.0,   3.0),
-        SUPER_DELUXE("Super Deluxe",  500_000_000.0,   3.5),
-        PREMIER("Premier",            1_000_000_000.0, 4.0),
-        PREMIER_PLUS("Premier+",      Double.MAX_VALUE, 4.5);
+        STARTER("Starter",            50_000_000.0,    2.0,  1_000_000.0),
+        GOLD("Gold",                  100_000_000.0,   2.5,  2_000_000.0),
+        DELUXE("Deluxe",              250_000_000.0,   3.0,  3_000_000.0),
+        SUPER_DELUXE("Super Deluxe",  500_000_000.0,   3.5,  4_000_000.0),
+        PREMIER("Premier",            1_000_000_000.0, 4.0,  5_000_000.0),
+        PREMIER_PLUS("Premier+",      Double.MAX_VALUE, 4.5, 10_000_000.0);
 
         private final String displayName;
         /** Maximum balance this tier can hold before the next tier is required. */
         private final double maxBalance;
         /** Annual interest rate as a percentage (e.g. 1.5 means 1.5%). */
         private final double interestRate;
+        /** Maximum coins that can be paid out in a single interest accrual. */
+        private final double interestCap;
 
-        BankTier(String displayName, double maxBalance, double interestRate) {
+        BankTier(String displayName, double maxBalance, double interestRate, double interestCap) {
             this.displayName = displayName;
             this.maxBalance = maxBalance;
             this.interestRate = interestRate;
+            this.interestCap = interestCap;
         }
 
         public String getDisplayName() {
@@ -75,6 +78,10 @@ public final class BankManager {
 
         public double getInterestRate() {
             return interestRate;
+        }
+
+        public double getInterestCap() {
+            return interestCap;
         }
 
         /** Returns the lowest tier whose cap can hold the given balance. */
@@ -158,8 +165,9 @@ public final class BankManager {
 
     public double applyInterest(UUID playerId) {
         BankAccount old = getOrCreate(playerId);
-        double rate = getTier(playerId).getInterestRate() / 100.0;
-        double interest = old.balance() * rate;
+        BankTier tier = getTier(playerId);
+        double rate = tier.getInterestRate() / 100.0;
+        double interest = Math.min(old.balance() * rate, tier.getInterestCap());
         if (interest > 0) {
             old.transactionHistory().add("INTEREST +" + interest);
             accounts.put(playerId, new BankAccount(old.balance() + interest, old.transactionHistory()));
