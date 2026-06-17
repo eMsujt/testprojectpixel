@@ -1,4 +1,4 @@
-package com.skyblock.plugin.item;
+package com.skyblock.core.item;
 
 import com.skyblock.core.model.Rarity;
 import org.bukkit.Material;
