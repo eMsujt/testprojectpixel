@@ -2,8 +2,11 @@ package com.skyblock.core.manager;
 
 import com.skyblock.core.manager.FishingManager.SeaCreature;
 import com.skyblock.core.manager.FishingManager.WaterType;
+import com.skyblock.core.model.Stat;
 import org.junit.jupiter.api.Test;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,6 +87,25 @@ class FishingManagerTest {
         FishingManager mgr = FishingManager.getInstance();
         assertThrows(IllegalArgumentException.class,
                 () -> mgr.rollSeaCreature(20, WaterType.WATER, -0.5));
+    }
+
+    @Test
+    void rollSeaCreature_AppliesRodSeaCreatureChanceStat() {
+        FishingManager mgr = FishingManager.getInstance();
+        // A rod with a huge +Sea Creature Chance bonus guarantees the spawn,
+        // and at level 1 in WATER only SEA_WALKER is unlocked.
+        Map<Stat, Double> rodStats = new EnumMap<>(Stat.class);
+        rodStats.put(Stat.SEA_CREATURE_CHANCE, 10000.0);
+        for (int i = 0; i < 50; i++) {
+            assertEquals(SeaCreature.SEA_WALKER, mgr.rollSeaCreature(1, WaterType.WATER, rodStats));
+        }
+    }
+
+    @Test
+    void rollSeaCreature_NullRodStatsContributesNoLuck() {
+        FishingManager mgr = FishingManager.getInstance();
+        // Null rod stats must not throw; level 0 still unlocks nothing.
+        assertNull(mgr.rollSeaCreature(0, WaterType.WATER, (Map<Stat, Double>) null));
     }
 
     @Test
