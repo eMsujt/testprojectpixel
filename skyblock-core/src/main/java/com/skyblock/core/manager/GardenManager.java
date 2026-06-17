@@ -249,7 +249,47 @@ public final class GardenManager {
     /** Per-player best contest collection achieved per crop. */
     private final Map<UUID, Map<GardenCrop, Long>> bestContestCollection = new HashMap<>();
 
+    /** Per-player accumulated Garden XP (drives garden level). */
+    private final Map<UUID, Long> gardenExperience = new HashMap<>();
+
+    /** Per-player copper balance (earned from visitor offers). */
+    private final Map<UUID, Long> copper = new HashMap<>();
+
+    /** Per-player count of visitor offers fulfilled. */
+    private final Map<UUID, Integer> completedOffers = new HashMap<>();
+
     private GardenManager() {
+    }
+
+    /**
+     * An offer presented by a Garden {@link VisitorType}: a set of crops the
+     * visitor wants in exchange for a copper reward.
+     */
+    public static final class VisitorOffer {
+        private final VisitorType visitor;
+        private final Map<GardenCrop, Integer> requiredCrops;
+        private final long copperReward;
+
+        public VisitorOffer(VisitorType visitor, Map<GardenCrop, Integer> requiredCrops, long copperReward) {
+            this.visitor = Objects.requireNonNull(visitor, "visitor");
+            Objects.requireNonNull(requiredCrops, "requiredCrops");
+            EnumMap<GardenCrop, Integer> copy = new EnumMap<>(GardenCrop.class);
+            copy.putAll(requiredCrops);
+            this.requiredCrops = Collections.unmodifiableMap(copy);
+            this.copperReward = Math.max(0L, copperReward);
+        }
+
+        public VisitorType getVisitor() {
+            return visitor;
+        }
+
+        public Map<GardenCrop, Integer> getRequiredCrops() {
+            return requiredCrops;
+        }
+
+        public long getCopperReward() {
+            return copperReward;
+        }
     }
 
     /**
@@ -765,6 +805,164 @@ public final class GardenManager {
     }
 
     // -------------------------------------------------------------------------
+    // Garden level XP
+    // -------------------------------------------------------------------------
+
+    /** Cumulative Garden XP required to reach each garden level (index = level). */
+    private static final long[] GARDEN_LEVEL_XP = {
+        0L,       // level 0
+        70L,      // 1
+        140L,     // 2
+        280L,     // 3
+        520L,     // 4
+        1_120L,   // 5
+        2_620L,   // 6
+        4_620L,   // 7
+        7_120L,   // 8
+        10_120L,  // 9
+        14_120L,  // 10
+        20_120L,  // 11
+        28_120L,  // 12
+        40_120L,  // 13
+        56_120L,  // 14
+        81_120L,  // 15
+    };
+
+    /**
+     * Returns the maximum attainable garden level.
+     *
+     * @return the maximum garden level
+     */
+    public int getMaxGardenLevel() {
+        return GARDEN_LEVEL_XP.length - 1;
+    }
+
+    /**
+     * Returns the player's accumulated Garden XP.
+     *
+     * @param playerId the player to look up
+     * @return the garden XP, {@code 0} if not set
+     */
+    public long getGardenExperience(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return gardenExperience.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Sets the player's Garden XP (clamped to {@code >= 0}).
+     *
+     * @param playerId the player to update
+     * @param xp       the new garden XP
+     */
+    public void setGardenExperience(UUID playerId, long xp) {
+        Objects.requireNonNull(playerId, "playerId");
+        gardenExperience.put(playerId, Math.max(0L, xp));
+    }
+
+    /**
+     * Adds to the player's Garden XP (clamped to {@code >= 0}).
+     *
+     * @param playerId the player to update
+     * @param amount   the amount to add (may be negative)
+     * @return the new garden XP total
+     */
+    public long addGardenExperience(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        long updated = Math.max(0L, getGardenExperience(playerId) + amount);
+        gardenExperience.put(playerId, updated);
+        return updated;
+    }
+
+    /**
+     * Returns the player's garden level, derived from accumulated Garden XP and
+     * capped at {@link #getMaxGardenLevel()}.
+     *
+     * @param playerId the player to look up
+     * @return the current garden level, {@code 0} if no XP earned
+     */
+    public int getGardenLevel(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        long xp = getGardenExperience(playerId);
+        int level = 0;
+        while (level < getMaxGardenLevel() && xp >= GARDEN_LEVEL_XP[level + 1]) {
+            level++;
+        }
+        return level;
+    }
+
+    /**
+     * Returns how much more Garden XP the player needs to reach the next garden
+     * level.
+     *
+     * @param playerId the player to look up
+     * @return XP remaining until the next level, {@code 0} if already at max
+     */
+    public long getGardenXpToNextLevel(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        int next = getGardenLevel(playerId) + 1;
+        if (next > getMaxGardenLevel()) {
+            return 0L;
+        }
+        return Math.max(0L, GARDEN_LEVEL_XP[next] - getGardenExperience(playerId));
+    }
+
+    // -------------------------------------------------------------------------
+    // Visitor offers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the player's copper balance.
+     *
+     * @param playerId the player to look up
+     * @return the copper balance, {@code 0} if not set
+     */
+    public long getCopper(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return copper.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Adds to the player's copper balance (clamped to {@code >= 0}).
+     *
+     * @param playerId the player to update
+     * @param amount   the amount to add (may be negative)
+     * @return the new copper balance
+     */
+    public long addCopper(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        long updated = Math.max(0L, getCopper(playerId) + amount);
+        copper.put(playerId, updated);
+        return updated;
+    }
+
+    /**
+     * Returns the number of visitor offers the player has fulfilled.
+     *
+     * @param playerId the player to look up
+     * @return the completed offer count, {@code 0} if none
+     */
+    public int getCompletedOffers(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return completedOffers.getOrDefault(playerId, 0);
+    }
+
+    /**
+     * Fulfills a visitor offer for the player: awards the offer's copper reward,
+     * counts the visitor, and records the completed offer.
+     *
+     * @param playerId the player fulfilling the offer
+     * @param offer    the offer being fulfilled
+     * @return the player's new copper balance
+     */
+    public long completeVisitorOffer(UUID playerId, VisitorOffer offer) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(offer, "offer");
+        addVisitorCount(playerId, 1);
+        completedOffers.merge(playerId, 1, Integer::sum);
+        return addCopper(playerId, offer.getCopperReward());
+    }
+
+    // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
 
@@ -784,6 +982,9 @@ public final class GardenManager {
         contestMedals.clear();
         contestsParticipated.clear();
         bestContestCollection.clear();
+        gardenExperience.clear();
+        copper.clear();
+        completedOffers.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -845,6 +1046,15 @@ public final class GardenManager {
                 if (cfg.isSet(key + ".contestsParticipated")) {
                     contestsParticipated.put(uuid, cfg.getInt(key + ".contestsParticipated", 0));
                 }
+                if (cfg.isSet(key + ".gardenXp")) {
+                    gardenExperience.put(uuid, cfg.getLong(key + ".gardenXp", 0L));
+                }
+                if (cfg.isSet(key + ".copper")) {
+                    copper.put(uuid, cfg.getLong(key + ".copper", 0L));
+                }
+                if (cfg.isSet(key + ".completedOffers")) {
+                    completedOffers.put(uuid, cfg.getInt(key + ".completedOffers", 0));
+                }
                 if (cfg.isConfigurationSection(key + ".contestMedals")) {
                     int[] medals = new int[ContestMedal.values().length];
                     for (String medalName : cfg.getConfigurationSection(key + ".contestMedals").getKeys(false)) {
@@ -885,6 +1095,9 @@ public final class GardenManager {
         allUuids.addAll(contestMedals.keySet());
         allUuids.addAll(contestsParticipated.keySet());
         allUuids.addAll(bestContestCollection.keySet());
+        allUuids.addAll(gardenExperience.keySet());
+        allUuids.addAll(copper.keySet());
+        allUuids.addAll(completedOffers.keySet());
         for (UUID uuid : allUuids) {
             String key = uuid.toString();
             if (plotLevels.containsKey(uuid)) {
@@ -927,6 +1140,15 @@ public final class GardenManager {
             }
             if (contestsParticipated.containsKey(uuid)) {
                 cfg.set(key + ".contestsParticipated", contestsParticipated.get(uuid));
+            }
+            if (gardenExperience.containsKey(uuid)) {
+                cfg.set(key + ".gardenXp", gardenExperience.get(uuid));
+            }
+            if (copper.containsKey(uuid)) {
+                cfg.set(key + ".copper", copper.get(uuid));
+            }
+            if (completedOffers.containsKey(uuid)) {
+                cfg.set(key + ".completedOffers", completedOffers.get(uuid));
             }
             int[] medals = contestMedals.get(uuid);
             if (medals != null) {
@@ -972,6 +1194,9 @@ public final class GardenManager {
         contestMedals.remove(playerId);
         contestsParticipated.remove(playerId);
         bestContestCollection.remove(playerId);
+        gardenExperience.remove(playerId);
+        copper.remove(playerId);
+        completedOffers.remove(playerId);
     }
 
     /**
@@ -992,6 +1217,9 @@ public final class GardenManager {
         had |= contestMedals.remove(playerId) != null;
         had |= contestsParticipated.remove(playerId) != null;
         had |= bestContestCollection.remove(playerId) != null;
+        had |= gardenExperience.remove(playerId) != null;
+        had |= copper.remove(playerId) != null;
+        had |= completedOffers.remove(playerId) != null;
         return had;
     }
 }
