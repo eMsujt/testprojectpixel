@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.menu.BestiaryMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -17,7 +18,8 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /bestiary}            — show all recorded kill counts</li>
+ *   <li>{@code /bestiary}            — open the bestiary GUI menu</li>
+ *   <li>{@code /bestiary list}       — show all recorded kill counts in chat</li>
  *   <li>{@code /bestiary view <mob>} — show kill count for a specific mob</li>
  *   <li>{@code /bestiary reset}      — reset all kill counts</li>
  * </ul>
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public final class BestiaryCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("view", "reset", "families", "categories");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "view", "reset", "families", "categories");
 
     private final BestiaryManager bestiaryManager;
 
@@ -41,11 +43,12 @@ public final class BestiaryCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            handleList(player);
+            new BestiaryMenu(player.getUniqueId()).open(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
+            case "list"       -> handleList(player);
             case "view"       -> handleView(player, args);
             case "reset"      -> handleReset(player);
             case "families"   -> handleFamilies(player);
@@ -127,7 +130,8 @@ public final class BestiaryCommand implements TabExecutor {
 
     private void sendHelp(Player player) {
         player.sendMessage("=== Bestiary Commands ===");
-        player.sendMessage("/bestiary              — show all kill counts");
+        player.sendMessage("/bestiary              — open the bestiary menu");
+        player.sendMessage("/bestiary list         — show all kill counts in chat");
         player.sendMessage("/bestiary view <mob>   — show kills for a specific mob");
         player.sendMessage("/bestiary families     — show kills grouped by family");
         player.sendMessage("/bestiary categories   — show kills grouped by category");
