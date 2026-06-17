@@ -16,7 +16,6 @@
         <module>api</module>
         <module>enchantments</module>
         <module>items</module>
-        <module>enchanting</module>
         <module>mining</module>
         <module>dungeons</module>
         <module>foraging</module>
