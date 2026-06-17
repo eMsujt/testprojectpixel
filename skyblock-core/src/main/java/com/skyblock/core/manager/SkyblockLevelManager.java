@@ -1,24 +1,40 @@
-package com.skyblock.core.level;
+package com.skyblock.core.manager;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * Singleton tracking each player's SkyBlock XP and deriving their SkyBlock level.
+ * Canonical singleton tracking each player's SkyBlock XP and deriving their SkyBlock level.
  *
- * <p>Level formula mirrors the standard Hypixel skill curve defined in
- * {@link com.skyblock.core.manager.SkillManager}: the cumulative XP thresholds
- * are the same, and max level is {@value #MAX_LEVEL}.</p>
+ * <p>XP can be credited from several {@link Category categories} (skills, slayers,
+ * dungeons, events, museum, …); the per-category breakdown is tracked alongside the
+ * cumulative total. Level formula mirrors the standard Hypixel skill curve defined in
+ * {@link SkillManager}: max level is {@value #MAX_LEVEL}.</p>
+ *
+ * <p>Each level grants a {@link LevelReward} (coins plus a small permanent health
+ * bonus); {@link #rewardsForLevelRange(int, int)} returns the rewards earned when
+ * advancing across a span of levels.</p>
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class SkyblockLevelManager {
 
     public static final int MAX_LEVEL = 50;
+
+    /** Sources of SkyBlock XP, tracked per player for breakdown displays. */
+    public enum Category {
+        SKILL, SLAYER, DUNGEON, EVENT, MUSEUM, MISC
+    }
+
+    /** Rewards granted for reaching a single SkyBlock level. */
+    public record LevelReward(int level, long coins, double healthBonus) {}
 
     /**
      * Cumulative XP thresholds for levels 1–50 (matches the Hypixel SkyBlock skill curve).
@@ -41,6 +57,9 @@ public final class SkyblockLevelManager {
 
     /** Per-player cumulative SkyBlock XP; absent entries default to zero. */
     private final Map<UUID, Long> skyblockXP = new HashMap<>();
+
+    /** Per-player XP broken down by the category it was earned from. */
+    private final Map<UUID, EnumMap<Category, Long>> categoryXP = new HashMap<>();
 
     private SkyblockLevelManager() {}
 
@@ -65,7 +84,7 @@ public final class SkyblockLevelManager {
     }
 
     /**
-     * Adds SkyBlock XP to the player's total.
+     * Adds SkyBlock XP to the player's total, attributing it to {@link Category#MISC}.
      *
      * @param playerId the player to update
      * @param amount   the amount of XP to add (must be positive)
@@ -73,17 +92,34 @@ public final class SkyblockLevelManager {
      * @throws IllegalArgumentException if {@code amount} is not positive
      */
     public long addXP(UUID playerId, long amount) {
+        return addXP(playerId, Category.MISC, amount);
+    }
+
+    /**
+     * Adds SkyBlock XP to the player's total, attributing it to the given source category.
+     *
+     * @param playerId the player to update
+     * @param category the source the XP was earned from
+     * @param amount   the amount of XP to add (must be positive)
+     * @return the new total XP after the addition
+     * @throws IllegalArgumentException if {@code amount} is not positive
+     */
+    public long addXP(UUID playerId, Category category, long amount) {
         Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(category, "category");
         if (amount <= 0) {
             throw new IllegalArgumentException("amount must be positive");
         }
         long newXP = skyblockXP.getOrDefault(playerId, 0L) + amount;
         skyblockXP.put(playerId, newXP);
+        categoryXP.computeIfAbsent(playerId, id -> new EnumMap<>(Category.class))
+                .merge(category, amount, Long::sum);
         return newXP;
     }
 
     /**
-     * Sets the player's SkyBlock XP to an explicit value (op use only).
+     * Sets the player's SkyBlock XP to an explicit value (op use only). The per-category
+     * breakdown is reset and the new value attributed to {@link Category#MISC}.
      *
      * @param playerId the player to update
      * @param xp       the new XP value (must not be negative)
@@ -95,6 +131,40 @@ public final class SkyblockLevelManager {
             throw new IllegalArgumentException("xp must not be negative");
         }
         skyblockXP.put(playerId, xp);
+        EnumMap<Category, Long> breakdown = new EnumMap<>(Category.class);
+        if (xp > 0) {
+            breakdown.put(Category.MISC, xp);
+        }
+        categoryXP.put(playerId, breakdown);
+    }
+
+    /**
+     * Returns the XP the player has earned from the given source category.
+     *
+     * @param playerId the player to look up
+     * @param category the source category
+     * @return XP earned from that category, {@code 0} if none
+     */
+    public long getCategoryXP(UUID playerId, Category category) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(category, "category");
+        EnumMap<Category, Long> breakdown = categoryXP.get(playerId);
+        return breakdown == null ? 0L : breakdown.getOrDefault(category, 0L);
+    }
+
+    /**
+     * Returns an unmodifiable view of the player's XP broken down by source category.
+     *
+     * @param playerId the player to look up
+     * @return category → XP map, empty if the player has none
+     */
+    public Map<Category, Long> getCategoryBreakdown(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        EnumMap<Category, Long> breakdown = categoryXP.get(playerId);
+        if (breakdown == null || breakdown.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return Collections.unmodifiableMap(new EnumMap<>(breakdown));
     }
 
     /**
@@ -150,6 +220,38 @@ public final class SkyblockLevelManager {
     }
 
     /**
+     * Returns the reward granted for reaching the given level. Each level grants
+     * {@code level * 100} coins and a small permanent health bonus (a larger one on
+     * every fifth, milestone level).
+     *
+     * @param level target level, clamped to [1, {@value #MAX_LEVEL}]
+     * @return the reward for that level
+     */
+    public LevelReward rewardForLevel(int level) {
+        int clamped = Math.max(1, Math.min(level, MAX_LEVEL));
+        long coins = clamped * 100L;
+        double health = clamped % 5 == 0 ? 5.0 : 2.0;
+        return new LevelReward(clamped, coins, health);
+    }
+
+    /**
+     * Returns the rewards earned when advancing from {@code fromLevel} (exclusive) to
+     * {@code toLevel} (inclusive), in ascending level order. Returns an empty list if
+     * no levels were gained.
+     *
+     * @param fromLevel the level before advancing
+     * @param toLevel   the level after advancing
+     * @return rewards for each newly gained level
+     */
+    public List<LevelReward> rewardsForLevelRange(int fromLevel, int toLevel) {
+        List<LevelReward> rewards = new ArrayList<>();
+        for (int level = Math.max(1, fromLevel + 1); level <= Math.min(toLevel, MAX_LEVEL); level++) {
+            rewards.add(rewardForLevel(level));
+        }
+        return rewards;
+    }
+
+    /**
      * Returns an unmodifiable view of all player UUIDs with tracked XP.
      *
      * @return set of tracked player UUIDs
@@ -166,6 +268,7 @@ public final class SkyblockLevelManager {
      */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        categoryXP.remove(playerId);
         return skyblockXP.remove(playerId) != null;
     }
 }

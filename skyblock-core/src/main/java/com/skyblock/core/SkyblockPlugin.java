@@ -73,7 +73,7 @@ import com.skyblock.core.trade.TradeListener;
 import com.skyblock.core.achievement.AchievementCommand;
 import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.level.SkyblockLevelCommand;
-import com.skyblock.core.level.SkyblockLevelManager;
+import com.skyblock.core.manager.SkyblockLevelManager;
 import com.skyblock.core.command.SkyblockMenuCommand;
 import com.skyblock.core.run.RunCommand;
 import com.skyblock.core.dungeon.manager.RunManager;
