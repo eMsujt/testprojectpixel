@@ -1,6 +1,7 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.manager.BazaarManager;
+import com.skyblock.core.manager.BazaarManager.FeeTier;
 import com.skyblock.core.manager.BazaarManager.FillResult;
 import org.junit.jupiter.api.Test;
 
@@ -128,5 +129,57 @@ class BazaarManagerTest {
         assertEquals(1, mgr.getSellOrderCount(item));
         assertEquals(90.0, mgr.getHighestBid(item));
         assertEquals(100.0, mgr.getLowestAsk(item));
+    }
+
+    @Test
+    void feeTier_DefaultsToBaseRate() {
+        BazaarManager mgr = BazaarManager.getInstance();
+        UUID player = UUID.randomUUID();
+        assertEquals(FeeTier.BASE, mgr.getFeeTier(player));
+        assertEquals(1000.0 * 0.0125, mgr.computeFee(1000.0));
+    }
+
+    @Test
+    void feeTier_UsesPlayerConfiguredRate() {
+        BazaarManager mgr = BazaarManager.getInstance();
+        UUID player = UUID.randomUUID();
+        mgr.setFeeTier(player, FeeTier.TIER_5);
+        assertEquals(FeeTier.TIER_5, mgr.getFeeTier(player));
+        assertEquals(1000.0 * 0.0010, mgr.computeFee(1000.0, mgr.getFeeTier(player)));
+    }
+
+    @Test
+    void claim_SellerAccruesNetCoinsBuyerAccruesItems() {
+        BazaarManager mgr = BazaarManager.getInstance();
+        String item = uniqueItem();
+        UUID seller = UUID.randomUUID();
+        UUID buyer = UUID.randomUUID();
+        mgr.addSellOrder(seller, item, 10, 100.0);
+        // Buyer's resting order crosses and clears the book: seller escrows coins, buyer escrows items.
+        mgr.addBuyOrder(buyer, item, 10, 120.0);
+
+        double gross = 10 * 100.0;
+        double expectedNet = gross - mgr.computeFee(gross, FeeTier.BASE);
+        assertEquals(expectedNet, mgr.getClaimableCoins(seller));
+        assertEquals(10, mgr.getClaimableItems(buyer, item));
+
+        // Claiming drains the escrow exactly once.
+        assertEquals(expectedNet, mgr.claimCoins(seller));
+        assertEquals(0.0, mgr.getClaimableCoins(seller));
+        assertEquals(10, mgr.claimItems(buyer, item));
+        assertEquals(0, mgr.getClaimableItems(buyer, item));
+    }
+
+    @Test
+    void claim_InstantBuyEscrowsCoinsForRestingSeller() {
+        BazaarManager mgr = BazaarManager.getInstance();
+        String item = uniqueItem();
+        UUID seller = UUID.randomUUID();
+        mgr.addSellOrder(seller, item, 5, 40.0);
+
+        mgr.instantBuy(UUID.randomUUID(), item, 5);
+
+        double gross = 5 * 40.0;
+        assertEquals(gross - mgr.computeFee(gross, FeeTier.BASE), mgr.getClaimableCoins(seller));
     }
 }

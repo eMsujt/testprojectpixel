@@ -193,6 +193,30 @@ public final class BazaarManager {
         }
     }
 
+    /**
+     * Bazaar sell-tax tiers. The base rate is charged on coin proceeds; community/perk upgrades
+     * progressively reduce it. Items are never taxed — only coins claimed from filled sell orders.
+     */
+    public enum FeeTier {
+        BASE("Base", 0.0125),
+        TIER_1("Bazaar Flipper I", 0.0100),
+        TIER_2("Bazaar Flipper II", 0.0075),
+        TIER_3("Bazaar Flipper III", 0.0050),
+        TIER_4("Bazaar Flipper IV", 0.0025),
+        TIER_5("Bazaar Flipper V", 0.0010);
+
+        private final String displayName;
+        private final double rate;
+
+        FeeTier(String displayName, double rate) {
+            this.displayName = displayName;
+            this.rate = rate;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public double getRate() { return rate; }
+    }
+
     public enum BazaarOrderType {
         BUY("Buy Order"),
         SELL("Sell Order");
@@ -388,6 +412,9 @@ public final class BazaarManager {
     private final Map<UUID, List<String>> bazaarHistory = new ConcurrentHashMap<>();
     private final Map<String, Double> instantBuyPrices = new HashMap<>();
     private final Map<String, Double> sellOfferPrices = new HashMap<>();
+    private final Map<UUID, Double> claimableCoins = new HashMap<>();
+    private final Map<UUID, Map<String, Integer>> claimableItems = new HashMap<>();
+    private final Map<UUID, FeeTier> feeTiers = new HashMap<>();
 
     private BazaarManager() {}
 
@@ -443,6 +470,8 @@ public final class BazaarManager {
             recordBazaarEvent(sell.seller(), "Order filled: sold " + qty + "x " + itemId + " @ " + price);
             addTransaction(buy.buyer(), "BUY " + qty + "x " + itemId + " for " + total);
             addTransaction(sell.seller(), "SELL " + qty + "x " + itemId + " for " + total);
+            creditItems(buy.buyer(), itemId, qty);
+            creditCoins(sell.seller(), total);
 
             buys.remove(0);
             if (buy.quantity() > qty) {
@@ -479,6 +508,7 @@ public final class BazaarManager {
             }
             recordBazaarEvent(sell.seller(), "Sell order filled: " + fill + "x " + itemId + " @ " + sell.priceEach());
             addTransaction(sell.seller(), "SELL " + fill + "x " + itemId + " for " + (fill * sell.priceEach()));
+            creditCoins(sell.seller(), fill * sell.priceEach());
         }
         int filled = quantity - remaining;
         recordBazaarEvent(buyer, "Instant buy: " + filled + "x " + itemId + " for " + totalCost);
@@ -510,6 +540,7 @@ public final class BazaarManager {
             }
             recordBazaarEvent(buy.buyer(), "Buy order filled: " + fill + "x " + itemId + " @ " + buy.priceEach());
             addTransaction(buy.buyer(), "BUY " + fill + "x " + itemId + " for " + (fill * buy.priceEach()));
+            creditItems(buy.buyer(), itemId, fill);
         }
         int filled = quantity - remaining;
         recordBazaarEvent(seller, "Instant sell: " + filled + "x " + itemId + " for " + totalEarned);
@@ -732,6 +763,75 @@ public final class BazaarManager {
         setSellOfferPrice(product.getItemId(), price);
     }
 
+    // --- Fee tiers ---
+
+    /** The sell-tax tier applied to {@code player}'s claimed coin proceeds; {@link FeeTier#BASE} by default. */
+    public FeeTier getFeeTier(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return feeTiers.getOrDefault(player, FeeTier.BASE);
+    }
+
+    public void setFeeTier(UUID player, FeeTier tier) {
+        Objects.requireNonNull(player, "player");
+        Objects.requireNonNull(tier, "tier");
+        feeTiers.put(player, tier);
+    }
+
+    /** Tax charged on {@code grossCoins} at the given tier. */
+    public double computeFee(double grossCoins, FeeTier tier) {
+        Objects.requireNonNull(tier, "tier");
+        return grossCoins * tier.getRate();
+    }
+
+    /** Tax charged on {@code grossCoins} at the {@link FeeTier#BASE} rate. */
+    public double computeFee(double grossCoins) {
+        return computeFee(grossCoins, FeeTier.BASE);
+    }
+
+    // --- Order claim escrow ---
+
+    /** Credits {@code player} the net (post-fee) coin proceeds of a filled sell order, held until claimed. */
+    private void creditCoins(UUID player, double grossCoins) {
+        double net = grossCoins - computeFee(grossCoins, getFeeTier(player));
+        claimableCoins.merge(player, net, Double::sum);
+    }
+
+    /** Credits {@code player} the items of a filled buy order, held until claimed. */
+    private void creditItems(UUID player, String itemId, int quantity) {
+        claimableItems.computeIfAbsent(player, k -> new HashMap<>()).merge(itemId, quantity, Integer::sum);
+    }
+
+    /** Coins waiting to be claimed from {@code player}'s filled sell orders, net of fees. */
+    public double getClaimableCoins(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return claimableCoins.getOrDefault(player, 0.0);
+    }
+
+    /** Units of {@code itemId} waiting to be claimed from {@code player}'s filled buy orders. */
+    public int getClaimableItems(UUID player, String itemId) {
+        Objects.requireNonNull(player, "player");
+        Objects.requireNonNull(itemId, "itemId");
+        return claimableItems.getOrDefault(player, Collections.emptyMap()).getOrDefault(itemId, 0);
+    }
+
+    /** Removes and returns all coins {@code player} has waiting to claim. */
+    public double claimCoins(UUID player) {
+        Objects.requireNonNull(player, "player");
+        Double amount = claimableCoins.remove(player);
+        return amount == null ? 0.0 : amount;
+    }
+
+    /** Removes and returns the units of {@code itemId} {@code player} has waiting to claim. */
+    public int claimItems(UUID player, String itemId) {
+        Objects.requireNonNull(player, "player");
+        Objects.requireNonNull(itemId, "itemId");
+        Map<String, Integer> items = claimableItems.get(player);
+        if (items == null) return 0;
+        Integer quantity = items.remove(itemId);
+        if (items.isEmpty()) claimableItems.remove(player);
+        return quantity == null ? 0 : quantity;
+    }
+
     // --- Persistence ---
 
     public void load(File dataFolder) {
@@ -769,6 +869,38 @@ public final class BazaarManager {
                 try {
                     bazaarHistory.put(UUID.fromString(key),
                             new ArrayList<>(cfg.getStringList("bazaarHistory." + key)));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+
+        claimableCoins.clear();
+        if (cfg.isConfigurationSection("claimableCoins")) {
+            for (String key : cfg.getConfigurationSection("claimableCoins").getKeys(false)) {
+                try {
+                    claimableCoins.put(UUID.fromString(key), cfg.getDouble("claimableCoins." + key));
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+
+        claimableItems.clear();
+        if (cfg.isConfigurationSection("claimableItems")) {
+            for (String key : cfg.getConfigurationSection("claimableItems").getKeys(false)) {
+                try {
+                    UUID player = UUID.fromString(key);
+                    Map<String, Integer> items = new HashMap<>();
+                    for (String itemId : cfg.getConfigurationSection("claimableItems." + key).getKeys(false)) {
+                        items.put(itemId, cfg.getInt("claimableItems." + key + "." + itemId));
+                    }
+                    if (!items.isEmpty()) claimableItems.put(player, items);
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+
+        feeTiers.clear();
+        if (cfg.isConfigurationSection("feeTiers")) {
+            for (String key : cfg.getConfigurationSection("feeTiers").getKeys(false)) {
+                try {
+                    feeTiers.put(UUID.fromString(key), FeeTier.valueOf(cfg.getString("feeTiers." + key)));
                 } catch (IllegalArgumentException ignored) {}
             }
         }
@@ -832,6 +964,17 @@ public final class BazaarManager {
         for (Map.Entry<UUID, List<String>> entry : bazaarHistory.entrySet()) {
             cfg.set("bazaarHistory." + entry.getKey().toString(), entry.getValue());
         }
+        for (Map.Entry<UUID, Double> entry : claimableCoins.entrySet()) {
+            cfg.set("claimableCoins." + entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Map<String, Integer>> entry : claimableItems.entrySet()) {
+            for (Map.Entry<String, Integer> item : entry.getValue().entrySet()) {
+                cfg.set("claimableItems." + entry.getKey() + "." + item.getKey(), item.getValue());
+            }
+        }
+        for (Map.Entry<UUID, FeeTier> entry : feeTiers.entrySet()) {
+            cfg.set("feeTiers." + entry.getKey(), entry.getValue().name());
+        }
         for (Map.Entry<String, List<BuyOrder>> entry : buyOrders.entrySet()) {
             List<Map<String, Object>> serialized = new ArrayList<>();
             for (BuyOrder o : entry.getValue()) {
@@ -867,5 +1010,8 @@ public final class BazaarManager {
         buyOrders.clear();
         sellOrders.clear();
         bazaarHistory.clear();
+        claimableCoins.clear();
+        claimableItems.clear();
+        feeTiers.clear();
     }
 }
