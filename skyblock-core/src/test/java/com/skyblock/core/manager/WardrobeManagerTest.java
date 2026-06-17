@@ -123,6 +123,36 @@ class WardrobeManagerTest {
     }
 
     @Test
+    void lockedSlot_GatesSaveAndEquip() {
+        WardrobeManager mgr = WardrobeManager.getInstance();
+        UUID player = UUID.randomUUID();
+
+        // Slots within the default count are unlocked; later ones are not.
+        assertTrue(mgr.isSlotUnlocked(player, WardrobeSlot.SLOT_1));
+        assertFalse(mgr.isSlotUnlocked(player, WardrobeSlot.SLOT_5));
+
+        // Saving/equipping a locked slot is rejected.
+        assertFalse(mgr.saveOutfit(player, WardrobeSlot.SLOT_5, emptyArmor()));
+        assertNull(mgr.equip(player, WardrobeSlot.SLOT_5));
+
+        // After unlocking, the slot behaves normally.
+        assertTrue(mgr.unlockSlot(player, WardrobeSlot.SLOT_5));
+        assertFalse(mgr.unlockSlot(player, WardrobeSlot.SLOT_5)); // already unlocked
+        assertTrue(mgr.isSlotUnlocked(player, WardrobeSlot.SLOT_5));
+        assertTrue(mgr.saveOutfit(player, WardrobeSlot.SLOT_5, emptyArmor()));
+        assertNotNull(mgr.equip(player, WardrobeSlot.SLOT_5));
+        mgr.reset(player);
+    }
+
+    @Test
+    void unlockSlot_DefaultSlotsAlreadyAvailable() {
+        WardrobeManager mgr = WardrobeManager.getInstance();
+        UUID player = UUID.randomUUID();
+        assertFalse(mgr.unlockSlot(player, WardrobeSlot.SLOT_1));
+        mgr.reset(player);
+    }
+
+    @Test
     void equip_BySlotAppliesStats() {
         WardrobeManager mgr = WardrobeManager.getInstance();
         StatManager statManager = StatManager.getInstance();
