@@ -223,6 +223,19 @@ class AuctionHouseManagerTest {
     }
 
     @Test
+    void binPurchase_AbovePrice_CreditsSellerNetOfTaxOnAmountPaid() {
+        UUID seller = UUID.randomUUID();
+        UUID buyer = UUID.randomUUID();
+        UUID id = ah.createListing(seller, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+
+        // Paying above the BIN price deducts the full amount paid; seller is credited net of the 1% tax on it.
+        ah.placeBid(id, buyer, 2000);
+
+        assertEquals(1980.0, ah.getPendingCoins(seller));
+        assertEquals(1, ah.getPendingItems(buyer).size());
+    }
+
+    @Test
     void claimCoinsAndItems_ReturnAndClear() {
         UUID seller = UUID.randomUUID();
         UUID buyer = UUID.randomUUID();
