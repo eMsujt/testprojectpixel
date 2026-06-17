@@ -1,5 +1,6 @@
 package com.skyblock.core.mob;
 
+import com.skyblock.core.manager.MobManager;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;

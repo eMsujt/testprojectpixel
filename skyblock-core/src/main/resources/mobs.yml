@@ -4,6 +4,9 @@ mobs:
     entityType: ZOMBIE
     health: 100.0
     damage: 15.0
+    defense: 20.0
+    level: 5
+    spawnWeight: 30
     xpReward: 20
     coinReward: 10
 
@@ -12,6 +15,9 @@ mobs:
     entityType: SKELETON
     health: 80.0
     damage: 20.0
+    defense: 15.0
+    level: 5
+    spawnWeight: 25
     xpReward: 25
     coinReward: 12
 
@@ -20,6 +26,9 @@ mobs:
     entityType: SPIDER
     health: 120.0
     damage: 18.0
+    defense: 25.0
+    level: 8
+    spawnWeight: 15
     xpReward: 30
     coinReward: 15
 
@@ -28,6 +37,9 @@ mobs:
     entityType: CAVE_SPIDER
     health: 60.0
     damage: 12.0
+    defense: 10.0
+    level: 3
+    spawnWeight: 35
     xpReward: 15
     coinReward: 8
 
@@ -36,6 +48,9 @@ mobs:
     entityType: BLAZE
     health: 200.0
     damage: 35.0
+    defense: 40.0
+    level: 12
+    spawnWeight: 10
     xpReward: 50
     coinReward: 25
 
@@ -44,6 +59,9 @@ mobs:
     entityType: ENDERMAN
     health: 300.0
     damage: 45.0
+    defense: 60.0
+    level: 15
+    spawnWeight: 6
     xpReward: 75
     coinReward: 40
 
@@ -52,6 +70,9 @@ mobs:
     entityType: CREEPER
     health: 50.0
     damage: 60.0
+    defense: 5.0
+    level: 6
+    spawnWeight: 20
     xpReward: 35
     coinReward: 20
 
@@ -60,6 +81,9 @@ mobs:
     entityType: WITCH
     health: 150.0
     damage: 25.0
+    defense: 30.0
+    level: 10
+    spawnWeight: 12
     xpReward: 45
     coinReward: 30
 
@@ -68,6 +92,9 @@ mobs:
     entityType: GUARDIAN
     health: 250.0
     damage: 40.0
+    defense: 50.0
+    level: 14
+    spawnWeight: 8
     xpReward: 60
     coinReward: 35
 
@@ -76,5 +103,8 @@ mobs:
     entityType: WITHER_SKELETON
     health: 350.0
     damage: 55.0
+    defense: 70.0
+    level: 18
+    spawnWeight: 4
     xpReward: 90
     coinReward: 50
