@@ -1,8 +1,11 @@
 package com.skyblock.core.manager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -23,6 +26,12 @@ public final class PartyManager {
 
     /** Pending party invites: invitee UUID → leader UUID. */
     private final Map<UUID, UUID> pendingInvites = new HashMap<>();
+
+    /** Party finder queue: activity (e.g. dungeon floor) → waiting players, in join order. */
+    private final Map<String, LinkedHashSet<UUID>> finderQueue = new HashMap<>();
+
+    /** Reverse lookup for the finder queue: player UUID → activity they are queued for. */
+    private final Map<UUID, String> finderActivity = new HashMap<>();
 
     private PartyManager() {}
 
@@ -187,6 +196,99 @@ public final class PartyManager {
     }
 
     // -------------------------------------------------------------------------
+    // Party finder queue
+    // -------------------------------------------------------------------------
+
+    /**
+     * Queues {@code player} in the party finder for {@code activity} (e.g. a dungeon floor).
+     *
+     * @throws IllegalStateException if the player is already in a party or already queued
+     */
+    public void queueForFinder(UUID player, String activity) {
+        if (partyByMember.containsKey(player)) {
+            throw new IllegalStateException("Player is already in a party.");
+        }
+        if (finderActivity.containsKey(player)) {
+            throw new IllegalStateException("Player is already in the party finder queue.");
+        }
+        finderQueue.computeIfAbsent(activity, k -> new LinkedHashSet<>()).add(player);
+        finderActivity.put(player, activity);
+    }
+
+    /**
+     * Removes {@code player} from the party finder queue.
+     *
+     * @return {@code true} if the player was queued and removed, {@code false} otherwise
+     */
+    public boolean leaveFinderQueue(UUID player) {
+        String activity = finderActivity.remove(player);
+        if (activity == null) return false;
+        LinkedHashSet<UUID> queue = finderQueue.get(activity);
+        if (queue != null) {
+            queue.remove(player);
+            if (queue.isEmpty()) finderQueue.remove(activity);
+        }
+        return true;
+    }
+
+    /** Returns {@code true} if the player is currently in the party finder queue. */
+    public boolean isQueued(UUID player) {
+        return finderActivity.containsKey(player);
+    }
+
+    /** Returns the players queued for {@code activity}, in join order. */
+    public List<UUID> getFinderQueue(String activity) {
+        LinkedHashSet<UUID> queue = finderQueue.get(activity);
+        return queue == null ? Collections.emptyList()
+                : Collections.unmodifiableList(new ArrayList<>(queue));
+    }
+
+    /**
+     * Forms a dungeon party from the front of the party finder queue for {@code activity}. The
+     * first queued player becomes leader and up to {@link #MAX_SIZE} players are pulled in total;
+     * all selected players are removed from the queue and the new party is tagged with the
+     * activity as its dungeon floor.
+     *
+     * @return the newly formed dungeon party, or {@code null} if no players are queued
+     */
+    public Party formDungeonParty(String activity) {
+        LinkedHashSet<UUID> queue = finderQueue.get(activity);
+        if (queue == null || queue.isEmpty()) return null;
+
+        List<UUID> selected = new ArrayList<>();
+        for (UUID id : queue) {
+            selected.add(id);
+            if (selected.size() >= MAX_SIZE) break;
+        }
+        for (UUID id : selected) {
+            queue.remove(id);
+            finderActivity.remove(id);
+        }
+        if (queue.isEmpty()) finderQueue.remove(activity);
+
+        UUID leader = selected.get(0);
+        Party party = createParty(leader);
+        party.setDungeonFloor(activity);
+        for (int i = 1; i < selected.size(); i++) {
+            joinParty(leader, selected.get(i));
+        }
+        return party;
+    }
+
+    /**
+     * Marks {@code leader}'s existing party as running the given dungeon {@code floor}.
+     *
+     * @throws IllegalStateException if {@code leader} does not lead a party
+     */
+    public void startDungeon(UUID leader, String floor) {
+        Party party = partyByMember.get(leader);
+        if (party == null || !party.getLeader().equals(leader)) {
+            throw new IllegalStateException("Only the party leader can start a dungeon.");
+        }
+        party.setDungeonFloor(floor);
+    }
+
+    // -------------------------------------------------------------------------
     // Inner class
     // -------------------------------------------------------------------------
 
@@ -196,12 +298,22 @@ public final class PartyManager {
         private UUID leader;
         /** Non-leader members; does not include the leader. */
         private final Set<UUID> members = new HashSet<>();
+        /** Dungeon floor this party is running, or {@code null} if not a dungeon party. */
+        private String dungeonFloor;
 
         Party(UUID leader) {
             this.leader = leader;
         }
 
         public UUID getLeader() { return leader; }
+
+        /** Returns {@code true} if this party is running a dungeon. */
+        public boolean isDungeonParty() { return dungeonFloor != null; }
+
+        /** Returns the dungeon floor this party is running, or {@code null} if none. */
+        public String getDungeonFloor() { return dungeonFloor; }
+
+        void setDungeonFloor(String floor) { this.dungeonFloor = floor; }
 
         /** Returns an unmodifiable view of non-leader members. */
         public Set<UUID> getMembers() {
