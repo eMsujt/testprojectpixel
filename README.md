@@ -36,7 +36,7 @@ mvn clean package -DskipTests
 1. Build the project (see above).
 2. Copy `skyblock-core/target/skyblock-core-1.0.0-SNAPSHOT.jar` into your Paper server's `plugins/` directory.
 3. Start or restart the server.
-4. The plugin registers automatically via `SkyBlockPlugin#onEnable`.
+4. The plugin registers automatically via `SkyblockPlugin#onEnable`.
 
 ## Module Structure
 
@@ -51,13 +51,14 @@ Most gameplay state is owned by a single authoritative manager under
 **`com.skyblock.core.manager`** (a few large systems keep their own feature
 sub-package — e.g. `com.skyblock.core.auction.manager.AuctionHouseManager`,
 `com.skyblock.core.crafting.manager.CraftingManager`,
-`com.skyblock.core.island.manager.IslandManager`). Import these directly — never a
+`com.skyblock.core.profile.manager.ProfileManager`). Import these directly — never a
 copy. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the package-layout
 conventions and the one-canonical-home rule.
 
 | Manager | Responsibility |
 |---------|----------------|
 | `AccessoryManager` / `AccessoryBagManager` | Talismans/accessories and the magical-power bag |
+| `AttributeManager` | Crimson Isle attribute shards and per-attribute levelling |
 | `BankManager` | Personal/co-op bank balance, interest, deposits/withdrawals |
 | `BazaarManager` | Buy/sell order book, instant buy/sell pricing, order fulfillment |
 | `BestiaryManager` | Mob-kill tracking and bestiary tiers |
@@ -72,26 +73,33 @@ conventions and the one-canonical-home rule.
 | `EnchantmentManager` / `EnchantingManager` | Custom enchantments and the enchant table |
 | `EssenceManager` | Essence currencies and shop upgrades |
 | `EventManager` | Server-wide event scheduling and lifecycle |
+| `ExperimentationTableManager` | Superpairs / Chronomatron / Ultrasequencer minigames |
 | `FairySoulManager` | Fairy soul discovery and exchange bonuses |
 | `FishingManager` | Sea creatures, fishing XP, and treasure |
 | `ForgeManager` | Forge item recipes and processing slots |
 | `GardenManager` | Jacob's farming contests, plot unlocks, crop milestones |
 | `HotmManager` | Heart of the Mountain tree — perk nodes, tiers, powder |
+| `IslandManager` | Private island creation, upgrades, and visiting |
+| `ItemAbilityManager` | Weapon/armor item and full-set abilities with mana costs |
 | `MayorManager` | Mayor elections and active perks |
 | `MiningManager` | Mining XP, speed, fortune, and ores |
 | `MinionManager` | Minion types/tiers, fuel, upgrade slots, hopper auto-sell |
 | `MuseumManager` | Museum donations and completion rewards |
+| `NetworthManager` | Player net-worth valuation across items and currencies |
 | `PartyManager` | Party invites, membership, and leadership |
 | `PetManager` | Pet ownership, levelling, and active-pet perks |
+| `PotionManager` | Brewing-stand recipes, potion levels/durations, splash potions |
 | `QuestManager` | Quest tracking and completion |
 | `ReforgeManager` / `RepairManager` | Reforge stones/stats and item repair |
 | `ReputationManager` | Faction reputation tracking |
 | `RiftManager` | The Rift dimension state and currency |
-| `SacksManager` | Sack storage and auto-pickup |
+| `SackManager` | Sack storage and auto-pickup |
 | `ShopManager` | NPC shop catalogues and transactions |
 | `SkillManager` | Skill levels and XP |
 | `SlayerManager` | Slayer quest tiers, boss spawn cost, and rewards |
+| `StorageManager` | Personal storage and backpack pages |
 | `TradeManager` | Peer-to-peer trading sessions |
+| `WardrobeManager` | Named armor outfits and full-set swapping |
 
 ## Commands
 
