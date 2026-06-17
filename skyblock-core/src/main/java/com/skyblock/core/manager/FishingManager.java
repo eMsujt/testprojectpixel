@@ -1,6 +1,7 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Rarity;
+import com.skyblock.core.model.Stat;
 
 import org.bukkit.Material;
 import java.util.EnumMap;
@@ -459,6 +460,23 @@ public final class FishingManager {
             }
         }
         return null;
+    }
+
+    /**
+     * Rolls a sea creature using the held fishing rod's stats. The rod's
+     * {@link Stat#SEA_CREATURE_CHANCE} bonus (expressed in percentage points, e.g.
+     * {@code 5.0} for +5%) is converted to the {@code luck} fraction consumed by
+     * {@link #rollSeaCreature(int, WaterType, double)}; absent or negative bonuses
+     * contribute nothing.
+     *
+     * @param level     the player's fishing level
+     * @param waterType the body of water being fished
+     * @param rodStats  the equipped rod's stat map, may be {@code null}
+     * @return the sea creature to spawn, or {@code null}
+     */
+    public SeaCreature rollSeaCreature(int level, WaterType waterType, Map<Stat, Double> rodStats) {
+        double bonus = rodStats == null ? 0.0 : rodStats.getOrDefault(Stat.SEA_CREATURE_CHANCE, 0.0);
+        return rollSeaCreature(level, waterType, Math.max(0.0, bonus) / 100.0);
     }
 
     private List<SeaCreature> eligibleCreatures(int level, WaterType waterType) {
