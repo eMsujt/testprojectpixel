@@ -1,11 +1,14 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.model.Stat;
+import com.skyblock.core.stat.StatManager;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -86,6 +89,12 @@ public final class WardrobeManager {
 
     /** playerId → name of the currently active (equipped) armor set */
     private final Map<UUID, String> activeArmorSet = new HashMap<>();
+
+    /** playerId → (outfitName → aggregated armor stats for that outfit) */
+    private final Map<UUID, Map<String, Map<Stat, Double>>> outfitStats = new HashMap<>();
+
+    /** playerId → armor stat bonuses currently applied to {@link StatManager}, kept for clean swaps */
+    private final Map<UUID, Map<Stat, Double>> appliedStats = new HashMap<>();
 
     private WardrobeManager() {}
 
@@ -219,6 +228,150 @@ public final class WardrobeManager {
     }
 
     /**
+     * Saves the given armor snapshot together with the aggregated stats its
+     * pieces grant, so the stats can be applied when the outfit is equipped.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param name     the outfit name, must not be null or blank
+     * @param armor    the four armor slots to snapshot (index 0-3)
+     * @param stats    the combined stats granted by the outfit; may be null or empty
+     * @return {@code true} if saved; {@code false} if the player already has
+     *         {@link #MAX_OUTFITS} outfits and {@code name} is a new entry
+     */
+    public boolean saveOutfit(UUID playerId, String name, ItemStack[] armor, Map<Stat, Double> stats) {
+        boolean saved = saveOutfit(playerId, name, armor);
+        if (saved) {
+            if (stats == null || stats.isEmpty()) {
+                Map<String, Map<Stat, Double>> playerOutfits = outfitStats.get(playerId);
+                if (playerOutfits != null) {
+                    playerOutfits.remove(name);
+                }
+            } else {
+                outfitStats.computeIfAbsent(playerId, id -> new HashMap<>())
+                        .put(name, new EnumMap<>(stats));
+            }
+        }
+        return saved;
+    }
+
+    /**
+     * Slot-keyed variant of {@link #saveOutfit(UUID, String, ItemStack[], Map)}.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param slot     the wardrobe slot, must not be null
+     * @param armor    the four armor slots to snapshot (index 0-3)
+     * @param stats    the combined stats granted by the outfit; may be null or empty
+     * @return {@code true} if saved; {@code false} if the player is at the outfit cap
+     */
+    public boolean saveOutfit(UUID playerId, WardrobeSlot slot, ItemStack[] armor, Map<Stat, Double> stats) {
+        Objects.requireNonNull(slot, "slot");
+        return saveOutfit(playerId, slot.name(), armor, stats);
+    }
+
+    /**
+     * Returns the aggregated stats granted by the named outfit.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param name     the outfit name, must not be null
+     * @return an unmodifiable map of stats; empty if the outfit has no stored stats
+     */
+    public Map<Stat, Double> getOutfitStats(UUID playerId, String name) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(name, "name");
+        Map<String, Map<Stat, Double>> playerOutfits = outfitStats.get(playerId);
+        if (playerOutfits == null) {
+            return Collections.emptyMap();
+        }
+        Map<Stat, Double> stats = playerOutfits.get(name);
+        if (stats == null || stats.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return Collections.unmodifiableMap(new EnumMap<>(stats));
+    }
+
+    /**
+     * Slot-keyed variant of {@link #getOutfitStats(UUID, String)}.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param slot     the wardrobe slot, must not be null
+     * @return an unmodifiable map of stats; empty if the slot has no stored stats
+     */
+    public Map<Stat, Double> getOutfitStats(UUID playerId, WardrobeSlot slot) {
+        Objects.requireNonNull(slot, "slot");
+        return getOutfitStats(playerId, slot.name());
+    }
+
+    /**
+     * Equips the named outfit: marks it active and applies its armor stats as
+     * {@link StatManager} bonuses, first removing the bonuses of the previously
+     * equipped outfit so swaps don't accumulate.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param name     the outfit name, must not be null
+     * @return the cloned armor of the equipped outfit, or {@code null} if no such outfit exists
+     */
+    public ItemStack[] equip(UUID playerId, String name) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(name, "name");
+        ItemStack[] armor = getOutfit(playerId, name);
+        if (armor == null) {
+            return null;
+        }
+        applyStats(playerId, getOutfitStats(playerId, name));
+        activeArmorSet.put(playerId, name);
+        return armor;
+    }
+
+    /**
+     * Slot-keyed variant of {@link #equip(UUID, String)}.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param slot     the wardrobe slot, must not be null
+     * @return the cloned armor of the equipped slot, or {@code null} if the slot is empty
+     */
+    public ItemStack[] equip(UUID playerId, WardrobeSlot slot) {
+        Objects.requireNonNull(slot, "slot");
+        return equip(playerId, slot.name());
+    }
+
+    /**
+     * Unequips the player's active outfit, removing its applied armor stat
+     * bonuses from {@link StatManager} and clearing the active set.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return {@code true} if an active set was cleared
+     */
+    public boolean unequip(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        applyStats(playerId, Collections.emptyMap());
+        return activeArmorSet.remove(playerId) != null;
+    }
+
+    /**
+     * Swaps the player's applied armor stat bonuses on {@link StatManager}:
+     * reverses the previously applied bonuses, then adds the new ones.
+     */
+    private void applyStats(UUID playerId, Map<Stat, Double> newStats) {
+        StatManager statManager = StatManager.getInstance();
+        Map<Stat, Double> previous = appliedStats.get(playerId);
+        if (previous != null) {
+            for (Map.Entry<Stat, Double> entry : previous.entrySet()) {
+                statManager.addBonus(playerId, entry.getKey(), -entry.getValue());
+            }
+        }
+        if (newStats == null || newStats.isEmpty()) {
+            appliedStats.remove(playerId);
+            return;
+        }
+        Map<Stat, Double> applied = new EnumMap<>(Stat.class);
+        for (Map.Entry<Stat, Double> entry : newStats.entrySet()) {
+            statManager.addBonus(playerId, entry.getKey(), entry.getValue());
+            applied.put(entry.getKey(), entry.getValue());
+        }
+        appliedStats.put(playerId, applied);
+    }
+
+    /**
      * Returns the name of the armor set the player currently has equipped, or
      * {@code null} if none is active.
      *
@@ -250,6 +403,7 @@ public final class WardrobeManager {
      */
     public boolean clearActiveArmorSet(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        applyStats(playerId, Collections.emptyMap());
         return activeArmorSet.remove(playerId) != null;
     }
 
@@ -260,8 +414,10 @@ public final class WardrobeManager {
      */
     public void reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        applyStats(playerId, Collections.emptyMap());
         wardrobes.remove(playerId);
         activeArmorSet.remove(playerId);
+        outfitStats.remove(playerId);
     }
 
     /**
@@ -272,7 +428,9 @@ public final class WardrobeManager {
      */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
+        applyStats(playerId, Collections.emptyMap());
         activeArmorSet.remove(playerId);
+        outfitStats.remove(playerId);
         return wardrobes.remove(playerId) != null;
     }
 
@@ -280,6 +438,8 @@ public final class WardrobeManager {
     public void clear() {
         wardrobes.clear();
         activeArmorSet.clear();
+        outfitStats.clear();
+        appliedStats.clear();
     }
 
     public void load(File dataFolder) {
@@ -290,6 +450,8 @@ public final class WardrobeManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         wardrobes.clear();
         activeArmorSet.clear();
+        outfitStats.clear();
+        appliedStats.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -305,6 +467,20 @@ public final class WardrobeManager {
                             armor[i] = cfg.getItemStack(key + ".outfits." + outfitName + "." + i);
                         }
                         outfits.put(outfitName, armor);
+                        String statsPath = key + ".outfits." + outfitName + ".stats";
+                        if (cfg.isConfigurationSection(statsPath)) {
+                            Map<Stat, Double> stats = new EnumMap<>(Stat.class);
+                            for (String statName : cfg.getConfigurationSection(statsPath).getKeys(false)) {
+                                try {
+                                    stats.put(Stat.valueOf(statName), cfg.getDouble(statsPath + "." + statName));
+                                } catch (IllegalArgumentException ignored) {
+                                    // skip unknown stat names
+                                }
+                            }
+                            if (!stats.isEmpty()) {
+                                outfitStats.computeIfAbsent(uuid, id -> new HashMap<>()).put(outfitName, stats);
+                            }
+                        }
                     }
                     wardrobes.put(uuid, outfits);
                 }
@@ -323,10 +499,17 @@ public final class WardrobeManager {
             if (active != null) {
                 cfg.set(key + ".active", active);
             }
+            Map<String, Map<Stat, Double>> playerStats = outfitStats.get(entry.getKey());
             for (Map.Entry<String, ItemStack[]> outfit : entry.getValue().entrySet()) {
                 ItemStack[] armor = outfit.getValue();
                 for (int i = 0; i < armor.length; i++) {
                     cfg.set(key + ".outfits." + outfit.getKey() + "." + i, armor[i]);
+                }
+                Map<Stat, Double> stats = playerStats == null ? null : playerStats.get(outfit.getKey());
+                if (stats != null) {
+                    for (Map.Entry<Stat, Double> stat : stats.entrySet()) {
+                        cfg.set(key + ".outfits." + outfit.getKey() + ".stats." + stat.getKey().name(), stat.getValue());
+                    }
                 }
             }
         }

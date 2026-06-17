@@ -122,7 +122,7 @@ public final class WardrobeCommand implements TabExecutor {
             return;
         }
         String name = args[1];
-        ItemStack[] armor = wardrobeManager.getOutfit(player.getUniqueId(), name);
+        ItemStack[] armor = wardrobeManager.equip(player.getUniqueId(), name);
         if (armor == null) {
             player.sendMessage("No outfit named '" + name + "' found.");
             return;
@@ -189,7 +189,7 @@ public final class WardrobeCommand implements TabExecutor {
                 }
             }
             case "load" -> {
-                ItemStack[] armor = wardrobeManager.getOutfit(player.getUniqueId(), slot);
+                ItemStack[] armor = wardrobeManager.equip(player.getUniqueId(), slot);
                 if (armor == null) {
                     player.sendMessage(slot.getDisplayName() + " is empty.");
                     return;
