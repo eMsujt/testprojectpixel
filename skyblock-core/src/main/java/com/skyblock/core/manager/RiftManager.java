@@ -58,6 +58,12 @@ public final class RiftManager {
     /** The total number of Enigma souls hidden across the Rift. */
     public static final int ENIGMA_SOUL_TOTAL = 42;
 
+    /**
+     * The maximum motes a player's purse can hold. Motes earned beyond this cap
+     * decay away rather than accumulating.
+     */
+    public static final long MOTES_PURSE_CAP = 4000L;
+
     private static final RiftManager INSTANCE = new RiftManager();
 
     private final Map<UUID, Boolean> inRift = new HashMap<>();
@@ -173,11 +179,13 @@ public final class RiftManager {
     }
 
     /**
-     * Credits motes to a player.
+     * Credits motes to a player, capping the resulting balance at
+     * {@link #MOTES_PURSE_CAP}. Motes that would exceed the cap decay away and
+     * are not stored.
      *
      * @param playerId the player to credit
      * @param amount   the number of motes to add (must be non-negative)
-     * @return the player's motes balance after the credit
+     * @return the player's motes balance after the credit, never exceeding the cap
      * @throws IllegalArgumentException if {@code amount} is negative
      */
     public long addMotes(UUID playerId, long amount) {
@@ -185,7 +193,9 @@ public final class RiftManager {
         if (amount < 0) {
             throw new IllegalArgumentException("amount must be non-negative");
         }
-        return motes.merge(playerId, amount, Long::sum);
+        long capped = Math.min(MOTES_PURSE_CAP, getMotes(playerId) + amount);
+        motes.put(playerId, capped);
+        return capped;
     }
 
     /**
