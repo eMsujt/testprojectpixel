@@ -1,4 +1,4 @@
-package com.skyblock.core.ability.manager;
+package com.skyblock.core.manager;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -9,37 +9,70 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Canonical singleton for SkyBlock item abilities.
+ * Canonical singleton for SkyBlock item and full-set abilities.
  *
  * <p>Tracks which abilities each player has unlocked, which ability is active
- * (equipped), and the per-ability cooldown state.</p>
+ * (equipped), and the per-ability cooldown state. Each ability carries a mana
+ * cost and a cooldown; {@link #activate} gates use on the player being able to
+ * pay both.</p>
+ *
+ * <p>Abilities come in two flavours (see {@link AbilityCategory}): single-item
+ * weapon/tool abilities, and armor/weapon full-set abilities that are only
+ * available while the complete set is worn.</p>
  *
  * <p>Not thread-safe; synchronize externally if needed.</p>
  */
-public final class AbilityManager {
+public final class ItemAbilityManager {
+
+    /** Whether an ability comes from a single item or a worn full set. */
+    public enum AbilityCategory {
+        ITEM,
+        FULL_SET
+    }
+
+    /** Outcome of an {@link #activate} attempt. */
+    public enum ActivationResult {
+        SUCCESS,
+        NOT_UNLOCKED,
+        ON_COOLDOWN,
+        NOT_ENOUGH_MANA
+    }
 
     /** Every ability available in SkyBlock. */
     public enum AbilityType {
-        WITHER_SHIELD(10),
-        SHADOW_FURY(8),
-        IMPLOSION(12),
-        HURRICANE_BOW(6),
-        HYPE(15),
-        OVERLOAD(20),
-        GYROKINESIS(10),
-        ADRENALINE(8),
-        SWORD_SPECIALIST(5),
-        MANA_STEAL(7);
+        // Single-item weapon/tool abilities.
+        WITHER_SHIELD(AbilityCategory.ITEM, 10, 150),
+        SHADOW_FURY(AbilityCategory.ITEM, 8, 300),
+        IMPLOSION(AbilityCategory.ITEM, 12, 300),
+        HURRICANE_BOW(AbilityCategory.ITEM, 6, 0),
+        HYPE(AbilityCategory.ITEM, 15, 250),
+        OVERLOAD(AbilityCategory.ITEM, 20, 200),
+        GYROKINESIS(AbilityCategory.ITEM, 10, 150),
+        ADRENALINE(AbilityCategory.ITEM, 8, 100),
+        SWORD_SPECIALIST(AbilityCategory.ITEM, 5, 50),
+        MANA_STEAL(AbilityCategory.ITEM, 7, 0),
+        // Armor/weapon full-set abilities (require the complete set worn).
+        RADIANT_FULL_SET(AbilityCategory.FULL_SET, 30, 200),
+        HOLY_FULL_SET(AbilityCategory.FULL_SET, 25, 100),
+        SUPERIOR_FULL_SET(AbilityCategory.FULL_SET, 20, 0);
+
+        /** Whether this ability comes from a single item or a worn full set. */
+        public final AbilityCategory category;
 
         /** Cooldown in seconds. */
         public final int cooldownSeconds;
 
-        AbilityType(int cooldownSeconds) {
+        /** Mana cost to activate. */
+        public final int manaCost;
+
+        AbilityType(AbilityCategory category, int cooldownSeconds, int manaCost) {
+            this.category = category;
             this.cooldownSeconds = cooldownSeconds;
+            this.manaCost = manaCost;
         }
     }
 
-    private static final AbilityManager INSTANCE = new AbilityManager();
+    private static final ItemAbilityManager INSTANCE = new ItemAbilityManager();
 
     /** Unlocked abilities per player. */
     private final Map<UUID, Set<AbilityType>> unlockedAbilities = new HashMap<>();
@@ -53,9 +86,9 @@ public final class AbilityManager {
      */
     private final Map<UUID, Map<AbilityType, Long>> lastUsed = new HashMap<>();
 
-    private AbilityManager() {}
+    private ItemAbilityManager() {}
 
-    public static AbilityManager getInstance() {
+    public static ItemAbilityManager getInstance() {
         return INSTANCE;
     }
 
@@ -114,6 +147,30 @@ public final class AbilityManager {
         long elapsedSeconds = (System.currentTimeMillis() - last) / 1000L;
         long remaining = abilityType.cooldownSeconds - elapsedSeconds;
         return Math.max(0, remaining);
+    }
+
+    /**
+     * Attempts to activate an ability, gating on unlock state, cooldown, and the
+     * player's available mana. On {@link ActivationResult#SUCCESS} the ability's
+     * cooldown is started; the caller is responsible for deducting
+     * {@link AbilityType#manaCost} from the player's mana pool.
+     *
+     * @param availableMana the player's current mana
+     */
+    public ActivationResult activate(UUID playerId, AbilityType abilityType, int availableMana) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(abilityType, "abilityType");
+        if (!isUnlocked(playerId, abilityType)) {
+            return ActivationResult.NOT_UNLOCKED;
+        }
+        if (getRemainingCooldown(playerId, abilityType) > 0) {
+            return ActivationResult.ON_COOLDOWN;
+        }
+        if (availableMana < abilityType.manaCost) {
+            return ActivationResult.NOT_ENOUGH_MANA;
+        }
+        recordUse(playerId, abilityType);
+        return ActivationResult.SUCCESS;
     }
 
     /** Records ability use for the given player, resetting its cooldown. */

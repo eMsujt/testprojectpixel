@@ -1,6 +1,6 @@
 package com.skyblock.core.ability;
 
-import com.skyblock.core.ability.manager.AbilityManager;
+import com.skyblock.core.manager.ItemAbilityManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -28,13 +28,13 @@ import java.util.stream.Collectors;
 public final class AbilityCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("list", "info", "equip", "unequip", "unlock");
-    private static final List<String> TYPE_NAMES = Arrays.stream(AbilityManager.AbilityType.values())
+    private static final List<String> TYPE_NAMES = Arrays.stream(ItemAbilityManager.AbilityType.values())
             .map(t -> t.name().toLowerCase())
             .collect(Collectors.toList());
 
-    private final AbilityManager abilityManager;
+    private final ItemAbilityManager abilityManager;
 
-    public AbilityCommand(AbilityManager abilityManager) {
+    public AbilityCommand(ItemAbilityManager abilityManager) {
         this.abilityManager = abilityManager;
     }
 
@@ -82,14 +82,14 @@ public final class AbilityCommand implements TabExecutor {
     }
 
     private void handleList(Player player) {
-        Set<AbilityManager.AbilityType> unlocked = abilityManager.getUnlocked(player.getUniqueId());
+        Set<ItemAbilityManager.AbilityType> unlocked = abilityManager.getUnlocked(player.getUniqueId());
         if (unlocked.isEmpty()) {
             player.sendMessage("You have no unlocked abilities.");
             return;
         }
-        AbilityManager.AbilityType active = abilityManager.getActive(player.getUniqueId());
+        ItemAbilityManager.AbilityType active = abilityManager.getActive(player.getUniqueId());
         player.sendMessage("=== Your Abilities ===");
-        for (AbilityManager.AbilityType type : unlocked) {
+        for (ItemAbilityManager.AbilityType type : unlocked) {
             String marker = type.equals(active) ? " [ACTIVE]" : "";
             player.sendMessage("  " + capitalize(type.name()) + marker
                     + " (cooldown: " + type.cooldownSeconds + "s)");
@@ -101,11 +101,11 @@ public final class AbilityCommand implements TabExecutor {
             player.sendMessage("Usage: /ability info <type>");
             return;
         }
-        AbilityManager.AbilityType type = parseType(player, args[1]);
+        ItemAbilityManager.AbilityType type = parseType(player, args[1]);
         if (type == null) return;
         long remaining = abilityManager.getRemainingCooldown(player.getUniqueId(), type);
         boolean unlocked = abilityManager.isUnlocked(player.getUniqueId(), type);
-        AbilityManager.AbilityType active = abilityManager.getActive(player.getUniqueId());
+        ItemAbilityManager.AbilityType active = abilityManager.getActive(player.getUniqueId());
         player.sendMessage("=== " + capitalize(type.name()) + " ===");
         player.sendMessage("  Cooldown: " + type.cooldownSeconds + "s");
         player.sendMessage("  Unlocked: " + (unlocked ? "Yes" : "No"));
@@ -118,7 +118,7 @@ public final class AbilityCommand implements TabExecutor {
             player.sendMessage("Usage: /ability equip <type>");
             return;
         }
-        AbilityManager.AbilityType type = parseType(player, args[1]);
+        ItemAbilityManager.AbilityType type = parseType(player, args[1]);
         if (type == null) return;
         if (!abilityManager.isUnlocked(player.getUniqueId(), type)) {
             player.sendMessage("You have not unlocked " + capitalize(type.name()) + ".");
@@ -129,7 +129,7 @@ public final class AbilityCommand implements TabExecutor {
     }
 
     private void handleUnequip(Player player) {
-        AbilityManager.AbilityType active = abilityManager.getActive(player.getUniqueId());
+        ItemAbilityManager.AbilityType active = abilityManager.getActive(player.getUniqueId());
         if (active == null) {
             player.sendMessage("You have no active ability equipped.");
             return;
@@ -147,7 +147,7 @@ public final class AbilityCommand implements TabExecutor {
             player.sendMessage("Usage: /ability unlock <type>");
             return;
         }
-        AbilityManager.AbilityType type = parseType(player, args[1]);
+        ItemAbilityManager.AbilityType type = parseType(player, args[1]);
         if (type == null) return;
         if (abilityManager.isUnlocked(player.getUniqueId(), type)) {
             player.sendMessage("You have already unlocked " + capitalize(type.name()) + ".");
@@ -158,9 +158,9 @@ public final class AbilityCommand implements TabExecutor {
     }
 
     /** Parses an ability type name, sending an error to the player on failure. */
-    private AbilityManager.AbilityType parseType(Player player, String input) {
+    private ItemAbilityManager.AbilityType parseType(Player player, String input) {
         try {
-            return AbilityManager.AbilityType.valueOf(input.toUpperCase());
+            return ItemAbilityManager.AbilityType.valueOf(input.toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown ability: " + input
                     + ". Valid abilities: " + String.join(", ", TYPE_NAMES));
