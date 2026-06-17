@@ -53,6 +53,21 @@ public final class CalendarManager {
     /** Total days in a SkyBlock year. */
     public static final int DAYS_PER_YEAR = SkyBlockMonth.values().length * DAYS_PER_MONTH;
 
+    /** The ten crops eligible for Jacob's Farming Contest, in canonical order. */
+    public static final List<String> JACOB_CONTEST_CROPS = List.of(
+            "Wheat", "Carrot", "Potato", "Pumpkin", "Melon",
+            "Mushroom", "Cocoa Beans", "Cactus", "Sugar Cane", "Nether Wart");
+    /** How many distinct crops are featured in each contest. */
+    public static final int CROPS_PER_CONTEST = 3;
+    /** A contest runs every this many days; {@link #DAYS_PER_YEAR} is a multiple so the cycle wraps cleanly. */
+    public static final int CONTEST_PERIOD_DAYS = 3;
+    /**
+     * Spacing between consecutive featured crop indices. Chosen coprime to
+     * {@link #JACOB_CONTEST_CROPS}{@code .size()} (gcd(7,10)=1) so the three
+     * picks never collide and are always distinct.
+     */
+    private static final int CONTEST_CROP_STRIDE = 7;
+
     private static final CalendarManager INSTANCE = new CalendarManager();
 
     /** Current day within the SkyBlock year (1-based). */
@@ -205,6 +220,84 @@ public final class CalendarManager {
     public List<String> getEventsToday() {
         List<String> events = scheduledEvents.get(currentDay);
         return events != null ? Collections.unmodifiableList(events) : List.of();
+    }
+
+    /**
+     * Returns whether Jacob's Farming Contest runs on the given date.
+     *
+     * @param month      the month to check
+     * @param dayOfMonth the day within that month (1–{@value #DAYS_PER_MONTH})
+     * @return {@code true} if a contest is scheduled that day
+     */
+    public boolean isContestDay(SkyBlockMonth month, int dayOfMonth) {
+        return isContestYearDay(yearDayOf(month, dayOfMonth));
+    }
+
+    /**
+     * Returns whether Jacob's Farming Contest runs on the current calendar day.
+     *
+     * @return {@code true} if a contest is scheduled today
+     */
+    public boolean isContestDayToday() {
+        return isContestYearDay(currentDay);
+    }
+
+    /**
+     * Returns the {@value #CROPS_PER_CONTEST} distinct crops featured by Jacob's
+     * Farming Contest on the given date, or an empty list if no contest runs that day.
+     *
+     * @param month      the month to look up
+     * @param dayOfMonth the day within that month (1–{@value #DAYS_PER_MONTH})
+     * @return an unmodifiable list of distinct crop names, empty if it is not a contest day
+     */
+    public List<String> getContestCrops(SkyBlockMonth month, int dayOfMonth) {
+        return contestCropsFor(yearDayOf(month, dayOfMonth));
+    }
+
+    /**
+     * Returns the crops featured by Jacob's Farming Contest on the current calendar day.
+     *
+     * @return an unmodifiable list of distinct crop names, empty if today is not a contest day
+     */
+    public List<String> getContestCropsToday() {
+        return contestCropsFor(currentDay);
+    }
+
+    /**
+     * Returns the year-day of the next Jacob's Farming Contest strictly after the
+     * current day, wrapping into next year if necessary.
+     *
+     * @return the next contest's year-day (1–{@value #DAYS_PER_YEAR})
+     */
+    public int nextContestDay() {
+        for (int offset = 1; offset <= DAYS_PER_YEAR; offset++) {
+            int day = ((currentDay - 1 + offset) % DAYS_PER_YEAR) + 1;
+            if (isContestYearDay(day)) {
+                return day;
+            }
+        }
+        // CONTEST_PERIOD_DAYS divides DAYS_PER_YEAR, so a contest day always exists.
+        throw new IllegalStateException("no contest day found within the year");
+    }
+
+    /** Whether the given year-day hosts a contest. */
+    private static boolean isContestYearDay(int yearDay) {
+        return (yearDay - 1) % CONTEST_PERIOD_DAYS == 0;
+    }
+
+    /** Computes the distinct featured crops for the given year-day, empty if not a contest day. */
+    private static List<String> contestCropsFor(int yearDay) {
+        if (!isContestYearDay(yearDay)) {
+            return List.of();
+        }
+        int cropCount = JACOB_CONTEST_CROPS.size();
+        int base = (yearDay - 1) % cropCount;
+        List<String> crops = new ArrayList<>(CROPS_PER_CONTEST);
+        for (int i = 0; i < CROPS_PER_CONTEST; i++) {
+            int index = (base + i * CONTEST_CROP_STRIDE) % cropCount;
+            crops.add(JACOB_CONTEST_CROPS.get(index));
+        }
+        return Collections.unmodifiableList(crops);
     }
 
     /**
