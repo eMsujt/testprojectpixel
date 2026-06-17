@@ -91,7 +91,7 @@ public final class MinionManager {
     public enum MinionTier {
         TIER_1, TIER_2, TIER_3, TIER_4, TIER_5,
         TIER_6, TIER_7, TIER_8, TIER_9, TIER_10,
-        TIER_11
+        TIER_11, TIER_12
     }
 
     /**
