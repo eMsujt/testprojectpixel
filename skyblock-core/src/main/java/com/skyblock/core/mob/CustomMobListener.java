@@ -1,5 +1,6 @@
 package com.skyblock.core.mob;
 
+import com.skyblock.core.manager.MobManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
