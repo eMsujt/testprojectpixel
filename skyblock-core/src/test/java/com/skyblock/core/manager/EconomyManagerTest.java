@@ -111,6 +111,42 @@ class EconomyManagerTest {
     }
 
     @Test
+    void bits_DepositAndSpend() {
+        UUID id = UUID.randomUUID();
+        manager.addBits(id, 1000L);
+        assertEquals(1000L, manager.getBits(id));
+        assertTrue(manager.spendBits(id, 400L));
+        assertEquals(600L, manager.getBits(id));
+    }
+
+    @Test
+    void spendBits_FailsWhenInsufficient() {
+        UUID id = UUID.randomUUID();
+        manager.setBits(id, 100L);
+        assertFalse(manager.spendBits(id, 500L));
+        assertEquals(100L, manager.getBits(id));
+    }
+
+    @Test
+    void transact_RejectsNegativeResult() {
+        UUID id = UUID.randomUUID();
+        manager.setCurrency(id, CurrencyType.GEMS, 50L);
+        assertFalse(manager.transact(id, CurrencyType.GEMS, -100L));
+        assertEquals(50L, manager.getCurrency(id, CurrencyType.GEMS));
+        assertTrue(manager.transact(id, CurrencyType.GEMS, -50L));
+        assertEquals(0L, manager.getCurrency(id, CurrencyType.GEMS));
+    }
+
+    @Test
+    void getCurrency_CoinsBackedByPurse() {
+        UUID id = UUID.randomUUID();
+        manager.deposit(id, 250.0);
+        assertEquals(250L, manager.getCurrency(id, CurrencyType.COINS));
+        manager.setCurrency(id, CurrencyType.COINS, 999L);
+        assertEquals(999.0, manager.getBalance(id), 1e-9);
+    }
+
+    @Test
     void currencyType_CoinsIsTradeable() {
         assertTrue(CurrencyType.COINS.isTradeable());
     }
