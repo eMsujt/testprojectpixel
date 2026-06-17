@@ -73,6 +73,29 @@ split into `manager` (state + logic), `command` (player commands), `gui` (menus)
 `com.skyblock.core.SkyBlockPlugin` is the `onEnable` entry point that wires the
 managers and registers commands.
 
+## Cross-cutting / foundational packages
+
+Alongside the per-feature sub-packages, a handful of `com.skyblock.core.*`
+packages are shared infrastructure that nearly every feature depends on. Reach
+for these before introducing a new helper, constant, or value type.
+
+| Package | Role | Key types |
+|---------|------|-----------|
+| `config` | Single source of tuning constants (caps, rates, thresholds) | `Constants` |
+| `model` | Shared value types used across features — import these, never re-declare | `Rarity`, `Stat`, `Skill`, `Collection`, `ItemType`, `AccessoryRarity` |
+| `manager` | Authoritative singleton managers for most gameplay state (see registry above) | `EconomyManager`, `SkillManager`, … |
+| `economy` | Coin/economy value types; the live logic is `manager.EconomyManager` | `economy.model.*` |
+| `combat` | Damage pipeline — calculator, listeners, managers, and model in one feature | `combat.calculator.*`, `combat.manager.*` |
+| `event` | Time-boxed server events and the `/event` command | `SkyblockEventManager`, `EventCommand` |
+| `persistence` / `storage` | Player-data load/save: `persistence.DataManager` orchestrates, `storage` holds the YAML backend | `DataManager`, `StorageManager`, `YamlPlayerStorage` |
+| `util` | Stateless helpers shared everywhere — item builders, skull/textures, world gen | `ItemBuilder`, `SkullItemUtil`, `IslandGenerator` |
+| `command` / `listener` | Top-level commands and the consolidated lifecycle listener not owned by a feature | `ProfileCommand`, `SkyblockMenuCommand`, `CoreListeners` |
+
+> "Player data" is **not** a single `data` package — it is split across
+> `persistence` (orchestration), `storage` (the YAML backend), and `model`
+> (the value types being persisted). There is no separate `shop` package either:
+> NPC shops live in `manager.ShopManager`.
+
 ## Module map
 
 The parent `pom.xml` aggregates the modules below. The leaf modules are mostly
