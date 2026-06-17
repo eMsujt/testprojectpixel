@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.skyblock.core.contest.JacobsContestManager.ContestCrop;
+
 /**
  * Canonical singleton manager for the SkyBlock in-game calendar.
  *
@@ -52,6 +54,11 @@ public final class CalendarManager {
     public static final int DAYS_PER_MONTH = 31;
     /** Total days in a SkyBlock year. */
     public static final int DAYS_PER_YEAR = SkyBlockMonth.values().length * DAYS_PER_MONTH;
+
+    /** A new Jacob's Farming Contest begins every this many in-game days. */
+    public static final int CONTEST_INTERVAL_DAYS = 3;
+    /** Number of crops featured in each Jacob's Farming Contest. */
+    public static final int CROPS_PER_CONTEST = 3;
 
     private static final CalendarManager INSTANCE = new CalendarManager();
 
@@ -234,6 +241,90 @@ public final class CalendarManager {
      */
     public void resetYearlyParticipation() {
         eventParticipation.clear();
+    }
+
+    /**
+     * Returns whether a Jacob's Farming Contest is scheduled on the given year-day.
+     *
+     * <p>Contests recur every {@value #CONTEST_INTERVAL_DAYS} in-game days, starting
+     * on day 1 of the year.</p>
+     *
+     * @param day year-day (1–{@value #DAYS_PER_YEAR})
+     * @return {@code true} if a contest is scheduled that day
+     * @throws IllegalArgumentException if {@code day} is out of range
+     */
+    public static boolean isContestDay(int day) {
+        if (day < 1 || day > DAYS_PER_YEAR) {
+            throw new IllegalArgumentException(
+                    "day must be between 1 and " + DAYS_PER_YEAR + ", got " + day);
+        }
+        return (day - 1) % CONTEST_INTERVAL_DAYS == 0;
+    }
+
+    /**
+     * Returns the {@value #CROPS_PER_CONTEST} crops featured in the Jacob's Farming
+     * Contest scheduled on the given year-day.
+     *
+     * <p>The crop line-up is derived deterministically from the year-day, so the
+     * same date always yields the same crops without storing a schedule.</p>
+     *
+     * @param day year-day (1–{@value #DAYS_PER_YEAR})
+     * @return an unmodifiable list of the contest's crops, or an empty list if no
+     *         contest is scheduled that day
+     * @throws IllegalArgumentException if {@code day} is out of range
+     */
+    public static List<ContestCrop> getContestCrops(int day) {
+        if (!isContestDay(day)) {
+            return List.of();
+        }
+        ContestCrop[] all = ContestCrop.values();
+        // Stride of 5 is co-prime to the crop count, so the three picks are distinct.
+        int base = (day * 7) % all.length;
+        List<ContestCrop> crops = new ArrayList<>(CROPS_PER_CONTEST);
+        for (int i = 0; i < CROPS_PER_CONTEST; i++) {
+            crops.add(all[(base + i * 5) % all.length]);
+        }
+        return Collections.unmodifiableList(crops);
+    }
+
+    /**
+     * Returns whether a Jacob's Farming Contest is scheduled on the current calendar day.
+     *
+     * @return {@code true} if a contest is active today
+     */
+    public boolean isContestToday() {
+        return isContestDay(currentDay);
+    }
+
+    /**
+     * Returns the crops featured in today's Jacob's Farming Contest.
+     *
+     * @return an unmodifiable list of the contest's crops, empty if none is scheduled today
+     */
+    public List<ContestCrop> getContestCropsToday() {
+        return getContestCrops(currentDay);
+    }
+
+    /**
+     * Returns the next year-day on or after {@code fromDay} that hosts a Jacob's
+     * Farming Contest, wrapping around the year if necessary.
+     *
+     * @param fromDay the year-day to start searching from (1–{@value #DAYS_PER_YEAR})
+     * @return the next contest year-day
+     * @throws IllegalArgumentException if {@code fromDay} is out of range
+     */
+    public static int nextContestDay(int fromDay) {
+        if (fromDay < 1 || fromDay > DAYS_PER_YEAR) {
+            throw new IllegalArgumentException(
+                    "fromDay must be between 1 and " + DAYS_PER_YEAR + ", got " + fromDay);
+        }
+        for (int offset = 0; offset < CONTEST_INTERVAL_DAYS; offset++) {
+            int day = ((fromDay - 1 + offset) % DAYS_PER_YEAR) + 1;
+            if (isContestDay(day)) {
+                return day;
+            }
+        }
+        return fromDay; // unreachable: a contest day always exists within the interval window
     }
 
     /** Registers the standard recurring SkyBlock calendar events. */
