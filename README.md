@@ -1,5 +1,7 @@
 # SkyBlock
 
+> **A faithful Hypixel SkyBlock recreation for Paper 1.21+ servers — skills, dungeons, economy, and beyond.**
+
 [![Build](https://github.com/eMsujt/testprojectpixel/actions/workflows/build.yml/badge.svg)](https://github.com/eMsujt/testprojectpixel/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://adoptium.net/)
@@ -125,39 +127,62 @@ conventions and the one-canonical-home rule, and
 
 | Command | Alias | Description |
 |---------|-------|-------------|
-| `/skyblock` | `/sb` | Open the SkyBlock main menu |
-| `/island` | — | Create, visit, or manage your island |
-| `/islandupgrade` | `/iu` | Purchase island upgrades |
-| `/skills` / `/skill` | — | View skill levels and XP |
-| `/auction` | — | Auction House (create/view/cancel) |
-| `/auctionhouse` | `/ah` | Full Auction House management |
-| `/bazaar` | — | Open the Bazaar |
-| `/profile` | — | View a player profile |
-| `/slay` | — | Slayer quest management |
-| `/pets` / `/pet` | — | Pet management |
-| `/f` | — | Friend management |
-| `/warp` | — | Teleport to warp points |
-| `/shop` | — | Browse the item shop |
+| `/accessories` | — | View and manage your accessory bag |
+| `/achievement` | — | View your SkyBlock achievements |
+| `/alchemy` | — | Brew potions using the SkyBlock alchemy system |
+| `/auctionhouse` | `/ah` | Manage Auction House listings (BIN and bid-based) |
+| `/backpack` | — | Create and manage personal item backpacks |
+| `/bank` | — | Personal and co-op bank deposit/withdraw/balance |
+| `/bazaar` | — | Open the Bazaar order book |
+| `/bestiary` | — | Track your mob kill counts and bestiary tiers |
+| `/booster` | — | Activate XP or coin boosters |
+| `/chat` | — | Switch your active chat channel |
+| `/collection` | `/col` | View your collection progress |
+| `/collections` | — | View your SkyBlock collection progress |
+| `/combat` | — | View and manage your combat stats |
+| `/coop` | — | Manage your co-op island group |
+| `/crafting` | — | Browse SkyBlock crafting recipes and track history |
+| `/crimson` | — | View and manage Crimson Isle faction and reputation |
+| `/dungeon` | — | Enter and manage Catacombs dungeon runs |
+| `/dungeonclass` | — | View and select your dungeon class |
+| `/enchanting` | — | View and apply SkyBlock enchantments |
+| `/essence` | — | View and manage your SkyBlock essence balances |
+| `/event` | — | View and join active SkyBlock events |
+| `/fairysoul` | `/fairysouls` | View and manage your fairy soul collection |
+| `/fishing` | — | View fishing stats and trophy fish catches |
+| `/foraging` | — | View foraging level, XP, and log chop counts |
+| `/forge` | — | Forge items using the SkyBlock forge |
+| `/friend` | — | Manage your SkyBlock friend list |
+| `/garden` | — | View and manage your Garden plot, visitors, and crop upgrades |
+| `/guild` | — | Create and manage player guilds |
+| `/harp` | — | View Melody's Harp song progress and Intelligence bonus |
+| `/hotm` | `/hotmtree` | View and manage Heart of the Mountain perk tree |
+| `/jerryworkshop` | — | View Jerry's Workshop gifts, snow minions, and snow cannon |
+| `/kuudra` | — | Kuudra boss tiers and contribution tracking |
 | `/leaderboard` | `/lb` | View player leaderboards |
-| `/bank` / `/banking` | — | Bank deposit/withdraw/balance |
-| `/dungeon` | — | Dungeon runs |
-| `/forge` | — | Item forging |
-| `/collection` | `/col` | Collection progress |
-| `/npc` | — | NPC shop interactions |
-| `/minion` | — | Minion management |
-| `/alchemy` | — | Potion brewing |
-| `/enchanting` / `/enchantment` / `/enchant` | — | Enchantment management |
-| `/talisman` | — | Talisman/accessory management |
-| `/crafting` | — | Custom recipes and history |
-| `/quest` | — | Quest management |
-| `/achievement` | — | Achievement viewer |
-| `/dailyreward` | `/daily` | Claim daily coin reward |
-| `/storage` | — | Personal storage pages |
-| `/trade` | — | Peer-to-peer trading |
-| `/wardrobe` | — | Named armor outfits |
-| `/bestiary` | — | Mob kill tracking |
-| `/party` | — | Party invites and management |
-| `/accessorybag` | `/abag` | Accessory bag management |
+| `/mail` | — | Send and read player mail messages |
+| `/mailbox` | — | Mailbox management |
+| `/mayor` | — | View the active mayor and vote for candidates |
+| `/menu` | — | Open the SkyBlock main menu |
+| `/minion` | `/minions` | Manage your placed minions, fuel, and upgrades |
+| `/museum` | — | Donate items and view your museum collection progress |
+| `/party` | — | Manage your party invites and membership |
+| `/pet` | — | Manage your pets and active-pet perks |
+| `/profile` | — | View your SkyBlock profile |
+| `/quest` | — | Manage your SkyBlock quests |
+| `/reforge` | — | View and apply item reforges |
+| `/run` | — | Track your dungeon run statistics |
+| `/skyblock-level` | `/sblevel` | View and manage your SkyBlock level and XP |
+| `/slay` | `/slayer` | Manage Slayer quests and view boss info |
+| `/skills` | — | View your SkyBlock skill levels and XP |
+| `/stat` | — | View your effective SkyBlock player stats |
+| `/stats` | — | View and manage your SkyBlock player stats menu |
+| `/title` | — | Manage your SkyBlock title |
+| `/trade` | — | Trade items with another player |
+| `/trophyfish` | — | View trophy fish catch counts and drop chances |
+| `/vault` | — | Manage your personal vault balance and tier |
+| `/wardrobe` | — | View and manage your saved armor outfits |
+| `/warp` | — | Teleport to a named warp point |
 
 ## Development
 
