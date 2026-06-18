@@ -23,96 +23,123 @@ import java.util.UUID;
  */
 public final class PetManager {
 
-    /** Every pet type available in SkyBlock with its default rarity and display name. */
-    public enum PetType {
-        // Common
-        CHICKEN(Rarity.COMMON, "Chicken"),
-        WORM(Rarity.COMMON, "Worm"),
-        SHEEP(Rarity.COMMON, "Sheep"),
-        PIG(Rarity.COMMON, "Pig"),
-        COW(Rarity.COMMON, "Cow"),
-        BAT(Rarity.COMMON, "Bat"),
-        SNAIL(Rarity.COMMON, "Snail"),
-        ROCK(Rarity.COMMON, "Rock"),
-        MOSQUITO(Rarity.COMMON, "Mosquito"),
-        SLUG(Rarity.COMMON, "Slug"),
-        // Uncommon
-        RABBIT(Rarity.UNCOMMON, "Rabbit"),
-        PENGUIN(Rarity.UNCOMMON, "Penguin"),
-        HORSE(Rarity.UNCOMMON, "Horse"),
-        MULE(Rarity.UNCOMMON, "Mule"),
-        DONKEY(Rarity.UNCOMMON, "Donkey"),
-        GOAT(Rarity.UNCOMMON, "Goat"),
-        SILVERFISH(Rarity.UNCOMMON, "Silverfish"),
-        CAVE_SPIDER(Rarity.UNCOMMON, "Cave Spider"),
-        MOOSHROOM_COW(Rarity.UNCOMMON, "Mooshroom Cow"),
-        HOUND(Rarity.UNCOMMON, "Hound"),
-        // Rare
-        BEE(Rarity.RARE, "Bee"),
-        DOG(Rarity.RARE, "Dog"),
-        DOLPHIN(Rarity.RARE, "Dolphin"),
-        SQUID(Rarity.RARE, "Squid"),
-        FLYING_FISH(Rarity.RARE, "Flying Fish"),
-        CAT(Rarity.RARE, "Cat"),
-        PARROT(Rarity.RARE, "Parrot"),
-        MONKEY(Rarity.RARE, "Monkey"),
-        GUARDIAN(Rarity.RARE, "Guardian"),
-        OCELOT(Rarity.RARE, "Ocelot"),
-        TURTLE(Rarity.RARE, "Turtle"),
-        ELEPHANT(Rarity.RARE, "Elephant"),
-        GIRAFFE(Rarity.RARE, "Giraffe"),
-        LION(Rarity.RARE, "Lion"),
-        CREEPER(Rarity.RARE, "Creeper"),
-        ZOMBIE(Rarity.RARE, "Zombie"),
-        SKELETON(Rarity.RARE, "Skeleton"),
-        SPIDER(Rarity.RARE, "Spider"),
-        ENDERMITE(Rarity.RARE, "Endermite"),
-        PIGMAN(Rarity.RARE, "Pigman"),
-        JELLYFISH(Rarity.RARE, "Jellyfish"),
-        SCARECROW(Rarity.RARE, "Scarecrow"),
-        MITHRIL_GOLEM(Rarity.RARE, "Mithril Golem"),
-        // Epic
-        WOLF(Rarity.EPIC, "Wolf"),
-        BLAZE(Rarity.EPIC, "Blaze"),
-        MAGMA_CUBE(Rarity.EPIC, "Magma Cube"),
-        ENDERMAN(Rarity.EPIC, "Enderman"),
-        GHAST(Rarity.EPIC, "Ghast"),
-        GOLEM(Rarity.EPIC, "Golem"),
-        WITHER_SKELETON(Rarity.EPIC, "Wither Skeleton"),
-        TARANTULA(Rarity.EPIC, "Tarantula"),
-        BABY_YETI(Rarity.EPIC, "Baby Yeti"),
-        BLUE_WHALE(Rarity.EPIC, "Blue Whale"),
-        TIGER(Rarity.EPIC, "Tiger"),
-        WISP(Rarity.EPIC, "Wisp"),
-        SNOWMAN(Rarity.EPIC, "Snowman"),
-        ARMADILLO(Rarity.EPIC, "Armadillo"),
-        AMMONITE(Rarity.EPIC, "Ammonite"),
-        SPINOCLAW(Rarity.EPIC, "Spinoclaw"),
-        GHOUL(Rarity.EPIC, "Ghoul"),
-        DROPLET_WISP(Rarity.EPIC, "Droplet Wisp"),
-        HEDGEHOG(Rarity.EPIC, "Hedgehog"),
-        SUMO(Rarity.EPIC, "Sumo"),
-        // Legendary
-        GRIFFIN(Rarity.LEGENDARY, "Griffin"),
-        GOLDEN_DRAGON(Rarity.LEGENDARY, "Golden Dragon"),
-        BLUE_SHARK(Rarity.LEGENDARY, "Blue Shark"),
-        JERRY(Rarity.LEGENDARY, "Jerry"),
-        BLACK_CAT(Rarity.LEGENDARY, "Black Cat"),
-        GRANDMA_WOLF(Rarity.LEGENDARY, "Grandma Wolf"),
-        ENDER_DRAGON(Rarity.LEGENDARY, "Ender Dragon"),
-        PHOENIX(Rarity.LEGENDARY, "Phoenix");
+    /** The skill category a pet is associated with, used to group pets in menus. */
+    public enum PetCategory {
+        COMBAT("Combat"),
+        MINING("Mining"),
+        FARMING("Farming"),
+        FISHING("Fishing"),
+        FORAGING("Foraging"),
+        ALCHEMY("Alchemy");
 
-        /** Default rarity of this pet type. Individual instances may override it. */
-        public final Rarity defaultRarity;
         private final String displayName;
 
-        PetType(Rarity defaultRarity, String displayName) {
-            this.defaultRarity = defaultRarity;
+        PetCategory(String displayName) {
             this.displayName = displayName;
         }
 
         public String getDisplayName() {
             return displayName;
+        }
+    }
+
+    /** Every pet type available in SkyBlock with its default rarity, display name, and skill category. */
+    public enum PetType {
+        // Common
+        CHICKEN(Rarity.COMMON, "Chicken", PetCategory.FARMING),
+        WORM(Rarity.COMMON, "Worm", PetCategory.FISHING),
+        SHEEP(Rarity.COMMON, "Sheep", PetCategory.ALCHEMY),
+        PIG(Rarity.COMMON, "Pig", PetCategory.FARMING),
+        COW(Rarity.COMMON, "Cow", PetCategory.FARMING),
+        BAT(Rarity.COMMON, "Bat", PetCategory.MINING),
+        SNAIL(Rarity.COMMON, "Snail", PetCategory.MINING),
+        ROCK(Rarity.COMMON, "Rock", PetCategory.MINING),
+        MOSQUITO(Rarity.COMMON, "Mosquito", PetCategory.FARMING),
+        SLUG(Rarity.COMMON, "Slug", PetCategory.FARMING),
+        // Uncommon
+        RABBIT(Rarity.UNCOMMON, "Rabbit", PetCategory.FARMING),
+        PENGUIN(Rarity.UNCOMMON, "Penguin", PetCategory.FISHING),
+        HORSE(Rarity.UNCOMMON, "Horse", PetCategory.FORAGING),
+        MULE(Rarity.UNCOMMON, "Mule", PetCategory.FORAGING),
+        DONKEY(Rarity.UNCOMMON, "Donkey", PetCategory.FORAGING),
+        GOAT(Rarity.UNCOMMON, "Goat", PetCategory.MINING),
+        SILVERFISH(Rarity.UNCOMMON, "Silverfish", PetCategory.MINING),
+        CAVE_SPIDER(Rarity.UNCOMMON, "Cave Spider", PetCategory.COMBAT),
+        MOOSHROOM_COW(Rarity.UNCOMMON, "Mooshroom Cow", PetCategory.FARMING),
+        HOUND(Rarity.UNCOMMON, "Hound", PetCategory.COMBAT),
+        // Rare
+        BEE(Rarity.RARE, "Bee", PetCategory.FARMING),
+        DOG(Rarity.RARE, "Dog", PetCategory.MINING),
+        DOLPHIN(Rarity.RARE, "Dolphin", PetCategory.FISHING),
+        SQUID(Rarity.RARE, "Squid", PetCategory.FISHING),
+        FLYING_FISH(Rarity.RARE, "Flying Fish", PetCategory.FISHING),
+        CAT(Rarity.RARE, "Cat", PetCategory.COMBAT),
+        PARROT(Rarity.RARE, "Parrot", PetCategory.ALCHEMY),
+        MONKEY(Rarity.RARE, "Monkey", PetCategory.FORAGING),
+        GUARDIAN(Rarity.RARE, "Guardian", PetCategory.FISHING),
+        OCELOT(Rarity.RARE, "Ocelot", PetCategory.FORAGING),
+        TURTLE(Rarity.RARE, "Turtle", PetCategory.FISHING),
+        ELEPHANT(Rarity.RARE, "Elephant", PetCategory.FARMING),
+        GIRAFFE(Rarity.RARE, "Giraffe", PetCategory.FORAGING),
+        LION(Rarity.RARE, "Lion", PetCategory.FORAGING),
+        CREEPER(Rarity.RARE, "Creeper", PetCategory.COMBAT),
+        ZOMBIE(Rarity.RARE, "Zombie", PetCategory.COMBAT),
+        SKELETON(Rarity.RARE, "Skeleton", PetCategory.COMBAT),
+        SPIDER(Rarity.RARE, "Spider", PetCategory.COMBAT),
+        ENDERMITE(Rarity.RARE, "Endermite", PetCategory.COMBAT),
+        PIGMAN(Rarity.RARE, "Pigman", PetCategory.COMBAT),
+        JELLYFISH(Rarity.RARE, "Jellyfish", PetCategory.FISHING),
+        SCARECROW(Rarity.RARE, "Scarecrow", PetCategory.FARMING),
+        MITHRIL_GOLEM(Rarity.RARE, "Mithril Golem", PetCategory.MINING),
+        // Epic
+        WOLF(Rarity.EPIC, "Wolf", PetCategory.COMBAT),
+        BLAZE(Rarity.EPIC, "Blaze", PetCategory.COMBAT),
+        MAGMA_CUBE(Rarity.EPIC, "Magma Cube", PetCategory.COMBAT),
+        ENDERMAN(Rarity.EPIC, "Enderman", PetCategory.COMBAT),
+        GHAST(Rarity.EPIC, "Ghast", PetCategory.COMBAT),
+        GOLEM(Rarity.EPIC, "Golem", PetCategory.COMBAT),
+        WITHER_SKELETON(Rarity.EPIC, "Wither Skeleton", PetCategory.COMBAT),
+        TARANTULA(Rarity.EPIC, "Tarantula", PetCategory.COMBAT),
+        BABY_YETI(Rarity.EPIC, "Baby Yeti", PetCategory.COMBAT),
+        BLUE_WHALE(Rarity.EPIC, "Blue Whale", PetCategory.FISHING),
+        TIGER(Rarity.EPIC, "Tiger", PetCategory.COMBAT),
+        WISP(Rarity.EPIC, "Wisp", PetCategory.COMBAT),
+        SNOWMAN(Rarity.EPIC, "Snowman", PetCategory.COMBAT),
+        ARMADILLO(Rarity.EPIC, "Armadillo", PetCategory.MINING),
+        AMMONITE(Rarity.EPIC, "Ammonite", PetCategory.FISHING),
+        SPINOCLAW(Rarity.EPIC, "Spinoclaw", PetCategory.FORAGING),
+        GHOUL(Rarity.EPIC, "Ghoul", PetCategory.COMBAT),
+        DROPLET_WISP(Rarity.EPIC, "Droplet Wisp", PetCategory.COMBAT),
+        HEDGEHOG(Rarity.EPIC, "Hedgehog", PetCategory.FARMING),
+        SUMO(Rarity.EPIC, "Sumo", PetCategory.COMBAT),
+        // Legendary
+        GRIFFIN(Rarity.LEGENDARY, "Griffin", PetCategory.COMBAT),
+        GOLDEN_DRAGON(Rarity.LEGENDARY, "Golden Dragon", PetCategory.COMBAT),
+        BLUE_SHARK(Rarity.LEGENDARY, "Blue Shark", PetCategory.FISHING),
+        JERRY(Rarity.LEGENDARY, "Jerry", PetCategory.COMBAT),
+        BLACK_CAT(Rarity.LEGENDARY, "Black Cat", PetCategory.COMBAT),
+        GRANDMA_WOLF(Rarity.LEGENDARY, "Grandma Wolf", PetCategory.COMBAT),
+        ENDER_DRAGON(Rarity.LEGENDARY, "Ender Dragon", PetCategory.COMBAT),
+        PHOENIX(Rarity.LEGENDARY, "Phoenix", PetCategory.COMBAT);
+
+        /** Default rarity of this pet type. Individual instances may override it. */
+        public final Rarity defaultRarity;
+        private final String displayName;
+        /** The skill category this pet belongs to. */
+        public final PetCategory category;
+
+        PetType(Rarity defaultRarity, String displayName, PetCategory category) {
+            this.defaultRarity = defaultRarity;
+            this.displayName = displayName;
+            this.category = category;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public PetCategory getCategory() {
+            return category;
         }
     }
 
@@ -552,6 +579,18 @@ public final class PetManager {
     public int getLevel(UUID playerId, PetType type) {
         Objects.requireNonNull(type, "type");
         return computeLevel(getExperience(playerId, type), type.defaultRarity);
+    }
+
+    /** Returns all pet types belonging to the given category, in enum declaration order. */
+    public static List<PetType> getTypesByCategory(PetCategory category) {
+        Objects.requireNonNull(category, "category");
+        List<PetType> types = new ArrayList<>();
+        for (PetType type : PetType.values()) {
+            if (type.category == category) {
+                types.add(type);
+            }
+        }
+        return Collections.unmodifiableList(types);
     }
 
     /** Returns all abilities defined for the given pet type, in unlock order (empty if the pet has none). */
