@@ -125,6 +125,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
     private DungeonClassManager dungeonClassManager;
+    private KuudraManager kuudraManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -255,7 +256,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("hotm").setExecutor(hotmCommand);
             getCommand("hotm").setTabCompleter(hotmCommand);
         }
-        KuudraManager kuudraManager = KuudraManager.getInstance();
+        kuudraManager = KuudraManager.getInstance();
         kuudraManager.load(getDataFolder());
         KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
         getCommand("kuudra").setExecutor(kuudraCommand);
