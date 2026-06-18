@@ -14,7 +14,7 @@ commands:
   auctionhouse:
     description: Manage Auction House listings (BIN and bid-based).
     usage: /auctionhouse <list|create|bid|view|cancel|mine>
-    aliases: [ah]
+    aliases: [ah, auction]
   bazaar:
     description: Open the Bazaar.
     usage: /bazaar [product]
