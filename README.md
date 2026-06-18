@@ -137,8 +137,7 @@ conventions and the one-canonical-home rule, and
 | `/bestiary` | — | Track your mob kill counts and bestiary tiers |
 | `/booster` | — | Activate XP or coin boosters |
 | `/chat` | — | Switch your active chat channel |
-| `/collection` | `/col` | View your collection progress |
-| `/collections` | — | View your SkyBlock collection progress |
+| `/collection` | `/col`, `/collections` | View your SkyBlock collection progress |
 | `/combat` | — | View and manage your combat stats |
 | `/coop` | — | Manage your co-op island group |
 | `/crafting` | — | Browse SkyBlock crafting recipes and track history |
@@ -160,8 +159,7 @@ conventions and the one-canonical-home rule, and
 | `/jerryworkshop` | — | View Jerry's Workshop gifts, snow minions, and snow cannon |
 | `/kuudra` | — | Kuudra boss tiers and contribution tracking |
 | `/leaderboard` | `/lb` | View player leaderboards |
-| `/mail` | — | Send and read player mail messages |
-| `/mailbox` | — | Mailbox management |
+| `/mail` | `/mailbox` | Send, read, and manage player mail messages |
 | `/mayor` | — | View the active mayor and vote for candidates |
 | `/menu` | — | Open the SkyBlock main menu |
 | `/minion` | `/minions` | Manage your placed minions, fuel, and upgrades |
