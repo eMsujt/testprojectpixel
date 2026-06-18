@@ -1,6 +1,7 @@
 package com.skyblock.core.minion.command;
 
 import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.minion.gui.MinionsMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -44,7 +45,7 @@ public final class MinionCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /minion <list|place|upgrade|remove|info>");
+            new MinionsMenu(player).open(player);
             return true;
         }
 
