@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.menu.EssenceMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -42,7 +43,7 @@ public final class EssenceCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /essence <balance|add|remove>");
+            new EssenceMenu(player).open(player);
             return true;
         }
 
