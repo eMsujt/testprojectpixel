@@ -125,6 +125,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
     private DungeonClassManager dungeonClassManager;
+    private ForgeManager forgeManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -347,7 +348,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("mail").setExecutor(mailCommand);
             getCommand("mail").setTabCompleter(mailCommand);
         }
-        ForgeManager forgeManager = ForgeManager.getInstance();
+        forgeManager = ForgeManager.getInstance();
         ForgeCommand forgeCommand = new ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
