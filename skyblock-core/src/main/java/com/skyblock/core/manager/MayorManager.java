@@ -33,12 +33,12 @@ public final class MayorManager {
         SCORPIUS("Scorpius", "Bribe", "Scorched", "Plague"),
         COLE("Cole", "Prospection", "Mining Fiesta", "Molten Forge"),
         FINNEGAN("Finnegan", "Cultivation", "Shining Armor", "Stead Fast", "Blooming Business"),
-        BARRY("Barry", "Bail Out", "Catch of the Day", "Crime Wave"),
         MARINA("Marina", "Fishing Festival", "Luck of the Sea", "Quiver", "Water Breathing"),
         FOXY("Foxy", "What the Dog Doin?", "Extra Pets", "Good Doggy"),
         AATROX("Aatrox", "Slayer XP Buff", "Slayer Quest Limit", "Slayer's Will", "Blood Thirst"),
         DIAZ("Diaz", "Free Samples", "Barrier Street", "Inflation"),
-        DERPY("Derpy", "TIME = MONEY!", "AAUUTOMATED!", "MOAR SKILLZ!!!");
+        DERPY("Derpy", "TIME = MONEY!", "AAUUTOMATED!", "MOAR SKILLZ!!!"),
+        BARRY("Barry", "Bail Out", "Catch of the Day", "Crime Wave");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
@@ -70,12 +70,12 @@ public final class MayorManager {
         m.put(MayorCandidate.SCORPIUS, statBonus(Stat.MAGIC_FIND, 15.0, Stat.ABILITY_DAMAGE, 10.0));
         m.put(MayorCandidate.COLE, statBonus(Stat.MINING_SPEED, 100.0, Stat.MINING_FORTUNE, 50.0));
         m.put(MayorCandidate.FINNEGAN, statBonus(Stat.FARMING_FORTUNE, 50.0));
-        m.put(MayorCandidate.BARRY, statBonus(Stat.INTELLIGENCE, 25.0));
         m.put(MayorCandidate.MARINA, statBonus(Stat.FISHING_SPEED, 50.0, Stat.SEA_CREATURE_CHANCE, 5.0));
         m.put(MayorCandidate.FOXY, statBonus(Stat.SPEED, 20.0, Stat.PET_LUCK, 7.0));
         m.put(MayorCandidate.AATROX, statBonus(Stat.STRENGTH, 30.0, Stat.FEROCITY, 10.0));
         m.put(MayorCandidate.DIAZ, statBonus(Stat.INTELLIGENCE, 10.0));
         m.put(MayorCandidate.DERPY, statBonus(Stat.SPEED, 10.0));
+        m.put(MayorCandidate.BARRY, statBonus(Stat.INTELLIGENCE, 25.0));
         MAYOR_STAT_PERKS = Collections.unmodifiableMap(m);
     }
 
