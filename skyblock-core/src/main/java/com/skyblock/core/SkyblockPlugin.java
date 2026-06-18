@@ -414,18 +414,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
         getCommand("alchemy").setExecutor(alchemyCommand);
         getCommand("alchemy").setTabCompleter(alchemyCommand);
-        MuseumManager museumManager = MuseumManager.getInstance();
-        MuseumCommand museumCommand = new MuseumCommand(museumManager);
-        if (getCommand("museum") != null) {
-            getCommand("museum").setExecutor(museumCommand);
-            getCommand("museum").setTabCompleter(museumCommand);
-        }
-        EssenceManager essenceManager = EssenceManager.getInstance();
-        EssenceCommand essenceCommand = new EssenceCommand(essenceManager);
-        if (getCommand("essence") != null) {
-            getCommand("essence").setExecutor(essenceCommand);
-            getCommand("essence").setTabCompleter(essenceCommand);
-        }
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
