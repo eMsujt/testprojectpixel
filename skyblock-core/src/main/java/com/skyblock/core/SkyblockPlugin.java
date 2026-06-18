@@ -27,6 +27,7 @@ import com.skyblock.core.fishing.listener.TrophyFishListener;
 import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.fairysoul.FairySoulCommand;
+import com.skyblock.core.island.IslandCommand;
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
@@ -226,6 +227,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("fairysoul") != null) {
             getCommand("fairysoul").setExecutor(fairySoulCommand);
             getCommand("fairysoul").setTabCompleter(fairySoulCommand);
+        }
+        IslandCommand islandCommand = new IslandCommand();
+        if (getCommand("island") != null) {
+            getCommand("island").setExecutor(islandCommand);
         }
         bestiaryManager = BestiaryManager.getInstance();
         BestiaryCommand bestiaryCommand = new BestiaryCommand(bestiaryManager);

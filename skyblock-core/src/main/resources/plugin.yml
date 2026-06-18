@@ -142,6 +142,11 @@ commands:
     usage: /fairysoul [info|collect <key>|reset]
     permission: skyblock.fairysoul
     aliases: [fairysouls]
+  island:
+    description: View your island level, XP, and progress to the next level.
+    usage: /island
+    permission: skyblock.island
+    aliases: [is]
   mayor:
     description: View the active mayor and vote for candidates.
     usage: /mayor [vote <mayor>|set <mayor>]
@@ -257,6 +262,9 @@ permissions:
     default: true
   skyblock.fairysoul:
     description: Use the /fairysoul command to view and manage fairy soul collection.
+    default: true
+  skyblock.island:
+    description: Use the /island command to view island level and XP progress.
     default: true
   skyblock.mayor:
     description: Use the /mayor command to view and vote for mayors.

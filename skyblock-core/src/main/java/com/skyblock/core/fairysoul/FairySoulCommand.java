@@ -2,6 +2,7 @@ package com.skyblock.core.fairysoul;
 
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.FairySoulManager.FairyIsland;
+import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.model.Stat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,7 +45,7 @@ public final class FairySoulCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /fairysoul <count|areas|stats|collect>");
+            new FairySoulMenu(player.getUniqueId()).open(player);
             return true;
         }
 
