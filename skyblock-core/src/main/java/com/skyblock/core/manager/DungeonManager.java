@@ -176,6 +176,13 @@ public final class DungeonManager {
         private int roomsCleared;
         private int secretsFound;
         private int puzzlesSolved;
+        private int deaths;
+        private int cryptsOpened;
+        private int totalRooms;
+        private int skillScore;
+        private int explorerScore;
+        private int speedScore;
+        private int completionScore;
 
         DungeonRun(DungeonType type, List<UUID> participants, long startTimeMillis) {
             this.type = type;
@@ -191,6 +198,24 @@ public final class DungeonManager {
         public int getRoomsCleared() { return roomsCleared; }
         public int getSecretsFound() { return secretsFound; }
         public int getPuzzlesSolved() { return puzzlesSolved; }
+        public int getDeaths() { return deaths; }
+        public int getCryptsOpened() { return cryptsOpened; }
+        public int getTotalRooms() { return totalRooms; }
+        public int getSkillScore() { return skillScore; }
+        public int getExplorerScore() { return explorerScore; }
+        public int getSpeedScore() { return speedScore; }
+        public int getCompletionScore() { return completionScore; }
+
+        /** Letter grade for the run: S+ ≥300, S ≥270, A ≥240, B ≥175, C ≥100, D <100. */
+        public String getGrade() {
+            int total = skillScore + explorerScore + speedScore + completionScore;
+            if (total >= 300) return "S+";
+            if (total >= 270) return "S";
+            if (total >= 240) return "A";
+            if (total >= 175) return "B";
+            if (total >= 100) return "C";
+            return "D";
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -470,6 +495,81 @@ public final class DungeonManager {
         run.puzzlesSolved++;
         run.score += scoreReward;
         return run.puzzlesSolved;
+    }
+
+    // -------------------------------------------------------------------------
+    // Run scoring
+    // -------------------------------------------------------------------------
+
+    /** Skill sub-score (0–60): max 60 minus 2 per death. */
+    public static int computeSkillScore(int deaths) {
+        if (deaths < 0) throw new IllegalArgumentException("deaths must not be negative: " + deaths);
+        return Math.max(0, 60 - deaths * 2);
+    }
+
+    /** Explorer sub-score (0–60): 40 for room completion ratio + up to 20 for crypts (2 each, max 10). */
+    public static int computeExplorerScore(int roomsCompleted, int totalRooms, int cryptsOpened) {
+        if (roomsCompleted < 0 || totalRooms < 0 || cryptsOpened < 0)
+            throw new IllegalArgumentException("arguments must not be negative");
+        if (roomsCompleted > totalRooms)
+            throw new IllegalArgumentException("roomsCompleted must not exceed totalRooms");
+        int roomPoints = totalRooms == 0 ? 0 : (int) Math.round(40.0 * roomsCompleted / totalRooms);
+        int cryptPoints = Math.min(20, cryptsOpened * 2);
+        return Math.min(60, roomPoints + cryptPoints);
+    }
+
+    /** Speed sub-score (0–100): full 100 under 5 min, 20 at 20 min, linear decay in between. */
+    public static int computeSpeedScore(int elapsedSeconds) {
+        if (elapsedSeconds < 0) throw new IllegalArgumentException("elapsedSeconds must not be negative: " + elapsedSeconds);
+        if (elapsedSeconds <= 300) return 100;
+        if (elapsedSeconds >= 1200) return 20;
+        double t = (double) (elapsedSeconds - 300) / (1200 - 300);
+        return (int) Math.round(100 - t * 80);
+    }
+
+    /**
+     * Completes the given player's active run using the provided run-end metrics,
+     * computing sub-scores and setting the run score to their sum.
+     *
+     * @param playerId       the player in the run
+     * @param endTimeMillis  wall-clock end time (used with startTimeMillis to compute elapsed)
+     * @param deaths         total party deaths
+     * @param cryptsOpened   crypts opened during the run
+     * @param roomsCompleted rooms fully cleared
+     * @param totalRooms     total rooms on the floor
+     * @return the completed run
+     */
+    public DungeonRun completeScoredRun(UUID playerId, long endTimeMillis,
+                                        int deaths, int cryptsOpened,
+                                        int roomsCompleted, int totalRooms) {
+        Objects.requireNonNull(playerId, "playerId");
+        DungeonRun run = activeRuns.get(playerId);
+        if (run == null) throw new IllegalStateException("No active dungeon run for " + playerId);
+        int elapsedSeconds = (int) Math.max(0, (endTimeMillis - run.getStartTimeMillis()) / 1000);
+        int skill       = computeSkillScore(deaths);
+        int explorer    = computeExplorerScore(roomsCompleted, totalRooms, cryptsOpened);
+        int speed       = computeSpeedScore(elapsedSeconds);
+        int completion  = 20;
+        int total       = skill + explorer + speed + completion;
+        run.deaths          = deaths;
+        run.cryptsOpened    = cryptsOpened;
+        run.totalRooms      = totalRooms;
+        run.skillScore      = skill;
+        run.explorerScore   = explorer;
+        run.speedScore      = speed;
+        run.completionScore = completion;
+        run.completed       = true;
+        run.score           = total;
+        for (UUID id : run.getParticipants()) {
+            activeRuns.remove(id);
+            bestScores.computeIfAbsent(id, k -> new HashMap<>())
+                    .merge(run.getType(), total, Math::max);
+            completionCounts.computeIfAbsent(id, k -> new HashMap<>())
+                    .merge(run.getType(), 1, Integer::sum);
+            recordDungeonEvent(id, "Completed " + run.getType().name() + " with score " + total
+                    + " (" + run.getGrade() + ")");
+        }
+        return run;
     }
 
     // -------------------------------------------------------------------------

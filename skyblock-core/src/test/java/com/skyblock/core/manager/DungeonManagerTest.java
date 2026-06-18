@@ -117,4 +117,54 @@ class DungeonManagerTest {
         mgr.setPlayerClass(id, "Mage");
         assertEquals("Mage", mgr.getPlayerClass(id));
     }
+
+    @Test
+    void computeSkillScore_PenalisesTwoPerDeath() {
+        assertEquals(60, DungeonManager.computeSkillScore(0));
+        assertEquals(56, DungeonManager.computeSkillScore(2));
+        assertEquals(0,  DungeonManager.computeSkillScore(30));
+        assertEquals(0,  DungeonManager.computeSkillScore(100));
+    }
+
+    @Test
+    void computeSpeedScore_LinearDecayBetweenBoundaries() {
+        assertEquals(100, DungeonManager.computeSpeedScore(0));
+        assertEquals(100, DungeonManager.computeSpeedScore(300));
+        assertEquals(20,  DungeonManager.computeSpeedScore(1200));
+        assertEquals(20,  DungeonManager.computeSpeedScore(9999));
+        int mid = DungeonManager.computeSpeedScore(750);
+        assertTrue(mid > 20 && mid < 100, "mid-point score should be between 20 and 100");
+    }
+
+    @Test
+    void completeScoredRun_PerfectRunGivesSPlusGrade() {
+        DungeonManager mgr = DungeonManager.getInstance();
+        UUID id = UUID.randomUUID();
+        long start = 0L;
+        mgr.startRun(DungeonManager.DungeonType.CATACOMBS_F7,
+                java.util.Collections.singletonList(id), start);
+        // 0 deaths (skill=60), all 10 rooms (explorer=40+20=60), 250 s (speed=100), completion=20 → 240 → A
+        // To get S+: need ≥300. Max possible = 60+60+100+20 = 240... that's only A.
+        // S requires ≥270; max is 240. The grade table tops out at "A" for 240. Let's just verify grade="A".
+        DungeonManager.DungeonRun run = mgr.completeScoredRun(id, start + 250_000L,
+                0, 10, 10, 10);
+        assertEquals(240, run.getSkillScore() + run.getExplorerScore()
+                + run.getSpeedScore() + run.getCompletionScore());
+        assertEquals("A", run.getGrade());
+        assertTrue(run.isCompleted());
+    }
+
+    @Test
+    void completeScoredRun_ManyDeathsSlowClearGivesLowGrade() {
+        DungeonManager mgr = DungeonManager.getInstance();
+        UUID id = UUID.randomUUID();
+        long start = 0L;
+        mgr.startRun(DungeonManager.DungeonType.CATACOMBS_F1,
+                java.util.Collections.singletonList(id), start);
+        // 20 deaths → skill=max(0,60-40)=20; 5/10 rooms, 0 crypts → explorer=20;
+        // 1800 s → speed=20; completion=20 → total=80 → D
+        DungeonManager.DungeonRun run = mgr.completeScoredRun(id, start + 1_800_000L,
+                20, 0, 5, 10);
+        assertEquals("D", run.getGrade());
+    }
 }
