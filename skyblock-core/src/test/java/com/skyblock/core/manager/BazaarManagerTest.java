@@ -193,6 +193,57 @@ class BazaarManagerTest {
     }
 
     @Test
+    void sellOrders_RestSortedByCheapestAskFirst() {
+        BazaarManager mgr = BazaarManager.getInstance();
+        String item = uniqueItem();
+        // Inserted out of price order; the book must queue the cheapest ask at the front.
+        mgr.addSellOrder(UUID.randomUUID(), item, 1, 70.0);
+        mgr.addSellOrder(UUID.randomUUID(), item, 1, 30.0);
+        mgr.addSellOrder(UUID.randomUUID(), item, 1, 50.0);
+
+        assertEquals(3, mgr.getSellOrderCount(item));
+        assertEquals(30.0, mgr.getSellOrders(item).get(0).priceEach());
+        assertEquals(50.0, mgr.getSellOrders(item).get(1).priceEach());
+        assertEquals(70.0, mgr.getSellOrders(item).get(2).priceEach());
+        assertEquals(30.0, mgr.getLowestAsk(item));
+    }
+
+    @Test
+    void buyOrders_RestSortedByHighestBidFirst() {
+        BazaarManager mgr = BazaarManager.getInstance();
+        String item = uniqueItem();
+        // Inserted out of price order; the book must queue the highest bid at the front.
+        mgr.addBuyOrder(UUID.randomUUID(), item, 1, 30.0);
+        mgr.addBuyOrder(UUID.randomUUID(), item, 1, 70.0);
+        mgr.addBuyOrder(UUID.randomUUID(), item, 1, 50.0);
+
+        assertEquals(3, mgr.getBuyOrderCount(item));
+        assertEquals(70.0, mgr.getBuyOrders(item).get(0).priceEach());
+        assertEquals(50.0, mgr.getBuyOrders(item).get(1).priceEach());
+        assertEquals(30.0, mgr.getBuyOrders(item).get(2).priceEach());
+        assertEquals(70.0, mgr.getHighestBid(item));
+    }
+
+    @Test
+    void instantBuy_WalksQueueAcrossThreeTiersInPriceOrder() {
+        BazaarManager mgr = BazaarManager.getInstance();
+        String item = uniqueItem();
+        mgr.addSellOrder(UUID.randomUUID(), item, 2, 60.0);
+        mgr.addSellOrder(UUID.randomUUID(), item, 2, 20.0);
+        mgr.addSellOrder(UUID.randomUUID(), item, 2, 40.0);
+
+        FillResult result = mgr.instantBuy(UUID.randomUUID(), item, 5);
+
+        // Cheapest first: 2 @ 20, 2 @ 40, then 1 @ 60 — leaving the dearest tier with 1 unit.
+        assertTrue(result.isFullyFilled());
+        assertEquals(3, result.ordersMatched());
+        assertEquals(2 * 20.0 + 2 * 40.0 + 1 * 60.0, result.totalCoins());
+        assertEquals(1, mgr.getSellOrderCount(item));
+        assertEquals(60.0, mgr.getSellOrders(item).get(0).priceEach());
+        assertEquals(1, mgr.getSellOrders(item).get(0).quantity());
+    }
+
+    @Test
     void claim_InstantBuyEscrowsCoinsForRestingSeller() {
         BazaarManager mgr = BazaarManager.getInstance();
         String item = uniqueItem();

@@ -91,6 +91,20 @@ class RiftManagerTest {
     }
 
     @Test
+    void addMotes_AccruesAcrossMultipleCreditsUntilCap() {
+        UUID player = UUID.randomUUID();
+        // Successive credits accumulate...
+        assertEquals(1000L, mgr.addMotes(player, 1000));
+        assertEquals(3000L, mgr.addMotes(player, 2000));
+        // ...but the purse never exceeds its cap; the overflow decays away.
+        assertEquals(RiftManager.MOTES_PURSE_CAP, mgr.addMotes(player, 5000));
+        assertEquals(RiftManager.MOTES_PURSE_CAP, mgr.getMotes(player));
+        // Spending below the cap frees room for further accrual.
+        assertTrue(mgr.spendMotes(player, 1000));
+        assertEquals(RiftManager.MOTES_PURSE_CAP, mgr.addMotes(player, 1000));
+    }
+
+    @Test
     void spendMotes_FailsWhenInsufficient() {
         UUID player = UUID.randomUUID();
         mgr.addMotes(player, 10);
