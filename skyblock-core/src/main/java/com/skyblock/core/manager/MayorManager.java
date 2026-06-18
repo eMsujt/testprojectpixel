@@ -33,7 +33,6 @@ public final class MayorManager {
         SCORPIUS("Scorpius", "Bribe", "Scorched", "Plague"),
         COLE("Cole", "Prospection", "Mining Fiesta", "Molten Forge"),
         FINNEGAN("Finnegan", "Cultivation", "Shining Armor", "Stead Fast", "Blooming Business"),
-        BARRY("Barry", "Bail Out", "Catch of the Day", "Crime Wave"),
         MARINA("Marina", "Fishing Festival", "Luck of the Sea", "Quiver", "Water Breathing"),
         FOXY("Foxy", "What the Dog Doin?", "Extra Pets", "Good Doggy"),
         AATROX("Aatrox", "Slayer XP Buff", "Slayer Quest Limit", "Slayer's Will", "Blood Thirst"),
@@ -70,7 +69,6 @@ public final class MayorManager {
         m.put(MayorCandidate.SCORPIUS, statBonus(Stat.MAGIC_FIND, 15.0, Stat.ABILITY_DAMAGE, 10.0));
         m.put(MayorCandidate.COLE, statBonus(Stat.MINING_SPEED, 100.0, Stat.MINING_FORTUNE, 50.0));
         m.put(MayorCandidate.FINNEGAN, statBonus(Stat.FARMING_FORTUNE, 50.0));
-        m.put(MayorCandidate.BARRY, statBonus(Stat.INTELLIGENCE, 25.0));
         m.put(MayorCandidate.MARINA, statBonus(Stat.FISHING_SPEED, 50.0, Stat.SEA_CREATURE_CHANCE, 5.0));
         m.put(MayorCandidate.FOXY, statBonus(Stat.SPEED, 20.0, Stat.PET_LUCK, 7.0));
         m.put(MayorCandidate.AATROX, statBonus(Stat.STRENGTH, 30.0, Stat.FEROCITY, 10.0));
@@ -87,6 +85,9 @@ public final class MayorManager {
         return Collections.unmodifiableMap(bonuses);
     }
 
+    /** Length of a full Skyblock election cycle, in days. */
+    public static final int ELECTION_CYCLE_DAYS = 53;
+
     private static final MayorManager INSTANCE = new MayorManager();
 
     /** The currently active mayor (null if none set). */
@@ -94,6 +95,9 @@ public final class MayorManager {
 
     /** Number of elections that have been run so far. */
     private int electionCycle;
+
+    /** Day within the current 53-day cycle, in the range {@code [0, ELECTION_CYCLE_DAYS)}. */
+    private int cycleDay;
 
     /** Per-player vote, keyed by player UUID. */
     private final Map<UUID, MayorCandidate> playerVotes = new HashMap<>();
@@ -190,6 +194,39 @@ public final class MayorManager {
      */
     public int getElectionCycle() {
         return electionCycle;
+    }
+
+    /**
+     * Returns the current day within the 53-day election cycle, in {@code [0, ELECTION_CYCLE_DAYS)}.
+     *
+     * @return the current cycle day
+     */
+    public int getCycleDay() {
+        return cycleDay;
+    }
+
+    /**
+     * Returns the number of days remaining until the next election in the current cycle.
+     *
+     * @return the days until the next election
+     */
+    public int getDaysUntilElection() {
+        return ELECTION_CYCLE_DAYS - cycleDay;
+    }
+
+    /**
+     * Advances the cycle by one day. When the 53-day cycle completes, the day counter resets
+     * and an election is automatically run.
+     *
+     * @return the newly elected mayor if the cycle completed, otherwise {@code null}
+     */
+    public MayorCandidate advanceDay() {
+        cycleDay++;
+        if (cycleDay >= ELECTION_CYCLE_DAYS) {
+            cycleDay = 0;
+            return runElection();
+        }
+        return null;
     }
 
     /**
@@ -325,6 +362,7 @@ public final class MayorManager {
         electionHistory.clear();
         currentMayor = null;
         electionCycle = cfg.getInt("electionCycle", 0);
+        cycleDay = cfg.getInt("cycleDay", 0);
         String mayorName = cfg.getString("currentMayor");
         if (mayorName != null) {
             try {
@@ -376,6 +414,7 @@ public final class MayorManager {
             cfg.set("currentMayor", currentMayor.name());
         }
         cfg.set("electionCycle", electionCycle);
+        cfg.set("cycleDay", cycleDay);
         for (Map.Entry<UUID, MayorCandidate> entry : playerVotes.entrySet()) {
             cfg.set("votes." + entry.getKey().toString(), entry.getValue().name());
         }
