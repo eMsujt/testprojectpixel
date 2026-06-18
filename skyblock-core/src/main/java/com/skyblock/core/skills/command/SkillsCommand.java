@@ -1,6 +1,7 @@
 package com.skyblock.core.skills.command;
 
 import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.menu.SkillsMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -33,7 +34,7 @@ public final class SkillsCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            handleStats(player);
+            new SkillsMenu(player.getUniqueId()).open(player);
             return true;
         }
 
