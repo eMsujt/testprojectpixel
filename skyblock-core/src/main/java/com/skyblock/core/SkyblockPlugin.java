@@ -114,6 +114,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private static SkyblockPlugin instance;
     private BankManager bankManager;
     private MayorManager mayorManager;
+    private GardenManager gardenManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -179,7 +180,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
         getCommand("pet").setTabCompleter(petCommand);
-        GardenManager gardenManager = GardenManager.getInstance();
+        gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
         GardenCommand gardenCommand = new GardenCommand(gardenManager);
         getCommand("garden").setExecutor(gardenCommand);

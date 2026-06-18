@@ -1,6 +1,7 @@
 package com.skyblock.core.garden;
 
 import com.skyblock.core.manager.GardenManager;
+import com.skyblock.core.menu.GardenMenu;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -60,7 +61,7 @@ public final class GardenCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|history|reset>");
+            new GardenMenu(player).open(player);
             return true;
         }
 
