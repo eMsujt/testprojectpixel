@@ -211,6 +211,10 @@ commands:
     description: Title system
     usage: /title <list|set|remove>
     permission: skyblock.title
+  wardrobe:
+    description: View and manage your saved armor outfits.
+    usage: /wardrobe [save <name>|load <name>|delete <name>|list|slots|slot <save|load|clear> <SLOT>]
+    permission: skyblock.wardrobe
 
 permissions:
   skyblock.warp:
@@ -308,4 +312,7 @@ permissions:
     default: true
   skyblock.title:
     description: Use the /title command to manage SkyBlock titles.
+    default: true
+  skyblock.wardrobe:
+    description: Use the /wardrobe command to save and equip armor sets.
     default: true
