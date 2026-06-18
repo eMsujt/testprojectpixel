@@ -214,7 +214,7 @@ public final class MinionManager {
     }
 
     /** Base number of minion slots each player is allowed. */
-    public static final int MAX_SLOTS = 11;
+    public static final int MAX_SLOTS = 12;
 
     /** Production ticks a TIER_1 minion needs to produce one resource. */
     public static final int BASE_PRODUCTION_TICKS = 14;
@@ -236,6 +236,9 @@ public final class MinionManager {
     /** Location key → minion UUID for placed-minion lookup by block position. */
     private final Map<String, UUID> locationIndex = new HashMap<>();
 
+    /** Per-player slot cap overrides set by island upgrades; absent = MAX_SLOTS. */
+    private final Map<UUID, Integer> playerMaxSlots = new HashMap<>();
+
     private MinionManager() {
     }
 
@@ -243,13 +246,32 @@ public final class MinionManager {
         return INSTANCE;
     }
 
+    /** Returns the effective minion slot cap for the given player (default {@link #MAX_SLOTS}). */
+    public int getMaxSlots(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return playerMaxSlots.getOrDefault(owner, MAX_SLOTS);
+    }
+
+    /**
+     * Sets a player's minion slot cap (used by island upgrade progression).
+     * The new cap must be at least {@link #MAX_SLOTS}.
+     */
+    public void setMaxSlots(UUID owner, int slots) {
+        Objects.requireNonNull(owner, "owner");
+        if (slots < MAX_SLOTS) {
+            throw new IllegalArgumentException("slots must be >= MAX_SLOTS (" + MAX_SLOTS + ")");
+        }
+        playerMaxSlots.put(owner, slots);
+    }
+
     public MinionData placeMinion(UUID owner, MinionType type, MinionTier tier) {
         Objects.requireNonNull(owner, "owner");
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(tier, "tier");
         List<UUID> existing = ownerIndex.getOrDefault(owner, Collections.emptyList());
-        if (existing.size() >= MAX_SLOTS) {
-            throw new IllegalStateException("Minion slot cap reached (" + MAX_SLOTS + ")");
+        int cap = getMaxSlots(owner);
+        if (existing.size() >= cap) {
+            throw new IllegalStateException("Minion slot cap reached (" + cap + ")");
         }
         UUID id = UUID.randomUUID();
         MinionData data = new MinionData(id, owner, type, tier);
@@ -521,6 +543,7 @@ public final class MinionManager {
         ownerIndex.clear();
         placements.clear();
         locationIndex.clear();
+        playerMaxSlots.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID id = UUID.fromString(key);
@@ -597,6 +620,19 @@ public final class MinionManager {
                 }
             }
         }
+        if (cfg.isConfigurationSection("slotOverrides")) {
+            for (String ownerStr : cfg.getConfigurationSection("slotOverrides").getKeys(false)) {
+                try {
+                    UUID owner = UUID.fromString(ownerStr);
+                    int slots = cfg.getInt("slotOverrides." + ownerStr, MAX_SLOTS);
+                    if (slots >= MAX_SLOTS) {
+                        playerMaxSlots.put(owner, slots);
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
     }
 
     public void save(File dataFolder) {
@@ -627,6 +663,9 @@ public final class MinionManager {
         }
         for (Map.Entry<String, UUID> entry : locationIndex.entrySet()) {
             cfg.set("locations." + entry.getKey(), entry.getValue().toString());
+        }
+        for (Map.Entry<UUID, Integer> entry : playerMaxSlots.entrySet()) {
+            cfg.set("slotOverrides." + entry.getKey().toString(), entry.getValue());
         }
         try {
             cfg.save(file);
