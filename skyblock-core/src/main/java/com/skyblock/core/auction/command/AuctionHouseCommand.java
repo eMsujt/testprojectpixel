@@ -1,5 +1,6 @@
 package com.skyblock.core.auction.command;
 
+import com.skyblock.core.auction.gui.AuctionHouseMenu;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,7 +51,7 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /auctionhouse <list|create|bid|view|cancel|mine|history>");
+            new AuctionHouseMenu().open(player);
             return true;
         }
 

@@ -126,6 +126,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private AccessoryBagManager accessoryBagManager;
     private DungeonClassManager dungeonClassManager;
     private ForgeManager forgeManager;
+    private AuctionHouseManager auctionHouseManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -144,7 +145,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         MayorCommand mayorCommand = new MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
         getCommand("mayor").setTabCompleter(mayorCommand);
-        AuctionHouseManager auctionHouseManager = AuctionHouseManager.getInstance();
+        auctionHouseManager = AuctionHouseManager.getInstance();
         auctionHouseManager.load(getDataFolder());
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
         getCommand("auctionhouse").setExecutor(auctionHouseCommand);
@@ -152,6 +153,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("ah") != null) {
             getCommand("ah").setExecutor(auctionHouseCommand);
             getCommand("ah").setTabCompleter(auctionHouseCommand);
+        }
+        if (getCommand("auction") != null) {
+            getCommand("auction").setExecutor(auctionHouseCommand);
+            getCommand("auction").setTabCompleter(auctionHouseCommand);
         }
         BazaarManager bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
