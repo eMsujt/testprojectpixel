@@ -17,7 +17,9 @@ import com.skyblock.core.manager.MuseumManager;
 import com.skyblock.core.manager.EssenceCommand;
 import com.skyblock.core.manager.EssenceManager;
 import com.skyblock.core.dungeon.command.DungeonCommand;
+import com.skyblock.core.dungeon.command.DungeonClassCommand;
 import com.skyblock.core.manager.DungeonManager;
+import com.skyblock.core.manager.DungeonClassManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.manager.EnchantingManager;
 import com.skyblock.core.fishing.command.FishingCommand;
@@ -121,6 +123,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private MayorManager mayorManager;
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
+    private DungeonClassManager dungeonClassManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -172,6 +175,12 @@ public final class SkyblockPlugin extends JavaPlugin {
         DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
         getCommand("dungeon").setExecutor(dungeonCommand);
         getCommand("dungeon").setTabCompleter(dungeonCommand);
+        dungeonClassManager = DungeonClassManager.getInstance();
+        DungeonClassCommand dungeonClassCommand = new DungeonClassCommand(dungeonClassManager);
+        if (getCommand("dungeonclass") != null) {
+            getCommand("dungeonclass").setExecutor(dungeonClassCommand);
+            getCommand("dungeonclass").setTabCompleter(dungeonClassCommand);
+        }
         GuildManager guildManager = GuildManager.getInstance();
         guildManager.load(getDataFolder());
         GuildCommand guildCommand = new GuildCommand(guildManager);
