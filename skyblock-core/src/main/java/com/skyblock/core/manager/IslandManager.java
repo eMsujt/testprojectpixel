@@ -138,8 +138,13 @@ public final class IslandManager {
 
     private static final IslandManager INSTANCE = new IslandManager();
 
+    /** XP required per island level: level = floor(sqrt(islandXp / XP_PER_LEVEL)). */
+    public static final long XP_PER_LEVEL = 100L;
+
     /** Per-player IslandData records. */
     private final Map<UUID, IslandData> islandData = new HashMap<>();
+    /** Per-player cumulative island XP; absent entries default to zero. */
+    private final Map<UUID, Long> islandXp = new HashMap<>();
     private final Map<UUID, List<String>> islandHistory = new HashMap<>();
     private final Map<UUID, String> islandBiome = new HashMap<>();
     private final Map<UUID, Boolean> islandUnlocked = new HashMap<>();
@@ -386,6 +391,55 @@ public final class IslandManager {
     }
 
     /**
+     * Computes the island level for a given XP total using the SkyBlock formula
+     * {@code level = floor(sqrt(xp / XP_PER_LEVEL))}.
+     *
+     * @param xp the cumulative island XP (must be >= 0)
+     * @return the derived island level
+     */
+    public static int levelFromXp(long xp) {
+        if (xp < 0) throw new IllegalArgumentException("xp must be >= 0, got " + xp);
+        return (int) Math.floor(Math.sqrt((double) xp / XP_PER_LEVEL));
+    }
+
+    /**
+     * Returns the cumulative island XP for {@code owner}, or 0 if none.
+     *
+     * @param owner the island owner's UUID
+     * @return the island XP
+     */
+    public long getIslandXp(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return islandXp.getOrDefault(owner, 0L);
+    }
+
+    /**
+     * Adds island XP to {@code owner} and recomputes the derived island level.
+     *
+     * @param owner  the island owner's UUID
+     * @param amount the XP to add (must be >= 0)
+     * @return the new cumulative island XP
+     */
+    public long addIslandXp(UUID owner, long amount) {
+        Objects.requireNonNull(owner, "owner");
+        if (amount < 0) throw new IllegalArgumentException("amount must be >= 0, got " + amount);
+        long total = islandXp.getOrDefault(owner, 0L) + amount;
+        islandXp.put(owner, total);
+        setLevel(owner, levelFromXp(total));
+        return total;
+    }
+
+    /**
+     * Returns the island level derived from {@code owner}'s XP via {@link #levelFromXp(long)}.
+     *
+     * @param owner the island owner's UUID
+     * @return the XP-derived island level
+     */
+    public int getIslandLevelFromXp(UUID owner) {
+        return levelFromXp(getIslandXp(owner));
+    }
+
+    /**
      * Sets the level on the owner's island data record.
      *
      * @param owner the island owner's UUID
@@ -533,6 +587,7 @@ public final class IslandManager {
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         islandData.clear();
+        islandXp.clear();
         islandHistory.clear();
         islandBiome.clear();
         islandUnlocked.clear();
@@ -543,6 +598,10 @@ public final class IslandManager {
                 UUID owner = UUID.fromString(key);
                 int level = cfg.getInt(key + ".level", 0);
                 long blocks = cfg.getLong(key + ".blocksPlaced", 0L);
+                long xp = cfg.getLong(key + ".islandXp", 0L);
+                if (xp > 0) {
+                    islandXp.put(owner, xp);
+                }
                 List<UUID> trustees = new ArrayList<>();
                 List<?> raw = cfg.getList(key + ".trustees", Collections.emptyList());
                 for (Object o : raw) {
@@ -604,6 +663,10 @@ public final class IslandManager {
             IslandData d = entry.getValue();
             cfg.set(key + ".level", d.level());
             cfg.set(key + ".blocksPlaced", d.blocksPlaced());
+            long xp = islandXp.getOrDefault(entry.getKey(), 0L);
+            if (xp > 0) {
+                cfg.set(key + ".islandXp", xp);
+            }
             List<String> trusteeStrings = new ArrayList<>();
             for (UUID t : d.trustees) {
                 trusteeStrings.add(t.toString());
