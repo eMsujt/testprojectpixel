@@ -107,14 +107,6 @@ import com.skyblock.core.warp.WarpCommand;
 import com.skyblock.core.warp.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.alchemy.AlchemyManager;
-import com.skyblock.core.manager.FairySoulManager;
-import com.skyblock.core.manager.BestiaryManager;
-import com.skyblock.core.manager.HarpManager;
-import com.skyblock.core.manager.JerryWorkshopManager;
-import com.skyblock.core.manager.MuseumManager;
-import com.skyblock.core.museum.MuseumCommand;
-import com.skyblock.core.manager.EssenceManager;
-import com.skyblock.core.manager.EssenceCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
