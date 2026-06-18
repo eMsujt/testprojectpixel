@@ -206,6 +206,14 @@ public final class DungeonManager {
         public int getSpeedScore() { return speedScore; }
         public int getCompletionScore() { return completionScore; }
 
+        /** Package-private factory that pre-sets sub-scores; used only in unit tests. */
+        static DungeonRun withSubScores(int skill, int explorer, int speed, int completion) {
+            DungeonRun r = new DungeonRun(DungeonType.CATACOMBS_F1, Collections.emptyList(), 0L);
+            r.skillScore = skill; r.explorerScore = explorer;
+            r.speedScore = speed; r.completionScore = completion;
+            return r;
+        }
+
         /** Letter grade for the run: S+ ≥300, S ≥270, A ≥240, B ≥175, C ≥100, D <100. */
         public String getGrade() {
             int total = skillScore + explorerScore + speedScore + completionScore;
