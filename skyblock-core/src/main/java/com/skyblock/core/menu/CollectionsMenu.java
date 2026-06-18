@@ -1,9 +1,11 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.collections.gui.CollectionCategoryMenu;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -12,7 +14,8 @@ import java.util.UUID;
  * Canonical Collections hub menu. A 54-slot (6-row) chest titled
  * {@code §6Collections} showing one icon per {@link CollectionCategory},
  * framed by a {@code GRAY_STAINED_GLASS_PANE} border. Each category icon
- * displays the player's total item count for that category.
+ * displays the player's total item count for that category; clicking one
+ * opens the {@link CollectionCategoryMenu} for that category.
  *
  * <p>All other CollectionsMenu/CollectionMenu classes in the project are
  * deprecated stubs that delegate here.</p>
@@ -43,7 +46,7 @@ public final class CollectionsMenu extends Menu {
         CollectionManager manager = CollectionManager.getInstance();
         CollectionCategory[] categories = CollectionCategory.values();
         for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
-            CollectionCategory category = categories[i];
+            final CollectionCategory category = categories[i];
             long total = manager.getTotalForCategory(playerId, category);
             setItem(CATEGORY_SLOTS[i], new ItemBuilder(CATEGORY_ICONS[i])
                     .displayName("§a" + category.getDisplayName())
@@ -51,7 +54,11 @@ public final class CollectionsMenu extends Menu {
                             "§7Total collected: §e" + total,
                             "§7View your " + category.getDisplayName().toLowerCase() + " collections.")
                     .build(),
-                    event -> event.setCancelled(true));
+                    event -> {
+                        event.setCancelled(true);
+                        new CollectionCategoryMenu(playerId, category)
+                                .open((Player) event.getWhoClicked());
+                    });
         }
     }
 

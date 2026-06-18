@@ -2,6 +2,7 @@ package com.skyblock.core.collections.gui;
 
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
+import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.Menu;
@@ -9,16 +10,19 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Shows all collection items for a single category.
+ * Shows all collection items for a single {@link CollectionCategory}.
  *
  * <p>A 54-slot chest titled {@code §<color>Collections › <Category>} with a
- * gray glass-pane top/bottom border. Items fill slots 9–44; a back arrow at
- * slot 4 returns the player to {@link CollectionsMenu}.</p>
+ * gray glass-pane top/bottom border. Items fill slots 9–44 showing each
+ * collection's gathered count, current tier, and items needed for the next
+ * tier. A back arrow at slot 4 returns the player to {@link CollectionsMenu}.</p>
  */
 public class CollectionCategoryMenu extends Menu {
 
@@ -33,14 +37,13 @@ public class CollectionCategoryMenu extends Menu {
     }
 
     private final UUID playerId;
-    private final String categoryName;
-    private final Material[] items;
+    private final CollectionCategory category;
 
-    public CollectionCategoryMenu(UUID playerId, String categoryName, Material[] items) {
-        super(CATEGORY_COLORS.getOrDefault(categoryName, "§e") + "Collections › " + categoryName, 6);
+    public CollectionCategoryMenu(UUID playerId, CollectionCategory category) {
+        super(CATEGORY_COLORS.getOrDefault(category.getDisplayName(), "§e")
+                + "Collections › " + category.getDisplayName(), 6);
         this.playerId = playerId;
-        this.categoryName = categoryName;
-        this.items = items;
+        this.category = category;
     }
 
     @Override
@@ -56,15 +59,35 @@ public class CollectionCategoryMenu extends Menu {
                 });
 
         CollectionManager manager = CollectionManager.getInstance();
-        for (int i = 0; i < items.length && i + 9 < 45; i++) {
-            Material mat = items[i];
-            Collection c = Collection.parse(mat.name());
-            long count = c == null ? 0L : manager.getItems(playerId, c);
-            int tier = c == null ? 0 : manager.getTier(playerId, c);
+        Collection[] collections = category.getCollections();
+        for (int i = 0; i < collections.length && i + 9 < 45; i++) {
+            Collection c = collections[i];
+            Material mat = resolveMaterial(c);
+            long count = manager.getItems(playerId, c);
+            int tier = manager.getTier(playerId, c);
+            long toNext = manager.getItemsToNextTier(playerId, c);
+
+            List<String> lore = new ArrayList<>();
+            lore.add("§7Collected: §e" + count);
+            lore.add("§7Tier: §e" + tier);
+            if (toNext > 0) {
+                lore.add("§7Next tier in: §e" + toNext + " §7more");
+            } else {
+                lore.add("§aMaxed!");
+            }
+
             setItem(9 + i, new ItemBuilder(mat)
-                    .displayName("§a" + prettify(mat.name()))
-                    .lore("§7Collected: §e" + count, "§7Tier: §e" + tier)
+                    .displayName("§a" + c.getDisplayName())
+                    .lore(lore)
                     .build());
+        }
+    }
+
+    private static Material resolveMaterial(Collection c) {
+        try {
+            return Material.valueOf(c.name());
+        } catch (IllegalArgumentException e) {
+            return Material.PAPER;
         }
     }
 
@@ -74,16 +97,5 @@ public class CollectionCategoryMenu extends Menu {
                 .build();
         for (int slot = 0; slot < 9; slot++)  setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
-    }
-
-    private static String prettify(String name) {
-        String[] words = name.split("_");
-        StringBuilder sb = new StringBuilder();
-        for (String word : words) {
-            if (word.isEmpty()) continue;
-            if (sb.length() > 0) sb.append(' ');
-            sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase());
-        }
-        return sb.toString();
     }
 }

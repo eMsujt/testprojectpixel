@@ -1,6 +1,7 @@
 package com.skyblock.core.collections.command;
 
 import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import org.bukkit.command.Command;
@@ -114,14 +115,7 @@ public final class CollectionsCommand implements TabExecutor {
     }
 
     private void handleAll(Player player) {
-        UUID id = player.getUniqueId();
-        player.sendMessage("=== Collections ===");
-        for (Collection c : Collection.values()) {
-            long total = collectionsManager.getItems(id, c);
-            int tier = collectionsManager.getTier(id, c);
-            player.sendMessage(String.format("  %-22s %d  (Tier %d)", c.name(), total, tier));
-        }
-        player.sendMessage("Use /collections <name> to view a specific collection.");
+        new CollectionsMenu(player.getUniqueId()).open(player);
     }
 
     private void handleCollection(Player player, Collection collection) {
