@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public final class DungeonCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("info", "start", "leave", "complete", "class", "scores", "floor", "history");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("menu", "info", "start", "leave", "complete", "class", "scores", "floor", "history");
 
     private final DungeonManager dungeonManager;
 
@@ -29,11 +29,12 @@ public final class DungeonCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            handleInfo(player);
+            new com.skyblock.core.dungeon.gui.DungeonMenu(player.getUniqueId()).open(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
+            case "menu"     -> new com.skyblock.core.dungeon.gui.DungeonMenu(player.getUniqueId()).open(player);
             case "info"     -> handleInfo(player);
             case "start"    -> handleStart(player, args);
             case "leave"    -> handleLeave(player);

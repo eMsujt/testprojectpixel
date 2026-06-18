@@ -234,6 +234,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         HOTMCommand hotmCommand = new HOTMCommand(hotmManager);
         getCommand("hotmtree").setExecutor(hotmCommand);
         getCommand("hotmtree").setTabCompleter(hotmCommand);
+        if (getCommand("hotm") != null) {
+            getCommand("hotm").setExecutor(hotmCommand);
+            getCommand("hotm").setTabCompleter(hotmCommand);
+        }
         KuudraManager kuudraManager = KuudraManager.getInstance();
         kuudraManager.load(getDataFolder());
         KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
