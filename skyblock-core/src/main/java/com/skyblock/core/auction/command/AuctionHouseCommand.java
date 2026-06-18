@@ -1,6 +1,6 @@
 package com.skyblock.core.auction.command;
 
-import com.skyblock.core.auction.gui.AuctionHouseMenu;
+import com.skyblock.core.menu.AuctionHouseMenu;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
