@@ -127,6 +127,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private DungeonClassManager dungeonClassManager;
     private ForgeManager forgeManager;
     private AuctionHouseManager auctionHouseManager;
+    private PetManager petManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -197,7 +198,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         PartyCommand partyCommand = new PartyCommand(partyManager);
         getCommand("party").setExecutor(partyCommand);
         getCommand("party").setTabCompleter(partyCommand);
-        PetManager petManager = PetManager.getInstance();
+        petManager = PetManager.getInstance();
         petManager.load(getDataFolder());
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
