@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,20 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class PetMenu extends Menu {
+
+    /** Wool material used to represent each rarity tier. */
+    static final Map<Rarity, Material> RARITY_WOOL = new EnumMap<>(Rarity.class);
+
+    static {
+        RARITY_WOOL.put(Rarity.COMMON,      Material.WHITE_WOOL);
+        RARITY_WOOL.put(Rarity.UNCOMMON,    Material.LIME_WOOL);
+        RARITY_WOOL.put(Rarity.RARE,        Material.BLUE_WOOL);
+        RARITY_WOOL.put(Rarity.EPIC,        Material.PURPLE_WOOL);
+        RARITY_WOOL.put(Rarity.LEGENDARY,   Material.ORANGE_WOOL);
+        RARITY_WOOL.put(Rarity.MYTHIC,      Material.PINK_WOOL);
+        RARITY_WOOL.put(Rarity.DIVINE,      Material.CYAN_WOOL);
+        RARITY_WOOL.put(Rarity.SPECIAL,     Material.RED_WOOL);
+    }
 
     /** Width of the textual XP progress bar rendered in each pet's lore. */
     private static final int XP_BAR_SEGMENTS = 20;
@@ -87,7 +102,8 @@ public class PetMenu extends Menu {
             int level = petManager.getLevel(playerId, pet.type);
             long xp = petManager.getExperience(playerId, pet.type);
             String rarityColor = ItemBuilder.rarityColor(pet.rarity.name()).toString();
-            ItemStack item = new ItemBuilder(Material.PLAYER_HEAD)
+            Material wool = RARITY_WOOL.getOrDefault(pet.rarity, Material.WHITE_WOOL);
+            ItemStack item = new ItemBuilder(wool)
                     .displayName(rarityColor + (equipped ? "✦ " : "") + "[Lvl " + level + "] " + pet.type.getDisplayName())
                     .lore(
                             "§7Rarity: " + rarityColor + pet.rarity.getDisplayName(),
