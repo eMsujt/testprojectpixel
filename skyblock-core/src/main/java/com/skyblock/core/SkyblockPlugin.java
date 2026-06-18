@@ -115,6 +115,7 @@ public final class SkyblockPlugin extends JavaPlugin {
 
     private static SkyblockPlugin instance;
     private BankManager bankManager;
+    private BestiaryManager bestiaryManager;
     private MayorManager mayorManager;
     private WardrobeManager wardrobeManager;
 
@@ -207,7 +208,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("fairysoul").setExecutor(fairySoulCommand);
             getCommand("fairysoul").setTabCompleter(fairySoulCommand);
         }
-        BestiaryManager bestiaryManager = BestiaryManager.getInstance();
+        bestiaryManager = BestiaryManager.getInstance();
         BestiaryCommand bestiaryCommand = new BestiaryCommand(bestiaryManager);
         if (getCommand("bestiary") != null) {
             getCommand("bestiary").setExecutor(bestiaryCommand);
