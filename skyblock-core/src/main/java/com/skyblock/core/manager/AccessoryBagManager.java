@@ -106,6 +106,46 @@ public final class AccessoryBagManager {
         }
     }
 
+    /**
+     * Accessory-bag slot-count tier, unlocked through SkyBlock progression. Each
+     * tier raises the number of accessory slots available, from the default of
+     * {@link #DEFAULT 3} up to the maximum of {@link #TIER_7 45}.
+     */
+    public enum SlotTier {
+        DEFAULT("Default",   3),
+        TIER_1("Tier I",     9),
+        TIER_2("Tier II",   15),
+        TIER_3("Tier III",  21),
+        TIER_4("Tier IV",   27),
+        TIER_5("Tier V",    33),
+        TIER_6("Tier VI",   39),
+        TIER_7("Tier VII",  45);
+
+        private final String displayName;
+        private final int slots;
+
+        SlotTier(String displayName, int slots) {
+            this.displayName = displayName;
+            this.slots = slots;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        /** Number of accessory slots unlocked at this tier. */
+        public int getSlots() {
+            return slots;
+        }
+
+        /** Returns the next tier, or {@code null} if already at max. */
+        public SlotTier next() {
+            int next = ordinal() + 1;
+            SlotTier[] values = values();
+            return next < values.length ? values[next] : null;
+        }
+    }
+
     /** Maximum number of accessories a player can hold in the bag. */
     public static final int MAX_SLOTS = 45;
 
@@ -113,6 +153,9 @@ public final class AccessoryBagManager {
 
     /** Per-player set of accessories stored in the bag. */
     private final Map<UUID, Set<TalismanManager.TalismanType>> bags = new HashMap<>();
+
+    /** Per-player unlocked slot-count tier; absent players default to {@link SlotTier#DEFAULT}. */
+    private final Map<UUID, SlotTier> slotTiers = new HashMap<>();
 
     /** Per-player selected power stone used to tune magical power into stats. */
     private final Map<UUID, PowerStone> powerStones = new HashMap<>();
@@ -144,7 +187,7 @@ public final class AccessoryBagManager {
         if (bag.contains(type)) {
             return false;
         }
-        if (bag.size() >= MAX_SLOTS) {
+        if (bag.size() >= getUnlockedSlots(playerId)) {
             return false;
         }
         return bag.add(type);
@@ -200,6 +243,56 @@ public final class AccessoryBagManager {
         Objects.requireNonNull(playerId, "playerId");
         Set<TalismanManager.TalismanType> bag = bags.get(playerId);
         return bag == null ? 0 : bag.size();
+    }
+
+    /**
+     * Returns the player's unlocked slot-count tier.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return the current tier, never {@code null} (defaults to {@link SlotTier#DEFAULT})
+     */
+    public SlotTier getSlotTier(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return slotTiers.getOrDefault(playerId, SlotTier.DEFAULT);
+    }
+
+    /**
+     * Returns the number of accessory slots the player has unlocked.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return unlocked slot count for the player's current tier
+     */
+    public int getUnlockedSlots(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return getSlotTier(playerId).getSlots();
+    }
+
+    /**
+     * Sets the player's unlocked slot-count tier.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param tier     the tier to set, must not be null
+     */
+    public void setSlotTier(UUID playerId, SlotTier tier) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(tier, "tier");
+        slotTiers.put(playerId, tier);
+    }
+
+    /**
+     * Advances the player to the next slot-count tier, if any remain.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @return the player's tier after the upgrade (unchanged if already at max)
+     */
+    public SlotTier upgradeSlotTier(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        SlotTier next = getSlotTier(playerId).next();
+        if (next != null) {
+            slotTiers.put(playerId, next);
+            return next;
+        }
+        return getSlotTier(playerId);
     }
 
     /**
@@ -350,6 +443,7 @@ public final class AccessoryBagManager {
     public boolean clear(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         powerStones.remove(playerId);
+        slotTiers.remove(playerId);
         return bags.remove(playerId) != null;
     }
 }
