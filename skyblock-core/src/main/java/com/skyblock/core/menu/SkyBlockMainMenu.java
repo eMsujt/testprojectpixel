@@ -48,25 +48,37 @@ public final class SkyBlockMainMenu extends Menu {
                 .displayName("§aSkills")
                 .lore("§7View your skill levels and XP.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> {
+                    e.setCancelled(true);
+                    new SkillsMenu(player.getUniqueId()).open(player);
+                });
 
         setItem(11, new ItemBuilder(Material.WRITABLE_BOOK)
                 .displayName("§aCollections")
                 .lore("§7Track your collection progress.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> {
+                    e.setCancelled(true);
+                    new CollectionsMenu(player.getUniqueId()).open(player);
+                });
 
         setItem(12, new ItemBuilder(Material.CRAFTING_TABLE)
                 .displayName("§aCrafting")
                 .lore("§7Browse SkyBlock recipes.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> {
+                    e.setCancelled(true);
+                    new CraftingMenu().open(player);
+                });
 
         setItem(13, new ItemBuilder(Material.LEATHER_CHESTPLATE)
                 .displayName("§aWardrobe")
                 .lore("§7Manage your armor sets.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> {
+                    e.setCancelled(true);
+                    new WardrobeMenu(player).open(player);
+                });
 
         setItem(14, new ItemBuilder(Material.CAT_SPAWN_EGG)
                 .displayName("§aPets")
@@ -143,7 +155,10 @@ public final class SkyBlockMainMenu extends Menu {
                 .displayName("§5Accessory Bag")
                 .lore("§7Manage your accessories.")
                 .build(),
-                e -> e.setCancelled(true));
+                e -> {
+                    e.setCancelled(true);
+                    new AccessoryBagMenu(player).open(player);
+                });
 
         setItem(29, new ItemBuilder(Material.GLASS_BOTTLE)
                 .displayName("§aPotion Bag")
@@ -157,11 +172,38 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> new QuestsMenu(player).open(player));
 
+        setItem(30, new ItemBuilder(Material.DIAMOND)
+                .displayName("§aStats")
+                .lore("§7View your SkyBlock stats.")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    new StatsMenu(player).open(player);
+                });
+
+        setItem(32, new ItemBuilder(Material.BONE)
+                .displayName("§aBestiary")
+                .lore("§7Track the mobs you've slain.")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    new BestiaryMenu(player).open(player);
+                });
+
         setItem(33, new ItemBuilder(Material.COMPARATOR)
                 .displayName("§aSettings")
                 .lore("§7Configure your SkyBlock settings.")
                 .build(),
                 e -> e.setCancelled(true));
+
+        setItem(34, new ItemBuilder(Material.GOLD_NUGGET)
+                .displayName("§eMuseum")
+                .lore("§7Donate and display your items.")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    new MuseumMenu(player.getUniqueId()).open(player);
+                });
     }
 
     private void fillBorder() {
