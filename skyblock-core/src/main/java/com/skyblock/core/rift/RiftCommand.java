@@ -43,7 +43,7 @@ public final class RiftCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            new com.skyblock.core.menu.RiftMenu(player).open(player);
             return true;
         }
 
