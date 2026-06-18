@@ -121,6 +121,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private BankManager bankManager;
     private BestiaryManager bestiaryManager;
     private MayorManager mayorManager;
+    private StatManager statManager;
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
     private DungeonClassManager dungeonClassManager;
@@ -272,9 +273,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkillManager skillsManager = SkillManager.getInstance();
         skillsManager.load(getDataFolder());
         AccessoryManager.getInstance();
-        StatsCommand statsCommand = new StatsCommand(skillsManager, slayerManager);
-        getCommand("stats").setExecutor(statsCommand);
-        getCommand("stats").setTabCompleter(statsCommand);
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
@@ -394,10 +392,15 @@ public final class SkyblockPlugin extends JavaPlugin {
         AchievementCommand achievementCommand = new AchievementCommand(achievementManager);
         getCommand("achievement").setExecutor(achievementCommand);
         getCommand("achievement").setTabCompleter(achievementCommand);
-        StatManager statManager = StatManager.getInstance();
+        statManager = StatManager.getInstance();
         StatCommand statCommand = new StatCommand(statManager);
         getCommand("stat").setExecutor(statCommand);
         getCommand("stat").setTabCompleter(statCommand);
+        StatsCommand statsCommand = new StatsCommand(statManager);
+        if (getCommand("stats") != null) {
+            getCommand("stats").setExecutor(statsCommand);
+            getCommand("stats").setTabCompleter(statsCommand);
+        }
         SkyblockLevelManager skyblockLevelManager = SkyblockLevelManager.getInstance();
         SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
