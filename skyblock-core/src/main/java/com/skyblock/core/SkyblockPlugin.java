@@ -109,6 +109,8 @@ import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.manager.WardrobeManager;
+import com.skyblock.core.accessory.command.AccessoryBagCommand;
+import com.skyblock.core.manager.AccessoryBagManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -118,6 +120,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private BestiaryManager bestiaryManager;
     private MayorManager mayorManager;
     private WardrobeManager wardrobeManager;
+    private AccessoryBagManager accessoryBagManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -419,6 +422,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         WardrobeCommand wardrobeCommand = new WardrobeCommand(wardrobeManager);
         getCommand("wardrobe").setExecutor(wardrobeCommand);
         getCommand("wardrobe").setTabCompleter(wardrobeCommand);
+        accessoryBagManager = AccessoryBagManager.getInstance();
+        AccessoryBagCommand accessoryBagCommand = new AccessoryBagCommand(accessoryBagManager);
+        getCommand("accessories").setExecutor(accessoryBagCommand);
+        getCommand("accessories").setTabCompleter(accessoryBagCommand);
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();

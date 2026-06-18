@@ -215,6 +215,10 @@ commands:
     description: View and manage your saved armor outfits.
     usage: /wardrobe [save <name>|load <name>|delete <name>|list|slots|slot <save|load|clear> <SLOT>]
     permission: skyblock.wardrobe
+  accessories:
+    description: View and manage your accessory bag.
+    usage: /accessories <list|add|remove|bonuses|rarity|tier>
+    permission: skyblock.accessories
 
 permissions:
   skyblock.warp:
@@ -315,4 +319,7 @@ permissions:
     default: true
   skyblock.wardrobe:
     description: Use the /wardrobe command to save and equip armor sets.
+    default: true
+  skyblock.accessories:
+    description: Use the /accessories command to manage your accessory bag.
     default: true
