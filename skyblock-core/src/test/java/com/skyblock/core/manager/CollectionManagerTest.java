@@ -2,6 +2,7 @@ package com.skyblock.core.manager;
 
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
+import com.skyblock.core.model.CollectionCategory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -109,5 +110,41 @@ class CollectionManagerTest {
         assertFalse(history.isEmpty());
         assertTrue(history.stream().anyMatch(e -> e.contains("tier 1")),
                 "history should record the tier I unlock");
+    }
+
+    @Test
+    void addItems_AccumulatesAcrossMultipleCalls_AndCrossesTierThreshold() {
+        CollectionManager mgr = CollectionManager.getInstance();
+        UUID player = UUID.randomUUID();
+        // WHEAT tier I threshold = 50; two calls of 25 must cross it.
+        mgr.addItems(player, Collection.WHEAT, 25);
+        assertEquals(0, mgr.getTier(player, Collection.WHEAT));
+        mgr.addItems(player, Collection.WHEAT, 25);
+        assertEquals(50, mgr.getItems(player, Collection.WHEAT));
+        assertEquals(1, mgr.getTier(player, Collection.WHEAT));
+    }
+
+    @Test
+    void getTotalForCategory_SumsItemsAcrossFarmingCollections() {
+        CollectionManager mgr = CollectionManager.getInstance();
+        UUID player = UUID.randomUUID();
+        mgr.addItems(player, Collection.WHEAT, 100);
+        mgr.addItems(player, Collection.CARROT, 200);
+        // Both are FARMING; total must be at least 300 (other farming entries start at 0).
+        long total = mgr.getTotalForCategory(player, CollectionCategory.FARMING);
+        assertEquals(300, total);
+    }
+
+    @Test
+    void reset_ClearsAllPlayerCollectionData() {
+        CollectionManager mgr = CollectionManager.getInstance();
+        UUID player = UUID.randomUUID();
+        mgr.addItems(player, Collection.COAL, 500);
+        assertEquals(500, mgr.getItems(player, Collection.COAL));
+
+        assertTrue(mgr.reset(player));
+        assertEquals(0, mgr.getItems(player, Collection.COAL));
+        assertEquals(0, mgr.getTier(player, Collection.COAL));
+        assertFalse(mgr.reset(player)); // already cleared
     }
 }
