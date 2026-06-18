@@ -1,9 +1,7 @@
 package com.skyblock.core.stats;
 
-import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.model.Skill;
-import com.skyblock.core.manager.SlayerManager;
-
+import com.skyblock.core.manager.StatManager;
+import com.skyblock.core.menu.StatsMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -11,16 +9,13 @@ import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 public final class StatsCommand implements TabExecutor {
 
-    private final SkillManager skillsManager;
-    private final SlayerManager slayerManager;
+    private final StatManager statManager;
 
-    public StatsCommand(SkillManager skillsManager, SlayerManager slayerManager) {
-        this.skillsManager = skillsManager;
-        this.slayerManager = slayerManager;
+    public StatsCommand(StatManager statManager) {
+        this.statManager = statManager;
     }
 
     @Override
@@ -29,31 +24,12 @@ public final class StatsCommand implements TabExecutor {
             sender.sendMessage("This command can only be used by players.");
             return true;
         }
-        showStats(player);
+        new StatsMenu(player).open(player);
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         return Collections.emptyList();
-    }
-
-    private void showStats(Player player) {
-        UUID id = player.getUniqueId();
-        player.sendMessage("§6§l--- SkyBlock Stats ---");
-
-        player.sendMessage("§e§lSkills:");
-        for (Skill skill : Skill.values()) {
-            int level = skillsManager.getLevel(id, skill);
-            long xp = skillsManager.getXp(id, skill);
-            player.sendMessage("  §7" + skill.getDisplayName() + ": §fLevel " + level + " §8(§7" + xp + " XP§8)");
-        }
-
-        player.sendMessage("§e§lSlayer:");
-        for (SlayerManager.SlayerType type : SlayerManager.SlayerType.values()) {
-            int level = slayerManager.getLevel(id, type);
-            long xp = slayerManager.getExperience(id, type);
-            player.sendMessage("  §7" + type.getDisplayName() + ": §fLevel " + level + " §8(§7" + xp + " XP§8)");
-        }
     }
 }
