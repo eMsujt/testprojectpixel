@@ -107,6 +107,8 @@ import com.skyblock.core.warp.WarpCommand;
 import com.skyblock.core.warp.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.alchemy.AlchemyManager;
+import com.skyblock.core.wardrobe.WardrobeCommand;
+import com.skyblock.core.manager.WardrobeManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -410,6 +412,13 @@ public final class SkyblockPlugin extends JavaPlugin {
         AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
         getCommand("alchemy").setExecutor(alchemyCommand);
         getCommand("alchemy").setTabCompleter(alchemyCommand);
+        WardrobeManager wardrobeManager = WardrobeManager.getInstance();
+        wardrobeManager.load(getDataFolder());
+        WardrobeCommand wardrobeCommand = new WardrobeCommand(wardrobeManager);
+        if (getCommand("wardrobe") != null) {
+            getCommand("wardrobe").setExecutor(wardrobeCommand);
+            getCommand("wardrobe").setTabCompleter(wardrobeCommand);
+        }
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
@@ -452,6 +461,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         AlchemyManager.getInstance().save(getDataFolder());
         JerryWorkshopManager.getInstance().save(getDataFolder());
         PetManager.getInstance().save(getDataFolder());
+        WardrobeManager.getInstance().save(getDataFolder());
         try {
             WarpManager.getInstance().save(getDataFolder());
             HarpManager.getInstance().save(getDataFolder());

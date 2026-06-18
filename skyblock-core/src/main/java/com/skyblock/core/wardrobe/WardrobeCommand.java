@@ -1,6 +1,7 @@
 package com.skyblock.core.wardrobe;
 
 import com.skyblock.core.manager.WardrobeManager;
+import com.skyblock.core.menu.WardrobeMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -48,7 +49,7 @@ public final class WardrobeCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            new WardrobeMenu(player).open(player);
             return true;
         }
 
