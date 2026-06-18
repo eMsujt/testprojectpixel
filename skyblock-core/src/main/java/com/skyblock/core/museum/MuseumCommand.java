@@ -44,7 +44,7 @@ public final class MuseumCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /museum <info|view|categories|donate>");
+            new com.skyblock.core.menu.MuseumMenu(player.getUniqueId()).open(player);
             return true;
         }
 
