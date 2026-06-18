@@ -47,7 +47,9 @@ public final class HotmManager {
         FORTUNATE(20, "Fortunate"),
         MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost"),
         SEASONED_MINEMAN(100, "Seasoned Mineman"),
-        ANOMALOUS_DESIRE(20, "Anomalous Desire");
+        ANOMALOUS_DESIRE(20, "Anomalous Desire"),
+        MANIACAL_MINER(1, "Maniacal Miner"),
+        VEIN_SEEKER(1, "Vein Seeker");
 
         /** Maximum level for this perk. */
         public final int maxLevel;
@@ -103,6 +105,8 @@ public final class HotmManager {
         m.put("MINING_EXPERIENCE_BOOST",   buildPowderCosts(100, 2000, 1.8));
         m.put("SEASONED_MINEMAN",          buildPowderCosts(100, 2000, 1.8));
         m.put("ANOMALOUS_DESIRE",          buildPowderCosts(20,  4000, 2.2));
+        m.put("MANIACAL_MINER",            new int[]{2000});
+        m.put("VEIN_SEEKER",               new int[]{4000});
         NODE_POWDER_COSTS = Collections.unmodifiableMap(m);
     }
 
