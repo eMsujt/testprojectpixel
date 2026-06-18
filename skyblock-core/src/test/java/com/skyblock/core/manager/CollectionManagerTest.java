@@ -4,6 +4,7 @@ import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -87,5 +88,26 @@ class CollectionManagerTest {
         mgr.addItems(player, Collection.WHEAT, 50);   // tier 1
         mgr.addItems(player, Collection.PUMPKIN, 100); // thresholds 40,100,... -> tier 2
         assertEquals(3, mgr.getTotalTiersUnlocked(player));
+    }
+
+    @Test
+    void getProgressToNextTier_IsMidpointBetweenTiers() {
+        CollectionManager mgr = CollectionManager.getInstance();
+        UUID player = UUID.randomUUID();
+        // WHEAT: tier I at 50, tier II at 100; 75 items is midway → progress 0.5
+        mgr.addItems(player, Collection.WHEAT, 75);
+        assertEquals(1, mgr.getTier(player, Collection.WHEAT));
+        assertEquals(0.5, mgr.getProgressToNextTier(player, Collection.WHEAT), 0.001);
+    }
+
+    @Test
+    void addItems_RecordsHistory_OnTierUnlock() {
+        CollectionManager mgr = CollectionManager.getInstance();
+        UUID player = UUID.randomUUID();
+        mgr.addItems(player, Collection.WHEAT, 50); // crosses tier I threshold
+        List<String> history = mgr.getCollectionsHistory(player);
+        assertFalse(history.isEmpty());
+        assertTrue(history.stream().anyMatch(e -> e.contains("tier 1")),
+                "history should record the tier I unlock");
     }
 }
