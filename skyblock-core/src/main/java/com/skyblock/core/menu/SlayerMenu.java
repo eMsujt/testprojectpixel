@@ -35,10 +35,10 @@ public final class SlayerMenu extends Menu {
 
     static {
         HEAD_ICONS.put(SlayerType.ZOMBIE,   Material.ZOMBIE_HEAD);
-        HEAD_ICONS.put(SlayerType.SPIDER,   Material.SPIDER_EYE);
-        HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE);
-        HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_PEARL);
-        HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_POWDER);
+        HEAD_ICONS.put(SlayerType.SPIDER,   Material.COBWEB);
+        HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE_BLOCK);
+        HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_EYE);
+        HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_ROD);
     }
 
     private final UUID playerId;
