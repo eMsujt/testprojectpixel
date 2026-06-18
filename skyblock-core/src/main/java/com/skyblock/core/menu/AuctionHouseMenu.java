@@ -1,8 +1,7 @@
-package com.skyblock.core.auction.gui;
+package com.skyblock.core.menu;
 
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionListing;
-import com.skyblock.core.menu.Menu;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -17,13 +16,10 @@ import java.util.stream.Collectors;
  * slots fill the middle four rows (10–43); a gray-pane footer spans the bottom
  * row (45–53). An empty-state barrier appears at slot 22 when no listings are
  * active.
- *
- * <p>All other AuctionHouseMenu / AuctionMenu classes in this project are
- * deprecated stubs that delegate here.</p>
  */
 public final class AuctionHouseMenu extends Menu {
 
-    private static final int[] LISTING_SLOTS = {
+    static final int[] LISTING_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34,
