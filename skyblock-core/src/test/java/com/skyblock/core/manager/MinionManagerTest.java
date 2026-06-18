@@ -208,6 +208,16 @@ class MinionManagerTest {
     }
 
     @Test
+    void setMaxSlots_ExpandsPerPlayerSlotCap() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        assertEquals(MinionManager.MAX_SLOTS, mgr.getMaxSlots(owner));
+
+        mgr.setMaxSlots(owner, 15);
+        assertEquals(15, mgr.getMaxSlots(owner));
+    }
+
+    @Test
     void upgradeMinion_ReturnsFalseAtMaxTier() {
         MinionManager mgr = MinionManager.getInstance();
         MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.WHEAT, MinionTier.TIER_12);
