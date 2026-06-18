@@ -15,14 +15,20 @@ import java.util.UUID;
 public final class KuudraManager {
 
     public enum KuudraTier {
-        BASIC("Basic", 1), HOT("Hot", 2), BURNING("Burning", 3), FIERY("Fiery", 4), INFERNAL("Infernal", 5);
+        BASIC("Basic", 1, 700),
+        HOT("Hot", 2, 800),
+        BURNING("Burning", 3, 900),
+        FIERY("Fiery", 4, 1000),
+        INFERNAL("Infernal", 5, 1200);
 
         private final String displayName;
         private final int tier;
+        private final int contributionThreshold;
 
-        KuudraTier(String displayName, int tier) {
+        KuudraTier(String displayName, int tier, int contributionThreshold) {
             this.displayName = displayName;
             this.tier = tier;
+            this.contributionThreshold = contributionThreshold;
         }
 
         public String getDisplayName() {
@@ -32,6 +38,11 @@ public final class KuudraManager {
         /** The escalation tier number, 1 (Basic) through 5 (Infernal). */
         public int getTier() {
             return tier;
+        }
+
+        /** Minimum contribution score required to receive full loot rewards for this tier. */
+        public int getContributionThreshold() {
+            return contributionThreshold;
         }
     }
 
