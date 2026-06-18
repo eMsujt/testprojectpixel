@@ -275,6 +275,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         MinionCommand minionCommand = new MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
         getCommand("minion").setTabCompleter(minionCommand);
+        if (getCommand("minions") != null) {
+            getCommand("minions").setExecutor(minionCommand);
+            getCommand("minions").setTabCompleter(minionCommand);
+        }
         CraftingManager craftingManager = CraftingManager.getInstance();
         craftingManager.load(getDataFolder());
         CraftingCommand craftingCommand = new CraftingCommand(craftingManager);
@@ -313,6 +317,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         CollectionsCommand collectionsCommand = new CollectionsCommand(collectionsManager);
         getCommand("collections").setExecutor(collectionsCommand);
         getCommand("collections").setTabCompleter(collectionsCommand);
+        if (getCommand("collection") != null) {
+            getCommand("collection").setExecutor(collectionsCommand);
+            getCommand("collection").setTabCompleter(collectionsCommand);
+        }
         getServer().getPluginManager().registerEvents(new CollectionListener(collectionsManager), this);
         ChatManager chatManager = ChatManager.getInstance();
         ChatCommand chatCommand = new ChatCommand(chatManager);
