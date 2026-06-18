@@ -195,4 +195,53 @@ class MinionManagerTest {
 
         mgr.removeMinion(minion.id);
     }
+
+    @Test
+    void upgradeMinion_AdvancesTierByOne() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.WHEAT, MinionTier.TIER_1);
+
+        assertTrue(mgr.upgradeMinion(minion.id));
+        assertEquals(MinionTier.TIER_2, minion.getTier());
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void upgradeMinion_ReturnsFalseAtMaxTier() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.WHEAT, MinionTier.TIER_12);
+
+        assertFalse(mgr.upgradeMinion(minion.id));
+        assertEquals(MinionTier.TIER_12, minion.getTier());
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void getProductionIntervalTicks_DecreasesByTierOrdinal() {
+        MinionManager mgr = MinionManager.getInstance();
+        // TIER_5 ordinal = 4; expected interval = BASE_PRODUCTION_TICKS - 4
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_5);
+        int expected = MinionManager.BASE_PRODUCTION_TICKS - MinionTier.TIER_5.ordinal();
+        assertEquals(expected, mgr.getProductionIntervalTicks(minion));
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void tick_ProducesResourceAtTierFiveInterval() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_5);
+        int interval = mgr.getProductionIntervalTicks(minion);
+
+        int produced = 0;
+        for (int i = 0; i < interval - 1; i++) {
+            produced += mgr.tick(minion);
+        }
+        assertEquals(0, produced);
+        assertEquals(1, mgr.tick(minion));
+
+        mgr.removeMinion(minion.id);
+    }
 }
