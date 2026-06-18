@@ -116,6 +116,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private static SkyblockPlugin instance;
     private BankManager bankManager;
     private MayorManager mayorManager;
+    private WardrobeManager wardrobeManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -412,13 +413,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
         getCommand("alchemy").setExecutor(alchemyCommand);
         getCommand("alchemy").setTabCompleter(alchemyCommand);
-        WardrobeManager wardrobeManager = WardrobeManager.getInstance();
+        wardrobeManager = WardrobeManager.getInstance();
         wardrobeManager.load(getDataFolder());
         WardrobeCommand wardrobeCommand = new WardrobeCommand(wardrobeManager);
-        if (getCommand("wardrobe") != null) {
-            getCommand("wardrobe").setExecutor(wardrobeCommand);
-            getCommand("wardrobe").setTabCompleter(wardrobeCommand);
-        }
+        getCommand("wardrobe").setExecutor(wardrobeCommand);
+        getCommand("wardrobe").setTabCompleter(wardrobeCommand);
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
