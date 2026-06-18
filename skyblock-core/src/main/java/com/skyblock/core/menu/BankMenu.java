@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.coop.CoopManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.util.ItemBuilder;
@@ -15,24 +16,32 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * Canonical 54-slot Bank menu. Gray-pane border on all four edges; purse icon
- * (GOLD_NUGGET) at slot 20; bank balance (GOLD_BLOCK) at slot 24; Deposit All
- * (EMERALD) at slot 29; Withdraw All (DROPPER) at slot 33; close barrier at
- * slot 49.
+ * Canonical 27-slot (3-row) Bank menu with Personal and Co-op tabs.
  *
- * <p>All other BankMenu / BankingMenu / BankGui classes in this project are
- * deprecated stubs that delegate here.</p>
+ * <p>Gray-pane border on all four edges; the two tab buttons (Personal at slot
+ * 10, Co-op at slot 11) toggle which account the menu acts on. The active
+ * account's balance is shown at slot 13 alongside the purse at slot 12;
+ * Deposit All (EMERALD) at slot 15 and Withdraw All (DROPPER) at slot 16
+ * move coins between the purse and the active account. Close barrier at
+ * slot 22.</p>
+ *
+ * <p>The Co-op tab keys its balance off the player's island owner via
+ * {@link CoopManager}; players not in a co-op see a zero balance and cannot
+ * deposit or withdraw on that tab.</p>
  */
 public final class BankMenu extends Menu {
 
-    private static final int PURSE_SLOT    = 20;
-    private static final int BANK_SLOT     = 24;
-    private static final int DEPOSIT_SLOT  = 29;
-    private static final int WITHDRAW_SLOT = 33;
-    private static final int CLOSE_SLOT    = 49;
+    private static final int PERSONAL_TAB_SLOT = 10;
+    private static final int COOP_TAB_SLOT      = 11;
+    private static final int PURSE_SLOT         = 12;
+    private static final int BALANCE_SLOT       = 13;
+    private static final int DEPOSIT_SLOT       = 15;
+    private static final int WITHDRAW_SLOT      = 16;
+    private static final int CLOSE_SLOT         = 22;
 
     private final UUID playerId;
     private Inventory inventory;
+    private boolean showingCoop;
     private final Map<Integer, Consumer<InventoryClickEvent>> handlers = new HashMap<>();
 
     public BankMenu(Player player) {
@@ -40,7 +49,7 @@ public final class BankMenu extends Menu {
     }
 
     public BankMenu(UUID playerId) {
-        super("§6Bank Account", 6);
+        super("§6Bank Account", 3);
         this.playerId = playerId;
     }
 
@@ -55,27 +64,56 @@ public final class BankMenu extends Menu {
 
         EconomyManager econ = EconomyManager.getInstance();
         BankManager bank = BankManager.getInstance();
+        CoopManager coop = CoopManager.getInstance();
 
-        inventory = org.bukkit.Bukkit.createInventory(this, 54, "§6Bank Account");
+        inventory = org.bukkit.Bukkit.createInventory(this, 27, "§6Bank Account");
 
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 54; slot++) {
+        for (int slot = 0; slot < 27; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 18 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
 
+        UUID coopOwner = coop.getOwner(playerId);
+        String coopKey = coopOwner != null ? coopOwner.toString() : null;
+
+        // Tabs.
+        inventory.setItem(PERSONAL_TAB_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
+                .displayName((showingCoop ? "§7" : "§6") + "Personal Bank")
+                .lore(showingCoop ? "§7Click to view." : "§eViewing.")
+                .build());
+        handlers.put(PERSONAL_TAB_SLOT, e -> {
+            if (showingCoop) {
+                showingCoop = false;
+                open(player);
+            }
+        });
+
+        inventory.setItem(COOP_TAB_SLOT, new ItemBuilder(Material.EMERALD_BLOCK)
+                .displayName((showingCoop ? "§6" : "§7") + "Co-op Bank")
+                .lore(showingCoop ? "§eViewing." : "§7Click to view.")
+                .build());
+        handlers.put(COOP_TAB_SLOT, e -> {
+            if (!showingCoop) {
+                showingCoop = true;
+                open(player);
+            }
+        });
+
         long purse = econ.getPurse(playerId);
-        double balance = bank.getBalance(playerId);
+        double balance = showingCoop
+                ? (coopKey != null ? bank.getCoopBalance(coopKey) : 0.0)
+                : bank.getBalance(playerId);
 
         inventory.setItem(PURSE_SLOT, new ItemBuilder(Material.GOLD_NUGGET)
                 .displayName("§6Purse")
                 .lore("§7Balance: §6" + String.format("%,.0f", (double) purse) + " Coins")
                 .build());
 
-        inventory.setItem(BANK_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
-                .displayName("§6Bank Account")
+        inventory.setItem(BALANCE_SLOT, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName(showingCoop ? "§6Co-op Bank" : "§6Personal Bank")
                 .lore("§7Balance: §6" + String.format("%,.0f", balance) + " Coins")
                 .build());
 
@@ -84,10 +122,18 @@ public final class BankMenu extends Menu {
                 .lore("§7Move all purse coins into the bank.")
                 .build());
         handlers.put(DEPOSIT_SLOT, e -> {
+            if (showingCoop && coopKey == null) {
+                player.sendMessage("§cYou are not in a co-op.");
+                return;
+            }
             long p = econ.getPurse(playerId);
             if (p > 0) {
                 econ.withdraw(playerId, p);
-                bank.deposit(playerId, p);
+                if (showingCoop) {
+                    bank.depositCoop(coopKey, p);
+                } else {
+                    bank.deposit(playerId, p);
+                }
                 player.sendMessage("§aDeposited §6" + String.format("%,.0f", (double) p) + " §acoins into your bank.");
                 open(player);
             }
@@ -98,9 +144,17 @@ public final class BankMenu extends Menu {
                 .lore("§7Move all bank coins to your purse.")
                 .build());
         handlers.put(WITHDRAW_SLOT, e -> {
-            double b = bank.getBalance(playerId);
+            if (showingCoop && coopKey == null) {
+                player.sendMessage("§cYou are not in a co-op.");
+                return;
+            }
+            double b = showingCoop ? bank.getCoopBalance(coopKey) : bank.getBalance(playerId);
             if (b > 0) {
-                bank.withdraw(playerId, b);
+                if (showingCoop) {
+                    bank.withdrawCoop(coopKey, b);
+                } else {
+                    bank.withdraw(playerId, b);
+                }
                 econ.addPurse(playerId, (long) b);
                 player.sendMessage("§aWithdrew §6" + String.format("%,.0f", b) + " §acoins from your bank.");
                 open(player);
