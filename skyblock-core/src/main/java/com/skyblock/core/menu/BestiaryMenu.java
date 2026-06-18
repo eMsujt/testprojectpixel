@@ -47,7 +47,7 @@ public final class BestiaryMenu extends Menu {
     /** Lower-case mob key -> display name, for entries that map to a known {@link BestiaryMob}. */
     private static final Map<String, String> MOB_NAMES = new HashMap<>();
 
-    private static final Map<BestiaryCategory, Material> CATEGORY_ICONS = new EnumMap<>(BestiaryCategory.class);
+    public static final Map<BestiaryCategory, Material> CATEGORY_ICONS = new EnumMap<>(BestiaryCategory.class);
 
     static {
         for (BestiaryMob mob : BestiaryMob.values()) {
