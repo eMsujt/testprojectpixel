@@ -1,6 +1,7 @@
 package com.skyblock.core.forge;
 
 import com.skyblock.core.manager.ForgeManager;
+import com.skyblock.core.menu.ForgeMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -43,7 +44,7 @@ public final class ForgeCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /forge <list|start|status|collect|cancel>");
+            new ForgeMenu(player).open(player);
             return true;
         }
 
