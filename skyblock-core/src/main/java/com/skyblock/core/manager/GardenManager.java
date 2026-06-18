@@ -149,20 +149,22 @@ public final class GardenManager {
         }
     }
 
-    /** Upgrade tiers for a crop plot in the Garden. */
+    /** Upgrade tiers for a crop plot in the Garden, each granting a farming-fortune bonus. */
     public enum PlotTier {
-        TIER_1("Tier I",   1),
-        TIER_2("Tier II",  2),
-        TIER_3("Tier III", 3),
-        TIER_4("Tier IV",  4),
-        TIER_5("Tier V",   5);
+        TIER_1("Tier I",   1, 0),
+        TIER_2("Tier II",  2, 25),
+        TIER_3("Tier III", 3, 50),
+        TIER_4("Tier IV",  4, 75),
+        TIER_5("Tier V",   5, 100);
 
         private final String displayName;
         private final int tier;
+        private final int farmingFortune;
 
-        PlotTier(String displayName, int tier) {
+        PlotTier(String displayName, int tier, int farmingFortune) {
             this.displayName = displayName;
             this.tier = tier;
+            this.farmingFortune = farmingFortune;
         }
 
         public String getDisplayName() {
@@ -171,6 +173,11 @@ public final class GardenManager {
 
         public int getTier() {
             return tier;
+        }
+
+        /** Farming-fortune bonus granted by this plot tier. */
+        public int getFarmingFortune() {
+            return farmingFortune;
         }
 
         /** Returns the next tier, or {@code null} if already at max. */
@@ -217,6 +224,25 @@ public final class GardenManager {
         m.put("CACTUS",      new int[]{2, 12, 25});
         m.put("MUSHROOM",    new int[]{1, 12, 25});
         CROP_DATA = Collections.unmodifiableMap(m);
+    }
+
+    /**
+     * Copper cost to unlock each of the 9 crop-plot slots.  The first crop is
+     * free; subsequent slots scale in price.
+     */
+    public static final Map<GardenCrop, Long> CROP_PLOT_UNLOCK_COSTS;
+    static {
+        Map<GardenCrop, Long> m = new EnumMap<>(GardenCrop.class);
+        m.put(GardenCrop.WHEAT,       0L);
+        m.put(GardenCrop.CARROT,      1_000L);
+        m.put(GardenCrop.POTATO,      2_000L);
+        m.put(GardenCrop.PUMPKIN,     4_000L);
+        m.put(GardenCrop.SUGAR_CANE,  8_000L);
+        m.put(GardenCrop.MELON,       16_000L);
+        m.put(GardenCrop.CACTUS,      32_000L);
+        m.put(GardenCrop.COCOA_BEANS, 64_000L);
+        m.put(GardenCrop.MUSHROOM,    128_000L);
+        CROP_PLOT_UNLOCK_COSTS = Collections.unmodifiableMap(m);
     }
 
     /** Per-player garden plot level (1–24). */
@@ -555,6 +581,31 @@ public final class GardenManager {
         }
         cropPlotTiers.computeIfAbsent(playerId, k -> new EnumMap<>(GardenCrop.class)).put(crop, next);
         return next;
+    }
+
+    /**
+     * Returns the copper cost to unlock the given crop's plot slot.
+     *
+     * @param crop the crop whose plot slot to price
+     * @return the unlock cost in copper, {@code 0} if the crop has no plot slot
+     */
+    public long getCropPlotUnlockCost(GardenCrop crop) {
+        Objects.requireNonNull(crop, "crop");
+        return CROP_PLOT_UNLOCK_COSTS.getOrDefault(crop, 0L);
+    }
+
+    /**
+     * Returns the farming-fortune bonus the player currently enjoys on the given
+     * crop, derived from its crop-plot tier.
+     *
+     * @param playerId the player to look up
+     * @param crop     the crop to check
+     * @return the farming-fortune bonus from the crop's current {@link PlotTier}
+     */
+    public int getCropFarmingFortune(UUID playerId, GardenCrop crop) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(crop, "crop");
+        return getCropPlotTier(playerId, crop).getFarmingFortune();
     }
 
     // -------------------------------------------------------------------------
