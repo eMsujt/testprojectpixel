@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.menu.EssenceMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
+ *   <li>{@code /essence}                     — open the essence shop GUI (balances + perk upgrades)</li>
  *   <li>{@code /essence balance [type]}     — show balance for one or all essence types</li>
  *   <li>{@code /essence add <type> <amount>} — (op) grant essence to yourself</li>
  *   <li>{@code /essence remove <type> <amount>} — (op) deduct essence from yourself</li>
@@ -42,7 +44,7 @@ public final class EssenceCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /essence <balance|add|remove>");
+            new EssenceMenu(player).open(player);
             return true;
         }
 
