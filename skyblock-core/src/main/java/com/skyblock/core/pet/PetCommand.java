@@ -2,6 +2,7 @@ package com.skyblock.core.pet;
 
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetManager.PetType;
+import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.model.Rarity;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -43,7 +44,12 @@ public final class PetCommand implements TabExecutor {
             return true;
         }
 
-        if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
+        if (args.length == 0) {
+            new PetMenu(player).open(player);
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("list")) {
             handleList(player);
             return true;
         }
