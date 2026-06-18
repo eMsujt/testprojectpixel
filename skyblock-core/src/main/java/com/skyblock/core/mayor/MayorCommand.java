@@ -1,6 +1,7 @@
 package com.skyblock.core.mayor;
 
 import com.skyblock.core.manager.MayorManager;
+import com.skyblock.core.menu.MayorMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -43,7 +44,7 @@ public final class MayorCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            handleInfo(player);
+            new MayorMenu(player).open(player);
             return true;
         }
 
