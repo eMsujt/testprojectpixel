@@ -3,81 +3,55 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.HeartOfTheMountainManager;
 import com.skyblock.core.manager.HeartOfTheMountainManager.HotMNode;
 import com.skyblock.core.util.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 /**
- * GUI menu opened by {@code /hotm}. Renders the Heart of the Mountain tree as a
- * grid of clickable perk nodes read from {@link HeartOfTheMountainManager}: each node shows its
- * current level, max level, and next-level Mithril Powder cost. Clicking a node
- * attempts to purchase the next level and refreshes the menu. A summary node shows
- * the player's HOTM tier and powder balances.
+ * 54-slot Heart of the Mountain perk tree menu.
  */
-public final class HotmMenu extends Menu {
+public final class HotmMenu extends AbstractMenu {
 
     private static final int SUMMARY_SLOT = 4;
     private static final int FIRST_PERK_SLOT = 9;
     private static final int CLOSE_SLOT = 49;
 
-    private final UUID playerId;
-    private Inventory inventory;
-    private final Map<Integer, Consumer<InventoryClickEvent>> handlers = new HashMap<>();
-
-    public HotmMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public HotmMenu(UUID playerId) {
-        super("§2Heart of the Mountain", 6);
-        this.playerId = playerId;
-    }
-
-    /** Unused: this menu manages its own inventory via {@link #open(Player)}. */
-    @Override
-    protected void build() {
+    public HotmMenu(JavaPlugin plugin, Player player) {
+        super(plugin, player, "§bHeart of the Mountain", 54);
     }
 
     @Override
-    public void open(Player player) {
-        handlers.clear();
-        inventory = Bukkit.createInventory(this, 54, getTitle());
-
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) inventory.setItem(slot, pane);
-        for (int slot = 45; slot < 54; slot++) inventory.setItem(slot, pane);
-
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
         HeartOfTheMountainManager hotm = HeartOfTheMountainManager.getInstance();
 
-        inventory.setItem(SUMMARY_SLOT, new ItemBuilder(Material.BEACON)
-                .displayName("§aHeart of the Mountain")
+        ItemBuilder pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r");
+        for (int slot = 0; slot < 9; slot++) setItem(slot, pane.build());
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane.build());
+
+        setItem(SUMMARY_SLOT, new ItemBuilder(Material.BEACON)
+                .displayName("§bHeart of the Mountain")
                 .lore(
                         "§7HOTM Tier: §e" + hotm.getHotmTier(playerId) + "§7/§e" + HeartOfTheMountainManager.MAX_TIER,
                         "§7Mithril Powder: §e" + hotm.getMithrilPowder(playerId),
                         "§7Gemstone Powder: §e" + hotm.getGemstonePowder(playerId))
                 .build());
 
-        HotMNode[] perks = HotMNode.values();
-        for (int i = 0; i < perks.length; i++) {
-            HotMNode perk = perks[i];
+        HotMNode[] nodes = HotMNode.values();
+        for (int i = 0; i < nodes.length; i++) {
+            HotMNode node = nodes[i];
             int slot = FIRST_PERK_SLOT + i;
             if (slot >= CLOSE_SLOT) break;
-            int level = hotm.getLevel(playerId, perk);
-            boolean maxed = level >= perk.maxLevel;
-            int cost = hotm.getUpgradeCost(perk, level);
+            int level = hotm.getLevel(playerId, node);
+            boolean maxed = level >= node.maxLevel;
+            int cost = hotm.getUpgradeCost(node, level);
 
             List<String> lore = new ArrayList<>();
-            lore.add("§7Level: §e" + level + "§7/§e" + perk.maxLevel);
+            lore.add("§7Level: §e" + level + "§7/§e" + node.maxLevel);
             if (maxed) {
                 lore.add("§aMaxed out!");
             } else if (cost >= 0) {
@@ -87,37 +61,24 @@ public final class HotmMenu extends Menu {
                 lore.add("§eClick to upgrade!");
             }
 
-            ItemStack icon = new ItemBuilder(Material.ENCHANTED_BOOK)
-                    .displayName((maxed ? "§a" : "§e") + perk.getDisplayName())
+            setItem(slot, new ItemBuilder(Material.ENCHANTED_BOOK)
+                    .displayName((maxed ? "§a" : "§e") + node.getDisplayName())
                     .lore(lore.toArray(new String[0]))
-                    .build();
-            inventory.setItem(slot, icon);
-            handlers.put(slot, e -> {
-                hotm.purchaseUpgrade(playerId, perk);
-                open(player);
-            });
+                    .build(),
+                    e -> {
+                        e.setCancelled(true);
+                        hotm.purchaseUpgrade(playerId, node);
+                        open(player);
+                    });
         }
 
-        inventory.setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
+        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
                 .lore("§7Close the Heart of the Mountain menu.")
-                .build());
-        handlers.put(CLOSE_SLOT, e -> player.closeInventory());
-
-        player.openInventory(inventory);
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        event.setCancelled(true);
-        Consumer<InventoryClickEvent> handler = handlers.get(event.getSlot());
-        if (handler != null) {
-            handler.accept(event);
-        }
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return inventory;
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    player.closeInventory();
+                });
     }
 }
