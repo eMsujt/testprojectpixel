@@ -8,12 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-/**
- * Jacob's Farming Contest hub menu opened by {@code /jacobscontest}. Displays one
- * tile per {@link GardenCrop} showing the viewing player's best contest collection
- * for that crop, with an overall medal summary.
- */
-public class JacobsContestMenu extends Menu {
+public final class JacobsContestMenu extends Menu {
 
     static final int SUMMARY_SLOT = 4;
 
@@ -38,31 +33,13 @@ public class JacobsContestMenu extends Menu {
                 e -> e.setCancelled(true));
 
         GardenCrop[] crops = GardenCrop.values();
-        for (int i = 0; i < crops.length; i++) {
+        for (int i = 0; i < crops.length && i < 27; i++) {
             GardenCrop crop = crops[i];
-            setItem(9 + i, new ItemBuilder(materialFor(crop))
-                    .displayName("§a" + crop.getDisplayName())
+            setItem(9 + i, new ItemBuilder(Material.WHEAT)
+                    .displayName("§6" + crop.getDisplayName())
                     .lore("§7Best collection: §e" + manager.getBestCollection(playerId, crop))
                     .build(),
                     e -> e.setCancelled(true));
-        }
-    }
-
-    private static Material materialFor(GardenCrop crop) {
-        switch (crop) {
-            case WHEAT: return Material.WHEAT;
-            case CARROT: return Material.CARROT;
-            case POTATO: return Material.POTATO;
-            case MELON: return Material.MELON_SLICE;
-            case PUMPKIN: return Material.PUMPKIN;
-            case SUGAR_CANE: return Material.SUGAR_CANE;
-            case COCOA_BEANS: return Material.COCOA_BEANS;
-            case CACTUS: return Material.CACTUS;
-            case MUSHROOM: return Material.RED_MUSHROOM;
-            case NETHER_WART: return Material.NETHER_WART;
-            case CABBAGE: return Material.GREEN_DYE;
-            case COARSE_POTATO: return Material.POISONOUS_POTATO;
-            default: return Material.WHEAT;
         }
     }
 

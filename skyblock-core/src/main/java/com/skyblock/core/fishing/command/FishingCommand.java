@@ -56,7 +56,7 @@ public final class FishingCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            new FishingMenu(player.getUniqueId()).open(player);
+            new FishingMenu().open(player);
             return true;
         }
 
