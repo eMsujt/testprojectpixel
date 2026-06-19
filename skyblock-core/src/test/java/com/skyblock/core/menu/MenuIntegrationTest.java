@@ -1533,12 +1533,12 @@ class MenuIntegrationTest {
 
         @Test
         void title_isFishing() {
-            assertEquals("Fishing", new FishingMenu(PLAYER).getTitle());
+            assertEquals("§9Fishing", new FishingMenu(PLAYER).getTitle());
         }
 
         @Test
-        void rows_isSix() {
-            assertEquals(6, new FishingMenu(PLAYER).getRows());
+        void rows_isFour() {
+            assertEquals(4, new FishingMenu(PLAYER).getRows());
         }
 
         @Test
