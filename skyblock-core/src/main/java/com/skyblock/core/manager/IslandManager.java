@@ -137,6 +137,28 @@ public final class IslandManager {
         }
     }
 
+    /** Side length, in blocks, of each claimed island region. */
+    public static final int REGION_SIZE = 256;
+    /** Spacing, in grid cells per row, before regions wrap to the next row. */
+    private static final int GRID_COLUMNS = 16;
+
+    /**
+     * An axis-aligned, square claimed region of the world.
+     *
+     * @param centerX block X of the region centre
+     * @param centerZ block Z of the region centre
+     * @param minX    inclusive minimum block X
+     * @param minZ    inclusive minimum block Z
+     * @param maxX    inclusive maximum block X
+     * @param maxZ    inclusive maximum block Z
+     */
+    public record IslandRegion(int centerX, int centerZ, int minX, int minZ, int maxX, int maxZ) {
+        /** Returns {@code true} if the block at {@code (x, z)} lies within this region. */
+        public boolean contains(int x, int z) {
+            return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
+        }
+    }
+
     private static final IslandManager INSTANCE = new IslandManager();
 
     /** XP required per island level: level = floor(sqrt(islandXp / XP_PER_LEVEL)). */
@@ -158,6 +180,10 @@ public final class IslandManager {
     private final Map<UUID, UUID> memberIndex = new HashMap<>();
     /** owner UUID → island world */
     private final Map<UUID, World> islandWorlds = new HashMap<>();
+    /** player UUID → claimed region */
+    private final Map<UUID, IslandRegion> regions = new HashMap<>();
+    /** index of the next grid cell to allocate */
+    private int nextRegionIndex = 0;
 
     private IslandManager() {
     }
@@ -717,6 +743,43 @@ public final class IslandManager {
     // -------------------------------------------------------------------------
     // World-based island API
     // -------------------------------------------------------------------------
+
+    /**
+     * Assigns {@code player} a unique 256×256 region centred on the next free grid cell.
+     *
+     * <p>Grid cells are laid out in rows of {@link #GRID_COLUMNS}, spaced {@link #REGION_SIZE}
+     * blocks apart, so adjacent regions tile the world without overlapping. If the player has
+     * already claimed a region, the existing one is returned unchanged (idempotent).</p>
+     *
+     * @param player the claiming player's UUID
+     * @return the player's claimed region
+     */
+    public IslandRegion claim(UUID player) {
+        Objects.requireNonNull(player, "player");
+        IslandRegion existing = regions.get(player);
+        if (existing != null) {
+            return existing;
+        }
+        int index = nextRegionIndex++;
+        int gridX = index % GRID_COLUMNS;
+        int gridZ = index / GRID_COLUMNS;
+        int centerX = gridX * REGION_SIZE;
+        int centerZ = gridZ * REGION_SIZE;
+        int half = REGION_SIZE / 2;
+        IslandRegion region = new IslandRegion(
+                centerX, centerZ,
+                centerX - half, centerZ - half,
+                centerX + half - 1, centerZ + half - 1);
+        regions.put(player, region);
+        recordIslandEvent(player, "Region claimed at (" + centerX + ", " + centerZ + ")");
+        return region;
+    }
+
+    /** Returns the region claimed by {@code player}, if any. */
+    public Optional<IslandRegion> getRegion(UUID player) {
+        Objects.requireNonNull(player, "player");
+        return Optional.ofNullable(regions.get(player));
+    }
 
     /**
      * Deletes the island owned by {@code owner}, removes all its members, and unloads the world.
