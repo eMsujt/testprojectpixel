@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.chocolate.ChocolateFactoryManager;
 import com.skyblock.core.model.Rarity;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
