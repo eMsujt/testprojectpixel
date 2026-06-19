@@ -60,7 +60,6 @@ import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.manager.PetManager;
-import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.command.IslandCommand;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.command.ProfileCommand;
@@ -167,7 +166,6 @@ public final class SkyblockPlugin extends JavaPlugin {
     private ForgeManager forgeManager;
     private AuctionHouseManager auctionHouseManager;
     private PetManager petManager;
-    private PetsManager petsManager;
     private HeartOfTheMountainManager hotmManager;
     private SkillManager skillsManager;
     private MinionManager minionManager;
@@ -217,7 +215,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         dungeonsManager = DungeonsManager.getInstance();
         petManager = PetManager.getInstance();
         petManager.load(getDataFolder());
-        petsManager = PetsManager.getInstance();
         hotmManager = HeartOfTheMountainManager.getInstance();
         hotmManager.load(getDataFolder());
         slayerManager = SlayerManager.getInstance();
