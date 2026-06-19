@@ -149,7 +149,6 @@ import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.BankingManager;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageCommand;
-import com.skyblock.core.manager.JacobsContestManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -632,7 +631,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         JacobsContestManager.getInstance();
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
-        JacobsContestManager.getInstance();
+        MinionManager.getInstance();
         HarpManager.getInstance().load(getDataFolder());
         JerryWorkshopManager.getInstance().load(getDataFolder());
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
