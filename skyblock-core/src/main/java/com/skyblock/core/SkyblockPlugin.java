@@ -212,6 +212,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
         getCommand("pet").setTabCompleter(petCommand);
+        if (getCommand("pets") != null) {
+            getCommand("pets").setExecutor(petCommand);
+            getCommand("pets").setTabCompleter(petCommand);
+        }
         GardenManager gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
         GardenCommand gardenCommand = new GardenCommand(gardenManager);

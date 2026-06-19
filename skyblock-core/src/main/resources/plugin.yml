@@ -31,6 +31,7 @@ commands:
   pet:
     description: Manage your pets.
     usage: /pet [list|equip|unequip|info]
+    aliases: [pets]
   friend:
     description: Manage your SkyBlock friend list.
     usage: /friend <add|remove|list> [player]
