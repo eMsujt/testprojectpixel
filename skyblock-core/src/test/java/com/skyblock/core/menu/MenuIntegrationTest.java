@@ -41,6 +41,8 @@ import com.skyblock.core.manager.EnchantingManager.SkyBlockEnchantment;
 import com.skyblock.core.manager.EnchantmentManager;
 import com.skyblock.core.manager.EssenceManager.EssenceShopPerk;
 import com.skyblock.core.manager.EssenceShopManager;
+import com.skyblock.core.manager.FairySoulManager;
+import com.skyblock.core.manager.FairySoulManager.FairyIsland;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.manager.MayorManager;
@@ -169,6 +171,65 @@ class MenuIntegrationTest {
                 assertFalse(c.getPerks().isEmpty(),
                         c.getDisplayName() + " must have at least one perk");
             }
+        }
+    }
+
+    @Nested
+    class FairySoulMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void cleanup() {
+            FairySoulManager.getInstance().resetPlayer(PLAYER);
+        }
+
+        @Test
+        void title_isFairySouls() {
+            assertEquals("§dFairy Souls", new FairySoulMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new FairySoulMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new FairySoulMenu(PLAYER));
+        }
+
+        @Test
+        void islandSlots_count_isEight() {
+            assertEquals(8, FairySoulMenu.ISLAND_SLOTS.length);
+        }
+
+        @Test
+        void islandSlots_firstIsZero() {
+            assertEquals(0, FairySoulMenu.ISLAND_SLOTS[0]);
+        }
+
+        @Test
+        void islandSlots_lastIsSeven() {
+            assertEquals(7, FairySoulMenu.ISLAND_SLOTS[FairySoulMenu.ISLAND_SLOTS.length - 1]);
+        }
+
+        @Test
+        void manager_foundCount_zeroForFreshPlayer() {
+            assertEquals(0, FairySoulManager.getInstance().getFoundCount(PLAYER));
+        }
+
+        @Test
+        void manager_collectSoul_roundTrips() {
+            FairySoulManager mgr = FairySoulManager.getInstance();
+            assertTrue(mgr.collectSoul(PLAYER, FairyIsland.HUB, 1));
+            assertTrue(mgr.hasCollected(PLAYER, FairyIsland.HUB, 1));
+            assertEquals(1, mgr.getFoundCount(PLAYER, FairyIsland.HUB));
+        }
+
+        @Test
+        void manager_statBonuses_emptyForFreshPlayer() {
+            assertTrue(FairySoulManager.getInstance().getStatBonuses(PLAYER).isEmpty());
         }
     }
 
