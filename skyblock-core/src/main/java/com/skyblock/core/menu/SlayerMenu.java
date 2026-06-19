@@ -34,7 +34,7 @@ public final class SlayerMenu extends Menu {
     private static final Map<SlayerType, Material> HEAD_ICONS = new EnumMap<>(SlayerType.class);
 
     static {
-        HEAD_ICONS.put(SlayerType.ZOMBIE,   Material.WITHER_SKULL);
+        HEAD_ICONS.put(SlayerType.ZOMBIE,   Material.WITHER_SKELETON_SKULL);
         HEAD_ICONS.put(SlayerType.SPIDER,   Material.SPIDER_EYE);
         HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE);
         HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_PEARL);
