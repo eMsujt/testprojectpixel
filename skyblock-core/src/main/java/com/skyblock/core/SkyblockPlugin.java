@@ -51,7 +51,6 @@ import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.command.HOTMCommand;
 import com.skyblock.core.manager.HeartOfTheMountainManager;
-import com.skyblock.core.manager.HotMManager;
 import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.manager.MayorManager;
@@ -630,7 +629,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
-        HotMManager.getInstance();
         HarpManager.getInstance().load(getDataFolder());
         JerryWorkshopManager.getInstance().load(getDataFolder());
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
