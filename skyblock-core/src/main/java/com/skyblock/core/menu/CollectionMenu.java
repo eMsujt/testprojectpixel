@@ -12,14 +12,15 @@ import java.util.UUID;
 
 public final class CollectionMenu extends Menu {
 
-    private static final int[] CATEGORY_SLOTS = {20, 21, 22, 23, 24};
+    private static final int[] CATEGORY_SLOTS = {20, 21, 22, 23, 24, 31};
 
     private static final Material[] CATEGORY_ICONS = {
-        Material.WHEAT,       // FARMING
-        Material.COBBLESTONE, // MINING
-        Material.IRON_SWORD,  // COMBAT
-        Material.OAK_LOG,     // FORAGING
-        Material.COD,         // FISHING
+        Material.WHEAT,           // FARMING
+        Material.COBBLESTONE,     // MINING
+        Material.IRON_SWORD,      // COMBAT
+        Material.OAK_LOG,         // FORAGING
+        Material.COD,             // FISHING
+        Material.ENCHANTING_TABLE,// ENCHANTING
     };
 
     private final UUID playerId;
