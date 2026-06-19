@@ -136,7 +136,7 @@ import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.warp.WarpCommand;
 import com.skyblock.core.warp.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
-import com.skyblock.core.alchemy.AlchemyManager;
+import com.skyblock.core.manager.AlchemyManager;
 import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.accessory.command.AccessoryBagCommand;
