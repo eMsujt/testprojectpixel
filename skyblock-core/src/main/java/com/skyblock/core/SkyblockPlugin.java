@@ -150,67 +150,116 @@ import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.BankingManager;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageCommand;
+import com.skyblock.core.npc.NpcManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
 
     private static SkyblockPlugin instance;
+
+    // core data
+    private SkillManager skillsManager;
+    private ProfileManager profile;
+    private CollectionManager collectionManager;
+
+    // economy
     private BankManager bankManager;
+    private BankingManager bankingManager;
+    private AuctionHouseManager auctionHouseManager;
+    private BazaarManager bazaarManager;
+
+    // progression / world content
+    private MayorManager mayorManager;
+    private CalendarManager calendarManager;
+    private EssenceManager essenceManager;
+    private EssenceShopManager essenceShopManager;
+    private DungeonManager dungeonManager;
+    private DungeonClassManager dungeonClassManager;
+    private DungeonsManager dungeonsManager;
+    private PetManager petManager;
+    private HeartOfTheMountainManager hotmManager;
+    private SlayerManager slayerManager;
+    private TrophyFishManager trophyFishManager;
     private BestiaryManager bestiaryManager;
     private MuseumManager museumManager;
     private RiftManager riftManager;
-    private MayorManager mayorManager;
+    private MinionManager minionManager;
+    private ForgeManager forgeManager;
     private StatManager statManager;
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
-    private TrophyFishManager trophyFishManager;
-    private DungeonClassManager dungeonClassManager;
-    private ForgeManager forgeManager;
-    private AuctionHouseManager auctionHouseManager;
-    private PetManager petManager;
-    private HeartOfTheMountainManager hotmManager;
-    private SkillManager skillsManager;
-    private MinionManager minionManager;
-    private SlayerManager slayerManager;
-    private BazaarManager bazaarManager;
-    private CalendarManager calendarManager;
-    private DungeonManager dungeonManager;
-    private DungeonsManager dungeonsManager;
-    private FishingManager fishingManager;
-    private EssenceManager essenceManager;
-    private EssenceShopManager essenceShopManager;
-    private CollectionManager collectionManager;
     private SackManager sackManager;
-    private BankingManager bankingManager;
     private StorageManager storageManager;
+    private IslandManager islandManager;
     private GardenManager gardenManager;
     private CrimsonIsleManager crimsonIsleManager;
     private DojoManager dojoManager;
     private CommissionManager commissionManager;
     private ChocolateFactoryManager chocolateFactoryManager;
     private EnchantingManager enchantingManager;
-    private IslandManager islandManager;
-    private ProfileManager profile;
+    private FishingManager fishingManager;
+    private GuildManager guildManager;
+    private PartyManager partyManager;
+    private FairySoulManager fairySoulManager;
+    private HarpManager harpManager;
+    private JerryWorkshopManager jerryWorkshopManager;
+    private KuudraManager kuudraManager;
+    private ReforgeManager reforgeManager;
+    private CraftingManager craftingManager;
+    private QuestManager questManager;
+    private TradeManager tradeManager;
+    private BackpackManager backpackManager;
+    private EventManager eventManager;
+    private ForagingManager foragingManager;
+    private MiningManager miningManager;
+    private CombatManager combatManager;
+    private ChatManager chatManager;
+    private LeaderboardManager leaderboardManager;
+    private MailManager mailManager;
+    private CoopManager coopManager;
+    private ReputationManager reputationManager;
+    private VaultManager vaultManager;
+    private FriendManager friendManager;
+    private BoosterManager boosterManager;
+    private MailboxManager mailboxManager;
+    private WarpManager warpManager;
+    private AchievementManager achievementManager;
+    private SkyblockLevelManager skyblockLevelManager;
+    private TitleManager titleManager;
+    private RunManager runManager;
+    private AlchemyManager alchemyManager;
+    private CrystalHollowsManager crystalHollowsManager;
+    private JacobsContestManager jacobsContestManager;
+    private NpcManager npcManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
     }
 
     private void initManagers() {
+        // core data — loaded first; others may depend on skill/profile state
+        skillsManager = SkillManager.getInstance();
+        skillsManager.load(getDataFolder());
+        profile = ProfileManager.getInstance();
+        profile.load(getDataFolder());
+        collectionManager = CollectionManager.getInstance();
+        collectionManager.load(getDataFolder());
+
+        // economy
         bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
         bankingManager = BankingManager.getInstance();
-        mayorManager = MayorManager.getInstance();
-        mayorManager.load(getDataFolder());
         auctionHouseManager = AuctionHouseManager.getInstance();
         auctionHouseManager.load(getDataFolder());
         bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
+
+        // world / progression
+        mayorManager = MayorManager.getInstance();
+        mayorManager.load(getDataFolder());
         calendarManager = CalendarManager.getInstance();
         essenceManager = EssenceManager.getInstance();
         essenceShopManager = EssenceShopManager.getInstance();
-        collectionManager = CollectionManager.getInstance();
-        collectionManager.load(getDataFolder());
         dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
         dungeonClassManager = DungeonClassManager.getInstance();
@@ -225,10 +274,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         bestiaryManager = BestiaryManager.getInstance();
         museumManager = MuseumManager.getInstance();
         riftManager = RiftManager.getInstance();
-        skillsManager = SkillManager.getInstance();
-        skillsManager.load(getDataFolder());
-        profile = ProfileManager.getInstance();
-        profile.load(getDataFolder());
         minionManager = MinionManager.getInstance();
         minionManager.load(getDataFolder());
         forgeManager = ForgeManager.getInstance();
@@ -236,6 +281,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         wardrobeManager = WardrobeManager.getInstance();
         wardrobeManager.load(getDataFolder());
         accessoryBagManager = AccessoryBagManager.getInstance();
+        AccessoryManager.getInstance();
         sackManager = SackManager.getInstance();
         storageManager = StorageManager.getInstance();
         islandManager = IslandManager.getInstance();
@@ -247,6 +293,62 @@ public final class SkyblockPlugin extends JavaPlugin {
         commissionManager = CommissionManager.getInstance();
         chocolateFactoryManager = ChocolateFactoryManager.getInstance();
         enchantingManager = EnchantingManager.getInstance();
+        enchantingManager.load(getDataFolder());
+        fishingManager = FishingManager.getInstance();
+        fishingManager.load(getDataFolder());
+        guildManager = GuildManager.getInstance();
+        guildManager.load(getDataFolder());
+        partyManager = PartyManager.getInstance();
+        fairySoulManager = FairySoulManager.getInstance();
+        harpManager = HarpManager.getInstance();
+        harpManager.load(getDataFolder());
+        jerryWorkshopManager = JerryWorkshopManager.getInstance();
+        jerryWorkshopManager.load(getDataFolder());
+        kuudraManager = KuudraManager.getInstance();
+        kuudraManager.load(getDataFolder());
+        reforgeManager = ReforgeManager.getInstance();
+        reforgeManager.load(getDataFolder());
+        craftingManager = CraftingManager.getInstance();
+        craftingManager.load(getDataFolder());
+        questManager = QuestManager.getInstance();
+        questManager.load(getDataFolder());
+        tradeManager = TradeManager.getInstance();
+        backpackManager = BackpackManager.getInstance();
+        backpackManager.load(getDataFolder());
+        eventManager = EventManager.getInstance();
+        foragingManager = ForagingManager.getInstance();
+        foragingManager.load(getDataFolder());
+        miningManager = MiningManager.getInstance();
+        combatManager = CombatManager.getInstance();
+        chatManager = ChatManager.getInstance();
+        leaderboardManager = LeaderboardManager.getInstance();
+        mailManager = MailManager.getInstance();
+        mailManager.load(getDataFolder());
+        coopManager = CoopManager.getInstance();
+        coopManager.load(getDataFolder());
+        reputationManager = ReputationManager.getInstance();
+        reputationManager.load(getDataFolder());
+        vaultManager = VaultManager.getInstance();
+        vaultManager.load(getDataFolder());
+        friendManager = FriendManager.getInstance();
+        friendManager.load(getDataFolder());
+        boosterManager = BoosterManager.getInstance();
+        boosterManager.load(getDataFolder());
+        mailboxManager = MailboxManager.getInstance();
+        mailboxManager.load(getDataFolder());
+        warpManager = WarpManager.getInstance();
+        warpManager.load(getDataFolder());
+        achievementManager = AchievementManager.getInstance();
+        skyblockLevelManager = SkyblockLevelManager.getInstance();
+        titleManager = TitleManager.getInstance();
+        titleManager.load(getDataFolder());
+        runManager = RunManager.getInstance();
+        runManager.load(getDataFolder());
+        alchemyManager = AlchemyManager.getInstance();
+        alchemyManager.load(getDataFolder());
+        crystalHollowsManager = CrystalHollowsManager.getInstance();
+        jacobsContestManager = JacobsContestManager.getInstance();
+        npcManager = NpcManager.getInstance();
     }
 
     @Override
@@ -298,12 +400,9 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("dungeonclass").setExecutor(dungeonClassCommand);
             getCommand("dungeonclass").setTabCompleter(dungeonClassCommand);
         }
-        GuildManager guildManager = GuildManager.getInstance();
-        guildManager.load(getDataFolder());
         GuildCommand guildCommand = new GuildCommand(guildManager);
         getCommand("guild").setExecutor(guildCommand);
         getCommand("guild").setTabCompleter(guildCommand);
-        PartyManager partyManager = PartyManager.getInstance();
         PartyCommand partyCommand = new PartyCommand(partyManager);
         getCommand("party").setExecutor(partyCommand);
         getCommand("party").setTabCompleter(partyCommand);
@@ -335,13 +434,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("slayer") != null) {
             getCommand("slayer").setExecutor(slayerMenuCommand);
         }
-        fishingManager = FishingManager.getInstance();
-        fishingManager.load(getDataFolder());
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);
         getCommand("fishing").setTabCompleter(fishingCommand);
         getServer().getPluginManager().registerEvents(new TrophyFishListener(trophyFishManager, fishingManager), this);
-        FairySoulManager fairySoulManager = FairySoulManager.getInstance();
         FairySoulCommand fairySoulCommand = new FairySoulCommand(fairySoulManager);
         if (getCommand("fairysoul") != null) {
             getCommand("fairysoul").setExecutor(fairySoulCommand);
@@ -362,15 +458,11 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("trophyfishing").setExecutor(trophyFishingCommand);
             getCommand("trophyfishing").setTabCompleter(trophyFishingCommand);
         }
-        HarpManager harpManager = HarpManager.getInstance();
-        harpManager.load(getDataFolder());
         HarpCommand harpCommand = new HarpCommand(harpManager);
         if (getCommand("harp") != null) {
             getCommand("harp").setExecutor(harpCommand);
             getCommand("harp").setTabCompleter(harpCommand);
         }
-        JerryWorkshopManager jerryWorkshopManager = JerryWorkshopManager.getInstance();
-        jerryWorkshopManager.load(getDataFolder());
         JerryWorkshopCommand jerryWorkshopCommand = new JerryWorkshopCommand(jerryWorkshopManager);
         if (getCommand("jerryworkshop") != null) {
             getCommand("jerryworkshop").setExecutor(jerryWorkshopCommand);
@@ -383,22 +475,15 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("hotm").setExecutor(hotmCommand);
             getCommand("hotm").setTabCompleter(hotmCommand);
         }
-        KuudraManager kuudraManager = KuudraManager.getInstance();
-        kuudraManager.load(getDataFolder());
         KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
         getCommand("kuudra").setExecutor(kuudraCommand);
         getCommand("kuudra").setTabCompleter(kuudraCommand);
-        EnchantingManager enchantingManager = EnchantingManager.getInstance();
-        enchantingManager.load(getDataFolder());
         EnchantingCommand enchantingCommand = new EnchantingCommand(enchantingManager);
         getCommand("enchanting").setExecutor(enchantingCommand);
         getCommand("enchanting").setTabCompleter(enchantingCommand);
-        ReforgeManager reforgeManager = ReforgeManager.getInstance();
-        reforgeManager.load(getDataFolder());
         ReforgeCommand reforgeCommand = new ReforgeCommand(reforgeManager);
         getCommand("reforge").setExecutor(reforgeCommand);
         getCommand("reforge").setTabCompleter(reforgeCommand);
-        AccessoryManager.getInstance();
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
@@ -416,42 +501,30 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("minions").setExecutor(minionCommand);
             getCommand("minions").setTabCompleter(minionCommand);
         }
-        CraftingManager craftingManager = CraftingManager.getInstance();
-        craftingManager.load(getDataFolder());
         CraftingCommand craftingCommand = new CraftingCommand(craftingManager);
         getCommand("crafting").setExecutor(craftingCommand);
         getCommand("crafting").setTabCompleter(craftingCommand);
-        QuestManager questManager = QuestManager.getInstance();
-        questManager.load(getDataFolder());
         QuestCommand questCommand = new QuestCommand(questManager);
         getCommand("quest").setExecutor(questCommand);
         getCommand("quest").setTabCompleter(questCommand);
-        TradeManager tradeManager = TradeManager.getInstance();
         TradeCommand tradeCommand = new TradeCommand(tradeManager);
         getCommand("trade").setExecutor(tradeCommand);
         getCommand("trade").setTabCompleter(tradeCommand);
         getServer().getPluginManager().registerEvents(new TradeListener(tradeManager), this);
-        BackpackManager backpackManager = BackpackManager.getInstance();
-        backpackManager.load(getDataFolder());
         BackpackCommand backpackCommand = new BackpackCommand(backpackManager);
         getCommand("backpack").setExecutor(backpackCommand);
         getCommand("backpack").setTabCompleter(backpackCommand);
-        EventManager eventManager = EventManager.getInstance();
         EventCommand eventCommand = new EventCommand(eventManager);
         getCommand("event").setExecutor(eventCommand);
         getCommand("event").setTabCompleter(eventCommand);
-        ForagingManager foragingManager = ForagingManager.getInstance();
-        foragingManager.load(getDataFolder());
         ForagingCommand foragingCommand = new ForagingCommand(foragingManager);
         getCommand("foraging").setExecutor(foragingCommand);
         getCommand("foraging").setTabCompleter(foragingCommand);
-        MiningManager miningManager = MiningManager.getInstance();
         MiningCommand miningCommand = new MiningCommand(miningManager);
         if (getCommand("mining") != null) {
             getCommand("mining").setExecutor(miningCommand);
             getCommand("mining").setTabCompleter(miningCommand);
         }
-        CombatManager combatManager = CombatManager.getInstance();
         CombatCommand combatCommand = new CombatCommand(combatManager);
         getCommand("combat").setExecutor(combatCommand);
         getCommand("combat").setTabCompleter(combatCommand);
@@ -464,16 +537,12 @@ public final class SkyblockPlugin extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new CollectionListener(collectionManager), this);
         getServer().getPluginManager().registerEvents(new ProgressionListener(skillsManager, FairySoulManager.getInstance(), this), this);
-        ChatManager chatManager = ChatManager.getInstance();
         ChatCommand chatCommand = new ChatCommand(chatManager);
         getCommand("chat").setExecutor(chatCommand);
         getCommand("chat").setTabCompleter(chatCommand);
-        LeaderboardManager leaderboardManager = LeaderboardManager.getInstance();
         LeaderboardCommand leaderboardCommand = new LeaderboardCommand(leaderboardManager);
         getCommand("leaderboard").setExecutor(leaderboardCommand);
         getCommand("leaderboard").setTabCompleter(leaderboardCommand);
-        MailManager mailManager = MailManager.getInstance();
-        mailManager.load(getDataFolder());
         MailCommand mailCommand = new MailCommand(mailManager);
         if (getCommand("mail") != null) {
             getCommand("mail").setExecutor(mailCommand);
@@ -487,13 +556,9 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("calendar").setExecutor(calendarCommand);
             getCommand("calendar").setTabCompleter(calendarCommand);
         }
-        CoopManager coopManager = CoopManager.getInstance();
-        coopManager.load(getDataFolder());
         CoopCommand coopCommand = new CoopCommand(coopManager);
         getCommand("coop").setExecutor(coopCommand);
         getCommand("coop").setTabCompleter(coopCommand);
-        ReputationManager reputationManager = ReputationManager.getInstance();
-        reputationManager.load(getDataFolder());
         CrimsonCommand crimsonCommand = new CrimsonCommand(reputationManager);
         getCommand("crimson").setExecutor(crimsonCommand);
         getCommand("crimson").setTabCompleter(crimsonCommand);
@@ -532,32 +597,21 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("jacobscontest").setExecutor(jacobsContestCommand);
             getCommand("jacobscontest").setTabCompleter(jacobsContestCommand);
         }
-        VaultManager vaultManager = VaultManager.getInstance();
-        vaultManager.load(getDataFolder());
         VaultCommand vaultCommand = new VaultCommand(vaultManager);
         getCommand("vault").setExecutor(vaultCommand);
         getCommand("vault").setTabCompleter(vaultCommand);
-        FriendManager friendManager = FriendManager.getInstance();
-        friendManager.load(getDataFolder());
         FriendCommand friendCommand = new FriendCommand(friendManager);
         getCommand("friend").setExecutor(friendCommand);
         getCommand("friend").setTabCompleter(friendCommand);
-        BoosterManager boosterManager = BoosterManager.getInstance();
-        boosterManager.load(getDataFolder());
         BoosterCommand boosterCommand = new BoosterCommand(boosterManager);
         getCommand("booster").setExecutor(boosterCommand);
         getCommand("booster").setTabCompleter(boosterCommand);
-        MailboxManager mailboxManager = MailboxManager.getInstance();
-        mailboxManager.load(getDataFolder());
         MailboxCommand mailboxCommand = new MailboxCommand(mailboxManager);
         getCommand("mailbox").setExecutor(mailboxCommand);
         getCommand("mailbox").setTabCompleter(mailboxCommand);
-        WarpManager warpManager = WarpManager.getInstance();
-        warpManager.load(getDataFolder());
         WarpCommand warpCommand = new WarpCommand(warpManager);
         getCommand("warp").setExecutor(warpCommand);
         getCommand("warp").setTabCompleter(warpCommand);
-        AchievementManager achievementManager = AchievementManager.getInstance();
         AchievementCommand achievementCommand = new AchievementCommand(achievementManager);
         getCommand("achievement").setExecutor(achievementCommand);
         getCommand("achievement").setTabCompleter(achievementCommand);
@@ -569,7 +623,6 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("stats").setExecutor(statsCommand);
             getCommand("stats").setTabCompleter(statsCommand);
         }
-        SkyblockLevelManager skyblockLevelManager = SkyblockLevelManager.getInstance();
         SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
         getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
@@ -583,22 +636,16 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("skyblock").setExecutor(skyBlockCommand);
             getCommand("skyblock").setTabCompleter(skyBlockCommand);
         }
-        TitleManager titleManager = TitleManager.getInstance();
-        titleManager.load(getDataFolder());
         TitleCommand titleCommand = new TitleCommand(titleManager);
         if (getCommand("title") != null) {
             getCommand("title").setExecutor(titleCommand);
             getCommand("title").setTabCompleter(titleCommand);
         }
-        RunManager runManager = RunManager.getInstance();
-        runManager.load(getDataFolder());
         RunCommand runCommand = new RunCommand(runManager);
         if (getCommand("run") != null) {
             getCommand("run").setExecutor(runCommand);
             getCommand("run").setTabCompleter(runCommand);
         }
-        AlchemyManager alchemyManager = AlchemyManager.getInstance();
-        alchemyManager.load(getDataFolder());
         AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
         getCommand("alchemy").setExecutor(alchemyCommand);
         getCommand("alchemy").setTabCompleter(alchemyCommand);
@@ -621,20 +668,12 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("sack").setExecutor(sackCommand);
             getCommand("sack").setTabCompleter(sackCommand);
         }
-        CrystalHollowsManager crystalHollowsManager = CrystalHollowsManager.getInstance();
         CrystalHollowsCommand crystalHollowsCommand = new CrystalHollowsCommand(crystalHollowsManager);
         getCommand("crystalhollows").setExecutor(crystalHollowsCommand);
         getCommand("crystalhollows").setTabCompleter(crystalHollowsCommand);
         StorageCommand storageCommand = new StorageCommand(storageManager);
         getCommand("storage").setExecutor(storageCommand);
         getCommand("storage").setTabCompleter(storageCommand);
-        // Canonical managers without dedicated commands — initialize so their state loads/persists.
-        JacobsContestManager.getInstance();
-        FairySoulManager.getInstance();
-        BestiaryManager.getInstance();
-        MinionManager.getInstance();
-        HarpManager.getInstance().load(getDataFolder());
-        JerryWorkshopManager.getInstance().load(getDataFolder());
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
     }
 
@@ -680,11 +719,6 @@ public final class SkyblockPlugin extends JavaPlugin {
             HarpManager.getInstance().save(getDataFolder());
         } catch (java.io.IOException e) {
             getLogger().severe("Failed to save data: " + e.getMessage());
-        }
-        try {
-            HarpManager.getInstance().save(getDataFolder());
-        } catch (java.io.IOException e) {
-            getLogger().severe("Failed to save harp data: " + e.getMessage());
         }
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().stop();
         instance = null;
