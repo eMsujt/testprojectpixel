@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.chocolate.ChocolateFactoryManager;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BazaarManager;
@@ -1762,6 +1763,83 @@ class MenuIntegrationTest {
             commission.addProgress(9999);
             assertEquals(CommissionType.TITANIUM_MINER.getTarget(), commission.getProgress());
             assertTrue(commission.isComplete());
+        }
+    }
+
+    @Nested
+    class ChocolateFactoryMenuTests {
+
+        private final Player mockPlayer = mock(Player.class);
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @BeforeEach
+        void setUp() {
+            when(mockPlayer.getUniqueId()).thenReturn(PLAYER);
+            when(mockPlayer.getName()).thenReturn("TestPlayer");
+        }
+
+        @Test
+        void title_isChocolateFactory() {
+            assertEquals("§6Chocolate Factory", new ChocolateFactoryMenu(mockPlayer).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new ChocolateFactoryMenu(mockPlayer).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new ChocolateFactoryMenu(mockPlayer));
+        }
+
+        @Test
+        void summarySlot_isFour() {
+            assertEquals(4, ChocolateFactoryMenu.SUMMARY_SLOT);
+        }
+
+        @Test
+        void manager_chocolate_zeroForFreshPlayer() {
+            assertEquals(0, ChocolateFactoryManager.getInstance().getChocolate(PLAYER));
+        }
+
+        @Test
+        void manager_addAndGetChocolate_roundTrips() {
+            ChocolateFactoryManager mgr = ChocolateFactoryManager.getInstance();
+            mgr.addChocolate(PLAYER, 500L);
+            assertEquals(500L, mgr.getChocolate(PLAYER));
+        }
+
+        @Test
+        void manager_rabbitCount_zeroForFreshPlayer() {
+            assertEquals(0, ChocolateFactoryManager.getInstance().getRabbitCount(PLAYER, Rarity.COMMON));
+        }
+
+        @Test
+        void manager_addRabbit_incrementsCount() {
+            ChocolateFactoryManager mgr = ChocolateFactoryManager.getInstance();
+            mgr.addRabbit(PLAYER, Rarity.RARE);
+            assertEquals(1, mgr.getRabbitCount(PLAYER, Rarity.RARE));
+        }
+
+        @Test
+        void manager_productionRate_zeroForFreshPlayer() {
+            assertEquals(0, ChocolateFactoryManager.getInstance().getProductionRate(UUID.randomUUID()));
+        }
+
+        @Test
+        void chocolatePerSecond_commonIsOne() {
+            assertEquals(1, (int) ChocolateFactoryManager.CHOCOLATE_PER_SECOND.get(Rarity.COMMON));
+        }
+
+        @Test
+        void chocolatePerSecond_legendaryIsTwenty() {
+            assertEquals(20, (int) ChocolateFactoryManager.CHOCOLATE_PER_SECOND.get(Rarity.LEGENDARY));
+        }
+
+        @AfterEach
+        void tearDown() {
+            ChocolateFactoryManager.getInstance().remove(PLAYER);
         }
     }
 

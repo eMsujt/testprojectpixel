@@ -21,7 +21,7 @@ import java.util.UUID;
 public final class ChocolateFactoryMenu extends Menu {
 
     private static final String TITLE = "§6Chocolate Factory";
-    private static final int SUMMARY_SLOT = 4;
+    static final int SUMMARY_SLOT = 4;
 
     /** Rabbit rarity tiles laid out across the third interior row. */
     private static final int[] RABBIT_SLOTS = {
