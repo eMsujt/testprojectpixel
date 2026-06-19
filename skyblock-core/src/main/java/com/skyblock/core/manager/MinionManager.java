@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -213,8 +215,21 @@ public final class MinionManager {
         }
     }
 
-    /** Base number of minion slots each player is allowed. */
-    public static final int MAX_SLOTS = 12;
+    /** Starting minion slot count for every player (before milestone unlocks). */
+    public static final int BASE_SLOTS = 5;
+
+    /** Absolute ceiling on minion slots a player can ever reach. */
+    public static final int MAX_TOTAL_SLOTS = 25;
+
+    /**
+     * Unique type+tier combination thresholds (ascending) that each unlock one
+     * additional minion slot above {@link #BASE_SLOTS}.  Index {@code i} gives
+     * the number of unique minions needed to unlock slot {@code BASE_SLOTS + i + 1}.
+     */
+    private static final int[] SLOT_MILESTONES = {
+        1, 2, 5, 10, 15, 25, 30, 45, 50, 75,
+        100, 125, 150, 175, 200, 225, 250, 275, 300, 350
+    };
 
     /** Production ticks a TIER_1 minion needs to produce one resource. */
     public static final int BASE_PRODUCTION_TICKS = 14;
@@ -236,8 +251,11 @@ public final class MinionManager {
     /** Location key → minion UUID for placed-minion lookup by block position. */
     private final Map<String, UUID> locationIndex = new HashMap<>();
 
-    /** Per-player slot cap overrides set by island upgrades; absent = MAX_SLOTS. */
+    /** Per-player slot cap overrides set by island upgrades; absent = milestone-based count. */
     private final Map<UUID, Integer> playerMaxSlots = new HashMap<>();
+
+    /** Per-player set of unique minion "TYPE:TIER" strings ever placed or upgraded to. */
+    private final Map<UUID, Set<String>> uniqueMinions = new HashMap<>();
 
     private MinionManager() {
     }
@@ -246,20 +264,56 @@ public final class MinionManager {
         return INSTANCE;
     }
 
-    /** Returns the effective minion slot cap for the given player (default {@link #MAX_SLOTS}). */
-    public int getMaxSlots(UUID owner) {
+    /**
+     * Registers a unique minion type+tier combination for the given player.
+     * Called automatically by {@link #placeMinion} and {@link #upgradeMinion}.
+     */
+    public void registerUniqueMinion(UUID owner, MinionType type, MinionTier tier) {
         Objects.requireNonNull(owner, "owner");
-        return playerMaxSlots.getOrDefault(owner, MAX_SLOTS);
+        Objects.requireNonNull(type, "type");
+        Objects.requireNonNull(tier, "tier");
+        uniqueMinions.computeIfAbsent(owner, k -> new HashSet<>())
+                     .add(type.name() + ":" + tier.name());
+    }
+
+    /** Number of unique type+tier combinations the player has ever placed or upgraded to. */
+    public int getUniqueMinionsCount(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        Set<String> set = uniqueMinions.get(owner);
+        return set == null ? 0 : set.size();
     }
 
     /**
-     * Sets a player's minion slot cap (used by island upgrade progression).
-     * The new cap must be at least {@link #MAX_SLOTS}.
+     * Slot count earned by the player's unique-minion milestones.
+     * Starts at {@link #BASE_SLOTS} and adds one slot per milestone threshold crossed.
+     */
+    public int getSlotCount(UUID owner) {
+        int unique = getUniqueMinionsCount(owner);
+        int slots = BASE_SLOTS;
+        for (int threshold : SLOT_MILESTONES) {
+            if (unique >= threshold) {
+                slots++;
+            } else {
+                break;
+            }
+        }
+        return slots;
+    }
+
+    /** Returns the effective minion slot cap for the given player (milestone-based by default). */
+    public int getMaxSlots(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return playerMaxSlots.getOrDefault(owner, getSlotCount(owner));
+    }
+
+    /**
+     * Sets an explicit per-player minion slot cap (used by island upgrade progression).
+     * The new cap must be at least {@link #BASE_SLOTS}.
      */
     public void setMaxSlots(UUID owner, int slots) {
         Objects.requireNonNull(owner, "owner");
-        if (slots < MAX_SLOTS) {
-            throw new IllegalArgumentException("slots must be >= MAX_SLOTS (" + MAX_SLOTS + ")");
+        if (slots < BASE_SLOTS) {
+            throw new IllegalArgumentException("slots must be >= BASE_SLOTS (" + BASE_SLOTS + ")");
         }
         playerMaxSlots.put(owner, slots);
     }
@@ -277,6 +331,7 @@ public final class MinionManager {
         MinionData data = new MinionData(id, owner, type, tier);
         minions.put(id, data);
         ownerIndex.computeIfAbsent(owner, k -> new ArrayList<>()).add(id);
+        registerUniqueMinion(owner, type, tier);
         return data;
     }
 
@@ -320,6 +375,7 @@ public final class MinionManager {
             return false;
         }
         data.setTier(tiers[next]);
+        registerUniqueMinion(data.owner, data.type, tiers[next]);
         return true;
     }
 
@@ -475,6 +531,8 @@ public final class MinionManager {
             minions.remove(id);
             locationIndex.values().remove(id);
         }
+        uniqueMinions.remove(owner);
+        playerMaxSlots.remove(owner);
         return list.size();
     }
 
@@ -544,6 +602,7 @@ public final class MinionManager {
         placements.clear();
         locationIndex.clear();
         playerMaxSlots.clear();
+        uniqueMinions.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID id = UUID.fromString(key);
@@ -624,9 +683,30 @@ public final class MinionManager {
             for (String ownerStr : cfg.getConfigurationSection("slotOverrides").getKeys(false)) {
                 try {
                     UUID owner = UUID.fromString(ownerStr);
-                    int slots = cfg.getInt("slotOverrides." + ownerStr, MAX_SLOTS);
-                    if (slots >= MAX_SLOTS) {
+                    int slots = cfg.getInt("slotOverrides." + ownerStr, BASE_SLOTS);
+                    if (slots >= BASE_SLOTS) {
                         playerMaxSlots.put(owner, slots);
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // skip malformed UUID
+                }
+            }
+        }
+        if (cfg.isConfigurationSection("uniqueMinions")) {
+            for (String ownerStr : cfg.getConfigurationSection("uniqueMinions").getKeys(false)) {
+                try {
+                    UUID owner = UUID.fromString(ownerStr);
+                    List<?> rawList = cfg.getList("uniqueMinions." + ownerStr);
+                    if (rawList != null) {
+                        Set<String> set = new HashSet<>();
+                        for (Object item : rawList) {
+                            if (item instanceof String s) {
+                                set.add(s);
+                            }
+                        }
+                        if (!set.isEmpty()) {
+                            uniqueMinions.put(owner, set);
+                        }
                     }
                 } catch (IllegalArgumentException ignored) {
                     // skip malformed UUID
@@ -666,6 +746,12 @@ public final class MinionManager {
         }
         for (Map.Entry<UUID, Integer> entry : playerMaxSlots.entrySet()) {
             cfg.set("slotOverrides." + entry.getKey().toString(), entry.getValue());
+        }
+        for (Map.Entry<UUID, Set<String>> entry : uniqueMinions.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                cfg.set("uniqueMinions." + entry.getKey().toString(),
+                        new ArrayList<>(entry.getValue()));
+            }
         }
         try {
             cfg.save(file);

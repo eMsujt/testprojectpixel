@@ -54,7 +54,7 @@ class MinionMenuTest {
     }
 
     @Test
-    void maxSlots_defaultIsTwelve() {
-        assertEquals(MinionManager.MAX_SLOTS, MinionManager.getInstance().getMaxSlots(owner));
+    void maxSlots_defaultIsBaseSlots() {
+        assertEquals(MinionManager.BASE_SLOTS, MinionManager.getInstance().getMaxSlots(owner));
     }
 }

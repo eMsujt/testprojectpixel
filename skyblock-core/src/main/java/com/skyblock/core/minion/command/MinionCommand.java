@@ -90,7 +90,7 @@ public final class MinionCommand implements TabExecutor {
             player.sendMessage("You have no placed minions. Use /minion place <type> to add one.");
             return;
         }
-        player.sendMessage("=== Your Minions (" + ids.size() + "/" + MinionManager.MAX_SLOTS + ") ===");
+        player.sendMessage("=== Your Minions (" + ids.size() + "/" + minionManager.getMaxSlots(player.getUniqueId()) + ") ===");
         for (int i = 0; i < ids.size(); i++) {
             MinionManager.MinionData data = minionManager.getMinion(ids.get(i));
             if (data != null) {
@@ -137,7 +137,7 @@ public final class MinionCommand implements TabExecutor {
         try {
             data = minionManager.placeMinion(player.getUniqueId(), type, tier);
         } catch (IllegalStateException e) {
-            player.sendMessage("You have reached the minion slot cap (" + MinionManager.MAX_SLOTS + ").");
+            player.sendMessage("You have reached the minion slot cap (" + minionManager.getMaxSlots(player.getUniqueId()) + ").");
             return;
         }
         player.sendMessage("Placed " + type.getDisplayName() + " at Tier " + (tier.ordinal() + 1)
