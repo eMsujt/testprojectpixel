@@ -2,6 +2,7 @@ package com.skyblock.core.fishing.command;
 
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.manager.TrophyFishManager;
+import com.skyblock.core.menu.FishingMenu;
 import com.skyblock.core.model.Rarity;
 
 import org.bukkit.command.Command;
@@ -55,7 +56,7 @@ public final class FishingCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            handleStatus(player);
+            new FishingMenu(player.getUniqueId()).open(player);
             return true;
         }
 
@@ -98,14 +99,6 @@ public final class FishingCommand implements TabExecutor {
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
-    }
-
-    private void handleStatus(Player player) {
-        UUID id = player.getUniqueId();
-        int level = fishingManager.getLevel(id);
-        double xp = fishingManager.getXp(id);
-        player.sendMessage("=== Fishing ===");
-        player.sendMessage("Level: " + level + "  XP: " + String.format("%.1f", xp));
     }
 
     private void handleTrophy(Player player, String[] args) {
@@ -184,7 +177,7 @@ public final class FishingCommand implements TabExecutor {
 
     private void sendHelp(Player player) {
         player.sendMessage("=== Fishing Commands ===");
-        player.sendMessage("/fishing                       — show fishing level and XP");
+        player.sendMessage("/fishing                       — open the fishing menu");
         player.sendMessage("/fishing trophy                — show all trophy fish catches");
         player.sendMessage("/fishing trophy <fish>         — show catches for a specific trophy fish");
         player.sendMessage("/fishing trophy reset          — reset trophy fish records");
