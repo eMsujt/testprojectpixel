@@ -44,7 +44,7 @@ public final class SlayerMenu extends Menu {
     private final UUID playerId;
 
     public SlayerMenu(UUID playerId) {
-        super("§cSlayers", 6);
+        super("§cSlayer", 6);
         this.playerId = playerId;
     }
 
