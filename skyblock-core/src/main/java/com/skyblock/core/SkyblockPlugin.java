@@ -12,6 +12,8 @@ import com.skyblock.core.bank.command.BankCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.bazaar.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
+import com.skyblock.core.manager.CalendarCommand;
+import com.skyblock.core.manager.CalendarManager;
 import com.skyblock.core.museum.MuseumCommand;
 import com.skyblock.core.manager.MuseumManager;
 import com.skyblock.core.manager.EssenceCommand;
@@ -152,6 +154,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private MinionManager minionManager;
     private SlayerManager slayerManager;
     private BazaarManager bazaarManager;
+    private CalendarManager calendarManager;
     private DungeonManager dungeonManager;
     private FishingManager fishingManager;
     private EssenceManager essenceManager;
@@ -176,6 +179,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         auctionHouseManager.load(getDataFolder());
         bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
+        calendarManager = CalendarManager.getInstance();
         essenceManager = EssenceManager.getInstance();
         essenceShopManager = EssenceShopManager.getInstance();
         collectionManager = CollectionManager.getInstance();
@@ -420,6 +424,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         ForgeCommand forgeCommand = new ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
+        CalendarCommand calendarCommand = new CalendarCommand(calendarManager);
+        if (getCommand("calendar") != null) {
+            getCommand("calendar").setExecutor(calendarCommand);
+            getCommand("calendar").setTabCompleter(calendarCommand);
+        }
         CoopManager coopManager = CoopManager.getInstance();
         coopManager.load(getDataFolder());
         CoopCommand coopCommand = new CoopCommand(coopManager);
