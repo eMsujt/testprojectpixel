@@ -4,6 +4,7 @@ import com.skyblock.core.manager.GardenManager.GardenCrop;
 import com.skyblock.core.manager.JacobManager;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -15,31 +16,32 @@ public final class JacobsContestMenu extends Menu {
     private final UUID playerId;
 
     public JacobsContestMenu(UUID playerId) {
-        super("§aJacob's Farming Contest", 4);
+        super("§eJacob's Farming Contest", 6);
         this.playerId = playerId;
     }
 
     @Override
     protected void build() {
-        fillBorder();
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+
         JacobManager manager = JacobManager.getInstance();
 
         setItem(SUMMARY_SLOT, new ItemBuilder(Material.WHEAT)
-                .displayName("§aJacob's Farming Contest")
+                .displayName("§eJacob's Farming Contest")
                 .lore(
                         "§7Contests participated: §e" + manager.getContestsParticipated(playerId),
                         "§7Total medals: §e" + manager.getTotalMedals(playerId))
-                .build(),
-                e -> e.setCancelled(true));
+                .build());
 
         GardenCrop[] crops = GardenCrop.values();
-        for (int i = 0; i < crops.length && i < 27; i++) {
+        for (int i = 0; i < crops.length && i < 36; i++) {
             GardenCrop crop = crops[i];
             setItem(9 + i, new ItemBuilder(materialFor(crop))
                     .displayName("§6" + crop.getDisplayName())
                     .lore("§7Best collection: §e" + manager.getBestCollection(playerId, crop))
-                    .build(),
-                    e -> e.setCancelled(true));
+                    .build());
         }
     }
 
@@ -55,15 +57,14 @@ public final class JacobsContestMenu extends Menu {
             case CACTUS:        return Material.CACTUS;
             case MUSHROOM:      return Material.RED_MUSHROOM;
             case NETHER_WART:   return Material.NETHER_WART;
+            case CABBAGE:       return Material.WHEAT;
             case COARSE_POTATO: return Material.POTATO;
             default:            return Material.WHEAT;
         }
     }
 
-    private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+    @Override
+    public void handleClick(InventoryClickEvent event) {
+        event.setCancelled(true);
     }
 }
