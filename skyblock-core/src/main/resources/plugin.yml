@@ -79,6 +79,9 @@ commands:
   forge:
     description: Forge items using the SkyBlock forge.
     usage: /forge [list|start|collect]
+  calendar:
+    description: View the SkyBlock calendar and events.
+    usage: /calendar <info|months|events|set>
   collection:
     description: View your collection progress.
     usage: /collection [name]
