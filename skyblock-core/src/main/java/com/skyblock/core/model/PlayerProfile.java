@@ -11,6 +11,7 @@ public final class PlayerProfile {
 
     private final UUID uuid;
     private double coins;
+    private double bankCoins;
     private final Map<String, Integer> skillXP = new HashMap<>();
     private int fairySouls;
 
@@ -30,6 +31,18 @@ public final class PlayerProfile {
     public void addCoins(double amount) {
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
         this.coins += amount;
+    }
+
+    public double getBankCoins() { return bankCoins; }
+
+    public void setBankCoins(double bankCoins) {
+        if (bankCoins < 0) throw new IllegalArgumentException("bankCoins must not be negative");
+        this.bankCoins = bankCoins;
+    }
+
+    public void addBankCoins(double amount) {
+        if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
+        this.bankCoins += amount;
     }
 
     public Map<String, Integer> getSkillXP() {
