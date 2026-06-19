@@ -52,8 +52,8 @@ commands:
     usage: /leaderboard [category]
     aliases: [lb]
   bank:
-    description: Bank system
-    usage: /bank <balance|deposit|withdraw>
+    description: Open the SkyBlock bank GUI or manage balance/deposits/withdrawals.
+    usage: /bank [balance|deposit|withdraw|tier|type|history|interest|coop]
     permission: skyblock.bank
   dungeon:
     description: Dungeon system

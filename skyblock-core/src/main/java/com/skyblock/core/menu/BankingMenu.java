@@ -1,0 +1,64 @@
+package com.skyblock.core.menu;
+
+import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.manager.BankManager.BankTier;
+import com.skyblock.core.manager.BankManager.BankType;
+import com.skyblock.core.util.ItemBuilder;
+import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
+
+/**
+ * 54-slot Bank overview menu opened by {@code /bank} with no arguments.
+ *
+ * <p>Slot 13 shows personal balance as a gold-block item; slot 31 shows
+ * co-op bank info as a yellow-terracotta item. Top and bottom rows are
+ * gray-pane borders.</p>
+ */
+public final class BankingMenu extends Menu {
+
+    static final int PERSONAL_SLOT = 13;
+    static final int COOP_SLOT = 31;
+
+    private final UUID playerId;
+
+    public BankingMenu(UUID playerId) {
+        super("§6Bank", 6);
+        this.playerId = playerId;
+    }
+
+    @Override
+    protected void build() {
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+
+        BankManager manager = BankManager.getInstance();
+        double balance = manager.getBalance(playerId);
+        BankTier tier = manager.getTier(playerId);
+        BankType type = manager.getBankType(playerId);
+
+        setItem(PERSONAL_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
+                .displayName("§6Personal Bank")
+                .lore(
+                        "§7Balance: §6" + String.format("%.2f", balance) + " coins",
+                        "§7Tier: §e" + tier.getDisplayName(),
+                        "§7Interest rate: §a" + tier.getInterestRate() + "%",
+                        "§7Type: §b" + type.getDisplayName())
+                .build());
+
+        setItem(COOP_SLOT, new ItemBuilder(Material.YELLOW_TERRACOTTA)
+                .displayName("§eCo-op Bank")
+                .lore(
+                        "§7Use §f/bank coop balance <name>",
+                        "§7to check a co-op bank balance.")
+                .build());
+    }
+
+    @Override
+    public void handleClick(InventoryClickEvent event) {
+        event.setCancelled(true);
+    }
+}
