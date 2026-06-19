@@ -8,7 +8,12 @@ import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.manager.MayorManager.MayorCandidate;
 import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.manager.MuseumManager;
+import com.skyblock.core.manager.MuseumManager.DonationMilestone;
+import com.skyblock.core.manager.MuseumManager.MuseumCategory;
 import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.RiftManager;
+import com.skyblock.core.manager.RiftManager.RiftData;
 import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.manager.WardrobeManager;
@@ -651,6 +656,93 @@ class MenuIntegrationTest {
                 new SlayerMenu(a);
                 new SlayerMenu(b);
             });
+        }
+    }
+
+    @Nested
+    class MuseumMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @BeforeEach
+        void reset() {
+            MuseumManager.getInstance().remove(PLAYER);
+        }
+
+        @Test
+        void title_isMuseum() {
+            assertEquals("§6Museum", new MuseumMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new MuseumMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new MuseumMenu(PLAYER));
+        }
+
+        @Test
+        void manager_totalDonations_zeroForFreshPlayer() {
+            assertEquals(0, MuseumManager.getInstance().getTotalDonations(PLAYER));
+        }
+
+        @Test
+        void manager_milestone_noneForFreshPlayer() {
+            assertEquals(DonationMilestone.NONE, MuseumManager.getInstance().getMilestone(PLAYER));
+        }
+
+        @Test
+        void manager_donateAndGetDonations_roundTrips() {
+            MuseumManager mgr = MuseumManager.getInstance();
+            mgr.donate(PLAYER, MuseumCategory.WEAPONS, "aspect_of_the_end");
+            assertTrue(mgr.getDonations(PLAYER, MuseumCategory.WEAPONS).contains("aspect_of_the_end"));
+            assertEquals(1, mgr.getTotalDonations(PLAYER));
+        }
+    }
+
+    @Nested
+    class RiftMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @BeforeEach
+        void reset() {
+            RiftManager.getInstance().reset(PLAYER);
+        }
+
+        @Test
+        void title_isTheRift() {
+            assertEquals("§5The Rift", new RiftMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new RiftMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new RiftMenu(PLAYER));
+        }
+
+        @Test
+        void enigmaSoulTotal_isFortyTwo() {
+            assertEquals(42, RiftManager.ENIGMA_SOUL_TOTAL);
+        }
+
+        @Test
+        void motesPurseCap_isFourThousand() {
+            assertEquals(4000L, RiftManager.MOTES_PURSE_CAP);
+        }
+
+        @Test
+        void manager_riftData_zeroMotesForFreshPlayer() {
+            RiftData data = RiftManager.getInstance().getRiftData(PLAYER);
+            assertEquals(0L, data.motes);
+            assertEquals(0, data.enigmaSouls);
         }
     }
 }
