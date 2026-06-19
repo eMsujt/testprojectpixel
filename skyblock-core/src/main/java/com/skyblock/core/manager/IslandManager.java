@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.entity.Player;
 
 import com.skyblock.core.util.SkyblockUtils.IslandGenerator;
 
@@ -185,6 +186,24 @@ public final class IslandManager {
         islandWorlds.put(owner, world);
 
         recordIslandEvent(owner, "Island created");
+        return island;
+    }
+
+    /**
+     * Creates a new island for {@code player} (generating its UUID-based void world)
+     * and teleports the player to the island's spawn location.
+     *
+     * @return the new island
+     * @throws IllegalStateException if the player already owns an island
+     */
+    public SkyBlockIsland createIsland(Player player) {
+        Objects.requireNonNull(player, "player");
+        UUID owner = player.getUniqueId();
+        SkyBlockIsland island = createIsland(owner);
+        World world = islandWorlds.get(owner);
+        if (world != null) {
+            player.teleport(world.getSpawnLocation());
+        }
         return island;
     }
 
