@@ -122,6 +122,27 @@ public class ItemBuilder {
         return this;
     }
 
+    /** Adds an enchant glow without showing any enchantment in the tooltip. */
+    public ItemBuilder glow() {
+        item.addUnsafeEnchantment(Enchantment.UNBREAKING, 1);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(meta);
+        }
+        return this;
+    }
+
+    /** Sets the custom model data used for resource-pack item overrides. */
+    public ItemBuilder customModelData(int data) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setCustomModelData(data);
+            item.setItemMeta(meta);
+        }
+        return this;
+    }
+
     /** Marks the item as unbreakable. */
     public ItemBuilder setUnbreakable(boolean unbreakable) {
         ItemMeta meta = item.getItemMeta();
