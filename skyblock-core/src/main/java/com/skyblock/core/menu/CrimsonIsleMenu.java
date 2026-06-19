@@ -5,7 +5,7 @@ import com.skyblock.core.manager.KuudraManager.KuudraTier;
 import com.skyblock.core.manager.ReputationManager;
 import com.skyblock.core.manager.ReputationManager.Faction;
 import com.skyblock.core.util.SkyblockUtils;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;

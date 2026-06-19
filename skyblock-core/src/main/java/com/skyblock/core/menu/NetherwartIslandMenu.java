@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.NetherwartIslandManager;
 import com.skyblock.core.manager.NetherwartIslandManager.Faction;
 import com.skyblock.core.manager.NetherwartIslandManager.KuudraTier;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

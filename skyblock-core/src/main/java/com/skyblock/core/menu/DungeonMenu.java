@@ -4,7 +4,7 @@ import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.manager.DungeonManager.FloorMeta;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;

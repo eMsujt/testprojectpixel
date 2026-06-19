@@ -4,7 +4,7 @@ import com.skyblock.core.manager.GardenManager.ContestMedal;
 import com.skyblock.core.manager.GardenManager.GardenCrop;
 import com.skyblock.core.manager.JacobManager;
 import com.skyblock.core.manager.JacobManager.UpcomingContest;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;

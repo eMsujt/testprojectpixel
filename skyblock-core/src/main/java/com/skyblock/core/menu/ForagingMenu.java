@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.foraging.ForagingManager.TreeType;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
