@@ -47,13 +47,13 @@ public final class MinionMenu extends Menu {
     private final UUID owner;
 
     public MinionMenu(UUID owner) {
-        super("§6Minions", 6);
+        super("§6§lYour Minions", 6);
         this.owner = owner;
     }
 
     @Override
     protected void build() {
-        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.ORANGE_STAINED_GLASS_PANE, "§r");
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         setItem(9, pane);
