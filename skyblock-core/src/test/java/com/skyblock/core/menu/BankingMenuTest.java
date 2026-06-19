@@ -24,12 +24,17 @@ class BankingMenuTest {
     }
 
     @Test
-    void personalSlot_isThirteen() {
-        assertEquals(13, BankingMenu.PERSONAL_SLOT);
+    void depositSlot_isEleven() {
+        assertEquals(11, BankingMenu.DEPOSIT_SLOT);
     }
 
     @Test
-    void coopSlot_isThirtyOne() {
-        assertEquals(31, BankingMenu.COOP_SLOT);
+    void balanceSlot_isThirteen() {
+        assertEquals(13, BankingMenu.BALANCE_SLOT);
+    }
+
+    @Test
+    void withdrawSlot_isFifteen() {
+        assertEquals(15, BankingMenu.WITHDRAW_SLOT);
     }
 }
