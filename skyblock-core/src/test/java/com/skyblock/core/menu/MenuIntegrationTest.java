@@ -2223,6 +2223,21 @@ class MenuIntegrationTest {
         void manager_powerStone_nullByDefault() {
             assertNull(AccessoryBagManager.getInstance().getSelectedPowerStone(PLAYER));
         }
+
+        @Test
+        void raritySlots_countIsEight() {
+            assertEquals(8, AccessoryBagMenu.RARITY_SLOTS.length);
+        }
+
+        @Test
+        void raritySlots_firstIsNine() {
+            assertEquals(9, AccessoryBagMenu.RARITY_SLOTS[0]);
+        }
+
+        @Test
+        void raritySlots_lastIsSixteen() {
+            assertEquals(16, AccessoryBagMenu.RARITY_SLOTS[AccessoryBagMenu.RARITY_SLOTS.length - 1]);
+        }
     }
 
     @Nested
