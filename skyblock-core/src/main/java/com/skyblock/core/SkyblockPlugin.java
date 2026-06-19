@@ -308,7 +308,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
         getCommand("pet").setTabCompleter(petCommand);
-        MenuCommand petsCommand = new MenuCommand(p -> new PetMenu(p).open(p));
+        MenuCommand petsCommand = new MenuCommand(p -> new PetMenu(p.getUniqueId()).open(p));
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }

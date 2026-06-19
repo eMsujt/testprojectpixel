@@ -6,14 +6,30 @@ import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.UUID;
 
 public final class PetMenu extends Menu {
 
+    public static final Map<Rarity, Material> RARITY_WOOL;
+
+    static {
+        RARITY_WOOL = new EnumMap<>(Rarity.class);
+        RARITY_WOOL.put(Rarity.COMMON,    Material.WHITE_WOOL);
+        RARITY_WOOL.put(Rarity.UNCOMMON,  Material.LIME_WOOL);
+        RARITY_WOOL.put(Rarity.RARE,      Material.BLUE_WOOL);
+        RARITY_WOOL.put(Rarity.EPIC,      Material.PURPLE_WOOL);
+        RARITY_WOOL.put(Rarity.LEGENDARY, Material.ORANGE_WOOL);
+        RARITY_WOOL.put(Rarity.MYTHIC,    Material.PINK_WOOL);
+        RARITY_WOOL.put(Rarity.DIVINE,    Material.CYAN_WOOL);
+        RARITY_WOOL.put(Rarity.SPECIAL,   Material.RED_WOOL);
+    }
+
     private final UUID playerId;
 
     public PetMenu(UUID playerId) {
-        super("§aPets", 6);
+        super("§dPets", 6);
         this.playerId = playerId;
     }
 

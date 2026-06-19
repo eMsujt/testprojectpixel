@@ -45,7 +45,7 @@ public final class PetCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            new PetMenu(player).open(player);
+            new PetMenu(player.getUniqueId()).open(player);
             return true;
         }
 
