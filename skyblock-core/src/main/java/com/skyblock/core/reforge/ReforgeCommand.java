@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public final class ReforgeCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("list", "info", "apply", "clear", "stone", "itemtype");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("status", "list", "info", "apply", "clear", "stone", "itemtype");
     private static final List<String> STONE_SUBCOMMANDS = Arrays.asList("list", "info");
 
     private final ReforgeManager reforgeManager;
@@ -47,11 +47,12 @@ public final class ReforgeCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            handleStatus(player);
+            new com.skyblock.core.menu.ReforgeMenu().open(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
+            case "status" -> handleStatus(player);
             case "list"  -> handleList(player);
             case "info"  -> handleInfo(player, args);
             case "apply" -> handleApply(player, args);
