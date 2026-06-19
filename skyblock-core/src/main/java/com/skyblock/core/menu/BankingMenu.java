@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BankManager.BankTier;
 import com.skyblock.core.manager.BankManager.BankType;
-import com.skyblock.core.util.SkyblockUtil.*;
+import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
