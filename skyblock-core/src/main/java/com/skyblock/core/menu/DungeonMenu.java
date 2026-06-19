@@ -1,11 +1,13 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.manager.DungeonManager.FloorMeta;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,9 +23,9 @@ import java.util.UUID;
  * <p>Row 1 shows F1–F7 as wither-skull items; row 2 shows M1–M7 as
  * nether-star items. Each tile displays the boss name, the player's
  * completion count and best time for that floor. Top and bottom edges
- * are gray-pane borders.</p>
+ * are purple-pane borders.</p>
  */
-public final class DungeonMenu extends Menu {
+public final class DungeonMenu extends AbstractMenu {
 
     /** Inventory slots for the seven normal floors (F1–F7). */
     static final int[] F_SLOTS = {10, 11, 12, 13, 14, 15, 16};
@@ -48,16 +50,14 @@ public final class DungeonMenu extends Menu {
         CLASS_ICONS.put(DungeonClass.TANK,    Material.SHIELD);
     }
 
-    private final UUID playerId;
-
-    public DungeonMenu(UUID playerId) {
-        super("§5The Catacombs", 6);
-        this.playerId = playerId;
+    public DungeonMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§5§lCatacombs", 54);
     }
 
     @Override
-    protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
+        ItemStack pane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE).displayName("§r").build();
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
