@@ -7,11 +7,27 @@
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://adoptium.net/)
 [![Paper](https://img.shields.io/badge/Paper-1.21%2B-brightgreen.svg)](https://papermc.io/)
 
-A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven multi-module project targeting Paper 1.21+.
+A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven multi-module project targeting Paper 1.21+, it recreates the full SkyBlock progression loop — from private islands and skills to dungeons, the economy, and end-game zones — as a self-contained server-side plugin.
 
-## Feature Overview
+---
 
-SkyBlock recreates the core Hypixel SkyBlock progression loop as a server-side Paper plugin:
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Building](#building)
+- [Installation](#installation)
+- [Module Structure](#module-structure)
+- [Feature Managers](#feature-managers)
+- [Commands](#commands)
+- [Development](#development)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Features
 
 - **Private islands** — create, upgrade, and visit personal islands.
 - **Skills & collections** — level Combat, Mining, Farming, Foraging, Fishing, and more, unlocking collection tiers as you gather resources.
@@ -21,14 +37,9 @@ SkyBlock recreates the core Hypixel SkyBlock progression loop as a server-side P
 - **End-game zones** — Crimson Isle (Kuudra & faction reputation), Crystal Hollows/Dwarven Mines with Heart of the Mountain, and The Rift.
 - **Minions & automation** — placeable minions with fuel, upgrades, and hopper auto-sell.
 
-See the [Feature Managers](#feature-managers) table below for the authoritative manager registry, and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the module map.
+See the [Feature Managers](#feature-managers) table for the authoritative manager registry, and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full module map.
 
-## Documentation
-
-All project documentation lives under [`docs/`](docs/README.md) — see the
-[documentation index](docs/README.md) for the full list. Start with
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and read
-[`CONTRIBUTING.md`](CONTRIBUTING.md) before submitting changes.
+---
 
 ## Prerequisites
 
@@ -37,6 +48,8 @@ All project documentation lives under [`docs/`](docs/README.md) — see the
 | Java | 25+ |
 | Paper server | 1.21+ |
 | Maven | 3.8+ |
+
+---
 
 ## Building
 
@@ -52,6 +65,8 @@ mvn clean package -DskipTests
 # skyblock-core/target/skyblock-core-1.0.0-SNAPSHOT.jar
 ```
 
+---
+
 ## Installation
 
 1. Build the project (see above).
@@ -59,12 +74,31 @@ mvn clean package -DskipTests
 3. Start or restart the server.
 4. The plugin registers automatically via `SkyblockPlugin#onEnable`.
 
+---
+
 ## Module Structure
 
-The parent POM (`pom.xml`) aggregates all modules; `skyblock-core` is the deployable
-plugin JAR and the canonical home for everything under `com.skyblock.core.*`. The full
-**module map**, the canonical manager registry, and guidance on where to put a change
-live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+The parent POM (`pom.xml`) aggregates all modules:
+
+| Module | Purpose |
+|--------|---------|
+| `api` | Shared API interfaces and events |
+| `enchantments` | Custom enchantment definitions |
+| `items` | Custom item types and builders |
+| `dungeons` | Catacombs floor logic and dungeon rooms |
+| `foraging` | Foraging skill and log/sapling mechanics |
+| `farming` | Farming skill, crop, and Garden logic |
+| `storage` | Backpack, vault, and personal storage |
+| `progression` | Skill XP, collections, and HOTM tree |
+| `social` | Party, guild, friends, mail, and trade |
+| `combat-extras` | Slayer, bestiary, and trophy fishing |
+| `world` | Island generation, warps, and zone management |
+| `plugin` | Thin plugin bootstrap (delegates to `skyblock-core`) |
+| `skyblock-core` | **Deployable plugin JAR** — all managers, commands, menus |
+
+`skyblock-core` is the canonical home for everything under `com.skyblock.core.*`. The full package-layout conventions and the one-canonical-home rule live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+---
 
 ## Feature Managers
 
@@ -72,10 +106,8 @@ Most gameplay state is owned by a single authoritative manager under
 **`com.skyblock.core.manager`** (a few large systems keep their own feature
 sub-package — e.g. `com.skyblock.core.auction.manager.AuctionHouseManager`,
 `com.skyblock.core.crafting.manager.CraftingManager`,
-`com.skyblock.core.profile.manager.ProfileManager`). Import these directly — never a
-copy. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the package-layout
-conventions and the one-canonical-home rule, and
-[`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feature list.
+`com.skyblock.core.profile.manager.ProfileManager`). Import these directly — never
+a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feature list.
 
 | Manager | Responsibility |
 |---------|----------------|
@@ -122,6 +154,8 @@ conventions and the one-canonical-home rule, and
 | `StorageManager` | Personal storage and backpack pages |
 | `TradeManager` | Peer-to-peer trading sessions |
 | `WardrobeManager` | Named armor outfits and full-set swapping |
+
+---
 
 ## Commands
 
@@ -184,17 +218,49 @@ conventions and the one-canonical-home rule, and
 | `/wardrobe` | — | View and manage your saved armor outfits |
 | `/warp` | — | Teleport to a named warp point |
 
+---
+
 ## Development
 
 ```bash
 # Compile only (no tests)
 mvn compile
 
-# Run tests
-mvn test
+# Run tests (skyblock-core module only — the authoritative check)
+mvn test -pl skyblock-core -am
 
-# Build a single module (e.g. skyblock-core)
+# Build a single module
 mvn package -pl skyblock-core -am -DskipTests
 ```
 
 The project targets **Java 25** (`maven.compiler.release=25`). All modules inherit from the parent POM; dependency versions are managed there. The Paper API is declared `<scope>provided</scope>` and must be supplied by the server at runtime.
+
+---
+
+## Documentation
+
+All project documentation lives under [`docs/`](docs/README.md):
+
+| Document | Purpose |
+|----------|---------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Module map, package conventions, one-canonical-home rule |
+| [`docs/FEATURES.md`](docs/FEATURES.md) | Per-manager feature detail |
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Planned features and milestones |
+| [`docs/STATUS.md`](docs/STATUS.md) | Current implementation status |
+| [`docs/CLEANUP.md`](docs/CLEANUP.md) | Technical debt and cleanup tracking |
+
+---
+
+## Contributing
+
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before submitting changes. Key points:
+
+- One canonical home per concept — never duplicate a manager or command class.
+- `skyblock-core` is the authoritative module; all gameplay logic lives there.
+- Run `mvn test -pl skyblock-core -am` before opening a PR.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
