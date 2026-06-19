@@ -65,13 +65,17 @@ public final class SkillManager {
 
     static {
         Map<String, Stat> stat = new HashMap<>();
-        stat.put("farming",    Stat.HEALTH);
-        stat.put("fishing",    Stat.HEALTH);
-        stat.put("mining",     Stat.DEFENSE);
-        stat.put("foraging",   Stat.STRENGTH);
-        stat.put("combat",     Stat.CRIT_CHANCE);
-        stat.put("enchanting", Stat.INTELLIGENCE);
-        stat.put("alchemy",    Stat.INTELLIGENCE);
+        stat.put("farming",      Stat.HEALTH);
+        stat.put("fishing",      Stat.HEALTH);
+        stat.put("mining",       Stat.DEFENSE);
+        stat.put("foraging",     Stat.STRENGTH);
+        stat.put("combat",       Stat.CRIT_CHANCE);
+        stat.put("enchanting",   Stat.INTELLIGENCE);
+        stat.put("alchemy",      Stat.INTELLIGENCE);
+        stat.put("taming",       Stat.SPEED);
+        stat.put("carpentry",    Stat.HEALTH);
+        stat.put("runecrafting", Stat.INTELLIGENCE);
+        stat.put("social",       Stat.SPEED);
         stat.put("dungeoneering", Stat.HEALTH);
         SKILL_STAT = stat;
 
@@ -90,7 +94,8 @@ public final class SkillManager {
 
     private static double rewardForLevel(String skill, int level) {
         if ("combat".equals(skill)) return 0.5;
-        boolean health = "farming".equals(skill) || "fishing".equals(skill) || "dungeoneering".equals(skill);
+        boolean health = "farming".equals(skill) || "fishing".equals(skill)
+                || "dungeoneering".equals(skill) || "carpentry".equals(skill);
         int tier = level <= 14 ? 0 : level <= 19 ? 1 : level <= 25 ? 2 : 3;
         return (health ? 2 : 1) + tier;
     }
