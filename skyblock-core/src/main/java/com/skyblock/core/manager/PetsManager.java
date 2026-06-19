@@ -15,6 +15,37 @@ public final class PetsManager {
         COMMON, UNCOMMON, RARE, EPIC, LEGENDARY
     }
 
+    /** Every pet type available, with its display name and default rarity. */
+    public enum PetType {
+        RABBIT("Rabbit", PetRarity.UNCOMMON),
+        BEE("Bee", PetRarity.RARE),
+        ELEPHANT("Elephant", PetRarity.RARE),
+        WOLF("Wolf", PetRarity.EPIC),
+        ENDERMAN("Enderman", PetRarity.EPIC),
+        TIGER("Tiger", PetRarity.EPIC);
+
+        private final String displayName;
+        private final PetRarity defaultRarity;
+
+        PetType(String displayName, PetRarity defaultRarity) {
+            this.displayName = displayName;
+            this.defaultRarity = defaultRarity;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public PetRarity getDefaultRarity() {
+            return defaultRarity;
+        }
+
+        /** Creates a {@link Pet} of this type at its default rarity. */
+        public Pet asPet() {
+            return new Pet(displayName, defaultRarity);
+        }
+    }
+
     public record Pet(String name, PetRarity rarity) {}
 
     private static final PetsManager INSTANCE = new PetsManager();
