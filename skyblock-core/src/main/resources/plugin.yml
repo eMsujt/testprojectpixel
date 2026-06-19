@@ -219,6 +219,14 @@ commands:
     description: Open the Dojo challenge scores menu.
     usage: /dojo
     permission: skyblock.dojo
+  miningcommission:
+    description: Open the King's Commissions mining menu.
+    usage: /miningcommission
+    permission: skyblock.miningcommission
+  chocolatefactory:
+    description: Open the Chocolate Factory menu.
+    usage: /chocolatefactory
+    permission: skyblock.chocolatefactory
   vault:
     description: Manage your personal vault balance and tier.
     usage: /vault [info|deposit <amount>|withdraw <amount>|upgrade]
@@ -344,6 +352,12 @@ permissions:
     default: true
   skyblock.dojo:
     description: Use the /dojo command to view Dojo challenge scores.
+    default: true
+  skyblock.miningcommission:
+    description: Use the /miningcommission command to view King's Commissions.
+    default: true
+  skyblock.chocolatefactory:
+    description: Use the /chocolatefactory command to view the Chocolate Factory.
     default: true
   skyblock.vault:
     description: Use the /vault command to manage vault balance and tier.
