@@ -54,6 +54,8 @@ import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.manager.SkyblockLevelManager;
 import com.skyblock.core.manager.SkyblockLevelManager.Category;
+import com.skyblock.core.foraging.ForagingManager;
+import com.skyblock.core.foraging.ForagingManager.TreeType;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.manager.AccessoryBagManager.SlotTier;
 import com.skyblock.core.manager.WardrobeManager;
@@ -2160,6 +2162,79 @@ class MenuIntegrationTest {
         @Test
         void manager_powerStone_nullByDefault() {
             assertNull(AccessoryBagManager.getInstance().getSelectedPowerStone(PLAYER));
+        }
+    }
+
+    @Nested
+    class ForagingMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void cleanup() {
+            ForagingManager.getInstance().reset(PLAYER);
+        }
+
+        @Test
+        void title_isForaging() {
+            assertEquals("§2Foraging", new ForagingMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isThree() {
+            assertEquals(3, new ForagingMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new ForagingMenu(PLAYER));
+        }
+
+        @Test
+        void manager_xp_zeroForFreshPlayer() {
+            assertEquals(0.0, ForagingManager.getInstance().getXp(PLAYER), 0.0001);
+        }
+
+        @Test
+        void manager_level_oneForFreshPlayer() {
+            assertEquals(1, ForagingManager.getInstance().getLevel(PLAYER));
+        }
+
+        @Test
+        void manager_chops_zeroForFreshPlayer() {
+            assertEquals(0, ForagingManager.getInstance().getChops(PLAYER, TreeType.OAK));
+        }
+
+        @Test
+        void manager_recordChop_byTree_roundTrips() {
+            ForagingManager mgr = ForagingManager.getInstance();
+            mgr.recordChop(PLAYER, TreeType.BIRCH, 5);
+            assertEquals(5, mgr.getChops(PLAYER, TreeType.BIRCH));
+        }
+
+        @Test
+        void manager_recordChop_awardsXp() {
+            ForagingManager mgr = ForagingManager.getInstance();
+            mgr.recordChop(PLAYER, TreeType.OAK, 1);
+            assertEquals(TreeType.OAK.getBaseXp(), mgr.getXp(PLAYER), 0.0001);
+        }
+
+        @Test
+        void manager_treeTypes_countIsEleven() {
+            assertEquals(11, TreeType.values().length);
+        }
+
+        @Test
+        void manager_woodXpMap_containsAllTreeTypes() {
+            for (TreeType tree : TreeType.values()) {
+                assertTrue(ForagingManager.WOOD_XP_MAP.containsKey(tree.getMaterial()),
+                        "WOOD_XP_MAP missing " + tree);
+            }
+        }
+
+        @Test
+        void manager_speedMultiplier_oneAtLevelZero() {
+            assertEquals(1.0, ForagingManager.getInstance().getSpeedMultiplier(0), 0.0001);
         }
     }
 
