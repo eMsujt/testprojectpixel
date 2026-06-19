@@ -1,7 +1,17 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BestiaryManager;
+import com.skyblock.core.manager.CalendarManager;
+import com.skyblock.core.manager.CalendarManager.SkyBlockMonth;
+import com.skyblock.core.manager.CrystalHollowsManager;
+import com.skyblock.core.manager.CrystalHollowsManager.CrystalType;
+import com.skyblock.core.manager.CrystalHollowsManager.PowderType;
+import com.skyblock.core.manager.DungeonStatsManager;
+import com.skyblock.core.manager.NetherwartIslandManager;
+import com.skyblock.core.manager.NetherwartIslandManager.Faction;
+import com.skyblock.core.manager.NetherwartIslandManager.KuudraTier;
 import com.skyblock.core.manager.BestiaryManager.BestiaryCategory;
 import com.skyblock.core.manager.BestiaryManager.BestiaryFamily;
 import com.skyblock.core.manager.CollectionManager;
@@ -937,6 +947,263 @@ class MenuIntegrationTest {
         @Test
         void manager_xpToNextLevel_fiftyForFreshPlayer() {
             assertEquals(50L, SkyblockLevelManager.getInstance().xpToNextLevel(PLAYER));
+        }
+    }
+
+    @Nested
+    class AlchemyMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isAlchemy() {
+            assertEquals("§aAlchemy", new AlchemyMenu(mock(Player.class)).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new AlchemyMenu(mock(Player.class)).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new AlchemyMenu(mock(Player.class)));
+        }
+
+        @Test
+        void manager_recipes_notEmpty() {
+            assertFalse(AlchemyManager.getInstance().getRecipes().isEmpty());
+        }
+
+        @Test
+        void manager_getLevel_oneForFreshPlayer() {
+            assertEquals(1, AlchemyManager.getInstance().getLevel(PLAYER));
+        }
+
+        @Test
+        void manager_getXp_zeroForFreshPlayer() {
+            assertEquals(0.0, AlchemyManager.getInstance().getXp(PLAYER));
+        }
+
+        @Test
+        void manager_activeJob_nullForFreshPlayer() {
+            assertNull(AlchemyManager.getInstance().getActiveJob(PLAYER));
+        }
+
+        @Test
+        void manager_addXp_roundTrips() {
+            AlchemyManager mgr = AlchemyManager.getInstance();
+            mgr.addXp(PLAYER, 250.0);
+            assertEquals(250.0, mgr.getXp(PLAYER));
+        }
+    }
+
+    @Nested
+    class CrystalHollowsMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isCrystalHollows() {
+            assertEquals("§5Crystal Hollows", new CrystalHollowsMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new CrystalHollowsMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new CrystalHollowsMenu(PLAYER));
+        }
+
+        @Test
+        void crystalSlots_count_isFive() {
+            assertEquals(5, CrystalHollowsMenu.CRYSTAL_SLOTS.length);
+        }
+
+        @Test
+        void crystalSlots_spanTwentyToTwentyFour() {
+            assertEquals(20, CrystalHollowsMenu.CRYSTAL_SLOTS[0]);
+            assertEquals(24, CrystalHollowsMenu.CRYSTAL_SLOTS[CrystalHollowsMenu.CRYSTAL_SLOTS.length - 1]);
+        }
+
+        @Test
+        void manager_crystalCount_zeroForFreshPlayer() {
+            assertEquals(0, CrystalHollowsManager.getInstance().getCrystalCount(PLAYER, CrystalType.JADE));
+        }
+
+        @Test
+        void manager_crystalPlaced_falseForFreshPlayer() {
+            assertFalse(CrystalHollowsManager.getInstance().isCrystalPlaced(PLAYER, CrystalType.JADE));
+        }
+
+        @Test
+        void manager_powder_zeroForFreshPlayer() {
+            assertEquals(0L, CrystalHollowsManager.getInstance().getPowder(PLAYER, PowderType.MITHRIL));
+        }
+
+        @Test
+        void manager_nucleusComplete_falseForFreshPlayer() {
+            assertFalse(CrystalHollowsManager.getInstance().isNucleusComplete(PLAYER));
+        }
+
+        @Test
+        void manager_addCrystal_roundTrips() {
+            CrystalHollowsManager mgr = CrystalHollowsManager.getInstance();
+            mgr.addCrystal(PLAYER, CrystalType.AMBER);
+            assertEquals(1, mgr.getCrystalCount(PLAYER, CrystalType.AMBER));
+        }
+
+        @Test
+        void manager_placeCrystal_roundTrips() {
+            CrystalHollowsManager mgr = CrystalHollowsManager.getInstance();
+            assertTrue(mgr.placeCrystal(PLAYER, CrystalType.TOPAZ));
+            assertTrue(mgr.isCrystalPlaced(PLAYER, CrystalType.TOPAZ));
+        }
+    }
+
+    @Nested
+    class DungeonStatsMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isCatacombsStats() {
+            assertEquals("§5Catacombs Stats", new DungeonStatsMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new DungeonStatsMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new DungeonStatsMenu(PLAYER));
+        }
+
+        @Test
+        void manager_maxCatacombsLevel_isFifty() {
+            assertEquals(50, DungeonStatsManager.MAX_CATACOMBS_LEVEL);
+        }
+
+        @Test
+        void manager_catacombsLevel_zeroForFreshPlayer() {
+            assertEquals(0, DungeonStatsManager.getInstance().getCatacombsLevel(PLAYER));
+        }
+
+        @Test
+        void manager_catacombsXp_zeroForFreshPlayer() {
+            assertEquals(0.0, DungeonStatsManager.getInstance().getCatacombsXp(PLAYER));
+        }
+
+        @Test
+        void manager_secretsFound_zeroForFreshPlayer() {
+            assertEquals(0, DungeonStatsManager.getInstance().getSecretsFound(PLAYER));
+        }
+
+        @Test
+        void manager_bossKills_zeroForFreshPlayer() {
+            assertEquals(0, DungeonStatsManager.getInstance().getBossKills(PLAYER));
+        }
+    }
+
+    @Nested
+    class CalendarMenuTests {
+
+        @Test
+        void title_isSkyBlockCalendar() {
+            assertEquals("§aSkyBlock Calendar", new CalendarMenu().getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new CalendarMenu().getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(CalendarMenu::new);
+        }
+
+        @Test
+        void manager_daysPerMonth_isThirtyOne() {
+            assertEquals(31, CalendarManager.DAYS_PER_MONTH);
+        }
+
+        @Test
+        void manager_currentMonth_notNull() {
+            assertNotNull(CalendarManager.getInstance().getCurrentMonth());
+        }
+
+        @Test
+        void manager_currentDayOfMonth_inRange() {
+            int day = CalendarManager.getInstance().getCurrentDayOfMonth();
+            assertTrue(day >= 1 && day <= CalendarManager.DAYS_PER_MONTH,
+                    "day-of-month must be between 1 and " + CalendarManager.DAYS_PER_MONTH);
+        }
+
+        @Test
+        void month_allHaveDisplayName() {
+            for (SkyBlockMonth month : SkyBlockMonth.values()) {
+                assertNotNull(month.getDisplayName());
+            }
+        }
+    }
+
+    @Nested
+    class NetherwartIslandMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isCrimsonIsle() {
+            assertEquals("§4Crimson Isle", new NetherwartIslandMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new NetherwartIslandMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new NetherwartIslandMenu(PLAYER));
+        }
+
+        @Test
+        void manager_faction_nullForFreshPlayer() {
+            assertNull(NetherwartIslandManager.getInstance().getFaction(PLAYER));
+        }
+
+        @Test
+        void manager_reputation_zeroForFreshPlayer() {
+            assertEquals(0, NetherwartIslandManager.getInstance().getReputation(PLAYER));
+        }
+
+        @Test
+        void manager_kuudraCompletions_zeroForFreshPlayer() {
+            assertEquals(0, NetherwartIslandManager.getInstance()
+                    .getKuudraCompletions(PLAYER, KuudraTier.BASIC));
+        }
+
+        @Test
+        void manager_discoveredAreas_emptyForFreshPlayer() {
+            assertTrue(NetherwartIslandManager.getInstance().getDiscoveredAreas(PLAYER).isEmpty());
+        }
+
+        @Test
+        void manager_areaProgress_zeroForFreshPlayer() {
+            assertEquals(0.0, NetherwartIslandManager.getInstance().getAreaProgress(PLAYER));
+        }
+
+        @Test
+        void faction_allHaveDisplayName() {
+            for (Faction faction : Faction.values()) {
+                assertNotNull(faction.getDisplayName());
+            }
         }
     }
 }
