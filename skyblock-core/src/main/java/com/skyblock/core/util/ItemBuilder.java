@@ -1,5 +1,6 @@
 package com.skyblock.core.util;
 
+import com.skyblock.core.model.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -93,6 +94,23 @@ public class ItemBuilder {
             item.setItemMeta(meta);
         }
         return this;
+    }
+
+    /**
+     * Appends a Hypixel-style stat line to the lore, e.g. {@code Strength: +10 ❁}.
+     * The value is shown green when positive and red when negative.
+     */
+    public ItemBuilder stat(Stat stat, double value) {
+        if (stat == null) {
+            return this;
+        }
+        ChatColor color = value < 0 ? ChatColor.RED : ChatColor.GREEN;
+        String amount = (value == Math.floor(value) && !Double.isInfinite(value))
+                ? String.valueOf((long) value)
+                : String.valueOf(value);
+        String sign = value < 0 ? "" : "+";
+        return addLore(ChatColor.GRAY + stat.getDisplayName() + ": " + color + sign + amount
+                + " " + stat.getSymbol());
     }
 
     /** Sets the stack size. */
