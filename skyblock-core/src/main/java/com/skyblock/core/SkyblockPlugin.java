@@ -321,8 +321,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
-        getCommand("slayer").setExecutor(slayerCommand);
-        getCommand("slayer").setTabCompleter(slayerCommand);
+        com.skyblock.core.command.SlayerCommand slayerMenuCommand = new com.skyblock.core.command.SlayerCommand();
+        if (getCommand("slayer") != null) {
+            getCommand("slayer").setExecutor(slayerMenuCommand);
+        }
         fishingManager = FishingManager.getInstance();
         fishingManager.load(getDataFolder());
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
