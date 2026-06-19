@@ -58,6 +58,9 @@ import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.foraging.ForagingManager.TreeType;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.manager.AccessoryBagManager.SlotTier;
+import com.skyblock.core.manager.JacobManager;
+import com.skyblock.core.manager.GardenManager.GardenCrop;
+import com.skyblock.core.manager.GardenManager.ContestMedal;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.WardrobeManager.WardrobeSlot;
 import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
@@ -2162,6 +2165,77 @@ class MenuIntegrationTest {
         @Test
         void manager_powerStone_nullByDefault() {
             assertNull(AccessoryBagManager.getInstance().getSelectedPowerStone(PLAYER));
+        }
+    }
+
+    @Nested
+    class JacobsContestMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void cleanup() {
+            GardenManager.getInstance().reset(PLAYER);
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new JacobsContestMenu(PLAYER));
+        }
+
+        @Test
+        void title_isJacobsFarmingContest() {
+            assertEquals("§aJacob's Farming Contest", new JacobsContestMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isFour() {
+            assertEquals(4, new JacobsContestMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void summarySlot_isFour() {
+            assertEquals(4, JacobsContestMenu.SUMMARY_SLOT);
+        }
+
+        @Test
+        void manager_contestsParticipated_zeroForFreshPlayer() {
+            assertEquals(0, JacobManager.getInstance().getContestsParticipated(PLAYER));
+        }
+
+        @Test
+        void manager_totalMedals_zeroForFreshPlayer() {
+            assertEquals(0, JacobManager.getInstance().getTotalMedals(PLAYER));
+        }
+
+        @Test
+        void manager_bestCollection_zeroForFreshPlayer() {
+            assertEquals(0L, JacobManager.getInstance().getBestCollection(PLAYER, GardenCrop.WHEAT));
+        }
+
+        @Test
+        void manager_medalCount_bronzeZeroForFreshPlayer() {
+            assertEquals(0, JacobManager.getInstance().getMedalCount(PLAYER, ContestMedal.BRONZE));
+        }
+
+        @Test
+        void manager_medalCount_silverZeroForFreshPlayer() {
+            assertEquals(0, JacobManager.getInstance().getMedalCount(PLAYER, ContestMedal.SILVER));
+        }
+
+        @Test
+        void manager_medalCount_goldZeroForFreshPlayer() {
+            assertEquals(0, JacobManager.getInstance().getMedalCount(PLAYER, ContestMedal.GOLD));
+        }
+
+        @Test
+        void manager_isRegistered_falseForFreshPlayer() {
+            assertFalse(JacobManager.getInstance().isRegistered(PLAYER));
+        }
+
+        @Test
+        void manager_upcomingContests_returnsRequestedCount() {
+            assertEquals(3, JacobManager.getInstance().getUpcomingContests(3).size());
         }
     }
 

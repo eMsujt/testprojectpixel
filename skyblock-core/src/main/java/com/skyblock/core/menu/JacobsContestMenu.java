@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class JacobsContestMenu extends Menu {
 
-    private static final int SUMMARY_SLOT = 4;
+    static final int SUMMARY_SLOT = 4;
 
     private final UUID playerId;
 
