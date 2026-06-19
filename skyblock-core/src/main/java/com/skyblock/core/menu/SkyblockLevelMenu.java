@@ -28,7 +28,7 @@ public final class SkyblockLevelMenu extends Menu {
     private static final Material[] CATEGORY_ICONS = {
             Material.DIAMOND_SWORD,   // SKILL
             Material.GOLDEN_SWORD,    // SLAYER
-            Material.WOODEN_DOOR,     // DUNGEON
+            Material.OAK_DOOR,        // DUNGEON
             Material.CAKE,            // EVENT
             Material.GOLD_BLOCK,      // MUSEUM
             Material.PAPER,           // MISC
