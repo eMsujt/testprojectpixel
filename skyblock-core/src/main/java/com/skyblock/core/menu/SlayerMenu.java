@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.SlayerManager.SlayerBoss;
 import com.skyblock.core.manager.SlayerManager.SlayerType;
-import com.skyblock.core.util.MenuUtil;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -50,7 +50,7 @@ public final class SlayerMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
@@ -68,7 +68,7 @@ public final class SlayerMenu extends Menu {
             int[] data = SlayerManager.SLAYER_BOSS_DATA.get(type.name());
             int maxLevel = data != null ? data[0] : SlayerManager.MAX_LEVEL;
 
-            setItem(BOSS_SLOTS[i], MenuUtil.buildItem(HEAD_ICONS.get(type),
+            setItem(BOSS_SLOTS[i], SkyblockUtils.buildItem(HEAD_ICONS.get(type),
                     "§c" + boss.getDisplayName(),
                     "§7Type: §e" + type.getDisplayName(),
                     "§7Level: §e" + level + "§7/§e" + maxLevel,
@@ -76,7 +76,7 @@ public final class SlayerMenu extends Menu {
                     "§7Bosses slain: §e" + kills));
         }
 
-        setItem(SUMMARY_SLOT, MenuUtil.buildItem(Material.DIAMOND_SWORD,
+        setItem(SUMMARY_SLOT, SkyblockUtils.buildItem(Material.DIAMOND_SWORD,
                 "§cSlayer Overview",
                 "§7Defeat slayer bosses to earn",
                 "§7slayer XP and rare drops."));

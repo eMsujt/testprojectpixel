@@ -2,7 +2,6 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarOrder;
-import com.skyblock.core.util.MenuUtil;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -37,14 +36,14 @@ public final class BazaarMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = MenuUtil.buildItem(Material.CYAN_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.CYAN_STAINED_GLASS_PANE, "§r");
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         List<BazaarOrder> orders = BazaarManager.getInstance().getOrdersForPlayer(player);
 
         for (int i = 0; i < orders.size() && i < ORDER_SLOTS.length; i++) {
             BazaarOrder order = orders.get(i);
-            setItem(ORDER_SLOTS[i], MenuUtil.buildItem(Material.PAPER,
+            setItem(ORDER_SLOTS[i], SkyblockUtils.buildItem(Material.PAPER,
                     "§e" + order.type().getDisplayName(),
                     "§7Item: §f" + order.itemId(),
                     "§7Quantity: §e" + order.quantity(),
@@ -52,7 +51,7 @@ public final class BazaarMenu extends Menu {
         }
 
         if (orders.isEmpty()) {
-            setItem(22, MenuUtil.buildItem(Material.BARRIER,
+            setItem(22, SkyblockUtils.buildItem(Material.BARRIER,
                     "§cNo Orders",
                     "§7You have no standing bazaar orders."));
         }

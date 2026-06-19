@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.coop.CoopManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.EconomyManager;
-import com.skyblock.core.util.MenuUtil;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -68,7 +68,7 @@ public final class BankMenu extends Menu {
 
         inventory = org.bukkit.Bukkit.createInventory(this, 27, "§6Bank Account");
 
-        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 27; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 18 || col == 0 || col == 8) {
@@ -80,7 +80,7 @@ public final class BankMenu extends Menu {
         String coopKey = coopOwner != null ? coopOwner.toString() : null;
 
         // Tabs.
-        inventory.setItem(PERSONAL_TAB_SLOT, MenuUtil.buildItem(Material.GOLD_BLOCK,
+        inventory.setItem(PERSONAL_TAB_SLOT, SkyblockUtils.buildItem(Material.GOLD_BLOCK,
                 (showingCoop ? "§7" : "§6") + "Personal Bank",
                 showingCoop ? "§7Click to view." : "§eViewing."));
         handlers.put(PERSONAL_TAB_SLOT, e -> {
@@ -90,7 +90,7 @@ public final class BankMenu extends Menu {
             }
         });
 
-        inventory.setItem(COOP_TAB_SLOT, MenuUtil.buildItem(Material.EMERALD_BLOCK,
+        inventory.setItem(COOP_TAB_SLOT, SkyblockUtils.buildItem(Material.EMERALD_BLOCK,
                 (showingCoop ? "§6" : "§7") + "Co-op Bank",
                 showingCoop ? "§eViewing." : "§7Click to view."));
         handlers.put(COOP_TAB_SLOT, e -> {
@@ -105,15 +105,15 @@ public final class BankMenu extends Menu {
                 ? (coopKey != null ? bank.getCoopBalance(coopKey) : 0.0)
                 : bank.getBalance(playerId);
 
-        inventory.setItem(PURSE_SLOT, MenuUtil.buildItem(Material.GOLD_NUGGET,
+        inventory.setItem(PURSE_SLOT, SkyblockUtils.buildItem(Material.GOLD_NUGGET,
                 "§6Purse",
                 "§7Balance: §6" + String.format("%,.0f", (double) purse) + " Coins"));
 
-        inventory.setItem(BALANCE_SLOT, MenuUtil.buildItem(Material.GOLD_INGOT,
+        inventory.setItem(BALANCE_SLOT, SkyblockUtils.buildItem(Material.GOLD_INGOT,
                 showingCoop ? "§6Co-op Bank" : "§6Personal Bank",
                 "§7Balance: §6" + String.format("%,.0f", balance) + " Coins"));
 
-        inventory.setItem(DEPOSIT_SLOT, MenuUtil.buildItem(Material.EMERALD,
+        inventory.setItem(DEPOSIT_SLOT, SkyblockUtils.buildItem(Material.EMERALD,
                 "§aDeposit All",
                 "§7Move all purse coins into the bank."));
         handlers.put(DEPOSIT_SLOT, e -> {
@@ -134,7 +134,7 @@ public final class BankMenu extends Menu {
             }
         });
 
-        inventory.setItem(WITHDRAW_SLOT, MenuUtil.buildItem(Material.DROPPER,
+        inventory.setItem(WITHDRAW_SLOT, SkyblockUtils.buildItem(Material.DROPPER,
                 "§eWithdraw All",
                 "§7Move all bank coins to your purse."));
         handlers.put(WITHDRAW_SLOT, e -> {
@@ -155,7 +155,7 @@ public final class BankMenu extends Menu {
             }
         });
 
-        inventory.setItem(CLOSE_SLOT, MenuUtil.buildItem(Material.BARRIER,
+        inventory.setItem(CLOSE_SLOT, SkyblockUtils.buildItem(Material.BARRIER,
                 "§cClose",
                 "§7Close the bank."));
         handlers.put(CLOSE_SLOT, e -> player.closeInventory());

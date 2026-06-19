@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.manager.MinionManager.MinionData;
-import com.skyblock.core.util.MenuUtil;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -53,7 +53,7 @@ public final class MinionMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         setItem(9, pane);
@@ -75,24 +75,24 @@ public final class MinionMenu extends Menu {
                 MinionData data = manager.getMinion(minionIds.get(i));
                 if (data != null) {
                     Material mat = TERRACOTTA_COLORS[data.type.ordinal() % TERRACOTTA_COLORS.length];
-                    setItem(slot, MenuUtil.buildItem(mat,
+                    setItem(slot, SkyblockUtils.buildItem(mat,
                             "§a" + data.type.getDisplayName(),
                             "§7Tier: §e" + (data.getTier().ordinal() + 1),
                             "§7Stored: §f" + data.getStoredResources(),
                             "§7Fuel: §f" + data.getFuel().name().replace('_', ' ')));
                 }
             } else if (i < maxSlots) {
-                setItem(slot, MenuUtil.buildItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE,
+                setItem(slot, SkyblockUtils.buildItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE,
                         "§7Empty Minion Slot",
                         "§7Place a minion to fill this slot."));
             } else {
-                setItem(slot, MenuUtil.buildItem(Material.RED_STAINED_GLASS_PANE,
+                setItem(slot, SkyblockUtils.buildItem(Material.RED_STAINED_GLASS_PANE,
                         "§cLocked Slot",
                         "§7Upgrade your island to unlock more slots."));
             }
         }
 
-        setItem(53, MenuUtil.buildItem(Material.PAPER,
+        setItem(53, SkyblockUtils.buildItem(Material.PAPER,
                 "§fMinion Slots",
                 "§7Used: §e" + minionIds.size() + " §7/ §e" + maxSlots));
     }

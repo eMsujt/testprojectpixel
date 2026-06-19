@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.WardrobeManager.WardrobeSlot;
-import com.skyblock.core.util.MenuUtil;
+import com.skyblock.core.util.SkyblockUtils;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -53,7 +53,7 @@ public final class WardrobeMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
 
@@ -65,7 +65,7 @@ public final class WardrobeMenu extends Menu {
             int invSlot = FIRST_SLOT + i;
 
             if (!manager.isSlotUnlocked(playerId, ws)) {
-                setItem(invSlot, MenuUtil.buildItem(Material.GRAY_DYE,
+                setItem(invSlot, SkyblockUtils.buildItem(Material.GRAY_DYE,
                         "§7" + ws.getDisplayName(),
                         "§cLocked"));
                 continue;
