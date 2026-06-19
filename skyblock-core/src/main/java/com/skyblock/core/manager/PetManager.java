@@ -1,6 +1,7 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Rarity;
+import com.skyblock.core.model.Stat;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -127,11 +128,14 @@ public final class PetManager {
         private final String displayName;
         /** The skill category this pet belongs to. */
         public final PetCategory category;
+        /** The primary stat this pet grants, scaling with its level. */
+        public final PetStatBonus statBonus;
 
         PetType(Rarity defaultRarity, String displayName, PetCategory category) {
             this.defaultRarity = defaultRarity;
             this.displayName = displayName;
             this.category = category;
+            this.statBonus = statBonusFor(category);
         }
 
         public String getDisplayName() {
@@ -141,6 +145,27 @@ public final class PetManager {
         public PetCategory getCategory() {
             return category;
         }
+
+        /** Returns this pet's primary stat bonus, granted in proportion to its level. */
+        public PetStatBonus getStatBonus() {
+            return statBonus;
+        }
+    }
+
+    /** A pet's primary stat bonus: a {@link Stat} granted at {@code bonusPerLevel} per pet level. */
+    public record PetStatBonus(Stat stat, double bonusPerLevel) {
+    }
+
+    /** Maps a pet's skill category to the primary stat its level grants. */
+    private static PetStatBonus statBonusFor(PetCategory category) {
+        return switch (category) {
+            case COMBAT -> new PetStatBonus(Stat.STRENGTH, 0.5);
+            case MINING -> new PetStatBonus(Stat.MINING_SPEED, 0.5);
+            case FARMING -> new PetStatBonus(Stat.FARMING_FORTUNE, 0.5);
+            case FISHING -> new PetStatBonus(Stat.SEA_CREATURE_CHANCE, 0.25);
+            case FORAGING -> new PetStatBonus(Stat.FORAGING_FORTUNE, 0.5);
+            case ALCHEMY -> new PetStatBonus(Stat.INTELLIGENCE, 1.0);
+        };
     }
 
     /** The highest level a pet can reach. */
@@ -746,6 +771,21 @@ public final class PetManager {
         }
         int[] held = getHeldItemBonus(playerId, petId);
         return new int[]{speed + held[0], strength + held[1], health + held[2]};
+    }
+
+    /**
+     * Returns the primary stat bonus the player's active pet grants at its current level,
+     * or {@code 0} if the player has no active pet. The bonus is
+     * {@code statBonus.bonusPerLevel() * level} of {@link PetType#statBonus}.
+     */
+    public double getActivePetStatBonus(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Pet pet = getActivePet(playerId);
+        if (pet == null) {
+            return 0.0;
+        }
+        int level = computeLevel(getExperience(playerId, pet.type), pet.rarity);
+        return pet.type.statBonus.bonusPerLevel() * level;
     }
 
     public void recordPetEvent(UUID playerId, String summary) {
