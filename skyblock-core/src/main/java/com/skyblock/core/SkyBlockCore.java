@@ -21,7 +21,6 @@ import com.skyblock.core.manager.EssenceManager;
 import com.skyblock.core.dungeon.command.DungeonCommand;
 import com.skyblock.core.dungeon.command.DungeonClassCommand;
 import com.skyblock.core.manager.DungeonManager;
-import com.skyblock.core.manager.DungeonsManager;
 import com.skyblock.core.manager.DungeonClassManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.manager.EnchantingManager;
@@ -180,7 +179,6 @@ public final class SkyBlockCore extends JavaPlugin {
     private EssenceShopManager essenceShopManager;
     private DungeonManager dungeonManager;
     private DungeonClassManager dungeonClassManager;
-    private DungeonsManager dungeonsManager;
     private PetManager petManager;
     private HeartOfTheMountainManager hotmManager;
     private HotmManager hotmPerkManager;
@@ -271,7 +269,6 @@ public final class SkyBlockCore extends JavaPlugin {
         dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
         dungeonClassManager = DungeonClassManager.getInstance();
-        dungeonsManager = DungeonsManager.getInstance();
         petManager = PetManager.getInstance();
         petManager.load(getDataFolder());
         hotmManager = HeartOfTheMountainManager.getInstance();
