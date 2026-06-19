@@ -145,6 +145,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private SlayerManager slayerManager;
     private BazaarManager bazaarManager;
     private DungeonManager dungeonManager;
+    private EssenceManager essenceManager;
     private SackManager sackManager;
 
     public static SkyblockPlugin getInstance() {
@@ -190,7 +191,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("museum").setExecutor(museumCommand);
             getCommand("museum").setTabCompleter(museumCommand);
         }
-        EssenceManager essenceManager = EssenceManager.getInstance();
+        essenceManager = EssenceManager.getInstance();
         EssenceCommand essenceCommand = new EssenceCommand(essenceManager);
         if (getCommand("essence") != null) {
             getCommand("essence").setExecutor(essenceCommand);
