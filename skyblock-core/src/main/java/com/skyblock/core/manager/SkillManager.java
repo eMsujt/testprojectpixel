@@ -249,6 +249,28 @@ public final class SkillManager {
     // Level-up stat rewards
     // -------------------------------------------------------------------------
 
+    /**
+     * Returns the total passive stat bonuses this player has earned from all skill levels,
+     * keyed by {@link Stat} name (e.g. {@code "HEALTH"}, {@code "DEFENSE"}).
+     */
+    public Map<String, Double> getStatBonuses(UUID playerId) {
+        Map<String, Double> bonuses = new HashMap<>();
+        for (Skill skill : Skill.values()) {
+            Stat stat = SKILL_STAT.get(skill.key());
+            Map<Integer, Double> rewards = LEVEL_REWARDS.get(skill.key());
+            if (stat == null || rewards == null) continue;
+            int level = getLevel(playerId, skill);
+            if (level <= 0) continue;
+            double total = 0;
+            for (int lvl = 1; lvl <= level; lvl++) {
+                Double amount = rewards.get(lvl);
+                if (amount != null) total += amount;
+            }
+            bonuses.merge(stat.name(), total, Double::sum);
+        }
+        return bonuses;
+    }
+
     /** Grants accumulated stat bonuses for all levels gained between {@code fromLevel} and {@code toLevel}. */
     public void grantLevelUpRewards(UUID playerId, Skill skill, int fromLevel, int toLevel) {
         if (playerId == null || skill == null || toLevel <= fromLevel) return;
