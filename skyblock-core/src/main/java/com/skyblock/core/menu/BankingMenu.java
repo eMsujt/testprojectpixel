@@ -19,9 +19,9 @@ public final class BankingMenu extends Menu {
 
     private final UUID playerId;
 
-    public BankingMenu(Player player) {
+    public BankingMenu(UUID playerId) {
         super("§6Banking", 6);
-        this.playerId = player.getUniqueId();
+        this.playerId = playerId;
     }
 
     @Override

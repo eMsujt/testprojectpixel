@@ -10,6 +10,6 @@ public final class BankingCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new BankingMenu(p).open(p);
+        new BankingMenu(p.getUniqueId()).open(p);
     }
 }
