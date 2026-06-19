@@ -10,10 +10,88 @@ import java.util.UUID;
 /**
  * Canonical singleton for per-player SkyBlock enchantment tracking.
  *
- * <p>Delegates all state to {@link EnchantingManager}. Use
- * {@link EnchantingManager.SkyBlockEnchantment} as the enchant type.</p>
+ * <p>Delegates all state to {@link EnchantingManager}. Prefer
+ * {@link SkyBlockEnchant} over the internal {@link EnchantingManager.SkyBlockEnchantment}
+ * when calling through this class.</p>
  */
 public final class EnchantmentManager {
+
+    /** Every SkyBlock enchant with its maximum level. */
+    public enum SkyBlockEnchant {
+        // Combat
+        SHARPNESS(7),
+        CRITICAL(7),
+        SMITE(7),
+        BANE_OF_ARTHROPODS(7),
+        FIRST_STRIKE(4),
+        GIANT_KILLER(7),
+        ENDER_SLAYER(7),
+        DRAGON_HUNTER(5),
+        THUNDERLORD(7),
+        VAMPIRISM(6),
+        LIFE_STEAL(5),
+        LETHALITY(6),
+        EXECUTE(5),
+        PROSECUTE(5),
+        OVERLOAD(5),
+        // Utility / Special
+        TELEKINESIS(1),
+        LOOTING(4),
+        SMELTING_TOUCH(1),
+        MAGNET(1),
+        SILK_TOUCH(1),
+        // Fishing
+        LUCK_OF_THE_SEA(7),
+        ANGLER(6),
+        FRAIL(5),
+        EXPERTISE(10),
+        // Farming
+        CULTIVATING(10),
+        GREEN_THUMB(5),
+        DEDICATION(4),
+        REPLENISH(1),
+        HARVESTING(6),
+        TURBO_WHEAT(5),
+        TURBO_COCO(5),
+        TURBO_CACTUS(5),
+        TURBO_MELON(5),
+        TURBO_PUMPKIN(5),
+        TURBO_WARTS(5),
+        TURBO_MUSHROOMS(5),
+        TURBO_POTATO(5),
+        TURBO_CARROT(5),
+        TURBO_SUGAR_CANE(5),
+        // Mining / Tool
+        EFFICIENCY(5),
+        FORTUNE(4),
+        // Armor
+        PROTECTION(7),
+        THORNS(3),
+        GROWTH(7),
+        FEATHER_FALLING(7),
+        SUGAR_RUSH(3),
+        REJUVENATE(5),
+        // Misc
+        LUCK(7),
+        CHANCE(5),
+        ULTIMATE_WISE(5),
+        // Dungeon / Extra
+        SHREDDER(5),
+        SCAVENGER(4),
+        SOUL_EATER(5),
+        VENOMOUS(5),
+        VICIOUS(5);
+
+        private final int maxLevel;
+
+        SkyBlockEnchant(int maxLevel) {
+            this.maxLevel = maxLevel;
+        }
+
+        public int getMaxLevel() {
+            return maxLevel;
+        }
+    }
 
     private static final EnchantmentManager INSTANCE = new EnchantmentManager();
     private final EnchantingManager delegate = EnchantingManager.getInstance();
