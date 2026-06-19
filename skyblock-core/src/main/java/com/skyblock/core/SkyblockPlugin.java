@@ -107,7 +107,7 @@ import com.skyblock.core.mailbox.MailboxCommand;
 import com.skyblock.core.mailbox.MailboxManager;
 import com.skyblock.core.friend.FriendCommand;
 import com.skyblock.core.friend.FriendManager;
-import com.skyblock.core.forge.ForgeCommand;
+import com.skyblock.core.command.ForgeCommand;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
@@ -479,7 +479,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("mail").setExecutor(mailCommand);
             getCommand("mail").setTabCompleter(mailCommand);
         }
-        ForgeCommand forgeCommand = new ForgeCommand(forgeManager);
+        ForgeCommand forgeCommand = new ForgeCommand();
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
         CalendarCommand calendarCommand = new CalendarCommand(calendarManager);
