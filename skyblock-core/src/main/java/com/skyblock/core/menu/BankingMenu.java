@@ -13,14 +13,16 @@ import java.util.UUID;
 /**
  * 54-slot Bank overview menu opened by {@code /bank} with no arguments.
  *
- * <p>Slot 13 shows personal balance as a gold-block item; slot 31 shows
- * co-op bank info as a yellow-terracotta item. Top and bottom rows are
- * gray-pane borders.</p>
+ * <p>Slot 11 is a gold-block "Deposit" button showing the player's purse
+ * balance; slot 13 shows the personal bank balance as a gold-ingot item;
+ * slot 15 is a chest "Withdraw" button. Top and bottom rows are gray-pane
+ * borders.</p>
  */
 public final class BankingMenu extends Menu {
 
-    static final int PERSONAL_SLOT = 13;
-    static final int COOP_SLOT = 31;
+    static final int DEPOSIT_SLOT = 11;
+    static final int BALANCE_SLOT = 13;
+    static final int WITHDRAW_SLOT = 15;
 
     private final UUID playerId;
 
@@ -37,10 +39,18 @@ public final class BankingMenu extends Menu {
 
         BankManager manager = BankManager.getInstance();
         double balance = manager.getBalance(playerId);
+        long purse = manager.getPurseBalance(playerId);
         BankTier tier = manager.getTier(playerId);
         BankType type = manager.getBankType(playerId);
 
-        setItem(PERSONAL_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
+        setItem(DEPOSIT_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
+                .displayName("§aDeposit")
+                .lore(
+                        "§7Purse: §6" + purse + " coins",
+                        "§7Click to deposit coins into your bank.")
+                .build());
+
+        setItem(BALANCE_SLOT, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Personal Bank")
                 .lore(
                         "§7Balance: §6" + String.format("%.2f", balance) + " coins",
@@ -49,11 +59,11 @@ public final class BankingMenu extends Menu {
                         "§7Type: §b" + type.getDisplayName())
                 .build());
 
-        setItem(COOP_SLOT, new ItemBuilder(Material.YELLOW_TERRACOTTA)
-                .displayName("§eCo-op Bank")
+        setItem(WITHDRAW_SLOT, new ItemBuilder(Material.CHEST)
+                .displayName("§cWithdraw")
                 .lore(
-                        "§7Use §f/bank coop balance <name>",
-                        "§7to check a co-op bank balance.")
+                        "§7Balance: §6" + String.format("%.2f", balance) + " coins",
+                        "§7Click to withdraw coins into your purse.")
                 .build());
     }
 
