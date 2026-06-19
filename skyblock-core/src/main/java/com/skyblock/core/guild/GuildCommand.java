@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public final class GuildCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList(
-            "create", "invite", "accept", "decline", "kick", "leave", "disband", "info", "rank", "xp"
+            "create", "invite", "accept", "decline", "kick", "leave", "disband", "info", "rank", "xp", "bank"
     );
 
     private final GuildManager guildManager;
@@ -63,6 +63,7 @@ public final class GuildCommand implements TabExecutor {
             case "info"    -> handleInfo(player);
             case "rank"    -> handleRank(player, args);
             case "xp"      -> handleXp(player, args);
+            case "bank"    -> handleBank(player, args);
             default        -> sendHelp(player);
         }
         return true;
@@ -80,6 +81,11 @@ public final class GuildCommand implements TabExecutor {
             String sub = args[0].toLowerCase();
             if (sub.equals("xp")) {
                 return Collections.singletonList("add").stream()
+                        .filter(s -> s.startsWith(args[1].toLowerCase()))
+                        .collect(Collectors.toList());
+            }
+            if (sub.equals("bank")) {
+                return Arrays.asList("deposit", "withdraw").stream()
                         .filter(s -> s.startsWith(args[1].toLowerCase()))
                         .collect(Collectors.toList());
             }
@@ -282,6 +288,46 @@ public final class GuildCommand implements TabExecutor {
         }
     }
 
+    private void handleBank(Player player, String[] args) {
+        GuildManager.Guild guild = guildManager.getGuild(player.getUniqueId());
+        if (guild == null) {
+            player.sendMessage("You are not in a guild.");
+            return;
+        }
+        if (args.length < 2) {
+            player.sendMessage("Guild '" + guild.name() + "' bank balance: " + guildManager.getBankBalance(guild.name()));
+            return;
+        }
+        String action = args[1].toLowerCase();
+        if (!action.equals("deposit") && !action.equals("withdraw")) {
+            player.sendMessage("Usage: /guild bank [deposit|withdraw <amount>]");
+            return;
+        }
+        if (args.length < 3) {
+            player.sendMessage("Usage: /guild bank " + action + " <amount>");
+            return;
+        }
+        long amount;
+        try {
+            amount = Long.parseLong(args[2]);
+            if (amount <= 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            player.sendMessage("Invalid amount: " + args[2]);
+            return;
+        }
+        try {
+            if (action.equals("deposit")) {
+                guildManager.depositBank(guild.name(), amount);
+                player.sendMessage("Deposited " + amount + " into the guild bank. Balance: " + guildManager.getBankBalance(guild.name()));
+            } else {
+                guildManager.withdrawBank(guild.name(), amount);
+                player.sendMessage("Withdrew " + amount + " from the guild bank. Balance: " + guildManager.getBankBalance(guild.name()));
+            }
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            player.sendMessage(e.getMessage());
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Guild Commands ===");
         player.sendMessage("/guild create <name>   — create a guild");
@@ -294,5 +340,6 @@ public final class GuildCommand implements TabExecutor {
         player.sendMessage("/guild info            — show guild info");
         player.sendMessage("/guild rank <player> <rank> — set a member's rank (leader only)");
         player.sendMessage("/guild xp [add <amount>]  — view or add guild XP");
+        player.sendMessage("/guild bank [deposit|withdraw <amount>] — view or manage the guild bank");
     }
 }

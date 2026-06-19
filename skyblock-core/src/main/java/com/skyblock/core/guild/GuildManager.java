@@ -37,6 +37,9 @@ public final class GuildManager {
     /** Per-guild XP, keyed by lower-cased guild name. */
     private final Map<String, Long> guildXp = new HashMap<>();
 
+    /** Shared guild bank balance, keyed by lower-cased guild name. */
+    private final Map<String, Long> guildBank = new HashMap<>();
+
     private GuildManager() {}
 
     public static GuildManager getInstance() {
@@ -92,6 +95,7 @@ public final class GuildManager {
         String key = guild.name().toLowerCase();
         guildByName.remove(key);
         guildXp.remove(key);
+        guildBank.remove(key);
         guildByMember.remove(leader);
         for (UUID member : guild.members()) {
             guildByMember.remove(member);
@@ -348,6 +352,60 @@ public final class GuildManager {
     }
 
     // -------------------------------------------------------------------------
+    // Bank operations
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns the shared bank balance of the named guild, or 0 if not found.
+     *
+     * @param guildName the guild name (case-insensitive)
+     * @return the guild's bank balance
+     */
+    public long getBankBalance(String guildName) {
+        Objects.requireNonNull(guildName, "guildName");
+        return guildBank.getOrDefault(guildName.toLowerCase(), 0L);
+    }
+
+    /**
+     * Deposits {@code amount} into the named guild's shared bank.
+     *
+     * @param guildName the guild name (case-insensitive)
+     * @param amount    the amount to deposit (must be > 0)
+     * @throws IllegalArgumentException if {@code amount} is not positive or the guild does not exist
+     */
+    public void depositBank(String guildName, long amount) {
+        Objects.requireNonNull(guildName, "guildName");
+        if (amount <= 0) throw new IllegalArgumentException("amount must be > 0, got " + amount);
+        String key = guildName.toLowerCase();
+        if (!guildByName.containsKey(key)) {
+            throw new IllegalArgumentException("No guild named '" + guildName + "'.");
+        }
+        guildBank.merge(key, amount, Long::sum);
+    }
+
+    /**
+     * Withdraws {@code amount} from the named guild's shared bank.
+     *
+     * @param guildName the guild name (case-insensitive)
+     * @param amount    the amount to withdraw (must be > 0)
+     * @throws IllegalArgumentException if {@code amount} is not positive or the guild does not exist
+     * @throws IllegalStateException    if the guild's balance is insufficient
+     */
+    public void withdrawBank(String guildName, long amount) {
+        Objects.requireNonNull(guildName, "guildName");
+        if (amount <= 0) throw new IllegalArgumentException("amount must be > 0, got " + amount);
+        String key = guildName.toLowerCase();
+        if (!guildByName.containsKey(key)) {
+            throw new IllegalArgumentException("No guild named '" + guildName + "'.");
+        }
+        long balance = guildBank.getOrDefault(key, 0L);
+        if (balance < amount) {
+            throw new IllegalStateException("Insufficient guild bank balance (have " + balance + ", need " + amount + ").");
+        }
+        guildBank.put(key, balance - amount);
+    }
+
+    // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
 
@@ -360,11 +418,13 @@ public final class GuildManager {
         guildByName.clear();
         guildByMember.clear();
         guildXp.clear();
+        guildBank.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 String name = cfg.getString(key + ".name", key);
                 UUID leader = UUID.fromString(cfg.getString(key + ".leader", ""));
                 long xp = cfg.getLong(key + ".xp", 0L);
+                long bank = cfg.getLong(key + ".bank", 0L);
                 Set<UUID> members = new HashSet<>();
                 Map<UUID, GuildRank> ranks = new HashMap<>();
                 ranks.put(leader, GuildRank.GUILD_MASTER);
@@ -392,6 +452,7 @@ public final class GuildManager {
                     guildByMember.put(memberId, guild);
                 }
                 guildXp.put(key, xp);
+                guildBank.put(key, bank);
             } catch (IllegalArgumentException ignored) {
                 // skip malformed guild entries
             }
@@ -407,6 +468,7 @@ public final class GuildManager {
             cfg.set(key + ".name", guild.name());
             cfg.set(key + ".leader", guild.leader().toString());
             cfg.set(key + ".xp", guildXp.getOrDefault(key, 0L));
+            cfg.set(key + ".bank", guildBank.getOrDefault(key, 0L));
             List<String> memberStrings = new ArrayList<>();
             for (UUID memberId : guild.members()) {
                 memberStrings.add(memberId.toString());
