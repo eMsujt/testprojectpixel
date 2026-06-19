@@ -1685,8 +1685,13 @@ class MenuIntegrationTest {
         }
 
         @Test
-        void constant_xpPerCatch_isTen() {
-            assertEquals(10.0, FishingManager.XP_PER_CATCH, 0.0001);
+        void constant_xpPerCatch_isSix() {
+            assertEquals(6, FishingManager.XP_PER_CATCH);
+        }
+
+        @Test
+        void constant_xpTreasure_isFifteen() {
+            assertEquals(15, FishingManager.XP_TREASURE);
         }
 
         @Test

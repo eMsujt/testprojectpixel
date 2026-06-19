@@ -287,7 +287,9 @@ public final class FishingManager {
 
     private static final int MAX_LEVEL = 50;
     /** Base XP awarded per successful catch. */
-    public static final double XP_PER_CATCH = 10.0;
+    public static final int XP_PER_CATCH = 6;
+    /** Bonus XP awarded when a treasure item is reeled in. */
+    public static final int XP_TREASURE = 15;
 
     private static final FishingManager INSTANCE = new FishingManager();
 
