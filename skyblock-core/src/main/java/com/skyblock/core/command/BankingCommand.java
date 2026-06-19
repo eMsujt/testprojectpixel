@@ -2,17 +2,13 @@ package com.skyblock.core.command;
 
 import com.skyblock.core.menu.BankingMenu;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public final class BankingCommand extends BaseCommand {
+public final class BankingCommand extends PlayerCommand {
 
     @Override
-    protected void execute(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return;
-        }
+    protected boolean execute(Player player, Command command, String label, String[] args) {
         new BankingMenu(player.getUniqueId()).open(player);
+        return true;
     }
 }
