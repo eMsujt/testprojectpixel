@@ -4,6 +4,9 @@ import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.BestiaryManager.BestiaryCategory;
 import com.skyblock.core.manager.BestiaryManager.BestiaryFamily;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.manager.EssenceManager.EssenceShopPerk;
+import com.skyblock.core.manager.EssenceShopManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.manager.MayorManager.MayorCandidate;
@@ -16,11 +19,16 @@ import com.skyblock.core.manager.RiftManager;
 import com.skyblock.core.manager.RiftManager.RiftData;
 import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.manager.PetManager.PetType;
+import com.skyblock.core.manager.SkyblockLevelManager;
+import com.skyblock.core.manager.SkyblockLevelManager.Category;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.WardrobeManager.WardrobeSlot;
+import com.skyblock.core.model.Collection;
+import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.model.Stat;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -30,6 +38,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Grouped integration tests for every {@code com.skyblock.core.menu} GUI, consolidated
@@ -743,6 +752,186 @@ class MenuIntegrationTest {
             RiftData data = RiftManager.getInstance().getRiftData(PLAYER);
             assertEquals(0L, data.motes);
             assertEquals(0, data.enigmaSouls);
+        }
+    }
+
+    @Nested
+    class CollectionsMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void cleanup() {
+            CollectionManager.getInstance().reset(PLAYER);
+        }
+
+        @Test
+        void title_isCollections() {
+            assertEquals("§6Collections", new CollectionsMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new CollectionsMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new CollectionsMenu(PLAYER));
+        }
+
+        @Test
+        void manager_maxTier_isNine() {
+            assertEquals(9, CollectionManager.MAX_TIER);
+        }
+
+        @Test
+        void manager_getTotalForCategory_zeroOnFreshPlayer() {
+            assertEquals(0L, CollectionManager.getInstance()
+                    .getTotalForCategory(PLAYER, CollectionCategory.FARMING));
+        }
+
+        @Test
+        void manager_addAndGetItems_roundTrips() {
+            CollectionManager mgr = CollectionManager.getInstance();
+            mgr.addItems(PLAYER, Collection.WHEAT, 100L);
+            assertEquals(100L, mgr.getItems(PLAYER, Collection.WHEAT));
+        }
+
+        @Test
+        void manager_getTier_zeroOnNoItems() {
+            assertEquals(0, CollectionManager.getInstance().getTier(PLAYER, Collection.WHEAT));
+        }
+
+        @Test
+        void manager_getTier_advancesAfterThreshold() {
+            CollectionManager mgr = CollectionManager.getInstance();
+            mgr.addItems(PLAYER, Collection.WHEAT, 50L);
+            assertEquals(1, mgr.getTier(PLAYER, Collection.WHEAT));
+        }
+
+        @Test
+        void manager_getTotalForCategory_sumsCategoryCollections() {
+            CollectionManager mgr = CollectionManager.getInstance();
+            mgr.addItems(PLAYER, Collection.WHEAT, 10L);
+            mgr.addItems(PLAYER, Collection.CARROT, 5L);
+            assertEquals(15L, mgr.getTotalForCategory(PLAYER, CollectionCategory.FARMING));
+        }
+    }
+
+    @Nested
+    class EssenceShopMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isEssenceShop() {
+            assertEquals("§5Essence Shop", new EssenceShopMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new EssenceShopMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new EssenceShopMenu(PLAYER));
+        }
+
+        @Test
+        void manager_availablePerks_notEmpty() {
+            EssenceShopPerk[] perks = EssenceShopManager.getInstance().getAvailablePerks();
+            assertTrue(perks.length > 0);
+        }
+
+        @Test
+        void manager_perkLevel_zeroForFreshPlayer() {
+            assertEquals(0, EssenceShopManager.getInstance()
+                    .getPerkLevel(PLAYER, EssenceShopPerk.HEALTH));
+        }
+
+        @Test
+        void manager_canAfford_falseWithNoEssence() {
+            assertFalse(EssenceShopManager.getInstance()
+                    .canAfford(PLAYER, EssenceShopPerk.HEALTH));
+        }
+
+        @Test
+        void manager_purchasePerk_failsWithNoEssence() {
+            assertFalse(EssenceShopManager.getInstance()
+                    .purchasePerk(PLAYER, EssenceShopPerk.HEALTH));
+        }
+
+        @Test
+        void perk_maxLevel_positiveForAllPerks() {
+            for (EssenceShopPerk perk : EssenceShopPerk.values()) {
+                assertTrue(perk.getMaxLevel() > 0,
+                        perk.getDisplayName() + " must have a positive max level");
+            }
+        }
+    }
+
+    @Nested
+    class SkyblockLevelMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void cleanup() {
+            SkyblockLevelManager.getInstance().remove(PLAYER);
+        }
+
+        @Test
+        void title_isSkyBlockLevel() {
+            Player mockPlayer = mock(Player.class);
+            assertEquals("§aSkyBlock Level", new SkyblockLevelMenu(mockPlayer).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            Player mockPlayer = mock(Player.class);
+            assertEquals(6, new SkyblockLevelMenu(mockPlayer).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            Player mockPlayer = mock(Player.class);
+            assertDoesNotThrow(() -> new SkyblockLevelMenu(mockPlayer));
+        }
+
+        @Test
+        void manager_maxLevel_isFifty() {
+            assertEquals(50, SkyblockLevelManager.MAX_LEVEL);
+        }
+
+        @Test
+        void manager_getXP_zeroForFreshPlayer() {
+            assertEquals(0L, SkyblockLevelManager.getInstance().getXP(PLAYER));
+        }
+
+        @Test
+        void manager_getLevel_oneForZeroXP() {
+            assertEquals(1, SkyblockLevelManager.getInstance().getLevel(PLAYER));
+        }
+
+        @Test
+        void manager_addXP_roundTrips() {
+            SkyblockLevelManager mgr = SkyblockLevelManager.getInstance();
+            mgr.addXP(PLAYER, 500L);
+            assertEquals(500L, mgr.getXP(PLAYER));
+        }
+
+        @Test
+        void manager_addCategoryXP_tracksCategory() {
+            SkyblockLevelManager mgr = SkyblockLevelManager.getInstance();
+            mgr.addXP(PLAYER, Category.SKILL, 200L);
+            assertEquals(200L, mgr.getCategoryXP(PLAYER, Category.SKILL));
+        }
+
+        @Test
+        void manager_xpToNextLevel_fiftyForFreshPlayer() {
+            assertEquals(50L, SkyblockLevelManager.getInstance().xpToNextLevel(PLAYER));
         }
     }
 }
