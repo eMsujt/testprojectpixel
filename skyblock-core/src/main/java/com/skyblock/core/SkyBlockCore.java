@@ -154,10 +154,9 @@ import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.npc.NpcCommand;
 import com.skyblock.core.npc.NPCListener;
 import com.skyblock.core.manager.ManaManager;
+import com.skyblock.core.manager.PlayerDataManager;
 import com.skyblock.core.manager.RunecraftingManager;
 import com.skyblock.core.manager.SkyBlockEventManager;
-import com.skyblock.core.listener.CoreListeners;
-import com.skyblock.core.persistence.DataManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyBlockCore extends JavaPlugin {
@@ -720,7 +719,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("npc").setTabCompleter(npcCommand);
         }
         getServer().getPluginManager().registerEvents(new NPCListener(this, npcManager), this);
-        getServer().getPluginManager().registerEvents(new CoreListeners(DataManager.getInstance()), this);
+        getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.armor.ArmorSetListener(com.skyblock.core.armor.ArmorSetManager.getInstance()), this);
     }
 
