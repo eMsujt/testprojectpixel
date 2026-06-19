@@ -1637,6 +1637,22 @@ class MenuIntegrationTest {
         void manager_activeRun_nullForFreshPlayer() {
             assertNull(KuudraManager.getInstance().getActiveRun(PLAYER));
         }
+
+        @Test
+        void manager_completionCount_roundTripsThroughFullRun() {
+            KuudraManager manager = KuudraManager.getInstance();
+            KuudraManager.KuudraTier tier = KuudraManager.KuudraTier.HOT;
+            int before = manager.getCompletionCount(PLAYER, tier);
+
+            manager.joinRun(tier, java.util.List.of(PLAYER), 0L);
+            manager.advancePhase(PLAYER); // BUILD -> SUPPLY
+            manager.advancePhase(PLAYER); // SUPPLY -> DPS
+            manager.advancePhase(PLAYER); // DPS -> BURN
+            manager.completeRun(PLAYER);
+
+            assertEquals(before + 1, manager.getCompletionCount(PLAYER, tier));
+            assertNull(manager.getActiveRun(PLAYER));
+        }
     }
 
     @Nested
