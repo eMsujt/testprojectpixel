@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
 public final class WarpMenu extends AbstractMenu {
 
     public WarpMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§b§lFast Travel", 54);
+        super(plugin, player, "§bFast Travel", 54);
     }
 
     @Override
