@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.DungeonsManager;
-import com.skyblock.core.manager.DungeonsManager.DungeonClass;
+import com.skyblock.core.manager.DungeonManager;
+import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,7 +38,7 @@ public final class DungeonsMenu extends Menu {
         ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
-        DungeonsManager manager = DungeonsManager.getInstance();
+        DungeonManager manager = DungeonManager.getInstance();
         DungeonClass selected = manager.getClass(playerId);
 
         DungeonClass[] classes = DungeonClass.values();

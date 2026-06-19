@@ -29,8 +29,8 @@ import com.skyblock.core.manager.CrystalHollowsManager.CrystalType;
 import com.skyblock.core.manager.CrystalHollowsManager.PowderType;
 import com.skyblock.core.manager.DungeonStatsManager;
 import com.skyblock.core.stats.StatsManager;
-import com.skyblock.core.manager.DungeonsManager;
-import com.skyblock.core.manager.DungeonsManager.DungeonClass;
+import com.skyblock.core.manager.DungeonManager;
+import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.manager.NetherwartIslandManager;
 import com.skyblock.core.manager.NetherwartIslandManager.Faction;
 import com.skyblock.core.manager.NetherwartIslandManager.KuudraTier;
@@ -2616,25 +2616,25 @@ class MenuIntegrationTest {
 
         @Test
         void manager_selectedClass_nullForFreshPlayer() {
-            assertNull(DungeonsManager.getInstance().getClass(UUID.randomUUID()));
+            assertNull(DungeonManager.getInstance().getClass(UUID.randomUUID()));
         }
 
         @Test
         void manager_setAndGetClass_roundTrips() {
-            DungeonsManager mgr = DungeonsManager.getInstance();
+            DungeonManager mgr = DungeonManager.getInstance();
             mgr.setClass(PLAYER, DungeonClass.MAGE);
             assertEquals(DungeonClass.MAGE, mgr.getClass(PLAYER));
         }
 
         @Test
         void manager_classXp_zeroForFreshPlayer() {
-            assertEquals(0.0, DungeonsManager.getInstance()
+            assertEquals(0.0, DungeonManager.getInstance()
                     .getClassXp(UUID.randomUUID(), DungeonClass.BERSERK), 0.0001);
         }
 
         @Test
         void manager_addClassXp_roundTrips() {
-            DungeonsManager mgr = DungeonsManager.getInstance();
+            DungeonManager mgr = DungeonManager.getInstance();
             mgr.addClassXp(PLAYER, DungeonClass.ARCHER, 250.0);
             assertEquals(250.0, mgr.getClassXp(PLAYER, DungeonClass.ARCHER), 0.0001);
         }
