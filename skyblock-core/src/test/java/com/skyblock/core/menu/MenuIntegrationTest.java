@@ -633,7 +633,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isMinions() {
-            assertEquals("§6Minions", new MinionMenu(owner).getTitle());
+            assertEquals("§6§lYour Minions", new MinionMenu(owner).getTitle());
         }
 
         @Test
