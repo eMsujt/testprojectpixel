@@ -1,5 +1,6 @@
 package com.skyblock.core.scoreboard;
 
+import com.skyblock.core.manager.CalendarManager;
 import com.skyblock.core.manager.EconomyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -84,14 +85,19 @@ public final class ScoreboardManager {
         if (board == null) {
             return;
         }
+        CalendarManager cal = CalendarManager.getInstance();
+        String calendarDate = ChatColor.AQUA + cal.getCurrentMonth().getDisplayName()
+                + " " + cal.getCurrentDayOfMonth();
         double coins = EconomyManager.getInstance().getBalance(player.getUniqueId());
         List<String> lines = Arrays.asList(
+            calendarDate,
+            " ",
             ChatColor.YELLOW + "Coins",
             ChatColor.WHITE + formatCoins(coins),
-            " ",
+            "  ",
             ChatColor.AQUA + "Location",
             ChatColor.WHITE + player.getWorld().getName(),
-            "  ",
+            "   ",
             ChatColor.GRAY + "skyblock.example.net"
         );
         board.updateLines(lines);
