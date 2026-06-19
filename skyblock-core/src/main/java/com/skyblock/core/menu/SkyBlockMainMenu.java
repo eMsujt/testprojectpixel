@@ -50,7 +50,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new SkillsMenu(player.getUniqueId()).open(player);
+                    new SkillsMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player);
                 });
 
         setItem(11, new ItemBuilder(Material.WRITABLE_BOOK)
@@ -86,7 +86,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new PetMenu(e.getWhoClicked().getUniqueId()).open((Player) e.getWhoClicked());
+                    new PetMenu(com.skyblock.core.SkyblockPlugin.getInstance(), (Player) e.getWhoClicked()).open((Player) e.getWhoClicked());
                 });
 
         setItem(15, new ItemBuilder(Material.FISHING_ROD)

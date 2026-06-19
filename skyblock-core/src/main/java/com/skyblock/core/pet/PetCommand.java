@@ -45,7 +45,7 @@ public final class PetCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            new PetMenu(player.getUniqueId()).open(player);
+            new PetMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player);
             return true;
         }
 

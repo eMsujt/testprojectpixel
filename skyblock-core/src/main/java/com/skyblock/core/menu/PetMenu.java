@@ -1,16 +1,17 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.UUID;
 
-public final class PetMenu extends Menu {
+public final class PetMenu extends AbstractMenu {
 
     public static final Map<Rarity, Material> RARITY_WOOL;
 
@@ -26,15 +27,12 @@ public final class PetMenu extends Menu {
         RARITY_WOOL.put(Rarity.SPECIAL,   Material.RED_WOOL);
     }
 
-    private final UUID playerId;
-
-    public PetMenu(UUID playerId) {
-        super("§dPets", 6);
-        this.playerId = playerId;
+    public PetMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§dPets", 54);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);

@@ -552,23 +552,24 @@ class MenuIntegrationTest {
     @Nested
     class PetMenuTests {
 
-        private final UUID PLAYER = UUID.randomUUID();
+        private final Player mockPlayer = mock(Player.class);
+        private final com.skyblock.core.SkyblockPlugin mockPlugin = mock(com.skyblock.core.SkyblockPlugin.class);
 
         @Test
         void title_isPets() {
-            PetMenu menu = new PetMenu(PLAYER);
+            PetMenu menu = new PetMenu(mockPlugin, mockPlayer);
             assertEquals("§dPets", menu.getTitle());
         }
 
         @Test
         void rows_isSix() {
-            PetMenu menu = new PetMenu(PLAYER);
+            PetMenu menu = new PetMenu(mockPlugin, mockPlayer);
             assertEquals(6, menu.getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new PetMenu(PLAYER));
+            assertDoesNotThrow(() -> new PetMenu(mockPlugin, mockPlayer));
         }
 
         @Test
@@ -2131,6 +2132,13 @@ class MenuIntegrationTest {
     class SkillsMenuTests {
 
         private final UUID PLAYER = UUID.randomUUID();
+        private final Player mockPlayer = mock(Player.class);
+        private final com.skyblock.core.SkyblockPlugin mockPlugin = mock(com.skyblock.core.SkyblockPlugin.class);
+
+        @BeforeEach
+        void setUp() {
+            when(mockPlayer.getUniqueId()).thenReturn(PLAYER);
+        }
 
         @AfterEach
         void tearDown() {
@@ -2139,17 +2147,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isSkills() {
-            assertEquals("§aSkills", new SkillsMenu(PLAYER).getTitle());
+            assertEquals("§aSkills", new SkillsMenu(mockPlugin, mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new SkillsMenu(PLAYER).getRows());
+            assertEquals(6, new SkillsMenu(mockPlugin, mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new SkillsMenu(PLAYER));
+            assertDoesNotThrow(() -> new SkillsMenu(mockPlugin, mockPlayer));
         }
 
         @Test
