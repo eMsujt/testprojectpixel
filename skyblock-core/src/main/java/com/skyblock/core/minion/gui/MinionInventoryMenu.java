@@ -1,7 +1,7 @@
 package com.skyblock.core.minion.gui;
 
 import com.skyblock.core.manager.MinionManager;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import com.skyblock.core.menu.Menu;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
