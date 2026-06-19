@@ -392,7 +392,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
-        ProfileCommand profileCommand = new ProfileCommand(profile);
+        ProfileCommand profileCommand = new ProfileCommand();
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
         MinionCommand minionCommand = new MinionCommand(minionManager);
