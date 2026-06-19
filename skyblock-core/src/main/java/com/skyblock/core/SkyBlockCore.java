@@ -686,7 +686,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("crystalhollows").setTabCompleter(crystalHollowsCommand);
         StorageCommand storageCommand = new StorageCommand(storageManager);
         getCommand("storage").setTabCompleter(storageCommand);
-        com.skyblock.core.command.StorageCommand storageMenuCommand = new com.skyblock.core.command.StorageCommand();
+        com.skyblock.core.command.StorageCommand storageMenuCommand = new com.skyblock.core.command.StorageCommand(com.skyblock.core.manager.StorageManager.getInstance(), backpackManager);
         getCommand("storage").setExecutor(storageMenuCommand);
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
     }
