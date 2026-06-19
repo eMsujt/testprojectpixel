@@ -1,5 +1,6 @@
 package com.skyblock.core.alchemy;
 
+import com.skyblock.core.manager.AlchemyManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

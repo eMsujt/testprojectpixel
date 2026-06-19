@@ -1,8 +1,8 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.alchemy.AlchemyManager;
-import com.skyblock.core.alchemy.AlchemyManager.BrewJob;
-import com.skyblock.core.alchemy.AlchemyManager.PotionRecipe;
+import com.skyblock.core.manager.AlchemyManager;
+import com.skyblock.core.manager.AlchemyManager.BrewJob;
+import com.skyblock.core.manager.AlchemyManager.PotionRecipe;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

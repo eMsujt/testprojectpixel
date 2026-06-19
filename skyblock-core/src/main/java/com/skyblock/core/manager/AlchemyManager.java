@@ -1,4 +1,4 @@
-package com.skyblock.core.alchemy;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -25,7 +25,8 @@ public final class AlchemyManager {
     public enum PotionType {
         SPEED("Speed"),
         STRENGTH("Strength"),
-        CRITICAL("Critical"),
+        CRIT_CHANCE("Crit Chance"),
+        CRIT_DAMAGE("Crit Damage"),
         HASTE("Haste"),
         RESISTANCE("Resistance"),
         REGENERATION("Regeneration"),
@@ -40,31 +41,6 @@ public final class AlchemyManager {
         public final String displayName;
 
         PotionType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
-    /** Brew types categorising potions a player can brew. */
-    public enum BrewType {
-        SPEED("Speed"),
-        STRENGTH("Strength"),
-        CRITICAL("Critical"),
-        HASTE("Haste"),
-        RESISTANCE("Resistance"),
-        REGENERATION("Regeneration"),
-        HEALING("Healing"),
-        FIRE_RESISTANCE("Fire Resistance"),
-        WATER_BREATHING("Water Breathing"),
-        NIGHT_VISION("Night Vision");
-
-        /** Human-readable display name shown to players. */
-        public final String displayName;
-
-        BrewType(String displayName) {
             this.displayName = displayName;
         }
 
@@ -149,6 +125,10 @@ public final class AlchemyManager {
                 Map.of("Blaze_Powder", 1, "Nether_Wart", 1),       "STRENGTH",      1, 30,  20.0);
         addRecipe(map, "strength_ii",  "Strength Potion II",
                 Map.of("Blaze_Powder", 2, "Glowstone_Dust", 1, "Nether_Wart", 1), "STRENGTH_II", 1, 60, 45.0);
+        addRecipe(map, "crit_chance",  "Crit Chance Potion",
+                Map.of("Spider_Eye", 1, "Nether_Wart", 1),         "CRIT_CHANCE",   1, 25,  18.0);
+        addRecipe(map, "crit_damage",  "Crit Damage Potion",
+                Map.of("Spider_Eye", 2, "Glowstone_Dust", 1, "Nether_Wart", 1), "CRIT_DAMAGE", 1, 50, 35.0);
         addRecipe(map, "healing_i",    "Healing Potion I",
                 Map.of("Glistering_Melon", 1, "Nether_Wart", 1),   "INSTANT_HEAL",  1, 20,  15.0);
         addRecipe(map, "healing_ii",   "Healing Potion II",
@@ -166,8 +146,8 @@ public final class AlchemyManager {
 
     private static void addRecipe(Map<String, PotionRecipe> map, String id, String name,
                                   Map<String, Integer> ingredients, String output,
-                                  int level, int duration, double xp) {
-        map.put(id, new PotionRecipe(id, name, ingredients, output, level, duration, xp));
+                                  int outputAmount, int duration, double xp) {
+        map.put(id, new PotionRecipe(id, name, ingredients, output, outputAmount, duration, xp));
     }
 
     /**
@@ -350,10 +330,6 @@ public final class AlchemyManager {
             throw new RuntimeException("Failed to save alchemy.yml", e);
         }
     }
-
-    // ---------------------------------------------------------------------------
-    // Helpers
-    // ---------------------------------------------------------------------------
 
     /**
      * Computes the alchemy level for the given total XP.
