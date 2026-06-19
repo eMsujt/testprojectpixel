@@ -21,6 +21,7 @@ commands:
   bazaar:
     description: Open the Bazaar.
     usage: /bazaar [product]
+    aliases: [bz]
   profile:
     description: View your SkyBlock profile.
     usage: /profile [player]
@@ -115,6 +116,7 @@ commands:
   bestiary:
     description: Track your mob kill counts.
     usage: /bestiary [view <mob>|reset]
+    aliases: [bst]
   party:
     description: Manage your party.
     usage: /party <invite|accept|decline|kick|leave|list>
