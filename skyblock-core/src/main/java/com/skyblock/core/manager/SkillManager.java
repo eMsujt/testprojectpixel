@@ -104,6 +104,9 @@ public final class SkillManager {
     /** Per-player XP: player → (skill → total accumulated XP). */
     private final Map<UUID, Map<Skill, Long>> xpMap = new HashMap<>();
 
+    /** Per-player collection counts: player → (collection name → total count). */
+    private final Map<UUID, Map<String, Integer>> collectionCounts = new HashMap<>();
+
     private final StatManager statManager = StatManager.getInstance();
 
     private SkillManager() {}
@@ -326,18 +329,22 @@ public final class SkillManager {
     }
 
     // -------------------------------------------------------------------------
-    // Collection delegation
+    // Collection counts
     // -------------------------------------------------------------------------
 
-    /** Adds {@code amount} items to the player's collection identified by name; ignores unknown names. */
+    /** Adds {@code amount} items to the player's collection identified by name. */
     public void addCollection(UUID playerId, String collection, int amount) {
-        CollectionManager.getInstance().addItems(playerId, collection, (long) amount);
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(collection, "collection");
+        collectionCounts.computeIfAbsent(playerId, id -> new HashMap<>())
+                .merge(collection, amount, Integer::sum);
     }
 
     /** Returns how many items the player has in the named collection (0 if unknown). */
-    public long getCollectionCount(UUID playerId, String collection) {
-        com.skyblock.core.model.Collection c = com.skyblock.core.model.Collection.parse(collection);
-        return c == null ? 0L : CollectionManager.getInstance().getItems(playerId, c);
+    public int getCollectionCount(UUID playerId, String collection) {
+        Objects.requireNonNull(playerId, "playerId");
+        Map<String, Integer> counts = collectionCounts.get(playerId);
+        return counts == null ? 0 : counts.getOrDefault(collection, 0);
     }
 
     // -------------------------------------------------------------------------
