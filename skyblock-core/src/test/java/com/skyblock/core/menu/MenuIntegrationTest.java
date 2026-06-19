@@ -2379,12 +2379,12 @@ class MenuIntegrationTest {
 
         @Test
         void title_isJacobsFarmingContest() {
-            assertEquals("§aJacob's Farming Contest", new JacobsContestMenu(PLAYER).getTitle());
+            assertEquals("§eJacob's Farming Contest", new JacobsContestMenu(PLAYER).getTitle());
         }
 
         @Test
-        void rows_isFour() {
-            assertEquals(4, new JacobsContestMenu(PLAYER).getRows());
+        void rows_isSix() {
+            assertEquals(6, new JacobsContestMenu(PLAYER).getRows());
         }
 
         @Test
