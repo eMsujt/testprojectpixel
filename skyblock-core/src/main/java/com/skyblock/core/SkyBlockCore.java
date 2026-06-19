@@ -704,6 +704,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("storage").setExecutor(storageMenuCommand);
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
         manaManager.start(this);
+        jacobsContestManager.start(this);
         NpcCommand npcCommand = new NpcCommand(npcManager, com.skyblock.core.manager.EconomyManager.getInstance());
         if (getCommand("npc") != null) {
             getCommand("npc").setExecutor(npcCommand);
