@@ -2,8 +2,8 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.DungeonsManager;
 import com.skyblock.core.manager.DungeonsManager.DungeonClass;
+import com.skyblock.core.util.MenuUtil;
 import com.skyblock.core.util.SkyblockUtils;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +36,7 @@ public final class DungeonsMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         DungeonsManager manager = DungeonsManager.getInstance();
@@ -49,12 +49,10 @@ public final class DungeonsMenu extends Menu {
             boolean isSelected = cls.equals(selected);
 
             String name = (isSelected ? "§c§l" : "§c") + cls.getDisplayName();
-            setItem(CLASS_SLOTS[i], new ItemBuilder(CLASS_ICONS.get(cls))
-                    .displayName(name)
-                    .lore(
-                            "§7XP: §e" + String.format("%.1f", xp),
-                            isSelected ? "§a§l[SELECTED]" : "§7Click to select")
-                    .build());
+            setItem(CLASS_SLOTS[i], MenuUtil.buildItem(CLASS_ICONS.get(cls),
+                    name,
+                    "§7XP: §e" + String.format("%.1f", xp),
+                    isSelected ? "§a§l[SELECTED]" : "§7Click to select"));
         }
     }
 

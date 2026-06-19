@@ -4,7 +4,7 @@ import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.BestiaryManager.BestiaryCategory;
 import com.skyblock.core.manager.BestiaryManager.BestiaryFamily;
 import com.skyblock.core.manager.BestiaryManager.BestiaryMob;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.MenuUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -90,7 +90,7 @@ public final class BestiaryMenu extends Menu {
         handlers.clear();
         inventory = Bukkit.createInventory(this, 54, getTitle());
 
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 9; slot++) inventory.setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) inventory.setItem(slot, pane);
 
@@ -100,10 +100,9 @@ public final class BestiaryMenu extends Menu {
             buildCategory();
         }
 
-        inventory.setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .lore("§7Close the bestiary.")
-                .build());
+        inventory.setItem(CLOSE_SLOT, MenuUtil.buildItem(Material.BARRIER,
+                "§cClose",
+                "§7Close the bestiary."));
         handlers.put(CLOSE_SLOT, e -> player.closeInventory());
 
         player.openInventory(inventory);
@@ -112,16 +111,14 @@ public final class BestiaryMenu extends Menu {
     private void buildOverview() {
         BestiaryManager manager = BestiaryManager.getInstance();
 
-        inventory.setItem(SUMMARY_SLOT, new ItemBuilder(Material.WRITTEN_BOOK)
-                .displayName("§aBestiary Milestones")
-                .lore(
-                        "§7Milestone level: §e" + manager.getMilestoneLevel(playerId),
-                        "§7Families completed: §e" + manager.getCompletedFamilyCount(playerId)
-                                + "§7/§e" + BestiaryFamily.values().length,
-                        "§7Bonus Health: §a+" + String.format("%,.0f",
-                                manager.getMilestoneStats(playerId).getOrDefault(
-                                        com.skyblock.core.model.Stat.HEALTH, 0.0)) + " §c❤")
-                .build());
+        inventory.setItem(SUMMARY_SLOT, MenuUtil.buildItem(Material.WRITTEN_BOOK,
+                "§aBestiary Milestones",
+                "§7Milestone level: §e" + manager.getMilestoneLevel(playerId),
+                "§7Families completed: §e" + manager.getCompletedFamilyCount(playerId)
+                        + "§7/§e" + BestiaryFamily.values().length,
+                "§7Bonus Health: §a+" + String.format("%,.0f",
+                        manager.getMilestoneStats(playerId).getOrDefault(
+                                com.skyblock.core.model.Stat.HEALTH, 0.0)) + " §c❤"));
 
         BestiaryCategory[] categories = BestiaryCategory.values();
         for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
@@ -134,10 +131,9 @@ public final class BestiaryMenu extends Menu {
             }
             lore.add("");
             lore.add("§eClick to view mobs!");
-            ItemStack tile = new ItemBuilder(CATEGORY_ICONS.getOrDefault(cat, Material.BOOK))
-                    .displayName("§a" + cat.displayName)
-                    .lore(lore)
-                    .build();
+            ItemStack tile = MenuUtil.buildItem(CATEGORY_ICONS.getOrDefault(cat, Material.BOOK),
+                    "§a" + cat.displayName,
+                    lore.toArray(new String[0]));
             int slot = CATEGORY_SLOTS[i];
             inventory.setItem(slot, tile);
             BestiaryCategory clicked = cat;
@@ -164,21 +160,18 @@ public final class BestiaryMenu extends Menu {
             int tier = manager.getTier(playerId, mobKey);
             int toNext = manager.getKillsToNextTier(playerId, mobKey);
             String name = MOB_NAMES.getOrDefault(mobKey, mobKey);
-            inventory.setItem(INNER_SLOTS[i], new ItemBuilder(Material.BOOK)
-                    .displayName((tier > 0 ? "§a" : "§f") + name)
-                    .lore(
-                            "§7Kills: §e" + kills,
-                            "§7Tier: §6" + tier + "§7/§6" + BestiaryManager.MAX_TIER,
-                            tier >= BestiaryManager.MAX_TIER
-                                    ? "§aMaxed out!"
-                                    : "§7Next tier in §e" + toNext + " §7kills")
-                    .build());
+            inventory.setItem(INNER_SLOTS[i], MenuUtil.buildItem(Material.BOOK,
+                    (tier > 0 ? "§a" : "§f") + name,
+                    "§7Kills: §e" + kills,
+                    "§7Tier: §6" + tier + "§7/§6" + BestiaryManager.MAX_TIER,
+                    tier >= BestiaryManager.MAX_TIER
+                            ? "§aMaxed out!"
+                            : "§7Next tier in §e" + toNext + " §7kills"));
         }
 
-        inventory.setItem(BACK_SLOT, new ItemBuilder(Material.ARROW)
-                .displayName("§eBack")
-                .lore("§7Return to the category overview.")
-                .build());
+        inventory.setItem(BACK_SLOT, MenuUtil.buildItem(Material.ARROW,
+                "§eBack",
+                "§7Return to the category overview."));
         handlers.put(BACK_SLOT, e -> new BestiaryMenu(playerId).open((Player) e.getWhoClicked()));
     }
 

@@ -3,6 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.model.Rarity;
+import com.skyblock.core.util.MenuUtil;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -103,7 +104,7 @@ public class PetMenu extends Menu {
         int totalPages = Math.max(1, (int) Math.ceil((double) owned.size() / SLOTS_PER_PAGE));
         inventory = Bukkit.createInventory(this, 54, "§dPets");
 
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 9; slot++) inventory.setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) inventory.setItem(slot, pane);
 
@@ -134,7 +135,7 @@ public class PetMenu extends Menu {
                 }
             } else {
                 Material wool = RARITY_WOOL.getOrDefault(pet.rarity, Material.WHITE_WOOL);
-                item = new ItemBuilder(wool).displayName(displayName).lore(lore.toArray(new String[0])).build();
+                item = MenuUtil.buildItem(wool, displayName, lore.toArray(new String[0]));
             }
             int slot = INNER_SLOTS[i];
             inventory.setItem(slot, item);
@@ -150,32 +151,28 @@ public class PetMenu extends Menu {
         }
 
         if (owned.isEmpty()) {
-            inventory.setItem(22, new ItemBuilder(Material.BARRIER)
-                    .displayName("§cNo Pets")
-                    .lore("§7You don't own any pets yet.")
-                    .build());
+            inventory.setItem(22, MenuUtil.buildItem(Material.BARRIER,
+                    "§cNo Pets",
+                    "§7You don't own any pets yet."));
         }
 
-        inventory.setItem(49, new ItemBuilder(Material.BONE)
-                .displayName("§aPets")
-                .lore("§7Page §e" + (page + 1) + "§7/§e" + totalPages)
-                .build());
+        inventory.setItem(49, MenuUtil.buildItem(Material.BONE,
+                "§aPets",
+                "§7Page §e" + (page + 1) + "§7/§e" + totalPages));
 
         if (page > 0) {
             int prevPage = page - 1;
-            inventory.setItem(45, new ItemBuilder(Material.ARROW)
-                    .displayName("§ePrevious Page")
-                    .lore("§7Go to page §e" + (prevPage + 1))
-                    .build());
+            inventory.setItem(45, MenuUtil.buildItem(Material.ARROW,
+                    "§ePrevious Page",
+                    "§7Go to page §e" + (prevPage + 1)));
             handlers.put(45, event -> new PetMenu(playerId, prevPage).open((Player) event.getWhoClicked()));
         }
 
         if ((page + 1) < totalPages) {
             int nextPage = page + 1;
-            inventory.setItem(53, new ItemBuilder(Material.ARROW)
-                    .displayName("§eNext Page")
-                    .lore("§7Go to page §e" + (nextPage + 1))
-                    .build());
+            inventory.setItem(53, MenuUtil.buildItem(Material.ARROW,
+                    "§eNext Page",
+                    "§7Go to page §e" + (nextPage + 1)));
             handlers.put(53, event -> new PetMenu(playerId, nextPage).open((Player) event.getWhoClicked()));
         }
 

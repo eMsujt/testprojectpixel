@@ -2,6 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.model.AccessoryRarity;
+import com.skyblock.core.util.MenuUtil;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -34,27 +35,24 @@ public final class AccessoryBagMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) setItem(slot, pane);
 
         AccessoryBagManager manager = AccessoryBagManager.getInstance();
 
-        setItem(SUMMARY_SLOT, new ItemBuilder(Material.ENDER_CHEST)
-                .displayName("§dAccessory Bag")
-                .lore(
-                        "§7Slots: §a" + manager.getSize(playerId),
-                        "§7Magic Power: §d" + manager.getTotalMagicPower(playerId))
-                .build());
+        setItem(SUMMARY_SLOT, MenuUtil.buildItem(Material.ENDER_CHEST,
+                "§dAccessory Bag",
+                "§7Slots: §a" + manager.getSize(playerId),
+                "§7Magic Power: §d" + manager.getTotalMagicPower(playerId)));
 
         AccessoryRarity[] rarities = AccessoryRarity.values();
         for (int i = 0; i < RARITY_SLOTS.length && i < rarities.length; i++) {
             AccessoryRarity rarity = rarities[i];
             int count = manager.getContentsByRarity(playerId, rarity).size();
             String color = ItemBuilder.rarityColor(rarity.name()).toString();
-            setItem(RARITY_SLOTS[i], new ItemBuilder(Material.IRON_INGOT)
-                    .displayName(color + rarity.getDisplayName())
-                    .lore("§7Count: §a" + count)
-                    .build());
+            setItem(RARITY_SLOTS[i], MenuUtil.buildItem(Material.IRON_INGOT,
+                    color + rarity.getDisplayName(),
+                    "§7Count: §a" + count));
         }
     }
 
