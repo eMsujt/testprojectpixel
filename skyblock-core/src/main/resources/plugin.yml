@@ -21,7 +21,7 @@ commands:
   bazaar:
     description: Open the Bazaar.
     usage: /bazaar [product]
-    aliases: [bz]
+    aliases: [bz, bazar]
   profile:
     description: View your SkyBlock profile.
     usage: /profile [player]
@@ -167,6 +167,7 @@ commands:
   slayer:
     description: Manage your slayer quests and view boss info.
     usage: /slayer [info|start|type]
+    aliases: [sl]
     permission: skyblock.slayer
   museum:
     description: Donate items and view your museum collection.
@@ -272,6 +273,7 @@ commands:
   wardrobe:
     description: View and manage your saved armor outfits.
     usage: /wardrobe [save <name>|load <name>|delete <name>|list|slots|slot <save|load|clear> <SLOT>]
+    aliases: [wd]
     permission: skyblock.wardrobe
   accessories:
     description: View and manage your accessory bag.
