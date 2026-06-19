@@ -155,6 +155,7 @@ import com.skyblock.core.npc.NpcCommand;
 import com.skyblock.core.npc.NPCListener;
 import com.skyblock.core.manager.ManaManager;
 import com.skyblock.core.manager.RunecraftingManager;
+import com.skyblock.core.manager.SkyBlockEventManager;
 import com.skyblock.core.listener.CoreListeners;
 import com.skyblock.core.persistence.DataManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -240,6 +241,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private NpcManager npcManager;
     private RunecraftingManager runecraftingManager;
     private ManaManager manaManager;
+    private SkyBlockEventManager skyBlockEventManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
@@ -363,6 +365,7 @@ public final class SkyBlockCore extends JavaPlugin {
         runecraftingManager = RunecraftingManager.getInstance();
         runecraftingManager.load(getDataFolder());
         manaManager = ManaManager.getInstance();
+        skyBlockEventManager = SkyBlockEventManager.getInstance();
     }
 
     @Override
@@ -709,6 +712,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("storage").setExecutor(storageMenuCommand);
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
         manaManager.start(this);
+        skyBlockEventManager.start(this);
         jacobsContestManager.start(this);
         NpcCommand npcCommand = new NpcCommand(npcManager, com.skyblock.core.manager.EconomyManager.getInstance());
         if (getCommand("npc") != null) {
@@ -767,6 +771,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getLogger().severe("Failed to save data: " + e.getMessage());
         }
         RunecraftingManager.getInstance().save(getDataFolder());
+        SkyBlockEventManager.getInstance().stop();
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().stop();
         instance = null;
     }
