@@ -103,6 +103,7 @@ import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
+import com.skyblock.core.command.JacobsContestCommand;
 import com.skyblock.core.manager.TradeManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
@@ -409,6 +410,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         EventCommand eventCommand = new EventCommand(eventManager);
         getCommand("event").setExecutor(eventCommand);
         getCommand("event").setTabCompleter(eventCommand);
+        JacobsContestCommand jacobsContestCommand = new JacobsContestCommand();
+        getCommand("jacobscontest").setExecutor(jacobsContestCommand);
+        getCommand("jacobscontest").setTabCompleter(jacobsContestCommand);
         ForagingManager foragingManager = ForagingManager.getInstance();
         foragingManager.load(getDataFolder());
         ForagingCommand foragingCommand = new ForagingCommand(foragingManager);

@@ -187,6 +187,10 @@ commands:
     description: View and join SkyBlock events.
     usage: /event <list|join <event>|status [event]|reset>
     permission: skyblock.event
+  jacobscontest:
+    description: Open the Jacob's Farming Contest menu.
+    usage: /jacobscontest
+    permission: skyblock.jacobscontest
   foraging:
     description: View foraging level, XP, and log chop counts.
     usage: /foraging [info <log>|reset]
@@ -331,6 +335,9 @@ permissions:
     default: true
   skyblock.event:
     description: Use the /event command to view and join SkyBlock events.
+    default: true
+  skyblock.jacobscontest:
+    description: Use the /jacobscontest command to open Jacob's Farming Contest.
     default: true
   skyblock.foraging:
     description: Use the /foraging command to view foraging stats.
