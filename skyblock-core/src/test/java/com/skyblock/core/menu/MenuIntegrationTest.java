@@ -5,7 +5,11 @@ import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.CalendarManager;
+import com.skyblock.core.manager.CrimsonIsleManager;
 import com.skyblock.core.manager.ForgeManager;
+import com.skyblock.core.manager.GardenManager;
+import com.skyblock.core.manager.GardenManager.CropType;
+import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.manager.CalendarManager.SkyBlockMonth;
 import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.CrystalHollowsManager.CrystalType;
@@ -1352,6 +1356,98 @@ class MenuIntegrationTest {
         @Test
         void manager_quickForgeReduction_thirtyPercentAtMaxLevel() {
             assertEquals(0.30, ForgeManager.quickForgeReduction(ForgeManager.MAX_QUICK_FORGE_LEVEL), 0.0001);
+        }
+    }
+
+    @Nested
+    class GardenMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void cleanup() {
+            GardenManager.getInstance().reset(PLAYER);
+        }
+
+        @Test
+        void title_isGarden() {
+            assertEquals("§aGarden", new GardenMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isFive() {
+            assertEquals(5, new GardenMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new GardenMenu(PLAYER));
+        }
+
+        @Test
+        void manager_gardenLevel_zeroForFreshPlayer() {
+            assertEquals(0, GardenManager.getInstance().getGardenLevel(PLAYER));
+        }
+
+        @Test
+        void manager_copper_zeroForFreshPlayer() {
+            assertEquals(0L, GardenManager.getInstance().getCopper(PLAYER));
+        }
+
+        @Test
+        void manager_completedOffers_zeroForFreshPlayer() {
+            assertEquals(0, GardenManager.getInstance().getCompletedOffers(PLAYER));
+        }
+
+        @Test
+        void manager_harvestCount_zeroForFreshPlayer() {
+            assertEquals(0L, GardenManager.getInstance().getHarvestCount(PLAYER, CropType.WHEAT));
+        }
+
+        @Test
+        void manager_addCopper_roundTrips() {
+            GardenManager mgr = GardenManager.getInstance();
+            mgr.addCopper(PLAYER, 1_000L);
+            assertEquals(1_000L, mgr.getCopper(PLAYER));
+        }
+    }
+
+    @Nested
+    class CrimsonIsleMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isCrimsonIsle() {
+            assertEquals("Crimson Isle", new CrimsonIsleMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new CrimsonIsleMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new CrimsonIsleMenu(PLAYER));
+        }
+
+        @Test
+        void manager_highestUnlockedTier_basicForFreshPlayer() {
+            assertEquals(KuudraManager.KuudraTier.BASIC,
+                    CrimsonIsleManager.getInstance().getHighestUnlockedTier(PLAYER));
+        }
+
+        @Test
+        void manager_canJoinBasic_trueForFreshPlayer() {
+            assertTrue(CrimsonIsleManager.getInstance()
+                    .canJoinTier(PLAYER, KuudraManager.KuudraTier.BASIC));
+        }
+
+        @Test
+        void manager_completionCount_zeroForFreshPlayer() {
+            assertEquals(0, CrimsonIsleManager.getInstance().kuudra()
+                    .getCompletionCount(PLAYER, KuudraManager.KuudraTier.BASIC));
         }
     }
 }
