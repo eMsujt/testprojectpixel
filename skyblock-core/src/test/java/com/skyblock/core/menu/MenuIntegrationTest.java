@@ -1629,17 +1629,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isFishing() {
-            assertEquals("§9Fishing", new FishingMenu(PLAYER).getTitle());
+            assertEquals("§bFishing", new FishingMenu().getTitle());
         }
 
         @Test
-        void rows_isFour() {
-            assertEquals(4, new FishingMenu(PLAYER).getRows());
+        void rows_isSix() {
+            assertEquals(6, new FishingMenu().getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new FishingMenu(PLAYER));
+            assertDoesNotThrow(() -> new FishingMenu());
         }
 
         @Test
