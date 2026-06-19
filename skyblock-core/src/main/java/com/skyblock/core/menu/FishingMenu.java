@@ -16,15 +16,13 @@ public final class FishingMenu extends Menu {
 
     private static final int[] INNER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+            19, 20, 21, 22, 23, 24, 25
     };
 
     private final UUID playerId;
 
     public FishingMenu(UUID playerId) {
-        super("Fishing", 6);
+        super("§9Fishing", 4);
         this.playerId = playerId;
     }
 
