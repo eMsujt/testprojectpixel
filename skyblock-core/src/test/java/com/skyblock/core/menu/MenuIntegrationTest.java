@@ -2591,12 +2591,12 @@ class MenuIntegrationTest {
 
         @Test
         void title_isBankAccount() {
-            assertEquals("§6Bank Account", new BankMenu(PLAYER).getTitle());
+            assertEquals("§6§lBank Account", new BankMenu(PLAYER).getTitle());
         }
 
         @Test
-        void rows_isThree() {
-            assertEquals(3, new BankMenu(PLAYER).getRows());
+        void rows_isSix() {
+            assertEquals(6, new BankMenu(PLAYER).getRows());
         }
 
         @Test

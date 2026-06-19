@@ -37,7 +37,7 @@ public final class BankMenu extends Menu {
     private static final int BALANCE_SLOT       = 13;
     private static final int DEPOSIT_SLOT       = 15;
     private static final int WITHDRAW_SLOT      = 16;
-    private static final int CLOSE_SLOT         = 22;
+    private static final int CLOSE_SLOT         = 49;
 
     private final UUID playerId;
     private Inventory inventory;
@@ -49,7 +49,7 @@ public final class BankMenu extends Menu {
     }
 
     public BankMenu(UUID playerId) {
-        super("§6Bank Account", 3);
+        super("§6§lBank Account", 6);
         this.playerId = playerId;
     }
 
@@ -66,12 +66,12 @@ public final class BankMenu extends Menu {
         BankManager bank = BankManager.getInstance();
         CoopManager coop = CoopManager.getInstance();
 
-        inventory = org.bukkit.Bukkit.createInventory(this, 27, "§6Bank Account");
+        inventory = org.bukkit.Bukkit.createInventory(this, 54, "§6§lBank Account");
 
-        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 27; slot++) {
+        ItemStack pane = SkyblockUtils.buildItem(Material.YELLOW_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 18 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
                 inventory.setItem(slot, pane);
             }
         }
