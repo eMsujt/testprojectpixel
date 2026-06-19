@@ -553,6 +553,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.CombatListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.FarmingListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.MiningListener.getInstance(), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ForagingListener.getInstance(), this);
         ChatCommand chatCommand = new ChatCommand(chatManager);
         getCommand("chat").setExecutor(chatCommand);
         getCommand("chat").setTabCompleter(chatCommand);
