@@ -84,6 +84,7 @@ public final class MinionManager {
             this.displayName = displayName;
         }
 
+        /** Returns this minion type's human-readable display name. */
         public String getDisplayName() {
             return displayName;
         }
@@ -119,10 +120,12 @@ public final class MinionManager {
             this.durationTicks = durationTicks;
         }
 
+        /** Returns the production-rate multiplier this fuel applies while active. */
         public double getSpeedMultiplier() {
             return speedMultiplier;
         }
 
+        /** Returns how many production ticks this fuel lasts before being consumed. */
         public int getDurationTicks() {
             return durationTicks;
         }
@@ -179,6 +182,7 @@ public final class MinionManager {
         private final MinionUpgrade[] upgrades =
                 {MinionUpgrade.NONE, MinionUpgrade.NONE};
 
+        /** Creates minion state with the given ID, owner, type, and starting tier. */
         public MinionData(UUID id, UUID owner, MinionType type, MinionTier tier) {
             this.id = Objects.requireNonNull(id, "id");
             this.owner = Objects.requireNonNull(owner, "owner");
@@ -191,10 +195,12 @@ public final class MinionManager {
             return upgrades[slot];
         }
 
+        /** Returns this minion's current upgrade tier. */
         public MinionTier getTier() {
             return tier;
         }
 
+        /** Sets this minion's upgrade tier. */
         public void setTier(MinionTier tier) {
             this.tier = Objects.requireNonNull(tier, "tier");
         }
@@ -260,6 +266,7 @@ public final class MinionManager {
     private MinionManager() {
     }
 
+    /** Returns the singleton instance. */
     public static MinionManager getInstance() {
         return INSTANCE;
     }
@@ -318,6 +325,7 @@ public final class MinionManager {
         playerMaxSlots.put(owner, slots);
     }
 
+    /** Places a new minion of the given type and tier for the owner, enforcing the slot cap. */
     public MinionData placeMinion(UUID owner, MinionType type, MinionTier tier) {
         Objects.requireNonNull(owner, "owner");
         Objects.requireNonNull(type, "type");
@@ -335,6 +343,7 @@ public final class MinionManager {
         return data;
     }
 
+    /** Removes the minion with the given ID; returns {@code true} if it existed. */
     public boolean removeMinion(UUID minionId) {
         Objects.requireNonNull(minionId, "minionId");
         MinionData data = minions.remove(minionId);
@@ -352,17 +361,20 @@ public final class MinionManager {
         return true;
     }
 
+    /** Returns the minion with the given ID, or {@code null} if unknown. */
     public MinionData getMinion(UUID minionId) {
         Objects.requireNonNull(minionId, "minionId");
         return minions.get(minionId);
     }
 
+    /** Returns an unmodifiable list of the owner's minion IDs. */
     public List<UUID> getMinions(UUID owner) {
         Objects.requireNonNull(owner, "owner");
         List<UUID> list = ownerIndex.get(owner);
         return list == null ? Collections.emptyList() : Collections.unmodifiableList(list);
     }
 
+    /** Upgrades the minion to the next tier; returns {@code false} if unknown or already maxed. */
     public boolean upgradeMinion(UUID minionId) {
         Objects.requireNonNull(minionId, "minionId");
         MinionData data = minions.get(minionId);
@@ -521,6 +533,7 @@ public final class MinionManager {
         return data == null ? 0 : tick(data);
     }
 
+    /** Removes all of the owner's minions and state; returns how many were removed. */
     public int clearMinions(UUID owner) {
         Objects.requireNonNull(owner, "owner");
         List<UUID> list = ownerIndex.remove(owner);
@@ -561,6 +574,7 @@ public final class MinionManager {
         return id == null ? null : minions.get(id);
     }
 
+    /** Returns the minion type placed by the owner at the given location, or {@code null}. */
     public MinionType getPlacement(UUID owner, String location) {
         Objects.requireNonNull(owner, "owner");
         Objects.requireNonNull(location, "location");
@@ -568,6 +582,7 @@ public final class MinionManager {
         return map == null ? null : map.get(location);
     }
 
+    /** Records that the owner placed a minion of the given type at the location. */
     public void setPlacement(UUID owner, String location, MinionType type) {
         Objects.requireNonNull(owner, "owner");
         Objects.requireNonNull(location, "location");
@@ -575,6 +590,7 @@ public final class MinionManager {
         placements.computeIfAbsent(owner, k -> new HashMap<>()).put(location, type);
     }
 
+    /** Removes the owner's placement at the location; returns {@code true} if one existed. */
     public boolean removePlacement(UUID owner, String location) {
         Objects.requireNonNull(owner, "owner");
         Objects.requireNonNull(location, "location");
@@ -585,12 +601,14 @@ public final class MinionManager {
         return removed;
     }
 
+    /** Returns an unmodifiable map of the owner's location-to-type placements. */
     public Map<String, MinionType> getPlacements(UUID owner) {
         Objects.requireNonNull(owner, "owner");
         Map<String, MinionType> map = placements.get(owner);
         return map == null ? Collections.emptyMap() : Collections.unmodifiableMap(map);
     }
 
+    /** Loads all minion state from {@code minions.yml} in the given data folder. */
     public void load(File dataFolder) {
         File file = new File(dataFolder, "minions.yml");
         if (!file.exists()) {
@@ -715,6 +733,7 @@ public final class MinionManager {
         }
     }
 
+    /** Saves all minion state to {@code minions.yml} in the given data folder. */
     public void save(File dataFolder) {
         File file = new File(dataFolder, "minions.yml");
         YamlConfiguration cfg = new YamlConfiguration();

@@ -49,6 +49,7 @@ public final class JacobsContestManager {
             this.diamondThreshold = diamond;
         }
 
+        /** Returns this crop's human-readable display name. */
         public String getDisplayName() {
             return displayName;
         }
@@ -79,6 +80,7 @@ public final class JacobsContestManager {
             this.displayName = displayName;
         }
 
+        /** Returns this medal tier's human-readable display name. */
         public String getDisplayName() {
             return displayName;
         }
@@ -101,6 +103,7 @@ public final class JacobsContestManager {
     private JacobsContestManager() {
     }
 
+    /** Returns the singleton instance. */
     public static JacobsContestManager getInstance() {
         return INSTANCE;
     }
