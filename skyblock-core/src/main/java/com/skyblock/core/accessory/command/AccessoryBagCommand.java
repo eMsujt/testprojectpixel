@@ -1,6 +1,7 @@
 package com.skyblock.core.accessory.command;
 
 import com.skyblock.core.manager.AccessoryBagManager;
+import com.skyblock.core.menu.AccessoryBagMenu;
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.talisman.manager.TalismanManager;
@@ -45,7 +46,7 @@ public final class AccessoryBagCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /accessorybag <list|add|remove|bonuses|rarity|tier>");
+            new AccessoryBagMenu(player).open(player);
             return true;
         }
 
