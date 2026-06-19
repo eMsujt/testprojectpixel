@@ -226,6 +226,10 @@ commands:
     description: Donate items and view your museum collection.
     usage: /museum [info|view <category>|donate <item>|reset]
     permission: skyblock.museum
+  npc:
+    description: Interact with SkyBlock NPCs and their shops.
+    usage: /npc <list|shops|shop <npc>|buy <npc> <item>|type>
+    permission: skyblock.npc
   party:
     description: Manage your party.
     usage: /party <invite|accept|decline|kick|leave|list>
@@ -468,4 +472,7 @@ permissions:
     default: true
   skyblock.island:
     description: Use the /island command to open your SkyBlock island menu.
+    default: true
+  skyblock.npc:
+    description: Use the /npc command to interact with SkyBlock NPCs and their shops.
     default: true
