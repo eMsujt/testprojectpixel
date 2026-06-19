@@ -15,20 +15,22 @@ import java.util.UUID;
 public final class KuudraManager {
 
     public enum KuudraTier {
-        BASIC("Basic", 1, 700),
-        HOT("Hot", 2, 800),
-        BURNING("Burning", 3, 900),
-        FIERY("Fiery", 4, 1000),
-        INFERNAL("Infernal", 5, 1200);
+        BASIC("Basic", 1, 700, 2_000_000L),
+        HOT("Hot", 2, 800, 4_000_000L),
+        BURNING("Burning", 3, 900, 6_000_000L),
+        FIERY("Fiery", 4, 1000, 8_000_000L),
+        INFERNAL("Infernal", 5, 1200, 10_000_000L);
 
         private final String displayName;
         private final int tier;
         private final int contributionThreshold;
+        private final long maxHealth;
 
-        KuudraTier(String displayName, int tier, int contributionThreshold) {
+        KuudraTier(String displayName, int tier, int contributionThreshold, long maxHealth) {
             this.displayName = displayName;
             this.tier = tier;
             this.contributionThreshold = contributionThreshold;
+            this.maxHealth = maxHealth;
         }
 
         public String getDisplayName() {
@@ -43,6 +45,11 @@ public final class KuudraManager {
         /** Minimum contribution score required to receive full loot rewards for this tier. */
         public int getContributionThreshold() {
             return contributionThreshold;
+        }
+
+        /** Kuudra's scaled boss HP for this tier (2M at Basic up to 10M at Infernal). */
+        public long getMaxHealth() {
+            return maxHealth;
         }
     }
 
