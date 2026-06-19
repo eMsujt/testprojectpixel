@@ -2,6 +2,7 @@ package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
+import com.skyblock.core.model.CollectionTier;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -152,6 +153,11 @@ public final class CollectionManager {
         int tier = getTier(playerId, collection);
         if (tier >= thresholds.length) return 0L;
         return thresholds[tier] - getItems(playerId, collection);
+    }
+
+    /** Returns the {@link CollectionTier} the player is currently at, or {@code null} if none unlocked. */
+    public CollectionTier getCollectionTier(UUID playerId, Collection collection) {
+        return CollectionTier.fromLevel(getTier(playerId, collection));
     }
 
     /** Returns {@code true} once the player has unlocked the given tier (1-based) for the collection. */
