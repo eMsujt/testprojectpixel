@@ -30,7 +30,7 @@ public final class DungeonsMenu extends Menu {
     private final UUID playerId;
 
     public DungeonsMenu(UUID playerId) {
-        super("§4Dungeons", 6);
+        super("§5Dungeons", 6);
         this.playerId = playerId;
     }
 

@@ -2512,7 +2512,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isDungeons() {
-            assertEquals("§4Dungeons", new DungeonsMenu(PLAYER).getTitle());
+            assertEquals("§5Dungeons", new DungeonsMenu(PLAYER).getTitle());
         }
 
         @Test
