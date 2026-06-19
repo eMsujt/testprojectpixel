@@ -1962,4 +1962,79 @@ class MenuIntegrationTest {
                     .getCompletionCount(PLAYER, KuudraManager.KuudraTier.BASIC));
         }
     }
+
+    @Nested
+    class SkillsMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void tearDown() {
+            SkillManager.getInstance().setSkillXP(PLAYER, "farming", 0L);
+        }
+
+        @Test
+        void title_isSkills() {
+            assertEquals("§aSkills", new SkillsMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new SkillsMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new SkillsMenu(PLAYER));
+        }
+
+        @Test
+        void manager_farmingXp_zeroForFreshPlayer() {
+            assertEquals(0L, SkillManager.getInstance().getSkillXP(UUID.randomUUID(), "farming"));
+        }
+
+        @Test
+        void manager_addSkillXp_roundTrips() {
+            SkillManager mgr = SkillManager.getInstance();
+            mgr.addSkillXP(PLAYER, "farming", 500L);
+            assertEquals(500L, mgr.getSkillXP(PLAYER, "farming"));
+        }
+
+        @Test
+        void manager_setAndGetSkillXp_roundTrips() {
+            SkillManager mgr = SkillManager.getInstance();
+            mgr.setSkillXP(PLAYER, "farming", 1000L);
+            assertEquals(1000L, mgr.getSkillXP(PLAYER, "farming"));
+        }
+
+        @Test
+        void levelForXp_farming_zeroForNoXp() {
+            assertEquals(0, SkillManager.levelForXp("farming", 0L));
+        }
+
+        @Test
+        void levelForXp_unknownSkill_returnsZero() {
+            assertEquals(0, SkillManager.levelForXp("unknown", 9999L));
+        }
+
+        @Test
+        void maxLevel_farming_isSixty() {
+            assertEquals(60, SkillManager.maxLevel("farming"));
+        }
+
+        @Test
+        void maxLevel_dungeoneering_isFifty() {
+            assertEquals(50, SkillManager.maxLevel("dungeoneering"));
+        }
+
+        @Test
+        void skillXpTable_containsFarming() {
+            assertTrue(SkillManager.SKILL_XP_TABLE.containsKey("farming"));
+        }
+
+        @Test
+        void skillXpTable_containsAllTwelveSkills() {
+            assertEquals(12, SkillManager.SKILL_XP_TABLE.size());
+        }
+    }
 }
