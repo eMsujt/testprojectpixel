@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.util.SkyblockUtils;
@@ -23,7 +23,7 @@ public final class AccessoryBagMenu extends AbstractMenu {
     /** One slot per {@link AccessoryRarity}, left-to-right across row 1. */
     static final int[] RARITY_SLOTS = {9, 10, 11, 12, 13, 14, 15, 16};
 
-    public AccessoryBagMenu(SkyblockPlugin plugin, Player player) {
+    public AccessoryBagMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§5Accessory Bag", 54);
     }
 

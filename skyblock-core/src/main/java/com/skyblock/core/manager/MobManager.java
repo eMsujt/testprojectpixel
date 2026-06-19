@@ -1,6 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
@@ -129,7 +129,7 @@ public final class MobManager {
      * @param plugin the active plugin instance used to read the resource
      * @throws IllegalStateException if {@code mobs.yml} is missing from the jar
      */
-    public void init(SkyblockPlugin plugin) {
+    public void init(JavaPlugin plugin) {
         InputStream stream = plugin.getResource("mobs.yml");
         if (stream == null) {
             throw new IllegalStateException("mobs.yml not found in plugin resources");

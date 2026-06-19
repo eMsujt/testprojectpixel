@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.SlayerManager.SlayerBoss;
 import com.skyblock.core.manager.SlayerManager.SlayerType;
@@ -43,7 +43,7 @@ public final class SlayerMenu extends AbstractMenu {
         HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_POWDER);
     }
 
-    public SlayerMenu(SkyblockPlugin plugin, Player player) {
+    public SlayerMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§c§lSlayer Quests", 54);
     }
 

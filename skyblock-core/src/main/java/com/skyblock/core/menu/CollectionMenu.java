@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.collections.gui.CollectionCategoryMenu;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.CollectionCategory;
@@ -24,7 +24,7 @@ public final class CollectionMenu extends AbstractMenu {
         Material.ENCHANTING_TABLE,// ENCHANTING
     };
 
-    public CollectionMenu(SkyblockPlugin plugin, Player player) {
+    public CollectionMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§a§lCollections", 54);
     }
 

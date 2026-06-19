@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.manager.MinionManager.MinionData;
 import com.skyblock.core.util.SkyblockUtils;
@@ -46,7 +46,7 @@ public final class MinionMenu extends AbstractMenu {
             Material.BLACK_TERRACOTTA
     };
 
-    public MinionMenu(SkyblockPlugin plugin, Player player) {
+    public MinionMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§6§lYour Minions", 54);
     }
 

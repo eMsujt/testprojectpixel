@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
@@ -22,7 +22,7 @@ public final class ProfileMenu extends AbstractMenu {
 
     private static final int HEAD_SLOT = 13;
 
-    public ProfileMenu(SkyblockPlugin plugin, Player player) {
+    public ProfileMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§b§lSkyBlock Profile", 54);
     }
 

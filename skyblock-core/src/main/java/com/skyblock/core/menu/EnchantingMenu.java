@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.EnchantmentManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.util.ItemBuilder;
@@ -18,7 +18,7 @@ public final class EnchantingMenu extends AbstractMenu {
 
     static final int TABLE_SLOT = 22;
 
-    public EnchantingMenu(SkyblockPlugin plugin, Player player) {
+    public EnchantingMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§5§lEnchanting Table", 54);
     }
 

@@ -34,7 +34,7 @@ public final class SkillsCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            new SkillsMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player);
+            new SkillsMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
             return true;
         }
 

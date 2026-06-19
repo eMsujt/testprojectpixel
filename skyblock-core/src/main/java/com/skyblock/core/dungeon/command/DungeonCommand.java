@@ -1,6 +1,6 @@
 package com.skyblock.core.dungeon.command;
 
-import com.skyblock.core.SkyblockPlugin;
+import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.DungeonManager;
 import org.bukkit.command.Command;
@@ -24,7 +24,7 @@ public final class DungeonCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new com.skyblock.core.menu.DungeonMenu(SkyblockPlugin.getInstance(), p).open(p);
+        new com.skyblock.core.menu.DungeonMenu(SkyBlockCore.getInstance(), p).open(p);
     }
 
     @Override
@@ -35,7 +35,7 @@ public final class DungeonCommand extends PlayerCommand {
         }
 
         switch (args[0].toLowerCase()) {
-            case "menu"     -> new com.skyblock.core.menu.DungeonMenu(SkyblockPlugin.getInstance(), player).open(player);
+            case "menu"     -> new com.skyblock.core.menu.DungeonMenu(SkyBlockCore.getInstance(), player).open(player);
             case "info"     -> handleInfo(player);
             case "start"    -> handleStart(player, args);
             case "leave"    -> handleLeave(player);

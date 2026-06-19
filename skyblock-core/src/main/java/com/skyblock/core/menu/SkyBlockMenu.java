@@ -25,7 +25,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(10, new ItemBuilder(Material.DIAMOND_SWORD).displayName("§aSkills")
                 .lore("§7View your skill levels and XP.").build(),
-                e -> { e.setCancelled(true); new SkillsMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new SkillsMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
 
         setItem(11, new ItemBuilder(Material.WRITABLE_BOOK).displayName("§aCollections")
                 .lore("§7Track your collection progress.").build(),
@@ -33,7 +33,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(12, new ItemBuilder(Material.CAT_SPAWN_EGG).displayName("§aPets")
                 .lore("§7Manage your pets.").build(),
-                e -> { e.setCancelled(true); new PetMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new PetMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
 
         setItem(13, new ItemBuilder(Material.PISTON).displayName("§aMinions")
                 .lore("§7Manage your minions.").build(),
@@ -45,7 +45,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(15, new ItemBuilder(Material.NETHER_STAR).displayName("§aSlayer")
                 .lore("§7View your slayer quests.").build(),
-                e -> { e.setCancelled(true); new SlayerMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new SlayerMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
 
         setItem(16, new ItemBuilder(Material.END_PORTAL_FRAME).displayName("§5Dungeons")
                 .lore("§7Explore the Catacombs.").build(),
@@ -53,11 +53,11 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(19, new ItemBuilder(Material.GOLD_NUGGET).displayName("§6Auction House")
                 .lore("§7Buy and sell items.").build(),
-                e -> { e.setCancelled(true); new AuctionHouseMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new AuctionHouseMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
 
         setItem(20, new ItemBuilder(Material.GOLD_INGOT).displayName("§6Bazaar")
                 .lore("§7Trade commodities instantly.").build(),
-                e -> { e.setCancelled(true); new BazaarMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new BazaarMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
 
         setItem(21, new ItemBuilder(Material.GOLD_BLOCK).displayName("§6Bank")
                 .lore("§7Deposit and withdraw coins.").build(),
@@ -69,7 +69,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(23, new ItemBuilder(Material.ENDER_CHEST).displayName("§5Accessory Bag")
                 .lore("§7Manage your accessories.").build(),
-                e -> { e.setCancelled(true); new AccessoryBagMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new AccessoryBagMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
 
         setItem(24, new ItemBuilder(Material.CHEST).displayName("§aStorage")
                 .lore("§7Access your personal storage.").build(),
