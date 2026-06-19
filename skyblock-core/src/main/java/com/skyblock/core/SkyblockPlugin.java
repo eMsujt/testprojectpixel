@@ -43,7 +43,7 @@ import com.skyblock.core.manager.JerryWorkshopCommand;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.HarpManager;
 import com.skyblock.core.manager.JerryWorkshopManager;
-import com.skyblock.core.garden.GardenCommand;
+import com.skyblock.core.command.GardenCommand;
 import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
@@ -303,9 +303,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
-        GardenCommand gardenCommand = new GardenCommand(gardenManager);
+        GardenCommand gardenCommand = new GardenCommand();
         getCommand("garden").setExecutor(gardenCommand);
-        getCommand("garden").setTabCompleter(gardenCommand);
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
