@@ -36,6 +36,7 @@ import com.skyblock.core.manager.TrophyFishCommand;
 import com.skyblock.core.command.MenuCommand;
 import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.StatsMenu;
+import com.skyblock.core.menu.CrimsonIsleMenu;
 import com.skyblock.core.menu.TrophyFishingMenu;
 import com.skyblock.core.manager.JerryWorkshopCommand;
 import com.skyblock.core.manager.BestiaryManager;
@@ -164,6 +165,8 @@ public final class SkyblockPlugin extends JavaPlugin {
     private SackManager sackManager;
     private BankingManager bankingManager;
     private StorageManager storageManager;
+    private GardenManager gardenManager;
+    private CrimsonIsleManager crimsonIsleManager;
     private ProfileManager profile;
 
     public static SkyblockPlugin getInstance() {
@@ -212,6 +215,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         accessoryBagManager = AccessoryBagManager.getInstance();
         sackManager = SackManager.getInstance();
         storageManager = StorageManager.getInstance();
+        gardenManager = GardenManager.getInstance();
+        gardenManager.load(getDataFolder());
+        crimsonIsleManager = CrimsonIsleManager.getInstance();
     }
 
     @Override
@@ -279,8 +285,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
-        GardenManager gardenManager = GardenManager.getInstance();
-        gardenManager.load(getDataFolder());
         GardenCommand gardenCommand = new GardenCommand(gardenManager);
         getCommand("garden").setExecutor(gardenCommand);
         getCommand("garden").setTabCompleter(gardenCommand);
@@ -440,8 +444,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         CrimsonCommand crimsonCommand = new CrimsonCommand(reputationManager);
         getCommand("crimson").setExecutor(crimsonCommand);
         getCommand("crimson").setTabCompleter(crimsonCommand);
-        // Canonical Crimson Isle coordinator over faction reputation + Kuudra tiers.
-        CrimsonIsleManager.getInstance();
+        MenuCommand crimsonIsleCommand = new MenuCommand(p -> new CrimsonIsleMenu(p.getUniqueId()).open(p));
+        if (getCommand("crimsonisle") != null) {
+            getCommand("crimsonisle").setExecutor(crimsonIsleCommand);
+            getCommand("crimsonisle").setTabCompleter(crimsonIsleCommand);
+        }
         VaultManager vaultManager = VaultManager.getInstance();
         vaultManager.load(getDataFolder());
         VaultCommand vaultCommand = new VaultCommand(vaultManager);

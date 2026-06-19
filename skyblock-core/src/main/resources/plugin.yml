@@ -211,6 +211,10 @@ commands:
     description: View and manage Crimson Isle faction and reputation.
     usage: /crimson [info|faction <faction>|reputation [faction]]
     permission: skyblock.crimson
+  crimsonisle:
+    description: Open the Crimson Isle overview menu.
+    usage: /crimsonisle
+    permission: skyblock.crimsonisle
   vault:
     description: Manage your personal vault balance and tier.
     usage: /vault [info|deposit <amount>|withdraw <amount>|upgrade]
