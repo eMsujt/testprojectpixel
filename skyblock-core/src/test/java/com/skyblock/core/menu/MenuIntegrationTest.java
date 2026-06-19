@@ -68,6 +68,7 @@ import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.model.Rarity;
+import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -2078,6 +2079,16 @@ class MenuIntegrationTest {
         @Test
         void skillXpTable_containsAllTwelveSkills() {
             assertEquals(12, SkillManager.SKILL_XP_TABLE.size());
+        }
+
+        @Test
+        void displayableSkills_oneSlotEachFitsInMenu() {
+            long displayable = java.util.Arrays.stream(Skill.values())
+                    .filter(s -> s.texture != null)
+                    .count();
+            // one slot per skill with a head texture (all but DUNGEONEERING)
+            assertEquals(Skill.values().length - 1, displayable);
+            assertTrue(displayable <= 6 * 9, "all displayed skills must fit in the menu");
         }
     }
 
