@@ -211,7 +211,7 @@ class MinionManagerTest {
     void setMaxSlots_ExpandsPerPlayerSlotCap() {
         MinionManager mgr = MinionManager.getInstance();
         UUID owner = UUID.randomUUID();
-        assertEquals(MinionManager.MAX_SLOTS, mgr.getMaxSlots(owner));
+        assertEquals(MinionManager.BASE_SLOTS, mgr.getMaxSlots(owner));
 
         mgr.setMaxSlots(owner, 15);
         assertEquals(15, mgr.getMaxSlots(owner));
@@ -237,6 +237,78 @@ class MinionManagerTest {
         assertEquals(expected, mgr.getProductionIntervalTicks(minion));
 
         mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void getSlotCount_returnsBaseSlots_forFreshPlayer() {
+        UUID owner = UUID.randomUUID();
+        assertEquals(MinionManager.BASE_SLOTS, MinionManager.getInstance().getSlotCount(owner));
+    }
+
+    @Test
+    void getSlotCount_incrementsWithUniqueMilestones() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        assertEquals(MinionManager.BASE_SLOTS, mgr.getSlotCount(owner));
+
+        // 1 unique → slot BASE_SLOTS + 1
+        mgr.registerUniqueMinion(owner, MinionType.WHEAT, MinionTier.TIER_1);
+        assertEquals(MinionManager.BASE_SLOTS + 1, mgr.getSlotCount(owner));
+    }
+
+    @Test
+    void getUniqueMinionsCount_tracksDistinctTypeTierCombos() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        assertEquals(0, mgr.getUniqueMinionsCount(owner));
+
+        mgr.registerUniqueMinion(owner, MinionType.WHEAT, MinionTier.TIER_1);
+        assertEquals(1, mgr.getUniqueMinionsCount(owner));
+
+        // Same combo again → still 1
+        mgr.registerUniqueMinion(owner, MinionType.WHEAT, MinionTier.TIER_1);
+        assertEquals(1, mgr.getUniqueMinionsCount(owner));
+
+        // Different tier → 2
+        mgr.registerUniqueMinion(owner, MinionType.WHEAT, MinionTier.TIER_2);
+        assertEquals(2, mgr.getUniqueMinionsCount(owner));
+    }
+
+    @Test
+    void placeMinion_autoRegistersUniqueMinion() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        assertEquals(0, mgr.getUniqueMinionsCount(owner));
+
+        MinionData minion = mgr.placeMinion(owner, MinionType.COAL, MinionTier.TIER_1);
+        assertEquals(1, mgr.getUniqueMinionsCount(owner));
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void upgradeMinion_autoRegistersNewTier() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        MinionData minion = mgr.placeMinion(owner, MinionType.COAL, MinionTier.TIER_1);
+        assertEquals(1, mgr.getUniqueMinionsCount(owner));
+
+        mgr.upgradeMinion(minion.id);
+        assertEquals(2, mgr.getUniqueMinionsCount(owner));
+
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void clearMinions_resetsUniqueMinions() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        mgr.placeMinion(owner, MinionType.WHEAT, MinionTier.TIER_1);
+        assertTrue(mgr.getUniqueMinionsCount(owner) > 0);
+
+        mgr.clearMinions(owner);
+        assertEquals(0, mgr.getUniqueMinionsCount(owner));
+        assertEquals(MinionManager.BASE_SLOTS, mgr.getMaxSlots(owner));
     }
 
     @Test
