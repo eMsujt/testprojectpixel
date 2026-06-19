@@ -150,6 +150,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private AuctionHouseManager auctionHouseManager;
     private PetManager petManager;
     private PetsManager petsManager;
+    private HotmManager hotmManager;
     private SkillManager skillsManager;
     private MinionManager minionManager;
     private SlayerManager slayerManager;
@@ -190,6 +191,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         petManager = PetManager.getInstance();
         petManager.load(getDataFolder());
         petsManager = PetsManager.getInstance();
+        hotmManager = HotmManager.getInstance();
+        hotmManager.load(getDataFolder());
         slayerManager = SlayerManager.getInstance();
         slayerManager.load(getDataFolder());
         trophyFishManager = TrophyFishManager.getInstance();
@@ -327,8 +330,6 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("jerryworkshop").setExecutor(jerryWorkshopCommand);
             getCommand("jerryworkshop").setTabCompleter(jerryWorkshopCommand);
         }
-        HotmManager hotmManager = HotmManager.getInstance();
-        hotmManager.load(getDataFolder());
         HOTMCommand hotmCommand = new HOTMCommand(hotmManager);
         getCommand("hotmtree").setExecutor(hotmCommand);
         getCommand("hotmtree").setTabCompleter(hotmCommand);
