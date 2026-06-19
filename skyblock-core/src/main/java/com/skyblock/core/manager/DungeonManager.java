@@ -1,11 +1,13 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.model.Stat;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -98,21 +100,34 @@ public final class DungeonManager {
         public boolean isMasterMode() { return masterMode; }
     }
 
-    /** Playable dungeon classes. */
+    /** Playable dungeon classes, each granting a set of passive stat bonuses. */
     public enum DungeonClass {
-        HEALER("Healer"),
-        MAGE("Mage"),
-        BERSERK("Berserk"),
-        ARCHER("Archer"),
-        TANK("Tank");
+        HEALER("Healer", statMap(Stat.HEALTH, 100.0, Stat.INTELLIGENCE, 50.0, Stat.HEALTH_REGEN, 25.0)),
+        MAGE("Mage", statMap(Stat.INTELLIGENCE, 100.0, Stat.ABILITY_DAMAGE, 25.0)),
+        BERSERK("Berserk", statMap(Stat.STRENGTH, 50.0, Stat.CRIT_DAMAGE, 30.0)),
+        ARCHER("Archer", statMap(Stat.CRIT_CHANCE, 15.0, Stat.CRIT_DAMAGE, 25.0, Stat.ATTACK_SPEED, 20.0)),
+        TANK("Tank", statMap(Stat.HEALTH, 150.0, Stat.DEFENSE, 50.0, Stat.TRUE_DEFENSE, 10.0));
 
         private final String displayName;
+        private final Map<Stat, Double> statBonuses;
 
-        DungeonClass(String displayName) {
+        DungeonClass(String displayName, Map<Stat, Double> statBonuses) {
             this.displayName = displayName;
+            this.statBonuses = statBonuses;
         }
 
         public String getDisplayName() { return displayName; }
+
+        /** Returns this class's passive stat bonuses (immutable). */
+        public Map<Stat, Double> getStatBonuses() { return statBonuses; }
+
+        private static Map<Stat, Double> statMap(Object... pairs) {
+            Map<Stat, Double> map = new EnumMap<>(Stat.class);
+            for (int i = 0; i < pairs.length; i += 2) {
+                map.put((Stat) pairs[i], (Double) pairs[i + 1]);
+            }
+            return Collections.unmodifiableMap(map);
+        }
     }
 
     /** All dungeon types available in SkyBlock. */
