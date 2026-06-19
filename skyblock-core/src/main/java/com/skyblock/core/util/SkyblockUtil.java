@@ -9,6 +9,10 @@ public final class SkyblockUtil {
 
     private SkyblockUtil() {}
 
+    public static ItemStack createSkull(String base64Texture) {
+        return createSkullWithTexture(base64Texture, null, null);
+    }
+
     public static ItemStack createSkullWithTexture(String base64Texture, String displayName, List<String> lore) {
         return new ItemBuilder(Material.PLAYER_HEAD)
                 .skullTexture(base64Texture)
