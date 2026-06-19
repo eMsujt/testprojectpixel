@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
-import com.skyblock.core.util.SkyblockUtil.*;
+import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

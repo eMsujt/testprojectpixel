@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.SlayerManager.SlayerBoss;
 import com.skyblock.core.manager.SlayerManager.SlayerType;
-import com.skyblock.core.util.SkyblockUtil.*;
+import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

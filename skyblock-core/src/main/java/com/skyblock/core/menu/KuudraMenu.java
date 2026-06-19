@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.manager.KuudraManager.KuudraTier;
-import com.skyblock.core.util.SkyblockUtil.*;
+import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

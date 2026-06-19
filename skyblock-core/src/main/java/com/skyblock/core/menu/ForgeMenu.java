@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.manager.ForgeManager.ForgeJob;
 import com.skyblock.core.manager.ForgeManager.ForgeRecipe;
-import com.skyblock.core.util.SkyblockUtil.*;
+import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
