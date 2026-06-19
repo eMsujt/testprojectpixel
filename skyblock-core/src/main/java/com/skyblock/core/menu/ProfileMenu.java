@@ -19,7 +19,7 @@ import java.util.UUID;
  */
 public final class ProfileMenu extends Menu {
 
-    private static final String TITLE = "§aYour SkyBlock Profile";
+    private static final String TITLE = "§b§lSkyBlock Profile";
     private static final int HEAD_SLOT = 13;
 
     private final Player player;
@@ -52,7 +52,7 @@ public final class ProfileMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.CYAN_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
