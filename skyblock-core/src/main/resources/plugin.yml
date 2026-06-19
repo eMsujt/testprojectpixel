@@ -10,6 +10,7 @@ commands:
     usage: /menu
   skyblock:
     description: Open the SkyBlock main menu.
+    aliases: [sb, sky]
     usage: /skyblock
   skills:
     description: View your SkyBlock skills.
