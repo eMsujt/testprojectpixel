@@ -2,11 +2,13 @@ package com.skyblock.core.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
@@ -137,6 +139,16 @@ public class ItemBuilder {
             skullMeta.setOwnerProfile(profile);
             item.setItemMeta(skullMeta);
         } catch (Exception ignored) {
+        }
+        return this;
+    }
+
+    /** Dyes leather armor the given {@link Color}; no-op for non-leather items. */
+    public ItemBuilder leatherColor(Color color) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof LeatherArmorMeta leatherMeta && color != null) {
+            leatherMeta.setColor(color);
+            item.setItemMeta(leatherMeta);
         }
         return this;
     }
