@@ -465,6 +465,10 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
         }
+        if (getCommand("skyblock") != null) {
+            getCommand("skyblock").setExecutor(menuCommand);
+            getCommand("skyblock").setTabCompleter(menuCommand);
+        }
         TitleManager titleManager = TitleManager.getInstance();
         titleManager.load(getDataFolder());
         TitleCommand titleCommand = new TitleCommand(titleManager);

@@ -8,6 +8,9 @@ commands:
   menu:
     description: Open the SkyBlock main menu.
     usage: /menu
+  skyblock:
+    description: Open the SkyBlock main menu.
+    usage: /skyblock
   skills:
     description: View your SkyBlock skills.
     usage: /skills [skill]
