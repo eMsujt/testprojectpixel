@@ -123,6 +123,8 @@ import com.skyblock.core.rift.RiftListener;
 import com.skyblock.core.manager.RiftManager;
 import com.skyblock.core.crystalhollows.CrystalHollowsCommand;
 import com.skyblock.core.manager.CrystalHollowsManager;
+import com.skyblock.core.manager.CollectionsManager;
+import com.skyblock.core.manager.BankingManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -147,6 +149,8 @@ public final class SkyblockPlugin extends JavaPlugin {
     private DungeonManager dungeonManager;
     private EssenceManager essenceManager;
     private SackManager sackManager;
+    private CollectionsManager collectionsManager;
+    private BankingManager bankingManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -157,6 +161,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         instance = this;
         bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
+        bankingManager = BankingManager.getInstance();
         BankCommand bankCommand = new BankCommand(bankManager);
         getCommand("bank").setExecutor(bankCommand);
         getCommand("bank").setTabCompleter(bankCommand);
@@ -358,16 +363,17 @@ public final class SkyblockPlugin extends JavaPlugin {
         CombatCommand combatCommand = new CombatCommand(combatManager);
         getCommand("combat").setExecutor(combatCommand);
         getCommand("combat").setTabCompleter(combatCommand);
-        CollectionManager collectionsManager = CollectionManager.getInstance();
-        collectionsManager.load(getDataFolder());
-        CollectionsCommand collectionsCommand = new CollectionsCommand(collectionsManager);
+        collectionsManager = CollectionsManager.getInstance();
+        CollectionManager collectionManager = CollectionManager.getInstance();
+        collectionManager.load(getDataFolder());
+        CollectionsCommand collectionsCommand = new CollectionsCommand(collectionManager);
         getCommand("collections").setExecutor(collectionsCommand);
         getCommand("collections").setTabCompleter(collectionsCommand);
         if (getCommand("collection") != null) {
             getCommand("collection").setExecutor(collectionsCommand);
             getCommand("collection").setTabCompleter(collectionsCommand);
         }
-        getServer().getPluginManager().registerEvents(new CollectionListener(collectionsManager), this);
+        getServer().getPluginManager().registerEvents(new CollectionListener(collectionManager), this);
         ChatManager chatManager = ChatManager.getInstance();
         ChatCommand chatCommand = new ChatCommand(chatManager);
         getCommand("chat").setExecutor(chatCommand);
