@@ -4,8 +4,8 @@ import com.skyblock.core.manager.CrimsonIsleManager;
 import com.skyblock.core.manager.KuudraManager.KuudraTier;
 import com.skyblock.core.manager.ReputationManager;
 import com.skyblock.core.manager.ReputationManager.Faction;
-import com.skyblock.core.util.MenuUtils;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -27,7 +27,7 @@ public final class CrimsonIsleMenu extends Menu {
     @Override
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.RED_STAINED_GLASS_PANE).displayName("§r").build();
-        MenuUtils.fillBorder(getRows(), this::setItem, pane);
+        SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         CrimsonIsleManager cim = CrimsonIsleManager.getInstance();
         ReputationManager rm = cim.reputation();

@@ -23,10 +23,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
-public final class SkyblockUtil {
+public final class SkyblockUtils {
 
-    private SkyblockUtil() {}
+    private SkyblockUtils() {}
 
     public static ItemStack createSkull(String base64Texture) {
         return createSkullWithTexture(base64Texture, null, null);
@@ -38,6 +39,24 @@ public final class SkyblockUtil {
                 .displayName(displayName)
                 .lore(lore)
                 .build();
+    }
+
+    public static ItemStack createNamedItem(Material material, String name, List<String> lore) {
+        return new ItemBuilder(material).displayName(name).lore(lore).build();
+    }
+
+    /**
+     * Fills the border of an N-row (9-wide) inventory with {@code pane}.
+     * Border = top row, bottom row, leftmost and rightmost column of middle rows.
+     */
+    public static void fillBorder(int rows, BiConsumer<Integer, ItemStack> setter, ItemStack pane) {
+        int size = rows * 9;
+        for (int slot = 0; slot < 9; slot++) setter.accept(slot, pane);
+        for (int slot = size - 9; slot < size; slot++) setter.accept(slot, pane);
+        for (int row = 1; row < rows - 1; row++) {
+            setter.accept(row * 9, pane);
+            setter.accept(row * 9 + 8, pane);
+        }
     }
 
     /** Fluent builder for constructing {@link ItemStack}s used in GUI menus and elsewhere. */

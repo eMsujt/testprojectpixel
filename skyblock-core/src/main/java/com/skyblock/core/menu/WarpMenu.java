@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.util.SkyblockUtil.*;
+import com.skyblock.core.util.SkyblockUtils.*;
 import com.skyblock.core.warp.WarpManager;
 import com.skyblock.core.warp.WarpManager.WarpLocation;
 import org.bukkit.Material;

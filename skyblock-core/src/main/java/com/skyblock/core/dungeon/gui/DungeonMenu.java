@@ -3,7 +3,7 @@ package com.skyblock.core.dungeon.gui;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonManager.DungeonFloor;
 import com.skyblock.core.menu.Menu;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

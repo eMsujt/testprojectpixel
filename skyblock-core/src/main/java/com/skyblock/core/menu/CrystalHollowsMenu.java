@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.CrystalHollowsManager.CrystalType;
 import com.skyblock.core.manager.CrystalHollowsManager.PowderType;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

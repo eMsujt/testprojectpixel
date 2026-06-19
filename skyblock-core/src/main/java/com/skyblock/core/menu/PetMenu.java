@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.model.Rarity;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;

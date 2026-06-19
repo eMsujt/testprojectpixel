@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.MuseumManager;
 import com.skyblock.core.manager.MuseumManager.DonationMilestone;
 import com.skyblock.core.manager.MuseumManager.MuseumCategory;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

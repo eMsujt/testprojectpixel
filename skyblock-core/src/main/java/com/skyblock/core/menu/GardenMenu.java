@@ -6,7 +6,7 @@ import com.skyblock.core.manager.GardenManager.GardenCrop;
 import com.skyblock.core.manager.GardenManager.PlotTier;
 import com.skyblock.core.manager.GardenManager.VisitorOffer;
 import com.skyblock.core.manager.GardenManager.VisitorType;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
