@@ -68,7 +68,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new CraftingMenu().open(player);
+                    new CraftingMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
                 });
 
         setItem(13, new ItemBuilder(Material.LEATHER_CHESTPLATE)
