@@ -298,7 +298,8 @@ commands:
     usage: /storage [info|upgrade|reset]
     permission: skyblock.storage
   dungeons:
-    description: Open the Dungeons menu.
+    description: Open the Catacombs menu
+    aliases: [dungeon, catacombs]
     usage: /dungeons
     permission: skyblock.dungeons
   collectionsmenu:
