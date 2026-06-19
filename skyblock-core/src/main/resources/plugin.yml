@@ -302,6 +302,10 @@ commands:
     description: Open the Minions GUI.
     usage: /minionsmenu
     permission: skyblock.minionsmenu
+  island:
+    description: Open your SkyBlock island menu.
+    usage: /island
+    permission: skyblock.island
 
 permissions:
   skyblock.use:
@@ -450,4 +454,7 @@ permissions:
     default: true
   skyblock.minionsmenu:
     description: Use the /minionsmenu command to open the Minions GUI.
+    default: true
+  skyblock.island:
+    description: Use the /island command to open your SkyBlock island menu.
     default: true
