@@ -13,14 +13,16 @@ import java.util.UUID;
 public final class RunecraftingManager {
 
     public enum RuneType {
-        SNOW(3),
-        ICE(3),
+        FIERY(3),
+        ICY(3),
+        GOLDEN(3),
+        SMOKY(3),
+        SLIMY(3),
         BLOOD(3),
-        RAINBOW(3),
+        CLOUDY(3),
         ENCHANT(3),
         GRAND(3),
-        COUTURE(3),
-        EXOTIC(3);
+        AMBER(3);
 
         private final int maxLevel;
 
