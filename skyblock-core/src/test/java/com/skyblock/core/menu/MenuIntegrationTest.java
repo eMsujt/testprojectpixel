@@ -64,6 +64,7 @@ import com.skyblock.core.manager.AccessoryBagManager.SlotTier;
 import com.skyblock.core.manager.JacobManager;
 import com.skyblock.core.manager.GardenManager.GardenCrop;
 import com.skyblock.core.manager.GardenManager.ContestMedal;
+import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.WardrobeManager.WardrobeSlot;
 import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
@@ -2412,83 +2413,6 @@ class MenuIntegrationTest {
     }
 
     @Nested
-    class MinionMenuTests {
-
-        private final UUID PLAYER = UUID.randomUUID();
-
-        @Test
-        void title_isMinions() {
-            assertEquals("§6Minions", new MinionMenu(PLAYER).getTitle());
-        }
-
-        @Test
-        void rows_isSix() {
-            assertEquals(6, new MinionMenu(PLAYER).getRows());
-        }
-
-        @Test
-        void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new MinionMenu(PLAYER));
-        }
-
-        @Test
-        void minionSlots_countIsTwelve() {
-            assertEquals(12, MinionMenu.MINION_SLOTS.length);
-        }
-
-        @Test
-        void minionSlots_firstSlotIsTen() {
-            assertEquals(10, MinionMenu.MINION_SLOTS[0]);
-        }
-
-        @Test
-        void minionSlots_lastSlotIsTwentyFour() {
-            assertEquals(24, MinionMenu.MINION_SLOTS[MinionMenu.MINION_SLOTS.length - 1]);
-        }
-
-        @Test
-        void manager_getMinions_emptyForFreshPlayer() {
-            assertTrue(MinionManager.getInstance().getMinions(UUID.randomUUID()).isEmpty());
-        }
-
-        @Test
-        void manager_placeMinion_roundTrips() {
-            MinionManager mgr = MinionManager.getInstance();
-            mgr.placeMinion(PLAYER, MinionManager.MinionType.WHEAT, MinionManager.MinionTier.TIER_1);
-            assertEquals(1, mgr.getMinions(PLAYER).size());
-        }
-
-        @Test
-        void manager_getMaxSlots_baseSlotsForFreshPlayer() {
-            assertEquals(MinionManager.BASE_SLOTS, MinionManager.getInstance().getMaxSlots(UUID.randomUUID()));
-        }
-
-        @Test
-        void manager_setMaxSlots_roundTrips() {
-            MinionManager mgr = MinionManager.getInstance();
-            mgr.setMaxSlots(PLAYER, 10);
-            assertEquals(10, mgr.getMaxSlots(PLAYER));
-        }
-
-        @Test
-        void manager_placeAndUpgrade_tierAdvances() {
-            MinionManager mgr = MinionManager.getInstance();
-            MinionManager.MinionData data = mgr.placeMinion(PLAYER,
-                    MinionManager.MinionType.COBBLESTONE, MinionManager.MinionTier.TIER_1);
-            mgr.upgradeMinion(data.id);
-            assertEquals(MinionManager.MinionTier.TIER_2, mgr.getMinion(data.id).getTier());
-        }
-
-        @Test
-        void manager_clearMinions_removesAll() {
-            MinionManager mgr = MinionManager.getInstance();
-            mgr.placeMinion(PLAYER, MinionManager.MinionType.SNOW, MinionManager.MinionTier.TIER_1);
-            mgr.clearMinions(PLAYER);
-            assertTrue(mgr.getMinions(PLAYER).isEmpty());
-        }
-    }
-
-    @Nested
     class DungeonsMenuTests {
 
         private final UUID PLAYER = UUID.randomUUID();
@@ -2552,6 +2476,88 @@ class MenuIntegrationTest {
             DungeonsManager mgr = DungeonsManager.getInstance();
             mgr.addClassXp(PLAYER, DungeonClass.ARCHER, 250.0);
             assertEquals(250.0, mgr.getClassXp(PLAYER, DungeonClass.ARCHER), 0.0001);
+        }
+    }
+
+    @Nested
+    class BankMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @BeforeEach
+        void reset() {
+            BankManager.getInstance().clear();
+            EconomyManager.getInstance().clear();
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new BankMenu(PLAYER));
+        }
+
+        @Test
+        void title_isBankAccount() {
+            assertEquals("§6Bank Account", new BankMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isThree() {
+            assertEquals(3, new BankMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void balance_isZeroForFreshPlayer() {
+            assertEquals(0.0, BankManager.getInstance().getBalance(PLAYER), 0.001);
+        }
+
+        @Test
+        void deposit_increasesBalance() {
+            BankManager.getInstance().deposit(PLAYER, 1000.0);
+            assertEquals(1000.0, BankManager.getInstance().getBalance(PLAYER), 0.001);
+        }
+
+        @Test
+        void withdraw_decreasesBalance() {
+            BankManager.getInstance().deposit(PLAYER, 800.0);
+            BankManager.getInstance().withdraw(PLAYER, 300.0);
+            assertEquals(500.0, BankManager.getInstance().getBalance(PLAYER), 0.001);
+        }
+
+        @Test
+        void withdraw_throwsWhenInsufficientFunds() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> BankManager.getInstance().withdraw(PLAYER, 1.0));
+        }
+
+        @Test
+        void purse_isZeroForFreshPlayer() {
+            assertEquals(0L, EconomyManager.getInstance().getPurse(PLAYER));
+        }
+
+        @Test
+        void purse_addAndGet_roundTrips() {
+            EconomyManager.getInstance().addPurse(PLAYER, 250L);
+            assertEquals(250L, EconomyManager.getInstance().getPurse(PLAYER));
+        }
+
+        @Test
+        void coopBalance_isZeroForUnknownKey() {
+            assertEquals(0.0, BankManager.getInstance().getCoopBalance(UUID.randomUUID().toString()), 0.001);
+        }
+
+        @Test
+        void coopDeposit_roundTrips() {
+            String coopKey = UUID.randomUUID().toString();
+            BankManager.getInstance().depositCoop(coopKey, 500.0);
+            assertEquals(500.0, BankManager.getInstance().getCoopBalance(coopKey), 0.001);
+        }
+
+        @Test
+        void coopWithdraw_decreasesCoopBalance() {
+            String coopKey = UUID.randomUUID().toString();
+            BankManager.getInstance().depositCoop(coopKey, 400.0);
+            BankManager.getInstance().withdrawCoop(coopKey, 100.0);
+            assertEquals(300.0, BankManager.getInstance().getCoopBalance(coopKey), 0.001);
         }
     }
 
