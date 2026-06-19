@@ -436,6 +436,12 @@ public final class PetManager {
     /** Held item per owned pet, keyed by player then pet UUID. */
     private final Map<UUID, Map<UUID, PetItem>> petHeldItems = new HashMap<>();
 
+    /** Total XP of the player's currently active pet, keyed by player UUID. */
+    private final Map<UUID, Long> petXp = new HashMap<>();
+
+    /** Cached level of the player's currently active pet, keyed by player UUID. */
+    private final Map<UUID, Integer> petLevel = new HashMap<>();
+
     /** Event history per player. */
     private final Map<UUID, List<String>> petHistory = new HashMap<>();
 
@@ -529,6 +535,47 @@ public final class PetManager {
         }
         Map<UUID, Pet> collection = playerPets.get(playerId);
         return collection == null ? null : collection.get(petId);
+    }
+
+    /**
+     * Adds XP to the player's currently active pet. If no pet is equipped the call is a no-op.
+     * Updates {@code petXp} and recomputes {@code petLevel} from the pet's rarity XP table.
+     *
+     * @param playerId the player gaining experience
+     * @param amount   XP to add, must not be negative
+     * @return the active pet's new cumulative XP, or -1 if no pet is equipped
+     */
+    public long addPetXp(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        Pet active = getActivePet(playerId);
+        if (active == null) {
+            return -1L;
+        }
+        long prev = petXp.getOrDefault(playerId, 0L);
+        long total = prev + amount;
+        petXp.put(playerId, total);
+        int lvlBefore = petLevel.getOrDefault(playerId, 1);
+        int lvlAfter = computeLevel(total, active.rarity);
+        petLevel.put(playerId, lvlAfter);
+        if (lvlAfter > lvlBefore) {
+            recordPetEvent(playerId, "Active pet " + active.type.name() + " leveled up to " + lvlAfter);
+        }
+        return total;
+    }
+
+    /** Returns the cumulative XP of the player's currently active pet (0 if none or no XP yet). */
+    public long getPetXp(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return petXp.getOrDefault(playerId, 0L);
+    }
+
+    /** Returns the cached level of the player's currently active pet (1 if none or no XP yet). */
+    public int getPetLevel(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return petLevel.getOrDefault(playerId, 1);
     }
 
     /** Returns an unmodifiable list of all pets owned by the player. */
@@ -729,6 +776,8 @@ public final class PetManager {
         petExperience.clear();
         petHeldItems.clear();
         petHistory.clear();
+        petXp.clear();
+        petLevel.clear();
         for (String key : cfg.getKeys(false)) {
             if ("petHistory".equals(key)) {
                 continue;
@@ -868,6 +917,8 @@ public final class PetManager {
         hadData |= petExperience.remove(playerId) != null;
         hadData |= petHeldItems.remove(playerId) != null;
         petHistory.remove(playerId);
+        petXp.remove(playerId);
+        petLevel.remove(playerId);
         return hadData;
     }
 
