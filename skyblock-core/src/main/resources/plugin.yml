@@ -102,9 +102,6 @@ commands:
     description: Open the Dojo challenge scores menu.
     usage: /dojo
     permission: skyblock.dojo
-  dungeon:
-    description: Dungeon system
-    usage: /dungeon <join|leave|stats|shop>
   dungeonclass:
     description: View and select your dungeon class.
     usage: /dungeonclass [list|select <class>|info <class>]
