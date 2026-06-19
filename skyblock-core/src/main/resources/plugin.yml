@@ -158,6 +158,10 @@ commands:
     description: View your trophy fish catch counts and drop chances.
     usage: /trophyfish [info|reset]
     permission: skyblock.trophyfish
+  trophyfishing:
+    description: Open the Trophy Fishing GUI showing all 22 trophy fish types.
+    usage: /trophyfishing
+    permission: skyblock.trophyfish
   harp:
     description: View Melody's Harp song progress and Intelligence bonus.
     usage: /harp [info|stats|reset]
@@ -222,6 +226,10 @@ commands:
   accessories:
     description: View and manage your accessory bag.
     usage: /accessories <list|add|remove|bonuses|rarity|tier>
+    permission: skyblock.accessories
+  accessorybag:
+    description: Open the Accessory Bag GUI.
+    usage: /accessorybag [list|add|remove|bonuses|rarity|tier]
     permission: skyblock.accessories
 
 permissions:

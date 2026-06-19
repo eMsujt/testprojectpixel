@@ -31,6 +31,7 @@ import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
+import com.skyblock.core.manager.TrophyFishingCommand;
 import com.skyblock.core.manager.JerryWorkshopCommand;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.HarpManager;
@@ -124,6 +125,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private StatManager statManager;
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
+    private TrophyFishManager trophyFishManager;
     private DungeonClassManager dungeonClassManager;
     private ForgeManager forgeManager;
     private AuctionHouseManager auctionHouseManager;
@@ -217,7 +219,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("slayer").setTabCompleter(slayerCommand);
         FishingManager fishingManager = FishingManager.getInstance();
         fishingManager.load(getDataFolder());
-        TrophyFishManager trophyFishManager = TrophyFishManager.getInstance();
+        trophyFishManager = TrophyFishManager.getInstance();
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);
         getCommand("fishing").setTabCompleter(fishingCommand);
@@ -238,6 +240,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("trophyfish") != null) {
             getCommand("trophyfish").setExecutor(trophyFishCommand);
             getCommand("trophyfish").setTabCompleter(trophyFishCommand);
+        }
+        TrophyFishingCommand trophyFishingCommand = new TrophyFishingCommand(trophyFishManager);
+        if (getCommand("trophyfishing") != null) {
+            getCommand("trophyfishing").setExecutor(trophyFishingCommand);
+            getCommand("trophyfishing").setTabCompleter(trophyFishingCommand);
         }
         HarpManager harpManager = HarpManager.getInstance();
         harpManager.load(getDataFolder());
@@ -445,6 +452,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         AccessoryBagCommand accessoryBagCommand = new AccessoryBagCommand(accessoryBagManager);
         getCommand("accessories").setExecutor(accessoryBagCommand);
         getCommand("accessories").setTabCompleter(accessoryBagCommand);
+        if (getCommand("accessorybag") != null) {
+            getCommand("accessorybag").setExecutor(accessoryBagCommand);
+            getCommand("accessorybag").setTabCompleter(accessoryBagCommand);
+        }
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
