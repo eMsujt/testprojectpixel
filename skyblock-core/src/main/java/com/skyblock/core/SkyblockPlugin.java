@@ -148,6 +148,7 @@ import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.BankingManager;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageCommand;
+import com.skyblock.core.manager.JacobsContestManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -627,6 +628,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("storage").setExecutor(storageCommand);
         getCommand("storage").setTabCompleter(storageCommand);
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
+        JacobsContestManager.getInstance();
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
         HarpManager.getInstance().load(getDataFolder());
