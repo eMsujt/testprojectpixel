@@ -227,6 +227,18 @@ commands:
     description: Open the Chocolate Factory menu.
     usage: /chocolatefactory
     permission: skyblock.chocolatefactory
+  bazaarmenu:
+    description: Open the Bazaar GUI.
+    usage: /bazaarmenu
+    permission: skyblock.bazaarmenu
+  foragingmenu:
+    description: Open the Foraging GUI.
+    usage: /foragingmenu
+    permission: skyblock.foragingmenu
+  jacobscontest:
+    description: Open the Jacob's Farming Contest menu.
+    usage: /jacobscontest
+    permission: skyblock.jacobscontest
   vault:
     description: Manage your personal vault balance and tier.
     usage: /vault [info|deposit <amount>|withdraw <amount>|upgrade]
@@ -406,4 +418,13 @@ permissions:
     default: true
   skyblock.storage:
     description: Use the /storage command to view and manage storage pages.
+    default: true
+  skyblock.bazaarmenu:
+    description: Use the /bazaarmenu command to open the Bazaar GUI.
+    default: true
+  skyblock.foragingmenu:
+    description: Use the /foragingmenu command to open the Foraging GUI.
+    default: true
+  skyblock.jacobscontest:
+    description: Use the /jacobscontest command to open Jacob's Farming Contest.
     default: true

@@ -90,7 +90,10 @@ import com.skyblock.core.manager.DojoManager;
 import com.skyblock.core.manager.CommissionManager;
 import com.skyblock.core.chocolate.ChocolateFactoryManager;
 import com.skyblock.core.menu.MiningCommissionMenu;
+import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.ChocolateFactoryMenu;
+import com.skyblock.core.menu.ForagingMenu;
+import com.skyblock.core.menu.JacobsContestMenu;
 import com.skyblock.core.vault.VaultCommand;
 import com.skyblock.core.vault.VaultManager;
 import com.skyblock.core.booster.BoosterCommand;
@@ -478,6 +481,21 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("chocolatefactory") != null) {
             getCommand("chocolatefactory").setExecutor(chocolateFactoryCommand);
             getCommand("chocolatefactory").setTabCompleter(chocolateFactoryCommand);
+        }
+        MenuCommand bazaarMenuCommand = new MenuCommand(p -> new BazaarMenu(p).open(p));
+        if (getCommand("bazaarmenu") != null) {
+            getCommand("bazaarmenu").setExecutor(bazaarMenuCommand);
+            getCommand("bazaarmenu").setTabCompleter(bazaarMenuCommand);
+        }
+        MenuCommand foragingMenuCommand = new MenuCommand(p -> new ForagingMenu(p.getUniqueId()).open(p));
+        if (getCommand("foragingmenu") != null) {
+            getCommand("foragingmenu").setExecutor(foragingMenuCommand);
+            getCommand("foragingmenu").setTabCompleter(foragingMenuCommand);
+        }
+        MenuCommand jacobsContestCommand = new MenuCommand(p -> new JacobsContestMenu(p.getUniqueId()).open(p));
+        if (getCommand("jacobscontest") != null) {
+            getCommand("jacobscontest").setExecutor(jacobsContestCommand);
+            getCommand("jacobscontest").setTabCompleter(jacobsContestCommand);
         }
         VaultManager vaultManager = VaultManager.getInstance();
         vaultManager.load(getDataFolder());
