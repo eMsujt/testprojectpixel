@@ -5,19 +5,12 @@ import com.skyblock.core.manager.BankManager.BankTier;
 import com.skyblock.core.manager.BankManager.BankType;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-/**
- * 54-slot Bank overview menu opened by {@code /bank} with no arguments.
- *
- * <p>Slot 11 is a gold-block "Deposit" button showing the player's purse
- * balance; slot 13 shows the personal bank balance as a gold-ingot item;
- * slot 15 is a chest "Withdraw" button. Top and bottom rows are gray-pane
- * borders.</p>
- */
 public final class BankingMenu extends Menu {
 
     static final int DEPOSIT_SLOT = 11;
@@ -26,9 +19,9 @@ public final class BankingMenu extends Menu {
 
     private final UUID playerId;
 
-    public BankingMenu(UUID playerId) {
-        super("§6Bank", 6);
-        this.playerId = playerId;
+    public BankingMenu(Player player) {
+        super("§6Banking", 6);
+        this.playerId = player.getUniqueId();
     }
 
     @Override
