@@ -98,7 +98,7 @@ public final class MiningCommand implements TabExecutor {
     private void handleZones(Player player) {
         int level = miningManager.getLevel(player.getUniqueId());
         player.sendMessage("=== Mining Zones (your level: " + level + ") ===");
-        for (MiningManager.MiningZone zone : MiningManager.MiningZone.values()) {
+        for (MiningManager.MiningArea zone : MiningManager.MiningArea.values()) {
             String status = level >= zone.getMinLevel() ? "Unlocked" : "Requires level " + zone.getMinLevel();
             player.sendMessage("  " + zone.getDisplayName() + ": " + status);
         }
