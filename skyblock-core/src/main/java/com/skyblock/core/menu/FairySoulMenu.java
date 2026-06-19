@@ -7,35 +7,20 @@ import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * 54-slot Fairy Soul overview menu. Shows each SkyBlock island that contains
- * fairy souls (Hub, Farming Islands, Spider's Den, The End, Crimson Isle,
- * Deep Caverns, The Park, Dungeon Hub) as a thematic block item with the
- * player's found / total count for that island, plus an overall summary of
- * the permanent stat bonuses earned.
+ * 54-slot Fairy Soul overview menu. The top row (slots 0–7) shows one
+ * colored-wool item per island: GREEN = all souls found, YELLOW = partially
+ * found, RED = none found. Slot 49 summarises total progress and earned
+ * stat bonuses.
  */
 public final class FairySoulMenu extends Menu {
 
-    static final int[] ISLAND_SLOTS = {20, 21, 22, 23, 24, 30, 31, 32};
+    static final int[] ISLAND_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7};
 
     private static final int SUMMARY_SLOT = 49;
-
-    private static final Map<FairyIsland, Material> ISLAND_ICONS = new EnumMap<>(FairyIsland.class);
-
-    static {
-        ISLAND_ICONS.put(FairyIsland.HUB,             Material.GRASS_BLOCK);
-        ISLAND_ICONS.put(FairyIsland.FARMING_ISLANDS, Material.WHEAT);
-        ISLAND_ICONS.put(FairyIsland.SPIDERS_DEN,     Material.COBWEB);
-        ISLAND_ICONS.put(FairyIsland.THE_END,         Material.END_STONE);
-        ISLAND_ICONS.put(FairyIsland.CRIMSON_ISLE,    Material.NETHERRACK);
-        ISLAND_ICONS.put(FairyIsland.DEEP_CAVERNS,    Material.STONE);
-        ISLAND_ICONS.put(FairyIsland.THE_PARK,        Material.OAK_SAPLING);
-        ISLAND_ICONS.put(FairyIsland.DUNGEON_HUB,     Material.MOSSY_COBBLESTONE);
-    }
 
     private final UUID playerId;
 
@@ -48,8 +33,7 @@ public final class FairySoulMenu extends Menu {
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
 
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
-        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+        for (int slot = 8; slot < 54; slot++) setItem(slot, pane);
 
         FairySoulManager manager = FairySoulManager.getInstance();
         FairyIsland[] islands = FairyIsland.values();
@@ -57,12 +41,22 @@ public final class FairySoulMenu extends Menu {
         for (int i = 0; i < islands.length; i++) {
             FairyIsland island = islands[i];
             int found = manager.getFoundCount(playerId, island);
+            int total = island.getSoulCount();
 
-            setItem(ISLAND_SLOTS[i], new ItemBuilder(ISLAND_ICONS.get(island))
+            Material wool;
+            if (found == total) {
+                wool = Material.GREEN_WOOL;
+            } else if (found > 0) {
+                wool = Material.YELLOW_WOOL;
+            } else {
+                wool = Material.RED_WOOL;
+            }
+
+            setItem(ISLAND_SLOTS[i], new ItemBuilder(wool)
                     .displayName("§d" + island.getDisplayName())
                     .lore(
                             "§7Fairy Souls found:",
-                            "§e" + found + "§7/§e" + island.getSoulCount())
+                            "§e" + found + "§7/§e" + total)
                     .build());
         }
 
