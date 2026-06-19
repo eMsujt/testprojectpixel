@@ -175,6 +175,7 @@ public final class BestiaryManager {
             this.mobTypes    = mobTypes;
         }
 
+        /** Returns this family's human-readable display name. */
         public String getDisplayName() {
             return displayName;
         }
@@ -187,6 +188,7 @@ public final class BestiaryManager {
 
     private BestiaryManager() {}
 
+    /** Returns the singleton instance. */
     public static BestiaryManager getInstance() {
         return INSTANCE;
     }
