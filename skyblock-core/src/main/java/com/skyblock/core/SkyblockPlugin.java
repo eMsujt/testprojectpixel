@@ -63,6 +63,7 @@ import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.command.IslandCommand;
+import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
@@ -188,6 +189,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private CommissionManager commissionManager;
     private ChocolateFactoryManager chocolateFactoryManager;
     private EnchantingManager enchantingManager;
+    private IslandManager islandManager;
     private ProfileManager profile;
 
     public static SkyblockPlugin getInstance() {
@@ -237,6 +239,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         accessoryBagManager = AccessoryBagManager.getInstance();
         sackManager = SackManager.getInstance();
         storageManager = StorageManager.getInstance();
+        islandManager = IslandManager.getInstance();
+        islandManager.load(getDataFolder());
         gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
         crimsonIsleManager = CrimsonIsleManager.getInstance();
@@ -641,6 +645,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         DungeonManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());
         fishingManager.save(getDataFolder());
+        IslandManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
         HeartOfTheMountainManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
