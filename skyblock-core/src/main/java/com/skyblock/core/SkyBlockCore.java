@@ -282,6 +282,7 @@ public final class SkyBlockCore extends JavaPlugin {
         riftManager = RiftManager.getInstance();
         minionManager = MinionManager.getInstance();
         minionManager.load(getDataFolder());
+        minionManager.startTickTask(this);
         forgeManager = ForgeManager.getInstance();
         statManager = StatManager.getInstance();
         wardrobeManager = WardrobeManager.getInstance();
@@ -709,6 +710,7 @@ public final class SkyBlockCore extends JavaPlugin {
         KuudraManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
         ReforgeManager.getInstance().save(getDataFolder());
+        MinionManager.getInstance().stopTickTask();
         MinionManager.getInstance().save(getDataFolder());
         SkillManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());

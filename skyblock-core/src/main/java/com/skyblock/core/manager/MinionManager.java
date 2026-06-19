@@ -1,6 +1,9 @@
 package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -285,6 +288,12 @@ public final class MinionManager {
     /** Per-player set of unique minion "TYPE:TIER" strings ever placed or upgraded to. */
     private final Map<UUID, Set<String>> uniqueMinions = new HashMap<>();
 
+    /** Interval (in server ticks) between minion production passes; 20 ticks = 1 second. */
+    private static final long TICK_INTERVAL_TICKS = 20L;
+
+    /** Repeating production task, or {@code null} when not running. */
+    private BukkitTask tickTask;
+
     private MinionManager() {
     }
 
@@ -553,6 +562,42 @@ public final class MinionManager {
         Objects.requireNonNull(minionId, "minionId");
         MinionData data = minions.get(minionId);
         return data == null ? 0 : tick(data);
+    }
+
+    /**
+     * Advances every tracked minion by one production tick.
+     * Returns the total number of resources produced this pass.
+     */
+    public int tickAll() {
+        int produced = 0;
+        for (MinionData data : minions.values()) {
+            produced += tick(data);
+        }
+        return produced;
+    }
+
+    /**
+     * Starts the repeating production task that calls {@link #tickAll()} every
+     * {@value #TICK_INTERVAL_TICKS} server ticks. Idempotent: a running task is
+     * cancelled and replaced.
+     */
+    public void startTickTask(JavaPlugin plugin) {
+        Objects.requireNonNull(plugin, "plugin");
+        stopTickTask();
+        tickTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                tickAll();
+            }
+        }.runTaskTimer(plugin, TICK_INTERVAL_TICKS, TICK_INTERVAL_TICKS);
+    }
+
+    /** Cancels the repeating production task if it is running. */
+    public void stopTickTask() {
+        if (tickTask != null) {
+            tickTask.cancel();
+            tickTask = null;
+        }
     }
 
     /** Removes all of the owner's minions and state; returns how many were removed. */
