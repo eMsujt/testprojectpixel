@@ -17,7 +17,6 @@
         <module>enchantments</module>
         <module>items</module>
         <module>dungeons</module>
-        <module>foraging</module>
         <module>farming</module>
 
         <!-- Cohesive modules consolidating former thin single-feature modules -->
