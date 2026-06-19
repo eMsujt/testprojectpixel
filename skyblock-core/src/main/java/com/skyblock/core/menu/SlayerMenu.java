@@ -1,10 +1,12 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.SlayerManager.SlayerBoss;
 import com.skyblock.core.manager.SlayerManager.SlayerType;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumMap;
@@ -17,7 +19,7 @@ import java.util.UUID;
  * Voidgloom Seraph / Inferno Demonlord) as mob-head items with the
  * player's current level, XP and kill count for each {@link SlayerType}.
  */
-public final class SlayerMenu extends Menu {
+public final class SlayerMenu extends AbstractMenu {
 
     static final int[] BOSS_SLOTS = {20, 21, 22, 23, 24};
 
@@ -41,16 +43,14 @@ public final class SlayerMenu extends Menu {
         HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_POWDER);
     }
 
-    private final UUID playerId;
-
-    public SlayerMenu(UUID playerId) {
-        super("§c§lSlayer Quests", 6);
-        this.playerId = playerId;
+    public SlayerMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§c§lSlayer Quests", 54);
     }
 
     @Override
-    protected void build() {
-        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
+        ItemStack pane = SkyblockUtils.buildItem(Material.RED_STAINED_GLASS_PANE, "§r");
 
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;

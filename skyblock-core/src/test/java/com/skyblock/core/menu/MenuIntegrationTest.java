@@ -717,19 +717,29 @@ class MenuIntegrationTest {
     @Nested
     class SlayerMenuTests {
 
+        private SkyblockPlugin mockPlugin;
+        private Player mockPlayer;
+
+        @BeforeEach
+        void setup() {
+            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlayer = mock(Player.class);
+            when(mockPlayer.getUniqueId()).thenReturn(UUID.randomUUID());
+        }
+
         @Test
         void title_isSlayers() {
-            assertEquals("§c§lSlayer Quests", new SlayerMenu(UUID.randomUUID()).getTitle());
+            assertEquals("§c§lSlayer Quests", new SlayerMenu(mockPlugin, mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new SlayerMenu(UUID.randomUUID()).getRows());
+            assertEquals(6, new SlayerMenu(mockPlugin, mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new SlayerMenu(UUID.randomUUID()));
+            assertDoesNotThrow(() -> new SlayerMenu(mockPlugin, mockPlayer));
         }
 
         @Test
@@ -756,11 +766,13 @@ class MenuIntegrationTest {
 
         @Test
         void differentOwners_doNotShareState() {
-            UUID a = UUID.randomUUID();
-            UUID b = UUID.randomUUID();
+            Player a = mock(Player.class);
+            when(a.getUniqueId()).thenReturn(UUID.randomUUID());
+            Player b = mock(Player.class);
+            when(b.getUniqueId()).thenReturn(UUID.randomUUID());
             assertDoesNotThrow(() -> {
-                new SlayerMenu(a);
-                new SlayerMenu(b);
+                new SlayerMenu(mockPlugin, a);
+                new SlayerMenu(mockPlugin, b);
             });
         }
     }
