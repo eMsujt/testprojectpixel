@@ -49,6 +49,7 @@ import com.skyblock.core.manager.MuseumManager.DonationMilestone;
 import com.skyblock.core.manager.MuseumManager.MuseumCategory;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.RiftManager;
+import com.skyblock.core.manager.RiftManager.RiftArea;
 import com.skyblock.core.manager.RiftManager.RiftData;
 import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.manager.PetManager.PetType;
@@ -704,9 +705,14 @@ class MenuIntegrationTest {
 
         private final UUID PLAYER = UUID.randomUUID();
 
-        @BeforeEach
-        void reset() {
+        @AfterEach
+        void cleanup() {
             RiftManager.getInstance().reset(PLAYER);
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new RiftMenu(PLAYER));
         }
 
         @Test
@@ -720,8 +726,23 @@ class MenuIntegrationTest {
         }
 
         @Test
-        void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new RiftMenu(PLAYER));
+        void summarySlot_isFour() {
+            assertEquals(4, RiftMenu.SUMMARY_SLOT);
+        }
+
+        @Test
+        void zoneSlots_countIsSeven() {
+            assertEquals(7, RiftMenu.ZONE_SLOTS.length);
+        }
+
+        @Test
+        void zoneSlots_firstIsNineteen() {
+            assertEquals(19, RiftMenu.ZONE_SLOTS[0]);
+        }
+
+        @Test
+        void zoneSlots_lastIsTwentyFive() {
+            assertEquals(25, RiftMenu.ZONE_SLOTS[RiftMenu.ZONE_SLOTS.length - 1]);
         }
 
         @Test
@@ -739,6 +760,42 @@ class MenuIntegrationTest {
             RiftData data = RiftManager.getInstance().getRiftData(PLAYER);
             assertEquals(0L, data.motes);
             assertEquals(0, data.enigmaSouls);
+        }
+
+        @Test
+        void manager_addMotes_roundTrips() {
+            RiftManager.getInstance().addMotes(PLAYER, 500L);
+            assertEquals(500L, RiftManager.getInstance().getMotes(PLAYER));
+        }
+
+        @Test
+        void manager_addMotes_capsAtPurseCap() {
+            RiftManager.getInstance().addMotes(PLAYER, RiftManager.MOTES_PURSE_CAP + 1000L);
+            assertEquals(RiftManager.MOTES_PURSE_CAP, RiftManager.getInstance().getMotes(PLAYER));
+        }
+
+        @Test
+        void manager_enterRift_setsZone() {
+            RiftManager.getInstance().enterRift(PLAYER, RiftArea.DREADFARM);
+            assertEquals(RiftArea.DREADFARM, RiftManager.getInstance().getRiftData(PLAYER).zone);
+        }
+
+        @Test
+        void manager_collectTimecharm_roundTrips() {
+            RiftManager.getInstance().collectTimecharm(PLAYER, "charm_1");
+            assertEquals(1, RiftManager.getInstance().getTimecharmCount(PLAYER));
+        }
+
+        @Test
+        void manager_collectRiftSoul_roundTrips() {
+            RiftManager.getInstance().collectRiftSoul(PLAYER, "soul_1");
+            assertEquals(1, RiftManager.getInstance().getRiftSoulCount(PLAYER));
+        }
+
+        @Test
+        void manager_collectEnigmaSoul_roundTrips() {
+            RiftManager.getInstance().collectEnigmaSoul(PLAYER, 1);
+            assertEquals(1, RiftManager.getInstance().getEnigmaSoulCount(PLAYER));
         }
     }
 
