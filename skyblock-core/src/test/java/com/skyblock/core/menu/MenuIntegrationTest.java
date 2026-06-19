@@ -2,8 +2,10 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
+import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.CalendarManager;
+import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.manager.CalendarManager.SkyBlockMonth;
 import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.CrystalHollowsManager.CrystalType;
@@ -1204,6 +1206,152 @@ class MenuIntegrationTest {
             for (Faction faction : Faction.values()) {
                 assertNotNull(faction.getDisplayName());
             }
+        }
+    }
+
+    @Nested
+    class BazaarMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @BeforeEach
+        void reset() {
+            BazaarManager.getInstance().clear();
+        }
+
+        @Test
+        void title_isBazaar() {
+            assertEquals("Bazaar", new BazaarMenu(mock(Player.class)).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new BazaarMenu(mock(Player.class)).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new BazaarMenu(mock(Player.class)));
+        }
+
+        @Test
+        void orderSlots_count_isTwentyEight() {
+            assertEquals(28, BazaarMenu.ORDER_SLOTS.length);
+        }
+
+        @Test
+        void orderSlots_firstIs_ten() {
+            assertEquals(10, BazaarMenu.ORDER_SLOTS[0]);
+        }
+
+        @Test
+        void orderSlots_lastIs_fortyThree() {
+            assertEquals(43, BazaarMenu.ORDER_SLOTS[BazaarMenu.ORDER_SLOTS.length - 1]);
+        }
+
+        @Test
+        void manager_ordersForPlayer_emptyAfterClear() {
+            assertTrue(BazaarManager.getInstance().getOrdersForPlayer(PLAYER).isEmpty());
+        }
+
+        @Test
+        void manager_addBuyOrder_appearsInOrdersForPlayer() {
+            BazaarManager mgr = BazaarManager.getInstance();
+            mgr.addBuyOrder(PLAYER, "WHEAT", 100, 1.0);
+            assertEquals(1, mgr.getOrdersForPlayer(PLAYER).size());
+            assertEquals(BazaarManager.BazaarOrderType.BUY, mgr.getOrdersForPlayer(PLAYER).get(0).type());
+        }
+
+        @Test
+        void manager_addSellOrder_appearsInOrdersForPlayer() {
+            BazaarManager mgr = BazaarManager.getInstance();
+            mgr.addSellOrder(PLAYER, "WHEAT", 50, 2.0);
+            assertEquals(1, mgr.getOrdersForPlayer(PLAYER).size());
+            assertEquals(BazaarManager.BazaarOrderType.SELL, mgr.getOrdersForPlayer(PLAYER).get(0).type());
+        }
+
+        @Test
+        void manager_feeTier_defaultIsBase() {
+            assertEquals(BazaarManager.FeeTier.BASE, BazaarManager.getInstance().getFeeTier(PLAYER));
+        }
+
+        @Test
+        void manager_computeFee_baseRateIsOneTwoFivePercent() {
+            assertEquals(125.0, BazaarManager.getInstance().computeFee(10_000.0), 0.001);
+        }
+    }
+
+    @Nested
+    class ForgeMenuTests {
+
+        @Test
+        void title_isTheForge() {
+            assertEquals("§6The Forge", new ForgeMenu(UUID.randomUUID()).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new ForgeMenu(UUID.randomUUID()).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new ForgeMenu(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_defaultSlotCount_isTwo() {
+            assertEquals(2, ForgeManager.DEFAULT_SLOT_COUNT);
+        }
+
+        @Test
+        void manager_maxSlotCount_isSeven() {
+            assertEquals(7, ForgeManager.MAX_SLOT_COUNT);
+        }
+
+        @Test
+        void manager_getSlotCount_defaultForFreshPlayer() {
+            assertEquals(ForgeManager.DEFAULT_SLOT_COUNT,
+                    ForgeManager.getInstance().getSlotCount(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_recipes_notEmpty() {
+            assertFalse(ForgeManager.getInstance().getRecipes().isEmpty());
+        }
+
+        @Test
+        void manager_getActiveJob_nullForFreshPlayer() {
+            assertNull(ForgeManager.getInstance().getActiveJob(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_startForge_createsJob() {
+            UUID pid = UUID.randomUUID();
+            ForgeManager.ForgeJob job = ForgeManager.getInstance()
+                    .startForge(pid, "refined_mithril", 0L);
+            assertNotNull(job);
+            assertEquals(ForgeManager.ForgeRecipe.REFINED_MITHRIL, job.getRecipe());
+        }
+
+        @Test
+        void manager_collectForge_afterCompletion_freesSlot() {
+            UUID pid = UUID.randomUUID();
+            ForgeManager mgr = ForgeManager.getInstance();
+            mgr.startForge(pid, "refined_mithril", 0L);
+            long done = (long) ForgeManager.ForgeRecipe.REFINED_MITHRIL.getDurationSeconds() * 1000L + 1L;
+            mgr.collectForge(pid, 0, done);
+            assertNull(mgr.getActiveJob(pid));
+        }
+
+        @Test
+        void manager_quickForgeReduction_zeroAtLevelZero() {
+            assertEquals(0.0, ForgeManager.quickForgeReduction(0), 0.0001);
+        }
+
+        @Test
+        void manager_quickForgeReduction_thirtyPercentAtMaxLevel() {
+            assertEquals(0.30, ForgeManager.quickForgeReduction(ForgeManager.MAX_QUICK_FORGE_LEVEL), 0.0001);
         }
     }
 }
