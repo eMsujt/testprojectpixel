@@ -16,6 +16,7 @@ import java.util.UUID;
 public final class IslandMenu extends Menu {
 
     static final int OVERVIEW_SLOT = 13;
+    static final int BEACON_SLOT = 22;
     static final int[] UPGRADE_SLOTS = {28, 29, 30, 31, 32, 33, 34, 35};
 
     private static final IslandUpgrade[] DISPLAYED_UPGRADES = IslandUpgrade.values();
