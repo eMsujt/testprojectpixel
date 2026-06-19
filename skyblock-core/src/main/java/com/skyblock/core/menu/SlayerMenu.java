@@ -44,7 +44,7 @@ public final class SlayerMenu extends Menu {
     private final UUID playerId;
 
     public SlayerMenu(UUID playerId) {
-        super("§4Slayer Quests", 6);
+        super("§c§lSlayer Quests", 6);
         this.playerId = playerId;
     }
 
@@ -52,10 +52,12 @@ public final class SlayerMenu extends Menu {
     protected void build() {
         ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
 
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
-        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
-        setItem(18, pane); setItem(19, pane);
-        setItem(25, pane); setItem(26, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                setItem(slot, pane);
+            }
+        }
 
         SlayerManager manager = SlayerManager.getInstance();
 
