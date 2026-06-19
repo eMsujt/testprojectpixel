@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Plugin- and player-aware abstract menu base.
@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
  */
 public abstract class AbstractMenu extends Menu {
 
-    protected final SkyblockPlugin plugin;
+    protected final JavaPlugin plugin;
     protected final Player player;
 
-    protected AbstractMenu(SkyblockPlugin plugin, Player player, String title, int size) {
+    protected AbstractMenu(JavaPlugin plugin, Player player, String title, int size) {
         super(title, size / 9);
         this.plugin = plugin;
         this.player = player;

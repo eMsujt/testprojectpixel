@@ -1,5 +1,5 @@
 name: SkyBlock
-main: com.skyblock.core.SkyblockPlugin
+main: com.skyblock.core.SkyBlockCore
 api-version: '1.21'
 version: 1.0-SNAPSHOT
 description: SkyBlock plugin for Paper

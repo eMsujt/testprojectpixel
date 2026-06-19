@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionListing;
 import com.skyblock.core.util.ItemBuilder;
@@ -55,11 +55,11 @@ public final class AuctionHouseMenu extends AbstractMenu {
 
     private final int page;
 
-    public AuctionHouseMenu(SkyblockPlugin plugin, Player player) {
+    public AuctionHouseMenu(JavaPlugin plugin, Player player) {
         this(plugin, player, 0);
     }
 
-    public AuctionHouseMenu(SkyblockPlugin plugin, Player player, int page) {
+    public AuctionHouseMenu(JavaPlugin plugin, Player player, int page) {
         super(plugin, player, "§6§lAuction House", 54);
         this.page = Math.max(0, page);
     }

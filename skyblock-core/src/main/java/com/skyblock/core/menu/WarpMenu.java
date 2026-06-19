@@ -1,10 +1,10 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import com.skyblock.core.manager.WarpManager;
+import com.skyblock.core.manager.WarpManager.WarpLocation;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils.*;
-import com.skyblock.core.warp.WarpManager;
-import com.skyblock.core.warp.WarpManager.WarpLocation;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public final class WarpMenu extends AbstractMenu {
 
-    public WarpMenu(SkyblockPlugin plugin, Player player) {
+    public WarpMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§b§lFast Travel", 54);
     }
 
