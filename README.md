@@ -1,4 +1,4 @@
-# SkyBlock
+# SkyBlock Core
 
 > **A faithful Hypixel SkyBlock recreation for Paper 1.21+ servers — skills, dungeons, economy, and beyond.**
 
