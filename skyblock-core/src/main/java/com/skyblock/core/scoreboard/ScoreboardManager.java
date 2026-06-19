@@ -5,6 +5,10 @@ import com.skyblock.core.manager.EconomyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -15,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public final class ScoreboardManager {
+public final class ScoreboardManager implements Listener {
 
     private static final ScoreboardManager INSTANCE = new ScoreboardManager();
 
@@ -37,7 +41,7 @@ public final class ScoreboardManager {
         for (Player player : Bukkit.getOnlinePlayers()) {
             startForPlayer(player);
         }
-        Bukkit.getPluginManager().registerEvents(new ScoreboardListener(this), plugin);
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     public void stop() {
@@ -49,6 +53,16 @@ public final class ScoreboardManager {
             board.delete();
         }
         boards.clear();
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        startForPlayer(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        stopForPlayer(event.getPlayer());
     }
 
     public void startForPlayer(Player player) {
