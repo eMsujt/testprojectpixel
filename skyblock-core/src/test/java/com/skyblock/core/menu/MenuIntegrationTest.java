@@ -1576,6 +1576,13 @@ class MenuIntegrationTest {
     class HotmMenuTests {
 
         private final UUID PLAYER = UUID.randomUUID();
+        private final JavaPlugin mockPlugin = mock(JavaPlugin.class);
+        private final Player mockPlayer = mock(Player.class);
+
+        @BeforeEach
+        void setupPlayer() {
+            when(mockPlayer.getUniqueId()).thenReturn(PLAYER);
+        }
 
         @AfterEach
         void cleanup() {
@@ -1584,17 +1591,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isHeartOfTheMountain() {
-            assertEquals("§2Heart of the Mountain", new HotmMenu(PLAYER).getTitle());
+            assertEquals("§bHeart of the Mountain", new HotmMenu(mockPlugin, mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new HotmMenu(PLAYER).getRows());
+            assertEquals(6, new HotmMenu(mockPlugin, mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new HotmMenu(PLAYER));
+            assertDoesNotThrow(() -> new HotmMenu(mockPlugin, mockPlayer));
         }
 
         @Test

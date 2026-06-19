@@ -1,5 +1,6 @@
 package com.skyblock.core.hotm.command;
 
+import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.HeartOfTheMountainManager;
 import com.skyblock.core.menu.HotmMenu;
@@ -40,7 +41,7 @@ public final class HOTMCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new HotmMenu(p).open(p);
+        new HotmMenu(SkyBlockCore.getInstance(), p).open(p);
     }
 
     @Override
