@@ -390,6 +390,8 @@ public final class PetManager {
         public final UUID id;
         public final PetType type;
         public final Rarity rarity;
+        /** Number of pet candies consumed by this pet (capped at 10 in SkyBlock). */
+        public int candyUsed;
 
         public Pet(UUID id, PetType type, Rarity rarity) {
             this.id = Objects.requireNonNull(id, "id");
