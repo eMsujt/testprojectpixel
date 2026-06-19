@@ -132,6 +132,7 @@ import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.command.SackCommand;
+import com.skyblock.core.command.SkyBlockCommand;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.warp.WarpCommand;
 import com.skyblock.core.warp.WarpManager;
@@ -577,9 +578,10 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
         }
+        SkyBlockCommand skyBlockCommand = new SkyBlockCommand();
         if (getCommand("skyblock") != null) {
-            getCommand("skyblock").setExecutor(menuCommand);
-            getCommand("skyblock").setTabCompleter(menuCommand);
+            getCommand("skyblock").setExecutor(skyBlockCommand);
+            getCommand("skyblock").setTabCompleter(skyBlockCommand);
         }
         TitleManager titleManager = TitleManager.getInstance();
         titleManager.load(getDataFolder());
