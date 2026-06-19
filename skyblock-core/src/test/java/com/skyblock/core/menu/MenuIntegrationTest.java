@@ -366,7 +366,7 @@ class MenuIntegrationTest {
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(AuctionHouseMenu::new);
+            assertDoesNotThrow(() -> new AuctionHouseMenu());
         }
 
         @Test
@@ -1257,7 +1257,7 @@ class MenuIntegrationTest {
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(CalendarMenu::new);
+            assertDoesNotThrow(() -> new CalendarMenu());
         }
 
         @Test
