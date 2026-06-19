@@ -316,6 +316,7 @@ commands:
   island:
     description: Open your SkyBlock island menu.
     usage: /island
+    aliases: [is]
     permission: skyblock.island
 
 permissions:
