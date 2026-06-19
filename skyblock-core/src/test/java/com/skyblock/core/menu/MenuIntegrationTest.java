@@ -2104,4 +2104,86 @@ class MenuIntegrationTest {
         }
     }
 
+    @Nested
+    class BestiaryMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void tearDown() {
+            BestiaryManager.getInstance().resetKills(PLAYER);
+        }
+
+        @Test
+        void title_isBestiary() {
+            assertEquals("§2Bestiary", new BestiaryMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_areSix() {
+            assertEquals(6, new BestiaryMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new BestiaryMenu(PLAYER));
+        }
+
+        @Test
+        void categoryIcons_hasSixEntries() {
+            assertEquals(BestiaryCategory.values().length, BestiaryMenu.CATEGORY_ICONS.size());
+        }
+
+        @Test
+        void categoryIcons_combatMapsToIronSword() {
+            assertEquals(Material.IRON_SWORD, BestiaryMenu.CATEGORY_ICONS.get(BestiaryCategory.COMBAT));
+        }
+
+        @Test
+        void manager_killsZeroForFreshPlayer() {
+            assertEquals(0, BestiaryManager.getInstance().getKills(UUID.randomUUID(), "zombie"));
+        }
+
+        @Test
+        void manager_recordKill_roundTrips() {
+            BestiaryManager mgr = BestiaryManager.getInstance();
+            mgr.recordKill(PLAYER, "zombie");
+            assertEquals(1, mgr.getKills(PLAYER, "zombie"));
+        }
+
+        @Test
+        void manager_getTier_zeroBeforeThreshold() {
+            assertEquals(0, BestiaryManager.getInstance().getTier(PLAYER, "zombie"));
+        }
+
+        @Test
+        void manager_getTier_oneAtBaseTierKills() {
+            BestiaryManager mgr = BestiaryManager.getInstance();
+            for (int i = 0; i < BestiaryManager.BASE_TIER_KILLS; i++) {
+                mgr.recordKill(PLAYER, "zombie");
+            }
+            assertEquals(1, mgr.getTier(PLAYER, "zombie"));
+        }
+
+        @Test
+        void manager_getKillsToNextTier_tenForFreshPlayer() {
+            assertEquals(BestiaryManager.BASE_TIER_KILLS,
+                    BestiaryManager.getInstance().getKillsToNextTier(PLAYER, "zombie"));
+        }
+
+        @Test
+        void manager_milestoneLevel_zeroForFreshPlayer() {
+            assertEquals(0, BestiaryManager.getInstance().getMilestoneLevel(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_milestoneLevel_incrementsAfterTierUnlock() {
+            BestiaryManager mgr = BestiaryManager.getInstance();
+            for (int i = 0; i < BestiaryManager.BASE_TIER_KILLS; i++) {
+                mgr.recordKill(PLAYER, "zombie");
+            }
+            assertEquals(1, mgr.getMilestoneLevel(PLAYER));
+        }
+    }
+
 }
