@@ -45,6 +45,9 @@ public final class ForagingListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if (event.isCancelled() || event.getPlayer() == null) {
+            return;
+        }
         Long xp = LOG_XP.get(event.getBlock().getType());
         if (xp == null) {
             return;
