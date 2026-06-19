@@ -35,6 +35,7 @@ import com.skyblock.core.manager.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
 import com.skyblock.core.command.MenuCommand;
+import com.skyblock.core.command.SkyBlockCommand;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.DungeonsMenu;
 import com.skyblock.core.menu.CollectionsMenu;
@@ -673,7 +674,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
         }
-        MenuCommand skyBlockCommand = new MenuCommand(p -> new SkyBlockMenu(p).open(p));
+        SkyBlockCommand skyBlockCommand = new SkyBlockCommand();
         if (getCommand("skyblock") != null) {
             getCommand("skyblock").setExecutor(skyBlockCommand);
             getCommand("skyblock").setTabCompleter(skyBlockCommand);
