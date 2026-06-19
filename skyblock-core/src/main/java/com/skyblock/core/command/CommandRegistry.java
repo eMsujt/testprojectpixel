@@ -12,6 +12,7 @@ public final class CommandRegistry {
 
     static {
         COMMANDS.put("auctionhouse", new AuctionHouseCommand());
+        COMMANDS.put("bazaar", new BazaarCommand());
         COMMANDS.put("collectionsmenu", new CollectionsCommand());
         COMMANDS.put("dungeons", new DungeonsCommand());
         COMMANDS.put("forge", new ForgeCommand());
