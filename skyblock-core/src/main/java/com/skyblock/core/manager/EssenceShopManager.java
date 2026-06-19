@@ -62,4 +62,10 @@ public final class EssenceShopManager {
         Objects.requireNonNull(perk, "perk");
         return essenceManager.purchasePerk(playerId, perk);
     }
+
+    /** Removes all essence data for the given player (e.g. after tests). */
+    public boolean remove(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return essenceManager.remove(playerId);
+    }
 }

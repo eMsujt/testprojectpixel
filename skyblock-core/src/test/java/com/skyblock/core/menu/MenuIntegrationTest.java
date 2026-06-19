@@ -824,6 +824,11 @@ class MenuIntegrationTest {
 
         private final UUID PLAYER = UUID.randomUUID();
 
+        @AfterEach
+        void cleanup() {
+            EssenceShopManager.getInstance().remove(PLAYER);
+        }
+
         @Test
         void title_isEssenceShop() {
             assertEquals("§5Essence Shop", new EssenceShopMenu(PLAYER).getTitle());

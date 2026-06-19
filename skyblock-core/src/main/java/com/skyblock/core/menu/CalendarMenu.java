@@ -22,6 +22,10 @@ public final class CalendarMenu extends Menu {
     private static final String TITLE = "§aSkyBlock Calendar";
     private static final int SUMMARY_SLOT = 4;
 
+    public CalendarMenu() {
+        super(TITLE, 6);
+    }
+
     /** One tile per month: two centred rows of six. */
     private static final int[] MONTH_SLOTS = {
             10, 11, 12, 13, 14, 15,
