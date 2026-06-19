@@ -139,6 +139,8 @@ public final class SkyblockPlugin extends JavaPlugin {
     private SkillManager skillsManager;
     private MinionManager minionManager;
     private SlayerManager slayerManager;
+    private BazaarManager bazaarManager;
+    private DungeonManager dungeonManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -170,7 +172,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("auction").setExecutor(auctionHouseCommand);
             getCommand("auction").setTabCompleter(auctionHouseCommand);
         }
-        BazaarManager bazaarManager = BazaarManager.getInstance();
+        bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
         BazaarCommand bazaarCommand = new BazaarCommand(bazaarManager);
         if (getCommand("bazaar") != null) {
@@ -189,7 +191,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("essence").setExecutor(essenceCommand);
             getCommand("essence").setTabCompleter(essenceCommand);
         }
-        DungeonManager dungeonManager = DungeonManager.getInstance();
+        dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
         DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
         getCommand("dungeon").setExecutor(dungeonCommand);
