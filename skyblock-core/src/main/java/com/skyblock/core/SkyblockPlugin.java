@@ -77,6 +77,7 @@ import com.skyblock.core.collections.command.CollectionsCommand;
 import com.skyblock.core.collections.listener.CollectionListener;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.EssenceShopManager;
+import com.skyblock.core.menu.EnchantingMenu;
 import com.skyblock.core.menu.EssenceShopMenu;
 import com.skyblock.core.combat.command.CombatCommand;
 import com.skyblock.core.combat.manager.CombatManager;
@@ -176,6 +177,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private DojoManager dojoManager;
     private CommissionManager commissionManager;
     private ChocolateFactoryManager chocolateFactoryManager;
+    private EnchantingManager enchantingManager;
     private ProfileManager profile;
 
     public static SkyblockPlugin getInstance() {
@@ -230,6 +232,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         dojoManager = DojoManager.getInstance();
         commissionManager = CommissionManager.getInstance();
         chocolateFactoryManager = ChocolateFactoryManager.getInstance();
+        enchantingManager = EnchantingManager.getInstance();
     }
 
     @Override
