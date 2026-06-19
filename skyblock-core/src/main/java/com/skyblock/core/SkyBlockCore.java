@@ -152,6 +152,8 @@ import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageCommand;
 import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.manager.RunecraftingManager;
+import com.skyblock.core.listener.CoreListeners;
+import com.skyblock.core.persistence.DataManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyBlockCore extends JavaPlugin {
@@ -695,6 +697,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.command.StorageCommand storageMenuCommand = new com.skyblock.core.command.StorageCommand(com.skyblock.core.manager.StorageManager.getInstance(), backpackManager);
         getCommand("storage").setExecutor(storageMenuCommand);
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
+        getServer().getPluginManager().registerEvents(new CoreListeners(DataManager.getInstance()), this);
     }
 
     @Override
