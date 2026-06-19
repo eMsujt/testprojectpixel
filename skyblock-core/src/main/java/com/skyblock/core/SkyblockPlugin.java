@@ -148,6 +148,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private SlayerManager slayerManager;
     private BazaarManager bazaarManager;
     private DungeonManager dungeonManager;
+    private FishingManager fishingManager;
     private EssenceManager essenceManager;
     private SackManager sackManager;
     private BankingManager bankingManager;
@@ -265,7 +266,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("slay").setTabCompleter(slayerCommand);
         getCommand("slayer").setExecutor(slayerCommand);
         getCommand("slayer").setTabCompleter(slayerCommand);
-        FishingManager fishingManager = FishingManager.getInstance();
+        fishingManager = FishingManager.getInstance();
         fishingManager.load(getDataFolder());
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);
@@ -524,7 +525,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         BazaarManager.getInstance().save(getDataFolder());
         DungeonManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());
-        FishingManager.getInstance().save(getDataFolder());
+        fishingManager.save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
         HotmManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
