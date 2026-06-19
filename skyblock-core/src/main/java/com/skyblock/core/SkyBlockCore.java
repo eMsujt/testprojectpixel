@@ -52,6 +52,7 @@ import com.skyblock.core.hotm.command.HOTMCommand;
 import com.skyblock.core.manager.HeartOfTheMountainManager;
 import com.skyblock.core.manager.HotmManager;
 import com.skyblock.core.manager.KuudraManager;
+import com.skyblock.core.manager.TamingManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.minion.command.MinionCommand;
@@ -241,6 +242,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private RunecraftingManager runecraftingManager;
     private ManaManager manaManager;
     private SkyBlockEventManager skyBlockEventManager;
+    private TamingManager tamingManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
@@ -365,6 +367,7 @@ public final class SkyBlockCore extends JavaPlugin {
         runecraftingManager.load(getDataFolder());
         manaManager = ManaManager.getInstance();
         skyBlockEventManager = SkyBlockEventManager.getInstance();
+        tamingManager = TamingManager.getInstance();
     }
 
     @Override
@@ -720,6 +723,7 @@ public final class SkyBlockCore extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new NPCListener(this, npcManager), this);
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(tamingManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.armor.ArmorSetListener(com.skyblock.core.armor.ArmorSetManager.getInstance()), this);
     }
 
