@@ -49,7 +49,7 @@ public final class RunecraftingManager {
     private static final RunecraftingManager INSTANCE = new RunecraftingManager();
 
     /** Per-player runecrafting skill XP. */
-    private final Map<UUID, Long> skillXp = new HashMap<>();
+    private final Map<UUID, Long> xpMap = new HashMap<>();
     /** Per-player rune XP, keyed by rune type. */
     private final Map<UUID, Map<RuneType, Long>> runeXp = new HashMap<>();
     /** Per-player rune unlock counts. */
@@ -65,13 +65,13 @@ public final class RunecraftingManager {
 
     public long addSkillXp(UUID playerId, long amount) {
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
-        long total = skillXp.getOrDefault(playerId, 0L) + amount;
-        skillXp.put(playerId, total);
+        long total = xpMap.getOrDefault(playerId, 0L) + amount;
+        xpMap.put(playerId, total);
         return total;
     }
 
     public long getSkillXp(UUID playerId) {
-        return skillXp.getOrDefault(playerId, 0L);
+        return xpMap.getOrDefault(playerId, 0L);
     }
 
     public int getSkillLevel(UUID playerId) {
@@ -133,7 +133,7 @@ public final class RunecraftingManager {
     }
 
     public boolean reset(UUID playerId) {
-        boolean had = skillXp.remove(playerId) != null;
+        boolean had = xpMap.remove(playerId) != null;
         had |= runeXp.remove(playerId) != null;
         had |= runeCount.remove(playerId) != null;
         return had;
@@ -143,13 +143,13 @@ public final class RunecraftingManager {
         File file = new File(dataFolder, "runecrafting.yml");
         if (!file.exists()) return;
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        skillXp.clear();
+        xpMap.clear();
         runeXp.clear();
         runeCount.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
-                skillXp.put(uuid, cfg.getLong(key + ".skillXp", 0L));
+                xpMap.put(uuid, cfg.getLong(key + ".xpMap", 0L));
                 if (cfg.isConfigurationSection(key + ".runeXp")) {
                     Map<RuneType, Long> rxMap = new EnumMap<>(RuneType.class);
                     for (String typeName : cfg.getConfigurationSection(key + ".runeXp").getKeys(false)) {
@@ -175,8 +175,8 @@ public final class RunecraftingManager {
     public void save(File dataFolder) {
         File file = new File(dataFolder, "runecrafting.yml");
         YamlConfiguration cfg = new YamlConfiguration();
-        for (Map.Entry<UUID, Long> entry : skillXp.entrySet()) {
-            cfg.set(entry.getKey().toString() + ".skillXp", entry.getValue());
+        for (Map.Entry<UUID, Long> entry : xpMap.entrySet()) {
+            cfg.set(entry.getKey().toString() + ".xpMap", entry.getValue());
         }
         for (Map.Entry<UUID, Map<RuneType, Long>> entry : runeXp.entrySet()) {
             String key = entry.getKey().toString();
