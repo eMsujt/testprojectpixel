@@ -3,8 +3,13 @@ package com.skyblock.core.manager;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.backpack.BackpackManager.BackpackTier;
 import com.skyblock.core.vault.VaultManager;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -29,11 +34,20 @@ import java.util.UUID;
  */
 public final class StorageManager {
 
+    /** Number of item pages every player has. */
+    public static final int PAGE_COUNT = 9;
+
+    /** Number of {@link ItemStack} slots per storage page. */
+    public static final int PAGE_SIZE = 45;
+
     private static final StorageManager INSTANCE = new StorageManager();
 
     private final com.skyblock.core.storage.StorageManager pageStore;
     private final BackpackManager backpackManager;
     private final VaultManager vaultManager;
+
+    /** playerId → {@link #PAGE_COUNT} pages, each a {@link #PAGE_SIZE}-slot array (entries may be null) */
+    private final Map<UUID, ItemStack[][]> items = new HashMap<>();
 
     private StorageManager() {
         this(com.skyblock.core.storage.StorageManager.getInstance(),
@@ -96,6 +110,62 @@ public final class StorageManager {
     }
 
     // -------------------------------------------------------------------------
+    // Item pages
+    // -------------------------------------------------------------------------
+
+    private ItemStack[][] itemsFor(UUID playerId) {
+        return items.computeIfAbsent(playerId, id -> new ItemStack[PAGE_COUNT][PAGE_SIZE]);
+    }
+
+    private static void checkPage(int page) {
+        if (page < 0 || page >= PAGE_COUNT) {
+            throw new IndexOutOfBoundsException("page must be 0.." + (PAGE_COUNT - 1) + " but was " + page);
+        }
+    }
+
+    /**
+     * Returns a clone of the {@link #PAGE_SIZE}-slot contents of the given page.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param page     the 0-based page index, must be in {@code [0, PAGE_COUNT)}
+     * @return a cloned array of length {@link #PAGE_SIZE}; entries may be null
+     */
+    public ItemStack[] getPage(UUID playerId, int page) {
+        Objects.requireNonNull(playerId, "playerId");
+        checkPage(page);
+        ItemStack[] src = itemsFor(playerId)[page];
+        ItemStack[] copy = new ItemStack[PAGE_SIZE];
+        for (int i = 0; i < PAGE_SIZE; i++) {
+            copy[i] = src[i] != null ? src[i].clone() : null;
+        }
+        return copy;
+    }
+
+    /**
+     * Replaces the contents of the given page with a clone of {@code contents}.
+     * Missing or null entries clear the corresponding slot.
+     *
+     * @param playerId the player's UUID, must not be null
+     * @param page     the 0-based page index, must be in {@code [0, PAGE_COUNT)}
+     * @param contents the new slot contents, must not be null
+     */
+    public void setPage(UUID playerId, int page, ItemStack[] contents) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(contents, "contents");
+        checkPage(page);
+        ItemStack[] dest = itemsFor(playerId)[page];
+        for (int i = 0; i < PAGE_SIZE; i++) {
+            dest[i] = (i < contents.length && contents[i] != null) ? contents[i].clone() : null;
+        }
+    }
+
+    /** Clears all stored item pages for the player. */
+    public void resetItems(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        items.remove(playerId);
+    }
+
+    // -------------------------------------------------------------------------
     // Item persistence
     // -------------------------------------------------------------------------
 
@@ -108,6 +178,7 @@ public final class StorageManager {
         Objects.requireNonNull(dataFolder, "dataFolder");
         backpackManager.load(dataFolder);
         vaultManager.load(dataFolder);
+        loadItems(dataFolder);
     }
 
     /** Saves every storage domain that owns its own files to {@code dataFolder}. */
@@ -115,6 +186,52 @@ public final class StorageManager {
         Objects.requireNonNull(dataFolder, "dataFolder");
         backpackManager.save(dataFolder);
         vaultManager.save(dataFolder);
+        saveItems(dataFolder);
+    }
+
+    private void loadItems(File dataFolder) {
+        File file = new File(dataFolder, "storage.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        items.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                ItemStack[][] pages = new ItemStack[PAGE_COUNT][PAGE_SIZE];
+                for (int page = 0; page < PAGE_COUNT; page++) {
+                    for (int slot = 0; slot < PAGE_SIZE; slot++) {
+                        pages[page][slot] = cfg.getItemStack(key + ".pages." + page + "." + slot);
+                    }
+                }
+                items.put(uuid, pages);
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed entries
+            }
+        }
+    }
+
+    private void saveItems(File dataFolder) {
+        File file = new File(dataFolder, "storage.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, ItemStack[][]> entry : items.entrySet()) {
+            String key = entry.getKey().toString();
+            ItemStack[][] pages = entry.getValue();
+            for (int page = 0; page < PAGE_COUNT; page++) {
+                for (int slot = 0; slot < PAGE_SIZE; slot++) {
+                    ItemStack stack = pages[page][slot];
+                    if (stack != null) {
+                        cfg.set(key + ".pages." + page + "." + slot, stack);
+                    }
+                }
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save storage.yml", e);
+        }
     }
 
     /** A one-line summary of the player's storage holdings. */
