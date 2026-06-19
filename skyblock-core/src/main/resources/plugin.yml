@@ -36,7 +36,9 @@ commands:
   pet:
     description: Manage your pets.
     usage: /pet [list|equip|unequip|info]
-    aliases: [pets]
+  pets:
+    description: Open the Pet GUI grouped by rarity.
+    usage: /pets
   friend:
     description: Manage your SkyBlock friend list.
     usage: /friend <add|remove|list> [player]
@@ -303,7 +305,7 @@ commands:
   dungeons:
     description: Open the Catacombs menu.
     usage: /dungeons
-    aliases: [dungeon, catacombs]
+    aliases: [catacombs]
     permission: skyblock.dungeons
   collectionsmenu:
     description: Open the Collections GUI.
