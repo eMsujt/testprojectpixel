@@ -24,7 +24,7 @@ public final class DungeonCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new com.skyblock.core.menu.DungeonMenu(p.getUniqueId()).open(p);
+        new com.skyblock.core.menu.DungeonMenu(SkyblockPlugin.getInstance(), p).open(p);
     }
 
     @Override
