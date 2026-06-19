@@ -62,7 +62,7 @@ public final class MiningManager {
         private final String displayName;
         private final int minLevel;
 
-        MiningZone(String displayName, int minLevel) {
+        MiningArea(String displayName, int minLevel) {
             this.displayName = displayName;
             this.minLevel = minLevel;
         }
