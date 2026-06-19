@@ -4,6 +4,7 @@ import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionListing;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -12,10 +13,9 @@ import java.util.stream.Collectors;
 
 /**
  * Canonical 54-slot Auction House menu. Category filter icons occupy the top
- * row (slots 0–8); gray-pane separators sit at slots 9 and 44; 28 listing
- * slots fill the middle four rows (10–43); a gray-pane footer spans the bottom
- * row (45–53). An empty-state barrier appears at slot 22 when no listings are
- * active.
+ * row (slots 0–8); yellow-pane separators sit at slots 9 and 44; 28 listing
+ * slots fill the middle four rows (10–43); a yellow-pane footer spans the
+ * bottom row (45–53) with a prev-page button at slot 45 and next-page at 53.
  */
 public final class AuctionHouseMenu extends Menu {
 
@@ -25,6 +25,8 @@ public final class AuctionHouseMenu extends Menu {
             28, 29, 30, 31, 32, 33, 34,
             37, 38, 39, 40, 41, 42, 43
     };
+
+    private static final int PAGE_SIZE = LISTING_SLOTS.length;
 
     private enum CategoryFilter {
         WEAPONS(0,    Material.DIAMOND_SWORD,       "§aWeapons",         "§7Swords, bows and more."),
@@ -50,8 +52,15 @@ public final class AuctionHouseMenu extends Menu {
         }
     }
 
+    private final int page;
+
     public AuctionHouseMenu() {
-        super("§6Auction House", 6);
+        this(0);
+    }
+
+    public AuctionHouseMenu(int page) {
+        super("§6§lAuction House", 6);
+        this.page = Math.max(0, page);
     }
 
     @Override
@@ -63,7 +72,7 @@ public final class AuctionHouseMenu extends Menu {
                     .build());
         }
 
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE).displayName("§r").build();
         setItem(9, pane);
         setItem(44, pane);
         for (int slot = 45; slot < 54; slot++) {
@@ -75,7 +84,10 @@ public final class AuctionHouseMenu extends Menu {
                 .map(manager::getListing)
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < listings.size() && i < LISTING_SLOTS.length; i++) {
+        int start = page * PAGE_SIZE;
+        int end = Math.min(start + PAGE_SIZE, listings.size());
+
+        for (int i = start; i < end; i++) {
             AuctionListing listing = listings.get(i);
             String name = itemDisplayName(listing.item());
             ItemStack icon = new ItemBuilder(listing.item())
@@ -85,7 +97,7 @@ public final class AuctionHouseMenu extends Menu {
                             "§7Category: §f" + listing.category().getDisplayName(),
                             "§eClick to purchase!")
                     .build();
-            setItem(LISTING_SLOTS[i], icon,
+            setItem(LISTING_SLOTS[i - start], icon,
                     event -> event.getWhoClicked().sendMessage(
                             "§e" + name + " §7is listed for §6" + (long) listing.startingBid() + " coins§7."));
         }
@@ -95,6 +107,28 @@ public final class AuctionHouseMenu extends Menu {
                     .displayName("§cNo Auctions Available")
                     .lore("§7There are no active listings right now.")
                     .build());
+        }
+
+        if (page > 0) {
+            setItem(45, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Page " + page)
+                    .build(),
+                    event -> {
+                        event.setCancelled(true);
+                        new AuctionHouseMenu(page - 1).open((Player) event.getWhoClicked());
+                    });
+        }
+
+        if (end < listings.size()) {
+            setItem(53, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Page " + (page + 2))
+                    .build(),
+                    event -> {
+                        event.setCancelled(true);
+                        new AuctionHouseMenu(page + 1).open((Player) event.getWhoClicked());
+                    });
         }
     }
 
