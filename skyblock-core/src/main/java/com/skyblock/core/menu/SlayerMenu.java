@@ -34,17 +34,17 @@ public final class SlayerMenu extends Menu {
     private static final Map<SlayerType, Material> HEAD_ICONS = new EnumMap<>(SlayerType.class);
 
     static {
-        HEAD_ICONS.put(SlayerType.ZOMBIE,   Material.ZOMBIE_HEAD);
-        HEAD_ICONS.put(SlayerType.SPIDER,   Material.COBWEB);
-        HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE_BLOCK);
-        HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_EYE);
-        HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_ROD);
+        HEAD_ICONS.put(SlayerType.ZOMBIE,   Material.WITHER_SKULL);
+        HEAD_ICONS.put(SlayerType.SPIDER,   Material.SPIDER_EYE);
+        HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE);
+        HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_PEARL);
+        HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_POWDER);
     }
 
     private final UUID playerId;
 
     public SlayerMenu(UUID playerId) {
-        super("§cSlayers", 6);
+        super("§4Slayer Quests", 6);
         this.playerId = playerId;
     }
 

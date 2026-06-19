@@ -707,7 +707,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isSlayers() {
-            assertEquals("§cSlayers", new SlayerMenu(UUID.randomUUID()).getTitle());
+            assertEquals("§4Slayer Quests", new SlayerMenu(UUID.randomUUID()).getTitle());
         }
 
         @Test
