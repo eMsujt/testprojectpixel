@@ -107,6 +107,8 @@ import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.command.StatsCommand;
+import com.skyblock.core.command.SackCommand;
+import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.warp.WarpCommand;
 import com.skyblock.core.warp.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
@@ -141,6 +143,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private SlayerManager slayerManager;
     private BazaarManager bazaarManager;
     private DungeonManager dungeonManager;
+    private SackManager sackManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -476,6 +479,12 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("rift").setExecutor(riftCommand);
         getCommand("rift").setTabCompleter(riftCommand);
         getServer().getPluginManager().registerEvents(new RiftListener(riftManager), this);
+        sackManager = SackManager.getInstance();
+        SackCommand sackCommand = new SackCommand(sackManager);
+        if (getCommand("sack") != null) {
+            getCommand("sack").setExecutor(sackCommand);
+            getCommand("sack").setTabCompleter(sackCommand);
+        }
         CrystalHollowsManager crystalHollowsManager = CrystalHollowsManager.getInstance();
         CrystalHollowsCommand crystalHollowsCommand = new CrystalHollowsCommand(crystalHollowsManager);
         getCommand("crystalhollows").setExecutor(crystalHollowsCommand);
