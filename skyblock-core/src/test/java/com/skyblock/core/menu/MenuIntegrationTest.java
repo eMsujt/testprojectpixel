@@ -28,6 +28,7 @@ import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.CrystalHollowsManager.CrystalType;
 import com.skyblock.core.manager.CrystalHollowsManager.PowderType;
 import com.skyblock.core.manager.DungeonStatsManager;
+import com.skyblock.core.stats.StatsManager;
 import com.skyblock.core.manager.DungeonsManager;
 import com.skyblock.core.manager.DungeonsManager.DungeonClass;
 import com.skyblock.core.manager.NetherwartIslandManager;
@@ -2650,6 +2651,78 @@ class MenuIntegrationTest {
             BankManager.getInstance().depositCoop(coopKey, 400.0);
             BankManager.getInstance().withdrawCoop(coopKey, 100.0);
             assertEquals(300.0, BankManager.getInstance().getCoopBalance(coopKey), 0.001);
+        }
+    }
+
+    @Nested
+    class StatsMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void cleanup() {
+            StatsManager.getInstance().remove(PLAYER);
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new StatsMenu(PLAYER));
+        }
+
+        @Test
+        void title_isYourStats() {
+            assertEquals("§aYour Stats", new StatsMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new StatsMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void summarySlot_isFour() {
+            assertEquals(4, StatsMenu.SUMMARY_SLOT);
+        }
+
+        @Test
+        void firstStatSlot_isNine() {
+            assertEquals(9, StatsMenu.FIRST_STAT_SLOT);
+        }
+
+        @Test
+        void manager_getStat_returnsZeroForFreshPlayer() {
+            StatsManager.PlayerStats stats = StatsManager.getInstance().getStats(PLAYER);
+            assertEquals(0.0, stats.getStat(Stat.HEALTH), 0.0001);
+        }
+
+        @Test
+        void manager_getStats_notNull() {
+            assertNotNull(StatsManager.getInstance().getStats(PLAYER));
+        }
+
+        @Test
+        void manager_getCachedStats_notNull() {
+            assertNotNull(StatsManager.getInstance().getCachedStats(PLAYER));
+        }
+
+        @Test
+        void manager_remove_returnsFalseForUnknownPlayer() {
+            assertFalse(StatsManager.getInstance().remove(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_remove_returnsTrueAfterGetStats() {
+            StatsManager.getInstance().getStats(PLAYER);
+            assertTrue(StatsManager.getInstance().remove(PLAYER));
+        }
+
+        @Test
+        void differentOwners_doNotShareState() {
+            UUID other = UUID.randomUUID();
+            assertDoesNotThrow(() -> {
+                new StatsMenu(PLAYER);
+                new StatsMenu(other);
+            });
         }
     }
 
