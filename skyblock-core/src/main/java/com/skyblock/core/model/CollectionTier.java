@@ -56,4 +56,12 @@ public enum CollectionTier {
         int next = ordinal() + 1;
         return next < tiers.length ? tiers[next] : null;
     }
+
+    /** Returns the tier for the given 1-based level, or {@code null} if out of range. */
+    public static CollectionTier fromLevel(int level) {
+        for (CollectionTier tier : values()) {
+            if (tier.level == level) return tier;
+        }
+        return null;
+    }
 }
