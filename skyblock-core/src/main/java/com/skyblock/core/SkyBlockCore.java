@@ -386,6 +386,10 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("bazaar").setExecutor(bazaarCommand);
             getCommand("bazaar").setTabCompleter(bazaarCommand);
         }
+        if (getCommand("bz") != null) {
+            getCommand("bz").setExecutor(bazaarCommand);
+            getCommand("bz").setTabCompleter(bazaarCommand);
+        }
         MuseumCommand museumCommand = new MuseumCommand(museumManager);
         if (getCommand("museum") != null) {
             getCommand("museum").setExecutor(museumCommand);
