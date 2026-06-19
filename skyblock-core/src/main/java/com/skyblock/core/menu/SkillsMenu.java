@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.model.Skill;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtil.*;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
