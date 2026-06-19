@@ -242,6 +242,10 @@ commands:
     description: View and manage your Crystal Hollows progress.
     usage: /crystalhollows [zones|enter <zone>|leave|crystals|collect <crystal>]
     permission: skyblock.crystalhollows
+  sack:
+    description: View the contents of your sacks.
+    usage: /sack
+    permission: skyblock.sack
 
 permissions:
   skyblock.warp:
@@ -354,4 +358,7 @@ permissions:
     default: true
   skyblock.crystalhollows:
     description: Use the /crystalhollows command to view and manage your Crystal Hollows progress.
+    default: true
+  skyblock.sack:
+    description: Use the /sack command to view the contents of your sacks.
     default: true
