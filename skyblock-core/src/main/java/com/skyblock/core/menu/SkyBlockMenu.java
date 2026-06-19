@@ -53,7 +53,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(19, new ItemBuilder(Material.GOLD_NUGGET).displayName("§6Auction House")
                 .lore("§7Buy and sell items.").build(),
-                e -> { e.setCancelled(true); new AuctionHouseMenu().open(player); });
+                e -> { e.setCancelled(true); new AuctionHouseMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
 
         setItem(20, new ItemBuilder(Material.GOLD_INGOT).displayName("§6Bazaar")
                 .lore("§7Trade commodities instantly.").build(),

@@ -7,6 +7,6 @@ public final class AuctionHouseCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new AuctionHouseMenu().open(p);
+        new AuctionHouseMenu(com.skyblock.core.SkyblockPlugin.getInstance(), p).open(p);
     }
 }

@@ -358,26 +358,31 @@ class MenuIntegrationTest {
     @Nested
     class AuctionHouseMenuTests {
 
+        private SkyblockPlugin mockPlugin;
+        private Player mockPlayer;
+
         @BeforeEach
         void reset() {
+            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlayer = mock(Player.class);
             AuctionHouseManager.getInstance().clear();
         }
 
         @Test
         void title_isAuctionHouse() {
-            AuctionHouseMenu menu = new AuctionHouseMenu();
-            assertEquals("§6Auction House", menu.getTitle());
+            AuctionHouseMenu menu = new AuctionHouseMenu(mockPlugin, mockPlayer);
+            assertEquals("§6§lAuction House", menu.getTitle());
         }
 
         @Test
         void rows_isSix() {
-            AuctionHouseMenu menu = new AuctionHouseMenu();
+            AuctionHouseMenu menu = new AuctionHouseMenu(mockPlugin, mockPlayer);
             assertEquals(6, menu.getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new AuctionHouseMenu());
+            assertDoesNotThrow(() -> new AuctionHouseMenu(mockPlugin, mockPlayer));
         }
 
         @Test

@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionListing;
 import com.skyblock.core.util.ItemBuilder;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
  * slots fill the middle four rows (10–43); a yellow-pane footer spans the
  * bottom row (45–53) with a prev-page button at slot 45 and next-page at 53.
  */
-public final class AuctionHouseMenu extends Menu {
+public final class AuctionHouseMenu extends AbstractMenu {
 
     static final int[] LISTING_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -54,17 +55,17 @@ public final class AuctionHouseMenu extends Menu {
 
     private final int page;
 
-    public AuctionHouseMenu() {
-        this(0);
+    public AuctionHouseMenu(SkyblockPlugin plugin, Player player) {
+        this(plugin, player, 0);
     }
 
-    public AuctionHouseMenu(int page) {
-        super("§6§lAuction House", 6);
+    public AuctionHouseMenu(SkyblockPlugin plugin, Player player, int page) {
+        super(plugin, player, "§6§lAuction House", 54);
         this.page = Math.max(0, page);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
         for (CategoryFilter cat : CategoryFilter.values()) {
             setItem(cat.slot, new ItemBuilder(cat.icon)
                     .displayName(cat.displayName)
@@ -116,7 +117,7 @@ public final class AuctionHouseMenu extends Menu {
                     .build(),
                     event -> {
                         event.setCancelled(true);
-                        new AuctionHouseMenu(page - 1).open((Player) event.getWhoClicked());
+                        new AuctionHouseMenu(plugin, player, page - 1).open(player);
                     });
         }
 
@@ -127,7 +128,7 @@ public final class AuctionHouseMenu extends Menu {
                     .build(),
                     event -> {
                         event.setCancelled(true);
-                        new AuctionHouseMenu(page + 1).open((Player) event.getWhoClicked());
+                        new AuctionHouseMenu(plugin, player, page + 1).open(player);
                     });
         }
     }
