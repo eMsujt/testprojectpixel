@@ -17,12 +17,12 @@ import org.bukkit.inventory.ItemStack;
 public final class WarpMenu extends Menu {
 
     public WarpMenu() {
-        super("§5Warps", 6);
+        super("§b§lFast Travel", 6);
     }
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.LIGHT_BLUE_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
 
         WarpManager manager = WarpManager.getInstance();
