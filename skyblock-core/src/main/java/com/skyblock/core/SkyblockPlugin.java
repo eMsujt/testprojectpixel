@@ -85,6 +85,11 @@ import com.skyblock.core.coop.CoopManager;
 import com.skyblock.core.crimson.CrimsonCommand;
 import com.skyblock.core.manager.ReputationManager;
 import com.skyblock.core.manager.CrimsonIsleManager;
+import com.skyblock.core.manager.DojoManager;
+import com.skyblock.core.manager.CommissionManager;
+import com.skyblock.core.chocolate.ChocolateFactoryManager;
+import com.skyblock.core.menu.MiningCommissionMenu;
+import com.skyblock.core.menu.ChocolateFactoryMenu;
 import com.skyblock.core.vault.VaultCommand;
 import com.skyblock.core.vault.VaultManager;
 import com.skyblock.core.booster.BoosterCommand;
@@ -168,6 +173,9 @@ public final class SkyblockPlugin extends JavaPlugin {
     private StorageManager storageManager;
     private GardenManager gardenManager;
     private CrimsonIsleManager crimsonIsleManager;
+    private DojoManager dojoManager;
+    private CommissionManager commissionManager;
+    private ChocolateFactoryManager chocolateFactoryManager;
     private ProfileManager profile;
 
     public static SkyblockPlugin getInstance() {
@@ -219,6 +227,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
         crimsonIsleManager = CrimsonIsleManager.getInstance();
+        dojoManager = DojoManager.getInstance();
+        commissionManager = CommissionManager.getInstance();
+        chocolateFactoryManager = ChocolateFactoryManager.getInstance();
     }
 
     @Override
@@ -454,6 +465,16 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("dojo") != null) {
             getCommand("dojo").setExecutor(dojoCommand);
             getCommand("dojo").setTabCompleter(dojoCommand);
+        }
+        MenuCommand miningCommissionCommand = new MenuCommand(p -> new MiningCommissionMenu(p).open(p));
+        if (getCommand("miningcommission") != null) {
+            getCommand("miningcommission").setExecutor(miningCommissionCommand);
+            getCommand("miningcommission").setTabCompleter(miningCommissionCommand);
+        }
+        MenuCommand chocolateFactoryCommand = new MenuCommand(p -> new ChocolateFactoryMenu(p).open(p));
+        if (getCommand("chocolatefactory") != null) {
+            getCommand("chocolatefactory").setExecutor(chocolateFactoryCommand);
+            getCommand("chocolatefactory").setTabCompleter(chocolateFactoryCommand);
         }
         VaultManager vaultManager = VaultManager.getInstance();
         vaultManager.load(getDataFolder());
