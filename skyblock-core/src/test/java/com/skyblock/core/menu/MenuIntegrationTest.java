@@ -54,8 +54,11 @@ import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.manager.SkyblockLevelManager;
 import com.skyblock.core.manager.SkyblockLevelManager.Category;
+import com.skyblock.core.manager.AccessoryBagManager;
+import com.skyblock.core.manager.AccessoryBagManager.SlotTier;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.WardrobeManager.WardrobeSlot;
+import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.model.Rarity;
@@ -79,108 +82,6 @@ import static org.mockito.Mockito.when;
  * from the former per-class {@code *MenuTest} files into one suite of {@link Nested} groups.
  */
 class MenuIntegrationTest {
-
-    @Nested
-    class BestiaryMenuTests {
-
-        private final UUID PLAYER = UUID.randomUUID();
-
-        @BeforeEach
-        void reset() {
-            BestiaryManager.getInstance().resetKills(PLAYER);
-        }
-
-        @Test
-        void title_overviewIsBestiary() {
-            BestiaryMenu menu = new BestiaryMenu(PLAYER);
-            assertEquals("§2Bestiary", menu.getTitle());
-        }
-
-        @Test
-        void rows_isSix() {
-            BestiaryMenu menu = new BestiaryMenu(PLAYER);
-            assertEquals(6, menu.getRows());
-        }
-
-        @Test
-        void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new BestiaryMenu(PLAYER));
-        }
-
-        @Test
-        void categoryIcons_combatIsSword() {
-            assertEquals(Material.IRON_SWORD, BestiaryMenu.CATEGORY_ICONS.get(BestiaryCategory.COMBAT));
-        }
-
-        @Test
-        void categoryIcons_slayerIsDiamondSword() {
-            assertEquals(Material.DIAMOND_SWORD, BestiaryMenu.CATEGORY_ICONS.get(BestiaryCategory.SLAYER));
-        }
-
-        @Test
-        void categoryIcons_bossIsNetherStar() {
-            assertEquals(Material.NETHER_STAR, BestiaryMenu.CATEGORY_ICONS.get(BestiaryCategory.BOSS));
-        }
-
-        @Test
-        void categoryIcons_netherIsNetherrack() {
-            assertEquals(Material.NETHERRACK, BestiaryMenu.CATEGORY_ICONS.get(BestiaryCategory.NETHER));
-        }
-
-        @Test
-        void categoryIcons_oceanIsPrismarineShard() {
-            assertEquals(Material.PRISMARINE_SHARD, BestiaryMenu.CATEGORY_ICONS.get(BestiaryCategory.OCEAN));
-        }
-
-        @Test
-        void categoryIcons_miningIsPickaxe() {
-            assertEquals(Material.IRON_PICKAXE, BestiaryMenu.CATEGORY_ICONS.get(BestiaryCategory.MINING));
-        }
-
-        @Test
-        void categoryIcons_allCategoriesMapped() {
-            for (BestiaryCategory cat : BestiaryCategory.values()) {
-                assertNotNull(BestiaryMenu.CATEGORY_ICONS.get(cat),
-                        "CATEGORY_ICONS must contain an entry for " + cat);
-            }
-        }
-
-        @Test
-        void manager_milestoneLevel_zeroOnNoKills() {
-            assertEquals(0, BestiaryManager.getInstance().getMilestoneLevel(PLAYER));
-        }
-
-        @Test
-        void manager_completedFamilyCount_zeroOnNoKills() {
-            assertEquals(0, BestiaryManager.getInstance().getCompletedFamilyCount(PLAYER));
-        }
-
-        @Test
-        void manager_killsForCategory_zeroOnNoKills() {
-            assertEquals(0, BestiaryManager.getInstance().getKillsForCategory(PLAYER, BestiaryCategory.COMBAT));
-        }
-
-        @Test
-        void manager_killsForFamily_zeroOnNoKills() {
-            assertEquals(0, BestiaryManager.getInstance().getKillsForFamily(PLAYER, BestiaryFamily.ZOMBIE));
-        }
-
-        @Test
-        void manager_recordAndGetKills_roundTrips() {
-            BestiaryManager mgr = BestiaryManager.getInstance();
-            mgr.recordKill(PLAYER, "zombie");
-            mgr.recordKill(PLAYER, "zombie");
-            assertEquals(2, mgr.getKills(PLAYER, "zombie"));
-        }
-
-        @Test
-        void manager_killsForFamily_sumsMobKeys() {
-            BestiaryManager mgr = BestiaryManager.getInstance();
-            mgr.recordKill(PLAYER, "zombie");
-            mgr.recordKill(PLAYER, "drowned");
-            assertEquals(2, mgr.getKillsForFamily(PLAYER, BestiaryFamily.ZOMBIE));
-        }
-    }
 
     @Nested
     class MayorMenuTests {
@@ -2183,6 +2084,82 @@ class MenuIntegrationTest {
                 mgr.recordKill(PLAYER, "zombie");
             }
             assertEquals(1, mgr.getMilestoneLevel(PLAYER));
+        }
+    }
+
+    @Nested
+    class AccessoryBagMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void tearDown() {
+            AccessoryBagManager.getInstance().clear(PLAYER);
+        }
+
+        @Test
+        void title_isAccessoryBag() {
+            assertEquals("§5Accessory Bag", new AccessoryBagMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new AccessoryBagMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new AccessoryBagMenu(PLAYER));
+        }
+
+        @Test
+        void summarySlot_isFour() {
+            assertEquals(4, AccessoryBagMenu.SUMMARY_SLOT);
+        }
+
+        @Test
+        void maxSlots_isFortyFive() {
+            assertEquals(45, AccessoryBagManager.MAX_SLOTS);
+        }
+
+        @Test
+        void manager_size_zeroForFreshPlayer() {
+            assertEquals(0, AccessoryBagManager.getInstance().getSize(PLAYER));
+        }
+
+        @Test
+        void manager_unlockedSlots_threeForDefault() {
+            assertEquals(3, AccessoryBagManager.getInstance().getUnlockedSlots(PLAYER));
+        }
+
+        @Test
+        void manager_slotTier_defaultForFreshPlayer() {
+            assertEquals(SlotTier.DEFAULT, AccessoryBagManager.getInstance().getSlotTier(PLAYER));
+        }
+
+        @Test
+        void manager_addAccessory_incrementsSize() {
+            AccessoryBagManager mgr = AccessoryBagManager.getInstance();
+            mgr.addAccessory(PLAYER, TalismanType.SPEED_TALISMAN);
+            assertEquals(1, mgr.getSize(PLAYER));
+        }
+
+        @Test
+        void manager_upgradeSlotTier_advancesToTierOne() {
+            AccessoryBagManager mgr = AccessoryBagManager.getInstance();
+            SlotTier result = mgr.upgradeSlotTier(PLAYER);
+            assertEquals(SlotTier.TIER_1, result);
+            assertEquals(9, mgr.getUnlockedSlots(PLAYER));
+        }
+
+        @Test
+        void manager_totalMagicPower_zeroForEmptyBag() {
+            assertEquals(0, AccessoryBagManager.getInstance().getTotalMagicPower(PLAYER));
+        }
+
+        @Test
+        void manager_powerStone_nullByDefault() {
+            assertNull(AccessoryBagManager.getInstance().getSelectedPowerStone(PLAYER));
         }
     }
 
