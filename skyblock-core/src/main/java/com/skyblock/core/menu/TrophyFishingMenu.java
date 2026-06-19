@@ -61,7 +61,7 @@ public final class TrophyFishingMenu extends Menu {
             String color = ItemBuilder.rarityColor(fish.rarity.name()).toString();
             int count = manager.getCatchCount(playerId, fish);
             TrophyTier tier = manager.getTier(playerId, fish);
-            setItem(FIRST_SLOT + i, new ItemBuilder(Material.TROPICAL_FISH)
+            setItem(FIRST_SLOT + i, new ItemBuilder(Material.PUFFERFISH)
                     .displayName(color + fish.displayName)
                     .lore(
                             "§7Rarity: " + color + fish.rarity.getDisplayName(),
