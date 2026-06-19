@@ -1509,6 +1509,20 @@ class MenuIntegrationTest {
         void manager_purchaseUpgrade_failsWithNoPowder() {
             assertEquals(-2, HeartOfTheMountainManager.getInstance().purchaseUpgrade(PLAYER, HotMNode.MINING_SPEED));
         }
+
+        @Test
+        void manager_addGemstonePowder_roundTrips() {
+            HeartOfTheMountainManager mgr = HeartOfTheMountainManager.getInstance();
+            mgr.addGemstonePowder(PLAYER, 3000L);
+            assertEquals(3000L, mgr.getGemstonePowder(PLAYER));
+        }
+
+        @Test
+        void manager_upgrade_atMaxLevel_returnsNegativeOne() {
+            HeartOfTheMountainManager mgr = HeartOfTheMountainManager.getInstance();
+            mgr.setLevel(PLAYER, HotMNode.MINING_SPEED_BOOST, HotMNode.MINING_SPEED_BOOST.maxLevel);
+            assertEquals(-1, mgr.upgrade(PLAYER, HotMNode.MINING_SPEED_BOOST));
+        }
     }
 
     @Nested
