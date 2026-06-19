@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.manager.DungeonManager.FloorMeta;
@@ -50,7 +50,7 @@ public final class DungeonMenu extends AbstractMenu {
         CLASS_ICONS.put(DungeonClass.TANK,    Material.SHIELD);
     }
 
-    public DungeonMenu(SkyblockPlugin plugin, Player player) {
+    public DungeonMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§5§lCatacombs", 54);
     }
 

@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.SkyblockPlugin;
+import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.menu.AuctionHouseMenu;
 import org.bukkit.command.Command;
@@ -44,7 +44,7 @@ public final class AuctionHouseCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player player) {
-        new AuctionHouseMenu(SkyblockPlugin.getInstance(), player).open(player);
+        new AuctionHouseMenu(SkyBlockCore.getInstance(), player).open(player);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.util.ItemBuilder;
@@ -25,7 +25,7 @@ public class SkillsMenu extends AbstractMenu {
 
     private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32};
 
-    public SkillsMenu(SkyblockPlugin plugin, Player player) {
+    public SkillsMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§aSkills", 54);
     }
 

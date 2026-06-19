@@ -193,7 +193,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private SackManager sackManager;
     private StorageManager storageManager;
     private com.skyblock.core.manager.StorageManager storageCoordinator;
-    private com.skyblock.core.manager.ProfileManager coreProfileManager;
+
     private IslandManager islandManager;
     private GardenManager gardenManager;
     private CrimsonIsleManager crimsonIsleManager;
@@ -248,8 +248,6 @@ public final class SkyBlockCore extends JavaPlugin {
         profile.load(getDataFolder());
         collectionManager = CollectionManager.getInstance();
         collectionManager.load(getDataFolder());
-        coreProfileManager = com.skyblock.core.manager.ProfileManager.getInstance();
-
         // economy
         bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());

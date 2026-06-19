@@ -77,7 +77,7 @@ import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
@@ -295,12 +295,12 @@ class MenuIntegrationTest {
     @Nested
     class DungeonMenuTests {
 
-        private SkyblockPlugin mockPlugin;
+        private JavaPlugin mockPlugin;
         private Player mockPlayer;
 
         @BeforeEach
         void setup() {
-            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlugin = mock(JavaPlugin.class);
             mockPlayer = mock(Player.class);
             when(mockPlayer.getUniqueId()).thenReturn(UUID.randomUUID());
         }
@@ -358,12 +358,12 @@ class MenuIntegrationTest {
     @Nested
     class AuctionHouseMenuTests {
 
-        private SkyblockPlugin mockPlugin;
+        private JavaPlugin mockPlugin;
         private Player mockPlayer;
 
         @BeforeEach
         void reset() {
-            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlugin = mock(JavaPlugin.class);
             mockPlayer = mock(Player.class);
             AuctionHouseManager.getInstance().clear();
         }
@@ -558,7 +558,7 @@ class MenuIntegrationTest {
     class PetMenuTests {
 
         private final Player mockPlayer = mock(Player.class);
-        private final com.skyblock.core.SkyblockPlugin mockPlugin = mock(com.skyblock.core.SkyblockPlugin.class);
+        private final JavaPlugin mockPlugin = mock(JavaPlugin.class);
 
         @Test
         void title_isPets() {
@@ -641,13 +641,13 @@ class MenuIntegrationTest {
     class MinionMenuTests {
 
         private UUID owner;
-        private SkyblockPlugin mockPlugin;
+        private JavaPlugin mockPlugin;
         private Player mockPlayer;
 
         @BeforeEach
         void reset() {
             owner = UUID.randomUUID();
-            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlugin = mock(JavaPlugin.class);
             mockPlayer = mock(Player.class);
             when(mockPlayer.getUniqueId()).thenReturn(owner);
             MinionManager.getInstance().clearMinions(owner);
@@ -728,12 +728,12 @@ class MenuIntegrationTest {
     @Nested
     class SlayerMenuTests {
 
-        private SkyblockPlugin mockPlugin;
+        private JavaPlugin mockPlugin;
         private Player mockPlayer;
 
         @BeforeEach
         void setup() {
-            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlugin = mock(JavaPlugin.class);
             mockPlayer = mock(Player.class);
             when(mockPlayer.getUniqueId()).thenReturn(UUID.randomUUID());
         }
@@ -1385,17 +1385,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isBazaar() {
-            assertEquals("§6§lBazaar", new BazaarMenu(mock(SkyblockPlugin.class), mock(Player.class)).getTitle());
+            assertEquals("§6§lBazaar", new BazaarMenu(mock(JavaPlugin.class), mock(Player.class)).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new BazaarMenu(mock(SkyblockPlugin.class), mock(Player.class)).getRows());
+            assertEquals(6, new BazaarMenu(mock(JavaPlugin.class), mock(Player.class)).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new BazaarMenu(mock(SkyblockPlugin.class), mock(Player.class)));
+            assertDoesNotThrow(() -> new BazaarMenu(mock(JavaPlugin.class), mock(Player.class)));
         }
 
         @Test
@@ -2026,13 +2026,13 @@ class MenuIntegrationTest {
     @Nested
     class EnchantingMenuTests {
 
-        private SkyblockPlugin mockPlugin;
+        private JavaPlugin mockPlugin;
         private Player mockPlayer;
         private UUID playerId;
 
         @BeforeEach
         void setup() {
-            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlugin = mock(JavaPlugin.class);
             mockPlayer = mock(Player.class);
             playerId = UUID.randomUUID();
             when(mockPlayer.getUniqueId()).thenReturn(playerId);
@@ -2153,7 +2153,7 @@ class MenuIntegrationTest {
 
         private final UUID PLAYER = UUID.randomUUID();
         private final Player mockPlayer = mock(Player.class);
-        private final com.skyblock.core.SkyblockPlugin mockPlugin = mock(com.skyblock.core.SkyblockPlugin.class);
+        private final JavaPlugin mockPlugin = mock(JavaPlugin.class);
 
         @BeforeEach
         void setUp() {
@@ -2326,12 +2326,12 @@ class MenuIntegrationTest {
     class AccessoryBagMenuTests {
 
         private final UUID PLAYER = UUID.randomUUID();
-        private SkyblockPlugin mockPlugin;
+        private JavaPlugin mockPlugin;
         private Player mockPlayer;
 
         @BeforeEach
         void setup() {
-            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlugin = mock(JavaPlugin.class);
             mockPlayer = mock(Player.class);
             when(mockPlayer.getUniqueId()).thenReturn(PLAYER);
         }
