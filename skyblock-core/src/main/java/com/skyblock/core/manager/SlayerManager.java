@@ -21,10 +21,6 @@ public final class SlayerManager {
 
     public static final int MAX_LEVEL = 9;
 
-    private static final long[] XP_PER_LEVEL = {
-            5, 15, 200, 1000, 5000, 20000, 100000, 400000, 1000000
-    };
-
     /** Boss HP per tier (T1, T2, T3, T4), keyed by slayer type name. */
     public static final Map<String, int[]> BOSS_HEALTH;
 
@@ -67,17 +63,26 @@ public final class SlayerManager {
     }
 
     public enum SlayerType {
-        ZOMBIE("Zombie"),
-        SPIDER("Spider"),
-        WOLF("Wolf"),
-        ENDERMAN("Enderman"),
-        BLAZE("Blaze"),
-        VAMPIRE("Vampire");
+        ZOMBIE("Zombie",
+                new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
+        SPIDER("Spider",
+                new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
+        WOLF("Wolf",
+                new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
+        ENDERMAN("Enderman",
+                new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
+        BLAZE("Blaze",
+                new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
+        VAMPIRE("Vampire",
+                new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000});
 
         private final String displayName;
+        /** Cumulative XP required to reach each level (index = level - 1). */
+        public final int[] xpTable;
 
-        SlayerType(String displayName) {
+        SlayerType(String displayName, int[] xpTable) {
             this.displayName = displayName;
+            this.xpTable = xpTable;
         }
 
         public String getDisplayName() {
@@ -386,7 +391,8 @@ public final class SlayerManager {
     public int getLevel(UUID playerId, SlayerType type) {
         long xp = getExperience(playerId, type);
         int level = 0;
-        while (level < MAX_LEVEL && xp >= XP_PER_LEVEL[level]) {
+        int[] table = type.xpTable;
+        while (level < MAX_LEVEL && xp >= table[level]) {
             level++;
         }
         return level;
