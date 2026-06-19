@@ -29,13 +29,73 @@ A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven
 
 ## Features
 
-- **Private islands** — create, upgrade, and visit personal islands.
-- **Skills & collections** — level Combat, Mining, Farming, Foraging, Fishing, and more, unlocking collection tiers as you gather resources.
-- **Economy** — coins/purse, personal and co-op banking, NPC shops, the Bazaar order book, and the Auction House.
-- **Combat & dungeons** — custom mobs and stats, item/set abilities with mana, Slayer quests, and Catacombs floors F1–F7 plus Master Mode.
-- **Gear progression** — custom enchantments, reforges, the Forge, pets, talismans/accessories with magical power, and the wardrobe.
-- **End-game zones** — Crimson Isle (Kuudra & faction reputation), Crystal Hollows/Dwarven Mines with Heart of the Mountain, and The Rift.
-- **Minions & automation** — placeable minions with fuel, upgrades, and hopper auto-sell.
+### Skills & Progression
+- **12 skills** — Combat, Mining, Farming, Foraging, Fishing, Enchanting, Alchemy, Taming, Social, Carpentry, Runecrafting, and Dungeoneering, each with authentic Hypixel XP tables and level caps.
+- **Collections** — per-resource collection tiers gate crafting recipes; all 200+ collection items tracked per-player.
+- **SkyBlock Level** — cumulative XP across every progression system rolls into a single SkyBlock level with tier rewards.
+- **Fairy Souls** — discoverable fairy souls grant permanent stat bonuses via Tia the Fairy exchange.
+
+### Private Islands
+- **Island creation** — each player gets a personal schematic island; co-op members share the same island.
+- **Minions** — 20+ minion types (Combat, Farming, Mining, Fishing, Foraging …) with fuel slots, upgrade slots, storage, and hopper auto-sell.
+- **Upgrades** — island size upgrades, visitor system, and warp point management.
+
+### Economy
+- **Coins / purse** — server-wide coin economy managed by `EconomyManager`.
+- **Bank** — personal and co-op bank accounts with interest, deposits, and withdrawals (`BankManager` / `BankingManager`).
+- **Bazaar** — live buy/sell order book with instant buy/sell pricing and automated order fulfillment.
+- **Auction House** — BIN listings and bid-based auctions; all standard SkyBlock auction types.
+- **NPC shops** — NPC-driven shop catalogues (`ShopManager`) with configurable stock and prices.
+- **Sacks** — auto-pickup sacks with configurable per-resource storage limits.
+
+### Combat & Slayer
+- **Custom mobs** — all SkyBlock mobs with configurable HP, damage, and loot tables.
+- **SkyBlock damage formula** — Strength, Crit Damage, Defense, and Effective HP computed via `StatManager` and applied in `CombatListener`.
+- **Item/set abilities** — weapon and armor abilities with mana costs managed by `ItemAbilityManager`.
+- **Slayer quests** — Zombie, Spider, Wolf, Enderman, Blaze, and Vampire tiers with boss spawn costs, corruption, and RNG-meter rewards.
+- **Bestiary** — per-mob kill tracking with milestone bonuses.
+
+### Dungeons
+- **Catacombs** — floors F1–F7 and Master Mode M1–M7, with room generation, mob scaling, and puzzle rooms.
+- **Dungeon classes** — Healer, Mage, Berserk, Archer, Tank — each with class-specific perks and stat scaling.
+- **Dungeon score** — skill score, speed score, exploration, and bonus score feeding into S/S+ calculation.
+- **Essence system** — Undead, Wither, Dragon, Spider, Crimson, Wither Essence shop upgrades.
+- **Experimentation Table** — Superpairs, Chronomatron, and Ultrasequencer enchanting minigames.
+
+### Gear & Accessories
+- **Custom enchantments** — 50+ SkyBlock-exclusive enchantments with tiered levels.
+- **Reforges** — reforge stones with per-rarity stat bonuses; Blacksmith and Reforgeable items.
+- **Forge** — Dwarven and Molten-tier forge recipes with real processing times.
+- **Pets** — pet ownership, passive XP levelling (1–100), and active-pet perk injection into stats.
+- **Talismans / Accessories** — equipped talismans aggregate stat bonuses scaled by rarity; Magical Power calculated across the bag.
+- **Wardrobe** — up to 9 named armor outfits for instant full-set swapping.
+- **Runes** — rune application to items and active-rune visual/stat effects.
+
+### End-game Zones
+- **Dwarven Mines & Crystal Hollows** — Heart of the Mountain perk tree (HOTM), powder mining, gemstone nodes, and Dwarven commissions.
+- **Crimson Isle** — Kuudra boss tiers (Infernal to Molten), Mage vs. Barbarian faction reputation, and attribute shards.
+- **The Rift** — parallel dimension with Rift-specific currency and progression state.
+- **Jerry's Workshop** — seasonal event with gifts, snow minions, and snow cannon.
+- **Carnival** — rotational carnival event games and prize rewards.
+
+### Social & Quality of Life
+- **Parties** — invite, kick, leader transfer, and shared dungeon sessions.
+- **Guilds** — create/manage player guilds with membership and rank management.
+- **Friends** — friend list with online/offline tracking.
+- **Mail** — asynchronous player-to-player mail with item attachment.
+- **Leaderboards** — configurable skill and stat leaderboards.
+- **Mayor** — election cycles with active mayor perks affecting server-wide gameplay.
+- **SkyBlock Calendar** — in-game seasons and scheduled events (Spooky Festival, Season of Jerry, …).
+- **Notifications** — action bar, boss bar, title, and scoreboard display layers.
+
+### Additional Systems
+- **Garden** — dedicated farming island with Jacob's Contest integration, crop milestones, visitors, and pest extermination.
+- **Trophy Fishing** — 22 unique trophy fish types with weighted drop-chance tables and catch tracking.
+- **Museum** — item donation system with completion-tier rewards.
+- **Chocolate Factory** — idle-production system with upgrades.
+- **Net Worth** — real-time valuation of a player's full inventory, pets, and currencies.
+- **Potions** — custom brewing recipes with SkyBlock-specific durations and splash variants.
+- **Bingo** — seasonal bingo cards with goal tracking and prize tiers.
 
 See the [Feature Managers](#feature-managers) table for the authoritative manager registry, and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full module map.
 
