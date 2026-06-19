@@ -29,12 +29,12 @@ public final class DungeonCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            new com.skyblock.core.dungeon.gui.DungeonMenu(player.getUniqueId()).open(player);
+            new com.skyblock.core.menu.DungeonMenu(player.getUniqueId()).open(player);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "menu"     -> new com.skyblock.core.dungeon.gui.DungeonMenu(player.getUniqueId()).open(player);
+            case "menu"     -> new com.skyblock.core.menu.DungeonMenu(player.getUniqueId()).open(player);
             case "info"     -> handleInfo(player);
             case "start"    -> handleStart(player, args);
             case "leave"    -> handleLeave(player);

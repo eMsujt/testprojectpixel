@@ -1,6 +1,7 @@
 package com.skyblock.core.hotm.command;
 
 import com.skyblock.core.manager.HotmManager;
+import com.skyblock.core.menu.HotmMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,7 +46,7 @@ public final class HOTMCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /hotmtree <view|upgrade|set|reset|powder>");
+            new HotmMenu(player).open(player);
             return true;
         }
 
