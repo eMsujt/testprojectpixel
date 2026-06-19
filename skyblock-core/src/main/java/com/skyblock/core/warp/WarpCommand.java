@@ -38,7 +38,7 @@ public final class WarpCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            new com.skyblock.core.menu.WarpMenu().open(player);
+            new com.skyblock.core.menu.WarpMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player);
             return true;
         }
 
