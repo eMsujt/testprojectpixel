@@ -326,6 +326,21 @@ public final class SkillManager {
     }
 
     // -------------------------------------------------------------------------
+    // Collection delegation
+    // -------------------------------------------------------------------------
+
+    /** Adds {@code amount} items to the player's collection identified by name; ignores unknown names. */
+    public void addCollection(UUID playerId, String collection, int amount) {
+        CollectionManager.getInstance().addItems(playerId, collection, (long) amount);
+    }
+
+    /** Returns how many items the player has in the named collection (0 if unknown). */
+    public long getCollectionCount(UUID playerId, String collection) {
+        com.skyblock.core.model.Collection c = com.skyblock.core.model.Collection.parse(collection);
+        return c == null ? 0L : CollectionManager.getInstance().getItems(playerId, c);
+    }
+
+    // -------------------------------------------------------------------------
     // Internal helpers
     // -------------------------------------------------------------------------
 
