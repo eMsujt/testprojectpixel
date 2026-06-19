@@ -79,7 +79,7 @@ import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.collections.command.CollectionsCommand;
 import com.skyblock.core.collections.listener.CollectionListener;
 import com.skyblock.core.listener.CombatListener;
-import com.skyblock.core.listener.SkillsListener;
+import com.skyblock.core.listener.ProgressionListener;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.EssenceShopManager;
 import com.skyblock.core.menu.EnchantingMenu;
@@ -464,7 +464,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("collection").setTabCompleter(collectionsCommand);
         }
         getServer().getPluginManager().registerEvents(new CollectionListener(collectionManager), this);
-        getServer().getPluginManager().registerEvents(new SkillsListener(skillsManager), this);
+        getServer().getPluginManager().registerEvents(new ProgressionListener(skillsManager, FairySoulManager.getInstance(), this), this);
         getServer().getPluginManager().registerEvents(new CombatListener(skillsManager), this);
         ChatManager chatManager = ChatManager.getInstance();
         ChatCommand chatCommand = new ChatCommand(chatManager);
