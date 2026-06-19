@@ -31,8 +31,12 @@ import com.skyblock.core.manager.NetherwartIslandManager.KuudraTier;
 import com.skyblock.core.manager.BestiaryManager.BestiaryCategory;
 import com.skyblock.core.manager.BestiaryManager.BestiaryFamily;
 import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.manager.EnchantingManager;
+import com.skyblock.core.manager.EnchantingManager.SkyBlockEnchantment;
+import com.skyblock.core.manager.EnchantmentManager;
 import com.skyblock.core.manager.EssenceManager.EssenceShopPerk;
 import com.skyblock.core.manager.EssenceShopManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.manager.MayorManager.MayorCandidate;
@@ -65,6 +69,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Grouped integration tests for every {@code com.skyblock.core.menu} GUI, consolidated
@@ -1840,6 +1845,82 @@ class MenuIntegrationTest {
         @AfterEach
         void tearDown() {
             ChocolateFactoryManager.getInstance().remove(PLAYER);
+        }
+    }
+
+    @Nested
+    class EnchantingMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void tearDown() {
+            EnchantmentManager.getInstance().remove(PLAYER);
+            SkillManager.getInstance().setSkillXP(PLAYER, "enchanting", 0L);
+        }
+
+        @Test
+        void title_isEnchanting() {
+            assertEquals("§5Enchanting", new EnchantingMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new EnchantingMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new EnchantingMenu(PLAYER));
+        }
+
+        @Test
+        void tableSlot_isFour() {
+            assertEquals(4, EnchantingMenu.TABLE_SLOT);
+        }
+
+        @Test
+        void manager_enchantingLevel_oneForFreshPlayer() {
+            assertEquals(1, EnchantmentManager.getInstance().getEnchantingLevel(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_setAndGetEnchantingLevel_roundTrips() {
+            EnchantmentManager mgr = EnchantmentManager.getInstance();
+            mgr.setEnchantingLevel(PLAYER, 5);
+            assertEquals(5, mgr.getEnchantingLevel(PLAYER));
+        }
+
+        @Test
+        void skillManager_enchantingXp_zeroForFreshPlayer() {
+            assertEquals(0L, SkillManager.getInstance().getSkillXP(UUID.randomUUID(), "enchanting"));
+        }
+
+        @Test
+        void skillManager_setAndGetSkillXp_roundTrips() {
+            SkillManager mgr = SkillManager.getInstance();
+            mgr.setSkillXP(PLAYER, "enchanting", 1000L);
+            assertEquals(1000L, mgr.getSkillXP(PLAYER, "enchanting"));
+        }
+
+        @Test
+        void enchantment_sharpness_maxLevelIsSeven() {
+            assertEquals(7, EnchantingManager.getInstance().getMaxLevel(SkyBlockEnchantment.SHARPNESS));
+        }
+
+        @Test
+        void ultimateEnchants_containsUltimateWise() {
+            assertTrue(EnchantingManager.ULTIMATE_ENCHANTS.contains(SkyBlockEnchantment.ULTIMATE_WISE));
+        }
+
+        @Test
+        void isUltimate_ultimateWise_returnsTrue() {
+            assertTrue(EnchantingManager.getInstance().isUltimate(SkyBlockEnchantment.ULTIMATE_WISE));
+        }
+
+        @Test
+        void isUltimate_sharpness_returnsFalse() {
+            assertFalse(EnchantingManager.getInstance().isUltimate(SkyBlockEnchantment.SHARPNESS));
         }
     }
 

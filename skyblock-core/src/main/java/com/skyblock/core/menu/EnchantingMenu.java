@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 public final class EnchantingMenu extends Menu {
 
-    private static final int TABLE_SLOT = 4;
+    static final int TABLE_SLOT = 4;
 
     private final UUID playerId;
 
