@@ -9,13 +9,13 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 /**
- * 54-slot Island menu. A beacon at slot 22 shows the player's current island
- * level, total XP, and XP required to reach the next level. Island upgrades
- * are displayed across row 4 (slots 27–34).
+ * 54-slot Island menu. A grass block at slot 13 shows the player's current
+ * island level, total XP, and XP required to reach the next level. Island
+ * upgrades are displayed across row 4 (slots 28–35).
  */
 public final class IslandMenu extends Menu {
 
-    static final int BEACON_SLOT = 22;
+    static final int OVERVIEW_SLOT = 13;
     static final int[] UPGRADE_SLOTS = {28, 29, 30, 31, 32, 33, 34, 35};
 
     private static final IslandUpgrade[] DISPLAYED_UPGRADES = IslandUpgrade.values();
@@ -43,12 +43,13 @@ public final class IslandMenu extends Menu {
         long nextLevelXp = (long) (level + 1) * (level + 1) * IslandManager.XP_PER_LEVEL;
         long xpToNext = nextLevelXp - xp;
 
-        setItem(BEACON_SLOT, new ItemBuilder(Material.BEACON)
+        setItem(OVERVIEW_SLOT, new ItemBuilder(Material.GRASS_BLOCK)
                 .displayName("§aIsland Level " + level)
                 .lore(
                         "§7Current XP: §e" + xp,
                         "§7XP to next level: §e" + xpToNext,
-                        "§7Next level: §e" + (level + 1))
+                        "§7Next level: §e" + (level + 1),
+                        "§7Biome: §e" + manager.getIslandBiome(owner))
                 .build());
 
         for (int i = 0; i < DISPLAYED_UPGRADES.length && i < UPGRADE_SLOTS.length; i++) {
@@ -62,13 +63,5 @@ public final class IslandMenu extends Menu {
                             "§7Level: §e" + upgradeLevel + "§7/§e" + upgrade.getMaxLevel())
                     .build());
         }
-
-        setItem(49, new ItemBuilder(Material.GRASS_BLOCK)
-                .displayName("§aIsland Overview")
-                .lore(
-                        "§7Level: §e" + level,
-                        "§7Total XP: §e" + xp,
-                        "§7Biome: §e" + manager.getIslandBiome(owner))
-                .build());
     }
 }
