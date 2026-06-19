@@ -611,6 +611,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         BestiaryManager.getInstance();
         HarpManager.getInstance().load(getDataFolder());
         JerryWorkshopManager.getInstance().load(getDataFolder());
+        com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
     }
 
     @Override
@@ -660,6 +661,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         } catch (java.io.IOException e) {
             getLogger().severe("Failed to save harp data: " + e.getMessage());
         }
+        com.skyblock.core.scoreboard.ScoreboardManager.getInstance().stop();
         instance = null;
     }
 }
