@@ -75,7 +75,7 @@ import com.skyblock.core.collections.command.CollectionsCommand;
 import com.skyblock.core.collections.listener.CollectionListener;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.EssenceShopManager;
-import com.skyblock.core.command.EssenceShopCommand;
+import com.skyblock.core.menu.EssenceShopMenu;
 import com.skyblock.core.combat.command.CombatCommand;
 import com.skyblock.core.combat.manager.CombatManager;
 import com.skyblock.core.coop.CoopCommand;
@@ -102,7 +102,7 @@ import com.skyblock.core.achievement.AchievementCommand;
 import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.level.SkyblockLevelCommand;
 import com.skyblock.core.manager.SkyblockLevelManager;
-import com.skyblock.core.command.SkyblockMenuCommand;
+import com.skyblock.core.menu.manager.SkyBlockMenuManager;
 import com.skyblock.core.run.RunCommand;
 import com.skyblock.core.dungeon.manager.RunManager;
 import com.skyblock.core.title.TitleCommand;
@@ -250,7 +250,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("essence").setExecutor(essenceCommand);
             getCommand("essence").setTabCompleter(essenceCommand);
         }
-        EssenceShopCommand essenceShopCommand = new EssenceShopCommand(essenceShopManager);
+        MenuCommand essenceShopCommand = new MenuCommand(p -> new EssenceShopMenu(p).open(p));
         if (getCommand("essenceshop") != null) {
             getCommand("essenceshop").setExecutor(essenceShopCommand);
             getCommand("essenceshop").setTabCompleter(essenceShopCommand);
@@ -483,7 +483,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
         getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
-        SkyblockMenuCommand menuCommand = new SkyblockMenuCommand();
+        MenuCommand menuCommand = new MenuCommand(p -> SkyBlockMenuManager.getInstance().openMainMenu(p));
         if (getCommand("menu") != null) {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
