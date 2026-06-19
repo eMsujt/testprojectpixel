@@ -155,18 +155,20 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Invalid order ID.");
             return;
         }
-        try {
-            if (type.equals("buy")) {
-                bazaarManager.cancelBuyOrder(orderId);
+        if (type.equals("buy")) {
+            if (bazaarManager.cancelBuyOrder(orderId, player.getUniqueId())) {
                 player.sendMessage("Buy order " + orderId + " cancelled.");
-            } else if (type.equals("sell")) {
-                bazaarManager.cancelSellOrder(orderId);
+            } else {
+                player.sendMessage("Order not found or does not belong to you: " + orderId);
+            }
+        } else if (type.equals("sell")) {
+            if (bazaarManager.cancelSellOrder(orderId, player.getUniqueId())) {
                 player.sendMessage("Sell order " + orderId + " cancelled.");
             } else {
-                player.sendMessage("Usage: /bazaar cancel buy|sell <orderId>");
+                player.sendMessage("Order not found or does not belong to you: " + orderId);
             }
-        } catch (IllegalArgumentException e) {
-            player.sendMessage("Order not found: " + orderId);
+        } else {
+            player.sendMessage("Usage: /bazaar cancel buy|sell <orderId>");
         }
     }
 
