@@ -152,6 +152,7 @@ import com.skyblock.core.manager.BankingManager;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageCommand;
 import com.skyblock.core.npc.NpcManager;
+import com.skyblock.core.manager.RunecraftingManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyBlockCore extends JavaPlugin {
@@ -235,6 +236,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private CrystalHollowsManager crystalHollowsManager;
     private JacobsContestManager jacobsContestManager;
     private NpcManager npcManager;
+    private RunecraftingManager runecraftingManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
@@ -354,6 +356,8 @@ public final class SkyBlockCore extends JavaPlugin {
         crystalHollowsManager = CrystalHollowsManager.getInstance();
         jacobsContestManager = JacobsContestManager.getInstance();
         npcManager = NpcManager.getInstance();
+        runecraftingManager = RunecraftingManager.getInstance();
+        runecraftingManager.load(getDataFolder());
     }
 
     @Override
@@ -726,6 +730,7 @@ public final class SkyBlockCore extends JavaPlugin {
         } catch (java.io.IOException e) {
             getLogger().severe("Failed to save data: " + e.getMessage());
         }
+        RunecraftingManager.getInstance().save(getDataFolder());
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().stop();
         instance = null;
     }
