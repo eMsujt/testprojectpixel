@@ -4,7 +4,7 @@ import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.BestiaryManager.BestiaryCategory;
 import com.skyblock.core.manager.BestiaryManager.BestiaryFamily;
 import com.skyblock.core.manager.BestiaryManager.BestiaryMob;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

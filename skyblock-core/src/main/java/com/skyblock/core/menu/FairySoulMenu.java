@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.FairySoulManager.FairyIsland;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

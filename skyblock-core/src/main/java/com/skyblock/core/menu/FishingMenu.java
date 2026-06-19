@@ -2,8 +2,8 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.manager.FishingManager.FishType;
-import com.skyblock.core.util.MenuUtils;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +31,7 @@ public final class FishingMenu extends Menu {
     @Override
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.LIGHT_BLUE_STAINED_GLASS_PANE).displayName("§r").build();
-        MenuUtils.fillBorder(getRows(), this::setItem, pane);
+        SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         FishingManager fm = FishingManager.getInstance();
         int level = fm.getLevel(playerId);

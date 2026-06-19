@@ -2,8 +2,8 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarOrder;
-import com.skyblock.core.util.MenuUtils;
-import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
+import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -38,7 +38,7 @@ public final class BazaarMenu extends Menu {
     @Override
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.CYAN_STAINED_GLASS_PANE).displayName("§r").build();
-        MenuUtils.fillBorder(getRows(), this::setItem, pane);
+        SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         List<BazaarOrder> orders = BazaarManager.getInstance().getOrdersForPlayer(player);
 

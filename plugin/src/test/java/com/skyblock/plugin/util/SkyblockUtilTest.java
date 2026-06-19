@@ -1,6 +1,6 @@
 package com.skyblock.plugin.util;
 
-import com.skyblock.core.util.SkyblockUtil;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -19,59 +19,59 @@ class SkyblockUtilTest {
 
     @Test
     void testCreateSkullWithTexture_ReturnsPlayerHeadMaterial() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
         assertEquals(Material.PLAYER_HEAD, skull.getType());
     }
 
     @Test
     void testCreateSkullWithTexture_ReturnsStackSizeOne() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
         assertEquals(1, skull.getAmount());
     }
 
     @Test
     void testCreateSkullWithTexture_WithDisplayName() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
         assertTrue(skull.hasItemMeta());
         assertEquals(DISPLAY_NAME, skull.getItemMeta().getDisplayName());
     }
 
     @Test
     void testCreateSkullWithTexture_WithLore() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
         assertEquals(LORE, skull.getItemMeta().getLore());
     }
 
     @Test
     void testCreateSkullWithTexture_WithNullDisplayName() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, null, LORE);
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, null, LORE);
         assertTrue(skull.hasItemMeta());
         assertEquals("", skull.getItemMeta().getDisplayName());
     }
 
     @Test
     void testCreateSkullWithTexture_WithNullLore() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, null);
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, null);
         assertTrue(skull.hasItemMeta());
         assertNull(skull.getItemMeta().getLore());
     }
 
     @Test
     void testCreateSkullWithTexture_WithNullBothNameAndLore() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, null, null);
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, null, null);
         assertEquals(Material.PLAYER_HEAD, skull.getType());
         assertTrue(skull.hasItemMeta());
     }
 
     @Test
     void testCreateSkullWithTexture_HasSkullMeta() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, LORE);
         assertTrue(skull.getItemMeta() instanceof SkullMeta);
     }
 
     @Test
     void testCreateSkullWithTexture_WithEmptyLore() {
-        ItemStack skull = SkyblockUtil.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, Arrays.asList());
+        ItemStack skull = SkyblockUtils.createSkullWithTexture(BASE64_TEXTURE, DISPLAY_NAME, Arrays.asList());
         assertTrue(skull.hasItemMeta());
         assertEquals(0, skull.getItemMeta().getLore().size());
     }
