@@ -23,12 +23,13 @@ import java.util.function.Consumer;
  */
 public final class RiftMenu extends Menu {
 
-    private static final int SUMMARY_SLOT  = 4;
-    private static final int MOTES_SLOT     = 20;
-    private static final int TIMECHARM_SLOT = 22;
-    private static final int ENIGMA_SLOT    = 24;
-    private static final int RIFT_SOUL_SLOT = 31;
-    private static final int CLOSE_SLOT     = 49;
+    private static final int SUMMARY_SLOT   = 4;
+    private static final int MOTES_SLOT      = 11;
+    private static final int TIMER_SLOT      = 13;
+    private static final int TIMECHARM_SLOT  = 15;
+    private static final int ENIGMA_SLOT     = 29;
+    private static final int RIFT_SOUL_SLOT  = 33;
+    private static final int CLOSE_SLOT      = 49;
 
     private final UUID playerId;
     private Inventory inventory;
@@ -63,15 +64,19 @@ public final class RiftMenu extends Menu {
                 .displayName("§dRift Status")
                 .lore(
                         "§7In Rift: " + (data.inRift ? "§aYes" : "§cNo"),
-                        "§7Zone: §e" + (data.zone != null ? data.zone.name() : "—"),
-                        "§7Time remaining: §e" + data.timeRemainingSeconds + "s")
+                        "§7Zone: §e" + (data.zone != null ? data.zone.name() : "—"))
                 .build());
 
-        inventory.setItem(MOTES_SLOT, new ItemBuilder(Material.SUNFLOWER)
+        inventory.setItem(MOTES_SLOT, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Motes")
                 .lore(
                         "§7Balance: §e" + data.motes,
                         "§7Purse cap: §e" + RiftManager.MOTES_PURSE_CAP)
+                .build());
+
+        inventory.setItem(TIMER_SLOT, new ItemBuilder(Material.CLOCK)
+                .displayName("§dRift Timer")
+                .lore("§7Time remaining: §e" + data.timeRemainingSeconds + "s")
                 .build());
 
         inventory.setItem(TIMECHARM_SLOT, new ItemBuilder(Material.TOTEM_OF_UNDYING)
