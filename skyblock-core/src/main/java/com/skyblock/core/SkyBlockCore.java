@@ -131,7 +131,7 @@ import com.skyblock.core.dungeon.manager.RunManager;
 import com.skyblock.core.title.TitleCommand;
 import com.skyblock.core.title.TitleManager;
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.skills.command.SkillsCommand;
+import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.slayer.command.SlayerCommand;
 import com.skyblock.core.menu.SlayerMenu;
 import com.skyblock.core.manager.SlayerManager;

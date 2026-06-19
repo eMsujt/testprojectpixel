@@ -1,4 +1,4 @@
-package com.skyblock.core.skills.command;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.menu.SkillsMenu;
