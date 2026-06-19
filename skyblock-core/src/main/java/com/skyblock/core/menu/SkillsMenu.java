@@ -26,7 +26,7 @@ public class SkillsMenu extends AbstractMenu {
     private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32};
 
     public SkillsMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§aSkills", 54);
+        super(plugin, player, "§aYour Skills", 54);
     }
 
     @Override
