@@ -27,28 +27,19 @@ import java.util.UUID;
 public final class WardrobeManager {
 
     /**
-     * 18 wardrobe slots arranged as 9 pages × 2 armor sets per page.
-     * Page 1 = slots 1-2, page 2 = slots 3-4, …, page 9 = slots 17-18.
+     * 9 wardrobe slots arranged as 3 pages × 3 armor sets per page.
+     * Page 1 = slots 1-3, page 2 = slots 4-6, page 3 = slots 7-9.
      */
     public enum WardrobeSlot {
-        SLOT_1(1,  "Slot 1",  1, 1),
-        SLOT_2(2,  "Slot 2",  1, 2),
-        SLOT_3(3,  "Slot 3",  2, 1),
-        SLOT_4(4,  "Slot 4",  2, 2),
-        SLOT_5(5,  "Slot 5",  3, 1),
-        SLOT_6(6,  "Slot 6",  3, 2),
-        SLOT_7(7,  "Slot 7",  4, 1),
-        SLOT_8(8,  "Slot 8",  4, 2),
-        SLOT_9(9,  "Slot 9",  5, 1),
-        SLOT_10(10, "Slot 10", 5, 2),
-        SLOT_11(11, "Slot 11", 6, 1),
-        SLOT_12(12, "Slot 12", 6, 2),
-        SLOT_13(13, "Slot 13", 7, 1),
-        SLOT_14(14, "Slot 14", 7, 2),
-        SLOT_15(15, "Slot 15", 8, 1),
-        SLOT_16(16, "Slot 16", 8, 2),
-        SLOT_17(17, "Slot 17", 9, 1),
-        SLOT_18(18, "Slot 18", 9, 2);
+        SLOT_1(1, "Slot 1", 1, 1),
+        SLOT_2(2, "Slot 2", 1, 2),
+        SLOT_3(3, "Slot 3", 1, 3),
+        SLOT_4(4, "Slot 4", 2, 1),
+        SLOT_5(5, "Slot 5", 2, 2),
+        SLOT_6(6, "Slot 6", 2, 3),
+        SLOT_7(7, "Slot 7", 3, 1),
+        SLOT_8(8, "Slot 8", 3, 2),
+        SLOT_9(9, "Slot 9", 3, 3);
 
         private final int slotNumber;
         private final String displayName;
@@ -70,25 +61,25 @@ public final class WardrobeManager {
             return displayName;
         }
 
-        /** Returns the wardrobe page this slot belongs to (1–9). */
+        /** Returns the wardrobe page this slot belongs to (1–3). */
         public int getPage() {
             return page;
         }
 
-        /** Returns the set number within its page (1 or 2). */
+        /** Returns the set number within its page (1–3). */
         public int getSet() {
             return set;
         }
     }
 
     /** Maximum named outfits a player may store. */
-    public static final int MAX_OUTFITS = 18;
+    public static final int MAX_OUTFITS = 9;
 
     /**
-     * Number of wardrobe slots unlocked by default (the first page's two sets).
+     * Number of wardrobe slots unlocked by default (the first page's three sets).
      * Slots with a number above this are locked until explicitly unlocked.
      */
-    public static final int DEFAULT_UNLOCKED_SLOTS = 2;
+    public static final int DEFAULT_UNLOCKED_SLOTS = 3;
 
     private static final WardrobeManager INSTANCE = new WardrobeManager();
 
