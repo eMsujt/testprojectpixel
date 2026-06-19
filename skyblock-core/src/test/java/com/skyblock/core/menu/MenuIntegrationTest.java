@@ -607,6 +607,37 @@ class MenuIntegrationTest {
         void maxSlots_defaultIsBaseSlots() {
             assertEquals(MinionManager.BASE_SLOTS, MinionManager.getInstance().getMaxSlots(owner));
         }
+
+        @Test
+        void manager_placeMinion_roundTrips() {
+            MinionManager mgr = MinionManager.getInstance();
+            mgr.placeMinion(owner, MinionManager.MinionType.WHEAT, MinionManager.MinionTier.TIER_1);
+            assertEquals(1, mgr.getMinions(owner).size());
+        }
+
+        @Test
+        void manager_setMaxSlots_roundTrips() {
+            MinionManager mgr = MinionManager.getInstance();
+            mgr.setMaxSlots(owner, 10);
+            assertEquals(10, mgr.getMaxSlots(owner));
+        }
+
+        @Test
+        void manager_placeAndUpgrade_tierAdvances() {
+            MinionManager mgr = MinionManager.getInstance();
+            MinionManager.MinionData data = mgr.placeMinion(owner,
+                    MinionManager.MinionType.COBBLESTONE, MinionManager.MinionTier.TIER_1);
+            mgr.upgradeMinion(data.id);
+            assertEquals(MinionManager.MinionTier.TIER_2, mgr.getMinion(data.id).getTier());
+        }
+
+        @Test
+        void manager_clearMinions_removesAll() {
+            MinionManager mgr = MinionManager.getInstance();
+            mgr.placeMinion(owner, MinionManager.MinionType.SNOW, MinionManager.MinionTier.TIER_1);
+            mgr.clearMinions(owner);
+            assertTrue(mgr.getMinions(owner).isEmpty());
+        }
     }
 
     @Nested
