@@ -288,6 +288,18 @@ commands:
     description: View and manage your personal storage pages.
     usage: /storage [info|upgrade|reset]
     permission: skyblock.storage
+  dungeons:
+    description: Open the Dungeons menu.
+    usage: /dungeons
+    permission: skyblock.dungeons
+  collectionsmenu:
+    description: Open the Collections GUI.
+    usage: /collectionsmenu
+    permission: skyblock.collectionsmenu
+  minionsmenu:
+    description: Open the Minions GUI.
+    usage: /minionsmenu
+    permission: skyblock.minionsmenu
 
 permissions:
   skyblock.use:
@@ -427,4 +439,13 @@ permissions:
     default: true
   skyblock.jacobscontest:
     description: Use the /jacobscontest command to open Jacob's Farming Contest.
+    default: true
+  skyblock.dungeons:
+    description: Use the /dungeons command to open the Dungeons menu.
+    default: true
+  skyblock.collectionsmenu:
+    description: Use the /collectionsmenu command to open the Collections GUI.
+    default: true
+  skyblock.minionsmenu:
+    description: Use the /minionsmenu command to open the Minions GUI.
     default: true

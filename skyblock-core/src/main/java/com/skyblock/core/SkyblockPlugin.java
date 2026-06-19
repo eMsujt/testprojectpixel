@@ -43,6 +43,7 @@ import com.skyblock.core.manager.JerryWorkshopCommand;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.HarpManager;
 import com.skyblock.core.manager.JerryWorkshopManager;
+import com.skyblock.core.command.DungeonsCommand;
 import com.skyblock.core.command.GardenCommand;
 import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.guild.GuildCommand;
@@ -305,6 +306,18 @@ public final class SkyblockPlugin extends JavaPlugin {
         }
         GardenCommand gardenCommand = new GardenCommand();
         getCommand("garden").setExecutor(gardenCommand);
+        DungeonsCommand dungeonsCommand = new DungeonsCommand();
+        if (getCommand("dungeons") != null) {
+            getCommand("dungeons").setExecutor(dungeonsCommand);
+        }
+        com.skyblock.core.command.CollectionsCommand collectionsMenuCommand = new com.skyblock.core.command.CollectionsCommand();
+        if (getCommand("collectionsmenu") != null) {
+            getCommand("collectionsmenu").setExecutor(collectionsMenuCommand);
+        }
+        com.skyblock.core.command.MinionCommand minionMenuCommand = new com.skyblock.core.command.MinionCommand();
+        if (getCommand("minionsmenu") != null) {
+            getCommand("minionsmenu").setExecutor(minionMenuCommand);
+        }
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
