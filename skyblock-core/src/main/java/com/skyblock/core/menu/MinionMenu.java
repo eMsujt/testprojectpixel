@@ -1,9 +1,11 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.manager.MinionManager.MinionData;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.UUID;
  * slots are light-gray panes; locked slots (beyond the player's current cap)
  * are red panes.
  */
-public final class MinionMenu extends Menu {
+public final class MinionMenu extends AbstractMenu {
 
     static final int[] MINION_SLOTS = {
             10, 11, 12, 13, 14, 15,
@@ -44,15 +46,13 @@ public final class MinionMenu extends Menu {
             Material.BLACK_TERRACOTTA
     };
 
-    private final UUID owner;
-
-    public MinionMenu(UUID owner) {
-        super("§6§lYour Minions", 6);
-        this.owner = owner;
+    public MinionMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§6§lYour Minions", 54);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
+        UUID owner = player.getUniqueId();
         ItemStack pane = SkyblockUtils.buildItem(Material.ORANGE_STAINED_GLASS_PANE, "§r");
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);

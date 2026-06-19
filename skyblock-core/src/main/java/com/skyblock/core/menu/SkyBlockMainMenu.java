@@ -157,7 +157,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new AccessoryBagMenu(player).open(player);
+                    new AccessoryBagMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player);
                 });
 
         setItem(29, new ItemBuilder(Material.GLASS_BOTTLE)
