@@ -48,7 +48,7 @@ import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.hotm.command.HOTMCommand;
-import com.skyblock.core.manager.HotmManager;
+import com.skyblock.core.manager.HeartOfTheMountainManager;
 import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.manager.MayorManager;
@@ -161,7 +161,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private AuctionHouseManager auctionHouseManager;
     private PetManager petManager;
     private PetsManager petsManager;
-    private HotmManager hotmManager;
+    private HeartOfTheMountainManager hotmManager;
     private SkillManager skillsManager;
     private MinionManager minionManager;
     private SlayerManager slayerManager;
@@ -208,7 +208,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         petManager = PetManager.getInstance();
         petManager.load(getDataFolder());
         petsManager = PetsManager.getInstance();
-        hotmManager = HotmManager.getInstance();
+        hotmManager = HeartOfTheMountainManager.getInstance();
         hotmManager.load(getDataFolder());
         slayerManager = SlayerManager.getInstance();
         slayerManager.load(getDataFolder());
@@ -609,7 +609,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         SlayerManager.getInstance().save(getDataFolder());
         fishingManager.save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
-        HotmManager.getInstance().save(getDataFolder());
+        HeartOfTheMountainManager.getInstance().save(getDataFolder());
         KuudraManager.getInstance().save(getDataFolder());
         EnchantingManager.getInstance().save(getDataFolder());
         ReforgeManager.getInstance().save(getDataFolder());

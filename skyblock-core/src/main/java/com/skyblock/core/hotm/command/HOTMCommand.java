@@ -1,7 +1,7 @@
 package com.skyblock.core.hotm.command;
 
 import com.skyblock.core.command.PlayerCommand;
-import com.skyblock.core.manager.HotmManager;
+import com.skyblock.core.manager.HeartOfTheMountainManager;
 import com.skyblock.core.menu.HotmMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -28,13 +28,13 @@ import java.util.stream.Collectors;
 public final class HOTMCommand extends PlayerCommand {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("view", "upgrade", "set", "reset", "powder", "history");
-    private static final List<String> PERK_NAMES = Arrays.stream(HotmManager.HotmPerk.values())
+    private static final List<String> PERK_NAMES = Arrays.stream(HeartOfTheMountainManager.HotMNode.values())
             .map(p -> p.name().toLowerCase())
             .collect(Collectors.toList());
 
-    private final HotmManager hotmManager;
+    private final HeartOfTheMountainManager hotmManager;
 
-    public HOTMCommand(HotmManager hotmManager) {
+    public HOTMCommand(HeartOfTheMountainManager hotmManager) {
         this.hotmManager = hotmManager;
     }
 
@@ -79,13 +79,13 @@ public final class HOTMCommand extends PlayerCommand {
 
     private void handleView(Player player, String[] args) {
         if (args.length >= 2) {
-            HotmManager.HotmPerk perk = parsePerk(player, args[1]);
+            HeartOfTheMountainManager.HotMNode perk = parsePerk(player, args[1]);
             if (perk == null) return;
             int level = hotmManager.getLevel(player.getUniqueId(), perk);
             player.sendMessage(perk.getDisplayName() + ": " + level + "/" + perk.maxLevel);
         } else {
             player.sendMessage("=== Heart of the Mountain ===");
-            for (HotmManager.HotmPerk perk : HotmManager.HotmPerk.values()) {
+            for (HeartOfTheMountainManager.HotMNode perk : HeartOfTheMountainManager.HotMNode.values()) {
                 int level = hotmManager.getLevel(player.getUniqueId(), perk);
                 player.sendMessage(perk.getDisplayName() + ": " + level + "/" + perk.maxLevel);
             }
@@ -101,7 +101,7 @@ public final class HOTMCommand extends PlayerCommand {
             player.sendMessage("Usage: /hotmtree upgrade <perk>");
             return;
         }
-        HotmManager.HotmPerk perk = parsePerk(player, args[1]);
+        HeartOfTheMountainManager.HotMNode perk = parsePerk(player, args[1]);
         if (perk == null) return;
         int newLevel = hotmManager.upgrade(player.getUniqueId(), perk);
         if (newLevel == -1) {
@@ -120,7 +120,7 @@ public final class HOTMCommand extends PlayerCommand {
             player.sendMessage("Usage: /hotmtree set <perk> <level>");
             return;
         }
-        HotmManager.HotmPerk perk = parsePerk(player, args[1]);
+        HeartOfTheMountainManager.HotMNode perk = parsePerk(player, args[1]);
         if (perk == null) return;
         int level = parseLevel(player, args[2]);
         if (level < 0) return;
@@ -188,9 +188,9 @@ public final class HOTMCommand extends PlayerCommand {
         }
     }
 
-    private HotmManager.HotmPerk parsePerk(Player player, String input) {
+    private HeartOfTheMountainManager.HotMNode parsePerk(Player player, String input) {
         try {
-            return HotmManager.HotmPerk.valueOf(input.toUpperCase());
+            return HeartOfTheMountainManager.HotMNode.valueOf(input.toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown perk: " + input + ". Valid perks: " + String.join(", ", PERK_NAMES));
             return null;

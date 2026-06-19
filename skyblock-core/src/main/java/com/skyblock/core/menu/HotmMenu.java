@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.HotmManager;
-import com.skyblock.core.manager.HotmManager.HotmPerk;
+import com.skyblock.core.manager.HeartOfTheMountainManager;
+import com.skyblock.core.manager.HeartOfTheMountainManager.HotMNode;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 /**
  * GUI menu opened by {@code /hotm}. Renders the Heart of the Mountain tree as a
- * grid of clickable perk nodes read from {@link HotmManager}: each node shows its
+ * grid of clickable perk nodes read from {@link HeartOfTheMountainManager}: each node shows its
  * current level, max level, and next-level Mithril Powder cost. Clicking a node
  * attempts to purchase the next level and refreshes the menu. A summary node shows
  * the player's HOTM tier and powder balances.
@@ -57,19 +57,19 @@ public final class HotmMenu extends Menu {
         for (int slot = 0; slot < 9; slot++) inventory.setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) inventory.setItem(slot, pane);
 
-        HotmManager hotm = HotmManager.getInstance();
+        HeartOfTheMountainManager hotm = HeartOfTheMountainManager.getInstance();
 
         inventory.setItem(SUMMARY_SLOT, new ItemBuilder(Material.BEACON)
                 .displayName("§aHeart of the Mountain")
                 .lore(
-                        "§7HOTM Tier: §e" + hotm.getHotmTier(playerId) + "§7/§e" + HotmManager.MAX_TIER,
+                        "§7HOTM Tier: §e" + hotm.getHotmTier(playerId) + "§7/§e" + HeartOfTheMountainManager.MAX_TIER,
                         "§7Mithril Powder: §e" + hotm.getMithrilPowder(playerId),
                         "§7Gemstone Powder: §e" + hotm.getGemstonePowder(playerId))
                 .build());
 
-        HotmPerk[] perks = HotmPerk.values();
+        HotMNode[] perks = HotMNode.values();
         for (int i = 0; i < perks.length; i++) {
-            HotmPerk perk = perks[i];
+            HotMNode perk = perks[i];
             int slot = FIRST_PERK_SLOT + i;
             if (slot >= CLOSE_SLOT) break;
             int level = hotm.getLevel(playerId, perk);
