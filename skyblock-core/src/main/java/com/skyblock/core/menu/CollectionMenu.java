@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.collections.gui.CollectionCategoryMenu;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.CollectionCategory;
@@ -10,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public final class CollectionMenu extends Menu {
+public final class CollectionMenu extends AbstractMenu {
 
     private static final int[] CATEGORY_SLOTS = {20, 21, 22, 23, 24, 31};
 
@@ -23,16 +24,14 @@ public final class CollectionMenu extends Menu {
         Material.ENCHANTING_TABLE,// ENCHANTING
     };
 
-    private final UUID playerId;
-
-    public CollectionMenu(UUID playerId) {
-        super("§6§lCollections", 6);
-        this.playerId = playerId;
+    public CollectionMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§a§lCollections", 54);
     }
 
     @Override
-    protected void build() {
-        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
+        ItemStack pane = SkyblockUtils.buildItem(Material.LIME_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
