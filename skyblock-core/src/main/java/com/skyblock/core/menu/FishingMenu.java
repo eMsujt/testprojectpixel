@@ -22,7 +22,7 @@ public final class FishingMenu extends Menu {
     private final UUID playerId;
 
     public FishingMenu(UUID playerId) {
-        super("§9Fishing", 4);
+        super("Fishing", 6);
         this.playerId = playerId;
     }
 
