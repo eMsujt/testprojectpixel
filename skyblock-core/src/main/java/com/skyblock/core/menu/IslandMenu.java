@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.manager.IslandManager.IslandUpgrade;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

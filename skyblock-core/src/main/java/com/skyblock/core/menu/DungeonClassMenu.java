@@ -4,7 +4,7 @@ import com.skyblock.core.manager.DungeonClassManager;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

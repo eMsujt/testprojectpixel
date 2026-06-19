@@ -18,7 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
-import com.skyblock.core.util.IslandGenerator;
+import com.skyblock.core.util.SkyblockUtil.IslandGenerator;
 
 /**
  * Singleton managing per-player SkyBlock islands.
