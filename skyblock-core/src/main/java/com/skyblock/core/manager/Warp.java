@@ -1,13 +1,10 @@
-package com.skyblock.core.warp;
+package com.skyblock.core.manager;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Objects;
 
-/**
- * Immutable value object representing a named warp destination.
- */
 public final class Warp {
 
     private final String name;
@@ -28,7 +25,6 @@ public final class Warp {
         this.pitch = pitch;
     }
 
-    /** Creates a {@code Warp} from a Bukkit {@link Location}. */
     public static Warp fromLocation(String name, Location location) {
         Objects.requireNonNull(location, "location");
         Objects.requireNonNull(location.getWorld(), "location.world");
@@ -45,7 +41,6 @@ public final class Warp {
     public float  getYaw()   { return yaw;   }
     public float  getPitch() { return pitch; }
 
-    /** Converts this warp back to a Bukkit {@link Location}. */
     public Location toLocation() {
         return new Location(world, x, y, z, yaw, pitch);
     }
