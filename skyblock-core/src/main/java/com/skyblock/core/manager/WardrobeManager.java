@@ -76,10 +76,10 @@ public final class WardrobeManager {
     public static final int MAX_OUTFITS = 9;
 
     /**
-     * Number of wardrobe slots unlocked by default (the first page's three sets).
+     * Number of wardrobe slots unlocked by default (the first two sets).
      * Slots with a number above this are locked until explicitly unlocked.
      */
-    public static final int DEFAULT_UNLOCKED_SLOTS = 3;
+    public static final int DEFAULT_UNLOCKED_SLOTS = 2;
 
     private static final WardrobeManager INSTANCE = new WardrobeManager();
 
