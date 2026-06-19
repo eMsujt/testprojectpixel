@@ -108,6 +108,8 @@ import com.skyblock.core.forge.ForgeCommand;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
+import com.skyblock.core.manager.MiningManager;
+import com.skyblock.core.mining.command.MiningCommand;
 import com.skyblock.core.manager.TradeManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
@@ -436,6 +438,12 @@ public final class SkyblockPlugin extends JavaPlugin {
         ForagingCommand foragingCommand = new ForagingCommand(foragingManager);
         getCommand("foraging").setExecutor(foragingCommand);
         getCommand("foraging").setTabCompleter(foragingCommand);
+        MiningManager miningManager = MiningManager.getInstance();
+        MiningCommand miningCommand = new MiningCommand(miningManager);
+        if (getCommand("mining") != null) {
+            getCommand("mining").setExecutor(miningCommand);
+            getCommand("mining").setTabCompleter(miningCommand);
+        }
         CombatManager combatManager = CombatManager.getInstance();
         CombatCommand combatCommand = new CombatCommand(combatManager);
         getCommand("combat").setExecutor(combatCommand);
