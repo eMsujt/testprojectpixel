@@ -50,6 +50,7 @@ import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.pet.PetCommand;
+import com.skyblock.core.pet.PetsCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.profile.manager.ProfileManager;
@@ -212,6 +213,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
         getCommand("pet").setTabCompleter(petCommand);
+        PetsCommand petsCommand = new PetsCommand(petManager);
+        if (getCommand("pets") != null) {
+            getCommand("pets").setExecutor(petsCommand);
+        }
         GardenManager gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
         GardenCommand gardenCommand = new GardenCommand(gardenManager);
