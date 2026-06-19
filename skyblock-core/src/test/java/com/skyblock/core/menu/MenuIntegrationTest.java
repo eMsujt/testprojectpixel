@@ -2412,6 +2412,83 @@ class MenuIntegrationTest {
     }
 
     @Nested
+    class MinionMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isMinions() {
+            assertEquals("§6Minions", new MinionMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new MinionMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new MinionMenu(PLAYER));
+        }
+
+        @Test
+        void minionSlots_countIsTwelve() {
+            assertEquals(12, MinionMenu.MINION_SLOTS.length);
+        }
+
+        @Test
+        void minionSlots_firstSlotIsTen() {
+            assertEquals(10, MinionMenu.MINION_SLOTS[0]);
+        }
+
+        @Test
+        void minionSlots_lastSlotIsTwentyFour() {
+            assertEquals(24, MinionMenu.MINION_SLOTS[MinionMenu.MINION_SLOTS.length - 1]);
+        }
+
+        @Test
+        void manager_getMinions_emptyForFreshPlayer() {
+            assertTrue(MinionManager.getInstance().getMinions(UUID.randomUUID()).isEmpty());
+        }
+
+        @Test
+        void manager_placeMinion_roundTrips() {
+            MinionManager mgr = MinionManager.getInstance();
+            mgr.placeMinion(PLAYER, MinionManager.MinionType.WHEAT, MinionManager.MinionTier.TIER_1);
+            assertEquals(1, mgr.getMinions(PLAYER).size());
+        }
+
+        @Test
+        void manager_getMaxSlots_baseSlotsForFreshPlayer() {
+            assertEquals(MinionManager.BASE_SLOTS, MinionManager.getInstance().getMaxSlots(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_setMaxSlots_roundTrips() {
+            MinionManager mgr = MinionManager.getInstance();
+            mgr.setMaxSlots(PLAYER, 10);
+            assertEquals(10, mgr.getMaxSlots(PLAYER));
+        }
+
+        @Test
+        void manager_placeAndUpgrade_tierAdvances() {
+            MinionManager mgr = MinionManager.getInstance();
+            MinionManager.MinionData data = mgr.placeMinion(PLAYER,
+                    MinionManager.MinionType.COBBLESTONE, MinionManager.MinionTier.TIER_1);
+            mgr.upgradeMinion(data.id);
+            assertEquals(MinionManager.MinionTier.TIER_2, mgr.getMinion(data.id).getTier());
+        }
+
+        @Test
+        void manager_clearMinions_removesAll() {
+            MinionManager mgr = MinionManager.getInstance();
+            mgr.placeMinion(PLAYER, MinionManager.MinionType.SNOW, MinionManager.MinionTier.TIER_1);
+            mgr.clearMinions(PLAYER);
+            assertTrue(mgr.getMinions(PLAYER).isEmpty());
+        }
+    }
+
+    @Nested
     class DungeonsMenuTests {
 
         private final UUID PLAYER = UUID.randomUUID();
