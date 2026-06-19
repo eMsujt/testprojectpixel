@@ -158,22 +158,52 @@ public final class SkyblockPlugin extends JavaPlugin {
         return instance;
     }
 
-    @Override
-    public void onEnable() {
-        instance = this;
+    private void initManagers() {
         bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
         bankingManager = BankingManager.getInstance();
+        mayorManager = MayorManager.getInstance();
+        mayorManager.load(getDataFolder());
+        auctionHouseManager = AuctionHouseManager.getInstance();
+        auctionHouseManager.load(getDataFolder());
+        bazaarManager = BazaarManager.getInstance();
+        bazaarManager.load(getDataFolder());
+        essenceManager = EssenceManager.getInstance();
+        dungeonManager = DungeonManager.getInstance();
+        dungeonManager.load(getDataFolder());
+        dungeonClassManager = DungeonClassManager.getInstance();
+        petManager = PetManager.getInstance();
+        petManager.load(getDataFolder());
+        petsManager = PetsManager.getInstance();
+        slayerManager = SlayerManager.getInstance();
+        slayerManager.load(getDataFolder());
+        trophyFishManager = TrophyFishManager.getInstance();
+        bestiaryManager = BestiaryManager.getInstance();
+        skillsManager = SkillManager.getInstance();
+        skillsManager.load(getDataFolder());
+        profile = ProfileManager.getInstance();
+        profile.load(getDataFolder());
+        minionManager = MinionManager.getInstance();
+        minionManager.load(getDataFolder());
+        forgeManager = ForgeManager.getInstance();
+        statManager = StatManager.getInstance();
+        wardrobeManager = WardrobeManager.getInstance();
+        wardrobeManager.load(getDataFolder());
+        accessoryBagManager = AccessoryBagManager.getInstance();
+        sackManager = SackManager.getInstance();
+        storageManager = StorageManager.getInstance();
+    }
+
+    @Override
+    public void onEnable() {
+        instance = this;
+        initManagers();
         BankCommand bankCommand = new BankCommand(bankManager);
         getCommand("bank").setExecutor(bankCommand);
         getCommand("bank").setTabCompleter(bankCommand);
-        mayorManager = MayorManager.getInstance();
-        mayorManager.load(getDataFolder());
         MayorCommand mayorCommand = new MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
         getCommand("mayor").setTabCompleter(mayorCommand);
-        auctionHouseManager = AuctionHouseManager.getInstance();
-        auctionHouseManager.load(getDataFolder());
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
         getCommand("auctionhouse").setExecutor(auctionHouseCommand);
         getCommand("auctionhouse").setTabCompleter(auctionHouseCommand);
@@ -185,8 +215,6 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("auction").setExecutor(auctionHouseCommand);
             getCommand("auction").setTabCompleter(auctionHouseCommand);
         }
-        bazaarManager = BazaarManager.getInstance();
-        bazaarManager.load(getDataFolder());
         BazaarCommand bazaarCommand = new BazaarCommand(bazaarManager);
         if (getCommand("bazaar") != null) {
             getCommand("bazaar").setExecutor(bazaarCommand);
@@ -198,18 +226,14 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("museum").setExecutor(museumCommand);
             getCommand("museum").setTabCompleter(museumCommand);
         }
-        essenceManager = EssenceManager.getInstance();
         EssenceCommand essenceCommand = new EssenceCommand(essenceManager);
         if (getCommand("essence") != null) {
             getCommand("essence").setExecutor(essenceCommand);
             getCommand("essence").setTabCompleter(essenceCommand);
         }
-        dungeonManager = DungeonManager.getInstance();
-        dungeonManager.load(getDataFolder());
         DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
         getCommand("dungeon").setExecutor(dungeonCommand);
         getCommand("dungeon").setTabCompleter(dungeonCommand);
-        dungeonClassManager = DungeonClassManager.getInstance();
         DungeonClassCommand dungeonClassCommand = new DungeonClassCommand(dungeonClassManager);
         if (getCommand("dungeonclass") != null) {
             getCommand("dungeonclass").setExecutor(dungeonClassCommand);
@@ -224,12 +248,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         PartyCommand partyCommand = new PartyCommand(partyManager);
         getCommand("party").setExecutor(partyCommand);
         getCommand("party").setTabCompleter(partyCommand);
-        petManager = PetManager.getInstance();
-        petManager.load(getDataFolder());
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
         getCommand("pet").setTabCompleter(petCommand);
-        petsManager = PetsManager.getInstance();
         PetsCommand petsCommand = new PetsCommand(petManager);
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
@@ -239,8 +260,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         GardenCommand gardenCommand = new GardenCommand(gardenManager);
         getCommand("garden").setExecutor(gardenCommand);
         getCommand("garden").setTabCompleter(gardenCommand);
-        slayerManager = SlayerManager.getInstance();
-        slayerManager.load(getDataFolder());
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
@@ -248,7 +267,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("slayer").setTabCompleter(slayerCommand);
         FishingManager fishingManager = FishingManager.getInstance();
         fishingManager.load(getDataFolder());
-        trophyFishManager = TrophyFishManager.getInstance();
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);
         getCommand("fishing").setTabCompleter(fishingCommand);
@@ -259,7 +277,6 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("fairysoul").setExecutor(fairySoulCommand);
             getCommand("fairysoul").setTabCompleter(fairySoulCommand);
         }
-        bestiaryManager = BestiaryManager.getInstance();
         BestiaryCommand bestiaryCommand = new BestiaryCommand(bestiaryManager);
         if (getCommand("bestiary") != null) {
             getCommand("bestiary").setExecutor(bestiaryCommand);
@@ -313,19 +330,13 @@ public final class SkyblockPlugin extends JavaPlugin {
         ReforgeCommand reforgeCommand = new ReforgeCommand(reforgeManager);
         getCommand("reforge").setExecutor(reforgeCommand);
         getCommand("reforge").setTabCompleter(reforgeCommand);
-        skillsManager = SkillManager.getInstance();
-        skillsManager.load(getDataFolder());
         AccessoryManager.getInstance();
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
-        profile = ProfileManager.getInstance();
-        profile.load(getDataFolder());
         ProfileCommand profileCommand = new ProfileCommand(profile);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
-        minionManager = MinionManager.getInstance();
-        minionManager.load(getDataFolder());
         MinionCommand minionCommand = new MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
         getCommand("minion").setTabCompleter(minionCommand);
@@ -391,7 +402,6 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("mail").setExecutor(mailCommand);
             getCommand("mail").setTabCompleter(mailCommand);
         }
-        forgeManager = ForgeManager.getInstance();
         ForgeCommand forgeCommand = new ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
@@ -436,7 +446,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         AchievementCommand achievementCommand = new AchievementCommand(achievementManager);
         getCommand("achievement").setExecutor(achievementCommand);
         getCommand("achievement").setTabCompleter(achievementCommand);
-        statManager = StatManager.getInstance();
         StatCommand statCommand = new StatCommand(statManager);
         getCommand("stat").setExecutor(statCommand);
         getCommand("stat").setTabCompleter(statCommand);
@@ -473,12 +482,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
         getCommand("alchemy").setExecutor(alchemyCommand);
         getCommand("alchemy").setTabCompleter(alchemyCommand);
-        wardrobeManager = WardrobeManager.getInstance();
-        wardrobeManager.load(getDataFolder());
         WardrobeCommand wardrobeCommand = new WardrobeCommand(wardrobeManager);
         getCommand("wardrobe").setExecutor(wardrobeCommand);
         getCommand("wardrobe").setTabCompleter(wardrobeCommand);
-        accessoryBagManager = AccessoryBagManager.getInstance();
         AccessoryBagCommand accessoryBagCommand = new AccessoryBagCommand(accessoryBagManager);
         getCommand("accessories").setExecutor(accessoryBagCommand);
         getCommand("accessories").setTabCompleter(accessoryBagCommand);
@@ -491,7 +497,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         getCommand("rift").setExecutor(riftCommand);
         getCommand("rift").setTabCompleter(riftCommand);
         getServer().getPluginManager().registerEvents(new RiftListener(riftManager), this);
-        sackManager = SackManager.getInstance();
         SackCommand sackCommand = new SackCommand(sackManager);
         if (getCommand("sack") != null) {
             getCommand("sack").setExecutor(sackCommand);
@@ -501,7 +506,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         CrystalHollowsCommand crystalHollowsCommand = new CrystalHollowsCommand(crystalHollowsManager);
         getCommand("crystalhollows").setExecutor(crystalHollowsCommand);
         getCommand("crystalhollows").setTabCompleter(crystalHollowsCommand);
-        storageManager = StorageManager.getInstance();
         StorageCommand storageCommand = new StorageCommand(storageManager);
         getCommand("storage").setExecutor(storageCommand);
         getCommand("storage").setTabCompleter(storageCommand);
