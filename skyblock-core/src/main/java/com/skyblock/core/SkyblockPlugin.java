@@ -60,6 +60,7 @@ import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetsManager;
+import com.skyblock.core.command.IslandCommand;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
@@ -395,6 +396,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         ProfileCommand profileCommand = new ProfileCommand();
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
+        IslandCommand islandCommand = new IslandCommand();
+        if (getCommand("island") != null) {
+            getCommand("island").setExecutor(islandCommand);
+        }
         MinionCommand minionCommand = new MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
         getCommand("minion").setTabCompleter(minionCommand);
