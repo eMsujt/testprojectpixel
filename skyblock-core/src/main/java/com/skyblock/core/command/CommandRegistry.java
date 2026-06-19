@@ -20,6 +20,7 @@ public final class CommandRegistry {
         COMMANDS.put("island", new IslandCommand());
         COMMANDS.put("minionsmenu", new MinionCommand());
         COMMANDS.put("profile", new ProfileCommand());
+        COMMANDS.put("skyblock", new SkyBlockCommand());
         COMMANDS.put("slayer", new SlayerCommand());
         COMMANDS.put("stats", new StatsCommand());
     }

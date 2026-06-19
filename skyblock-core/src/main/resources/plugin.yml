@@ -11,6 +11,7 @@ commands:
   skyblock:
     description: Open the SkyBlock main menu.
     usage: /skyblock
+    aliases: [sb, sky]
   skills:
     description: View your SkyBlock skills.
     usage: /skills [skill]
