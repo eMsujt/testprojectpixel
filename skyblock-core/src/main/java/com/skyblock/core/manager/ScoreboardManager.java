@@ -1,7 +1,6 @@
-package com.skyblock.core.scoreboard;
+package com.skyblock.core.manager;
 
-import com.skyblock.core.manager.CalendarManager;
-import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.scoreboard.SkyBlockScoreboard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -24,7 +23,7 @@ public final class ScoreboardManager implements Listener {
     private static final ScoreboardManager INSTANCE = new ScoreboardManager();
 
     private static final long UPDATE_INTERVAL_TICKS = 20L;
-    private static final String TITLE = ChatColor.YELLOW + "" + ChatColor.BOLD + "SKYBLOCK";
+    private static final String TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "SKYBLOCK";
 
     private final Map<UUID, SkyBlockScoreboard> boards = new HashMap<>();
     private final Map<UUID, BukkitTask> tasks = new HashMap<>();
@@ -77,7 +76,7 @@ public final class ScoreboardManager implements Listener {
                     tasks.remove(player.getUniqueId());
                     return;
                 }
-                update(player);
+                updateScoreboard(player);
             }
         }.runTaskTimer(plugin, 0L, UPDATE_INTERVAL_TICKS);
         tasks.put(player.getUniqueId(), task);
@@ -94,7 +93,7 @@ public final class ScoreboardManager implements Listener {
         }
     }
 
-    public void update(Player player) {
+    public void updateScoreboard(Player player) {
         SkyBlockScoreboard board = boards.get(player.getUniqueId());
         if (board == null) {
             return;
@@ -126,5 +125,4 @@ public final class ScoreboardManager implements Listener {
         }
         return String.format("%.0f", coins);
     }
-
 }
