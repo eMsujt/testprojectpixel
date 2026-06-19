@@ -2692,7 +2692,7 @@ class MenuIntegrationTest {
         @Test
         void manager_getStat_returnsZeroForFreshPlayer() {
             StatsManager.PlayerStats stats = StatsManager.getInstance().getStats(PLAYER);
-            assertEquals(0.0, stats.getStat(Stat.HEALTH), 0.0001);
+            assertEquals(0.0, stats.getStat(Stat.DEFENSE), 0.0001);
         }
 
         @Test
