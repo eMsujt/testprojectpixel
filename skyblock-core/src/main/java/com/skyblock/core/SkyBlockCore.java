@@ -148,7 +148,6 @@ import com.skyblock.core.rift.RiftListener;
 import com.skyblock.core.manager.RiftManager;
 import com.skyblock.core.crystalhollows.CrystalHollowsCommand;
 import com.skyblock.core.manager.CrystalHollowsManager;
-import com.skyblock.core.manager.BankingManager;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageCommand;
 import com.skyblock.core.npc.NpcManager;
@@ -166,7 +165,6 @@ public final class SkyBlockCore extends JavaPlugin {
 
     // economy
     private BankManager bankManager;
-    private BankingManager bankingManager;
     private AuctionHouseManager auctionHouseManager;
     private BazaarManager bazaarManager;
 
@@ -253,7 +251,6 @@ public final class SkyBlockCore extends JavaPlugin {
         // economy
         bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
-        bankingManager = BankingManager.getInstance();
         auctionHouseManager = AuctionHouseManager.getInstance();
         auctionHouseManager.load(getDataFolder());
         bazaarManager = BazaarManager.getInstance();
@@ -368,6 +365,8 @@ public final class SkyBlockCore extends JavaPlugin {
         BankCommand bankCommand = new BankCommand(bankManager);
         getCommand("bank").setExecutor(bankCommand);
         getCommand("bank").setTabCompleter(bankCommand);
+        getCommand("banking").setExecutor(bankCommand);
+        getCommand("banking").setTabCompleter(bankCommand);
         MayorCommand mayorCommand = new MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
         getCommand("mayor").setTabCompleter(mayorCommand);
