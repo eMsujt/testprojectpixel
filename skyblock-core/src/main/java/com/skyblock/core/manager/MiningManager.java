@@ -71,6 +71,31 @@ public final class MiningManager {
         public int getMinLevel()     { return minLevel; }
     }
 
+    /**
+     * Gemstone types obtainable from Crystal Hollows mining, each carrying the XP
+     * awarded on collection and the Gemstone Powder rewarded per gem.
+     */
+    public enum GemstoneType {
+        RUBY("Ruby",     50, 5),
+        SAPPHIRE("Sapphire", 60, 6),
+        AMETHYST("Amethyst", 55, 5),
+        JADE("Jade",     65, 7);
+
+        private final String displayName;
+        private final int xp;
+        private final int powderReward;
+
+        GemstoneType(String displayName, int xp, int powderReward) {
+            this.displayName = displayName;
+            this.xp = xp;
+            this.powderReward = powderReward;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getXp()            { return xp; }
+        public int getPowderReward()  { return powderReward; }
+    }
+
     /** Lookup from {@link Material} to {@link OreType} for fast block-break dispatch. */
     public static final Map<Material, OreType> MATERIAL_TO_ORE;
 
