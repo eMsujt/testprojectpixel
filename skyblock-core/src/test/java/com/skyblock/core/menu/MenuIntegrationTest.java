@@ -28,6 +28,8 @@ import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.CrystalHollowsManager.CrystalType;
 import com.skyblock.core.manager.CrystalHollowsManager.PowderType;
 import com.skyblock.core.manager.DungeonStatsManager;
+import com.skyblock.core.manager.DungeonsManager;
+import com.skyblock.core.manager.DungeonsManager.DungeonClass;
 import com.skyblock.core.manager.NetherwartIslandManager;
 import com.skyblock.core.manager.NetherwartIslandManager.Faction;
 import com.skyblock.core.manager.NetherwartIslandManager.KuudraTier;
@@ -2406,6 +2408,73 @@ class MenuIntegrationTest {
         @Test
         void manager_speedMultiplier_oneAtLevelZero() {
             assertEquals(1.0, ForagingManager.getInstance().getSpeedMultiplier(0), 0.0001);
+        }
+    }
+
+    @Nested
+    class DungeonsMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isDungeons() {
+            assertEquals("§4Dungeons", new DungeonsMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new DungeonsMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new DungeonsMenu(PLAYER));
+        }
+
+        @Test
+        void classSlots_countIsFive() {
+            assertEquals(5, DungeonsMenu.CLASS_SLOTS.length);
+        }
+
+        @Test
+        void classSlots_spanTwentyToTwentyFour() {
+            assertEquals(20, DungeonsMenu.CLASS_SLOTS[0]);
+            assertEquals(24, DungeonsMenu.CLASS_SLOTS[DungeonsMenu.CLASS_SLOTS.length - 1]);
+        }
+
+        @Test
+        void classIcons_oneEntryPerDungeonClass() {
+            assertEquals(DungeonClass.values().length, DungeonsMenu.CLASS_ICONS.size());
+        }
+
+        @Test
+        void classIcons_healerMapsToGoldenApple() {
+            assertEquals(Material.GOLDEN_APPLE, DungeonsMenu.CLASS_ICONS.get(DungeonClass.HEALER));
+        }
+
+        @Test
+        void manager_selectedClass_nullForFreshPlayer() {
+            assertNull(DungeonsManager.getInstance().getClass(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_setAndGetClass_roundTrips() {
+            DungeonsManager mgr = DungeonsManager.getInstance();
+            mgr.setClass(PLAYER, DungeonClass.MAGE);
+            assertEquals(DungeonClass.MAGE, mgr.getClass(PLAYER));
+        }
+
+        @Test
+        void manager_classXp_zeroForFreshPlayer() {
+            assertEquals(0.0, DungeonsManager.getInstance()
+                    .getClassXp(UUID.randomUUID(), DungeonClass.BERSERK), 0.0001);
+        }
+
+        @Test
+        void manager_addClassXp_roundTrips() {
+            DungeonsManager mgr = DungeonsManager.getInstance();
+            mgr.addClassXp(PLAYER, DungeonClass.ARCHER, 250.0);
+            assertEquals(250.0, mgr.getClassXp(PLAYER, DungeonClass.ARCHER), 0.0001);
         }
     }
 
