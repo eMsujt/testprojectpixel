@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 /**
- * 27-slot Accessory Bag overview menu. One slot per {@link AccessoryRarity}
+ * 54-slot Accessory Bag overview menu. One slot per {@link AccessoryRarity}
  * value shows the count of accessories the player owns at that rarity.
  * A summary head at slot 4 reports slot usage and total magic power.
  */
@@ -28,14 +28,14 @@ public final class AccessoryBagMenu extends Menu {
     }
 
     public AccessoryBagMenu(UUID playerId) {
-        super("§5Accessory Bag", 3);
+        super("§5Accessory Bag", 6);
         this.playerId = playerId;
     }
 
     @Override
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 27; slot++) setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) setItem(slot, pane);
 
         AccessoryBagManager manager = AccessoryBagManager.getInstance();
 
