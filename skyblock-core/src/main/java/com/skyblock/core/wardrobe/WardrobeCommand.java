@@ -1,10 +1,10 @@
 package com.skyblock.core.wardrobe;
 
+import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.menu.WardrobeMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * </ul>
  * </p>
  */
-public final class WardrobeCommand implements TabExecutor {
+public final class WardrobeCommand extends PlayerCommand {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("save", "load", "delete", "list", "slots", "slot");
 
@@ -42,12 +42,7 @@ public final class WardrobeCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
-
+    protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
             new WardrobeMenu(player).open(player);
             return true;

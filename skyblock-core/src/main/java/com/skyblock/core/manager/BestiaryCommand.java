@@ -1,9 +1,9 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.menu.BestiaryMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * </ul>
  * </p>
  */
-public final class BestiaryCommand implements TabExecutor {
+public final class BestiaryCommand extends PlayerCommand {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("list", "view", "reset", "families", "categories");
 
@@ -35,12 +35,7 @@ public final class BestiaryCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
-
+    protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
             new BestiaryMenu(player).open(player);
             return true;

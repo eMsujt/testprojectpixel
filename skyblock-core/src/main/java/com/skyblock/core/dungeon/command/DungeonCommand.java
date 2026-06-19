@@ -1,9 +1,9 @@
 package com.skyblock.core.dungeon.command;
 
+import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.DungeonManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class DungeonCommand implements TabExecutor {
+public final class DungeonCommand extends PlayerCommand {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("menu", "info", "start", "leave", "complete", "class", "scores", "floor", "history");
 
@@ -22,12 +22,7 @@ public final class DungeonCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
-
+    protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
             new com.skyblock.core.menu.DungeonMenu(player.getUniqueId()).open(player);
             return true;
