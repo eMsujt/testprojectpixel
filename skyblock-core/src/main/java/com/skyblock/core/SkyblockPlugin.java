@@ -37,6 +37,7 @@ import com.skyblock.core.command.MenuCommand;
 import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.StatsMenu;
 import com.skyblock.core.menu.CrimsonIsleMenu;
+import com.skyblock.core.menu.DojoMenu;
 import com.skyblock.core.menu.TrophyFishingMenu;
 import com.skyblock.core.manager.JerryWorkshopCommand;
 import com.skyblock.core.manager.BestiaryManager;
@@ -448,6 +449,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("crimsonisle") != null) {
             getCommand("crimsonisle").setExecutor(crimsonIsleCommand);
             getCommand("crimsonisle").setTabCompleter(crimsonIsleCommand);
+        }
+        MenuCommand dojoCommand = new MenuCommand(p -> new DojoMenu(p.getUniqueId()).open(p));
+        if (getCommand("dojo") != null) {
+            getCommand("dojo").setExecutor(dojoCommand);
+            getCommand("dojo").setTabCompleter(dojoCommand);
         }
         VaultManager vaultManager = VaultManager.getInstance();
         vaultManager.load(getDataFolder());

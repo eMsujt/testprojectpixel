@@ -215,6 +215,10 @@ commands:
     description: Open the Crimson Isle overview menu.
     usage: /crimsonisle
     permission: skyblock.crimsonisle
+  dojo:
+    description: Open the Dojo challenge scores menu.
+    usage: /dojo
+    permission: skyblock.dojo
   vault:
     description: Manage your personal vault balance and tier.
     usage: /vault [info|deposit <amount>|withdraw <amount>|upgrade]
@@ -337,6 +341,9 @@ permissions:
     default: true
   skyblock.crimson:
     description: Use the /crimson command to view and manage Crimson Isle faction and reputation.
+    default: true
+  skyblock.dojo:
+    description: Use the /dojo command to view Dojo challenge scores.
     default: true
   skyblock.vault:
     description: Use the /vault command to manage vault balance and tier.
