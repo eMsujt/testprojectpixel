@@ -1088,7 +1088,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isAlchemy() {
-            assertEquals("§aAlchemy", new AlchemyMenu(mock(Player.class)).getTitle());
+            assertEquals("§dAlchemy", new AlchemyMenu(mock(Player.class)).getTitle());
         }
 
         @Test
