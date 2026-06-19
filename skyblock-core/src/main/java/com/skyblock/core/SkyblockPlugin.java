@@ -124,6 +124,8 @@ import com.skyblock.core.manager.RiftManager;
 import com.skyblock.core.crystalhollows.CrystalHollowsCommand;
 import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.manager.BankingManager;
+import com.skyblock.core.storage.StorageManager;
+import com.skyblock.core.storage.StorageCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -149,6 +151,8 @@ public final class SkyblockPlugin extends JavaPlugin {
     private EssenceManager essenceManager;
     private SackManager sackManager;
     private BankingManager bankingManager;
+    private StorageManager storageManager;
+    private ProfileManager profile;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -315,8 +319,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
-        ProfileManager.getInstance().load(getDataFolder());
-        ProfileCommand profileCommand = new ProfileCommand(ProfileManager.getInstance());
+        profile = ProfileManager.getInstance();
+        profile.load(getDataFolder());
+        ProfileCommand profileCommand = new ProfileCommand(profile);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
         minionManager = MinionManager.getInstance();
@@ -496,6 +501,10 @@ public final class SkyblockPlugin extends JavaPlugin {
         CrystalHollowsCommand crystalHollowsCommand = new CrystalHollowsCommand(crystalHollowsManager);
         getCommand("crystalhollows").setExecutor(crystalHollowsCommand);
         getCommand("crystalhollows").setTabCompleter(crystalHollowsCommand);
+        storageManager = StorageManager.getInstance();
+        StorageCommand storageCommand = new StorageCommand(storageManager);
+        getCommand("storage").setExecutor(storageCommand);
+        getCommand("storage").setTabCompleter(storageCommand);
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
