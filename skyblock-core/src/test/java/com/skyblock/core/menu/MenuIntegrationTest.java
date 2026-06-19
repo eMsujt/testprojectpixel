@@ -1416,7 +1416,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isTheForge() {
-            assertEquals("§6The Forge", new ForgeMenu(UUID.randomUUID()).getTitle());
+            assertEquals("§7§lForge", new ForgeMenu(UUID.randomUUID()).getTitle());
         }
 
         @Test

@@ -27,15 +27,15 @@ import java.util.function.Consumer;
  */
 public final class ForgeMenu extends Menu {
 
-    /** Top-row slots for the player's owned forge slots (up to {@link ForgeManager#MAX_SLOT_COUNT}). */
-    private static final int[] FORGE_SLOTS = {1, 2, 3, 4, 5, 6, 7};
+    /** Left-3-column slots (rows 1–4) for active forge jobs (up to {@link ForgeManager#MAX_SLOT_COUNT}). */
+    private static final int[] FORGE_SLOTS = {9, 10, 11, 18, 19, 20, 27};
 
-    /** Body slots used to list the available recipes. */
+    /** Body slots used to list the available recipes (cols 3-7, rows 1-4). */
     private static final int[] RECIPE_SLOTS = {
-            9, 10, 11, 12, 13, 14, 15, 16, 17,
-            18, 19, 20, 21, 22, 23, 24, 25, 26,
-            27, 28, 29, 30, 31, 32, 33, 34, 35,
-            36, 37, 38, 39, 40, 41, 42, 43, 44
+            12, 13, 14, 15, 16,
+            21, 22, 23, 24, 25,
+            30, 31, 32, 33, 34,
+            39, 40, 41, 42, 43
     };
 
     private static final int CLOSE_SLOT = 49;
@@ -49,7 +49,7 @@ public final class ForgeMenu extends Menu {
     }
 
     public ForgeMenu(UUID playerId) {
-        super("§6The Forge", 6);
+        super("§7§lForge", 6);
         this.playerId = playerId;
     }
 
@@ -64,9 +64,12 @@ public final class ForgeMenu extends Menu {
         inventory = Bukkit.createInventory(this, 54, getTitle());
 
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        inventory.setItem(0, pane);
-        inventory.setItem(8, pane);
-        for (int slot = 45; slot < 54; slot++) inventory.setItem(slot, pane);
+        for (int slot = 0; slot < 54; slot++) {
+            int col = slot % 9;
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+                inventory.setItem(slot, pane);
+            }
+        }
 
         buildForgeSlots(player);
         buildRecipeList();
