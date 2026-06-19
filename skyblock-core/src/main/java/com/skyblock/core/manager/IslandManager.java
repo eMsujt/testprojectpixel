@@ -18,6 +18,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
 
 import com.skyblock.core.util.SkyblockUtils.IslandGenerator;
 
@@ -31,7 +35,7 @@ import com.skyblock.core.util.SkyblockUtils.IslandGenerator;
  * and {@link IslandGenerator}. Worlds are stored in {@link #islandWorlds} and unloaded
  * when the island is deleted.</p>
  */
-public final class IslandManager {
+public final class IslandManager implements Listener {
 
     public static final Map<String, int[]> UPGRADE_DATA;
 
@@ -180,6 +184,8 @@ public final class IslandManager {
     private final Map<UUID, UUID> memberIndex = new HashMap<>();
     /** owner UUID → island world */
     private final Map<UUID, World> islandWorlds = new HashMap<>();
+    /** owner UUID → island home location */
+    private final Map<UUID, Location> islandHomes = new HashMap<>();
     /** player UUID → claimed region */
     private final Map<UUID, IslandRegion> regions = new HashMap<>();
     /** index of the next grid cell to allocate */
@@ -190,6 +196,40 @@ public final class IslandManager {
 
     public static IslandManager getInstance() {
         return INSTANCE;
+    }
+
+    /** Registers this manager as a Bukkit listener. */
+    public void start(Plugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        getOrCreateIslandData(uuid);
+        if (!hasIsland(uuid)) {
+            SkyBlockIsland island = createIsland(uuid);
+            World world = islandWorlds.get(uuid);
+            if (world != null) {
+                Location home = world.getSpawnLocation();
+                islandHomes.put(uuid, home);
+                player.teleport(home);
+            }
+        }
+    }
+
+    /** Returns the island home for {@code owner}, or {@code null} if none is set. */
+    public Location getIslandHome(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return islandHomes.get(owner);
+    }
+
+    /** Sets the island home for {@code owner}. */
+    public void setIslandHome(UUID owner, Location home) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(home, "home");
+        islandHomes.put(owner, home);
     }
 
     /**

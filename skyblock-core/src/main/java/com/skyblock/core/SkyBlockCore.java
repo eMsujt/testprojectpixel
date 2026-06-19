@@ -301,6 +301,7 @@ public final class SkyBlockCore extends JavaPlugin {
         storageCoordinator = com.skyblock.core.manager.StorageManager.getInstance();
         islandManager = IslandManager.getInstance();
         islandManager.load(getDataFolder());
+        islandManager.start(this);
         gardenManager = GardenManager.getInstance();
         gardenManager.load(getDataFolder());
         crimsonIsleManager = CrimsonIsleManager.getInstance();
