@@ -87,7 +87,7 @@ public final class HotmMenu extends Menu {
                 lore.add("§eClick to upgrade!");
             }
 
-            ItemStack icon = new ItemBuilder(maxed ? Material.LIME_DYE : Material.GRAY_DYE)
+            ItemStack icon = new ItemBuilder(Material.ENCHANTED_BOOK)
                     .displayName((maxed ? "§a" : "§e") + perk.getDisplayName())
                     .lore(lore.toArray(new String[0]))
                     .build();
