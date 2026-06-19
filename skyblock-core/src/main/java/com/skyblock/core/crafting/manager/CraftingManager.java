@@ -439,11 +439,35 @@ public final class CraftingManager {
     // -----------------------------------------------------------------------
 
     public void registerRecipes(JavaPlugin plugin) {
+        // Mining
         registerBukkitShaped(plugin, "enchanted_cobblestone", Material.COBBLESTONE);
-        registerBukkitShaped(plugin, "enchanted_oak_log", Material.OAK_LOG);
         registerBukkitShaped(plugin, "enchanted_iron_ingot", Material.IRON_INGOT);
         registerBukkitShaped(plugin, "enchanted_gold_ingot", Material.GOLD_INGOT);
         registerBukkitShaped(plugin, "enchanted_diamond", Material.DIAMOND);
+        registerBukkitShaped(plugin, "enchanted_emerald_ore", Material.EMERALD);
+        registerBukkitShaped(plugin, "enchanted_coal", Material.COAL);
+        registerBukkitShaped(plugin, "enchanted_redstone", Material.REDSTONE);
+        registerBukkitShaped(plugin, "enchanted_lapis", Material.LAPIS_LAZULI);
+        registerBukkitShaped(plugin, "enchanted_quartz", Material.QUARTZ);
+        registerBukkitShaped(plugin, "enchanted_obsidian", Material.OBSIDIAN);
+        // Foraging — all 6 log types (3x3 of 16 per slot)
+        registerBukkitShaped(plugin, "enchanted_oak_log", Material.OAK_LOG);
+        registerBukkitShaped(plugin, "enchanted_spruce_log", Material.SPRUCE_LOG);
+        registerBukkitShaped(plugin, "enchanted_birch_log", Material.BIRCH_LOG);
+        registerBukkitShaped(plugin, "enchanted_jungle_log", Material.JUNGLE_LOG);
+        registerBukkitShaped(plugin, "enchanted_acacia_log", Material.ACACIA_LOG);
+        registerBukkitShaped(plugin, "enchanted_dark_oak_log", Material.DARK_OAK_LOG);
+        // Farming
+        registerBukkitShaped(plugin, "enchanted_wheat", Material.WHEAT);
+        registerBukkitShaped(plugin, "enchanted_carrot", Material.CARROT);
+        registerBukkitShaped(plugin, "enchanted_potato", Material.POTATO);
+        registerBukkitShaped(plugin, "enchanted_pumpkin", Material.PUMPKIN);
+        registerBukkitShaped(plugin, "enchanted_melon", Material.MELON);
+        registerBukkitShaped(plugin, "enchanted_sugar_cane", Material.SUGAR_CANE);
+        registerBukkitShaped(plugin, "enchanted_cactus", Material.CACTUS);
+        registerBukkitShaped(plugin, "enchanted_nether_wart", Material.NETHER_WART);
+        registerBukkitShaped(plugin, "enchanted_cocoa_beans", Material.COCOA_BEANS);
+        registerBukkitShaped(plugin, "enchanted_mushroom", Material.RED_MUSHROOM);
     }
 
     private void registerBukkitShaped(JavaPlugin plugin, String id, Material material) {

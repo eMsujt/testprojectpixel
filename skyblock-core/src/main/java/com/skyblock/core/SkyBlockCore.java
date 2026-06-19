@@ -315,6 +315,7 @@ public final class SkyBlockCore extends JavaPlugin {
         reforgeManager.load(getDataFolder());
         craftingManager = CraftingManager.getInstance();
         craftingManager.load(getDataFolder());
+        craftingManager.registerRecipes(this);
         questManager = QuestManager.getInstance();
         questManager.load(getDataFolder());
         tradeManager = TradeManager.getInstance();
