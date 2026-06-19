@@ -231,6 +231,14 @@ commands:
     description: Open the Accessory Bag GUI.
     usage: /accessorybag [list|add|remove|bonuses|rarity|tier]
     permission: skyblock.accessories
+  rift:
+    description: View and manage your Rift dimension progress.
+    usage: /rift [info|enter [zone]|exit|reset]
+    permission: skyblock.rift
+  crystalhollows:
+    description: View and manage your Crystal Hollows progress.
+    usage: /crystalhollows [zones|enter <zone>|leave|crystals|collect <crystal>]
+    permission: skyblock.crystalhollows
 
 permissions:
   skyblock.warp:
@@ -337,4 +345,10 @@ permissions:
     default: true
   skyblock.dungeonclass:
     description: Use the /dungeonclass command to view and select your dungeon class.
+    default: true
+  skyblock.rift:
+    description: Use the /rift command to view and manage your Rift progress.
+    default: true
+  skyblock.crystalhollows:
+    description: Use the /crystalhollows command to view and manage your Crystal Hollows progress.
     default: true

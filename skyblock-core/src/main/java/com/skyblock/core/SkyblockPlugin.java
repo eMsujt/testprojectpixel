@@ -114,6 +114,11 @@ import com.skyblock.core.wardrobe.WardrobeCommand;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.accessory.command.AccessoryBagCommand;
 import com.skyblock.core.manager.AccessoryBagManager;
+import com.skyblock.core.rift.RiftCommand;
+import com.skyblock.core.rift.RiftListener;
+import com.skyblock.core.manager.RiftManager;
+import com.skyblock.core.crystalhollows.CrystalHollowsCommand;
+import com.skyblock.core.manager.CrystalHollowsManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyblockPlugin extends JavaPlugin {
@@ -456,6 +461,15 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("accessorybag").setExecutor(accessoryBagCommand);
             getCommand("accessorybag").setTabCompleter(accessoryBagCommand);
         }
+        RiftManager riftManager = RiftManager.getInstance();
+        RiftCommand riftCommand = new RiftCommand(riftManager);
+        getCommand("rift").setExecutor(riftCommand);
+        getCommand("rift").setTabCompleter(riftCommand);
+        getServer().getPluginManager().registerEvents(new RiftListener(riftManager), this);
+        CrystalHollowsManager crystalHollowsManager = CrystalHollowsManager.getInstance();
+        CrystalHollowsCommand crystalHollowsCommand = new CrystalHollowsCommand(crystalHollowsManager);
+        getCommand("crystalhollows").setExecutor(crystalHollowsCommand);
+        getCommand("crystalhollows").setTabCompleter(crystalHollowsCommand);
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
