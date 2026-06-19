@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.manager.MinionManager.MinionData;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.MenuUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -53,7 +53,7 @@ public final class MinionMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         setItem(9, pane);
@@ -75,30 +75,25 @@ public final class MinionMenu extends Menu {
                 MinionData data = manager.getMinion(minionIds.get(i));
                 if (data != null) {
                     Material mat = TERRACOTTA_COLORS[data.type.ordinal() % TERRACOTTA_COLORS.length];
-                    setItem(slot, new ItemBuilder(mat)
-                            .displayName("§a" + data.type.getDisplayName())
-                            .lore(
-                                    "§7Tier: §e" + (data.getTier().ordinal() + 1),
-                                    "§7Stored: §f" + data.getStoredResources(),
-                                    "§7Fuel: §f" + data.getFuel().name().replace('_', ' '))
-                            .build());
+                    setItem(slot, MenuUtil.buildItem(mat,
+                            "§a" + data.type.getDisplayName(),
+                            "§7Tier: §e" + (data.getTier().ordinal() + 1),
+                            "§7Stored: §f" + data.getStoredResources(),
+                            "§7Fuel: §f" + data.getFuel().name().replace('_', ' ')));
                 }
             } else if (i < maxSlots) {
-                setItem(slot, new ItemBuilder(Material.LIGHT_GRAY_STAINED_GLASS_PANE)
-                        .displayName("§7Empty Minion Slot")
-                        .lore("§7Place a minion to fill this slot.")
-                        .build());
+                setItem(slot, MenuUtil.buildItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE,
+                        "§7Empty Minion Slot",
+                        "§7Place a minion to fill this slot."));
             } else {
-                setItem(slot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
-                        .displayName("§cLocked Slot")
-                        .lore("§7Upgrade your island to unlock more slots.")
-                        .build());
+                setItem(slot, MenuUtil.buildItem(Material.RED_STAINED_GLASS_PANE,
+                        "§cLocked Slot",
+                        "§7Upgrade your island to unlock more slots."));
             }
         }
 
-        setItem(53, new ItemBuilder(Material.PAPER)
-                .displayName("§fMinion Slots")
-                .lore("§7Used: §e" + minionIds.size() + " §7/ §e" + maxSlots)
-                .build());
+        setItem(53, MenuUtil.buildItem(Material.PAPER,
+                "§fMinion Slots",
+                "§7Used: §e" + minionIds.size() + " §7/ §e" + maxSlots));
     }
 }

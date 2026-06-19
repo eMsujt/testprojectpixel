@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.collections.gui.CollectionCategoryMenu;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.CollectionCategory;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.MenuUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -48,12 +48,10 @@ public final class CollectionsMenu extends Menu {
         for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
             final CollectionCategory category = categories[i];
             long total = manager.getTotalForCategory(playerId, category);
-            setItem(CATEGORY_SLOTS[i], new ItemBuilder(CATEGORY_ICONS[i])
-                    .displayName("§a" + category.getDisplayName())
-                    .lore(
-                            "§7Total collected: §e" + total,
-                            "§7View your " + category.getDisplayName().toLowerCase() + " collections.")
-                    .build(),
+            setItem(CATEGORY_SLOTS[i], MenuUtil.buildItem(CATEGORY_ICONS[i],
+                    "§a" + category.getDisplayName(),
+                    "§7Total collected: §e" + total,
+                    "§7View your " + category.getDisplayName().toLowerCase() + " collections."),
                     event -> {
                         event.setCancelled(true);
                         new CollectionCategoryMenu(playerId, category)
@@ -63,7 +61,7 @@ public final class CollectionsMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
     }

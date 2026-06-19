@@ -3,7 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.coop.CoopManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.EconomyManager;
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
+import com.skyblock.core.util.MenuUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -68,7 +68,7 @@ public final class BankMenu extends Menu {
 
         inventory = org.bukkit.Bukkit.createInventory(this, 27, "§6Bank Account");
 
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = MenuUtil.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 27; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 18 || col == 0 || col == 8) {
@@ -80,10 +80,9 @@ public final class BankMenu extends Menu {
         String coopKey = coopOwner != null ? coopOwner.toString() : null;
 
         // Tabs.
-        inventory.setItem(PERSONAL_TAB_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
-                .displayName((showingCoop ? "§7" : "§6") + "Personal Bank")
-                .lore(showingCoop ? "§7Click to view." : "§eViewing.")
-                .build());
+        inventory.setItem(PERSONAL_TAB_SLOT, MenuUtil.buildItem(Material.GOLD_BLOCK,
+                (showingCoop ? "§7" : "§6") + "Personal Bank",
+                showingCoop ? "§7Click to view." : "§eViewing."));
         handlers.put(PERSONAL_TAB_SLOT, e -> {
             if (showingCoop) {
                 showingCoop = false;
@@ -91,10 +90,9 @@ public final class BankMenu extends Menu {
             }
         });
 
-        inventory.setItem(COOP_TAB_SLOT, new ItemBuilder(Material.EMERALD_BLOCK)
-                .displayName((showingCoop ? "§6" : "§7") + "Co-op Bank")
-                .lore(showingCoop ? "§eViewing." : "§7Click to view.")
-                .build());
+        inventory.setItem(COOP_TAB_SLOT, MenuUtil.buildItem(Material.EMERALD_BLOCK,
+                (showingCoop ? "§6" : "§7") + "Co-op Bank",
+                showingCoop ? "§eViewing." : "§7Click to view."));
         handlers.put(COOP_TAB_SLOT, e -> {
             if (!showingCoop) {
                 showingCoop = true;
@@ -107,20 +105,17 @@ public final class BankMenu extends Menu {
                 ? (coopKey != null ? bank.getCoopBalance(coopKey) : 0.0)
                 : bank.getBalance(playerId);
 
-        inventory.setItem(PURSE_SLOT, new ItemBuilder(Material.GOLD_NUGGET)
-                .displayName("§6Purse")
-                .lore("§7Balance: §6" + String.format("%,.0f", (double) purse) + " Coins")
-                .build());
+        inventory.setItem(PURSE_SLOT, MenuUtil.buildItem(Material.GOLD_NUGGET,
+                "§6Purse",
+                "§7Balance: §6" + String.format("%,.0f", (double) purse) + " Coins"));
 
-        inventory.setItem(BALANCE_SLOT, new ItemBuilder(Material.GOLD_INGOT)
-                .displayName(showingCoop ? "§6Co-op Bank" : "§6Personal Bank")
-                .lore("§7Balance: §6" + String.format("%,.0f", balance) + " Coins")
-                .build());
+        inventory.setItem(BALANCE_SLOT, MenuUtil.buildItem(Material.GOLD_INGOT,
+                showingCoop ? "§6Co-op Bank" : "§6Personal Bank",
+                "§7Balance: §6" + String.format("%,.0f", balance) + " Coins"));
 
-        inventory.setItem(DEPOSIT_SLOT, new ItemBuilder(Material.EMERALD)
-                .displayName("§aDeposit All")
-                .lore("§7Move all purse coins into the bank.")
-                .build());
+        inventory.setItem(DEPOSIT_SLOT, MenuUtil.buildItem(Material.EMERALD,
+                "§aDeposit All",
+                "§7Move all purse coins into the bank."));
         handlers.put(DEPOSIT_SLOT, e -> {
             if (showingCoop && coopKey == null) {
                 player.sendMessage("§cYou are not in a co-op.");
@@ -139,10 +134,9 @@ public final class BankMenu extends Menu {
             }
         });
 
-        inventory.setItem(WITHDRAW_SLOT, new ItemBuilder(Material.DROPPER)
-                .displayName("§eWithdraw All")
-                .lore("§7Move all bank coins to your purse.")
-                .build());
+        inventory.setItem(WITHDRAW_SLOT, MenuUtil.buildItem(Material.DROPPER,
+                "§eWithdraw All",
+                "§7Move all bank coins to your purse."));
         handlers.put(WITHDRAW_SLOT, e -> {
             if (showingCoop && coopKey == null) {
                 player.sendMessage("§cYou are not in a co-op.");
@@ -161,10 +155,9 @@ public final class BankMenu extends Menu {
             }
         });
 
-        inventory.setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .lore("§7Close the bank.")
-                .build());
+        inventory.setItem(CLOSE_SLOT, MenuUtil.buildItem(Material.BARRIER,
+                "§cClose",
+                "§7Close the bank."));
         handlers.put(CLOSE_SLOT, e -> player.closeInventory());
 
         player.openInventory(inventory);
