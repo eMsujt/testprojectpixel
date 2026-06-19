@@ -28,7 +28,7 @@ public final class BazaarMenu extends AbstractMenu {
     };
 
     public BazaarMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§6Bazaar", 54);
+        super(plugin, player, "§6§lBazaar", 54);
     }
 
     @Override
