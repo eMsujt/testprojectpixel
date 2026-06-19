@@ -44,7 +44,7 @@ public final class SlayerMenu extends AbstractMenu {
     }
 
     public SlayerMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§c§lSlayer Quests", 54);
+        super(plugin, player, "§4Slayer Quests", 54);
     }
 
     @Override
@@ -52,12 +52,7 @@ public final class SlayerMenu extends AbstractMenu {
         UUID playerId = player.getUniqueId();
         ItemStack pane = SkyblockUtils.buildItem(Material.RED_STAINED_GLASS_PANE, "§r");
 
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                setItem(slot, pane);
-            }
-        }
+        SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         SlayerManager manager = SlayerManager.getInstance();
 
