@@ -1,6 +1,7 @@
 package com.skyblock.core.kuudra;
 
 import com.skyblock.core.manager.KuudraManager;
+import com.skyblock.core.menu.KuudraMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -34,7 +35,7 @@ public final class KuudraCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            new KuudraMenu(player).open(player);
             return true;
         }
 
