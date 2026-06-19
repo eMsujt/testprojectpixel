@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarOrder;
 import com.skyblock.core.util.SkyblockUtils;
@@ -27,7 +27,7 @@ public final class BazaarMenu extends AbstractMenu {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    public BazaarMenu(SkyblockPlugin plugin, Player player) {
+    public BazaarMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§6§lBazaar", 54);
     }
 

@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.SkyblockPlugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
@@ -27,7 +27,7 @@ public final class PetMenu extends AbstractMenu {
         RARITY_WOOL.put(Rarity.SPECIAL,   Material.RED_WOOL);
     }
 
-    public PetMenu(SkyblockPlugin plugin, Player player) {
+    public PetMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "§dPets", 54);
     }
 
