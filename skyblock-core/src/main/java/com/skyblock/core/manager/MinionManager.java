@@ -90,11 +90,32 @@ public final class MinionManager {
         }
     }
 
-    /** Upgrade tiers a minion can reach. */
+    /** Upgrade tiers a minion can reach (I = slowest/smallest, XI = fastest/largest). */
     public enum MinionTier {
-        TIER_1, TIER_2, TIER_3, TIER_4, TIER_5,
-        TIER_6, TIER_7, TIER_8, TIER_9, TIER_10,
-        TIER_11, TIER_12
+        I  (520, 1),
+        II (480, 2),
+        III(440, 3),
+        IV (400, 5),
+        V  (360, 7),
+        VI (320, 9),
+        VII(280, 11),
+        VIII(240, 13),
+        IX (200, 15),
+        X  (160, 18),
+        XI (120, 21);
+
+        /** Ticks between each production action (20 ticks = 1 second). */
+        private final int actionIntervalTicks;
+        /** Number of item-stack slots available in the minion's storage. */
+        private final int storageSlots;
+
+        MinionTier(int actionIntervalTicks, int storageSlots) {
+            this.actionIntervalTicks = actionIntervalTicks;
+            this.storageSlots = storageSlots;
+        }
+
+        public int getActionIntervalTicks() { return actionIntervalTicks; }
+        public int getStorageSlots()        { return storageSlots; }
     }
 
     /**
@@ -391,19 +412,19 @@ public final class MinionManager {
         return true;
     }
 
-    /** Storage capacity for a minion at the given tier. */
+    /** Storage capacity (in item count) for a minion at the given tier; each slot holds 64 items. */
     public int getStorageCapacity(MinionTier tier) {
         Objects.requireNonNull(tier, "tier");
-        return BASE_STORAGE * (1 + tier.ordinal());
+        return tier.getStorageSlots() * BASE_STORAGE;
     }
 
     /**
-     * Effective number of production ticks the minion needs to yield one
-     * resource, accounting for its tier and any active fuel boost.
+     * Effective action interval (in ticks) for the minion, accounting for its
+     * tier and any active fuel speed boost.
      */
     public int getProductionIntervalTicks(MinionData data) {
         Objects.requireNonNull(data, "data");
-        int base = Math.max(1, BASE_PRODUCTION_TICKS - data.getTier().ordinal());
+        int base = data.getTier().getActionIntervalTicks();
         double mult = (data.fuel != MinionFuel.NONE && data.fuelTicksRemaining > 0)
                 ? data.fuel.getSpeedMultiplier() : 1.0;
         return Math.max(1, (int) Math.round(base / mult));
