@@ -402,7 +402,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isBank() {
-            assertEquals("§6Bank", new BankingMenu(PLAYER).getTitle());
+            assertEquals("§6Banking", new BankingMenu(PLAYER).getTitle());
         }
 
         @Test
