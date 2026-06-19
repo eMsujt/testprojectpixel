@@ -151,6 +151,7 @@ import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageCommand;
 import com.skyblock.core.npc.NpcManager;
+import com.skyblock.core.manager.ManaManager;
 import com.skyblock.core.manager.RunecraftingManager;
 import com.skyblock.core.listener.CoreListeners;
 import com.skyblock.core.persistence.DataManager;
@@ -237,6 +238,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private JacobsContestManager jacobsContestManager;
     private NpcManager npcManager;
     private RunecraftingManager runecraftingManager;
+    private ManaManager manaManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
@@ -360,6 +362,7 @@ public final class SkyBlockCore extends JavaPlugin {
         npcManager = NpcManager.getInstance();
         runecraftingManager = RunecraftingManager.getInstance();
         runecraftingManager.load(getDataFolder());
+        manaManager = ManaManager.getInstance();
     }
 
     @Override
@@ -698,6 +701,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.command.StorageCommand storageMenuCommand = new com.skyblock.core.command.StorageCommand(com.skyblock.core.manager.StorageManager.getInstance(), backpackManager);
         getCommand("storage").setExecutor(storageMenuCommand);
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
+        manaManager.start(this);
         getServer().getPluginManager().registerEvents(new CoreListeners(DataManager.getInstance()), this);
     }
 
