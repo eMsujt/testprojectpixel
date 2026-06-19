@@ -5,7 +5,6 @@ import com.skyblock.core.manager.AccessoryBagManager.AccessoryTier;
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
 import com.skyblock.core.util.ItemBuilder;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,7 +16,7 @@ import java.util.UUID;
 
 /**
  * GUI menu opened by {@code /accessories}. Renders all {@value AccessoryBagManager#MAX_SLOTS}
- * accessory slots as dyed leather boots whose colour reflects the accessory's
+ * accessory slots as iron ingots labelled with the accessory's
  * {@link AccessoryRarity rarity}; unlocked-but-empty and still-locked slots show
  * placeholders. The summary head at the top reports slot usage and magic power.
  */
@@ -66,8 +65,7 @@ public final class AccessoryBagMenu extends Menu {
             } else if (i < owned.size()) {
                 TalismanType type = owned.get(i);
                 String color = ItemBuilder.rarityColor(type.rarity.name()).toString();
-                setItem(slot, new ItemBuilder(Material.LEATHER_BOOTS)
-                        .leatherColor(rarityColor(type.rarity))
+                setItem(slot, new ItemBuilder(Material.IRON_INGOT)
                         .displayName(color + type.name())
                         .lore(
                                 "§7Rarity: " + color + type.rarity.getDisplayName(),
@@ -75,8 +73,7 @@ public final class AccessoryBagMenu extends Menu {
                                 "§7Magic Power: §d" + magicPower(type.rarity))
                         .build());
             } else {
-                setItem(slot, new ItemBuilder(Material.LEATHER_BOOTS)
-                        .leatherColor(Color.GRAY)
+                setItem(slot, new ItemBuilder(Material.IRON_INGOT)
                         .displayName("§7Empty Slot")
                         .lore("§7Add an accessory to your bag.")
                         .build());
@@ -87,21 +84,6 @@ public final class AccessoryBagMenu extends Menu {
     private static int magicPower(AccessoryRarity rarity) {
         AccessoryTier tier = AccessoryTier.fromRarity(rarity);
         return tier == null ? 0 : tier.magicPower;
-    }
-
-    /** Maps an accessory rarity to the leather dye colour used for its boots. */
-    private static Color rarityColor(AccessoryRarity rarity) {
-        switch (rarity) {
-            case UNCOMMON:     return Color.LIME;
-            case RARE:         return Color.BLUE;
-            case EPIC:         return Color.PURPLE;
-            case LEGENDARY:    return Color.ORANGE;
-            case MYTHIC:       return Color.FUCHSIA;
-            case SPECIAL:
-            case VERY_SPECIAL: return Color.RED;
-            case COMMON:
-            default:           return Color.WHITE;
-        }
     }
 
     @Override
