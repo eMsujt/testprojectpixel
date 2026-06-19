@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.AlchemyManager;
 import com.skyblock.core.manager.AlchemyManager.BrewJob;
-import com.skyblock.core.manager.AlchemyManager.PotionRecipe;
+import com.skyblock.core.manager.AlchemyManager.PotionType;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -10,20 +10,17 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Canonical "Alchemy" menu. A 54-slot (6-row) chest GUI framed by a
  * {@code GRAY_STAINED_GLASS_PANE} border with a brewing stand at slot 4
  * summarising the viewing player's alchemy level, XP and active brew status
- * (from {@link AlchemyManager}), and one potion tile per {@link PotionRecipe}
- * showing its ingredients, output, brew time and XP reward.
+ * (from {@link AlchemyManager}), and one POTION tile per {@link PotionType}.
  */
 public final class AlchemyMenu extends Menu {
 
-    private static final String TITLE = "§aAlchemy";
+    private static final String TITLE = "§dAlchemy";
     private static final int SUMMARY_SLOT = 4;
 
     /** Recipe tiles laid out across the third and fourth interior rows. */
@@ -67,22 +64,13 @@ public final class AlchemyMenu extends Menu {
                 .build(),
                 e -> e.setCancelled(true));
 
-        List<PotionRecipe> recipes = alchemy.getRecipes().values().stream()
-                .sorted((a, b) -> a.getId().compareTo(b.getId()))
-                .collect(Collectors.toList());
-        for (int i = 0; i < recipes.size() && i < RECIPE_SLOTS.length; i++) {
-            PotionRecipe recipe = recipes.get(i);
+        PotionType[] types = PotionType.values();
+        for (int i = 0; i < types.length && i < RECIPE_SLOTS.length; i++) {
+            PotionType type = types[i];
             List<String> lore = new ArrayList<>();
-            lore.add("§7Output: §a" + recipe.getOutputAmount() + "x " + recipe.getOutputPotion());
-            lore.add("§7Brew time: §e" + recipe.getDurationSeconds() + "s");
-            lore.add("§7XP reward: §e" + String.format("%,.0f", recipe.getXpReward()));
-            lore.add("");
-            lore.add("§7Ingredients:");
-            for (Map.Entry<String, Integer> ingredient : recipe.getIngredients().entrySet()) {
-                lore.add("§8 • §f" + ingredient.getValue() + "x " + ingredient.getKey());
-            }
+            lore.add("§7Type: §d" + type.getDisplayName());
             setItem(RECIPE_SLOTS[i], new ItemBuilder(Material.POTION)
-                    .displayName("§a" + recipe.getDisplayName())
+                    .displayName("§d" + type.getDisplayName())
                     .lore(lore)
                     .build(),
                     e -> e.setCancelled(true));
