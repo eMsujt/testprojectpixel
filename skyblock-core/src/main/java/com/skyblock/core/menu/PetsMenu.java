@@ -1,25 +1,32 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.PetsManager.PetType;
+import com.skyblock.core.manager.PetsManager;
+import com.skyblock.core.manager.PetsManager.Pet;
 import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public final class PetsMenu extends Menu {
 
-    public PetsMenu() {
+    private final Player player;
+
+    public PetsMenu(Player player) {
         super("§aPets", 6);
+        this.player = player;
     }
 
     @Override
     protected void build() {
-        PetType[] types = PetType.values();
-        for (int i = 0; i < types.length && i < 54; i++) {
-            PetType type = types[i];
+        List<Pet> pets = PetsManager.getInstance().getPets(player.getUniqueId());
+        for (int i = 0; i < pets.size() && i < 54; i++) {
+            Pet pet = pets.get(i);
             ItemStack item = new ItemBuilder(Material.BONE)
-                    .displayName("§a" + type.getDisplayName())
-                    .lore("§7Rarity: §" + rarityCode(type) + capitalize(type.getDefaultRarity().name()))
+                    .displayName("§a" + pet.name())
+                    .lore("§7Rarity: §" + rarityCode(pet) + capitalize(pet.rarity().name()))
                     .build();
             setItem(i, item);
         }
@@ -30,8 +37,8 @@ public final class PetsMenu extends Menu {
         event.setCancelled(true);
     }
 
-    private static char rarityCode(PetType type) {
-        switch (type.getDefaultRarity()) {
+    private static char rarityCode(Pet pet) {
+        switch (pet.rarity()) {
             case COMMON:    return 'f';
             case UNCOMMON:  return 'a';
             case RARE:      return '9';
