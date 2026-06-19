@@ -4,6 +4,8 @@
 
 # Maven build output
 target/
+*.class
+*.jar
 
 # IDE
 .idea/
