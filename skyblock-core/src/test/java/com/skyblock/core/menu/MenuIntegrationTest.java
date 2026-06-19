@@ -77,6 +77,7 @@ import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
+import com.skyblock.core.SkyblockPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
@@ -294,19 +295,29 @@ class MenuIntegrationTest {
     @Nested
     class DungeonMenuTests {
 
+        private SkyblockPlugin mockPlugin;
+        private Player mockPlayer;
+
+        @BeforeEach
+        void setup() {
+            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlayer = mock(Player.class);
+            when(mockPlayer.getUniqueId()).thenReturn(UUID.randomUUID());
+        }
+
         @Test
         void title_isCatacombs() {
-            assertEquals("§5The Catacombs", new DungeonMenu(UUID.randomUUID()).getTitle());
+            assertEquals("§5§lCatacombs", new DungeonMenu(mockPlugin, mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new DungeonMenu(UUID.randomUUID()).getRows());
+            assertEquals(6, new DungeonMenu(mockPlugin, mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new DungeonMenu(UUID.randomUUID()));
+            assertDoesNotThrow(() -> new DungeonMenu(mockPlugin, mockPlayer));
         }
 
         @Test
