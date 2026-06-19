@@ -72,6 +72,8 @@ import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.collections.command.CollectionsCommand;
 import com.skyblock.core.collections.listener.CollectionListener;
 import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.manager.EssenceShopManager;
+import com.skyblock.core.command.EssenceShopCommand;
 import com.skyblock.core.combat.command.CombatCommand;
 import com.skyblock.core.combat.manager.CombatManager;
 import com.skyblock.core.coop.CoopCommand;
@@ -153,6 +155,8 @@ public final class SkyblockPlugin extends JavaPlugin {
     private DungeonManager dungeonManager;
     private FishingManager fishingManager;
     private EssenceManager essenceManager;
+    private EssenceShopManager essenceShopManager;
+    private CollectionManager collectionManager;
     private SackManager sackManager;
     private BankingManager bankingManager;
     private StorageManager storageManager;
@@ -173,6 +177,9 @@ public final class SkyblockPlugin extends JavaPlugin {
         bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
         essenceManager = EssenceManager.getInstance();
+        essenceShopManager = EssenceShopManager.getInstance();
+        collectionManager = CollectionManager.getInstance();
+        collectionManager.load(getDataFolder());
         dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
         dungeonClassManager = DungeonClassManager.getInstance();
@@ -235,6 +242,11 @@ public final class SkyblockPlugin extends JavaPlugin {
         if (getCommand("essence") != null) {
             getCommand("essence").setExecutor(essenceCommand);
             getCommand("essence").setTabCompleter(essenceCommand);
+        }
+        EssenceShopCommand essenceShopCommand = new EssenceShopCommand(essenceShopManager);
+        if (getCommand("essenceshop") != null) {
+            getCommand("essenceshop").setExecutor(essenceShopCommand);
+            getCommand("essenceshop").setTabCompleter(essenceShopCommand);
         }
         DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
         getCommand("dungeon").setExecutor(dungeonCommand);
@@ -382,8 +394,6 @@ public final class SkyblockPlugin extends JavaPlugin {
         CombatCommand combatCommand = new CombatCommand(combatManager);
         getCommand("combat").setExecutor(combatCommand);
         getCommand("combat").setTabCompleter(combatCommand);
-        CollectionManager collectionManager = CollectionManager.getInstance();
-        collectionManager.load(getDataFolder());
         CollectionsCommand collectionsCommand = new CollectionsCommand(collectionManager);
         getCommand("collections").setExecutor(collectionsCommand);
         getCommand("collections").setTabCompleter(collectionsCommand);

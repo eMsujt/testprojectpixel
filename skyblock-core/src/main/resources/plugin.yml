@@ -72,6 +72,10 @@ commands:
     description: View and manage your SkyBlock essence balances.
     usage: /essence <balance|add|remove> [type] [amount]
     permission: skyblock.essence
+  essenceshop:
+    description: Open the Essence Shop to upgrade perks.
+    usage: /essenceshop
+    permission: skyblock.essenceshop
   forge:
     description: Forge items using the SkyBlock forge.
     usage: /forge [list|start|collect]
