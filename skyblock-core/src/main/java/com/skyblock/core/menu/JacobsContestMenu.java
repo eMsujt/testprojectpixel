@@ -35,11 +35,28 @@ public final class JacobsContestMenu extends Menu {
         GardenCrop[] crops = GardenCrop.values();
         for (int i = 0; i < crops.length && i < 27; i++) {
             GardenCrop crop = crops[i];
-            setItem(9 + i, new ItemBuilder(Material.WHEAT)
+            setItem(9 + i, new ItemBuilder(materialFor(crop))
                     .displayName("§6" + crop.getDisplayName())
                     .lore("§7Best collection: §e" + manager.getBestCollection(playerId, crop))
                     .build(),
                     e -> e.setCancelled(true));
+        }
+    }
+
+    private static Material materialFor(GardenCrop crop) {
+        switch (crop) {
+            case WHEAT:         return Material.WHEAT;
+            case CARROT:        return Material.CARROT;
+            case POTATO:        return Material.POTATO;
+            case PUMPKIN:       return Material.PUMPKIN;
+            case MELON:         return Material.MELON_SLICE;
+            case SUGAR_CANE:    return Material.SUGAR_CANE;
+            case COCOA_BEANS:   return Material.COCOA_BEANS;
+            case CACTUS:        return Material.CACTUS;
+            case MUSHROOM:      return Material.RED_MUSHROOM;
+            case NETHER_WART:   return Material.NETHER_WART;
+            case COARSE_POTATO: return Material.POTATO;
+            default:            return Material.WHEAT;
         }
     }
 
