@@ -45,6 +45,11 @@ public final class SkyblockUtils {
         return new ItemBuilder(material).displayName(name).lore(lore).build();
     }
 
+    /** Builds a named {@link ItemStack} of {@code material} with the given display name and lore lines. */
+    public static ItemStack buildItem(Material material, String name, String... lore) {
+        return new ItemBuilder(material).displayName(name).lore(lore).build();
+    }
+
     /**
      * Fills the border of an N-row (9-wide) inventory with {@code pane}.
      * Border = top row, bottom row, leftmost and rightmost column of middle rows.
