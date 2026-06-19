@@ -35,9 +35,7 @@ commands:
   pet:
     description: Manage your pets.
     usage: /pet [list|equip|unequip|info]
-  pets:
-    description: Open the pets GUI.
-    usage: /pets
+    aliases: [pets]
   friend:
     description: Manage your SkyBlock friend list.
     usage: /friend <add|remove|list> [player]
@@ -61,6 +59,11 @@ commands:
   bank:
     description: Open the SkyBlock bank GUI or manage balance/deposits/withdrawals.
     usage: /bank [balance|deposit|withdraw|tier|type|history|interest|coop]
+    permission: skyblock.bank
+  banking:
+    description: Open the Banking GUI.
+    usage: /banking
+    aliases: [coins]
     permission: skyblock.bank
   dungeon:
     description: Dungeon system
