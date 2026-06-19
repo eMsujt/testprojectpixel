@@ -49,7 +49,7 @@ public class SkillDetailMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new SkillsMenu(playerId).open((Player) e.getWhoClicked());
+                    new SkillsMenu(com.skyblock.core.SkyblockPlugin.getInstance(), (Player) e.getWhoClicked()).open((Player) e.getWhoClicked());
                 });
     }
 
