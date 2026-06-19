@@ -31,7 +31,10 @@ import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
-import com.skyblock.core.command.TrophyFishingCommand;
+import com.skyblock.core.command.MenuCommand;
+import com.skyblock.core.menu.PetMenu;
+import com.skyblock.core.menu.StatsMenu;
+import com.skyblock.core.menu.TrophyFishingMenu;
 import com.skyblock.core.manager.JerryWorkshopCommand;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.HarpManager;
@@ -50,7 +53,6 @@ import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.pet.PetCommand;
-import com.skyblock.core.command.PetsCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.command.ProfileCommand;
@@ -107,7 +109,6 @@ import com.skyblock.core.slayer.command.SlayerCommand;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.StatManager;
-import com.skyblock.core.command.StatsCommand;
 import com.skyblock.core.command.SackCommand;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.warp.WarpCommand;
@@ -252,7 +253,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
         getCommand("pet").setTabCompleter(petCommand);
-        PetsCommand petsCommand = new PetsCommand(petManager);
+        MenuCommand petsCommand = new MenuCommand(p -> new PetMenu(p).open(p));
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
@@ -288,7 +289,7 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("trophyfish").setExecutor(trophyFishCommand);
             getCommand("trophyfish").setTabCompleter(trophyFishCommand);
         }
-        TrophyFishingCommand trophyFishingCommand = new TrophyFishingCommand(trophyFishManager);
+        MenuCommand trophyFishingCommand = new MenuCommand(p -> new TrophyFishingMenu(p).open(p));
         if (getCommand("trophyfishing") != null) {
             getCommand("trophyfishing").setExecutor(trophyFishingCommand);
             getCommand("trophyfishing").setTabCompleter(trophyFishingCommand);
@@ -450,7 +451,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         StatCommand statCommand = new StatCommand(statManager);
         getCommand("stat").setExecutor(statCommand);
         getCommand("stat").setTabCompleter(statCommand);
-        StatsCommand statsCommand = new StatsCommand(statManager);
+        MenuCommand statsCommand = new MenuCommand(p -> new StatsMenu(p).open(p));
         if (getCommand("stats") != null) {
             getCommand("stats").setExecutor(statsCommand);
             getCommand("stats").setTabCompleter(statsCommand);
