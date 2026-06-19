@@ -52,6 +52,7 @@ import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.command.PetsCommand;
 import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
@@ -138,6 +139,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private ForgeManager forgeManager;
     private AuctionHouseManager auctionHouseManager;
     private PetManager petManager;
+    private PetsManager petsManager;
     private SkillManager skillsManager;
     private MinionManager minionManager;
     private SlayerManager slayerManager;
@@ -219,6 +221,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
         getCommand("pet").setTabCompleter(petCommand);
+        petsManager = PetsManager.getInstance();
         PetsCommand petsCommand = new PetsCommand(petManager);
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
