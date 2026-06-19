@@ -57,7 +57,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(20, new ItemBuilder(Material.GOLD_INGOT).displayName("§6Bazaar")
                 .lore("§7Trade commodities instantly.").build(),
-                e -> { e.setCancelled(true); new BazaarMenu(player).open(player); });
+                e -> { e.setCancelled(true); new BazaarMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
 
         setItem(21, new ItemBuilder(Material.GOLD_BLOCK).displayName("§6Bank")
                 .lore("§7Deposit and withdraw coins.").build(),
@@ -69,7 +69,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(23, new ItemBuilder(Material.ENDER_CHEST).displayName("§5Accessory Bag")
                 .lore("§7Manage your accessories.").build(),
-                e -> { e.setCancelled(true); new AccessoryBagMenu(player).open(player); });
+                e -> { e.setCancelled(true); new AccessoryBagMenu(com.skyblock.core.SkyblockPlugin.getInstance(), player).open(player); });
 
         setItem(24, new ItemBuilder(Material.CHEST).displayName("§aStorage")
                 .lore("§7Access your personal storage.").build(),

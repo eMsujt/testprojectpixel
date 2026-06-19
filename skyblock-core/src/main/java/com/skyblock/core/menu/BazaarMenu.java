@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarOrder;
 import com.skyblock.core.util.SkyblockUtils;
@@ -8,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * GUI menu opened by {@code /bazaar}. Renders each of the viewing player's
@@ -17,7 +17,7 @@ import java.util.UUID;
  * gray panes frames the top and bottom rows; an empty-state barrier appears
  * when the player has no orders.
  */
-public final class BazaarMenu extends Menu {
+public final class BazaarMenu extends AbstractMenu {
 
     /** Order slots filling the middle four rows (10–43, edges excluded). */
     static final int[] ORDER_SLOTS = {
@@ -27,19 +27,16 @@ public final class BazaarMenu extends Menu {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    private final UUID player;
-
-    public BazaarMenu(Player player) {
-        super("§6§lBazaar", 6);
-        this.player = player.getUniqueId();
+    public BazaarMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§6§lBazaar", 54);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
         ItemStack pane = SkyblockUtils.buildItem(Material.YELLOW_STAINED_GLASS_PANE, "§r");
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
-        List<BazaarOrder> orders = BazaarManager.getInstance().getOrdersForPlayer(player);
+        List<BazaarOrder> orders = BazaarManager.getInstance().getOrdersForPlayer(player.getUniqueId());
 
         for (int i = 0; i < orders.size() && i < ORDER_SLOTS.length; i++) {
             BazaarOrder order = orders.get(i);

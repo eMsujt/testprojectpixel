@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.util.SkyblockUtils;
@@ -16,25 +17,19 @@ import java.util.UUID;
  * value shows the count of accessories the player owns at that rarity.
  * A summary head at slot 4 reports slot usage and total magic power.
  */
-public final class AccessoryBagMenu extends Menu {
+public final class AccessoryBagMenu extends AbstractMenu {
 
     static final int SUMMARY_SLOT = 4;
     /** One slot per {@link AccessoryRarity}, left-to-right across row 1. */
     static final int[] RARITY_SLOTS = {9, 10, 11, 12, 13, 14, 15, 16};
 
-    private final UUID playerId;
-
-    public AccessoryBagMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public AccessoryBagMenu(UUID playerId) {
-        super("§5Accessory Bag", 6);
-        this.playerId = playerId;
+    public AccessoryBagMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§5Accessory Bag", 54);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
         ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) setItem(slot, pane);
 

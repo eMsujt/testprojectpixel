@@ -635,26 +635,31 @@ class MenuIntegrationTest {
     class MinionMenuTests {
 
         private UUID owner;
+        private SkyblockPlugin mockPlugin;
+        private Player mockPlayer;
 
         @BeforeEach
         void reset() {
             owner = UUID.randomUUID();
+            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlayer = mock(Player.class);
+            when(mockPlayer.getUniqueId()).thenReturn(owner);
             MinionManager.getInstance().clearMinions(owner);
         }
 
         @Test
         void title_isMinions() {
-            assertEquals("§6§lYour Minions", new MinionMenu(owner).getTitle());
+            assertEquals("§6§lYour Minions", new MinionMenu(mockPlugin, mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new MinionMenu(owner).getRows());
+            assertEquals(6, new MinionMenu(mockPlugin, mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new MinionMenu(owner));
+            assertDoesNotThrow(() -> new MinionMenu(mockPlugin, mockPlayer));
         }
 
         @Test
@@ -1374,17 +1379,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isBazaar() {
-            assertEquals("§6§lBazaar", new BazaarMenu(mock(Player.class)).getTitle());
+            assertEquals("§6§lBazaar", new BazaarMenu(mock(SkyblockPlugin.class), mock(Player.class)).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new BazaarMenu(mock(Player.class)).getRows());
+            assertEquals(6, new BazaarMenu(mock(SkyblockPlugin.class), mock(Player.class)).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new BazaarMenu(mock(Player.class)));
+            assertDoesNotThrow(() -> new BazaarMenu(mock(SkyblockPlugin.class), mock(Player.class)));
         }
 
         @Test
@@ -2298,6 +2303,15 @@ class MenuIntegrationTest {
     class AccessoryBagMenuTests {
 
         private final UUID PLAYER = UUID.randomUUID();
+        private SkyblockPlugin mockPlugin;
+        private Player mockPlayer;
+
+        @BeforeEach
+        void setup() {
+            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlayer = mock(Player.class);
+            when(mockPlayer.getUniqueId()).thenReturn(PLAYER);
+        }
 
         @AfterEach
         void tearDown() {
@@ -2306,17 +2320,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isAccessoryBag() {
-            assertEquals("§5Accessory Bag", new AccessoryBagMenu(PLAYER).getTitle());
+            assertEquals("§5Accessory Bag", new AccessoryBagMenu(mockPlugin, mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new AccessoryBagMenu(PLAYER).getRows());
+            assertEquals(6, new AccessoryBagMenu(mockPlugin, mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new AccessoryBagMenu(PLAYER));
+            assertDoesNotThrow(() -> new AccessoryBagMenu(mockPlugin, mockPlayer));
         }
 
         @Test
