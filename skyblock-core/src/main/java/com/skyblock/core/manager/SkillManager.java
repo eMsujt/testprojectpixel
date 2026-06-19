@@ -72,7 +72,7 @@ public final class SkillManager {
         stat.put("combat",       Stat.CRIT_CHANCE);
         stat.put("enchanting",   Stat.INTELLIGENCE);
         stat.put("alchemy",      Stat.INTELLIGENCE);
-        stat.put("taming",       Stat.SPEED);
+        stat.put("taming",       Stat.MAGIC_FIND);
         stat.put("carpentry",    Stat.HEALTH);
         stat.put("runecrafting", Stat.INTELLIGENCE);
         stat.put("social",       Stat.SPEED);
