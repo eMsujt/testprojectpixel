@@ -146,10 +146,17 @@ public final class RunecraftingManager {
         xpMap.clear();
         runeXp.clear();
         runeCount.clear();
+        boolean legacy = false;
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
-                xpMap.put(uuid, cfg.getLong(key + ".xpMap", 0L));
+                // Prefer the current 'xpMap' key, fall back to the legacy 'skillXp' key.
+                if (cfg.contains(key + ".xpMap")) {
+                    xpMap.put(uuid, cfg.getLong(key + ".xpMap", 0L));
+                } else {
+                    xpMap.put(uuid, cfg.getLong(key + ".skillXp", 0L));
+                    if (cfg.contains(key + ".skillXp")) legacy = true;
+                }
                 if (cfg.isConfigurationSection(key + ".runeXp")) {
                     Map<RuneType, Long> rxMap = new EnumMap<>(RuneType.class);
                     for (String typeName : cfg.getConfigurationSection(key + ".runeXp").getKeys(false)) {
@@ -170,6 +177,8 @@ public final class RunecraftingManager {
                 }
             } catch (IllegalArgumentException ignored) {}
         }
+        // Migrate legacy 'skillXp' keys to the current format on disk.
+        if (legacy) save(dataFolder);
     }
 
     public void save(File dataFolder) {
