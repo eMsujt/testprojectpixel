@@ -54,6 +54,12 @@ public final class ProfileManager {
     /** ownerId -> list of profile ids */
     private final Map<UUID, List<UUID>> profilesByOwner = new HashMap<>();
 
+    /** ownerId -> active profile name */
+    private final Map<UUID, String> activeProfile = new HashMap<>();
+
+    /** ownerId -> list of profile names */
+    private final Map<UUID, List<String>> profiles = new HashMap<>();
+
     private ProfileManager() {}
 
     public static ProfileManager getInstance() {
@@ -102,8 +108,41 @@ public final class ProfileManager {
         return true;
     }
 
+    public String getActiveProfile(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return activeProfile.get(owner);
+    }
+
+    public void setActiveProfile(UUID owner, String profileName) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(profileName, "profileName");
+        activeProfile.put(owner, profileName);
+    }
+
+    public List<String> getProfiles(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        return Collections.unmodifiableList(profiles.getOrDefault(owner, Collections.emptyList()));
+    }
+
+    public void addProfile(UUID owner, String profileName) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(profileName, "profileName");
+        profiles.computeIfAbsent(owner, k -> new ArrayList<>()).add(profileName);
+    }
+
+    public void removeProfileName(UUID owner, String profileName) {
+        Objects.requireNonNull(owner, "owner");
+        Objects.requireNonNull(profileName, "profileName");
+        List<String> list = profiles.get(owner);
+        if (list != null) {
+            list.remove(profileName);
+        }
+    }
+
     public void clear() {
         profilesById.clear();
         profilesByOwner.clear();
+        activeProfile.clear();
+        profiles.clear();
     }
 }
