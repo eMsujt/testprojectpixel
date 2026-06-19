@@ -138,6 +138,7 @@ public final class SkyblockPlugin extends JavaPlugin {
     private PetManager petManager;
     private SkillManager skillsManager;
     private MinionManager minionManager;
+    private SlayerManager slayerManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -222,7 +223,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         GardenCommand gardenCommand = new GardenCommand(gardenManager);
         getCommand("garden").setExecutor(gardenCommand);
         getCommand("garden").setTabCompleter(gardenCommand);
-        SlayerManager slayerManager = SlayerManager.getInstance();
+        slayerManager = SlayerManager.getInstance();
         slayerManager.load(getDataFolder());
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
