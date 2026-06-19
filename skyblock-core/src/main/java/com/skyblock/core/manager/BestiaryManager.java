@@ -1,7 +1,10 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Stat;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -16,8 +19,9 @@ import java.util.UUID;
  * <p>Tiers follow a doubling threshold curve — tier {@code n} requires
  * {@code BASE_TIER_KILLS * 2^(n-1)} cumulative kills, capped at {@link #MAX_TIER}.</p>
  *
- * <p>Kill counts are stored in memory only; they are not persisted across
- * server restarts in this implementation.</p>
+ * <p>Kill counts are persisted to {@code plugins/SkyBlock/bestiary/<uuid>.yml},
+ * one file per player. Call {@link #load(File)} on startup and
+ * {@link #save(File)} on shutdown.</p>
  *
  * <p>Not thread-safe; access from the main server thread only.</p>
  */
@@ -436,6 +440,72 @@ public final class BestiaryManager {
      */
     public void resetKills(UUID playerId) {
         kills.remove(playerId);
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    /**
+     * Loads all per-player bestiary files from {@code dataFolder/bestiary/}.
+     * Each file is named {@code <uuid>.yml} and contains a {@code kills} section
+     * mapping mob-type keys to kill counts.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void load(File dataFolder) {
+        File dir = new File(dataFolder, "bestiary");
+        if (!dir.exists()) {
+            return;
+        }
+        File[] files = dir.listFiles((d, name) -> name.endsWith(".yml"));
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            String name = file.getName();
+            String uuidStr = name.substring(0, name.length() - 4);
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(uuidStr);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            if (!cfg.isConfigurationSection("kills")) {
+                continue;
+            }
+            Map<String, Integer> playerKills = new HashMap<>();
+            for (String mobKey : cfg.getConfigurationSection("kills").getKeys(false)) {
+                playerKills.put(mobKey, cfg.getInt("kills." + mobKey, 0));
+            }
+            kills.put(uuid, playerKills);
+        }
+    }
+
+    /**
+     * Saves all in-memory kill counts to {@code dataFolder/bestiary/<uuid>.yml}.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void save(File dataFolder) {
+        File dir = new File(dataFolder, "bestiary");
+        if (!dir.exists() && !dir.mkdirs()) {
+            return;
+        }
+        for (Map.Entry<UUID, Map<String, Integer>> entry : kills.entrySet()) {
+            File file = new File(dir, entry.getKey().toString() + ".yml");
+            YamlConfiguration cfg = new YamlConfiguration();
+            for (Map.Entry<String, Integer> kill : entry.getValue().entrySet()) {
+                cfg.set("kills." + kill.getKey(), kill.getValue());
+            }
+            try {
+                cfg.save(file);
+            } catch (IOException e) {
+                // log but continue saving other players
+                e.printStackTrace();
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
