@@ -1,14 +1,12 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.menu.ForgeMenu;
-import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
 public final class ForgeCommand extends PlayerCommand {
 
     @Override
-    protected boolean execute(Player player, Command command, String label, String[] args) {
-        new ForgeMenu(player).open(player);
-        return true;
+    protected void openMenu(Player p) {
+        new ForgeMenu(p).open(p);
     }
 }

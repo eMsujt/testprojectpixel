@@ -40,9 +40,14 @@ public final class BankCommand extends PlayerCommand {
     }
 
     @Override
+    protected void openMenu(Player p) {
+        new BankingMenu(p.getUniqueId()).open(p);
+    }
+
+    @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            new BankingMenu(player.getUniqueId()).open(player);
+            openMenu(player);
             return true;
         }
 

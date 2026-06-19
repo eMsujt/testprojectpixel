@@ -24,7 +24,12 @@ public abstract class PlayerCommand implements TabExecutor {
         return execute(player, command, label, args);
     }
 
-    protected abstract boolean execute(Player player, Command command, String label, String[] args);
+    protected boolean execute(Player player, Command command, String label, String[] args) {
+        openMenu(player);
+        return true;
+    }
+
+    protected abstract void openMenu(Player p);
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {

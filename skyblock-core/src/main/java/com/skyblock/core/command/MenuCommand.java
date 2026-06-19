@@ -22,8 +22,7 @@ public final class MenuCommand extends PlayerCommand {
     }
 
     @Override
-    protected boolean execute(Player player, Command command, String label, String[] args) {
-        opener.accept(player);
-        return true;
+    protected void openMenu(Player p) {
+        opener.accept(p);
     }
 }

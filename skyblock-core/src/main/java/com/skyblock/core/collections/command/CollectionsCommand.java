@@ -38,9 +38,14 @@ public final class CollectionsCommand extends PlayerCommand {
     }
 
     @Override
+    protected void openMenu(Player p) {
+        new CollectionsMenu(p.getUniqueId()).open(p);
+    }
+
+    @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            handleAll(player);
+            openMenu(player);
             return true;
         }
 

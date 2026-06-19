@@ -22,9 +22,14 @@ public final class DungeonCommand extends PlayerCommand {
     }
 
     @Override
+    protected void openMenu(Player p) {
+        new com.skyblock.core.menu.DungeonMenu(p.getUniqueId()).open(p);
+    }
+
+    @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            new com.skyblock.core.menu.DungeonMenu(player.getUniqueId()).open(player);
+            openMenu(player);
             return true;
         }
 

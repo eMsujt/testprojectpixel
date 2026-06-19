@@ -20,6 +20,9 @@ public final class SackCommand extends PlayerCommand {
     }
 
     @Override
+    protected void openMenu(Player p) {}
+
+    @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         player.sendMessage(ChatColor.GOLD + "Your Sacks:");
         boolean any = false;

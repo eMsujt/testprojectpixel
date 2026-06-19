@@ -39,9 +39,14 @@ public final class HOTMCommand extends PlayerCommand {
     }
 
     @Override
+    protected void openMenu(Player p) {
+        new HotmMenu(p).open(p);
+    }
+
+    @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            new HotmMenu(player).open(player);
+            openMenu(player);
             return true;
         }
 
