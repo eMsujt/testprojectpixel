@@ -1,11 +1,16 @@
 package com.skyblock.core.manager;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
+
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -86,10 +91,21 @@ public final class JacobsContestManager {
         }
     }
 
+    /** Ticks between contest start events (72 in-game hours = 3 Minecraft days). */
+    private static final long CONTEST_INTERVAL_TICKS = 72_000L;
+
+    /** Duration of each contest in ticks (20 real minutes). */
+    private static final long CONTEST_DURATION_TICKS = 24_000L;
+
+    private static final Random RANDOM = new Random();
+    private static final CropType[] CROP_VALUES = CropType.values();
+
     private static final JacobsContestManager INSTANCE = new JacobsContestManager();
 
     /** Crops featured in the currently active contest; empty when no contest is running. */
     private Set<CropType> activeCrops = EnumSet.noneOf(CropType.class);
+
+    private BukkitTask rotationTask;
 
     /** Per-player score accumulated during the current contest, keyed by crop. */
     private final Map<UUID, Map<CropType, Long>> activeScores = new HashMap<>();
@@ -106,6 +122,39 @@ public final class JacobsContestManager {
     /** Returns the singleton instance. */
     public static JacobsContestManager getInstance() {
         return INSTANCE;
+    }
+
+    // -------------------------------------------------------------------------
+    // Scheduler
+    // -------------------------------------------------------------------------
+
+    /**
+     * Starts the automatic contest rotation.
+     * A new contest begins immediately and then repeats every {@value #CONTEST_INTERVAL_TICKS} ticks;
+     * each contest ends after {@value #CONTEST_DURATION_TICKS} ticks.
+     */
+    public void start(Plugin plugin) {
+        rotationTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            CropType crop = CROP_VALUES[RANDOM.nextInt(CROP_VALUES.length)];
+            startContest(EnumSet.of(crop));
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (isContestActive()) {
+                    endContest();
+                }
+            }, CONTEST_DURATION_TICKS);
+        }, 0L, CONTEST_INTERVAL_TICKS);
+    }
+
+    /** Cancels the rotation task and ends any active contest. */
+    public void stop() {
+        if (rotationTask != null) {
+            rotationTask.cancel();
+            rotationTask = null;
+        }
+        if (isContestActive()) {
+            activeCrops = EnumSet.noneOf(CropType.class);
+            activeScores.clear();
+        }
     }
 
     // -------------------------------------------------------------------------
