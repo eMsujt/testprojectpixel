@@ -151,6 +151,8 @@ import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.storage.StorageCommand;
 import com.skyblock.core.npc.NpcManager;
+import com.skyblock.core.npc.NpcCommand;
+import com.skyblock.core.npc.NPCListener;
 import com.skyblock.core.manager.ManaManager;
 import com.skyblock.core.manager.RunecraftingManager;
 import com.skyblock.core.listener.CoreListeners;
@@ -702,6 +704,12 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("storage").setExecutor(storageMenuCommand);
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
         manaManager.start(this);
+        NpcCommand npcCommand = new NpcCommand(npcManager, com.skyblock.core.manager.EconomyManager.getInstance());
+        if (getCommand("npc") != null) {
+            getCommand("npc").setExecutor(npcCommand);
+            getCommand("npc").setTabCompleter(npcCommand);
+        }
+        getServer().getPluginManager().registerEvents(new NPCListener(this, npcManager), this);
         getServer().getPluginManager().registerEvents(new CoreListeners(DataManager.getInstance()), this);
     }
 

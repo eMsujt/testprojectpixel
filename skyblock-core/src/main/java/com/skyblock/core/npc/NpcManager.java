@@ -207,5 +207,27 @@ public final class NpcManager {
                 new ShopEntry("COD",         3,   0),
                 new ShopEntry("SALMON",      5,   0)));
         register(new NpcDefinition("fisherman", "Fisherman Pete", "fisherman"));
+
+        sm.registerShop("materials_merchant", "Materials Merchant", List.of(
+                new ShopEntry("OAK_LOG",      8,  4),
+                new ShopEntry("COBBLESTONE",  2,  1),
+                new ShopEntry("SAND",         3,  1),
+                new ShopEntry("GRAVEL",       3,  1),
+                new ShopEntry("CLAY_BALL",    5,  2),
+                new ShopEntry("FLINT",        4,  2),
+                new ShopEntry("STRING",       6,  3),
+                new ShopEntry("LEATHER",     10,  5)));
+        register(new NpcDefinition("materials_merchant", "Materials Merchant", "materials_merchant"));
+
+        sm.registerShop("farmer_merchant", "Farmer Merchant", List.of(
+                new ShopEntry("WHEAT",         3,  1),
+                new ShopEntry("CARROT",        2,  1),
+                new ShopEntry("POTATO",        2,  1),
+                new ShopEntry("BEETROOT",      4,  2),
+                new ShopEntry("PUMPKIN",      10,  5),
+                new ShopEntry("MELON_SLICE",   2,  1),
+                new ShopEntry("SUGAR_CANE",    2,  1),
+                new ShopEntry("COCOA_BEANS",   5,  2)));
+        register(new NpcDefinition("farmer_merchant", "Farmer Merchant", "farmer_merchant"));
     }
 }
