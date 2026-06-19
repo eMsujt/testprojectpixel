@@ -8,6 +8,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+
 /**
  * Singleton tracking per-player Rift dimension state.
  *
@@ -16,7 +21,7 @@ import java.util.UUID;
  * and the timecharms, Rift souls, and Enigma souls they have collected. Not
  * thread-safe.</p>
  */
-public final class RiftManager {
+public final class RiftManager implements Listener {
 
     /** Named areas inside the Rift dimension. */
     public enum RiftArea {
@@ -84,6 +89,16 @@ public final class RiftManager {
      */
     public static RiftManager getInstance() {
         return INSTANCE;
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        exitRift(event.getEntity().getUniqueId());
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        exitRift(event.getPlayer().getUniqueId());
     }
 
     /**

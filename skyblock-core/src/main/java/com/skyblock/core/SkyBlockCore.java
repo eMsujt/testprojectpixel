@@ -147,7 +147,6 @@ import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.accessory.command.AccessoryBagCommand;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.rift.RiftCommand;
-import com.skyblock.core.rift.RiftListener;
 import com.skyblock.core.manager.RiftManager;
 import com.skyblock.core.crystalhollows.CrystalHollowsCommand;
 import com.skyblock.core.manager.CrystalHollowsManager;
@@ -701,7 +700,7 @@ public final class SkyBlockCore extends JavaPlugin {
         RiftCommand riftCommand = new RiftCommand(riftManager);
         getCommand("rift").setExecutor(riftCommand);
         getCommand("rift").setTabCompleter(riftCommand);
-        getServer().getPluginManager().registerEvents(new RiftListener(riftManager), this);
+        getServer().getPluginManager().registerEvents(riftManager, this);
         SackCommand sackCommand = new SackCommand(sackManager);
         if (getCommand("sack") != null) {
             getCommand("sack").setExecutor(sackCommand);
