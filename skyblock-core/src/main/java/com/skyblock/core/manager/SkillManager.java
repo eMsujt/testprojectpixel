@@ -297,17 +297,26 @@ public final class SkillManager {
         if (!file.exists()) return;
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         xpMap.clear();
+        collectionCounts.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
-                if (!cfg.isConfigurationSection(key + ".xp")) continue;
-                Map<Skill, Long> xp = new EnumMap<>(Skill.class);
-                for (String typeName : cfg.getConfigurationSection(key + ".xp").getKeys(false)) {
-                    try {
-                        xp.put(Skill.valueOf(typeName), cfg.getLong(key + ".xp." + typeName, 0L));
-                    } catch (IllegalArgumentException ignored) {}
+                if (cfg.isConfigurationSection(key + ".xp")) {
+                    Map<Skill, Long> xp = new EnumMap<>(Skill.class);
+                    for (String typeName : cfg.getConfigurationSection(key + ".xp").getKeys(false)) {
+                        try {
+                            xp.put(Skill.valueOf(typeName), cfg.getLong(key + ".xp." + typeName, 0L));
+                        } catch (IllegalArgumentException ignored) {}
+                    }
+                    if (!xp.isEmpty()) xpMap.put(uuid, xp);
                 }
-                if (!xp.isEmpty()) xpMap.put(uuid, xp);
+                if (cfg.isConfigurationSection(key + ".collections")) {
+                    Map<String, Integer> counts = new HashMap<>();
+                    for (String col : cfg.getConfigurationSection(key + ".collections").getKeys(false)) {
+                        counts.put(col, cfg.getInt(key + ".collections." + col, 0));
+                    }
+                    if (!counts.isEmpty()) collectionCounts.put(uuid, counts);
+                }
             } catch (IllegalArgumentException ignored) {}
         }
     }
@@ -319,6 +328,12 @@ public final class SkillManager {
             String key = entry.getKey().toString();
             for (Map.Entry<Skill, Long> xp : entry.getValue().entrySet()) {
                 cfg.set(key + ".xp." + xp.getKey().name(), xp.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Map<String, Integer>> entry : collectionCounts.entrySet()) {
+            String key = entry.getKey().toString();
+            for (Map.Entry<String, Integer> col : entry.getValue().entrySet()) {
+                cfg.set(key + ".collections." + col.getKey(), col.getValue());
             }
         }
         try {
