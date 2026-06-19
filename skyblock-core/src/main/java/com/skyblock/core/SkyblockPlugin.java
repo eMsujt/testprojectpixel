@@ -135,6 +135,8 @@ public final class SkyblockPlugin extends JavaPlugin {
     private ForgeManager forgeManager;
     private AuctionHouseManager auctionHouseManager;
     private PetManager petManager;
+    private SkillManager skillsManager;
+    private MinionManager minionManager;
 
     public static SkyblockPlugin getInstance() {
         return instance;
@@ -289,7 +291,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         ReforgeCommand reforgeCommand = new ReforgeCommand(reforgeManager);
         getCommand("reforge").setExecutor(reforgeCommand);
         getCommand("reforge").setTabCompleter(reforgeCommand);
-        SkillManager skillsManager = SkillManager.getInstance();
+        skillsManager = SkillManager.getInstance();
         skillsManager.load(getDataFolder());
         AccessoryManager.getInstance();
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
@@ -299,7 +301,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         ProfileCommand profileCommand = new ProfileCommand(ProfileManager.getInstance());
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
-        MinionManager minionManager = MinionManager.getInstance();
+        minionManager = MinionManager.getInstance();
         minionManager.load(getDataFolder());
         MinionCommand minionCommand = new MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
