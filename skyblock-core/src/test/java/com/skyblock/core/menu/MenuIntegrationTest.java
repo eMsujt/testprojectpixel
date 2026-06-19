@@ -2026,32 +2026,42 @@ class MenuIntegrationTest {
     @Nested
     class EnchantingMenuTests {
 
-        private final UUID PLAYER = UUID.randomUUID();
+        private SkyblockPlugin mockPlugin;
+        private Player mockPlayer;
+        private UUID playerId;
+
+        @BeforeEach
+        void setup() {
+            mockPlugin = mock(SkyblockPlugin.class);
+            mockPlayer = mock(Player.class);
+            playerId = UUID.randomUUID();
+            when(mockPlayer.getUniqueId()).thenReturn(playerId);
+        }
 
         @AfterEach
         void tearDown() {
-            EnchantmentManager.getInstance().remove(PLAYER);
-            SkillManager.getInstance().setSkillXP(PLAYER, "enchanting", 0L);
+            EnchantmentManager.getInstance().remove(playerId);
+            SkillManager.getInstance().setSkillXP(playerId, "enchanting", 0L);
         }
 
         @Test
-        void title_isEnchanting() {
-            assertEquals("§5Enchanting", new EnchantingMenu(PLAYER).getTitle());
+        void title_isEnchantingTable() {
+            assertEquals("§5§lEnchanting Table", new EnchantingMenu(mockPlugin, mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new EnchantingMenu(PLAYER).getRows());
+            assertEquals(6, new EnchantingMenu(mockPlugin, mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new EnchantingMenu(PLAYER));
+            assertDoesNotThrow(() -> new EnchantingMenu(mockPlugin, mockPlayer));
         }
 
         @Test
-        void tableSlot_isFour() {
-            assertEquals(4, EnchantingMenu.TABLE_SLOT);
+        void tableSlot_isTwentyTwo() {
+            assertEquals(22, EnchantingMenu.TABLE_SLOT);
         }
 
         @Test
@@ -2062,8 +2072,8 @@ class MenuIntegrationTest {
         @Test
         void manager_setAndGetEnchantingLevel_roundTrips() {
             EnchantmentManager mgr = EnchantmentManager.getInstance();
-            mgr.setEnchantingLevel(PLAYER, 5);
-            assertEquals(5, mgr.getEnchantingLevel(PLAYER));
+            mgr.setEnchantingLevel(playerId, 5);
+            assertEquals(5, mgr.getEnchantingLevel(playerId));
         }
 
         @Test
@@ -2074,8 +2084,8 @@ class MenuIntegrationTest {
         @Test
         void skillManager_setAndGetSkillXp_roundTrips() {
             SkillManager mgr = SkillManager.getInstance();
-            mgr.setSkillXP(PLAYER, "enchanting", 1000L);
-            assertEquals(1000L, mgr.getSkillXP(PLAYER, "enchanting"));
+            mgr.setSkillXP(playerId, "enchanting", 1000L);
+            assertEquals(1000L, mgr.getSkillXP(playerId, "enchanting"));
         }
 
         @Test
