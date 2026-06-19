@@ -34,6 +34,13 @@ import com.skyblock.core.manager.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
 import com.skyblock.core.command.MenuCommand;
+import com.skyblock.core.menu.GardenMenu;
+import com.skyblock.core.menu.DungeonsMenu;
+import com.skyblock.core.menu.CollectionsMenu;
+import com.skyblock.core.menu.MinionMenu;
+import com.skyblock.core.menu.ProfileMenu;
+import com.skyblock.core.menu.ForgeMenu;
+import com.skyblock.core.menu.SkyBlockMenu;
 import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.StatsMenu;
 import com.skyblock.core.menu.CrimsonIsleMenu;
@@ -43,8 +50,6 @@ import com.skyblock.core.manager.JerryWorkshopCommand;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.HarpManager;
 import com.skyblock.core.manager.JerryWorkshopManager;
-import com.skyblock.core.command.DungeonsCommand;
-import com.skyblock.core.command.GardenCommand;
 import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
@@ -63,7 +68,6 @@ import com.skyblock.core.pet.PetCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.command.IslandCommand;
 import com.skyblock.core.manager.IslandManager;
-import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
 import com.skyblock.core.reforge.ReforgeCommand;
@@ -108,7 +112,6 @@ import com.skyblock.core.mailbox.MailboxCommand;
 import com.skyblock.core.mailbox.MailboxManager;
 import com.skyblock.core.friend.FriendCommand;
 import com.skyblock.core.friend.FriendManager;
-import com.skyblock.core.command.ForgeCommand;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
@@ -134,7 +137,6 @@ import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.command.SackCommand;
-import com.skyblock.core.command.SkyBlockCommand;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.manager.WarpManager;
@@ -438,17 +440,17 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
-        GardenCommand gardenCommand = new GardenCommand();
+        MenuCommand gardenCommand = new MenuCommand(p -> new GardenMenu(p).open(p));
         getCommand("garden").setExecutor(gardenCommand);
-        DungeonsCommand dungeonsCommand = new DungeonsCommand();
+        MenuCommand dungeonsCommand = new MenuCommand(p -> new DungeonsMenu(p.getUniqueId()).open(p));
         if (getCommand("dungeons") != null) {
             getCommand("dungeons").setExecutor(dungeonsCommand);
         }
-        com.skyblock.core.command.CollectionsCommand collectionsMenuCommand = new com.skyblock.core.command.CollectionsCommand();
+        MenuCommand collectionsMenuCommand = new MenuCommand(p -> new CollectionsMenu(p.getUniqueId()).open(p));
         if (getCommand("collectionsmenu") != null) {
             getCommand("collectionsmenu").setExecutor(collectionsMenuCommand);
         }
-        com.skyblock.core.command.MinionCommand minionMenuCommand = new com.skyblock.core.command.MinionCommand();
+        MenuCommand minionMenuCommand = new MenuCommand(p -> new MinionMenu(this, p).open(p));
         if (getCommand("minionsmenu") != null) {
             getCommand("minionsmenu").setExecutor(minionMenuCommand);
         }
@@ -518,7 +520,7 @@ public final class SkyBlockCore extends JavaPlugin {
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
-        ProfileCommand profileCommand = new ProfileCommand();
+        MenuCommand profileCommand = new MenuCommand(p -> new ProfileMenu(this, p).open(p));
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
         IslandCommand islandCommand = new IslandCommand();
@@ -585,7 +587,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("mail").setExecutor(mailCommand);
             getCommand("mail").setTabCompleter(mailCommand);
         }
-        ForgeCommand forgeCommand = new ForgeCommand();
+        MenuCommand forgeCommand = new MenuCommand(p -> new ForgeMenu(p).open(p));
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
         CalendarCommand calendarCommand = new CalendarCommand(calendarManager);
@@ -668,7 +670,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
         }
-        SkyBlockCommand skyBlockCommand = new SkyBlockCommand();
+        MenuCommand skyBlockCommand = new MenuCommand(p -> new SkyBlockMenu(p).open(p));
         if (getCommand("skyblock") != null) {
             getCommand("skyblock").setExecutor(skyBlockCommand);
             getCommand("skyblock").setTabCompleter(skyBlockCommand);
