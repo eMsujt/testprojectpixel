@@ -1,5 +1,6 @@
 package com.skyblock.core.listener;
 
+import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.model.Skill;
 import org.bukkit.Material;
@@ -8,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import java.util.Map;
+import java.util.UUID;
 
 public final class MiningListener implements Listener {
 
@@ -33,6 +35,7 @@ public final class MiningListener implements Listener {
     );
 
     private final SkillManager skillManager = SkillManager.getInstance();
+    private final CollectionManager collectionManager = CollectionManager.getInstance();
 
     private MiningListener() {}
 
@@ -46,6 +49,8 @@ public final class MiningListener implements Listener {
         if (xp == null) {
             return;
         }
-        skillManager.addXP(event.getPlayer().getUniqueId(), Skill.MINING, xp);
+        UUID uuid = event.getPlayer().getUniqueId();
+        skillManager.addXP(uuid, Skill.MINING, xp);
+        collectionManager.addCollection(uuid, event.getBlock().getType(), 1);
     }
 }
