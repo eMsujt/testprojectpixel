@@ -54,8 +54,11 @@ import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.manager.SkyblockLevelManager;
 import com.skyblock.core.manager.SkyblockLevelManager.Category;
+import com.skyblock.core.manager.AccessoryBagManager;
+import com.skyblock.core.manager.AccessoryBagManager.SlotTier;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.WardrobeManager.WardrobeSlot;
+import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.model.Rarity;
@@ -2081,6 +2084,82 @@ class MenuIntegrationTest {
                 mgr.recordKill(PLAYER, "zombie");
             }
             assertEquals(1, mgr.getMilestoneLevel(PLAYER));
+        }
+    }
+
+    @Nested
+    class AccessoryBagMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @AfterEach
+        void tearDown() {
+            AccessoryBagManager.getInstance().clear(PLAYER);
+        }
+
+        @Test
+        void title_isAccessoryBag() {
+            assertEquals("§5Accessory Bag", new AccessoryBagMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new AccessoryBagMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new AccessoryBagMenu(PLAYER));
+        }
+
+        @Test
+        void summarySlot_isFour() {
+            assertEquals(4, AccessoryBagMenu.SUMMARY_SLOT);
+        }
+
+        @Test
+        void maxSlots_isFortyFive() {
+            assertEquals(45, AccessoryBagManager.MAX_SLOTS);
+        }
+
+        @Test
+        void manager_size_zeroForFreshPlayer() {
+            assertEquals(0, AccessoryBagManager.getInstance().getSize(PLAYER));
+        }
+
+        @Test
+        void manager_unlockedSlots_threeForDefault() {
+            assertEquals(3, AccessoryBagManager.getInstance().getUnlockedSlots(PLAYER));
+        }
+
+        @Test
+        void manager_slotTier_defaultForFreshPlayer() {
+            assertEquals(SlotTier.DEFAULT, AccessoryBagManager.getInstance().getSlotTier(PLAYER));
+        }
+
+        @Test
+        void manager_addAccessory_incrementsSize() {
+            AccessoryBagManager mgr = AccessoryBagManager.getInstance();
+            mgr.addAccessory(PLAYER, TalismanType.SPEED_TALISMAN);
+            assertEquals(1, mgr.getSize(PLAYER));
+        }
+
+        @Test
+        void manager_upgradeSlotTier_advancesToTierOne() {
+            AccessoryBagManager mgr = AccessoryBagManager.getInstance();
+            SlotTier result = mgr.upgradeSlotTier(PLAYER);
+            assertEquals(SlotTier.TIER_1, result);
+            assertEquals(9, mgr.getUnlockedSlots(PLAYER));
+        }
+
+        @Test
+        void manager_totalMagicPower_zeroForEmptyBag() {
+            assertEquals(0, AccessoryBagManager.getInstance().getTotalMagicPower(PLAYER));
+        }
+
+        @Test
+        void manager_powerStone_nullByDefault() {
+            assertNull(AccessoryBagManager.getInstance().getSelectedPowerStone(PLAYER));
         }
     }
 
