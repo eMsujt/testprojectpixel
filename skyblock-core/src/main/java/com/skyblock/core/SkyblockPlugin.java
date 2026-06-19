@@ -134,6 +134,8 @@ public final class SkyblockPlugin extends JavaPlugin {
     private static SkyblockPlugin instance;
     private BankManager bankManager;
     private BestiaryManager bestiaryManager;
+    private MuseumManager museumManager;
+    private RiftManager riftManager;
     private MayorManager mayorManager;
     private StatManager statManager;
     private WardrobeManager wardrobeManager;
@@ -181,6 +183,8 @@ public final class SkyblockPlugin extends JavaPlugin {
         slayerManager.load(getDataFolder());
         trophyFishManager = TrophyFishManager.getInstance();
         bestiaryManager = BestiaryManager.getInstance();
+        museumManager = MuseumManager.getInstance();
+        riftManager = RiftManager.getInstance();
         skillsManager = SkillManager.getInstance();
         skillsManager.load(getDataFolder());
         profile = ProfileManager.getInstance();
@@ -222,7 +226,6 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("bazaar").setExecutor(bazaarCommand);
             getCommand("bazaar").setTabCompleter(bazaarCommand);
         }
-        MuseumManager museumManager = MuseumManager.getInstance();
         MuseumCommand museumCommand = new MuseumCommand(museumManager);
         if (getCommand("museum") != null) {
             getCommand("museum").setExecutor(museumCommand);
@@ -498,7 +501,6 @@ public final class SkyblockPlugin extends JavaPlugin {
             getCommand("accessorybag").setExecutor(accessoryBagCommand);
             getCommand("accessorybag").setTabCompleter(accessoryBagCommand);
         }
-        RiftManager riftManager = RiftManager.getInstance();
         RiftCommand riftCommand = new RiftCommand(riftManager);
         getCommand("rift").setExecutor(riftCommand);
         getCommand("rift").setTabCompleter(riftCommand);
