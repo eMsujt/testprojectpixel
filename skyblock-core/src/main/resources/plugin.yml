@@ -193,6 +193,10 @@ commands:
     description: View foraging level, XP, and log chop counts.
     usage: /foraging [info <log>|reset]
     permission: skyblock.foraging
+  mining:
+    description: View mining level, XP, speed bonus, ores, and zones.
+    usage: /mining [ores|speedbonus|zones]
+    permission: skyblock.mining
   collections:
     description: View your SkyBlock collection progress.
     usage: /collections [collection|category <cat>|reset]
