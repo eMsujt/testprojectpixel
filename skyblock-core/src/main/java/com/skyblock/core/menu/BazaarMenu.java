@@ -2,6 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarOrder;
+import com.skyblock.core.util.MenuUtils;
 import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,15 +31,14 @@ public final class BazaarMenu extends Menu {
     private final UUID player;
 
     public BazaarMenu(Player player) {
-        super("§eBazaar", 6);
+        super("Bazaar", 6);
         this.player = player.getUniqueId();
     }
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
-        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+        ItemStack pane = new ItemBuilder(Material.CYAN_STAINED_GLASS_PANE).displayName("§r").build();
+        MenuUtils.fillBorder(getRows(), this::setItem, pane);
 
         List<BazaarOrder> orders = BazaarManager.getInstance().getOrdersForPlayer(player);
 
