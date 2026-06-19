@@ -1,0 +1,21 @@
+package com.skyblock.core.command;
+
+import com.skyblock.core.manager.StatManager;
+import com.skyblock.core.menu.StatsMenu;
+import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
+
+public final class StatsCommand extends PlayerCommand {
+
+    private final StatManager statManager;
+
+    public StatsCommand(StatManager statManager) {
+        this.statManager = statManager;
+    }
+
+    @Override
+    protected boolean execute(Player player, Command command, String label, String[] args) {
+        new StatsMenu(player).open(player);
+        return true;
+    }
+}

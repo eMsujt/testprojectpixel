@@ -1,13 +1,10 @@
-package com.skyblock.core.manager;
+package com.skyblock.core.command;
 
-import com.skyblock.core.command.PlayerCommand;
+import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.menu.TrophyFishingMenu;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
-/**
- * Handles the {@code /trophyfishing} command: opens {@link TrophyFishingMenu}.
- */
 public final class TrophyFishingCommand extends PlayerCommand {
 
     private final TrophyFishManager trophyFishManager;
