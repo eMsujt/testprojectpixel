@@ -98,6 +98,7 @@ import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.ChocolateFactoryMenu;
 import com.skyblock.core.menu.ForagingMenu;
 import com.skyblock.core.menu.JacobsContestMenu;
+import com.skyblock.core.manager.JacobsContestManager;
 import com.skyblock.core.vault.VaultCommand;
 import com.skyblock.core.vault.VaultManager;
 import com.skyblock.core.booster.BoosterCommand;
@@ -629,6 +630,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         // Canonical managers without dedicated commands — initialize so their state loads/persists.
         FairySoulManager.getInstance();
         BestiaryManager.getInstance();
+        JacobsContestManager.getInstance();
         HarpManager.getInstance().load(getDataFolder());
         JerryWorkshopManager.getInstance().load(getDataFolder());
         com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
