@@ -1,5 +1,6 @@
 package com.skyblock.core;
 
+import com.skyblock.core.manager.ActionBarManager;
 import com.skyblock.core.manager.AccessoryManager;
 import com.skyblock.core.quest.command.QuestCommand;
 import com.skyblock.core.crafting.CraftingCommand;
@@ -726,6 +727,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(tamingManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.armor.ArmorSetListener(com.skyblock.core.armor.ArmorSetManager.getInstance()), this);
+        ActionBarManager.getInstance().start(this);
     }
 
     @Override
