@@ -259,6 +259,9 @@ commands:
     permission: skyblock.storage
 
 permissions:
+  skyblock.use:
+    description: Access the SkyBlock plugin and its core features.
+    default: true
   skyblock.warp:
     description: Use the /warp command to teleport to warp points.
     default: true
