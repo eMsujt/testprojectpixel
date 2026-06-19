@@ -95,7 +95,7 @@ commands:
   minion:
     description: Manage your placed minions.
     usage: /minion <list|place|upgrade|remove|info>
-    aliases: [minions]
+    aliases: [m, minions]
   alchemy:
     description: Brew potions using the SkyBlock alchemy system.
     usage: /alchemy [list|brew|status|collect|cancel]
