@@ -11,6 +11,13 @@ import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.manager.GardenManager.CropType;
 import com.skyblock.core.manager.HotmManager;
 import com.skyblock.core.manager.HotmManager.HotmPerk;
+import com.skyblock.core.manager.CommissionManager;
+import com.skyblock.core.manager.CommissionManager.CommissionLocation;
+import com.skyblock.core.manager.CommissionManager.CommissionType;
+import com.skyblock.core.manager.DojoManager;
+import com.skyblock.core.manager.DojoManager.DojoChallenge;
+import com.skyblock.core.manager.FishingManager;
+import com.skyblock.core.manager.FishingManager.FishingTreasure;
 import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.manager.CalendarManager.SkyBlockMonth;
 import com.skyblock.core.manager.CrystalHollowsManager;
@@ -1482,6 +1489,279 @@ class MenuIntegrationTest {
         @Test
         void manager_purchaseUpgrade_failsWithNoPowder() {
             assertEquals(-2, HotmManager.getInstance().purchaseUpgrade(PLAYER, HotmPerk.MINING_SPEED));
+        }
+    }
+
+    @Nested
+    class FishingMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isFishing() {
+            assertEquals("Fishing", new FishingMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new FishingMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new FishingMenu(PLAYER));
+        }
+
+        @Test
+        void constant_xpPerCatch_isTen() {
+            assertEquals(10.0, FishingManager.XP_PER_CATCH, 0.0001);
+        }
+
+        @Test
+        void constant_baseSeaCreatureChance_isTwentyPercent() {
+            assertEquals(0.20, FishingManager.BASE_SEA_CREATURE_CHANCE, 0.0001);
+        }
+
+        @Test
+        void manager_getLevel_oneForFreshPlayer() {
+            assertEquals(1, FishingManager.getInstance().getLevel(PLAYER));
+        }
+
+        @Test
+        void manager_getXp_zeroForFreshPlayer() {
+            assertEquals(0.0, FishingManager.getInstance().getXp(PLAYER), 0.0001);
+        }
+
+        @Test
+        void manager_addXp_roundTrips() {
+            FishingManager mgr = FishingManager.getInstance();
+            mgr.addXp(PLAYER, 250.0);
+            assertEquals(250.0, mgr.getXp(PLAYER), 0.0001);
+        }
+
+        @Test
+        void manager_totalFishCaught_zeroForFreshPlayer() {
+            assertEquals(0, FishingManager.getInstance().getTotalFishCaught(PLAYER));
+        }
+
+        @Test
+        void manager_addFishCaught_roundTrips() {
+            FishingManager mgr = FishingManager.getInstance();
+            mgr.addFishCaught(PLAYER);
+            mgr.addFishCaught(PLAYER);
+            assertEquals(2, mgr.getTotalFishCaught(PLAYER));
+        }
+
+        @Test
+        void manager_treasureCatchCount_zeroForFreshPlayer() {
+            assertEquals(0, FishingManager.getInstance()
+                    .getTreasureCatchCount(PLAYER, FishingTreasure.SPONGE));
+        }
+
+        @Test
+        void manager_addTreasureCatch_roundTrips() {
+            FishingManager mgr = FishingManager.getInstance();
+            mgr.addTreasureCatch(PLAYER, FishingTreasure.ENCHANTED_FISH);
+            assertEquals(1, mgr.getTreasureCatchCount(PLAYER, FishingTreasure.ENCHANTED_FISH));
+        }
+    }
+
+    @Nested
+    class KuudraMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isKuudra() {
+            assertEquals("§cKuudra", new KuudraMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new KuudraMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new KuudraMenu(PLAYER));
+        }
+
+        @Test
+        void tierSlots_count_isFive() {
+            assertEquals(5, KuudraMenu.TIER_SLOTS.length);
+        }
+
+        @Test
+        void tierSlots_firstIs_twenty() {
+            assertEquals(20, KuudraMenu.TIER_SLOTS[0]);
+        }
+
+        @Test
+        void tierSlots_lastIs_twentyFour() {
+            assertEquals(24, KuudraMenu.TIER_SLOTS[KuudraMenu.TIER_SLOTS.length - 1]);
+        }
+
+        @Test
+        void tierData_basicHasZeroEssenceCost() {
+            int[] data = KuudraManager.TIER_DATA.get("BASIC");
+            assertNotNull(data);
+            assertEquals(0, data[0]);
+        }
+
+        @Test
+        void tierData_allTiersPresent() {
+            for (KuudraManager.KuudraTier tier : KuudraManager.KuudraTier.values()) {
+                assertNotNull(KuudraManager.TIER_DATA.get(tier.name()),
+                        "TIER_DATA missing entry for " + tier);
+            }
+        }
+
+        @Test
+        void tier_basic_tierNumberIsOne() {
+            assertEquals(1, KuudraManager.KuudraTier.BASIC.getTier());
+        }
+
+        @Test
+        void manager_completionCount_zeroForFreshPlayer() {
+            assertEquals(0, KuudraManager.getInstance()
+                    .getCompletionCount(PLAYER, KuudraManager.KuudraTier.BASIC));
+        }
+
+        @Test
+        void manager_activeRun_nullForFreshPlayer() {
+            assertNull(KuudraManager.getInstance().getActiveRun(PLAYER));
+        }
+    }
+
+    @Nested
+    class DojoMenuTests {
+
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @Test
+        void title_isDojo() {
+            assertEquals("§6Dojo", new DojoMenu(PLAYER).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new DojoMenu(PLAYER).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new DojoMenu(PLAYER));
+        }
+
+        @Test
+        void summarySlot_isFour() {
+            assertEquals(4, DojoMenu.SUMMARY_SLOT);
+        }
+
+        @Test
+        void challenge_maxScore_thousandForForce() {
+            assertEquals(1000, DojoChallenge.FORCE.maxScore());
+        }
+
+        @Test
+        void challenge_allHaveThousandMaxScore() {
+            for (DojoChallenge c : DojoChallenge.values()) {
+                assertEquals(1000, c.maxScore(),
+                        c.getDisplayName() + " must have maxScore 1000");
+            }
+        }
+
+        @Test
+        void manager_getScore_zeroForFreshPlayer() {
+            assertEquals(0, DojoManager.getInstance().getScore(PLAYER, DojoChallenge.STAMINA));
+        }
+
+        @Test
+        void manager_setAndGetScore_roundTrips() {
+            DojoManager mgr = DojoManager.getInstance();
+            mgr.setScore(PLAYER, DojoChallenge.MASTERY, 750);
+            assertEquals(750, mgr.getScore(PLAYER, DojoChallenge.MASTERY));
+        }
+
+        @Test
+        void manager_getTotalScore_zeroForFreshPlayer() {
+            assertEquals(0, DojoManager.getInstance().getTotalScore(UUID.randomUUID()));
+        }
+
+        @Test
+        void manager_getMaxTotalScore_isSixThousand() {
+            assertEquals(6000, DojoManager.getMaxTotalScore());
+        }
+
+        @Test
+        void getGrade_S_atNinetyPercent() {
+            assertEquals("S", DojoManager.getGrade(900, 1000));
+        }
+
+        @Test
+        void getGrade_F_atZero() {
+            assertEquals("F", DojoManager.getGrade(0, 1000));
+        }
+    }
+
+    @Nested
+    class MiningCommissionMenuTests {
+
+        private final Player mockPlayer = mock(Player.class);
+
+        @Test
+        void title_isKingsCommissions() {
+            assertEquals("§6King's Commissions", new MiningCommissionMenu(mockPlayer).getTitle());
+        }
+
+        @Test
+        void rows_isSix() {
+            assertEquals(6, new MiningCommissionMenu(mockPlayer).getRows());
+        }
+
+        @Test
+        void constructor_doesNotThrow() {
+            assertDoesNotThrow(() -> new MiningCommissionMenu(mockPlayer));
+        }
+
+        @Test
+        void commissionSlots_countIsTwo() {
+            assertEquals(2, CommissionManager.COMMISSION_SLOTS);
+        }
+
+        @Test
+        void manager_activeCommissions_emptyForFreshPlayer() {
+            UUID id = UUID.randomUUID();
+            assertTrue(CommissionManager.getInstance().getActiveCommissions(id).isEmpty());
+        }
+
+        @Test
+        void manager_generateCommissions_returnsTwoCommissions() {
+            UUID id = UUID.randomUUID();
+            var generated = CommissionManager.getInstance()
+                    .generateCommissions(id, CommissionLocation.DWARVEN_MINES);
+            assertEquals(CommissionManager.COMMISSION_SLOTS, generated.size());
+        }
+
+        @Test
+        void commissionType_mithrilMiner_targetIsFiveHundred() {
+            assertEquals(500, CommissionType.MITHRIL_MINER.getTarget());
+        }
+
+        @Test
+        void commissionType_allHaveLocation() {
+            for (CommissionType type : CommissionType.values()) {
+                assertNotNull(type.getLocation(),
+                        type.getDisplayName() + " must have a location");
+            }
+        }
+
+        @Test
+        void commission_addProgress_clampsToTarget() {
+            var commission = new CommissionManager.Commission(CommissionType.TITANIUM_MINER);
+            commission.addProgress(9999);
+            assertEquals(CommissionType.TITANIUM_MINER.getTarget(), commission.getProgress());
+            assertTrue(commission.isComplete());
         }
     }
 
