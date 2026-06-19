@@ -50,7 +50,7 @@ public final class BankingMenu extends Menu {
                         "§7Click to deposit coins into your bank.")
                 .build());
 
-        setItem(BALANCE_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
+        setItem(BALANCE_SLOT, new ItemBuilder(Material.GOLD_INGOT)
                 .displayName("§6Personal Bank")
                 .lore(
                         "§7Balance: §6" + String.format("%.2f", balance) + " coins",
