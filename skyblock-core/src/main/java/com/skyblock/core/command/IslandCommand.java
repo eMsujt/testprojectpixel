@@ -1,14 +1,12 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.menu.IslandMenu;
-import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 
 public final class IslandCommand extends PlayerCommand {
 
     @Override
-    protected boolean execute(Player player, Command command, String label, String[] args) {
-        new IslandMenu(player.getUniqueId()).open(player);
-        return true;
+    protected void openMenu(Player p) {
+        new IslandMenu(p.getUniqueId()).open(p);
     }
 }

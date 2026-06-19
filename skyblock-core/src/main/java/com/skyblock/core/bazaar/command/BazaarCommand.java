@@ -35,9 +35,14 @@ public final class BazaarCommand extends PlayerCommand {
     }
 
     @Override
+    protected void openMenu(Player p) {
+        new BazaarMenu(p).open(p);
+    }
+
+    @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            new BazaarMenu(player).open(player);
+            openMenu(player);
             return true;
         }
 

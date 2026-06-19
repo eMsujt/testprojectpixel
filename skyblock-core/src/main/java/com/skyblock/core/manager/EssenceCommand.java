@@ -36,9 +36,14 @@ public final class EssenceCommand extends PlayerCommand {
     }
 
     @Override
+    protected void openMenu(Player p) {
+        new EssenceMenu(p).open(p);
+    }
+
+    @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            new EssenceMenu(player).open(player);
+            openMenu(player);
             return true;
         }
 

@@ -35,9 +35,14 @@ public final class BestiaryCommand extends PlayerCommand {
     }
 
     @Override
+    protected void openMenu(Player p) {
+        new BestiaryMenu(p).open(p);
+    }
+
+    @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            new BestiaryMenu(player).open(player);
+            openMenu(player);
             return true;
         }
 
