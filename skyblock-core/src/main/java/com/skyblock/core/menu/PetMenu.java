@@ -5,11 +5,13 @@ import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,8 +24,11 @@ import java.util.function.Consumer;
 
 public class PetMenu extends Menu {
 
-    /** Wool material used to represent each rarity tier. */
+    /** Wool material used to represent each rarity tier for non-equipped pets. */
     static final Map<Rarity, Material> RARITY_WOOL = new EnumMap<>(Rarity.class);
+
+    /** Dye color used to tint the equipped-pet leather helm per rarity tier. */
+    static final Map<Rarity, Color> RARITY_DYE = new EnumMap<>(Rarity.class);
 
     static {
         RARITY_WOOL.put(Rarity.COMMON,      Material.WHITE_WOOL);
@@ -34,6 +39,15 @@ public class PetMenu extends Menu {
         RARITY_WOOL.put(Rarity.MYTHIC,      Material.PINK_WOOL);
         RARITY_WOOL.put(Rarity.DIVINE,      Material.CYAN_WOOL);
         RARITY_WOOL.put(Rarity.SPECIAL,     Material.RED_WOOL);
+
+        RARITY_DYE.put(Rarity.COMMON,    Color.WHITE);
+        RARITY_DYE.put(Rarity.UNCOMMON,  Color.fromRGB(0x55, 0xFF, 0x55));
+        RARITY_DYE.put(Rarity.RARE,      Color.fromRGB(0x55, 0x55, 0xFF));
+        RARITY_DYE.put(Rarity.EPIC,      Color.fromRGB(0xAA, 0x00, 0xAA));
+        RARITY_DYE.put(Rarity.LEGENDARY, Color.fromRGB(0xFF, 0xAA, 0x00));
+        RARITY_DYE.put(Rarity.MYTHIC,    Color.fromRGB(0xFF, 0x55, 0xFF));
+        RARITY_DYE.put(Rarity.DIVINE,    Color.fromRGB(0x55, 0xFF, 0xFF));
+        RARITY_DYE.put(Rarity.SPECIAL,   Color.fromRGB(0xFF, 0x55, 0x55));
     }
 
     /** Width of the textual XP progress bar rendered in each pet's lore. */
@@ -102,15 +116,26 @@ public class PetMenu extends Menu {
             int level = petManager.getLevel(playerId, pet.type);
             long xp = petManager.getExperience(playerId, pet.type);
             String rarityColor = ItemBuilder.rarityColor(pet.rarity.name()).toString();
-            Material wool = RARITY_WOOL.getOrDefault(pet.rarity, Material.WHITE_WOOL);
-            ItemStack item = new ItemBuilder(wool)
-                    .displayName(rarityColor + (equipped ? "✦ " : "") + "[Lvl " + level + "] " + pet.type.getDisplayName())
-                    .lore(
-                            "§7Rarity: " + rarityColor + pet.rarity.getDisplayName(),
-                            "§7Level: §a" + level + "§7/§a" + PetManager.MAX_LEVEL,
-                            "§7XP: " + xpBar(xp, level, pet.type.defaultRarity),
-                            equipped ? "§aCurrently equipped" : "§eClick to equip!")
-                    .build();
+            String displayName = rarityColor + (equipped ? "✦ " : "") + "[Lvl " + level + "] " + pet.type.getDisplayName();
+            List<String> lore = List.of(
+                    "§7Rarity: " + rarityColor + pet.rarity.getDisplayName(),
+                    "§7Level: §a" + level + "§7/§a" + PetManager.MAX_LEVEL,
+                    "§7XP: " + xpBar(xp, level, pet.type.defaultRarity),
+                    equipped ? "§aCurrently equipped" : "§eClick to equip!");
+            ItemStack item;
+            if (equipped) {
+                item = new ItemStack(Material.LEATHER_HELMET);
+                LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+                if (meta != null) {
+                    meta.setColor(RARITY_DYE.getOrDefault(pet.rarity, Color.WHITE));
+                    meta.setDisplayName(displayName);
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                }
+            } else {
+                Material wool = RARITY_WOOL.getOrDefault(pet.rarity, Material.WHITE_WOOL);
+                item = new ItemBuilder(wool).displayName(displayName).lore(lore.toArray(new String[0])).build();
+            }
             int slot = INNER_SLOTS[i];
             inventory.setItem(slot, item);
             UUID petId = pet.id;
