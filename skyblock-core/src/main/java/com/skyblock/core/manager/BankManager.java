@@ -104,6 +104,8 @@ public final class BankManager {
     private final Map<UUID, BankType> bankTypes = new HashMap<>();
     /** Shared co-op balances keyed by co-op name; absent entries default to zero. */
     private final Map<String, Double> coopBalances = new HashMap<>();
+    /** Per-player purse balance (coins held on the player, not in the bank). */
+    private final Map<UUID, Long> purseBalances = new HashMap<>();
 
     private BankManager() {}
 
@@ -161,6 +163,52 @@ public final class BankManager {
 
     public void setBankType(UUID playerId, BankType type) {
         bankTypes.put(playerId, type);
+    }
+
+    /** Returns the player's purse balance (coins carried on person, not in the bank). */
+    public long getPurseBalance(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return purseBalances.getOrDefault(playerId, 0L);
+    }
+
+    /** Sets the player's purse balance directly. */
+    public void setPurseBalance(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount < 0) {
+            throw new IllegalArgumentException("purse balance must not be negative: " + amount);
+        }
+        purseBalances.put(playerId, amount);
+    }
+
+    /**
+     * Adds coins to the player's purse.
+     *
+     * @param amount must be positive
+     */
+    public void addToPurse(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive: " + amount);
+        }
+        purseBalances.merge(playerId, amount, Long::sum);
+    }
+
+    /**
+     * Removes coins from the player's purse.
+     *
+     * @param amount must be positive and not exceed the current purse balance
+     * @throws IllegalArgumentException if the player has insufficient purse balance
+     */
+    public void removeFromPurse(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount <= 0) {
+            throw new IllegalArgumentException("amount must be positive: " + amount);
+        }
+        long current = purseBalances.getOrDefault(playerId, 0L);
+        if (amount > current) {
+            throw new IllegalArgumentException("insufficient purse balance: has " + current + ", requested " + amount);
+        }
+        purseBalances.put(playerId, current - amount);
     }
 
     public double applyInterest(UUID playerId) {
@@ -242,6 +290,7 @@ public final class BankManager {
         tiers.clear();
         bankTypes.clear();
         bankHistory.clear();
+        purseBalances.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -259,6 +308,10 @@ public final class BankManager {
                     try {
                         bankTypes.put(uuid, BankType.valueOf(typeName));
                     } catch (IllegalArgumentException ignored) {}
+                }
+                long purse = cfg.getLong(key + ".purse", 0L);
+                if (purse > 0) {
+                    purseBalances.put(uuid, purse);
                 }
             } catch (IllegalArgumentException ignored) {}
         }
@@ -290,6 +343,16 @@ public final class BankManager {
             if (bankType != null) {
                 cfg.set(key + ".bankType", bankType.name());
             }
+            Long purse = purseBalances.get(entry.getKey());
+            if (purse != null && purse > 0) {
+                cfg.set(key + ".purse", purse);
+            }
+        }
+        // Persist purse balances for players who have no bank account entry yet.
+        for (Map.Entry<UUID, Long> entry : purseBalances.entrySet()) {
+            if (!accounts.containsKey(entry.getKey()) && entry.getValue() > 0) {
+                cfg.set(entry.getKey().toString() + ".purse", entry.getValue());
+            }
         }
         for (Map.Entry<UUID, List<String>> entry : bankHistory.entrySet()) {
             cfg.set("bankHistory." + entry.getKey().toString(), entry.getValue());
@@ -301,7 +364,7 @@ public final class BankManager {
         }
     }
 
-    /** Removes all stored accounts, tiers, bank types, and co-op balances. */
+    /** Removes all stored accounts, tiers, bank types, co-op balances, and purse balances. */
     public void clear() {
         for (UUID uuid : accounts.keySet()) {
             recordBankEvent(uuid, "Balance reset");
@@ -310,5 +373,6 @@ public final class BankManager {
         tiers.clear();
         bankTypes.clear();
         coopBalances.clear();
+        purseBalances.clear();
     }
 }
