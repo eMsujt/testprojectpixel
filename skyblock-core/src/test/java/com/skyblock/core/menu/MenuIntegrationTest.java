@@ -1351,7 +1351,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isBazaar() {
-            assertEquals("Bazaar", new BazaarMenu(mock(Player.class)).getTitle());
+            assertEquals("§6§lBazaar", new BazaarMenu(mock(Player.class)).getTitle());
         }
 
         @Test

@@ -30,13 +30,13 @@ public final class BazaarMenu extends Menu {
     private final UUID player;
 
     public BazaarMenu(Player player) {
-        super("Bazaar", 6);
+        super("§6§lBazaar", 6);
         this.player = player.getUniqueId();
     }
 
     @Override
     protected void build() {
-        ItemStack pane = SkyblockUtils.buildItem(Material.CYAN_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.YELLOW_STAINED_GLASS_PANE, "§r");
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         List<BazaarOrder> orders = BazaarManager.getInstance().getOrdersForPlayer(player);
