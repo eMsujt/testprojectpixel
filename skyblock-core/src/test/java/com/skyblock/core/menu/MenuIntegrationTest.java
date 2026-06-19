@@ -246,7 +246,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isIsland() {
-            assertEquals("§aIsland", new IslandMenu(owner).getTitle());
+            assertEquals("§bYour Island", new IslandMenu(owner).getTitle());
         }
 
         @Test

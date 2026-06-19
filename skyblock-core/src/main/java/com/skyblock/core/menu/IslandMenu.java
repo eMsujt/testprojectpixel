@@ -24,7 +24,7 @@ public final class IslandMenu extends Menu {
     private final UUID owner;
 
     public IslandMenu(UUID owner) {
-        super("§aIsland", 6);
+        super("§bYour Island", 6);
         this.owner = owner;
     }
 
