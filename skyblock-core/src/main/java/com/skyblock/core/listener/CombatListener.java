@@ -1,4 +1,4 @@
-package com.skyblock.core.combat.listener;
+package com.skyblock.core.listener;
 
 import com.skyblock.core.combat.calculator.DamageFormula;
 import com.skyblock.core.model.Stat;
@@ -16,16 +16,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Collection;
 import java.util.UUID;
 
-/**
- * Singleton listener that resolves SkyBlock combat damage.
- *
- * <p>On {@link EntityDamageByEntityEvent}, when the damager is a {@link Player},
- * the vanilla damage is replaced with the value from {@link DamageFormula} using
- * the attacker's combat stats from {@link StatManager}.</p>
- *
- * <p>This type is registered as an event listener in
- * {@link com.skyblock.core.SkyBlockCore#onEnable()}.</p>
- */
 public final class CombatListener implements Listener {
 
     private static final CombatListener INSTANCE = new CombatListener();
@@ -38,11 +28,6 @@ public final class CombatListener implements Listener {
         return INSTANCE;
     }
 
-    /**
-     * Replaces a player's vanilla hit damage with the SkyBlock-computed value.
-     *
-     * @param event the damage event
-     */
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         Entity attacker = event.getDamager();
@@ -55,20 +40,10 @@ public final class CombatListener implements Listener {
         double critChance = statManager.getStat(uuid, Stat.CRIT_CHANCE);
         double critDamage = statManager.getStat(uuid, Stat.CRIT_DAMAGE);
 
-        // The vanilla damage of the swung weapon feeds the formula's weapon-damage term.
         double weaponDamage = event.getDamage();
         event.setDamage(DamageFormula.calculate(weaponDamage, strength, critChance, critDamage));
     }
 
-    /**
-     * Calculates the melee damage of a hit, resolving stats from the attacker and
-     * applying defense reduction when the target is a player.
-     *
-     * @param attacker the attacking player
-     * @param weapon   the held weapon (may be null for bare-hand hits)
-     * @param target   the entity being attacked
-     * @return the final damage dealt, never negative
-     */
     public static double calculateDamage(Player attacker, ItemStack weapon, Entity target) {
         StatManager stats = StatManager.getInstance();
         UUID attackerId = attacker.getUniqueId();
@@ -91,15 +66,6 @@ public final class CombatListener implements Listener {
         return damage;
     }
 
-    /**
-     * Calculates the melee damage of a hit from the given combat stats.
-     *
-     * @param weaponDamage      base weapon damage stat, clamped to &ge; 0
-     * @param strength          attacker's strength stat, clamped to &ge; 0
-     * @param critChancePercent chance to land a critical hit as a percentage, e.g. {@code 30.0} for 30 %
-     * @param critDamagePercent crit damage bonus as a percentage, e.g. {@code 50.0} for +50 %
-     * @return the final damage dealt, never negative
-     */
     public static double calculateDamage(double weaponDamage, double strength, double critChancePercent, double critDamagePercent) {
         return DamageFormula.calculate(weaponDamage, strength, critChancePercent, critDamagePercent);
     }

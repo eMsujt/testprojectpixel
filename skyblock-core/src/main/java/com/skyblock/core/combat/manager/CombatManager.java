@@ -23,7 +23,7 @@ import java.util.UUID;
  * </ol>
  *
  * <p>Event handling is delegated to
- * {@link com.skyblock.core.combat.listener.CombatListener}.</p>
+ * {@link com.skyblock.core.listener.CombatListener}.</p>
  * <p>Not thread-safe; synchronize externally if needed.</p>
  */
 public final class CombatManager {
