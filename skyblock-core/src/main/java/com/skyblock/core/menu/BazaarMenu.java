@@ -1,39 +1,37 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.BazaarManager.BazaarProduct;
+import com.skyblock.core.manager.BazaarManager;
+import com.skyblock.core.manager.BazaarManager.BazaarOrder;
 import com.skyblock.core.util.SkyblockUtil.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.UUID;
 
 /**
- * GUI menu opened by {@code /bazaar}. Renders the bazaar product categories as
- * selector items (wheat/iron pickaxe/diamond sword/oak sapling/fishing rod/book),
- * showing for each the number of tradable products it groups.
+ * GUI menu opened by {@code /bazaar}. Renders each of the viewing player's
+ * standing {@link BazaarOrder}s (from {@link BazaarManager#getOrdersForPlayer})
+ * as a paper item showing its type, item, quantity and unit price. A border of
+ * gray panes frames the top and bottom rows; an empty-state barrier appears
+ * when the player has no orders.
  */
 public final class BazaarMenu extends Menu {
 
-    /** First slot of the centered category row; the categories occupy {@code FIRST_CATEGORY_SLOT .. +n-1}. */
-    static final int FIRST_CATEGORY_SLOT = 20;
+    /** Order slots filling the middle four rows (10–43, edges excluded). */
+    static final int[] ORDER_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43
+    };
 
-    /** Ordered category → icon mapping; order drives the slot layout. */
-    private static final Map<String, Material> CATEGORIES = new LinkedHashMap<>();
-
-    static {
-        CATEGORIES.put("FARMING",  Material.WHEAT);
-        CATEGORIES.put("MINING",   Material.IRON_PICKAXE);
-        CATEGORIES.put("COMBAT",   Material.DIAMOND_SWORD);
-        CATEGORIES.put("FORAGING", Material.OAK_SAPLING);
-        CATEGORIES.put("FISHING",  Material.FISHING_ROD);
-        CATEGORIES.put("MISC",     Material.BOOK);
-    }
+    private final UUID player;
 
     public BazaarMenu(Player player) {
         super("§eBazaar", 6);
+        this.player = player.getUniqueId();
     }
 
     @Override
@@ -42,32 +40,24 @@ public final class BazaarMenu extends Menu {
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
 
-        int index = 0;
-        for (Map.Entry<String, Material> entry : CATEGORIES.entrySet()) {
-            String category = entry.getKey();
-            int products = 0;
-            for (BazaarProduct p : BazaarProduct.values()) {
-                if (p.getCategory().equals(category)) products++;
-            }
+        List<BazaarOrder> orders = BazaarManager.getInstance().getOrdersForPlayer(player);
 
-            setItem(FIRST_CATEGORY_SLOT + index, new ItemBuilder(entry.getValue())
-                    .displayName("§a" + displayName(category))
+        for (int i = 0; i < orders.size() && i < ORDER_SLOTS.length; i++) {
+            BazaarOrder order = orders.get(i);
+            setItem(ORDER_SLOTS[i], new ItemBuilder(Material.PAPER)
+                    .displayName("§e" + order.type().getDisplayName())
                     .lore(
-                            "§7Products: §e" + products,
-                            "",
-                            "§eClick to browse")
+                            "§7Item: §f" + order.itemId(),
+                            "§7Quantity: §e" + order.quantity(),
+                            "§7Price each: §6" + (long) order.priceEach() + " coins")
                     .build());
-            index++;
         }
-    }
 
-    /** Title-cases a category id, e.g. {@code "FARMING"} → {@code "Farming"}. */
-    private static String displayName(String category) {
-        return category.charAt(0) + category.substring(1).toLowerCase();
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        event.setCancelled(true);
+        if (orders.isEmpty()) {
+            setItem(22, new ItemBuilder(Material.BARRIER)
+                    .displayName("§cNo Orders")
+                    .lore("§7You have no standing bazaar orders.")
+                    .build());
+        }
     }
 }
