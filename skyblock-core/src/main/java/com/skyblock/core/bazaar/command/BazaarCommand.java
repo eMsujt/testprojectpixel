@@ -1,11 +1,11 @@
 package com.skyblock.core.bazaar.command;
 
+import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BuyOrder;
 import com.skyblock.core.manager.BazaarManager.SellOrder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import java.util.UUID;
  * </ul>
  * </p>
  */
-public final class BazaarCommand implements TabExecutor {
+public final class BazaarCommand extends PlayerCommand {
 
     private final BazaarManager bazaarManager;
 
@@ -34,12 +34,7 @@ public final class BazaarCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
-
+    protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
             sendHelp(player);
             return true;

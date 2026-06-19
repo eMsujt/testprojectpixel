@@ -1,12 +1,12 @@
 package com.skyblock.core.collections.command;
 
+import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public final class CollectionsCommand implements TabExecutor {
+public final class CollectionsCommand extends PlayerCommand {
 
     private static final List<String> SUBCOMMANDS;
 
@@ -38,12 +38,7 @@ public final class CollectionsCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
-
+    protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
             handleAll(player);
             return true;

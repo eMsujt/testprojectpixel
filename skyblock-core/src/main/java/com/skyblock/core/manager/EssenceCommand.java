@@ -1,9 +1,9 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.menu.EssenceMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * </ul>
  * </p>
  */
-public final class EssenceCommand implements TabExecutor {
+public final class EssenceCommand extends PlayerCommand {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("balance", "add", "remove");
     private static final List<String> TYPE_NAMES = Arrays.stream(EssenceManager.EssenceType.values())
@@ -36,12 +36,7 @@ public final class EssenceCommand implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
-
+    protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
             new EssenceMenu(player).open(player);
             return true;
