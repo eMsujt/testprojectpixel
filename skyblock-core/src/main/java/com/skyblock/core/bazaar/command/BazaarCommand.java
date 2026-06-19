@@ -4,6 +4,7 @@ import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BuyOrder;
 import com.skyblock.core.manager.BazaarManager.SellOrder;
+import com.skyblock.core.menu.BazaarMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,7 +37,7 @@ public final class BazaarCommand extends PlayerCommand {
     @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sendHelp(player);
+            new BazaarMenu(player).open(player);
             return true;
         }
 
