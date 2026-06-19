@@ -128,6 +128,7 @@ conventions and the one-canonical-home rule, and
 | Command | Alias | Description |
 |---------|-------|-------------|
 | `/accessories` | — | View and manage your accessory bag |
+| `/accessorybag` | — | Open the Accessory Bag GUI |
 | `/achievement` | — | View your SkyBlock achievements |
 | `/alchemy` | — | Brew potions using the SkyBlock alchemy system |
 | `/auctionhouse` | `/ah` | Manage Auction House listings (BIN and bid-based) |
@@ -178,6 +179,7 @@ conventions and the one-canonical-home rule, and
 | `/title` | — | Manage your SkyBlock title |
 | `/trade` | — | Trade items with another player |
 | `/trophyfish` | — | View trophy fish catch counts and drop chances |
+| `/trophyfishing` | — | Open the Trophy Fishing GUI (all 22 trophy fish types) |
 | `/vault` | — | Manage your personal vault balance and tier |
 | `/wardrobe` | — | View and manage your saved armor outfits |
 | `/warp` | — | Teleport to a named warp point |
