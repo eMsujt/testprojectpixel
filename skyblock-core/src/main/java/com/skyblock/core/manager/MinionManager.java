@@ -92,17 +92,18 @@ public final class MinionManager {
 
     /** Upgrade tiers a minion can reach (I = slowest/smallest, XI = fastest/largest). */
     public enum MinionTier {
-        I  (520, 1),
-        II (480, 2),
-        III(440, 3),
-        IV (400, 5),
-        V  (360, 7),
-        VI (320, 9),
-        VII(280, 11),
-        VIII(240, 13),
-        IX (200, 15),
-        X  (160, 18),
-        XI (120, 21);
+        TIER_1 (14, 1),
+        TIER_2 (13, 2),
+        TIER_3 (12, 3),
+        TIER_4 (11, 4),
+        TIER_5 (10, 5),
+        TIER_6 ( 9, 6),
+        TIER_7 ( 8, 7),
+        TIER_8 ( 7, 8),
+        TIER_9 ( 6, 9),
+        TIER_10( 5, 10),
+        TIER_11( 4, 11),
+        TIER_12( 3, 12);
 
         /** Ticks between each production action (20 ticks = 1 second). */
         private final int actionIntervalTicks;
