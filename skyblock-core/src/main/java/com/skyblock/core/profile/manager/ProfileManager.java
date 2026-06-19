@@ -114,6 +114,9 @@ public final class ProfileManager {
     /** uuid -> profile event history */
     private final Map<UUID, List<String>> profileHistory = new HashMap<>();
 
+    /** ownerId -> currently selected profile id */
+    private final Map<UUID, UUID> activeProfiles = new HashMap<>();
+
     private ProfileManager() {}
 
     public static ProfileManager getInstance() {
@@ -163,6 +166,30 @@ public final class ProfileManager {
             }
         }
         return Collections.unmodifiableList(result);
+    }
+
+    /**
+     * Switches the owner's active profile to the one at the given 1-based index, ordered as by
+     * {@link #getProfilesForOwner(UUID)}.
+     *
+     * @return the now-active {@link SkyBlockProfile}, or {@code null} if the index is out of range
+     */
+    public SkyBlockProfile switchProfile(UUID ownerId, int index) {
+        Objects.requireNonNull(ownerId, "ownerId");
+        List<SkyBlockProfile> profiles = getProfilesForOwner(ownerId);
+        if (index < 1 || index > profiles.size()) {
+            return null;
+        }
+        SkyBlockProfile profile = profiles.get(index - 1);
+        activeProfiles.put(ownerId, profile.profileId());
+        return profile;
+    }
+
+    /** Returns the owner's active profile, or {@code null} if none has been selected. */
+    public SkyBlockProfile getActiveProfile(UUID ownerId) {
+        Objects.requireNonNull(ownerId, "ownerId");
+        UUID id = activeProfiles.get(ownerId);
+        return id == null ? null : profilesById.get(id);
     }
 
     /** Removes a profile by id. Returns {@code true} if the profile existed and was removed. */
@@ -330,5 +357,6 @@ public final class ProfileManager {
         fairySouls.clear();
         skyBlockXp.clear();
         profileHistory.clear();
+        activeProfiles.clear();
     }
 }

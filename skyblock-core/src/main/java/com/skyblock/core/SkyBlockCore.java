@@ -137,6 +137,7 @@ import com.skyblock.core.menu.SlayerMenu;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.StatManager;
+import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.command.SackCommand;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.command.WarpCommand;
@@ -521,7 +522,7 @@ public final class SkyBlockCore extends JavaPlugin {
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
-        MenuCommand profileCommand = new MenuCommand(p -> new ProfileMenu(this, p).open(p));
+        ProfileCommand profileCommand = new ProfileCommand(profile, p -> new ProfileMenu(this, p).open(p));
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
         IslandCommand islandCommand = new IslandCommand();
