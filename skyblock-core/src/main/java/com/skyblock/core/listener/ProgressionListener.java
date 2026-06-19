@@ -11,14 +11,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * Consolidated progression listener covering skill XP on block-break and
- * fairy soul collection on right-click.
+ * Consolidated progression listener covering skill XP on block-break,
+ * combat XP on mob kill, and fairy soul collection on right-click.
  *
  * <p>Fairy soul blocks must carry two PDC entries set when placed:
  * {@code fairy_soul_island} (String, a {@link FairyIsland} name) and
@@ -46,6 +47,15 @@ public final class ProgressionListener implements Listener {
         Player player = event.getPlayer();
         Skill skill = skillFor(event.getBlock().getType());
         skillManager.addXP(player.getUniqueId(), skill, 1L);
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) {
+            return;
+        }
+        skillManager.addXP(killer.getUniqueId(), Skill.COMBAT, 1L);
     }
 
     @EventHandler
