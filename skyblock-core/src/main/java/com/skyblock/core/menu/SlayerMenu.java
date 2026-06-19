@@ -44,7 +44,7 @@ public final class SlayerMenu extends AbstractMenu {
     }
 
     public SlayerMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§4Slayer Quests", 54);
+        super(plugin, player, "§c§lSlayer Quests", 54);
     }
 
     @Override
