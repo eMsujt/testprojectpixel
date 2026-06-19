@@ -8,7 +8,10 @@ public final class BankingManager {
 
     private static final BankingManager INSTANCE = new BankingManager();
 
-    private final Map<UUID, Double> balances = new HashMap<>();
+    /** Maximum coin balance a player may hold in the bank. */
+    public static final long MAX_BALANCE = 2_000_000_000L;
+
+    private final Map<UUID, Long> balances = new HashMap<>();
 
     private BankingManager() {}
 
@@ -16,17 +19,21 @@ public final class BankingManager {
         return INSTANCE;
     }
 
-    public double getBalance(UUID playerId) {
-        return balances.getOrDefault(playerId, 0.0);
+    public long getBalance(UUID playerId) {
+        return balances.getOrDefault(playerId, 0L);
     }
 
-    public void deposit(UUID playerId, double amount) {
-        balances.merge(playerId, amount, Double::sum);
+    public void deposit(UUID playerId, long amount) {
+        if (amount <= 0) {
+            return;
+        }
+        long room = MAX_BALANCE - getBalance(playerId);
+        balances.put(playerId, getBalance(playerId) + Math.min(room, amount));
     }
 
-    public boolean withdraw(UUID playerId, double amount) {
-        double current = getBalance(playerId);
-        if (current < amount) {
+    public boolean withdraw(UUID playerId, long amount) {
+        long current = getBalance(playerId);
+        if (amount <= 0 || current < amount) {
             return false;
         }
         balances.put(playerId, current - amount);
