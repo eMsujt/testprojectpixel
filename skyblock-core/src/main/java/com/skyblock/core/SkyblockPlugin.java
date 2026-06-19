@@ -78,6 +78,7 @@ import com.skyblock.core.mail.MailCommand;
 import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.collections.command.CollectionsCommand;
 import com.skyblock.core.collections.listener.CollectionListener;
+import com.skyblock.core.listener.CombatListener;
 import com.skyblock.core.listener.SkillsListener;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.EssenceShopManager;
@@ -463,6 +464,7 @@ public final class SkyblockPlugin extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new CollectionListener(collectionManager), this);
         getServer().getPluginManager().registerEvents(new SkillsListener(skillsManager), this);
+        getServer().getPluginManager().registerEvents(new CombatListener(skillsManager), this);
         ChatManager chatManager = ChatManager.getInstance();
         ChatCommand chatCommand = new ChatCommand(chatManager);
         getCommand("chat").setExecutor(chatCommand);
