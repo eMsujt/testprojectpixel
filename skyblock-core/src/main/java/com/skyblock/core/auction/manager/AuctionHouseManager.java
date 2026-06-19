@@ -1,7 +1,9 @@
 package com.skyblock.core.auction.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.io.IOException;
@@ -657,6 +659,39 @@ public final class AuctionHouseManager {
             }
         }
         return "Auction Stats: Auctions Created: " + auctionsCreated + ", Items Sold: " + itemsSold + ", Total Coins: " + totalCoins;
+    }
+
+    // -------------------------------------------------------------------------
+    // Player-facing listing helper
+    // -------------------------------------------------------------------------
+
+    /**
+     * Lists an item on behalf of a player.
+     *
+     * @param player the listing player, must not be null
+     * @param item   the item to list, must not be null
+     * @param price  the BIN price or starting bid in coins (must be ≥ 0)
+     * @param isBin  {@code true} for buy-it-now, {@code false} for a bid-based auction
+     * @return the UUID of the newly created listing
+     */
+    public UUID listItem(Player player, ItemStack item, long price, boolean isBin) {
+        Objects.requireNonNull(player, "player");
+        Objects.requireNonNull(item, "item");
+        AuctionType type = isBin ? AuctionType.BIN : AuctionType.AUCTION;
+        return createListing(player.getUniqueId(), item, deriveItemName(item), AuctionCategory.MISC, price, type);
+    }
+
+    private static String deriveItemName(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.hasDisplayName()) return meta.getDisplayName();
+        String raw = item.getType().name().replace('_', ' ');
+        StringBuilder sb = new StringBuilder();
+        for (String word : raw.split(" ")) {
+            if (sb.length() > 0) sb.append(' ');
+            sb.append(Character.toUpperCase(word.charAt(0)));
+            if (word.length() > 1) sb.append(word.substring(1).toLowerCase());
+        }
+        return sb.toString();
     }
 
     // -------------------------------------------------------------------------
