@@ -159,6 +159,7 @@ import com.skyblock.core.npc.NpcCommand;
 import com.skyblock.core.npc.NPCListener;
 import com.skyblock.core.manager.ManaManager;
 import com.skyblock.core.manager.PlayerDataManager;
+import com.skyblock.core.manager.ScoreboardManager;
 import com.skyblock.core.manager.RunecraftingManager;
 import com.skyblock.core.manager.SkyBlockEventManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -721,7 +722,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("storage").setTabCompleter(storageCommand);
         MenuCommand storageMenuCommand = new MenuCommand(p -> new com.skyblock.core.menu.StorageMenu(SkyBlockCore.getInstance(), p, backpackManager.getTier(p.getUniqueId())).open(p));
         getCommand("storage").setExecutor(storageMenuCommand);
-        com.skyblock.core.scoreboard.ScoreboardManager.getInstance().start(this);
+        ScoreboardManager.getInstance().start(this);
         manaManager.start(this);
         skyBlockEventManager.start(this);
         jacobsContestManager.start(this);
@@ -785,7 +786,7 @@ public final class SkyBlockCore extends JavaPlugin {
         }
         RunecraftingManager.getInstance().save(getDataFolder());
         SkyBlockEventManager.getInstance().stop();
-        com.skyblock.core.scoreboard.ScoreboardManager.getInstance().stop();
+        ScoreboardManager.getInstance().stop();
         instance = null;
     }
 }
