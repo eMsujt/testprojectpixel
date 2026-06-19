@@ -128,6 +128,7 @@ import com.skyblock.core.title.TitleManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.skills.command.SkillsCommand;
 import com.skyblock.core.slayer.command.SlayerCommand;
+import com.skyblock.core.menu.SlayerMenu;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.StatManager;
@@ -449,9 +450,15 @@ public final class SkyBlockCore extends JavaPlugin {
         SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
-        com.skyblock.core.command.SlayerCommand slayerMenuCommand = new com.skyblock.core.command.SlayerCommand();
         if (getCommand("slayer") != null) {
-            getCommand("slayer").setExecutor(slayerMenuCommand);
+            getCommand("slayer").setExecutor((sender, cmd, label, args) -> {
+                if (sender instanceof org.bukkit.entity.Player p) {
+                    new SlayerMenu(this, p).open(p);
+                } else {
+                    sender.sendMessage("This command can only be used by players.");
+                }
+                return true;
+            });
         }
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);
