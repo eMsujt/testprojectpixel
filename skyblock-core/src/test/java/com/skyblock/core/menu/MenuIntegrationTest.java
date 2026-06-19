@@ -3,6 +3,9 @@ package com.skyblock.core.menu;
 import com.skyblock.core.chocolate.ChocolateFactoryManager;
 import com.skyblock.core.alchemy.AlchemyManager;
 import com.skyblock.core.auction.manager.AuctionHouseManager;
+import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.manager.BankManager.BankTier;
+import com.skyblock.core.manager.BankManager.BankType;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.CalendarManager;
@@ -416,19 +419,26 @@ class MenuIntegrationTest {
     @Nested
     class BankingMenuTests {
 
+        private final UUID PLAYER = UUID.randomUUID();
+
+        @BeforeEach
+        void reset() {
+            BankManager.getInstance().clear();
+        }
+
         @Test
         void title_isBank() {
-            assertEquals("§6Bank", new BankingMenu(UUID.randomUUID()).getTitle());
+            assertEquals("§6Bank", new BankingMenu(PLAYER).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new BankingMenu(UUID.randomUUID()).getRows());
+            assertEquals(6, new BankingMenu(PLAYER).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new BankingMenu(UUID.randomUUID()));
+            assertDoesNotThrow(() -> new BankingMenu(PLAYER));
         }
 
         @Test
@@ -444,6 +454,46 @@ class MenuIntegrationTest {
         @Test
         void withdrawSlot_isFifteen() {
             assertEquals(15, BankingMenu.WITHDRAW_SLOT);
+        }
+
+        @Test
+        void balance_isZeroForFreshPlayer() {
+            assertEquals(0.0, BankManager.getInstance().getBalance(PLAYER), 0.001);
+        }
+
+        @Test
+        void deposit_increasesBalance() {
+            BankManager.getInstance().deposit(PLAYER, 500.0);
+            assertEquals(500.0, BankManager.getInstance().getBalance(PLAYER), 0.001);
+        }
+
+        @Test
+        void withdraw_decreasesBalance() {
+            BankManager.getInstance().deposit(PLAYER, 1000.0);
+            BankManager.getInstance().withdraw(PLAYER, 400.0);
+            assertEquals(600.0, BankManager.getInstance().getBalance(PLAYER), 0.001);
+        }
+
+        @Test
+        void withdraw_throwsOnInsufficientFunds() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> BankManager.getInstance().withdraw(PLAYER, 1.0));
+        }
+
+        @Test
+        void tier_defaultIsStarter() {
+            assertEquals(BankTier.STARTER, BankManager.getInstance().getTier(PLAYER));
+        }
+
+        @Test
+        void tier_roundTrip() {
+            BankManager.getInstance().setTier(PLAYER, BankTier.GOLD);
+            assertEquals(BankTier.GOLD, BankManager.getInstance().getTier(PLAYER));
+        }
+
+        @Test
+        void bankType_defaultIsPersonal() {
+            assertEquals(BankType.PERSONAL, BankManager.getInstance().getBankType(PLAYER));
         }
     }
 
