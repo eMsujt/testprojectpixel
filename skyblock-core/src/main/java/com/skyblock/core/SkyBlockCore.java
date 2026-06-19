@@ -711,6 +711,7 @@ public final class SkyBlockCore extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new NPCListener(this, npcManager), this);
         getServer().getPluginManager().registerEvents(new CoreListeners(DataManager.getInstance()), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.armor.ArmorSetListener(com.skyblock.core.armor.ArmorSetManager.getInstance()), this);
     }
 
     @Override
