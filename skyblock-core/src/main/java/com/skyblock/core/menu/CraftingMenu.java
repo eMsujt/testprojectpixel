@@ -1,52 +1,22 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.util.SkyblockUtils.ItemBuilder;
-import org.bukkit.Material;
+import com.skyblock.core.manager.CraftingManager;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Canonical SkyBlock crafting-table menu. A 5-row chest titled
- * {@code §fCrafting Table} with a 3×3 input grid, an arrow, and a
- * result slot, framed by a {@code GRAY_STAINED_GLASS_PANE} border.
- *
- * <p>All other CraftingTableMenu/CraftingGui classes in the project are
- * deprecated stubs that delegate here.</p>
- */
 public final class CraftingMenu extends Menu {
 
-    private static final Set<Integer> GRID_SLOTS = Set.of(
-            10, 11, 12,
-            19, 20, 21,
-            28, 29, 30
-    );
-    private static final int ARROW_SLOT  = 23;
-    private static final int RESULT_SLOT = 25;
-
     public CraftingMenu() {
-        super("§fCrafting Table", 5);
+        super("§aCrafting Table", 6);
     }
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-
-        for (int slot = 0; slot < 45; slot++) {
-            if (!GRID_SLOTS.contains(slot) && slot != ARROW_SLOT && slot != RESULT_SLOT) {
-                setItem(slot, pane);
-            }
+        List<ItemStack> recipes = new ArrayList<>(CraftingManager.getInstance().getRecipes().values());
+        for (int i = 0; i < recipes.size() && i < 54; i++) {
+            setItem(i, recipes.get(i));
         }
-
-        setItem(ARROW_SLOT, new ItemBuilder(Material.ARROW)
-                .displayName("§e➜")
-                .build());
-
-        setItem(RESULT_SLOT, new ItemBuilder(Material.BARRIER)
-                .displayName("§cNo Recipe")
-                .lore("§7Place items in the grid to craft.")
-                .build());
     }
 }
