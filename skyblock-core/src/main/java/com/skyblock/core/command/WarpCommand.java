@@ -2,6 +2,8 @@ package com.skyblock.core.command;
 
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.manager.Warp;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -28,6 +30,11 @@ public final class WarpCommand implements TabExecutor {
             return true;
         }
 
+        if (label.equalsIgnoreCase("hub")) {
+            handleHub(player);
+            return true;
+        }
+
         if (args.length == 0) {
             new com.skyblock.core.menu.WarpMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
             return true;
@@ -39,6 +46,7 @@ public final class WarpCommand implements TabExecutor {
             case "list"      -> handleList(player);
             case "locations" -> handleLocations(player);
             case "zones"     -> handleZones(player);
+            case "hub"       -> handleHub(player);
             default          -> handleTeleport(player, args[0]);
         }
         return true;
@@ -67,6 +75,17 @@ public final class WarpCommand implements TabExecutor {
         }
         player.teleport(warp.get().toLocation());
         player.sendMessage("Warped to " + name + ".");
+    }
+
+    private void handleHub(Player player) {
+        Optional<Warp> warp = warpManager.getWarp(WarpManager.WarpLocation.HUB);
+        if (warp.isPresent()) {
+            player.teleport(warp.get().toLocation());
+        } else {
+            World world = Bukkit.getWorlds().get(0);
+            player.teleport(world.getSpawnLocation());
+        }
+        player.sendMessage("Warped to the Hub.");
     }
 
     private void handleSet(Player player, String[] args) {
