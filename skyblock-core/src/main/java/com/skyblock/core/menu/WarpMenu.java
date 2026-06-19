@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils.*;
 import com.skyblock.core.warp.WarpManager;
@@ -11,18 +12,18 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * 54-slot warp menu opened by {@code /warp}. Renders one ender-pearl item per
- * {@link WarpLocation}, starting at slot 9 below a gray-pane top border, showing
- * each destination's display name and whether it is currently registered in the
- * {@link WarpManager}.
+ * {@link WarpLocation}, starting at slot 9 below a light-blue-pane top border,
+ * showing each destination's display name and whether it is currently registered
+ * in the {@link WarpManager}.
  */
-public final class WarpMenu extends Menu {
+public final class WarpMenu extends AbstractMenu {
 
-    public WarpMenu() {
-        super("§b§lFast Travel", 6);
+    public WarpMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§b§lFast Travel", 54);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
         ItemStack pane = new ItemBuilder(Material.LIGHT_BLUE_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
 

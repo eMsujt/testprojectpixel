@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.SkyblockPlugin;
 import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
@@ -11,26 +12,22 @@ import java.util.UUID;
 
 /**
  * Canonical "Your SkyBlock Profile" menu. A 54-slot (6-row) chest GUI framed
- * by a {@code GRAY_STAINED_GLASS_PANE} border with the viewing player's head
+ * by a {@code CYAN_STAINED_GLASS_PANE} border with the viewing player's head
  * at slot 13, showing their purse and bank balances from {@link EconomyManager}.
  *
  * <p>All other ProfileMenu / PlayerMenu / PlayerStatsMenu / StatsGui classes in
  * the project are deprecated and delegate here.</p>
  */
-public final class ProfileMenu extends Menu {
+public final class ProfileMenu extends AbstractMenu {
 
-    private static final String TITLE = "§b§lSkyBlock Profile";
     private static final int HEAD_SLOT = 13;
 
-    private final Player player;
-
-    public ProfileMenu(Player player) {
-        super(TITLE, 6);
-        this.player = player;
+    public ProfileMenu(SkyblockPlugin plugin, Player player) {
+        super(plugin, player, "§b§lSkyBlock Profile", 54);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
         fillBorder();
 
         UUID id = player.getUniqueId();
