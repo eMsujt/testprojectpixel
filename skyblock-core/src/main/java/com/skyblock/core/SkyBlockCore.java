@@ -10,6 +10,7 @@ import com.skyblock.core.command.AuctionHouseCommand;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.command.KuudraCommand;
 import com.skyblock.core.command.BankCommand;
+import com.skyblock.core.command.NetWorthCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
@@ -470,6 +471,11 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("bank").setTabCompleter(bankCommand);
         getCommand("banking").setExecutor(bankCommand);
         getCommand("banking").setTabCompleter(bankCommand);
+        NetWorthCommand netWorthCommand = new NetWorthCommand(bankManager);
+        if (getCommand("networth") != null) {
+            getCommand("networth").setExecutor(netWorthCommand);
+            getCommand("networth").setTabCompleter(netWorthCommand);
+        }
         MayorCommand mayorCommand = new MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
         getCommand("mayor").setTabCompleter(mayorCommand);
