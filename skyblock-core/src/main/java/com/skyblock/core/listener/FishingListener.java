@@ -1,6 +1,7 @@
 package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.FishingManager;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,12 +31,14 @@ public final class FishingListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        fishingManager.addXp(uuid, FishingManager.XP_PER_CATCH);
+        int level = fishingManager.getLevel(uuid);
+        ItemStack loot = fishingManager.rollLoot(level);
+
+        boolean isTreasure = loot.getType() == Material.MAP;
+        double xp = isTreasure ? FishingManager.XP_TREASURE : FishingManager.XP_PER_CATCH;
+        fishingManager.addXp(uuid, xp);
         fishingManager.addFishCaught(uuid);
 
-        int level = fishingManager.getLevel(uuid);
-
-        ItemStack loot = fishingManager.rollLoot(level);
         player.getWorld().dropItemNaturally(event.getHook().getLocation(), loot);
 
         FishingManager.SeaCreature creature = fishingManager.rollSeaCreature(level);
@@ -43,5 +46,9 @@ public final class FishingListener implements Listener {
         String summary = "Caught " + loot.getType().name()
                 + (creature != null ? " + sea creature: " + creature.name() : "");
         fishingManager.recordCatchEvent(uuid, summary);
+
+        player.sendMessage("§9[Fishing] §fYou caught §e" + loot.getType().name().replace('_', ' ')
+                + "§f! §7(+" + (int) xp + " XP)"
+                + (creature != null ? " §c+ " + creature.name().replace('_', ' ') : ""));
     }
 }
