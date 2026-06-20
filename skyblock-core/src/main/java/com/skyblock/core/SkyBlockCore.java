@@ -604,6 +604,10 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("talisman").setExecutor(talismanCommand);
             getCommand("talisman").setTabCompleter(talismanCommand);
         }
+        com.skyblock.core.command.RuneCommand runeCommand = new com.skyblock.core.command.RuneCommand(this);
+        if (getCommand("runes") != null) {
+            getCommand("runes").setExecutor(runeCommand);
+        }
         CalendarCommand calendarCommand = new CalendarCommand(calendarManager);
         if (getCommand("calendar") != null) {
             getCommand("calendar").setExecutor(calendarCommand);
