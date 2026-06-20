@@ -149,6 +149,7 @@ import com.skyblock.core.listener.SlayerListener;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.FortuneManager;
 import com.skyblock.core.manager.StatManager;
+import com.skyblock.core.manager.StatsManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.command.SackCommand;
 import com.skyblock.core.command.NPCShopCommand;
@@ -216,6 +217,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private PetsManager petsManager;
     private ForgeManager forgeManager;
     private StatManager statManager;
+    private StatsManager statsManager;
     private FortuneManager fortuneManager;
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
@@ -371,6 +373,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return skillsManager;
     }
 
+    public StatsManager getStatsManager() {
+        return statsManager;
+    }
+
     public FishingManager getFishingManager() {
         return fishingManager;
     }
@@ -387,6 +393,7 @@ public final class SkyBlockCore extends JavaPlugin {
         // core data — loaded first; others may depend on skill/profile state
         skillsManager = SkillManager.getInstance();
         skillsManager.load(getDataFolder());
+        statsManager = StatsManager.getInstance();
         profile = ProfileManager.getInstance();
         profile.load(getDataFolder());
         collectionManager = CollectionManager.getInstance();
