@@ -143,9 +143,9 @@ import com.skyblock.core.title.TitleCommand;
 import com.skyblock.core.title.TitleManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.command.SkillsCommand;
-import com.skyblock.core.slayer.command.SlayerCommand;
-import com.skyblock.core.menu.SlayerMenu;
+import com.skyblock.core.command.SlayerCommand;
 import com.skyblock.core.manager.SlayerManager;
+import com.skyblock.core.listener.SlayerListener;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.command.ProfileCommand;
@@ -522,12 +522,14 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("minionsmenu") != null) {
             getCommand("minionsmenu").setExecutor(minionMenuCommand);
         }
-        SlayerCommand slayerCommand = new SlayerCommand(slayerManager);
+        SlayerCommand slayerCommand = new SlayerCommand(this, slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
         if (getCommand("slayer") != null) {
-            getCommand("slayer").setExecutor(new com.skyblock.core.command.SlayerCommand(this));
+            getCommand("slayer").setExecutor(slayerCommand);
+            getCommand("slayer").setTabCompleter(slayerCommand);
         }
+        getServer().getPluginManager().registerEvents(SlayerListener.getInstance(), this);
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);
         getCommand("fishing").setTabCompleter(fishingCommand);
