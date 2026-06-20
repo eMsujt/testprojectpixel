@@ -20,7 +20,7 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
     public static final int[] RARITY_SLOTS = {9, 10, 11, 12, 13, 14, 15, 16};
 
     public AccessoryBagMenu(Player player) {
-        super(player, "§6Accessory Bag", 5);
+        super(player, "§5Accessory Bag", 6);
     }
 
     @Override

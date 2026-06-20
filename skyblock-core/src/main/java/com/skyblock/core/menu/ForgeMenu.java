@@ -49,7 +49,7 @@ public final class ForgeMenu extends Menu {
     }
 
     public ForgeMenu(UUID playerId) {
-        super("§6Dwarven Forge", 6);
+        super("§7§lForge", 6);
         this.playerId = playerId;
     }
 
