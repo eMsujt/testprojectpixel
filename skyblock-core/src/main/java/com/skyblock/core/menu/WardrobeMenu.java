@@ -78,16 +78,36 @@ public final class WardrobeMenu extends Menu {
                     .displayName("§e" + ws.getDisplayName())
                     .lore(
                             filled ? "§7Saved armor set" : "§8Empty",
-                            isActive ? "§aActive" : "§eClick to equip!");
+                            isActive ? "§aCurrently equipped — click to unequip" : "§eClick to equip!");
             if (isActive) {
                 builder.enchant(Enchantment.UNBREAKING, 1).flags(ItemFlag.HIDE_ENCHANTS);
             }
-            setItem(invSlot, builder.build());
+
+            setItem(invSlot, builder.build(), event -> {
+                Player clicker = (Player) event.getWhoClicked();
+                if (isActive) {
+                    manager.unequip(playerId);
+                    clicker.getEquipment().setHelmet(null);
+                    clicker.getEquipment().setChestplate(null);
+                    clicker.getEquipment().setLeggings(null);
+                    clicker.getEquipment().setBoots(null);
+                } else if (filled) {
+                    ItemStack[] armor = manager.equip(playerId, ws);
+                    if (armor != null) {
+                        clicker.getEquipment().setHelmet(armor[0]);
+                        clicker.getEquipment().setChestplate(armor[1]);
+                        clicker.getEquipment().setLeggings(armor[2]);
+                        clicker.getEquipment().setBoots(armor[3]);
+                    }
+                }
+                new WardrobeMenu(playerId).open(clicker);
+            });
         }
     }
 
     @Override
     public void handleClick(InventoryClickEvent event) {
         event.setCancelled(true);
+        super.handleClick(event);
     }
 }
