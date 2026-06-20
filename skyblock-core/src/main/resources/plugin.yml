@@ -17,7 +17,7 @@ commands:
   accessorybag:
     description: Open the Accessory Bag GUI.
     usage: /accessorybag [list|add|remove|bonuses|rarity|tier]
-    aliases: [ab]
+    aliases: [ab, bag]
     permission: skyblock.accessories
   ability:
     description: View and manage item abilities.
@@ -72,6 +72,7 @@ commands:
   chocolatefactory:
     description: Open the Chocolate Factory menu.
     usage: /chocolatefactory
+    aliases: [cf, chocolate]
     permission: skyblock.chocolatefactory
   collection:
     description: View your collection progress.
