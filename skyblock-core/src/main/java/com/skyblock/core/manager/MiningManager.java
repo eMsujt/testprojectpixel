@@ -53,6 +53,28 @@ public final class MiningManager {
         public int getXp() { return xp; }
     }
 
+    /** Discrete mine zones in SkyBlock Deep Caverns, each requiring a minimum mining level. */
+    public enum MineType {
+        COAL_MINE("Coal Mine",          1),
+        IRON_MINE("Iron Mine",          2),
+        GOLD_MINE("Gold Mine",          5),
+        DIAMOND_RESERVE("Diamond Reserve", 10),
+        LAPIS_QUARRY("Lapis Quarry",    7),
+        REDSTONE_RESERVE("Redstone Reserve", 12),
+        OBSIDIAN_SANCTUARY("Obsidian Sanctuary", 18);
+
+        private final String displayName;
+        private final int minLevel;
+
+        MineType(String displayName, int minLevel) {
+            this.displayName = displayName;
+            this.minLevel = minLevel;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getMinLevel()       { return minLevel; }
+    }
+
     /** Mining areas available in SkyBlock, each requiring a minimum mining level. */
     public enum MiningArea {
         SPIDER_DEN("Spider's Den",         0),
