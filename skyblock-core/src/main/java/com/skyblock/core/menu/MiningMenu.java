@@ -29,7 +29,7 @@ import java.util.UUID;
  *  5: [GEXP][FORTU][MINE][SEAS][CLOSE][ANOM][VSEK][pane][pane]
  * </pre>
  */
-public final class MiningMenu extends Menu {
+public final class MiningMenu extends AbstractSkyBlockMenu {
 
     private static final String TITLE = "§bHeart of the Mountain";
 
@@ -72,15 +72,12 @@ public final class MiningMenu extends Menu {
         SLOT_TO_NODE = Collections.unmodifiableMap(m);
     }
 
-    private final Player player;
-
     public MiningMenu(Player player) {
-        super(TITLE, 6);
-        this.player = player;
+        super(player, TITLE, 6);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 54; slot++) {
             if (!SLOT_TO_NODE.containsKey(slot) && slot != SLOT_SUMMARY && slot != SLOT_CLOSE) {
