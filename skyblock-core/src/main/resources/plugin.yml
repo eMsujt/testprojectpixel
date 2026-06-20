@@ -272,7 +272,7 @@ commands:
     description: Manage your placed minions.
     usage: /minion <list|place|upgrade|remove|info>
     aliases: [minions]
-    permission: skyblock.minion
+    permission: skyblock.command.minion
   minionsmenu:
     description: Open the Minions GUI.
     usage: /minionsmenu
@@ -291,6 +291,7 @@ commands:
   pet:
     description: Manage your pets.
     usage: /pet [list|equip|unequip|info]
+    permission: skyblock.command.pet
   pets:
     description: Open the Pet Menu GUI.
     usage: /pets
@@ -337,6 +338,7 @@ commands:
     description: Open the Skills Menu.
     usage: /skills [skill]
     aliases: [sk]
+    permission: skyblock.command.skills
   skyblock:
     description: Open the SkyBlock main menu.
     aliases: [sb, sky]
@@ -616,4 +618,13 @@ permissions:
     default: true
   skyblock.season:
     description: Use the /season command to view or change the current season.
+    default: true
+  skyblock.command.pet:
+    description: Use the /pet command to manage your pets.
+    default: true
+  skyblock.command.skills:
+    description: Use the /skills command to open the Skills Menu.
+    default: true
+  skyblock.command.minion:
+    description: Use the /minion command to manage your placed minions.
     default: true
