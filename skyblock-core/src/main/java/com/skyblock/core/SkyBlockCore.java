@@ -31,7 +31,7 @@ import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.fairysoul.FairySoulCommand;
 import com.skyblock.core.manager.FairySoulManager;
-import com.skyblock.core.manager.BestiaryCommand;
+import com.skyblock.core.command.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
 import com.skyblock.core.command.EnchantCommand;
@@ -638,6 +638,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CollectionListener(collectionManager), this);
         getServer().getPluginManager().registerEvents(new ProgressionListener(skillsManager), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.listener.FairySoulListener(FairySoulManager.getInstance(), this), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.BestiaryListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.SkillListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.MiningListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.FarmingListener.getInstance(), this);
