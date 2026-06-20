@@ -69,7 +69,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(23, new ItemBuilder(Material.ENDER_CHEST).displayName("§5Accessory Bag")
                 .lore("§7Manage your accessories.").build(),
-                e -> { e.setCancelled(true); new AccessoryBagMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new AccessoryBagMenu(player).open(player); });
 
         setItem(24, new ItemBuilder(Material.CHEST).displayName("§aStorage")
                 .lore("§7Access your personal storage.").build(),
