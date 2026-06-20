@@ -6,76 +6,85 @@ import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
 /**
- * 6-row chest GUI titled 'Auction House' that fetches active listings from
- * {@link AuctionManager}. A yellow-pane border frames 28 listing slots
- * (10–43); an empty book of auctions is shown when no listings exist.
+ * 6-row GUI '§6Auction House' backed by {@link AuctionManager}. Slots 0–44
+ * display live listings; the bottom row (45–53) holds paged navigation.
  */
 public final class AuctionMenu extends AbstractSkyBlockMenu {
 
-    static final int[] LISTING_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
-    };
+    private static final int PAGE_SIZE = 45;
+
+    private final int page;
 
     public AuctionMenu(Player player) {
-        super(player, "Auction House", 54);
+        this(player, 0);
+    }
+
+    public AuctionMenu(Player player, int page) {
+        super(player, "§6Auction House", 6);
+        this.page = Math.max(0, page);
     }
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 54; slot++) {
-            int row = slot / 9;
-            int col = slot % 9;
-            if (row == 0 || row == 5 || col == 0 || col == 8) {
-                setItem(slot, pane);
-            }
-        }
-
         List<Listing> listings = AuctionManager.getInstance().getListings();
+
+        int start = page * PAGE_SIZE;
+        int end = Math.min(start + PAGE_SIZE, listings.size());
+
+        for (int i = start; i < end; i++) {
+            Listing listing = listings.get(i);
+            int slot = i - start;
+            ItemStack icon = new ItemBuilder(listing.item())
+                    .displayName("§e" + listing.itemName())
+                    .lore(
+                            "§7BIN: §6" + (long) listing.price() + " coins",
+                            "§7Category: §f" + listing.category(),
+                            "§eClick to purchase!")
+                    .build();
+            setItem(slot, icon, event -> {
+                event.setCancelled(true);
+                if (event.isLeftClick()) {
+                    new AuctionConfirmMenu(player, listing.id()).open(player);
+                }
+            });
+        }
 
         if (listings.isEmpty()) {
             setItem(22, new ItemBuilder(Material.BARRIER)
                     .displayName("§cNo Auctions Available")
                     .lore("§7There are no active listings right now.")
                     .build());
-            return;
         }
 
-        int count = Math.min(listings.size(), LISTING_SLOTS.length);
-        for (int i = 0; i < count; i++) {
-            Listing listing = listings.get(i);
-            String name = itemDisplayName(listing.item());
-            setItem(LISTING_SLOTS[i], new ItemBuilder(listing.item())
-                    .displayName("§e" + name)
-                    .lore(
-                            "§7Price: §6" + (long) listing.price() + " coins",
-                            "§eClick to purchase!")
+        ItemStack pane = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 45; slot < 54; slot++) {
+            setItem(slot, pane);
+        }
+
+        if (page > 0) {
+            setItem(45, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Page " + page)
                     .build(),
-                    event -> event.getWhoClicked().sendMessage(
-                            "§e" + name + " §7is listed for §6" + (long) listing.price() + " coins§7."));
+                    event -> {
+                        event.setCancelled(true);
+                        new AuctionMenu(player, page - 1).open(player);
+                    });
         }
-    }
 
-    private static String itemDisplayName(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && meta.hasDisplayName()) {
-            return meta.getDisplayName();
+        if (end < listings.size()) {
+            setItem(53, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Page " + (page + 2))
+                    .build(),
+                    event -> {
+                        event.setCancelled(true);
+                        new AuctionMenu(player, page + 1).open(player);
+                    });
         }
-        String name = item.getType().name().replace('_', ' ');
-        StringBuilder sb = new StringBuilder();
-        for (String word : name.split(" ")) {
-            if (sb.length() > 0) sb.append(' ');
-            sb.append(Character.toUpperCase(word.charAt(0)));
-            if (word.length() > 1) sb.append(word.substring(1).toLowerCase());
-        }
-        return sb.toString();
     }
 }
