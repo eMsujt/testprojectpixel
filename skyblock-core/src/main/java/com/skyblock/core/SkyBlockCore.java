@@ -190,7 +190,7 @@ public final class SkyBlockCore extends JavaPlugin {
 
     // core data
     private SkillManager skillsManager;
-    private ProfileManager profile;
+    private ProfileManager profileManager;
     private CollectionManager collectionManager;
 
     // economy
@@ -291,6 +291,10 @@ public final class SkyBlockCore extends JavaPlugin {
 
     public GardenManager getGardenManager() {
         return gardenManager;
+    }
+
+    public ProfileManager getProfileManager() {
+        return profileManager;
     }
 
     public CollectionManager getCollectionManager() {
@@ -394,8 +398,8 @@ public final class SkyBlockCore extends JavaPlugin {
         skillsManager = SkillManager.getInstance();
         skillsManager.load(getDataFolder());
         statsManager = StatsManager.getInstance();
-        profile = ProfileManager.getInstance();
-        profile.load(getDataFolder());
+        profileManager = ProfileManager.getInstance();
+        profileManager.load(getDataFolder());
         collectionManager = CollectionManager.getInstance();
         collectionManager.load(getDataFolder());
         // economy
@@ -731,7 +735,7 @@ public final class SkyBlockCore extends JavaPlugin {
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
-        ProfileCommand profileCommand = new ProfileCommand(profile);
+        ProfileCommand profileCommand = new ProfileCommand(profileManager);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
         IslandCommand islandCommand = new IslandCommand();
