@@ -33,7 +33,7 @@ public final class SlayerCommand implements TabExecutor {
         }
 
         if (args.length == 0 || args[0].equalsIgnoreCase("menu")) {
-            new SlayerMenu(plugin, player).open(player);
+            new SlayerMenu(player).open(player);
             return true;
         }
 

@@ -726,29 +726,27 @@ class MenuIntegrationTest {
     @Nested
     class SlayerMenuTests {
 
-        private JavaPlugin mockPlugin;
         private Player mockPlayer;
 
         @BeforeEach
         void setup() {
-            mockPlugin = mock(JavaPlugin.class);
             mockPlayer = mock(Player.class);
             when(mockPlayer.getUniqueId()).thenReturn(UUID.randomUUID());
         }
 
         @Test
         void title_isSlayers() {
-            assertEquals("§c§lSlayer Quests", new SlayerMenu(mockPlugin, mockPlayer).getTitle());
+            assertEquals("§cSlayer Quests", new SlayerMenu(mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new SlayerMenu(mockPlugin, mockPlayer).getRows());
+            assertEquals(6, new SlayerMenu(mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new SlayerMenu(mockPlugin, mockPlayer));
+            assertDoesNotThrow(() -> new SlayerMenu(mockPlayer));
         }
 
         @Test
@@ -780,8 +778,8 @@ class MenuIntegrationTest {
             Player b = mock(Player.class);
             when(b.getUniqueId()).thenReturn(UUID.randomUUID());
             assertDoesNotThrow(() -> {
-                new SlayerMenu(mockPlugin, a);
-                new SlayerMenu(mockPlugin, b);
+                new SlayerMenu(a);
+                new SlayerMenu(b);
             });
         }
     }
