@@ -31,6 +31,8 @@ public final class SkillManager {
 
     private static final long[] FIFTY_LEVEL_CURVE = Constants.SKILL_FIFTY_XP_CURVE;
 
+    private static final long[] DUNGEONEERING_CURVE = Constants.SKILL_DUNGEONEERING_XP_CURVE;
+
     private static final long[] TWENTY_FIVE_LEVEL_CURVE = Constants.SKILL_TWENTY_FIVE_XP_CURVE;
 
     /**
@@ -50,7 +52,7 @@ public final class SkillManager {
         m.put("alchemy",       STANDARD_CURVE.clone());
         m.put("taming",        STANDARD_CURVE.clone());
         m.put("carpentry",     FIFTY_LEVEL_CURVE.clone());
-        m.put("dungeoneering", FIFTY_LEVEL_CURVE.clone());
+        m.put("dungeoneering", DUNGEONEERING_CURVE.clone());
         m.put("runecrafting",  TWENTY_FIVE_LEVEL_CURVE.clone());
         m.put("social",        TWENTY_FIVE_LEVEL_CURVE.clone());
         SKILL_XP_TABLE = Collections.unmodifiableMap(m);
