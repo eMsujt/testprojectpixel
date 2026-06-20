@@ -79,6 +79,8 @@ import com.skyblock.core.event.EventCommand;
 import com.skyblock.core.manager.EventManager;
 import com.skyblock.core.chat.ChatCommand;
 import com.skyblock.core.chat.ChatManager;
+import com.skyblock.core.reward.DailyRewardCommand;
+import com.skyblock.core.reward.DailyRewardManager;
 import com.skyblock.core.leaderboard.LeaderboardCommand;
 import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.mail.MailCommand;
@@ -748,6 +750,11 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(tamingManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.armor.ArmorSetListener(com.skyblock.core.armor.ArmorSetManager.getInstance()), this);
         ActionBarManager.getInstance().start(this);
+        DailyRewardCommand dailyRewardCommand = new DailyRewardCommand(DailyRewardManager.getInstance(), com.skyblock.core.manager.EconomyManager.getInstance());
+        if (getCommand("dailyreward") != null) {
+            getCommand("dailyreward").setExecutor(dailyRewardCommand);
+            getCommand("dailyreward").setTabCompleter(dailyRewardCommand);
+        }
     }
 
     @Override
