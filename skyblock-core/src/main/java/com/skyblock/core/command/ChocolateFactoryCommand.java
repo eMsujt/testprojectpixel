@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.chocolate.ChocolateFactoryManager;
+import com.skyblock.core.manager.ChocolateFactoryManager;
 import com.skyblock.core.menu.ChocolateFactoryMenu;
 import com.skyblock.core.model.Rarity;
 
