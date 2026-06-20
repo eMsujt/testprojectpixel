@@ -6,6 +6,10 @@ description: SkyBlock plugin for Paper
 load: POSTWORLD
 
 commands:
+  accessory:
+    description: Manage accessory rarities and stat multipliers.
+    usage: /accessory <list|info|setrarity|remove>
+    permission: skyblock.accessories
   accessories:
     description: View and manage your accessory bag.
     usage: /accessories <list|add|remove|bonuses|rarity|tier>
