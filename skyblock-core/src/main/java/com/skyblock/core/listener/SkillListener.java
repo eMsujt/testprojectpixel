@@ -1,6 +1,6 @@
 package com.skyblock.core.listener;
 
-import com.skyblock.core.combat.calculator.DamageFormula;
+import com.skyblock.core.combat.calculator.CombatEngine;
 import com.skyblock.core.farming.manager.FarmingManager;
 import com.skyblock.core.util.ChatUtil;
 import com.skyblock.core.farming.manager.FarmingManager.CropType;
@@ -216,7 +216,7 @@ public final class SkillListener implements Listener {
         double strength   = statManager.getStat(uuid, Stat.STRENGTH);
         double critChance = statManager.getStat(uuid, Stat.CRIT_CHANCE);
         double critDamage = statManager.getStat(uuid, Stat.CRIT_DAMAGE);
-        event.setDamage(DamageFormula.calculate(event.getDamage(), strength, critChance, critDamage));
+        event.setDamage(CombatEngine.calculateDamage(event.getDamage(), strength, critChance, critDamage));
     }
 
     @EventHandler
@@ -276,7 +276,7 @@ public final class SkillListener implements Listener {
         double strength   = stats.getStat(attackerId, Stat.STRENGTH);
         double critChance = stats.getStat(attackerId, Stat.CRIT_CHANCE);
         double critDamage = stats.getStat(attackerId, Stat.CRIT_DAMAGE);
-        double damage = DamageFormula.calculate(weaponDamage, strength, critChance, critDamage);
+        double damage = CombatEngine.calculateDamage(weaponDamage, strength, critChance, critDamage);
         if (target instanceof Player defender) {
             UUID defenderId = defender.getUniqueId();
             double defense     = stats.getStat(defenderId, Stat.DEFENSE);
@@ -289,7 +289,7 @@ public final class SkillListener implements Listener {
 
     public static double calculateDamage(double weaponDamage, double strength,
                                          double critChancePercent, double critDamagePercent) {
-        return DamageFormula.calculate(weaponDamage, strength, critChancePercent, critDamagePercent);
+        return CombatEngine.calculateDamage(weaponDamage, strength, critChancePercent, critDamagePercent);
     }
 
     private static double getWeaponDamage(ItemStack weapon) {
