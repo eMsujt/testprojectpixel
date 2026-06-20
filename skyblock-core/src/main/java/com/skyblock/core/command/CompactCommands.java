@@ -307,7 +307,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new FairySoulMenu(player.getUniqueId()).open(player);
+            new FairySoulMenu(player).open(player);
         }
 
         @Override

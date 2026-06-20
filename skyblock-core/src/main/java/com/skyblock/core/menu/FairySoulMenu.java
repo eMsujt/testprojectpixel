@@ -5,39 +5,38 @@ import com.skyblock.core.manager.FairySoulManager.FairyIsland;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * 54-slot Fairy Soul overview menu. The top row (slots 0–7) shows one
- * colored-wool item per island: GREEN = all souls found, YELLOW = partially
- * found, RED = none found. Slot 49 summarises total progress and earned
- * stat bonuses.
- */
-public final class FairySoulMenu extends Menu {
+public final class FairySoulMenu extends AbstractSkyBlockMenu {
 
-    static final int[] ISLAND_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7};
+    static final int[] ISLAND_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33};
 
-    private static final int SUMMARY_SLOT = 49;
+    private static final int SUMMARY_SLOT = 40;
 
-    private final UUID playerId;
+    public FairySoulMenu(Player player) {
+        super(player, buildTitle(player), 5);
+    }
 
-    public FairySoulMenu(UUID playerId) {
-        super("§dFairy Souls", 6);
-        this.playerId = playerId;
+    private static String buildTitle(Player player) {
+        int found = FairySoulManager.getInstance().getFoundCount(player.getUniqueId());
+        return "§dFairy Souls §7(" + found + "/227)";
     }
 
     @Override
-    protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-
-        for (int slot = 13; slot < 54; slot++) setItem(slot, pane);
-
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
         FairySoulManager manager = FairySoulManager.getInstance();
-        FairyIsland[] islands = FairyIsland.values();
 
+        ItemStack purplePane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 9; slot <= 17; slot++) {
+            setItem(slot, purplePane);
+        }
+
+        FairyIsland[] islands = FairyIsland.values();
         for (int i = 0; i < islands.length && i < ISLAND_SLOTS.length; i++) {
             FairyIsland island = islands[i];
             int found = manager.getFoundCount(playerId, island);
@@ -64,7 +63,7 @@ public final class FairySoulMenu extends Menu {
         ItemBuilder summary = new ItemBuilder(Material.NETHER_STAR)
                 .displayName("§dFairy Soul Overview")
                 .lore(
-                        "§7Total found: §e" + totalFound + "§7/§e" + manager.getTotalSouls(),
+                        "§7Total found: §e" + totalFound + "§7/§e" + FairySoulManager.MAX_SOULS,
                         "§7Every §e" + FairySoulManager.SOULS_PER_REWARD + " §7souls grants",
                         "§7a permanent stat bonus.",
                         "§r");
