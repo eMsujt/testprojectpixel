@@ -60,7 +60,7 @@ import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.manager.TamingManager;
 import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.manager.MayorManager;
-import com.skyblock.core.minion.command.MinionCommand;
+import com.skyblock.core.command.MinionCommand;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
