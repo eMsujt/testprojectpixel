@@ -21,6 +21,7 @@ import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.AccessoryBagMenu;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.CalendarMenu;
+import com.skyblock.core.menu.ForgeMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.PetMenu;
@@ -2884,6 +2885,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new IslandMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /forge (thin menu opener)
+    // =========================================================================
+
+    public static final class ForgeCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new ForgeMenu(player.getUniqueId()).open(player);
         }
 
         @Override
