@@ -36,6 +36,7 @@ commands:
     description: Open the Auction House GUI.
     usage: /auction
     aliases: [ah]
+    permission: skyblock.auction
   backpack:
     description: Create and manage personal item backpacks.
     usage: /backpack <create <name>|delete <name>|list>
@@ -351,6 +352,7 @@ commands:
     description: Open the SkyBlock main menu.
     aliases: [sb, sky]
     usage: /skyblock
+    permission: skyblock.use
   skyblock-level:
     description: View and manage your SkyBlock level and XP.
     usage: /skyblock-level [info|addxp <amount>|setxp <amount>]
@@ -529,6 +531,9 @@ permissions:
     default: true
   skyblock.skyblock-level:
     description: Use the /skyblock-level command to view and manage SkyBlock level.
+    default: true
+  skyblock.auction:
+    description: Use the /auction command to open the Auction House GUI.
     default: true
   skyblock.bank:
     description: Use the /bank command to manage your SkyBlock bank account.
