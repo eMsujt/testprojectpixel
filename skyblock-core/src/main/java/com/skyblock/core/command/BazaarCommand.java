@@ -1,8 +1,7 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.core.manager.BazaarManager.BuyOrder;
-import com.skyblock.core.manager.BazaarManager.SellOrder;
+import com.skyblock.core.manager.BazaarManager.Order;
 import com.skyblock.core.menu.BazaarMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Handles the {@code /bazaar} command.
@@ -92,8 +90,8 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Quantity and price must be positive.");
             return;
         }
-        UUID orderId = bazaarManager.addBuyOrder(player.getUniqueId(), item, qty, price);
-        player.sendMessage("Buy order placed for " + qty + "x " + item + " at " + price + " each. Order ID: " + orderId);
+        bazaarManager.addBuyOrder(player.getUniqueId(), item, qty, price);
+        player.sendMessage("Buy order placed for " + qty + "x " + item + " at " + price + " each.");
     }
 
     private void handleSell(Player player, String[] args) {
@@ -115,8 +113,8 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Quantity and price must be positive.");
             return;
         }
-        UUID orderId = bazaarManager.addSellOrder(player.getUniqueId(), item, qty, price);
-        player.sendMessage("Sell order placed for " + qty + "x " + item + " at " + price + " each. Order ID: " + orderId);
+        bazaarManager.addSellOrder(player.getUniqueId(), item, qty, price);
+        player.sendMessage("Sell order placed for " + qty + "x " + item + " at " + price + " each.");
     }
 
     private void handleView(Player player, String[] args) {
@@ -125,62 +123,28 @@ public final class BazaarCommand extends PlayerCommand {
             return;
         }
         String item = args[1];
-        List<BuyOrder> buys = bazaarManager.getBuyOrders(item);
-        List<SellOrder> sells = bazaarManager.getSellOrders(item);
+        List<Order> buys = bazaarManager.getBuyOrders(item);
+        List<Order> sells = bazaarManager.getSellOrders(item);
 
         player.sendMessage("=== Bazaar: " + item + " ===");
         player.sendMessage("Lowest ask: " + formatPrice(bazaarManager.getLowestAsk(item)));
         player.sendMessage("Highest bid: " + bazaarManager.getHighestBid(item));
         player.sendMessage("Buy orders (" + buys.size() + "):");
-        for (BuyOrder o : buys) {
-            player.sendMessage("  " + o.quantity() + "x @ " + o.priceEach() + " [" + o.id() + "]");
+        for (Order o : buys) {
+            player.sendMessage("  " + o.quantity() + "x @ " + o.priceEach() + " [" + o.owner() + "]");
         }
         player.sendMessage("Sell orders (" + sells.size() + "):");
-        for (SellOrder o : sells) {
-            player.sendMessage("  " + o.quantity() + "x @ " + o.priceEach() + " [" + o.id() + "]");
+        for (Order o : sells) {
+            player.sendMessage("  " + o.quantity() + "x @ " + o.priceEach() + " [" + o.owner() + "]");
         }
     }
 
     private void handleCancel(Player player, String[] args) {
-        if (args.length < 3) {
-            player.sendMessage("Usage: /bazaar cancel buy|sell <orderId>");
-            return;
-        }
-        String type = args[1].toLowerCase();
-        UUID orderId;
-        try {
-            orderId = UUID.fromString(args[2]);
-        } catch (IllegalArgumentException e) {
-            player.sendMessage("Invalid order ID.");
-            return;
-        }
-        if (type.equals("buy")) {
-            if (bazaarManager.cancelBuyOrder(orderId, player.getUniqueId())) {
-                player.sendMessage("Buy order " + orderId + " cancelled.");
-            } else {
-                player.sendMessage("Order not found or does not belong to you: " + orderId);
-            }
-        } else if (type.equals("sell")) {
-            if (bazaarManager.cancelSellOrder(orderId, player.getUniqueId())) {
-                player.sendMessage("Sell order " + orderId + " cancelled.");
-            } else {
-                player.sendMessage("Order not found or does not belong to you: " + orderId);
-            }
-        } else {
-            player.sendMessage("Usage: /bazaar cancel buy|sell <orderId>");
-        }
+        player.sendMessage("Order cancellation is not yet supported.");
     }
 
     private void handleHistory(Player player) {
-        List<String> history = bazaarManager.getBazaarHistory(player.getUniqueId());
-        if (history.isEmpty()) {
-            player.sendMessage("You have no bazaar history.");
-            return;
-        }
-        player.sendMessage("=== Bazaar History ===");
-        for (int i = 0; i < history.size(); i++) {
-            player.sendMessage((i + 1) + ". " + history.get(i));
-        }
+        player.sendMessage("Bazaar history is not yet supported.");
     }
 
     private void sendHelp(Player player) {
