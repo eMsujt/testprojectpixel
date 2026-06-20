@@ -13,6 +13,10 @@ commands:
     description: Open the Accessory Bag GUI.
     usage: /accessorybag [list|add|remove|bonuses|rarity|tier]
     permission: skyblock.accessories
+  ability:
+    description: View and manage item abilities.
+    usage: /ability <list|info|equip|unequip|unlock>
+    permission: skyblock.ability
   achievement:
     description: View your SkyBlock achievements.
     usage: /achievement [list|view]
@@ -79,6 +83,10 @@ commands:
   combat:
     description: View and manage your combat stats.
     usage: /combat [info|kills|deaths|mobkills|reset]
+  cooldown:
+    description: View and manage active skill/ability cooldowns.
+    usage: /cooldown <list|check|set|clear|clearall>
+    permission: skyblock.cooldown
   coop:
     description: Manage your co-op island group.
     usage: /coop <invite|accept|decline|kick|leave|list>
@@ -98,6 +106,10 @@ commands:
     description: View and manage your Crystal Hollows progress.
     usage: /crystalhollows [zones|enter <zone>|leave|crystals|collect <crystal>]
     permission: skyblock.crystalhollows
+  dailyreward:
+    description: Claim your daily coin reward or check time until next claim.
+    usage: /dailyreward [status]
+    permission: skyblock.dailyreward
   dojo:
     description: Open the Dojo challenge scores menu.
     usage: /dojo
@@ -163,6 +175,10 @@ commands:
     description: View and manage your Garden plot, visitors, and crop upgrades.
     usage: /garden <info|plot [set|add <level>]|visitors [set|add <amount>]|crop [set|add <crop> <level>]|reset>
     permission: skyblock.garden
+  gemstone:
+    description: View and manage your gemstone collection.
+    usage: /gemstone <info|view <type>|types|add <type> <amount>>
+    permission: skyblock.gemstone
   guild:
     description: Create and manage player guilds.
     usage: /guild <create|invite|accept|decline|kick|leave|disband|info>
@@ -223,6 +239,10 @@ commands:
     description: Open the King's Commissions mining menu.
     usage: /miningcommission
     permission: skyblock.miningcommission
+  miningzone:
+    description: View or change your current mining zone.
+    usage: /miningzone [list|set <zone>|clear]
+    permission: skyblock.miningzone
   minion:
     description: Manage your placed minions.
     usage: /minion <list|place|upgrade|remove|info>
@@ -256,6 +276,10 @@ commands:
     description: View and apply item reforges.
     usage: /reforge [list|info <name>|apply <name>|clear]
     permission: skyblock.reforge
+  repair:
+    description: Repair items in your hand or entire inventory.
+    usage: /repair <hand|all>
+    permission: skyblock.repair
   rift:
     description: View and manage your Rift dimension progress.
     usage: /rift [info|enter [zone]|exit|reset]
@@ -268,6 +292,10 @@ commands:
     description: View the contents of your sacks.
     usage: /sack
     permission: skyblock.sack
+  season:
+    description: View or change the current SkyBlock season.
+    usage: /season <current|next|set <season>|advance>
+    permission: skyblock.season
   skills:
     description: View your SkyBlock skills.
     usage: /skills [skill]
@@ -495,4 +523,25 @@ permissions:
     default: true
   skyblock.npc:
     description: Use the /npc command to interact with SkyBlock NPCs and their shops.
+    default: true
+  skyblock.ability:
+    description: Use the /ability command to view and manage item abilities.
+    default: true
+  skyblock.cooldown:
+    description: Use the /cooldown command to view and manage active cooldowns.
+    default: true
+  skyblock.dailyreward:
+    description: Use the /dailyreward command to claim your daily reward.
+    default: true
+  skyblock.gemstone:
+    description: Use the /gemstone command to view and manage gemstone collection.
+    default: true
+  skyblock.miningzone:
+    description: Use the /miningzone command to view or change your mining zone.
+    default: true
+  skyblock.repair:
+    description: Use the /repair command to repair items.
+    default: true
+  skyblock.season:
+    description: Use the /season command to view or change the current season.
     default: true
