@@ -150,7 +150,9 @@ import com.skyblock.core.manager.FortuneManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.command.SackCommand;
+import com.skyblock.core.command.NPCShopCommand;
 import com.skyblock.core.command.ShopCommand;
+import com.skyblock.core.manager.NPCShopManager;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.command.WarpCommand;
@@ -258,6 +260,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private CrystalHollowsManager crystalHollowsManager;
     private JacobsContestManager jacobsContestManager;
     private NpcManager npcManager;
+    private NPCShopManager npcShopManager;
     private RunecraftingManager runecraftingManager;
     private ManaManager manaManager;
     private SkyBlockEventManager skyBlockEventManager;
@@ -388,6 +391,8 @@ public final class SkyBlockCore extends JavaPlugin {
         crystalHollowsManager = CrystalHollowsManager.getInstance();
         jacobsContestManager = JacobsContestManager.getInstance();
         npcManager = NpcManager.getInstance();
+        npcShopManager = NPCShopManager.getInstance();
+        npcShopManager.registerDefaults();
         runecraftingManager = RunecraftingManager.getInstance();
         runecraftingManager.load(getDataFolder());
         manaManager = ManaManager.getInstance();
@@ -482,6 +487,11 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("shop") != null) {
             getCommand("shop").setExecutor(shopCommand);
             getCommand("shop").setTabCompleter(shopCommand);
+        }
+        NPCShopCommand npcShopCommand = new NPCShopCommand(npcShopManager);
+        if (getCommand("npcshop") != null) {
+            getCommand("npcshop").setExecutor(npcShopCommand);
+            getCommand("npcshop").setTabCompleter(npcShopCommand);
         }
         DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
         getCommand("dungeon").setExecutor(dungeonCommand);
