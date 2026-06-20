@@ -175,6 +175,10 @@ public final class MiningManager {
     private final Map<UUID, Double> miningXp = new HashMap<>();
     /** Per-player mining level cache. */
     private final Map<UUID, Integer> miningLevel = new HashMap<>();
+    /** Per-player accumulated Mithril Powder (earned in the Dwarven Mines). */
+    private final Map<UUID, Long> mithrilPowder = new HashMap<>();
+    /** Per-player accumulated Gemstone Powder (earned in the Crystal Hollows). */
+    private final Map<UUID, Long> gemstonePowder = new HashMap<>();
 
     private MiningManager() {}
 
@@ -262,6 +266,58 @@ public final class MiningManager {
     }
 
     /**
+     * Adds Mithril Powder to the player's total.
+     *
+     * @param playerId the player receiving powder
+     * @param amount   powder to add, must not be negative
+     * @return the player's new Mithril Powder total
+     */
+    public long addMithrilPowder(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        return mithrilPowder.merge(playerId, amount, Long::sum);
+    }
+
+    /**
+     * Returns the player's current Mithril Powder total.
+     *
+     * @param playerId the player to look up
+     * @return Mithril Powder total, {@code 0} if none recorded
+     */
+    public long getMithrilPowder(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return mithrilPowder.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Adds Gemstone Powder to the player's total.
+     *
+     * @param playerId the player receiving powder
+     * @param amount   powder to add, must not be negative
+     * @return the player's new Gemstone Powder total
+     */
+    public long addGemstonePowder(UUID playerId, long amount) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
+        return gemstonePowder.merge(playerId, amount, Long::sum);
+    }
+
+    /**
+     * Returns the player's current Gemstone Powder total.
+     *
+     * @param playerId the player to look up
+     * @return Gemstone Powder total, {@code 0} if none recorded
+     */
+    public long getGemstonePowder(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return gemstonePowder.getOrDefault(playerId, 0L);
+    }
+
+    /**
      * Removes all stored data for the given player.
      *
      * @param playerId the player whose data should be cleared
@@ -270,6 +326,8 @@ public final class MiningManager {
         Objects.requireNonNull(playerId, "playerId");
         miningXp.remove(playerId);
         miningLevel.remove(playerId);
+        mithrilPowder.remove(playerId);
+        gemstonePowder.remove(playerId);
     }
 
     /**
@@ -285,6 +343,8 @@ public final class MiningManager {
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         miningXp.clear();
         miningLevel.clear();
+        mithrilPowder.clear();
+        gemstonePowder.clear();
         for (String key : cfg.getKeys(false)) {
             try {
                 UUID uuid = UUID.fromString(key);
@@ -292,6 +352,12 @@ public final class MiningManager {
                     double xp = cfg.getDouble(key + ".xp", 0.0);
                     miningXp.put(uuid, xp);
                     miningLevel.put(uuid, computeLevel(xp));
+                }
+                if (cfg.contains(key + ".mithrilPowder")) {
+                    mithrilPowder.put(uuid, cfg.getLong(key + ".mithrilPowder", 0L));
+                }
+                if (cfg.contains(key + ".gemstonePowder")) {
+                    gemstonePowder.put(uuid, cfg.getLong(key + ".gemstonePowder", 0L));
                 }
             } catch (IllegalArgumentException ignored) {
                 // skip malformed keys
@@ -310,6 +376,16 @@ public final class MiningManager {
         for (Map.Entry<UUID, Double> entry : miningXp.entrySet()) {
             if (entry.getValue() != 0) {
                 cfg.set(entry.getKey().toString() + ".xp", entry.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Long> entry : mithrilPowder.entrySet()) {
+            if (entry.getValue() != 0) {
+                cfg.set(entry.getKey().toString() + ".mithrilPowder", entry.getValue());
+            }
+        }
+        for (Map.Entry<UUID, Long> entry : gemstonePowder.entrySet()) {
+            if (entry.getValue() != 0) {
+                cfg.set(entry.getKey().toString() + ".gemstonePowder", entry.getValue());
             }
         }
         try {
