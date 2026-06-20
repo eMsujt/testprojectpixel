@@ -397,6 +397,10 @@ commands:
     usage: /talisman
     aliases: [ta]
     permission: skyblock.talisman
+  talismanbag:
+    description: View and manage talisman bag contents, rarities, and capacity.
+    usage: /talismanbag <info|list|add|remove|rarity>
+    permission: skyblock.accessories
   title:
     description: Title system
     usage: /title <list|set|remove>
