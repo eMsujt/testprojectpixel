@@ -314,6 +314,14 @@ public final class SkyBlockCore extends JavaPlugin {
         return warpManager;
     }
 
+    public BestiaryManager getBestiaryManager() {
+        return bestiaryManager;
+    }
+
+    public FishingManager getFishingManager() {
+        return fishingManager;
+    }
+
     private void initManagers() {
         // core data — loaded first; others may depend on skill/profile state
         skillsManager = SkillManager.getInstance();
