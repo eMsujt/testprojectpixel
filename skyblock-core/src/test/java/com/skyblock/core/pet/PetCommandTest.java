@@ -1,5 +1,6 @@
 package com.skyblock.core.pet;
 
+import com.skyblock.core.command.PetCommand;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.manager.PetManager.PetType;
