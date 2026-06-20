@@ -182,6 +182,7 @@ commands:
     description: Forge items using the SkyBlock forge.
     usage: /forge [list|start|collect]
     aliases: [blacksmith, skyforge]
+    permission: skyblock.command.forge
   friend:
     description: Manage your SkyBlock friend list.
     usage: /friend <add|remove|list> [player]
@@ -299,6 +300,7 @@ commands:
   profile:
     description: View your SkyBlock profile.
     usage: /profile [player]
+    permission: skyblock.command.profile
   quest:
     description: Manage your SkyBlock quests.
     usage: /quest <list|start|status|reset>
