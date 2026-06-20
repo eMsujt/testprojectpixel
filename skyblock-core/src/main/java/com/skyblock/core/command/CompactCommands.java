@@ -1,28 +1,41 @@
 package com.skyblock.core.command;
 
+import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.CalendarManager;
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.HOTMManager;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.manager.MiningManager;
+import com.skyblock.core.manager.RepairManager;
+import com.skyblock.core.manager.ReforgeManager;
+import com.skyblock.core.manager.Warp;
+import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.MiningMenu;
+import com.skyblock.core.menu.ReforgeMenu;
+import com.skyblock.core.menu.WarpMenu;
 import com.skyblock.core.model.Stat;
+import com.skyblock.core.season.SeasonManager;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Single compilation unit for four small, independent SkyBlock commands:
- * /fairysoul, /calendar, /mayor (command-package variant), and /mining.
+ * Single compilation unit for small, independent SkyBlock commands.
  */
 public final class CompactCommands {
 
@@ -502,6 +515,538 @@ public final class CompactCommands {
             player.sendMessage("/mining powder         — show Mithril and Gemstone powder amounts");
             player.sendMessage("/mining hotm           — show Heart of the Mountain tier and XP");
             player.sendMessage("/mining menu           — open the Mining overview menu");
+        }
+    }
+
+    // =========================================================================
+    // /season
+    // =========================================================================
+
+    public static final class SeasonCommand implements TabExecutor {
+
+        private static final List<String> SUBCOMMANDS = Arrays.asList("current", "next", "set", "advance");
+        private static final List<String> SEASON_NAMES = Arrays.stream(SeasonManager.Season.values())
+                .map(s -> s.name().toLowerCase())
+                .collect(Collectors.toList());
+
+        private final SeasonManager seasonManager;
+
+        public SeasonCommand(SeasonManager seasonManager) {
+            this.seasonManager = seasonManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (args.length == 0) {
+                player.sendMessage("Usage: /season <current|next|set <season>|advance>");
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "current" -> handleCurrent(player);
+                case "next"    -> handleNext(player);
+                case "set"     -> handleSet(player, args);
+                case "advance" -> handleAdvance(player);
+                default        -> player.sendMessage("Unknown subcommand. Usage: /season <current|next|set|advance>");
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
+                String prefix = args[1].toLowerCase();
+                return SEASON_NAMES.stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleCurrent(Player player) {
+            SeasonManager.Season season = seasonManager.getCurrentSeason();
+            player.sendMessage("Current Season: " + season.displayName() + " (Day " + seasonManager.getDay() + ")");
+        }
+
+        private void handleNext(Player player) {
+            SeasonManager.Season next = seasonManager.getNextSeason();
+            player.sendMessage("Next Season: " + next.displayName());
+        }
+
+        private void handleSet(Player player, String[] args) {
+            if (!player.isOp()) {
+                player.sendMessage("You do not have permission to use this subcommand.");
+                return;
+            }
+            if (args.length < 2) {
+                player.sendMessage("Usage: /season set <season>");
+                return;
+            }
+            SeasonManager.Season season = parseSeason(player, args[1]);
+            if (season == null) return;
+            seasonManager.setCurrentSeason(season);
+            player.sendMessage("Season set to: " + season.displayName());
+        }
+
+        private void handleAdvance(Player player) {
+            if (!player.isOp()) {
+                player.sendMessage("You do not have permission to use this subcommand.");
+                return;
+            }
+            SeasonManager.Season newSeason = seasonManager.advanceSeason();
+            player.sendMessage("Season advanced to: " + newSeason.displayName());
+        }
+
+        private SeasonManager.Season parseSeason(Player player, String input) {
+            try {
+                return SeasonManager.Season.valueOf(input.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown season: " + input
+                        + ". Valid seasons: " + String.join(", ", SEASON_NAMES));
+                return null;
+            }
+        }
+    }
+
+    // =========================================================================
+    // /networth
+    // =========================================================================
+
+    public static final class NetWorthCommand implements TabExecutor {
+
+        private final BankManager bankManager;
+
+        public NetWorthCommand(BankManager bankManager) {
+            this.bankManager = bankManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            UUID id = player.getUniqueId();
+            double bank = bankManager.getBalance(id);
+            long purse = bankManager.getPurseBalance(id);
+            double total = bank + purse;
+            player.sendMessage("=== Net Worth ===");
+            player.sendMessage("Purse: " + purse + " coins");
+            player.sendMessage("Bank: " + bank + " coins");
+            player.sendMessage("Total: " + total + " coins");
+            player.sendMessage("Bank Tier: " + BankManager.BankTier.forBalance(total).getDisplayName());
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /repair
+    // =========================================================================
+
+    public static final class RepairCommand implements TabExecutor {
+
+        private final RepairManager repairManager;
+
+        public RepairCommand(RepairManager repairManager) {
+            if (repairManager == null) {
+                throw new IllegalArgumentException("repairManager must not be null");
+            }
+            this.repairManager = repairManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (args.length == 0) {
+                sendHelp(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "hand" -> handleHand(player);
+                case "all"  -> handleAll(player);
+                default     -> sendHelp(player);
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String lower = args[0].toLowerCase();
+                return Arrays.asList("hand", "all").stream()
+                        .filter(s -> s.startsWith(lower))
+                        .toList();
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleHand(Player player) {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            int cost = repairManager.getRepairCost(item);
+            if (cost < 0) {
+                player.sendMessage("That item cannot be repaired.");
+                return;
+            }
+            if (cost == 0) {
+                player.sendMessage("That item is already fully repaired.");
+                return;
+            }
+            if (!repairManager.hasCoins(player, cost)) {
+                player.sendMessage("You need " + cost + " coins to repair that item.");
+                return;
+            }
+            repairManager.deductCoins(player, cost);
+            repairManager.repair(item);
+            player.sendMessage("Item repaired for " + cost + " coins.");
+        }
+
+        private void handleAll(Player player) {
+            ItemStack[] contents = player.getInventory().getContents();
+            int totalCost = 0;
+            for (ItemStack item : contents) {
+                int cost = repairManager.getRepairCost(item);
+                if (cost > 0) {
+                    totalCost += cost;
+                }
+            }
+            if (totalCost == 0) {
+                player.sendMessage("All your items are already fully repaired or cannot be repaired.");
+                return;
+            }
+            if (!repairManager.hasCoins(player, totalCost)) {
+                player.sendMessage("You need " + totalCost + " coins to repair all your items.");
+                return;
+            }
+            repairManager.deductCoins(player, totalCost);
+            int repaired = 0;
+            for (ItemStack item : contents) {
+                if (repairManager.repair(item)) {
+                    repaired++;
+                }
+            }
+            player.sendMessage("Repaired " + repaired + " item(s) for " + totalCost + " coins.");
+        }
+
+        private void sendHelp(Player player) {
+            player.sendMessage("=== Repair Commands ===");
+            player.sendMessage("/repair hand — repair the item in your hand");
+            player.sendMessage("/repair all  — repair all items in your inventory");
+        }
+    }
+
+    // =========================================================================
+    // /reforge
+    // =========================================================================
+
+    public static final class ReforgeCommand implements TabExecutor {
+
+        private static final List<String> SUBCOMMANDS = Arrays.asList("status", "list", "info", "apply", "clear", "stone", "itemtype");
+        private static final List<String> STONE_SUBCOMMANDS = Arrays.asList("list", "info");
+
+        private final ReforgeManager reforgeManager;
+
+        public ReforgeCommand(ReforgeManager reforgeManager) {
+            if (reforgeManager == null) {
+                throw new IllegalArgumentException("reforgeManager must not be null");
+            }
+            this.reforgeManager = reforgeManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (args.length == 0) {
+                new ReforgeMenu().open(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "status"   -> handleStatus(player);
+                case "list"     -> handleList(player);
+                case "info"     -> handleInfo(player, args);
+                case "apply"    -> handleApply(player, args);
+                case "clear"    -> handleClear(player);
+                case "stone"    -> handleStone(player, args);
+                case "itemtype" -> handleItemType(player);
+                default         -> sendHelp(player);
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 2 && (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("apply"))) {
+                String prefix = args[1].toLowerCase();
+                return Arrays.stream(ReforgeManager.ReforgeType.values())
+                        .filter(r -> r != ReforgeManager.ReforgeType.NONE)
+                        .map(ReforgeManager.ReforgeType::getDisplayName)
+                        .filter(n -> n.toLowerCase().startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("stone")) {
+                String prefix = args[1].toLowerCase();
+                return STONE_SUBCOMMANDS.stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 3 && args[0].equalsIgnoreCase("stone") && args[1].equalsIgnoreCase("info")) {
+                String prefix = args[2].toLowerCase();
+                return Arrays.stream(ReforgeManager.ReforgeStone.values())
+                        .map(ReforgeManager.ReforgeStone::getDisplayName)
+                        .filter(n -> n.toLowerCase().startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleStatus(Player player) {
+            UUID id = player.getUniqueId();
+            ReforgeManager.ReforgeType reforge = reforgeManager.getReforge(id);
+            player.sendMessage("=== Reforge ===");
+            player.sendMessage("Current: " + reforge.getDisplayName());
+            if (reforge != ReforgeManager.ReforgeType.NONE) {
+                printBonuses(player, reforge);
+            }
+        }
+
+        private void handleList(Player player) {
+            player.sendMessage("=== Available Reforges ===");
+            for (ReforgeManager.ReforgeType r : ReforgeManager.ReforgeType.values()) {
+                if (r == ReforgeManager.ReforgeType.NONE) continue;
+                player.sendMessage("  " + r.getDisplayName()
+                        + " [STR+" + r.getStrengthBonus()
+                        + " DEF+" + r.getDefenseBonus()
+                        + " SPD+" + r.getSpeedBonus() + "]");
+            }
+        }
+
+        private void handleInfo(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /reforge info <name>");
+                return;
+            }
+            ReforgeManager.ReforgeType reforge = ReforgeManager.ReforgeType.fromName(args[1]);
+            if (reforge == null || reforge == ReforgeManager.ReforgeType.NONE) {
+                player.sendMessage("Unknown reforge: " + args[1]);
+                return;
+            }
+            player.sendMessage("=== " + reforge.getDisplayName() + " ===");
+            printBonuses(player, reforge);
+        }
+
+        private void handleApply(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /reforge apply <name>");
+                return;
+            }
+            ReforgeManager.ReforgeType reforge = ReforgeManager.ReforgeType.fromName(args[1]);
+            if (reforge == null || reforge == ReforgeManager.ReforgeType.NONE) {
+                player.sendMessage("Unknown reforge: " + args[1]);
+                return;
+            }
+            reforgeManager.setReforge(player.getUniqueId(), reforge);
+            player.sendMessage("Applied reforge: " + reforge.getDisplayName());
+            printBonuses(player, reforge);
+        }
+
+        private void handleClear(Player player) {
+            reforgeManager.clearReforge(player.getUniqueId());
+            player.sendMessage("Reforge cleared.");
+        }
+
+        private void handleStone(Player player, String[] args) {
+            if (args.length < 2 || args[1].equalsIgnoreCase("list")) {
+                player.sendMessage("=== Reforge Stones ===");
+                for (ReforgeManager.ReforgeStone stone : ReforgeManager.ReforgeStone.values()) {
+                    player.sendMessage("  " + stone.getDisplayName() + " → " + stone.getReforge());
+                }
+                return;
+            }
+            if (args[1].equalsIgnoreCase("info")) {
+                if (args.length < 3) {
+                    player.sendMessage("Usage: /reforge stone info <stone>");
+                    return;
+                }
+                ReforgeManager.ReforgeStone stone = ReforgeManager.ReforgeStone.fromName(args[2]);
+                if (stone == null) {
+                    player.sendMessage("Unknown reforge stone: " + args[2]);
+                    return;
+                }
+                player.sendMessage("=== " + stone.getDisplayName() + " ===");
+                player.sendMessage("  Applies reforge: " + stone.getReforge());
+                return;
+            }
+            player.sendMessage("Usage: /reforge stone [list|info <stone>]");
+        }
+
+        private void handleItemType(Player player) {
+            player.sendMessage("=== Reforgeable Item Types ===");
+            for (ReforgeManager.ReforgeItemType type : ReforgeManager.ReforgeItemType.values()) {
+                player.sendMessage("  " + type.getDisplayName());
+            }
+        }
+
+        private void sendHelp(Player player) {
+            player.sendMessage("=== Reforge Commands ===");
+            player.sendMessage("/reforge                       — show current reforge and bonuses");
+            player.sendMessage("/reforge list                  — list all available reforges");
+            player.sendMessage("/reforge info <name>           — show stat bonuses for a reforge");
+            player.sendMessage("/reforge apply <name>          — apply a reforge");
+            player.sendMessage("/reforge clear                 — remove the current reforge");
+            player.sendMessage("/reforge stone [list]          — list all reforge stones");
+            player.sendMessage("/reforge stone info <stone>    — show which reforge a stone applies");
+            player.sendMessage("/reforge itemtype              — list reforgeable item categories");
+        }
+
+        private static void printBonuses(Player player, ReforgeManager.ReforgeType reforge) {
+            player.sendMessage("  Strength: +" + reforge.getStrengthBonus());
+            player.sendMessage("  Defense:  +" + reforge.getDefenseBonus());
+            player.sendMessage("  Speed:    +" + reforge.getSpeedBonus());
+        }
+    }
+
+    // =========================================================================
+    // /warp
+    // =========================================================================
+
+    public static final class WarpCommand implements TabExecutor {
+
+        private final WarpManager warpManager;
+
+        public WarpCommand(WarpManager warpManager) {
+            this.warpManager = warpManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (label.equalsIgnoreCase("hub")) {
+                handleHub(player);
+                return true;
+            }
+            if (args.length == 0) {
+                new WarpMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "set"       -> handleSet(player, args);
+                case "remove"    -> handleRemove(player, args);
+                case "list"      -> handleList(player);
+                case "locations" -> handleLocations(player);
+                case "zones"     -> handleZones(player);
+                case "hub"       -> handleHub(player);
+                default          -> handleTeleport(player, args[0]);
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String lower = args[0].toLowerCase();
+                List<String> options = new ArrayList<>(Arrays.asList("set", "remove", "list", "locations", "zones"));
+                warpManager.getWarpNames().forEach(options::add);
+                return options.stream().filter(s -> s.startsWith(lower)).toList();
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
+                String lower = args[1].toLowerCase();
+                return warpManager.getWarpNames().stream().filter(s -> s.startsWith(lower)).toList();
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleTeleport(Player player, String name) {
+            Optional<Warp> warp = warpManager.getWarp(name);
+            if (warp.isEmpty()) {
+                player.sendMessage("Warp '" + name + "' not found.");
+                return;
+            }
+            player.teleport(warp.get().toLocation());
+            player.sendMessage("Warped to " + name + ".");
+        }
+
+        private void handleHub(Player player) {
+            Optional<Warp> warp = warpManager.getWarp(WarpManager.WarpLocation.HUB);
+            if (warp.isPresent()) {
+                player.teleport(warp.get().toLocation());
+            } else {
+                World world = Bukkit.getWorlds().get(0);
+                player.teleport(world.getSpawnLocation());
+            }
+            player.sendMessage("Warped to the Hub.");
+        }
+
+        private void handleSet(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /warp set <name>");
+                return;
+            }
+            warpManager.setWarp(args[1], player.getLocation());
+            player.sendMessage("Warp '" + args[1] + "' set to your current location.");
+        }
+
+        private void handleRemove(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /warp remove <name>");
+                return;
+            }
+            if (warpManager.removeWarp(args[1])) {
+                player.sendMessage("Warp '" + args[1] + "' removed.");
+            } else {
+                player.sendMessage("Warp '" + args[1] + "' not found.");
+            }
+        }
+
+        private void handleList(Player player) {
+            Set<String> names = warpManager.getWarpNames();
+            if (names.isEmpty()) {
+                player.sendMessage("No warps are set.");
+                return;
+            }
+            player.sendMessage("=== Warps ===");
+            names.stream().sorted().forEach(n -> player.sendMessage("- " + n));
+        }
+
+        private void handleLocations(Player player) {
+            player.sendMessage("=== Warp Locations ===");
+            for (WarpManager.WarpLocation loc : WarpManager.WarpLocation.values()) {
+                player.sendMessage("- " + loc.getDisplayName() + " (" + loc.warpKey() + ")");
+            }
+        }
+
+        private void handleZones(Player player) {
+            player.sendMessage("=== SkyBlock Locations ===");
+            for (WarpManager.SkyBlockLocation loc : WarpManager.SkyBlockLocation.values()) {
+                player.sendMessage("- " + loc.getDisplayName());
+            }
         }
     }
 }

@@ -10,7 +10,6 @@ import com.skyblock.core.command.AuctionHouseCommand;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.command.KuudraCommand;
 import com.skyblock.core.command.BankCommand;
-import com.skyblock.core.command.NetWorthCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
@@ -75,7 +74,6 @@ import com.skyblock.core.command.IslandCommand;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
-import com.skyblock.core.command.ReforgeCommand;
 import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.event.EventCommand;
@@ -123,7 +121,6 @@ import com.skyblock.core.friend.FriendCommand;
 import com.skyblock.core.friend.FriendManager;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.manager.RepairManager;
-import com.skyblock.core.command.RepairCommand;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.manager.MiningManager;
@@ -157,7 +154,6 @@ import com.skyblock.core.manager.NPCShopManager;
 import com.skyblock.core.manager.NetworthManager;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.manager.ShopManager;
-import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.manager.AlchemyManager;
@@ -502,7 +498,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("bank").setTabCompleter(bankCommand);
         getCommand("banking").setExecutor(bankCommand);
         getCommand("banking").setTabCompleter(bankCommand);
-        NetWorthCommand netWorthCommand = new NetWorthCommand(bankManager);
+        CompactCommands.NetWorthCommand netWorthCommand = new CompactCommands.NetWorthCommand(bankManager);
         if (getCommand("networth") != null) {
             getCommand("networth").setExecutor(netWorthCommand);
             getCommand("networth").setTabCompleter(netWorthCommand);
@@ -658,7 +654,7 @@ public final class SkyBlockCore extends JavaPlugin {
         EnchantingCommand enchantingCommand = new EnchantingCommand(enchantingManager);
         getCommand("enchanting").setExecutor(enchantingCommand);
         getCommand("enchanting").setTabCompleter(enchantingCommand);
-        ReforgeCommand reforgeCommand = new ReforgeCommand(reforgeManager);
+        CompactCommands.ReforgeCommand reforgeCommand = new CompactCommands.ReforgeCommand(reforgeManager);
         getCommand("reforge").setExecutor(reforgeCommand);
         getCommand("reforge").setTabCompleter(reforgeCommand);
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
@@ -830,7 +826,7 @@ public final class SkyBlockCore extends JavaPlugin {
         MailboxCommand mailboxCommand = new MailboxCommand(mailboxManager);
         getCommand("mailbox").setExecutor(mailboxCommand);
         getCommand("mailbox").setTabCompleter(mailboxCommand);
-        WarpCommand warpCommand = new WarpCommand(warpManager);
+        CompactCommands.WarpCommand warpCommand = new CompactCommands.WarpCommand(warpManager);
         getCommand("warp").setExecutor(warpCommand);
         getCommand("warp").setTabCompleter(warpCommand);
         getCommand("hub").setExecutor(warpCommand);
@@ -921,12 +917,12 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("dailyreward").setExecutor(dailyRewardCommand);
             getCommand("dailyreward").setTabCompleter(dailyRewardCommand);
         }
-        com.skyblock.core.command.SeasonCommand seasonCommand = new com.skyblock.core.command.SeasonCommand(com.skyblock.core.season.SeasonManager.getInstance());
+        CompactCommands.SeasonCommand seasonCommand = new CompactCommands.SeasonCommand(com.skyblock.core.season.SeasonManager.getInstance());
         if (getCommand("season") != null) {
             getCommand("season").setExecutor(seasonCommand);
             getCommand("season").setTabCompleter(seasonCommand);
         }
-        RepairCommand repairCommand = new RepairCommand(RepairManager.getInstance());
+        CompactCommands.RepairCommand repairCommand = new CompactCommands.RepairCommand(RepairManager.getInstance());
         if (getCommand("repair") != null) {
             getCommand("repair").setExecutor(repairCommand);
             getCommand("repair").setTabCompleter(repairCommand);
