@@ -14,7 +14,7 @@ import com.skyblock.core.command.NetWorthCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.core.command.CalendarCommand;
+import com.skyblock.core.command.CompactCommands;
 import com.skyblock.core.manager.CalendarManager;
 import com.skyblock.core.command.MuseumCommand;
 import com.skyblock.core.manager.MuseumManager;
@@ -31,7 +31,6 @@ import com.skyblock.core.fishing.command.FishingCommand;
 import com.skyblock.core.fishing.listener.TrophyFishListener;
 import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.FishingManager;
-import com.skyblock.core.command.FairySoulCommand;
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.command.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
@@ -128,7 +127,6 @@ import com.skyblock.core.command.RepairCommand;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.manager.MiningManager;
-import com.skyblock.core.mining.command.MiningCommand;
 import com.skyblock.core.mining.command.MiningZoneCommand;
 import com.skyblock.core.mining.manager.MiningZoneManager;
 import com.skyblock.core.manager.TradeManager;
@@ -617,7 +615,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("fishing").setExecutor(fishingCommand);
         getCommand("fishing").setTabCompleter(fishingCommand);
         getServer().getPluginManager().registerEvents(new TrophyFishListener(trophyFishManager, fishingManager), this);
-        FairySoulCommand fairySoulCommand = new FairySoulCommand(fairySoulManager);
+        CompactCommands.FairySoulCommand fairySoulCommand = new CompactCommands.FairySoulCommand(fairySoulManager);
         if (getCommand("fairysoul") != null) {
             getCommand("fairysoul").setExecutor(fairySoulCommand);
             getCommand("fairysoul").setTabCompleter(fairySoulCommand);
@@ -700,7 +698,7 @@ public final class SkyBlockCore extends JavaPlugin {
         ForagingCommand foragingCommand = new ForagingCommand(foragingManager);
         getCommand("foraging").setExecutor(foragingCommand);
         getCommand("foraging").setTabCompleter(foragingCommand);
-        MiningCommand miningCommand = new MiningCommand(miningManager);
+        CompactCommands.MiningCommand miningCommand = new CompactCommands.MiningCommand(miningManager);
         if (getCommand("mining") != null) {
             getCommand("mining").setExecutor(miningCommand);
             getCommand("mining").setTabCompleter(miningCommand);
@@ -769,7 +767,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("runecrafting") != null) {
             getCommand("runecrafting").setExecutor(runecraftingCommand);
         }
-        CalendarCommand calendarCommand = new CalendarCommand();
+        CompactCommands.CalendarCommand calendarCommand = new CompactCommands.CalendarCommand();
         if (getCommand("calendar") != null) {
             getCommand("calendar").setExecutor(calendarCommand);
             getCommand("calendar").setTabCompleter(calendarCommand);
