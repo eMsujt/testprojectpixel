@@ -1,7 +1,11 @@
 package com.skyblock.core.manager;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -210,6 +214,86 @@ public final class AuctionManager {
         Objects.requireNonNull(player, "player");
         List<ItemStack> claimed = pendingItems.remove(player);
         return claimed == null ? new ArrayList<>() : claimed;
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence (one YAML file per seller under {dataFolder}/auctions/<uuid>.yml)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Loads every seller's active listings from {@code dataFolder/auctions/<uuid>.yml}.
+     * Each file holds one section per listing id, storing the escrowed item,
+     * display name, category and price.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void load(File dataFolder) {
+        Objects.requireNonNull(dataFolder, "dataFolder");
+        File dir = new File(dataFolder, "auctions");
+        File[] files = dir.listFiles((d, name) -> name.endsWith(".yml"));
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            String base = file.getName().substring(0, file.getName().length() - 4);
+            UUID seller;
+            try {
+                seller = UUID.fromString(base);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            for (String key : cfg.getKeys(false)) {
+                ConfigurationSection section = cfg.getConfigurationSection(key);
+                if (section == null) {
+                    continue;
+                }
+                ItemStack item = section.getItemStack("item");
+                if (item == null) {
+                    continue;
+                }
+                UUID id;
+                try {
+                    id = UUID.fromString(key);
+                } catch (IllegalArgumentException e) {
+                    continue;
+                }
+                String itemName = section.getString("itemName", "");
+                String category = section.getString("category", "");
+                double price = section.getDouble("price", 0.0);
+                listings.put(id, new Listing(id, seller, item, itemName, category, price));
+            }
+        }
+    }
+
+    /**
+     * Saves every seller's active listings to {@code dataFolder/auctions/<uuid>.yml},
+     * one file per seller.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void save(File dataFolder) {
+        Objects.requireNonNull(dataFolder, "dataFolder");
+        File dir = new File(dataFolder, "auctions");
+        if (!dir.exists() && !dir.mkdirs()) {
+            return;
+        }
+        Map<UUID, YamlConfiguration> bySeller = new HashMap<>();
+        for (Listing listing : listings.values()) {
+            YamlConfiguration cfg = bySeller.computeIfAbsent(listing.seller(), s -> new YamlConfiguration());
+            String path = listing.id().toString();
+            cfg.set(path + ".item", listing.item());
+            cfg.set(path + ".itemName", listing.itemName());
+            cfg.set(path + ".category", listing.category());
+            cfg.set(path + ".price", listing.price());
+        }
+        for (Map.Entry<UUID, YamlConfiguration> entry : bySeller.entrySet()) {
+            try {
+                entry.getValue().save(new File(dir, entry.getKey() + ".yml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /** Removes all active listings and clears all escrow state. */
