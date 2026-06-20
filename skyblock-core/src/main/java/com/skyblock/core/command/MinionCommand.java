@@ -1,4 +1,4 @@
-package com.skyblock.core.minion.command;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.minion.gui.MinionsMenu;
