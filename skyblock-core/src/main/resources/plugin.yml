@@ -292,6 +292,10 @@ commands:
     description: View and manage your personal storage pages.
     usage: /storage [info|upgrade|reset]
     permission: skyblock.storage
+  talisman:
+    description: Open the Talisman Bag GUI.
+    usage: /talisman
+    permission: skyblock.talisman
   title:
     description: Title system
     usage: /title <list|set|remove>
