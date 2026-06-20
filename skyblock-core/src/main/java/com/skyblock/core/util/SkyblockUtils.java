@@ -95,16 +95,10 @@ public final class SkyblockUtils {
     /** Returns the legacy {@link ChatColor} for a rarity name string (e.g. {@code "LEGENDARY"}). */
     public static ChatColor rarityColor(String name) {
         if (name == null) return ChatColor.WHITE;
-        switch (name.toUpperCase(Locale.ROOT)) {
-            case "UNCOMMON":     return ChatColor.GREEN;
-            case "RARE":         return ChatColor.BLUE;
-            case "EPIC":         return ChatColor.DARK_PURPLE;
-            case "LEGENDARY":    return ChatColor.GOLD;
-            case "MYTHIC":       return ChatColor.LIGHT_PURPLE;
-            case "DIVINE":       return ChatColor.AQUA;
-            case "SPECIAL":
-            case "VERY_SPECIAL": return ChatColor.RED;
-            default:             return ChatColor.WHITE;
+        try {
+            return rarityColor(Rarity.valueOf(name.toUpperCase(Locale.ROOT)));
+        } catch (IllegalArgumentException e) {
+            return ChatColor.WHITE;
         }
     }
 
