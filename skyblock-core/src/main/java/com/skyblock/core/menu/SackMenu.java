@@ -37,7 +37,7 @@ public final class SackMenu extends AbstractSkyBlockMenu {
     private SackType selectedType;
 
     public SackMenu(Player player) {
-        super(player, "§aSack Contents", 6);
+        super(player, "§2Sacks", 6);
         this.selectedType = TYPES[0];
     }
 
