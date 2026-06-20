@@ -1,5 +1,7 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.PetManager.Pet;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
@@ -10,7 +12,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public final class PetMenu extends AbstractSkyBlockMenu {
 
@@ -108,7 +112,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
     }
 
     public PetMenu(Player player) {
-        super(player, "§dPets", 54);
+        super(player, "§dPets", 6);
     }
 
     @Override
@@ -117,17 +121,34 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
 
-        PetType[] types = PetType.values();
-        for (int i = 0; i < types.length && i < 36; i++) {
-            PetType type = types[i];
-            String color = SkyblockUtils.rarityColor(type.defaultRarity).toString();
-            Material icon = TYPE_ICON.getOrDefault(type, Material.SLIME_BALL);
+        PetManager manager = PetManager.getInstance();
+        UUID playerId = player.getUniqueId();
+        List<Pet> pets = manager.getPets(playerId);
+        UUID activePetId = manager.getActivePetId(playerId);
+
+        for (int i = 0; i < pets.size() && i < 36; i++) {
+            Pet pet = pets.get(i);
+            boolean isActive = pet.id.equals(activePetId);
+            int level = manager.getPetData(playerId, pet.type).getLevel();
+            String color = SkyblockUtils.rarityColor(pet.rarity).toString();
+            Material icon = TYPE_ICON.getOrDefault(pet.type, Material.SLIME_BALL);
+            String activeTag = isActive ? " §a§l[ACTIVE]" : "";
             setItem(9 + i, new ItemBuilder(icon)
-                    .displayName(color + type.getDisplayName())
-                    .lore("§7Rarity: " + color + type.defaultRarity.getDisplayName(),
-                          "§7Category: §e" + type.getCategory().getDisplayName())
+                    .displayName(color + pet.type.getDisplayName() + activeTag)
+                    .lore("§7Level: §e" + level,
+                          "§7Rarity: " + color + pet.rarity.getDisplayName(),
+                          "§7Category: §e" + pet.type.getCategory().getDisplayName(),
+                          "",
+                          isActive ? "§eClick to unequip" : "§eClick to equip")
                     .build(),
-                    e -> e.setCancelled(true));
+                    e -> {
+                        if (isActive) {
+                            manager.unequipPet(playerId);
+                        } else {
+                            manager.equipPet(playerId, pet.id);
+                        }
+                        open(player);
+                    });
         }
     }
 }
