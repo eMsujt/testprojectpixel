@@ -1,44 +1,54 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.npc.NpcManager.NpcDefinition;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 /**
- * 3-row chest GUI for a single NPC. The title is the NPC's name; slot 13
- * shows a player head representing the NPC. Left-clicking the head opens the
- * NPC's shop when one is configured.
+ * NPC directory hub. A 54-slot (6-row) chest titled {@code §eNPCs} showing one
+ * player-head icon per registered {@link NpcDefinition}, framed by a
+ * {@code GRAY_STAINED_GLASS_PANE} border. Clicking an NPC opens that NPC's
+ * shop via {@link NPCShopMenu}.
  */
-public final class NPCMenu extends Menu {
+public final class NPCMenu extends AbstractSkyBlockMenu {
 
-    private static final int HEAD_SLOT = 13;
+    private static final int[] NPC_SLOTS = {
+        10, 11, 12, 13, 14, 15, 16,
+        19, 20, 21, 22, 23, 24, 25,
+        28, 29, 30, 31, 32, 33, 34,
+        37, 38, 39, 40, 41, 42, 43
+    };
 
-    private final NpcDefinition npc;
-
-    public NPCMenu(NpcDefinition npc) {
-        super(npc.name(), 3);
-        this.npc = npc;
+    public NPCMenu(Player player) {
+        super(player, "§eNPCs", 6);
     }
 
     @Override
-    protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 27; slot++) {
-            setItem(slot, pane);
-        }
+    protected void populate() {
+        fillBorder();
 
-        boolean hasShop = npc.shopId() != null && !npc.shopId().isBlank();
-        ItemStack head = new ItemBuilder(Material.PLAYER_HEAD)
-                .displayName("§e" + npc.name())
-                .lore(hasShop ? "§eClick to browse the shop!" : "§7Hello, traveller!")
-                .build();
-        setItem(HEAD_SLOT, head, event -> {
-            event.setCancelled(true);
-            if (hasShop) {
-                event.getWhoClicked().closeInventory();
-                new NPCShopMenu(npc.shopId()).open((org.bukkit.entity.Player) event.getWhoClicked());
-            }
-        });
+        List<NpcDefinition> npcs = NpcManager.getInstance().getAllNpcs();
+        for (int i = 0; i < npcs.size() && i < NPC_SLOTS.length; i++) {
+            final NpcDefinition npc = npcs.get(i);
+            setItem(NPC_SLOTS[i], SkyblockUtils.buildItem(Material.PLAYER_HEAD,
+                    "§e" + npc.name(),
+                    "§7Click to browse the shop!"),
+                    event -> {
+                        event.setCancelled(true);
+                        event.getWhoClicked().closeInventory();
+                        new NPCShopMenu(npc.shopId()).open((Player) event.getWhoClicked());
+                    });
+        }
+    }
+
+    private void fillBorder() {
+        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
     }
 }
