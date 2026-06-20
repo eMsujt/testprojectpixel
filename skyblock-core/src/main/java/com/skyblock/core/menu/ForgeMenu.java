@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * job completes), and the body lists every available forge recipe with its
  * output, duration and ingredients.
  */
-public final class ForgeMenu extends Menu {
+public final class ForgeMenu extends AbstractSkyBlockMenu {
 
     /** Left-3-column slots (rows 1–4) for active forge jobs (up to {@link ForgeManager#MAX_SLOT_COUNT}). */
     private static final int[] FORGE_SLOTS = {9, 10, 11, 18, 19, 20, 27};
@@ -40,29 +40,24 @@ public final class ForgeMenu extends Menu {
 
     private static final int CLOSE_SLOT = 49;
 
-    private final UUID playerId;
     private Inventory inventory;
-    private final Map<Integer, Consumer<InventoryClickEvent>> handlers = new HashMap<>();
+    private final Map<Integer, Consumer<InventoryClickEvent>> clickHandlers = new HashMap<>();
 
     public ForgeMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public ForgeMenu(UUID playerId) {
-        super("§7§lForge", 6);
-        this.playerId = playerId;
-    }
-
-    /** Unused: this menu manages its own inventory via {@link #open(Player)}. */
-    @Override
-    protected void build() {
+        super(player, "§7§lForge", 6);
     }
 
     @Override
-    public void open(Player player) {
-        handlers.clear();
+    protected void populate() {
+        // ForgeMenu manages its own inventory in open() to support dynamic refresh
+    }
+
+    @Override
+    public void open(Player p) {
+        clickHandlers.clear();
         inventory = Bukkit.createInventory(this, 54, getTitle());
 
+        UUID id = player.getUniqueId();
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
@@ -71,22 +66,22 @@ public final class ForgeMenu extends Menu {
             }
         }
 
-        buildForgeSlots(player);
+        buildForgeSlots(id);
         buildRecipeList();
 
         inventory.setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
                 .lore("§7Close the forge.")
                 .build());
-        handlers.put(CLOSE_SLOT, e -> player.closeInventory());
+        clickHandlers.put(CLOSE_SLOT, e -> player.closeInventory());
 
         player.openInventory(inventory);
     }
 
-    private void buildForgeSlots(Player player) {
+    private void buildForgeSlots(UUID id) {
         ForgeManager manager = ForgeManager.getInstance();
         long now = System.currentTimeMillis();
-        int slotCount = manager.getSlotCount(playerId);
+        int slotCount = manager.getSlotCount(id);
 
         for (int i = 0; i < FORGE_SLOTS.length; i++) {
             int displaySlot = FORGE_SLOTS[i];
@@ -98,7 +93,7 @@ public final class ForgeMenu extends Menu {
                 continue;
             }
 
-            ForgeJob job = manager.getJob(playerId, i);
+            ForgeJob job = manager.getJob(id, i);
             if (job == null) {
                 inventory.setItem(displaySlot, new ItemBuilder(Material.FURNACE)
                         .displayName("§aForge Slot " + (i + 1))
@@ -112,18 +107,17 @@ public final class ForgeMenu extends Menu {
                         .displayName("§a" + job.getRecipe().getDisplayName())
                         .lore("§7Slot " + (i + 1), "§aReady to claim!", "", "§eClick to collect!")
                         .build());
-                final int slot = i;
-                handlers.put(displaySlot, e -> {
+                final int slotIdx = i;
+                clickHandlers.put(displaySlot, e -> {
                     try {
-                        ForgeManager.getInstance().collectForge(playerId, slot, System.currentTimeMillis());
+                        ForgeManager.getInstance().collectForge(id, slotIdx, System.currentTimeMillis());
                         Player clicker = (Player) e.getWhoClicked();
-                        ForgeJob collected = job;
-                        clicker.sendMessage("Collected " + collected.getRecipe().getOutputAmount() + "x "
-                                + collected.getRecipe().getOutputItem() + " from forging "
-                                + collected.getRecipe().getDisplayName() + "!");
-                        new ForgeMenu(playerId).open(clicker);
+                        clicker.sendMessage("Collected " + job.getRecipe().getOutputAmount() + "x "
+                                + job.getRecipe().getOutputItem() + " from forging "
+                                + job.getRecipe().getDisplayName() + "!");
+                        new ForgeMenu(clicker).open(clicker);
                     } catch (IllegalStateException ex) {
-                        new ForgeMenu(playerId).open((Player) e.getWhoClicked());
+                        new ForgeMenu((Player) e.getWhoClicked()).open((Player) e.getWhoClicked());
                     }
                 });
             } else {
@@ -160,7 +154,7 @@ public final class ForgeMenu extends Menu {
     @Override
     public void handleClick(InventoryClickEvent event) {
         event.setCancelled(true);
-        Consumer<InventoryClickEvent> handler = handlers.get(event.getSlot());
+        Consumer<InventoryClickEvent> handler = clickHandlers.get(event.getSlot());
         if (handler != null) {
             handler.accept(event);
         }
