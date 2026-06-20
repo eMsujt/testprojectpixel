@@ -21,10 +21,8 @@ import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.AccessoryBagMenu;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.CalendarMenu;
-import com.skyblock.core.menu.ForgeMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
-import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.ReforgeMenu;
 import com.skyblock.core.menu.SlayerMenu;
 import com.skyblock.core.menu.WardrobeMenu;
@@ -2804,121 +2802,6 @@ public final class CompactCommands {
                 player.sendMessage("Invalid amount: " + input);
                 return -1;
             }
-        }
-    }
-
-    // =========================================================================
-    // /pet (thin menu opener)
-    // =========================================================================
-
-    public static final class PetCmd extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new PetMenu(player).open(player);
-        }
-
-        @Override
-        protected boolean execute(Player player, Command command, String label, String[] args) {
-            openMenu(player);
-            return true;
-        }
-
-        @Override
-        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            return List.of();
-        }
-    }
-
-    // =========================================================================
-    // /reforge (thin menu opener — use ReforgeCommand for full sub-commands)
-    // =========================================================================
-
-    public static final class ReforgeCmd extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new ReforgeMenu().open(player);
-        }
-
-        @Override
-        protected boolean execute(Player player, Command command, String label, String[] args) {
-            openMenu(player);
-            return true;
-        }
-
-        @Override
-        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            return List.of();
-        }
-    }
-
-    // =========================================================================
-    // /wardrobe (thin menu opener — use WardrobeCommand for full sub-commands)
-    // =========================================================================
-
-    public static final class WardrobeCmd extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new WardrobeMenu(player.getUniqueId()).open(player);
-        }
-
-        @Override
-        protected boolean execute(Player player, Command command, String label, String[] args) {
-            openMenu(player);
-            return true;
-        }
-
-        @Override
-        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            return List.of();
-        }
-    }
-
-    // =========================================================================
-    // /island (thin menu opener — use IslandCommand for full sub-commands)
-    // =========================================================================
-
-    public static final class IslandCmd extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new IslandMenu(player.getUniqueId()).open(player);
-        }
-
-        @Override
-        protected boolean execute(Player player, Command command, String label, String[] args) {
-            openMenu(player);
-            return true;
-        }
-
-        @Override
-        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            return List.of();
-        }
-    }
-
-    // =========================================================================
-    // /forge (thin menu opener)
-    // =========================================================================
-
-    public static final class ForgeCmd extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new ForgeMenu(player.getUniqueId()).open(player);
-        }
-
-        @Override
-        protected boolean execute(Player player, Command command, String label, String[] args) {
-            openMenu(player);
-            return true;
-        }
-
-        @Override
-        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            return List.of();
         }
     }
 
