@@ -601,6 +601,11 @@ public final class SkyBlockCore extends JavaPlugin {
         MenuCommand forgeCommand = new MenuCommand(p -> new ForgeMenu(p).open(p));
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
+        MenuCommand talismanCommand = new MenuCommand(p -> new com.skyblock.core.menu.TalismanBagMenu(this, p).open(p));
+        if (getCommand("talisman") != null) {
+            getCommand("talisman").setExecutor(talismanCommand);
+            getCommand("talisman").setTabCompleter(talismanCommand);
+        }
         CalendarCommand calendarCommand = new CalendarCommand(calendarManager);
         if (getCommand("calendar") != null) {
             getCommand("calendar").setExecutor(calendarCommand);
