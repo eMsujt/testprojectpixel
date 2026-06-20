@@ -347,6 +347,14 @@ public final class SkyBlockCore extends JavaPlugin {
         return fishingManager;
     }
 
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+
+    public com.skyblock.core.manager.StorageManager getStorageCoordinator() {
+        return storageCoordinator;
+    }
+
     private void initManagers() {
         // core data — loaded first; others may depend on skill/profile state
         skillsManager = SkillManager.getInstance();
