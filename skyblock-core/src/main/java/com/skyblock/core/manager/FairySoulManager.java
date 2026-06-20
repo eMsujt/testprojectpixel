@@ -1,11 +1,16 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Stat;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -201,6 +206,55 @@ public final class FairySoulManager {
     public boolean resetPlayer(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return collected.remove(playerId) != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence
+    // -------------------------------------------------------------------------
+
+    /**
+     * Loads all per-player collected souls from {@code dataFolder/fairysouls.yml}.
+     * Each player is stored as a {@code <uuid>} section holding a string list of
+     * soul keys (see {@link #key(FairyIsland, int)}).
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "fairysouls.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        for (String uuidStr : cfg.getKeys(false)) {
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(uuidStr);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            collected.put(uuid, new HashSet<>(cfg.getStringList(uuidStr)));
+        }
+    }
+
+    /**
+     * Saves all in-memory collected souls to {@code dataFolder/fairysouls.yml}.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void save(File dataFolder) {
+        if (!dataFolder.exists() && !dataFolder.mkdirs()) {
+            return;
+        }
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Set<String>> entry : collected.entrySet()) {
+            List<String> keys = new ArrayList<>(entry.getValue());
+            cfg.set(entry.getKey().toString(), keys);
+        }
+        try {
+            cfg.save(new File(dataFolder, "fairysouls.yml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static String key(FairyIsland island, int soulIndex) {
