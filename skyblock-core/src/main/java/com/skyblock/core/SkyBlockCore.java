@@ -277,6 +277,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private DailyRewardManager dailyRewardManager;
     private RepairManager repairManager;
     private SeasonManager seasonManager;
+    private ScoreboardManager scoreboardManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
@@ -548,6 +549,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.manager.CarnivalManager.getInstance();
         com.skyblock.core.manager.EnderChestManager.getInstance();
         com.skyblock.core.manager.ExperimentationTableManager.getInstance();
+        scoreboardManager = ScoreboardManager.getInstance();
     }
 
     @Override
@@ -957,7 +959,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("storage").setExecutor(storageCommand);
             getCommand("storage").setTabCompleter(storageCommand);
         }
-        ScoreboardManager.getInstance().start(this);
+        scoreboardManager.start(this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ScoreboardListener.getInstance(), this);
         com.skyblock.core.manager.TabListManager.getInstance().start(this);
         manaManager.start(this);
@@ -1042,7 +1044,7 @@ public final class SkyBlockCore extends JavaPlugin {
         RunecraftingManager.getInstance().save(getDataFolder());
         CarpentryManager.getInstance().save(getDataFolder());
         SkyBlockEventManager.getInstance().stop();
-        ScoreboardManager.getInstance().stop();
+        scoreboardManager.stop();
         com.skyblock.core.manager.TabListManager.getInstance().stop();
         instance = null;
     }
