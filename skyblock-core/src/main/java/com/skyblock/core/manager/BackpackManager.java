@@ -1,4 +1,4 @@
-package com.skyblock.core.backpack;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -27,7 +27,7 @@ public final class BackpackManager {
         SMALL(9),
         MEDIUM(18),
         LARGE(27),
-        JUMBO(36);
+        GREATER(36);
 
         /** Number of item slots provided by this tier. */
         public final int slots;
@@ -166,6 +166,10 @@ public final class BackpackManager {
                     UUID uuid = UUID.fromString(key);
                     String tierName = cfg.getString("players." + key + ".tier");
                     if (tierName != null) {
+                        // migrate legacy JUMBO → GREATER
+                        if ("JUMBO".equals(tierName)) {
+                            tierName = "GREATER";
+                        }
                         try {
                             playerTiers.put(uuid, BackpackTier.valueOf(tierName));
                         } catch (IllegalArgumentException ignored) {

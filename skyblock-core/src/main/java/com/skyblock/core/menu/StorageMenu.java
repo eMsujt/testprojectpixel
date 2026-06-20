@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.backpack.BackpackManager.BackpackTier;
+import com.skyblock.core.manager.BackpackManager.BackpackTier;
 import com.skyblock.core.manager.StorageManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
