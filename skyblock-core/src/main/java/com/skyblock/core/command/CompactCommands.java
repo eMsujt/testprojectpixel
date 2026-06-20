@@ -21,7 +21,7 @@ import com.skyblock.core.menu.ProfileMenu;
 import com.skyblock.core.menu.SlayerMenu;
 import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.MinionMenu;
-import com.skyblock.core.menu.PetsMenu;
+import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.BestiaryMenu;
 import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.WardrobeMenu;
@@ -263,7 +263,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new PetsMenu(player).open(player);
+            new PetMenu(player).open(player);
         }
 
         @Override
