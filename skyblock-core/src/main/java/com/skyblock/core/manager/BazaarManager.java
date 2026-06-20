@@ -171,6 +171,10 @@ public final class BazaarManager {
 
     private BazaarManager() {}
 
+    public void load(java.io.File dataFolder) {}
+
+    public void save(java.io.File dataFolder) {}
+
     // ---- Order book accessors ----
 
     public int getSellOrderCount(String item) {
