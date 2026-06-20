@@ -382,7 +382,7 @@ commands:
   hub:
     description: Teleport to the configured hub.
     usage: /hub
-    permission: skyblock.warp
+    permission: skyblock.hub
     aliases: [spawn]
 
 permissions:
@@ -391,6 +391,9 @@ permissions:
     default: true
   skyblock.warp:
     description: Use the /warp command to teleport to warp points.
+    default: true
+  skyblock.hub:
+    description: Use the /hub command to teleport to the configured hub.
     default: true
   skyblock.warp.set:
     description: Create and delete warp points via /warp set and /warp delete.
