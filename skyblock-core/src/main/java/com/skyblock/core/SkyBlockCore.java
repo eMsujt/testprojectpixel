@@ -362,6 +362,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return petsManager;
     }
 
+    public PetManager getPetManager() {
+        return petManager;
+    }
+
     public SkillManager getSkillsManager() {
         return skillsManager;
     }
