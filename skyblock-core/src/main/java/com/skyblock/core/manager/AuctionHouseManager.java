@@ -4,6 +4,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +41,38 @@ public final class AuctionHouseManager {
 
         public String getDisplayName() {
             return displayName;
+        }
+    }
+
+    /** The fixed listing durations a seller may choose when creating an auction. */
+    public enum Duration {
+        HOUR_1("1 Hour", 1),
+        HOURS_6("6 Hours", 6),
+        HOURS_12("12 Hours", 12),
+        HOURS_24("24 Hours", 24),
+        HOURS_48("48 Hours", 48);
+
+        private static final long MILLIS_PER_HOUR = 60L * 60L * 1000L;
+
+        private final String displayName;
+        private final int hours;
+
+        Duration(String displayName, int hours) {
+            this.displayName = displayName;
+            this.hours = hours;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public int getHours() {
+            return hours;
+        }
+
+        /** Returns this duration in milliseconds. */
+        public long toMillis() {
+            return hours * MILLIS_PER_HOUR;
         }
     }
 
@@ -245,6 +280,27 @@ public final class AuctionHouseManager {
      * @param endEpoch    unix epoch milliseconds when the listing expires, or {@code 0} for no expiry
      * @return the UUID of the newly created listing
      */
+    /**
+     * Creates a new auction house listing that expires after one of the fixed
+     * {@link Duration} options, measured from {@code now}.
+     *
+     * @param seller      the selling player's UUID, must not be null
+     * @param item        the item being listed, must not be null
+     * @param itemName    the display name of the listed item, must not be null
+     * @param category    the auction category, must not be null
+     * @param startingBid the minimum bid or BIN price, must not be negative
+     * @param type        the auction type ({@link AuctionType#BIN} or {@link AuctionType#AUCTION})
+     * @param duration    the listing duration, must not be null
+     * @param now         the current time in unix epoch milliseconds
+     * @return the UUID of the newly created listing
+     */
+    public UUID createListing(UUID seller, ItemStack item, String itemName,
+                              AuctionCategory category, double startingBid, AuctionType type,
+                              Duration duration, long now) {
+        Objects.requireNonNull(duration, "duration");
+        return createListing(seller, item, itemName, category, startingBid, type, now + duration.toMillis());
+    }
+
     public UUID createListing(UUID seller, ItemStack item, String itemName,
                               AuctionCategory category, double startingBid, AuctionType type, long endEpoch) {
         Objects.requireNonNull(seller, "seller");
@@ -481,6 +537,24 @@ public final class AuctionHouseManager {
             settled.add(entry.getKey());
         }
         return settled;
+    }
+
+    /**
+     * Starts a repeating server task that settles expired listings via
+     * {@link #processExpired(long)} using the current wall-clock time.
+     *
+     * @param plugin      the owning plugin, must not be null
+     * @param periodTicks how often the sweep runs, in server ticks (20 ticks ≈ 1 second)
+     * @return the scheduled {@link BukkitTask} so the caller can cancel it on disable
+     */
+    public BukkitTask startExpiryTask(Plugin plugin, long periodTicks) {
+        Objects.requireNonNull(plugin, "plugin");
+        return new BukkitRunnable() {
+            @Override
+            public void run() {
+                processExpired(System.currentTimeMillis());
+            }
+        }.runTaskTimer(plugin, periodTicks, periodTicks);
     }
 
     // -------------------------------------------------------------------------
