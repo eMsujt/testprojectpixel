@@ -25,6 +25,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -50,6 +51,9 @@ public final class SkillListener implements Listener {
     private static final double XP_PER_BREW = 10.0;
 
     private static final Map<Material, Long> ORE_XP = Map.ofEntries(
+            Map.entry(Material.STONE,                    1L),
+            Map.entry(Material.COBBLESTONE,              1L),
+            Map.entry(Material.OBSIDIAN,                 5L),
             Map.entry(Material.COAL_ORE,                 5L),
             Map.entry(Material.DEEPSLATE_COAL_ORE,       5L),
             Map.entry(Material.IRON_ORE,                10L),
@@ -163,7 +167,12 @@ public final class SkillListener implements Listener {
 
         Long oreXp = ORE_XP.get(type);
         if (oreXp != null) {
+            int before = skillManager.getLevel(uuid, Skill.MINING);
             skillManager.addXP(uuid, Skill.MINING, oreXp);
+            int after = skillManager.getLevel(uuid, Skill.MINING);
+            if (after > before) {
+                player.sendTitle("§aSkill Level Up!", "§eMining §a→ §eLVL " + after, 10, 60, 20);
+            }
             collectionManager.addCollection(uuid, type, 1);
             return;
         }
@@ -272,6 +281,22 @@ public final class SkillListener implements Listener {
         UUID uuid = brewerMap.get(loc);
         if (uuid != null) alchemyManager.addXp(uuid, XP_PER_BREW);
         alchemyManager.processCompletedJobs(System.currentTimeMillis());
+    }
+
+    // --- Enchanting ---
+
+    @EventHandler
+    public void onEnchantItem(EnchantItemEvent event) {
+        Player player = event.getEnchanter();
+        UUID uuid = player.getUniqueId();
+        long xp = (long) event.getExpLevelCost() * 3L;
+        if (xp <= 0) return;
+        int before = skillManager.getLevel(uuid, Skill.ENCHANTING);
+        skillManager.addXP(uuid, Skill.ENCHANTING, xp);
+        int after = skillManager.getLevel(uuid, Skill.ENCHANTING);
+        if (after > before) {
+            player.sendTitle("§aSkill Level Up!", "§eEnchanting §a→ §eLVL " + after, 10, 60, 20);
+        }
     }
 
     public static double calculateDamage(Player attacker, ItemStack weapon, Entity target) {
