@@ -79,7 +79,7 @@ public final class EnchantingManager {
     public enum SkyBlockEnchant {
         // Combat
         SHARPNESS, CRITICAL, SMITE, BANE_OF_ARTHROPODS, FIRST_STRIKE,
-        GIANT_KILLER, ENDER_SLAYER, DRAGON_HUNTER, THUNDERLORD, VAMPIRISM,
+        GIANT_KILLER, ENDER_SLAYER, CUBISM, DRAGON_HUNTER, THUNDERLORD, VAMPIRISM,
         LIFE_STEAL, LETHALITY, EXECUTE, PROSECUTE, OVERLOAD,
         // Utility / Special
         TELEKINESIS, LOOTING, SMELTING_TOUCH, MAGNET, SILK_TOUCH,
@@ -112,6 +112,7 @@ public final class EnchantingManager {
         FIRST_STRIKE("First Strike", 4),
         GIANT_KILLER("Giant Killer", 7),
         ENDER_SLAYER("Ender Slayer", 7),
+        CUBISM("Cubism", 6),
         DRAGON_HUNTER("Dragon Hunter", 5),
         THUNDERLORD("Thunderlord", 7),
         VAMPIRISM("Vampirism", 6),
@@ -126,6 +127,12 @@ public final class EnchantingManager {
         SMELTING_TOUCH("Smelting Touch", 1),
         MAGNET("Magnet", 1),
         SILK_TOUCH("Silk Touch", 1),
+        FIRE_ASPECT("Fire Aspect", 2),
+        KNOCKBACK("Knockback", 2),
+        PUNCH("Punch", 2),
+        FLAME("Flame", 1),
+        // Bow
+        POWER("Power", 5),
         // Fishing
         LUCK_OF_THE_SEA("Luck of the Sea", 7),
         ANGLER("Angler", 6),
