@@ -284,6 +284,18 @@ public final class SkyBlockCore extends JavaPlugin {
         return collectionManager;
     }
 
+    public BankManager getBankManager() {
+        return bankManager;
+    }
+
+    public AuctionHouseManager getAuctionHouseManager() {
+        return auctionHouseManager;
+    }
+
+    public BazaarManager getBazaarManager() {
+        return bazaarManager;
+    }
+
     private void initManagers() {
         // core data — loaded first; others may depend on skill/profile state
         skillsManager = SkillManager.getInstance();
