@@ -49,4 +49,9 @@ public class SkyBlockItem {
     public ItemStack getItemStack() {
         return itemStack.clone();
     }
+
+    /** Returns {@code true} if the rarity is at least {@link Rarity#RARE}. */
+    public boolean isRareOrAbove() {
+        return rarity.ordinal() >= Rarity.RARE.ordinal();
+    }
 }
