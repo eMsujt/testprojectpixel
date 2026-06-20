@@ -18,7 +18,7 @@ import java.util.UUID;
 public final class IslandMenu extends Menu {
 
     static final int OVERVIEW_SLOT   = 13;
-    static final int BEACON_SLOT     = 22;
+    static final int BEACON_SLOT     = 49;
     static final int VISIT_SLOT      = 20;
     static final int MANAGE_SLOT     = 22;
     static final int SETTINGS_SLOT   = 24;

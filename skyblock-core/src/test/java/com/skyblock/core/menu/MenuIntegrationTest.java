@@ -262,8 +262,8 @@ class MenuIntegrationTest {
         }
 
         @Test
-        void beaconSlot_is22() {
-            assertEquals(22, IslandMenu.BEACON_SLOT);
+        void beaconSlot_is49() {
+            assertEquals(49, IslandMenu.BEACON_SLOT);
         }
 
         @Test
