@@ -406,6 +406,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return fishingManager;
     }
 
+    public MiningManager getMiningManager() {
+        return miningManager;
+    }
+
     public StorageManager getStorageManager() {
         return storageManager;
     }
