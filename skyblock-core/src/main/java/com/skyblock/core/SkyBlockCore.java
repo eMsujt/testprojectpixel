@@ -311,6 +311,14 @@ public final class SkyBlockCore extends JavaPlugin {
         return auctionManager;
     }
 
+    public SlayerManager getSlayerManager() {
+        return slayerManager;
+    }
+
+    public DungeonManager getDungeonManager() {
+        return dungeonManager;
+    }
+
     public BazaarManager getBazaarManager() {
         return bazaarManager;
     }
