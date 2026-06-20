@@ -38,14 +38,14 @@ import com.skyblock.core.command.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
 import com.skyblock.core.command.MenuCommand;
-import com.skyblock.core.command.MiningCommand;
+import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.DungeonsMenu;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.MinionMenu;
 import com.skyblock.core.menu.ProfileMenu;
 import com.skyblock.core.menu.ForgeMenu;
-import com.skyblock.core.command.SkyBlockCommand;
+import com.skyblock.core.menu.SkyBlockMenu;
 import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.StatsMenu;
 import com.skyblock.core.menu.CrimsonIsleMenu;
@@ -64,7 +64,6 @@ import com.skyblock.core.command.HOTMCommand;
 import com.skyblock.core.manager.HOTMManager;
 import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.manager.TamingManager;
-import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.command.MinionCommand;
 import com.skyblock.core.manager.MinionManager;
@@ -607,7 +606,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("networth").setExecutor(netWorthCommand);
             getCommand("networth").setTabCompleter(netWorthCommand);
         }
-        MayorCommand mayorCommand = new MayorCommand(mayorManager);
+        CompactCommands.MayorCommand mayorCommand = new CompactCommands.MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
         getCommand("mayor").setTabCompleter(mayorCommand);
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
@@ -696,7 +695,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("dungeons") != null) {
             getCommand("dungeons").setExecutor(dungeonsCommand);
         }
-        MiningCommand miningCommand = new MiningCommand();
+        MenuCommand miningCommand = new MenuCommand(p -> new MiningMenu(p).open(p));
         if (getCommand("mining") != null) {
             getCommand("mining").setExecutor(miningCommand);
             getCommand("mining").setTabCompleter(miningCommand);
@@ -955,7 +954,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("menu").setTabCompleter(menuCommand);
         }
         if (getCommand("skyblock") != null) {
-            getCommand("skyblock").setExecutor(new SkyBlockCommand());
+            getCommand("skyblock").setExecutor(new MenuCommand(p -> new SkyBlockMenu(p).open(p)));
         }
         TitleCommand titleCommand = new TitleCommand(titleManager);
         if (getCommand("title") != null) {
