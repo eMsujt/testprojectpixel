@@ -49,7 +49,7 @@ public final class BankMenu extends Menu {
     }
 
     public BankMenu(UUID playerId) {
-        super("§6Bank", 6);
+        super("§6§lBank Account", 6);
         this.playerId = playerId;
     }
 
