@@ -12,6 +12,7 @@ commands:
   accessorybag:
     description: Open the Accessory Bag GUI.
     usage: /accessorybag [list|add|remove|bonuses|rarity|tier]
+    aliases: [ab]
     permission: skyblock.accessories
   ability:
     description: View and manage item abilities.
