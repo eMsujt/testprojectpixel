@@ -143,6 +143,7 @@ import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.command.SkillsCommand;
 import com.skyblock.core.command.SlayerCommand;
 import com.skyblock.core.manager.SlayerManager;
+import com.skyblock.core.manager.CatacombsManager;
 import com.skyblock.core.listener.SlayerListener;
 import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.FortuneManager;
@@ -207,6 +208,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private PetManager petManager;
     private HOTMManager hotmManager;
     private SlayerManager slayerManager;
+    private CatacombsManager catacombsManager;
     private TrophyFishManager trophyFishManager;
     private BestiaryManager bestiaryManager;
     private MuseumManager museumManager;
@@ -351,6 +353,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return slayerManager;
     }
 
+    public CatacombsManager getCatacombsManager() {
+        return catacombsManager;
+    }
+
     public DungeonManager getDungeonManager() {
         return dungeonManager;
     }
@@ -450,6 +456,7 @@ public final class SkyBlockCore extends JavaPlugin {
         hotmManager.load(getDataFolder());
         slayerManager = SlayerManager.getInstance();
         slayerManager.load(getDataFolder());
+        catacombsManager = CatacombsManager.getInstance();
         trophyFishManager = TrophyFishManager.getInstance();
         bestiaryManager = BestiaryManager.getInstance();
         bestiaryManager.load(getDataFolder());
