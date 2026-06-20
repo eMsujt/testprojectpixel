@@ -53,6 +53,29 @@ public final class SkyblockUtils {
         }
     }
 
+    /** Formats {@code value} as a compact number string (e.g. 1500 → "1.5K", 2000000 → "2M"). */
+    public static String formatNumber(double value) {
+        if (value >= 1_000_000_000) return String.format("%.1fB", value / 1_000_000_000);
+        if (value >= 1_000_000)     return String.format("%.1fM", value / 1_000_000);
+        if (value >= 1_000)         return String.format("%.1fK", value / 1_000);
+        return String.format("%.0f", value);
+    }
+
+    /** Formats {@code seconds} as a human-readable duration (e.g. 3661 → "1h 1m 1s"). */
+    public static String formatTime(int seconds) {
+        int h = seconds / 3600;
+        int m = (seconds % 3600) / 60;
+        int s = seconds % 60;
+        if (h > 0) return h + "h " + m + "m " + s + "s";
+        if (m > 0) return m + "m " + s + "s";
+        return s + "s";
+    }
+
+    /** Converts a positive integer to its Roman-numeral string; returns {@code String.valueOf(n)} for values outside 1–3999. */
+    public static String toRomanNumeral(int n) {
+        return toRoman(n);
+    }
+
     /** Converts a positive integer to its Roman-numeral string; returns {@code String.valueOf(n)} for values outside 1–3999. */
     public static String toRoman(int n) {
         String[] thousands = {"", "M", "MM", "MMM"};
