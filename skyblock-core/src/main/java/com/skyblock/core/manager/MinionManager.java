@@ -95,35 +95,32 @@ public final class MinionManager {
 
     /** Upgrade tiers a minion can reach (I = slowest/smallest, XII = fastest/largest). */
     public enum MinionTier {
-        TIER_1 (14, 1, 26),
-        TIER_2 (13, 2, 24),
-        TIER_3 (12, 3, 22),
-        TIER_4 (11, 4, 20),
-        TIER_5 (10, 5, 18),
-        TIER_6 ( 9, 6, 16),
-        TIER_7 ( 8, 7, 14),
-        TIER_8 ( 7, 8, 12),
-        TIER_9 ( 6, 9, 10),
-        TIER_10( 5, 10,  8),
-        TIER_11( 4, 11,  6),
-        TIER_12( 3, 12,  4);
+        TIER_1 (14, 1),
+        TIER_2 (13, 2),
+        TIER_3 (12, 3),
+        TIER_4 (11, 4),
+        TIER_5 (10, 5),
+        TIER_6 ( 9, 6),
+        TIER_7 ( 8, 7),
+        TIER_8 ( 7, 8),
+        TIER_9 ( 6, 9),
+        TIER_10( 5, 10),
+        TIER_11( 4, 11),
+        TIER_12( 3, 12);
 
         /** Ticks between each production action (20 ticks = 1 second). */
         private final int actionIntervalTicks;
         /** Number of item-stack slots available in the minion's storage. */
         private final int storageSlots;
-        /** Real-world seconds between each production action. */
-        private final int actionIntervalSeconds;
 
-        MinionTier(int actionIntervalTicks, int storageSlots, int actionIntervalSeconds) {
+        MinionTier(int actionIntervalTicks, int storageSlots) {
             this.actionIntervalTicks = actionIntervalTicks;
             this.storageSlots = storageSlots;
-            this.actionIntervalSeconds = actionIntervalSeconds;
         }
 
         public int getActionIntervalTicks()   { return actionIntervalTicks; }
         public int getStorageSlots()          { return storageSlots; }
-        public int getActionIntervalSeconds() { return actionIntervalSeconds; }
+        public double getActionIntervalSeconds() { return actionIntervalTicks / 20.0; }
     }
 
     /**
