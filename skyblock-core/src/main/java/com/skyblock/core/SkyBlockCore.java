@@ -465,6 +465,7 @@ public final class SkyBlockCore extends JavaPlugin {
         accessoryBagManager = AccessoryBagManager.getInstance();
         AccessoryManager.getInstance();
         sackManager = SackManager.getInstance();
+        sackManager.load(getDataFolder());
         storageManager = StorageManager.getInstance();
         storageCoordinator = com.skyblock.core.manager.StorageManager.getInstance();
         storageCoordinator.loadAll(getDataFolder());
@@ -1035,6 +1036,7 @@ public final class SkyBlockCore extends JavaPlugin {
         SlayerManager.getInstance().save(getDataFolder());
         BestiaryManager.getInstance().save(getDataFolder());
         FairySoulManager.getInstance().save(getDataFolder());
+        SackManager.getInstance().save(getDataFolder());
         fishingManager.save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
