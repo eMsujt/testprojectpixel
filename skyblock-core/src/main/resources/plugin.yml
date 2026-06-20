@@ -32,7 +32,10 @@ commands:
   auctionhouse:
     description: Manage Auction House listings (BIN and bid-based).
     usage: /auctionhouse <list|create|bid|view|cancel|mine|history>
-    aliases: [ah, auction]
+  auction:
+    description: Open the Auction House GUI.
+    usage: /auction
+    aliases: [ah]
   backpack:
     description: Create and manage personal item backpacks.
     usage: /backpack <create <name>|delete <name>|list>
@@ -330,8 +333,9 @@ commands:
     usage: /season <current|next|set <season>|advance>
     permission: skyblock.season
   skills:
-    description: View your SkyBlock skills.
+    description: Open the Skills Menu.
     usage: /skills [skill]
+    aliases: [sk]
   skyblock:
     description: Open the SkyBlock main menu.
     aliases: [sb, sky]
