@@ -762,6 +762,11 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("dailyreward").setExecutor(dailyRewardCommand);
             getCommand("dailyreward").setTabCompleter(dailyRewardCommand);
         }
+        com.skyblock.core.command.SeasonCommand seasonCommand = new com.skyblock.core.command.SeasonCommand(com.skyblock.core.season.SeasonManager.getInstance());
+        if (getCommand("season") != null) {
+            getCommand("season").setExecutor(seasonCommand);
+            getCommand("season").setTabCompleter(seasonCommand);
+        }
     }
 
     @Override
