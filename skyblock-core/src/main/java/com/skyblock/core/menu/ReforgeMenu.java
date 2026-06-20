@@ -7,107 +7,77 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * 3-row GUI where a player drops the item to reforge in slot 11,
+ * clicks the anvil at slot 13 to apply a random reforge, and collects
+ * the result from slot 15.
+ */
 public final class ReforgeMenu extends Menu {
 
-    /** Inner area: rows 1–4, columns 1–7, 28 slots per page. */
-    private static final int PAGE_SIZE = 28;
+    static final int ITEM_SLOT   = 11;
+    static final int REFORGE_SLOT = 13;
+    static final int RESULT_SLOT  = 15;
 
-    private static final int[] INNER_SLOTS = buildInnerSlots();
+    private static final ReforgeManager.ReforgeType[] REFORGE_TYPES;
 
-    private static int[] buildInnerSlots() {
-        int[] slots = new int[PAGE_SIZE];
-        int idx = 0;
-        for (int row = 1; row <= 4; row++) {
-            for (int col = 1; col <= 7; col++) {
-                slots[idx++] = row * 9 + col;
-            }
-        }
-        return slots;
+    static {
+        ReforgeManager.ReforgeType[] all = ReforgeManager.ReforgeType.values();
+        // skip NONE (index 0)
+        REFORGE_TYPES = new ReforgeManager.ReforgeType[all.length - 1];
+        System.arraycopy(all, 1, REFORGE_TYPES, 0, REFORGE_TYPES.length);
     }
-
-    private static final ReforgeManager.ReforgeType[] REFORGES = buildReforgeList();
-
-    private static ReforgeManager.ReforgeType[] buildReforgeList() {
-        List<ReforgeManager.ReforgeType> list = new ArrayList<>();
-        for (ReforgeManager.ReforgeType r : ReforgeManager.ReforgeType.values()) {
-            if (r != ReforgeManager.ReforgeType.NONE) list.add(r);
-        }
-        return list.toArray(new ReforgeManager.ReforgeType[0]);
-    }
-
-    private int page;
 
     public ReforgeMenu() {
-        super("Reforge Anvil", 6);
-        this.page = 0;
+        super("§6Reforge Item", 3);
     }
 
     @Override
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            int row = slot / 9;
-            if (row == 0 || row == 5 || col == 0 || col == 8) {
+        for (int slot = 0; slot < 27; slot++) {
+            if (slot != ITEM_SLOT && slot != REFORGE_SLOT && slot != RESULT_SLOT) {
                 setItem(slot, pane);
             }
         }
 
-        int start = page * PAGE_SIZE;
-        for (int i = 0; i < PAGE_SIZE; i++) {
-            int idx = start + i;
-            if (idx >= REFORGES.length) break;
-            ReforgeManager.ReforgeType reforge = REFORGES[idx];
-            setItem(INNER_SLOTS[i], new ItemBuilder(Material.ANVIL)
-                    .displayName("§d" + reforge.getDisplayName())
-                    .lore(buildStatLore(reforge))
-                    .build());
-        }
+        setItem(ITEM_SLOT, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§7Item to Reforge")
+                .lore("§7Drag your item here.")
+                .build());
 
-        int totalPages = (REFORGES.length + PAGE_SIZE - 1) / PAGE_SIZE;
+        setItem(REFORGE_SLOT, new ItemBuilder(Material.ANVIL)
+                .displayName("§6Reforge")
+                .lore("§7Click to apply a random reforge", "§7to the item in the left slot.")
+                .build());
 
-        if (page > 0) {
-            setItem(48, new ItemBuilder(Material.ARROW)
-                    .displayName("§aPrevious Page")
-                    .lore("§7Page " + page + " of " + totalPages)
-                    .build(),
-                    e -> {
-                        page--;
-                        if (e.getWhoClicked() instanceof Player p) open(p);
-                    });
-        }
-
-        if (start + PAGE_SIZE < REFORGES.length) {
-            setItem(50, new ItemBuilder(Material.ARROW)
-                    .displayName("§aNext Page")
-                    .lore("§7Page " + (page + 2) + " of " + totalPages)
-                    .build(),
-                    e -> {
-                        page++;
-                        if (e.getWhoClicked() instanceof Player p) open(p);
-                    });
-        }
+        setItem(RESULT_SLOT, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .displayName("§7Result")
+                .lore("§7The reforged item appears here.")
+                .build());
     }
 
     @Override
     public void handleClick(InventoryClickEvent event) {
+        int slot = event.getRawSlot();
+        if (slot == ITEM_SLOT) {
+            // allow the player to freely place / take the item being reforged
+            return;
+        }
         event.setCancelled(true);
-        super.handleClick(event);
-    }
-
-    private static List<String> buildStatLore(ReforgeManager.ReforgeType reforge) {
-        List<String> lore = new ArrayList<>();
-        if (reforge.getStrengthBonus() != 0)
-            lore.add("§cStrength: §a+" + reforge.getStrengthBonus());
-        if (reforge.getDefenseBonus() != 0)
-            lore.add("§aDefense: §a+" + reforge.getDefenseBonus());
-        if (reforge.getSpeedBonus() != 0)
-            lore.add("§fSpeed: §a+" + reforge.getSpeedBonus());
-        if (lore.isEmpty())
-            lore.add("§7No stat bonuses.");
-        return lore;
+        if (slot == REFORGE_SLOT && event.getWhoClicked() instanceof Player player) {
+            ItemStack item = getInventory().getItem(ITEM_SLOT);
+            if (item == null || item.getType() == Material.AIR
+                    || item.getType() == Material.GRAY_STAINED_GLASS_PANE) {
+                player.sendMessage("§cPlace an item in the left slot first.");
+                return;
+            }
+            ReforgeManager mgr = ReforgeManager.getInstance();
+            ReforgeManager.ReforgeType chosen =
+                    REFORGE_TYPES[(int) (Math.random() * REFORGE_TYPES.length)];
+            mgr.setReforge(player.getUniqueId(), chosen);
+            getInventory().setItem(RESULT_SLOT, item.clone());
+            getInventory().setItem(ITEM_SLOT, null);
+            player.sendMessage("§aYour item was reforged to §6" + chosen.getDisplayName() + "§a!");
+        }
     }
 }
