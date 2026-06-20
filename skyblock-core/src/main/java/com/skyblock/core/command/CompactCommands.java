@@ -2875,4 +2875,27 @@ public final class CompactCommands {
         }
     }
 
+    // =========================================================================
+    // /island (thin menu opener — use IslandCommand for full sub-commands)
+    // =========================================================================
+
+    public static final class IslandCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new IslandMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
 }
