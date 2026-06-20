@@ -218,7 +218,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new TalismanMenu(player.getUniqueId()).open(player);
+            new TalismanMenu(player).open(player);
         }
 
         @Override

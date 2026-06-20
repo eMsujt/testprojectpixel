@@ -1,15 +1,13 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.AuctionHouseManager;
-import com.skyblock.core.manager.AuctionHouseManager.AuctionListing;
+import com.skyblock.core.manager.AuctionManager;
+import com.skyblock.core.manager.AuctionManager.Listing;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Canonical 54-slot Auction House menu. Category filter icons occupy the top
@@ -79,27 +77,23 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
             setItem(slot, pane);
         }
 
-        AuctionHouseManager manager = AuctionHouseManager.getInstance();
-        List<AuctionListing> listings = manager.getActiveListings().stream()
-                .map(manager::getListing)
-                .collect(Collectors.toList());
+        List<Listing> listings = AuctionManager.getInstance().getListings();
 
         int start = page * PAGE_SIZE;
         int end = Math.min(start + PAGE_SIZE, listings.size());
 
         for (int i = start; i < end; i++) {
-            AuctionListing listing = listings.get(i);
-            String name = itemDisplayName(listing.item());
+            Listing listing = listings.get(i);
             ItemStack icon = new ItemBuilder(listing.item())
-                    .displayName("§e" + name)
+                    .displayName("§e" + listing.itemName())
                     .lore(
-                            "§7" + listing.type().getDisplayName() + ": §6" + (long) listing.startingBid() + " coins",
-                            "§7Category: §f" + listing.category().getDisplayName(),
+                            "§7BIN: §6" + (long) listing.price() + " coins",
+                            "§7Category: §f" + listing.category(),
                             "§eClick to purchase!")
                     .build();
             setItem(LISTING_SLOTS[i - start], icon,
                     event -> event.getWhoClicked().sendMessage(
-                            "§e" + name + " §7is listed for §6" + (long) listing.startingBid() + " coins§7."));
+                            "§e" + listing.itemName() + " §7is listed for §6" + (long) listing.price() + " coins§7."));
         }
 
         if (listings.isEmpty()) {
@@ -130,20 +124,5 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                         new AuctionHouseMenu(player, page + 1).open(player);
                     });
         }
-    }
-
-    private static String itemDisplayName(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && meta.hasDisplayName()) {
-            return meta.getDisplayName();
-        }
-        String name = item.getType().name().replace('_', ' ');
-        StringBuilder sb = new StringBuilder();
-        for (String word : name.split(" ")) {
-            if (sb.length() > 0) sb.append(' ');
-            sb.append(Character.toUpperCase(word.charAt(0)));
-            if (word.length() > 1) sb.append(word.substring(1).toLowerCase());
-        }
-        return sb.toString();
     }
 }
