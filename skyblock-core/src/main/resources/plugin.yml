@@ -86,7 +86,7 @@ commands:
     description: View your collection progress.
     usage: /collection [name]
     aliases: [col]
-    permission: skyblock.collection
+    permission: skyblock.command.collection
   collections:
     description: View your SkyBlock collection progress.
     usage: /collections [collection|category <cat>|reset]
@@ -301,6 +301,10 @@ commands:
     description: View your SkyBlock profile.
     usage: /profile [player]
     permission: skyblock.command.profile
+  purse:
+    description: View your current coin purse balance.
+    usage: /purse
+    permission: skyblock.command.purse
   quest:
     description: Manage your SkyBlock quests.
     usage: /quest <list|start|status|reset>
@@ -635,4 +639,10 @@ permissions:
     default: true
   skyblock.command.dungeon:
     description: Use the /dungeon command to open your Dungeon menu.
+    default: true
+  skyblock.command.collection:
+    description: Use the /collection command to view collection progress.
+    default: true
+  skyblock.command.purse:
+    description: Use the /purse command to view your coin purse balance.
     default: true
