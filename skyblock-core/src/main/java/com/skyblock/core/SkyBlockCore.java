@@ -168,7 +168,7 @@ import com.skyblock.core.manager.RiftManager;
 import com.skyblock.core.crystalhollows.CrystalHollowsCommand;
 import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.storage.StorageManager;
-import com.skyblock.core.storage.StorageCommand;
+import com.skyblock.core.command.StorageCommand;
 import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.npc.NpcCommand;
 import com.skyblock.core.npc.NPCListener;
@@ -321,6 +321,7 @@ public final class SkyBlockCore extends JavaPlugin {
         sackManager = SackManager.getInstance();
         storageManager = StorageManager.getInstance();
         storageCoordinator = com.skyblock.core.manager.StorageManager.getInstance();
+        storageCoordinator.loadAll(getDataFolder());
         islandManager = IslandManager.getInstance();
         islandManager.load(getDataFolder());
         islandManager.start(this);
@@ -800,10 +801,11 @@ public final class SkyBlockCore extends JavaPlugin {
         CrystalHollowsCommand crystalHollowsCommand = new CrystalHollowsCommand(crystalHollowsManager);
         getCommand("crystalhollows").setExecutor(crystalHollowsCommand);
         getCommand("crystalhollows").setTabCompleter(crystalHollowsCommand);
-        StorageCommand storageCommand = new StorageCommand(storageManager);
-        getCommand("storage").setTabCompleter(storageCommand);
-        MenuCommand storageMenuCommand = new MenuCommand(p -> new com.skyblock.core.menu.StorageMenu(SkyBlockCore.getInstance(), p, backpackManager.getTier(p.getUniqueId())).open(p));
-        getCommand("storage").setExecutor(storageMenuCommand);
+        StorageCommand storageCommand = new StorageCommand(storageCoordinator);
+        if (getCommand("storage") != null) {
+            getCommand("storage").setExecutor(storageCommand);
+            getCommand("storage").setTabCompleter(storageCommand);
+        }
         ScoreboardManager.getInstance().start(this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ScoreboardListener.getInstance(), this);
         manaManager.start(this);

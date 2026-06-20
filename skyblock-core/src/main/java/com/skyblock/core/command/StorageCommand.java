@@ -1,5 +1,6 @@
-package com.skyblock.core.storage;
+package com.skyblock.core.command;
 
+import com.skyblock.core.manager.StorageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /storage info}    — show your current storage page count</li>
+ *   <li>{@code /storage info}    — show storage summary</li>
  *   <li>{@code /storage upgrade} — unlock an additional storage page</li>
  *   <li>{@code /storage reset}   — reset storage data to default</li>
  * </ul>
@@ -64,30 +65,31 @@ public final class StorageCommand implements TabExecutor {
     }
 
     private void handleInfo(Player player) {
-        StorageManager.StorageData data = storageManager.getStorage(player.getUniqueId());
         player.sendMessage("=== Your Storage ===");
-        player.sendMessage("Unlocked pages: " + data.getUnlockedPages() + " / " + StorageManager.MAX_PAGES);
+        player.sendMessage(storageManager.getSummary(player.getUniqueId()));
     }
 
     private void handleUpgrade(Player player) {
         boolean upgraded = storageManager.unlockPage(player.getUniqueId());
         if (upgraded) {
-            int pages = storageManager.getStorage(player.getUniqueId()).getUnlockedPages();
+            int pages = storageManager.getUnlockedPages(player.getUniqueId());
             player.sendMessage("Storage upgraded! You now have " + pages + " page(s).");
         } else {
             player.sendMessage("Your storage is already at the maximum of "
-                    + StorageManager.MAX_PAGES + " pages.");
+                    + com.skyblock.core.storage.StorageManager.MAX_PAGES + " pages.");
         }
     }
 
     private void handleReset(Player player) {
-        storageManager.resetStorage(player.getUniqueId());
-        player.sendMessage("Your storage has been reset to 1 page.");
+        java.util.UUID playerId = player.getUniqueId();
+        storageManager.pages().resetStorage(playerId);
+        storageManager.resetItems(playerId);
+        player.sendMessage("Your storage has been reset to default.");
     }
 
     private void sendHelp(Player player) {
         player.sendMessage("=== Storage Commands ===");
-        player.sendMessage("/storage info    — view your storage pages");
+        player.sendMessage("/storage info    — view your storage summary");
         player.sendMessage("/storage upgrade — unlock an additional page");
         player.sendMessage("/storage reset   — reset storage to default");
     }
