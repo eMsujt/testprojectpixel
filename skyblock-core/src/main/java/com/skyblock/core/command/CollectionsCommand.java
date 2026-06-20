@@ -1,6 +1,5 @@
-package com.skyblock.core.collections.command;
+package com.skyblock.core.command;
 
-import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.model.Collection;
@@ -112,10 +111,6 @@ public final class CollectionsCommand extends PlayerCommand {
         for (int i = 0; i < history.size(); i++) {
             player.sendMessage((i + 1) + ". " + history.get(i));
         }
-    }
-
-    private void handleAll(Player player) {
-        new CollectionsMenu(player.getUniqueId()).open(player);
     }
 
     private void handleCollection(Player player, Collection collection) {
