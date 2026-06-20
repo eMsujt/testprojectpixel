@@ -1,11 +1,13 @@
 package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.menu.Menu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 import java.util.UUID;
 
@@ -23,7 +25,10 @@ public final class PlayerEventListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
+        InventoryHolder holder = event.getInventory().getHolder();
+        if (!(holder instanceof Menu)) return;
         event.setCancelled(true);
+        ((Menu) holder).handleClick(event);
     }
 
     @EventHandler
