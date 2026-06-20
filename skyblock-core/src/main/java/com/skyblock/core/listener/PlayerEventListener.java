@@ -5,19 +5,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.UUID;
 
-public final class DeathListener implements Listener {
+public final class PlayerEventListener implements Listener {
 
-    private static final DeathListener INSTANCE = new DeathListener();
+    private static final PlayerEventListener INSTANCE = new PlayerEventListener();
 
     private final BankManager bankManager = BankManager.getInstance();
 
-    private DeathListener() {}
+    private PlayerEventListener() {}
 
-    public static DeathListener getInstance() {
+    public static PlayerEventListener getInstance() {
         return INSTANCE;
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        event.setCancelled(true);
     }
 
     @EventHandler
