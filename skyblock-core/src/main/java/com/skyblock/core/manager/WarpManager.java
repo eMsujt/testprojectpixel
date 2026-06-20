@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -83,6 +84,26 @@ public final class WarpManager {
         WarpLocation(String displayName) { this.displayName = displayName; }
         public String getDisplayName() { return displayName; }
         public String warpKey() { return name().toLowerCase(); }
+    }
+
+    /** Ordered catalogue of every SkyBlock warp: key → descriptive label. */
+    public static final LinkedHashMap<String, String> WARPS;
+    static {
+        WARPS = new LinkedHashMap<>();
+        WARPS.put("hub",             "The central hub island");
+        WARPS.put("farming_1",       "The Barn — crops, animals, and farming");
+        WARPS.put("farming_2",       "Mushroom Desert — vast mushroom biome");
+        WARPS.put("mining_1",        "Gold Mine — surface gold and coal");
+        WARPS.put("mining_2",        "Deep Caverns — deep ores and minerals");
+        WARPS.put("mining_3",        "Dwarven Mines — gemstone-rich dwarven tunnels");
+        WARPS.put("foraging_1",      "The Park — forested foraging grounds");
+        WARPS.put("combat_1",        "Spider's Den — cavern overrun by spiders");
+        WARPS.put("combat_2",        "Blazing Fortress — nether fortress of blazes");
+        WARPS.put("combat_3",        "The End — void dimension of endermen");
+        WARPS.put("crystal_hollows", "Crystal Hollows — crystal-laden underground caverns");
+        WARPS.put("crimson_isle",    "Crimson Isle — fiery nether island");
+        WARPS.put("the_rift",        "The Rift — mysterious dimensional rift");
+        WARPS.put("dungeon_hub",     "Dungeon Hub — gateway to the Catacombs");
     }
 
     private static final WarpManager INSTANCE = new WarpManager();
