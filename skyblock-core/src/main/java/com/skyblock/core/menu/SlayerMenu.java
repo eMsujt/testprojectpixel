@@ -15,14 +15,13 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 54-slot Slayer overview menu. Shows the 5 canonical slayer bosses
- * (Revenant Horror / Tarantula Broodfather / Sven Packmaster /
- * Voidgloom Seraph / Inferno Demonlord) as mob-head items with the
- * player's current level, XP and kill count for each {@link SlayerType}.
+ * 54-slot Slayer overview menu. Shows the four canonical slayer bosses
+ * (Revenant Horror / Tarantula Broodfather / Sven Packmaster / Voidgloom Seraph)
+ * with the player's current level, XP and kill count for each {@link SlayerType}.
  */
 public final class SlayerMenu extends AbstractMenu {
 
-    static final int[] BOSS_SLOTS = {20, 21, 22, 23, 24};
+    static final int[] BOSS_SLOTS = {20, 22, 24, 31};
 
     private static final int SUMMARY_SLOT = 49;
 
@@ -30,22 +29,20 @@ public final class SlayerMenu extends AbstractMenu {
             SlayerBoss.REVENANT_HORROR,
             SlayerBoss.TARANTULA_BROODFATHER,
             SlayerBoss.SVEN_PACKMASTER,
-            SlayerBoss.VOIDGLOOM_SERAPH,
-            SlayerBoss.INFERNO_DEMONLORD
+            SlayerBoss.VOIDGLOOM_SERAPH
     };
 
     private static final Map<SlayerType, Material> HEAD_ICONS = new EnumMap<>(SlayerType.class);
 
     static {
-        HEAD_ICONS.put(SlayerType.ZOMBIE,   Material.WITHER_SKELETON_SKULL);
+        HEAD_ICONS.put(SlayerType.ZOMBIE,   Material.ROTTEN_FLESH);
         HEAD_ICONS.put(SlayerType.SPIDER,   Material.SPIDER_EYE);
         HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE);
         HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_PEARL);
-        HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_POWDER);
     }
 
     public SlayerMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§c§lSlayer Quests", 54);
+        super(plugin, player, "§cSlayer Quests", 54);
     }
 
     @Override
