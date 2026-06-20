@@ -46,6 +46,11 @@ commands:
     usage: /banking
     aliases: [coins]
     permission: skyblock.bank
+  networth:
+    description: Show your liquid net worth (purse + bank balance).
+    usage: /networth
+    aliases: [nw]
+    permission: skyblock.networth
   bazaar:
     description: Open the Bazaar.
     usage: /bazaar [product]
@@ -509,6 +514,9 @@ permissions:
     default: true
   skyblock.bank:
     description: Use the /bank command to manage your SkyBlock bank account.
+    default: true
+  skyblock.networth:
+    description: Use the /networth command to view your net worth.
     default: true
   skyblock.friend:
     description: Use the /friend command to manage SkyBlock friendships.
