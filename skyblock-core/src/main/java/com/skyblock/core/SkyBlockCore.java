@@ -66,6 +66,7 @@ import com.skyblock.core.mayor.MayorCommand;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.command.MinionCommand;
 import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.command.PetCommand;
@@ -212,6 +213,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private MuseumManager museumManager;
     private RiftManager riftManager;
     private MinionManager minionManager;
+    private PetsManager petsManager;
     private ForgeManager forgeManager;
     private StatManager statManager;
     private FortuneManager fortuneManager;
@@ -347,6 +349,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return minionManager;
     }
 
+    public PetsManager getPetsManager() {
+        return petsManager;
+    }
+
     public FishingManager getFishingManager() {
         return fishingManager;
     }
@@ -400,6 +406,8 @@ public final class SkyBlockCore extends JavaPlugin {
         minionManager = MinionManager.getInstance();
         minionManager.load(getDataFolder());
         minionManager.startTickTask(this);
+        petsManager = PetsManager.getInstance();
+        petsManager.load(getDataFolder());
         forgeManager = ForgeManager.getInstance();
         statManager = StatManager.getInstance();
         fortuneManager = FortuneManager.getInstance();
@@ -984,6 +992,7 @@ public final class SkyBlockCore extends JavaPlugin {
         ReforgeManager.getInstance().save(getDataFolder());
         MinionManager.getInstance().stopTickTask();
         MinionManager.getInstance().save(getDataFolder());
+        PetsManager.getInstance().save(getDataFolder());
         SkillManager.getInstance().save(getDataFolder());
         ProfileManager.getInstance().save(getDataFolder());
         CraftingManager.getInstance().save(getDataFolder());
