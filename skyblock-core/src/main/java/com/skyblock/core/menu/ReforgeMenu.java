@@ -59,8 +59,8 @@ public final class ReforgeMenu extends Menu {
     @Override
     public void handleClick(InventoryClickEvent event) {
         int slot = event.getRawSlot();
-        if (slot == ITEM_SLOT) {
-            // allow the player to freely place / take the item being reforged
+        if (slot == ITEM_SLOT || slot == RESULT_SLOT) {
+            // allow the player to freely place / take the item being reforged or collected
             return;
         }
         event.setCancelled(true);
