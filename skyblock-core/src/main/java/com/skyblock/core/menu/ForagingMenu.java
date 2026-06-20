@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
 import com.skyblock.core.foraging.ForagingManager;
-import com.skyblock.core.foraging.ForagingManager.ForagingZone;
+import com.skyblock.core.foraging.ForagingManager.ForagingArea;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -12,35 +12,35 @@ public final class ForagingMenu extends Menu {
 
     private static final String TITLE = "§2Foraging";
 
-    private static final int[] ZONE_SLOTS = {10, 12, 14, 16, 22};
+    private static final int[] AREA_SLOTS = {10, 12, 14, 16, 22};
 
     private final UUID owner;
 
     public ForagingMenu(UUID owner) {
-        super(TITLE, 3);
+        super(TITLE, 6);
         this.owner = owner;
     }
 
     @Override
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 27; slot++) {
+        for (int slot = 0; slot < 54; slot++) {
             setItem(slot, pane);
         }
 
         ForagingManager mgr = ForagingManager.getInstance();
-        ForagingZone[] zones = ForagingZone.values();
+        ForagingArea[] areas = ForagingArea.values();
 
-        for (int i = 0; i < zones.length && i < ZONE_SLOTS.length; i++) {
-            ForagingZone zone = zones[i];
-            Material mat = zone.getPrimaryTree().getMaterial();
-            int chops = mgr.getChops(owner, zone.getPrimaryTree());
+        for (int i = 0; i < areas.length && i < AREA_SLOTS.length; i++) {
+            ForagingArea area = areas[i];
+            Material mat = area.getPrimaryTree().getMaterial();
+            int chops = mgr.getChops(owner, area.getPrimaryTree());
 
-            setItem(ZONE_SLOTS[i], new ItemBuilder(mat)
-                    .displayName("§2" + zone.getDisplayName())
+            setItem(AREA_SLOTS[i], new ItemBuilder(mat)
+                    .displayName("§2" + area.getDisplayName())
                     .lore(
                             "§7Chops: §a" + chops,
-                            "§7Click to view zone details.")
+                            "§7Click to view area details.")
                     .build(),
                     e -> e.setCancelled(true));
         }

@@ -1538,8 +1538,8 @@ class MenuIntegrationTest {
         }
 
         @Test
-        void rows_isFive() {
-            assertEquals(5, new GardenMenu(PLAYER).getRows());
+        void rows_isSix() {
+            assertEquals(6, new GardenMenu(PLAYER).getRows());
         }
 
         @Test
@@ -2524,8 +2524,8 @@ class MenuIntegrationTest {
         }
 
         @Test
-        void rows_isThree() {
-            assertEquals(3, new ForagingMenu(PLAYER).getRows());
+        void rows_isSix() {
+            assertEquals(6, new ForagingMenu(PLAYER).getRows());
         }
 
         @Test
