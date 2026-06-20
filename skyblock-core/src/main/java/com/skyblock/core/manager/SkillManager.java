@@ -302,6 +302,15 @@ public final class SkillManager {
         if (total > 0) statManager.addBonus(playerId, stat, total);
     }
 
+    /**
+     * Checks whether the player crossed any skill levels and applies the accumulated
+     * stat rewards for the gained levels. No-op when {@code newLevel <= oldLevel}.
+     * Alias for {@link #grantLevelUpRewards(UUID, Skill, int, int)}.
+     */
+    public void checkAndApplyLevelRewards(UUID playerId, Skill skill, int oldLevel, int newLevel) {
+        grantLevelUpRewards(playerId, skill, oldLevel, newLevel);
+    }
+
     // -------------------------------------------------------------------------
     // Persistence
     // -------------------------------------------------------------------------
