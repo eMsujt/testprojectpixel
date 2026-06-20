@@ -69,9 +69,8 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
 
         for (int i = 0; i < ORDER_SLOTS.length && i < products.size(); i++) {
             BazaarProduct product = products.get(i);
-            double[] ref = BazaarManager.PRODUCT_DATA.get(product.getItemId());
-            double buyPrice  = ref != null ? ref[0] : manager.getLowestAsk(product);
-            double sellPrice = ref != null ? ref[1] : manager.getHighestBid(product);
+            double buyPrice  = manager.getDisplayBuyPrice(product);
+            double sellPrice = manager.getDisplaySellPrice(product);
 
             setItem(ORDER_SLOTS[i], new ItemBuilder(resolveMaterial(product))
                     .displayName("§f" + product.getDisplayName())

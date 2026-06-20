@@ -729,6 +729,18 @@ public final class BazaarManager {
         return "Bazaar Stats: Buy Orders: " + buys + " | Sell Orders: " + sells + " | Total Events: " + events;
     }
 
+    /** Reference buy price: seed data if available, else lowest live ask. */
+    public double getDisplayBuyPrice(BazaarProduct product) {
+        double[] ref = PRODUCT_DATA.get(product.getItemId());
+        return ref != null ? ref[0] : getLowestAsk(product);
+    }
+
+    /** Reference sell price: seed data if available, else highest live bid. */
+    public double getDisplaySellPrice(BazaarProduct product) {
+        double[] ref = PRODUCT_DATA.get(product.getItemId());
+        return ref != null ? ref[1] : getHighestBid(product);
+    }
+
     // --- Instant price accessors ---
 
     public double getInstantBuyPrice(String itemId) {
