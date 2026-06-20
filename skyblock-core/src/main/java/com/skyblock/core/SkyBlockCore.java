@@ -678,6 +678,10 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("runes") != null) {
             getCommand("runes").setExecutor(runeCommand);
         }
+        com.skyblock.core.command.RunecraftingCommand runecraftingCommand = new com.skyblock.core.command.RunecraftingCommand();
+        if (getCommand("runecrafting") != null) {
+            getCommand("runecrafting").setExecutor(runecraftingCommand);
+        }
         CalendarCommand calendarCommand = new CalendarCommand();
         if (getCommand("calendar") != null) {
             getCommand("calendar").setExecutor(calendarCommand);
