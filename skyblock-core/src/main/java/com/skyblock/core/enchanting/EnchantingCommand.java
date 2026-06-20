@@ -1,6 +1,7 @@
 package com.skyblock.core.enchanting;
 
 import com.skyblock.core.manager.EnchantingManager;
+import com.skyblock.core.util.SkyblockUtils;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -219,7 +220,7 @@ public final class EnchantingCommand implements TabExecutor {
                 }
                 String bookName = args.length >= 5
                         ? String.join(" ", Arrays.copyOfRange(args, 4, args.length))
-                        : type.getDisplayName() + " Book " + toRoman(level);
+                        : type.getDisplayName() + " Book " + SkyblockUtils.toRoman(level);
                 try {
                     EnchantingManager.EnchantmentBook book =
                             new EnchantingManager.EnchantmentBook(bookName, type, level);
@@ -279,15 +280,6 @@ public final class EnchantingCommand implements TabExecutor {
         for (int i = 0; i < history.size(); i++) {
             player.sendMessage((i + 1) + ". " + history.get(i));
         }
-    }
-
-    private static String toRoman(int n) {
-        String[] thousands = {"", "M", "MM", "MMM"};
-        String[] hundreds  = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
-        String[] tens      = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
-        String[] ones      = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
-        if (n < 1 || n > 3999) return String.valueOf(n);
-        return thousands[n / 1000] + hundreds[(n % 1000) / 100] + tens[(n % 100) / 10] + ones[n % 10];
     }
 
     private static EnchantingManager.SkyBlockEnchantment parseType(String name) {

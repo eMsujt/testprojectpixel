@@ -1,5 +1,6 @@
 package com.skyblock.core.util;
 
+import com.skyblock.core.model.Rarity;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -8,6 +9,7 @@ import org.bukkit.generator.WorldInfo;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
@@ -62,6 +64,47 @@ public final class SkyblockUtils {
         for (int row = 1; row < rows - 1; row++) {
             setter.accept(row * 9, pane);
             setter.accept(row * 9 + 8, pane);
+        }
+    }
+
+    /** Converts a positive integer to its Roman-numeral string; returns {@code String.valueOf(n)} for values outside 1–3999. */
+    public static String toRoman(int n) {
+        String[] thousands = {"", "M", "MM", "MMM"};
+        String[] hundreds  = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+        String[] tens      = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+        String[] ones      = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+        if (n < 1 || n > 3999) return String.valueOf(n);
+        return thousands[n / 1000] + hundreds[(n % 1000) / 100] + tens[(n % 100) / 10] + ones[n % 10];
+    }
+
+    /** Returns the legacy {@link ChatColor} used for the given {@link Rarity}. */
+    public static ChatColor rarityColor(Rarity rarity) {
+        if (rarity == null) return ChatColor.WHITE;
+        switch (rarity) {
+            case UNCOMMON:  return ChatColor.GREEN;
+            case RARE:      return ChatColor.BLUE;
+            case EPIC:      return ChatColor.DARK_PURPLE;
+            case LEGENDARY: return ChatColor.GOLD;
+            case MYTHIC:    return ChatColor.LIGHT_PURPLE;
+            case DIVINE:    return ChatColor.AQUA;
+            case SPECIAL:   return ChatColor.RED;
+            default:        return ChatColor.WHITE;
+        }
+    }
+
+    /** Returns the legacy {@link ChatColor} for a rarity name string (e.g. {@code "LEGENDARY"}). */
+    public static ChatColor rarityColor(String name) {
+        if (name == null) return ChatColor.WHITE;
+        switch (name.toUpperCase(Locale.ROOT)) {
+            case "UNCOMMON":     return ChatColor.GREEN;
+            case "RARE":         return ChatColor.BLUE;
+            case "EPIC":         return ChatColor.DARK_PURPLE;
+            case "LEGENDARY":    return ChatColor.GOLD;
+            case "MYTHIC":       return ChatColor.LIGHT_PURPLE;
+            case "DIVINE":       return ChatColor.AQUA;
+            case "SPECIAL":
+            case "VERY_SPECIAL": return ChatColor.RED;
+            default:             return ChatColor.WHITE;
         }
     }
 

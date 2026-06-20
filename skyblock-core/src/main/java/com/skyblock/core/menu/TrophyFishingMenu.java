@@ -4,6 +4,7 @@ import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.TrophyFishManager.TrophyTier;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -58,7 +59,7 @@ public final class TrophyFishingMenu extends Menu {
 
         for (int i = 0; i < fishes.length; i++) {
             FishingManager.TrophyFish fish = fishes[i];
-            String color = ItemBuilder.rarityColor(fish.rarity.name()).toString();
+            String color = SkyblockUtils.rarityColor(fish.rarity).toString();
             int count = manager.getCatchCount(playerId, fish);
             TrophyTier tier = manager.getTier(playerId, fish);
             setItem(FIRST_SLOT + i, new ItemBuilder(Material.PUFFERFISH)

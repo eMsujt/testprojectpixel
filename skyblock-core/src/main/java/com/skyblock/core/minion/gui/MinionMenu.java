@@ -5,6 +5,7 @@ import com.skyblock.core.manager.MinionManager.MinionData;
 import com.skyblock.core.manager.MinionManager.MinionTier;
 import com.skyblock.core.menu.Menu;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,11 +25,6 @@ public class MinionMenu extends Menu {
     private static final int INFO_SLOT    = 13;
     private static final int UPGRADE_SLOT = 15;
     private static final int CLOSE_SLOT   = 22;
-
-    private static final String[] ROMAN = {
-        "", "I", "II", "III", "IV", "V",
-        "VI", "VII", "VIII", "IX", "X", "XI"
-    };
 
     private final MinionData data;
 
@@ -92,7 +88,6 @@ public class MinionMenu extends Menu {
     }
 
     private static String roman(MinionTier tier) {
-        int index = tier.ordinal() + 1;
-        return index < ROMAN.length ? ROMAN[index] : String.valueOf(index);
+        return SkyblockUtils.toRoman(tier.ordinal() + 1);
     }
 }

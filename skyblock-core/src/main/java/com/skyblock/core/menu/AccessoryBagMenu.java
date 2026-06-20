@@ -4,7 +4,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.util.SkyblockUtils;
-import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -44,7 +43,7 @@ public final class AccessoryBagMenu extends AbstractMenu {
         for (int i = 0; i < RARITY_SLOTS.length && i < rarities.length; i++) {
             AccessoryRarity rarity = rarities[i];
             int count = manager.getContentsByRarity(playerId, rarity).size();
-            String color = ItemBuilder.rarityColor(rarity.name()).toString();
+            String color = SkyblockUtils.rarityColor(rarity.name()).toString();
             setItem(RARITY_SLOTS[i], SkyblockUtils.buildItem(Material.IRON_INGOT,
                     color + rarity.getDisplayName(),
                     "§7Count: §a" + count));

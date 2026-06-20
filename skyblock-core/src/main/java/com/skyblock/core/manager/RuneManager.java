@@ -1,5 +1,7 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.util.SkyblockUtils;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -181,15 +183,6 @@ public final class RuneManager {
      */
     public String describeVisual(RuneType type, int level) {
         Objects.requireNonNull(type, "type");
-        return type.getDisplayName() + " " + toRoman(level) + ": " + type.getVisual();
-    }
-
-    private static String toRoman(int level) {
-        switch (level) {
-            case 1: return "I";
-            case 2: return "II";
-            case 3: return "III";
-            default: return Integer.toString(level);
-        }
+        return type.getDisplayName() + " " + SkyblockUtils.toRoman(level) + ": " + type.getVisual();
     }
 }

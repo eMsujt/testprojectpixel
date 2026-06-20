@@ -2,6 +2,7 @@ package com.skyblock.core.item;
 
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +19,7 @@ public class SkyBlockItem {
         this.id = id;
         this.displayName = displayName;
         this.rarity = rarity;
-        ChatColor color = ItemBuilder.rarityColor(rarity.name());
+        ChatColor color = SkyblockUtils.rarityColor(rarity);
         this.itemStack = new ItemBuilder(material)
                 .displayName(color + ChatColor.BOLD.toString() + displayName)
                 .addLore(color + ChatColor.BOLD.toString() + rarity.getDisplayName().toUpperCase())
