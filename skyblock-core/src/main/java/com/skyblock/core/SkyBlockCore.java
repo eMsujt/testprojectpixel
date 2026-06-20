@@ -574,7 +574,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("collectionsmenu") != null) {
             getCommand("collectionsmenu").setExecutor(collectionsMenuCommand);
         }
-        MenuCommand minionMenuCommand = new MenuCommand(p -> new MinionMenu(this, p).open(p));
+        MenuCommand minionMenuCommand = new MenuCommand(p -> new MinionMenu(p).open(p));
         if (getCommand("minionsmenu") != null) {
             getCommand("minionsmenu").setExecutor(minionMenuCommand);
         }

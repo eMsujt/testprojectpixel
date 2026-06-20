@@ -6,16 +6,11 @@ import com.skyblock.core.manager.EssenceManager.EssenceType;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 /**
  * Canonical 54-slot Essence menu. Gray-pane border on all four edges; one tile
@@ -27,41 +22,25 @@ import java.util.function.Consumer;
  * <p>Mirrors {@link BankMenu}: the menu manages its own inventory via
  * {@link #open(Player)} and routes clicks through {@link #handleClick}.</p>
  */
-public final class EssenceMenu extends Menu {
+public final class EssenceMenu extends AbstractSkyBlockMenu {
 
     private static final int CLOSE_SLOT = 49;
 
-    private final UUID playerId;
-    private Inventory inventory;
-    private final Map<Integer, Consumer<InventoryClickEvent>> handlers = new HashMap<>();
-
     public EssenceMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public EssenceMenu(UUID playerId) {
-        super("§dEssence", 6);
-        this.playerId = playerId;
-    }
-
-    /** Unused: this menu manages its own inventory via {@link #open(Player)}. */
-    @Override
-    protected void build() {
+        super(player, "§dEssence", 6);
     }
 
     @Override
-    public void open(Player player) {
-        handlers.clear();
-
+    protected void populate() {
         EssenceManager essence = EssenceManager.getInstance();
-        inventory = org.bukkit.Bukkit.createInventory(this, 54, "§dEssence");
+        UUID playerId = player.getUniqueId();
 
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         List<Integer> inner = new ArrayList<>();
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                inventory.setItem(slot, pane);
+                setItem(slot, pane);
             } else {
                 inner.add(slot);
             }
@@ -72,7 +51,7 @@ public final class EssenceMenu extends Menu {
         for (int i = 0; i < types.length; i++) {
             EssenceType type = types[i];
             int balance = essence.getBalance(playerId, type);
-            inventory.setItem(inner.get(i), new ItemBuilder(materialFor(type))
+            setItem(inner.get(i), new ItemBuilder(materialFor(type))
                     .displayName("§d" + type.getDisplayName() + " Essence")
                     .lore("§7Balance: §d" + String.format("%,d", balance))
                     .build());
@@ -83,8 +62,7 @@ public final class EssenceMenu extends Menu {
         for (int i = 0; i < perks.length; i++) {
             EssenceShopPerk perk = perks[i];
             int slot = inner.get(14 + i);
-            inventory.setItem(slot, perkItem(essence, perk));
-            handlers.put(slot, e -> {
+            setItem(slot, perkItem(essence, perk, playerId), e -> {
                 if (essence.purchasePerk(playerId, perk)) {
                     player.sendMessage("§aUpgraded §d" + perk.getDisplayName()
                             + " §ato level " + essence.getPerkLevel(playerId, perk) + ".");
@@ -98,16 +76,13 @@ public final class EssenceMenu extends Menu {
             });
         }
 
-        inventory.setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
+        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
                 .lore("§7Close the essence menu.")
-                .build());
-        handlers.put(CLOSE_SLOT, e -> player.closeInventory());
-
-        player.openInventory(inventory);
+                .build(), e -> player.closeInventory());
     }
 
-    private ItemStack perkItem(EssenceManager essence, EssenceShopPerk perk) {
+    private ItemStack perkItem(EssenceManager essence, EssenceShopPerk perk, UUID playerId) {
         int level = essence.getPerkLevel(playerId, perk);
         ItemBuilder builder = new ItemBuilder(Material.ENCHANTED_BOOK)
                 .displayName("§d" + perk.getDisplayName())
@@ -134,19 +109,5 @@ public final class EssenceMenu extends Menu {
             case UNDEAD  -> Material.ROTTEN_FLESH;
             case CRIMSON -> Material.NETHER_WART;
         };
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        event.setCancelled(true);
-        Consumer<InventoryClickEvent> handler = handlers.get(event.getSlot());
-        if (handler != null) {
-            handler.accept(event);
-        }
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return inventory;
     }
 }

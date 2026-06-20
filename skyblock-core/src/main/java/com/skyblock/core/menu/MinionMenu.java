@@ -1,6 +1,5 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.manager.MinionManager.MinionData;
 import com.skyblock.core.util.SkyblockUtils;
@@ -20,7 +19,7 @@ import java.util.UUID;
  * slots are light-gray panes; locked slots (beyond the player's current cap)
  * are red panes.
  */
-public final class MinionMenu extends AbstractMenu {
+public final class MinionMenu extends AbstractSkyBlockMenu {
 
     static final int[] MINION_SLOTS = {
             10, 11, 12, 13, 14, 15,
@@ -46,8 +45,8 @@ public final class MinionMenu extends AbstractMenu {
             Material.BLACK_TERRACOTTA
     };
 
-    public MinionMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§6§lYour Minions", 54);
+    public MinionMenu(Player player) {
+        super(player, "§6§lYour Minions", 6);
     }
 
     @Override
