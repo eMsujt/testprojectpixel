@@ -450,6 +450,7 @@ public final class SkyBlockCore extends JavaPlugin {
         bestiaryManager = BestiaryManager.getInstance();
         bestiaryManager.load(getDataFolder());
         museumManager = MuseumManager.getInstance();
+        museumManager.load(getDataFolder());
         riftManager = RiftManager.getInstance();
         minionManager = MinionManager.getInstance();
         minionManager.load(getDataFolder());
@@ -1035,6 +1036,7 @@ public final class SkyBlockCore extends JavaPlugin {
         BestiaryManager.getInstance().save(getDataFolder());
         FairySoulManager.getInstance().save(getDataFolder());
         SackManager.getInstance().save(getDataFolder());
+        MuseumManager.getInstance().save(getDataFolder());
         fishingManager.save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());

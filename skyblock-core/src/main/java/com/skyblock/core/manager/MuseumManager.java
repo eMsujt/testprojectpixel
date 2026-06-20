@@ -1,8 +1,14 @@
 package com.skyblock.core.manager;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -250,5 +256,68 @@ public final class MuseumManager {
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return donations.remove(playerId) != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence (one YAML file per player under {dataFolder}/museum/<uuid>.yml)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Loads every player's donations from {@code dataFolder/museum/<uuid>.yml}.
+     * Each file holds one string list per {@link MuseumCategory} of donated item names.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void load(File dataFolder) {
+        Objects.requireNonNull(dataFolder, "dataFolder");
+        File dir = new File(dataFolder, "museum");
+        File[] files = dir.listFiles((d, name) -> name.endsWith(".yml"));
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            String base = file.getName().substring(0, file.getName().length() - 4);
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(base);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            for (MuseumCategory category : MuseumCategory.values()) {
+                List<String> items = cfg.getStringList(category.name());
+                if (items.isEmpty()) {
+                    continue;
+                }
+                donations.computeIfAbsent(uuid, id -> new EnumMap<>(MuseumCategory.class))
+                        .computeIfAbsent(category, c -> new HashSet<>())
+                        .addAll(items);
+            }
+        }
+    }
+
+    /**
+     * Saves every player's donations to {@code dataFolder/museum/<uuid>.yml},
+     * one file per player.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void save(File dataFolder) {
+        Objects.requireNonNull(dataFolder, "dataFolder");
+        File dir = new File(dataFolder, "museum");
+        if (!dir.exists() && !dir.mkdirs()) {
+            return;
+        }
+        for (Map.Entry<UUID, Map<MuseumCategory, Set<String>>> playerEntry : donations.entrySet()) {
+            YamlConfiguration cfg = new YamlConfiguration();
+            for (Map.Entry<MuseumCategory, Set<String>> catEntry : playerEntry.getValue().entrySet()) {
+                cfg.set(catEntry.getKey().name(), new ArrayList<>(catEntry.getValue()));
+            }
+            try {
+                cfg.save(new File(dir, playerEntry.getKey() + ".yml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
