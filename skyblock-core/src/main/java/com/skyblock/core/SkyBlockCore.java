@@ -21,7 +21,6 @@ import com.skyblock.core.command.MuseumCommand;
 import com.skyblock.core.manager.MuseumManager;
 import com.skyblock.core.command.EssenceCommand;
 import com.skyblock.core.manager.EssenceManager;
-import com.skyblock.core.command.DungeonCommand;
 import com.skyblock.core.dungeon.command.DungeonClassCommand;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonClassManager;
@@ -55,7 +54,6 @@ import com.skyblock.core.manager.HarpManager;
 import com.skyblock.core.manager.JerryWorkshopManager;
 import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.command.CompostCommand;
-import com.skyblock.core.command.GardenCommand;
 import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.command.HOTMCommand;
@@ -63,7 +61,6 @@ import com.skyblock.core.manager.HOTMManager;
 import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.manager.TamingManager;
 import com.skyblock.core.manager.MayorManager;
-import com.skyblock.core.command.MinionCommand;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.party.PartyCommand;
@@ -141,7 +138,6 @@ import com.skyblock.core.title.TitleCommand;
 import com.skyblock.core.title.TitleManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.command.SkillsCommand;
-import com.skyblock.core.command.SlayerCommand;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.CatacombsManager;
 import com.skyblock.core.listener.SlayerListener;
@@ -160,7 +156,6 @@ import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.manager.AlchemyManager;
-import com.skyblock.core.command.WardrobeCommand;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.rift.RiftCommand;
@@ -662,7 +657,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("npcshop").setExecutor(npcShopCommand);
             getCommand("npcshop").setTabCompleter(npcShopCommand);
         }
-        DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
+        CompactCommands.DungeonCommand dungeonCommand = new CompactCommands.DungeonCommand(dungeonManager);
         getCommand("dungeon").setExecutor(dungeonCommand);
         getCommand("dungeon").setTabCompleter(dungeonCommand);
         DungeonClassCommand dungeonClassCommand = new DungeonClassCommand(dungeonClassManager);
@@ -688,7 +683,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
-        GardenCommand gardenCommand = new GardenCommand(GardenManager.getInstance());
+        CompactCommands.GardenCommand gardenCommand = new CompactCommands.GardenCommand(GardenManager.getInstance());
         if (getCommand("garden") != null) {
             getCommand("garden").setExecutor(gardenCommand);
             getCommand("garden").setTabCompleter(gardenCommand);
@@ -715,7 +710,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("minionsmenu") != null) {
             getCommand("minionsmenu").setExecutor(minionMenuCommand);
         }
-        SlayerCommand slayerCommand = new SlayerCommand(this, slayerManager);
+        CompactCommands.SlayerCommand slayerCommand = new CompactCommands.SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
         if (getCommand("slayer") != null) {
@@ -785,7 +780,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("island").setExecutor(islandCommand);
             getCommand("island").setTabCompleter(islandCommand);
         }
-        MinionCommand minionCommand = new MinionCommand(minionManager);
+        CompactCommands.MinionCommand minionCommand = new CompactCommands.MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
         getCommand("minion").setTabCompleter(minionCommand);
         if (getCommand("minions") != null) {
@@ -976,7 +971,7 @@ public final class SkyBlockCore extends JavaPlugin {
         AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
         getCommand("alchemy").setExecutor(alchemyCommand);
         getCommand("alchemy").setTabCompleter(alchemyCommand);
-        WardrobeCommand wardrobeCommand = new WardrobeCommand(wardrobeManager);
+        CompactCommands.WardrobeCommand wardrobeCommand = new CompactCommands.WardrobeCommand(wardrobeManager);
         getCommand("wardrobe").setExecutor(wardrobeCommand);
         getCommand("wardrobe").setTabCompleter(wardrobeCommand);
         CompactCommands.AccessoryBagCommand accessoryBagCommand = new CompactCommands.AccessoryBagCommand(accessoryBagManager);

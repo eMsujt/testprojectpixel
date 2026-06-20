@@ -1,16 +1,22 @@
 package com.skyblock.core.command;
 
+import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.CalendarManager;
+import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.EnchantingManager;
+import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.manager.HOTMManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.manager.MayorManager;
+import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.manager.MiningManager;
 import com.skyblock.core.manager.RepairManager;
 import com.skyblock.core.manager.ReforgeManager;
+import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.Warp;
+import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.AccessoryBagMenu;
 import com.skyblock.core.menu.BankMenu;
@@ -18,7 +24,10 @@ import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
+import com.skyblock.core.menu.SlayerMenu;
+import com.skyblock.core.menu.WardrobeMenu;
 import com.skyblock.core.menu.WarpMenu;
+import com.skyblock.core.minion.gui.MinionsMenu;
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.season.SeasonManager;
@@ -31,6 +40,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1729,6 +1739,1068 @@ public final class CompactCommands {
             player.sendMessage("=== SkyBlock Locations ===");
             for (WarpManager.SkyBlockLocation loc : WarpManager.SkyBlockLocation.values()) {
                 player.sendMessage("- " + loc.getDisplayName());
+            }
+        }
+    }
+
+    // =========================================================================
+    // /slayer
+    // =========================================================================
+
+    public static final class SlayerCommand implements TabExecutor {
+
+        private static final List<String> SUBCOMMANDS = Arrays.asList("view", "info", "start", "type", "menu");
+
+        private final SlayerManager slayerManager;
+
+        public SlayerCommand(SlayerManager slayerManager) {
+            this.slayerManager = slayerManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (args.length == 0 || args[0].equalsIgnoreCase("menu")) {
+                new SlayerMenu(player).open(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "view"  -> handleView(player, args);
+                case "info"  -> handleInfo(player);
+                case "start" -> handleStart(player, args);
+                case "type"  -> handleType(player, args);
+                default      -> sendHelp(player);
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (args.length == 2 && (args[0].equalsIgnoreCase("view")
+                    || args[0].equalsIgnoreCase("start")
+                    || args[0].equalsIgnoreCase("type"))) {
+                String prefix = args[1].toLowerCase();
+                return Arrays.stream(SlayerManager.SlayerType.values())
+                        .map(t -> t.name().toLowerCase())
+                        .filter(n -> n.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleView(Player player, String[] args) {
+            if (args.length < 2) {
+                handleInfo(player);
+                return;
+            }
+            SlayerManager.SlayerType type;
+            try {
+                type = SlayerManager.SlayerType.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown slayer type: " + args[1]);
+                return;
+            }
+            long xp = slayerManager.getExperience(player.getUniqueId(), type);
+            int level = slayerManager.getLevel(player.getUniqueId(), type);
+            int kills = slayerManager.getKillCount(player.getUniqueId(), type);
+            player.sendMessage("=== " + type.getDisplayName() + " Slayer ===");
+            player.sendMessage("  Level: " + level);
+            player.sendMessage("  XP: " + xp);
+            player.sendMessage("  Kills: " + kills);
+        }
+
+        private void handleInfo(Player player) {
+            player.sendMessage("=== Slayer XP ===");
+            for (SlayerManager.SlayerType type : SlayerManager.SlayerType.values()) {
+                long xp = slayerManager.getExperience(player.getUniqueId(), type);
+                int level = slayerManager.getLevel(player.getUniqueId(), type);
+                player.sendMessage("  " + type.getDisplayName() + ": level " + level + " (" + xp + " XP)");
+            }
+        }
+
+        private void handleStart(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /slayer start <type>");
+                return;
+            }
+            SlayerManager.SlayerType type;
+            try {
+                type = SlayerManager.SlayerType.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown slayer type: " + args[1]);
+                return;
+            }
+            try {
+                slayerManager.startQuest(player.getUniqueId(), type, SlayerManager.QuestTier.TIER_1);
+                player.sendMessage("§aStarted " + type.getDisplayName() + " Tier-1 slayer quest.");
+            } catch (IllegalStateException e) {
+                player.sendMessage("§cYou already have an active slayer quest.");
+            }
+        }
+
+        private void handleType(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /slayer type <type>");
+                return;
+            }
+            SlayerManager.SlayerType type;
+            try {
+                type = SlayerManager.SlayerType.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown slayer type: " + args[1]);
+                return;
+            }
+            long xp = slayerManager.getExperience(player.getUniqueId(), type);
+            int level = slayerManager.getLevel(player.getUniqueId(), type);
+            player.sendMessage(type.getDisplayName() + ": level " + level + " (" + xp + " XP)");
+        }
+
+        private void sendHelp(Player player) {
+            player.sendMessage("=== Slayer Commands ===");
+            player.sendMessage("/slayer             — open slayer menu");
+            player.sendMessage("/slayer info        — show all slayer levels");
+            player.sendMessage("/slayer start <type>— start a slayer quest");
+            player.sendMessage("/slayer view <type> — show XP for one type");
+            player.sendMessage("/slayer type <type> — show XP for one type");
+        }
+    }
+
+    // =========================================================================
+    // /minion
+    // =========================================================================
+
+    public static final class MinionCommand implements TabExecutor {
+
+        private static final List<String> SUBCOMMANDS = Arrays.asList("list", "place", "upgrade", "remove", "info");
+
+        private final MinionManager minionManager;
+
+        public MinionCommand(MinionManager minionManager) {
+            this.minionManager = minionManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (args.length == 0) {
+                new MinionsMenu(player).open(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "list"    -> handleList(player);
+                case "place"   -> handlePlace(player, args);
+                case "upgrade" -> handleUpgrade(player, args);
+                case "remove"  -> handleRemove(player, args);
+                case "info"    -> handleInfo(player, args);
+                default        -> player.sendMessage("Unknown subcommand. Usage: /minion <list|place|upgrade|remove|info>");
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("place")) {
+                String prefix = args[1].toUpperCase();
+                return Arrays.stream(MinionManager.MinionType.values())
+                        .map(Enum::name)
+                        .filter(n -> n.startsWith(prefix))
+                        .sorted()
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 3 && args[0].equalsIgnoreCase("place")) {
+                return Arrays.stream(MinionManager.MinionTier.values())
+                        .map(t -> String.valueOf(t.ordinal() + 1))
+                        .collect(Collectors.toList());
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleList(Player player) {
+            List<UUID> ids = minionManager.getMinions(player.getUniqueId());
+            if (ids.isEmpty()) {
+                player.sendMessage("You have no placed minions. Use /minion place <type> to add one.");
+                return;
+            }
+            player.sendMessage("=== Your Minions (" + ids.size() + "/" + minionManager.getMaxSlots(player.getUniqueId()) + ") ===");
+            for (int i = 0; i < ids.size(); i++) {
+                MinionManager.MinionData data = minionManager.getMinion(ids.get(i));
+                if (data != null) {
+                    player.sendMessage(String.format("[%d] %s — Tier %d | ID: %s",
+                            i + 1,
+                            data.type.getDisplayName(),
+                            data.getTier().ordinal() + 1,
+                            data.id.toString().substring(0, 8)));
+                }
+            }
+        }
+
+        private void handlePlace(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /minion place <type> [tier]");
+                return;
+            }
+            MinionManager.MinionType type;
+            try {
+                type = MinionManager.MinionType.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown minion type: " + args[1] + ". Use /minion place with a valid type.");
+                return;
+            }
+            MinionManager.MinionTier tier = MinionManager.MinionTier.TIER_1;
+            if (args.length >= 3) {
+                try {
+                    int tierNum = Integer.parseInt(args[2]);
+                    MinionManager.MinionTier[] tiers = MinionManager.MinionTier.values();
+                    if (tierNum < 1 || tierNum > tiers.length) {
+                        player.sendMessage("Tier must be between 1 and " + tiers.length + ".");
+                        return;
+                    }
+                    tier = tiers[tierNum - 1];
+                } catch (NumberFormatException e) {
+                    player.sendMessage("Tier must be a number.");
+                    return;
+                }
+            }
+            MinionManager.MinionData data;
+            try {
+                data = minionManager.placeMinion(player.getUniqueId(), type, tier);
+            } catch (IllegalStateException e) {
+                player.sendMessage("You have reached the minion slot cap (" + minionManager.getMaxSlots(player.getUniqueId()) + ").");
+                return;
+            }
+            player.sendMessage("Placed " + type.getDisplayName() + " at Tier " + (tier.ordinal() + 1)
+                    + " (ID: " + data.id.toString().substring(0, 8) + ").");
+        }
+
+        private void handleUpgrade(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /minion upgrade <id>");
+                return;
+            }
+            UUID minionId = resolveId(player, args[1]);
+            if (minionId == null) return;
+            boolean upgraded = minionManager.upgradeMinion(minionId);
+            if (!upgraded) {
+                MinionManager.MinionData data = minionManager.getMinion(minionId);
+                if (data == null) {
+                    player.sendMessage("Minion not found: " + args[1]);
+                } else {
+                    player.sendMessage(data.type.getDisplayName() + " is already at max tier ("
+                            + MinionManager.MinionTier.values().length + ").");
+                }
+            } else {
+                MinionManager.MinionData data = minionManager.getMinion(minionId);
+                player.sendMessage("Upgraded to " + data.type.getDisplayName() + " Tier "
+                        + (data.getTier().ordinal() + 1) + "!");
+            }
+        }
+
+        private void handleRemove(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /minion remove <id>");
+                return;
+            }
+            UUID minionId = resolveId(player, args[1]);
+            if (minionId == null) return;
+            MinionManager.MinionData data = minionManager.getMinion(minionId);
+            if (data == null || !data.owner.equals(player.getUniqueId())) {
+                player.sendMessage("Minion not found or does not belong to you.");
+                return;
+            }
+            minionManager.removeMinion(minionId);
+            player.sendMessage("Removed " + data.type.getDisplayName() + " (ID: "
+                    + minionId.toString().substring(0, 8) + ").");
+        }
+
+        private void handleInfo(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /minion info <id>");
+                return;
+            }
+            UUID minionId = resolveId(player, args[1]);
+            if (minionId == null) return;
+            MinionManager.MinionData data = minionManager.getMinion(minionId);
+            if (data == null) {
+                player.sendMessage("Minion not found: " + args[1]);
+                return;
+            }
+            player.sendMessage("=== Minion Info ===");
+            player.sendMessage("Type : " + data.type.getDisplayName());
+            player.sendMessage("Tier : " + (data.getTier().ordinal() + 1)
+                    + " / " + MinionManager.MinionTier.values().length);
+            player.sendMessage("Owner: " + data.owner);
+            player.sendMessage("ID   : " + data.id);
+        }
+
+        private UUID resolveId(Player player, String input) {
+            try {
+                return UUID.fromString(input);
+            } catch (IllegalArgumentException ignored) {
+                // fall through to prefix match
+            }
+            String lower = input.toLowerCase();
+            for (UUID id : minionManager.getMinions(player.getUniqueId())) {
+                if (id.toString().startsWith(lower)) {
+                    return id;
+                }
+            }
+            player.sendMessage("Could not find a minion matching: " + input
+                    + ". Use /minion list to see your minions.");
+            return null;
+        }
+    }
+
+    // =========================================================================
+    // /wardrobe
+    // =========================================================================
+
+    public static final class WardrobeCommand extends PlayerCommand {
+
+        private static final List<String> SUBCOMMANDS = Arrays.asList("save", "load", "delete", "list", "slots", "slot");
+
+        private final WardrobeManager wardrobeManager;
+
+        public WardrobeCommand(WardrobeManager wardrobeManager) {
+            this.wardrobeManager = wardrobeManager;
+        }
+
+        @Override
+        protected void openMenu(Player p) {
+            new WardrobeMenu(p).open(p);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            if (args.length == 0) {
+                openMenu(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "save"   -> handleSave(player, args);
+                case "load"   -> handleLoad(player, args);
+                case "delete" -> handleDelete(player, args);
+                case "list"   -> handleList(player);
+                case "slots"  -> handleSlots(player);
+                case "slot"   -> handleSlot(player, args);
+                default       -> sendHelp(player);
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (args.length == 2 && sender instanceof Player player) {
+                String sub = args[0].toLowerCase();
+                if (sub.equals("load") || sub.equals("delete")) {
+                    String prefix = args[1].toLowerCase();
+                    return wardrobeManager.getOutfitNames(player.getUniqueId()).stream()
+                            .filter(n -> n.toLowerCase().startsWith(prefix))
+                            .collect(Collectors.toList());
+                }
+                if (sub.equals("slot")) {
+                    String prefix = args[1].toLowerCase();
+                    return Arrays.asList("save", "load", "clear").stream()
+                            .filter(s -> s.startsWith(prefix))
+                            .collect(Collectors.toList());
+                }
+            }
+            if (args.length == 3 && args[0].equalsIgnoreCase("slot")) {
+                String action = args[1].toLowerCase();
+                if (action.equals("save") || action.equals("load") || action.equals("clear")) {
+                    String prefix = args[2].toUpperCase();
+                    return Arrays.stream(WardrobeManager.WardrobeSlot.values())
+                            .map(Enum::name)
+                            .filter(n -> n.startsWith(prefix))
+                            .collect(Collectors.toList());
+                }
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleSave(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /wardrobe save <name>");
+                return;
+            }
+            String name = args[1];
+            PlayerInventory inv = player.getInventory();
+            ItemStack[] armor = inv.getArmorContents();
+            boolean saved = wardrobeManager.saveOutfit(player.getUniqueId(), name, armor);
+            if (saved) {
+                player.sendMessage("Outfit '" + name + "' saved.");
+            } else {
+                player.sendMessage("You have reached the maximum of " + WardrobeManager.MAX_OUTFITS + " outfits.");
+            }
+        }
+
+        private void handleLoad(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /wardrobe load <name>");
+                return;
+            }
+            String name = args[1];
+            ItemStack[] armor = wardrobeManager.equip(player.getUniqueId(), name);
+            if (armor == null) {
+                player.sendMessage("No outfit named '" + name + "' found.");
+                return;
+            }
+            player.getInventory().setArmorContents(armor);
+            player.sendMessage("Outfit '" + name + "' equipped.");
+        }
+
+        private void handleDelete(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /wardrobe delete <name>");
+                return;
+            }
+            String name = args[1];
+            boolean removed = wardrobeManager.deleteOutfit(player.getUniqueId(), name);
+            if (removed) {
+                player.sendMessage("Outfit '" + name + "' deleted.");
+            } else {
+                player.sendMessage("No outfit named '" + name + "' found.");
+            }
+        }
+
+        private void handleList(Player player) {
+            Set<String> names = wardrobeManager.getOutfitNames(player.getUniqueId());
+            if (names.isEmpty()) {
+                player.sendMessage("You have no saved outfits.");
+                return;
+            }
+            player.sendMessage("=== Your Wardrobe (" + names.size() + "/" + WardrobeManager.MAX_OUTFITS + ") ===");
+            for (String name : names) {
+                player.sendMessage("  - " + name);
+            }
+        }
+
+        private void handleSlots(Player player) {
+            player.sendMessage("=== Wardrobe Slots ===");
+            for (WardrobeManager.WardrobeSlot slot : WardrobeManager.WardrobeSlot.values()) {
+                ItemStack[] armor = wardrobeManager.getOutfit(player.getUniqueId(), slot);
+                String status = (armor != null) ? "occupied" : "empty";
+                player.sendMessage("  " + slot.getDisplayName() + " (" + slot.name() + "): " + status);
+            }
+        }
+
+        private void handleSlot(Player player, String[] args) {
+            if (args.length < 3) {
+                player.sendMessage("Usage: /wardrobe slot <save|load|clear> <SLOT_1..SLOT_18>");
+                return;
+            }
+            WardrobeManager.WardrobeSlot slot;
+            try {
+                slot = WardrobeManager.WardrobeSlot.valueOf(args[2].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown slot '" + args[2] + "'. Use SLOT_1 through SLOT_18.");
+                return;
+            }
+            if (!wardrobeManager.isSlotUnlocked(player.getUniqueId(), slot)
+                    && ("save".equalsIgnoreCase(args[1]) || "load".equalsIgnoreCase(args[1]))) {
+                player.sendMessage(slot.getDisplayName() + " is locked.");
+                return;
+            }
+            switch (args[1].toLowerCase()) {
+                case "save" -> {
+                    ItemStack[] armor = player.getInventory().getArmorContents();
+                    boolean saved = wardrobeManager.saveOutfit(player.getUniqueId(), slot, armor);
+                    if (saved) {
+                        player.sendMessage(slot.getDisplayName() + " saved.");
+                    } else {
+                        player.sendMessage("You have reached the maximum of " + WardrobeManager.MAX_OUTFITS + " outfits.");
+                    }
+                }
+                case "load" -> {
+                    ItemStack[] armor = wardrobeManager.equip(player.getUniqueId(), slot);
+                    if (armor == null) {
+                        player.sendMessage(slot.getDisplayName() + " is empty.");
+                        return;
+                    }
+                    player.getInventory().setArmorContents(armor);
+                    player.sendMessage(slot.getDisplayName() + " equipped.");
+                }
+                case "clear" -> {
+                    boolean removed = wardrobeManager.deleteOutfit(player.getUniqueId(), slot);
+                    if (removed) {
+                        player.sendMessage(slot.getDisplayName() + " cleared.");
+                    } else {
+                        player.sendMessage(slot.getDisplayName() + " is already empty.");
+                    }
+                }
+                default -> player.sendMessage("Usage: /wardrobe slot <save|load|clear> <SLOT_1..SLOT_18>");
+            }
+        }
+
+        private void sendHelp(Player player) {
+            player.sendMessage("=== Wardrobe Commands ===");
+            player.sendMessage("/wardrobe save <name>              — save current armor as an outfit");
+            player.sendMessage("/wardrobe load <name>              — equip a saved outfit");
+            player.sendMessage("/wardrobe delete <name>            — remove a saved outfit");
+            player.sendMessage("/wardrobe list                     — list all saved outfits");
+            player.sendMessage("/wardrobe slots                    — list wardrobe slots");
+            player.sendMessage("/wardrobe slot save <SLOT_1..9>    — save current armor into a slot");
+            player.sendMessage("/wardrobe slot load <SLOT_1..9>    — equip armor from a slot");
+            player.sendMessage("/wardrobe slot clear <SLOT_1..9>   — clear a slot");
+        }
+    }
+
+    // =========================================================================
+    // /dungeon
+    // =========================================================================
+
+    public static final class DungeonCommand extends PlayerCommand {
+
+        private static final List<String> SUBCOMMANDS = Arrays.asList("menu", "info", "start", "leave", "complete", "class", "scores", "floor", "history");
+
+        private final DungeonManager dungeonManager;
+
+        public DungeonCommand(DungeonManager dungeonManager) {
+            this.dungeonManager = dungeonManager;
+        }
+
+        @Override
+        protected void openMenu(Player p) {
+            new com.skyblock.core.menu.DungeonMenu(SkyBlockCore.getInstance(), p).open(p);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            if (args.length == 0) {
+                openMenu(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "menu"     -> new com.skyblock.core.menu.DungeonMenu(SkyBlockCore.getInstance(), player).open(player);
+                case "info"     -> handleInfo(player);
+                case "start"    -> handleStart(player, args);
+                case "leave"    -> handleLeave(player);
+                case "complete" -> handleComplete(player, args);
+                case "class"    -> handleClass(player, args);
+                case "scores"   -> handleScores(player, args);
+                case "floor"    -> handleFloor(player, args);
+                case "history"  -> handleHistory(player);
+                default         -> sendHelp(player);
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("start")) {
+                String prefix = args[1].toUpperCase();
+                return Arrays.stream(DungeonManager.DungeonType.values())
+                        .map(Enum::name)
+                        .filter(n -> n.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("class")) {
+                String prefix = args[1].toUpperCase();
+                return Arrays.stream(DungeonManager.DungeonClass.values())
+                        .map(Enum::name)
+                        .filter(n -> n.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("scores")) {
+                String prefix = args[1].toUpperCase();
+                return Arrays.stream(DungeonManager.DungeonType.values())
+                        .map(Enum::name)
+                        .filter(n -> n.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("floor")) {
+                String prefix = args[1].toUpperCase();
+                return Arrays.stream(DungeonManager.DungeonFloor.values())
+                        .map(Enum::name)
+                        .filter(n -> n.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleInfo(Player player) {
+            DungeonManager.DungeonRun run = dungeonManager.getActiveRun(player.getUniqueId());
+            DungeonManager.DungeonClass cls = dungeonManager.getClass(player.getUniqueId());
+            player.sendMessage("=== Dungeon Info ===");
+            player.sendMessage("  Class      : " + (cls != null ? cls.getDisplayName() : "none"));
+            if (run != null) {
+                player.sendMessage("  Active run : " + run.getType().name());
+                player.sendMessage("  Participants: " + run.getParticipants().size());
+            } else {
+                player.sendMessage("  Active run : none");
+            }
+        }
+
+        private void handleStart(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /dungeon start <type>");
+                return;
+            }
+            DungeonManager.DungeonType type;
+            try {
+                type = DungeonManager.DungeonType.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown dungeon type: " + args[1]);
+                return;
+            }
+            dungeonManager.startRun(type, Collections.singletonList(player.getUniqueId()), System.currentTimeMillis());
+            player.sendMessage("Started dungeon run: " + type.name());
+        }
+
+        private void handleLeave(Player player) {
+            dungeonManager.abandonRun(player.getUniqueId());
+            player.sendMessage("You have left the dungeon run.");
+        }
+
+        private void handleComplete(Player player, String[] args) {
+            int score = 0;
+            if (args.length >= 2) {
+                try {
+                    score = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage("Invalid score: " + args[1]);
+                    return;
+                }
+            }
+            try {
+                dungeonManager.completeRun(player.getUniqueId(), score);
+                player.sendMessage("Dungeon run completed with score: " + score);
+            } catch (IllegalStateException e) {
+                player.sendMessage("You are not in a dungeon run.");
+            }
+        }
+
+        private void handleClass(Player player, String[] args) {
+            if (args.length < 2) {
+                DungeonManager.DungeonClass cls = dungeonManager.getClass(player.getUniqueId());
+                player.sendMessage("Your dungeon class: " + (cls != null ? cls.getDisplayName() : "none"));
+                return;
+            }
+            DungeonManager.DungeonClass cls;
+            try {
+                cls = DungeonManager.DungeonClass.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown class: " + args[1]);
+                return;
+            }
+            dungeonManager.setClass(player.getUniqueId(), cls);
+            player.sendMessage("Dungeon class set to: " + cls.getDisplayName());
+        }
+
+        private void handleScores(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /dungeon scores <type>");
+                return;
+            }
+            DungeonManager.DungeonType type;
+            try {
+                type = DungeonManager.DungeonType.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown dungeon type: " + args[1]);
+                return;
+            }
+            int best = dungeonManager.getBestScore(player.getUniqueId(), type);
+            int count = dungeonManager.getCompletionCount(player.getUniqueId(), type);
+            player.sendMessage("=== " + type.name() + " ===");
+            player.sendMessage("  Best score  : " + best);
+            player.sendMessage("  Completions : " + count);
+        }
+
+        private void handleFloor(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("=== Dungeon Floors ===");
+                for (DungeonManager.DungeonFloor floor : DungeonManager.DungeonFloor.values()) {
+                    player.sendMessage("  " + floor.getDisplayName() + " — Boss: " + floor.getBossName());
+                }
+                return;
+            }
+            DungeonManager.DungeonFloor floor;
+            try {
+                floor = DungeonManager.DungeonFloor.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown floor: " + args[1]);
+                return;
+            }
+            int runs = dungeonManager.getFloorCompletionCount(player.getUniqueId(), floor);
+            long best = dungeonManager.getFloorBestTime(player.getUniqueId(), floor);
+            player.sendMessage("=== " + floor.getDisplayName() + " ===");
+            player.sendMessage("  Boss       : " + floor.getBossName());
+            player.sendMessage("  Floor #    : " + floor.getFloorNumber());
+            player.sendMessage("  Master Mode: " + floor.isMasterMode());
+            player.sendMessage("  Runs       : " + runs);
+            player.sendMessage("  Best time  : " + (best == Long.MAX_VALUE ? "N/A" : best + "ms"));
+        }
+
+        private void handleHistory(Player player) {
+            List<String> history = dungeonManager.getDungeonHistory(player.getUniqueId());
+            player.sendMessage("=== Dungeon History ===");
+            if (history.isEmpty()) {
+                player.sendMessage("No dungeon history found.");
+                return;
+            }
+            for (int i = 0; i < history.size(); i++) {
+                player.sendMessage((i + 1) + ". " + history.get(i));
+            }
+        }
+
+        private void sendHelp(Player player) {
+            player.sendMessage("=== Dungeon Commands ===");
+            player.sendMessage("/dungeon info              — show active run and class");
+            player.sendMessage("/dungeon start <type>      — start a dungeon run");
+            player.sendMessage("/dungeon leave             — abandon your current run");
+            player.sendMessage("/dungeon complete [score]  — complete your current run");
+            player.sendMessage("/dungeon class [class]     — view or set your dungeon class");
+            player.sendMessage("/dungeon scores <type>     — view your scores for a dungeon");
+            player.sendMessage("/dungeon floor [floor]     — list floors or view floor details");
+            player.sendMessage("/dungeon history           — view your dungeon run history");
+        }
+    }
+
+    // =========================================================================
+    // /garden
+    // =========================================================================
+
+    public static final class GardenCommand implements TabExecutor {
+
+        private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "tier", "harvest", "history", "reset");
+        private static final List<String> CROP_TYPE_NAMES = Arrays.stream(GardenManager.CropType.values())
+                .map(c -> c.name().toLowerCase())
+                .collect(Collectors.toList());
+        private static final List<String> MODIFY_OPS = Arrays.asList("set", "add");
+        private static final List<String> CROP_OPS = Arrays.asList("set", "add");
+        private static final List<String> TIER_NAMES = Arrays.stream(GardenManager.PlotTier.values())
+                .map(t -> t.name().toLowerCase())
+                .collect(Collectors.toList());
+        private static final List<String> CROP_NAMES = Arrays.stream(GardenManager.GardenCrop.values())
+                .map(c -> c.name().toLowerCase())
+                .collect(Collectors.toList());
+        private static final List<String> PLOT_NAMES = Arrays.stream(GardenManager.GardenPlot.values())
+                .map(p -> p.name().toLowerCase())
+                .collect(Collectors.toList());
+
+        private final GardenManager gardenManager;
+
+        public GardenCommand(GardenManager gardenManager) {
+            this.gardenManager = gardenManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (args.length == 0) {
+                player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|history|reset>");
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "info"     -> handleInfo(player);
+                case "plot"     -> handlePlot(player, args);
+                case "visitors" -> handleVisitors(player, args);
+                case "crop"     -> handleCrop(player, args);
+                case "plots"    -> handlePlots(player, args);
+                case "tier"     -> handleTier(player, args);
+                case "harvest"  -> handleHarvest(player, args);
+                case "history"  -> handleHistory(player);
+                case "reset"    -> handleReset(player);
+                default         -> player.sendMessage("Unknown subcommand. Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|history|reset>");
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (args.length == 2) {
+                String sub = args[0].toLowerCase();
+                String prefix = args[1].toLowerCase();
+                if (sub.equals("plot") || sub.equals("visitors")) {
+                    return MODIFY_OPS.stream().filter(o -> o.startsWith(prefix)).collect(Collectors.toList());
+                }
+                if (sub.equals("crop")) {
+                    List<String> opts = new ArrayList<>(CROP_OPS);
+                    opts.addAll(CROP_NAMES);
+                    return opts.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
+                }
+                if (sub.equals("plots")) {
+                    return PLOT_NAMES.stream().filter(p -> p.startsWith(prefix)).collect(Collectors.toList());
+                }
+                if (sub.equals("tier")) {
+                    return CROP_NAMES.stream().filter(c -> c.startsWith(prefix)).collect(Collectors.toList());
+                }
+                if (sub.equals("harvest")) {
+                    return CROP_TYPE_NAMES.stream().filter(c -> c.startsWith(prefix)).collect(Collectors.toList());
+                }
+            }
+            if (args.length == 3 && args[0].equalsIgnoreCase("tier")) {
+                String prefix = args[2].toLowerCase();
+                return TIER_NAMES.stream().filter(t -> t.startsWith(prefix)).collect(Collectors.toList());
+            }
+            if (args.length == 3 && args[0].equalsIgnoreCase("crop")
+                    && CROP_OPS.contains(args[1].toLowerCase())) {
+                String prefix = args[2].toLowerCase();
+                return CROP_NAMES.stream().filter(c -> c.startsWith(prefix)).collect(Collectors.toList());
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleInfo(Player player) {
+            int plotLevel = gardenManager.getPlotLevel(player.getUniqueId());
+            int visitors = gardenManager.getVisitorCount(player.getUniqueId());
+            player.sendMessage("=== Garden Info ===");
+            player.sendMessage("Plot Level: " + plotLevel);
+            player.sendMessage("Total Visitors: " + visitors);
+        }
+
+        private void handlePlot(Player player, String[] args) {
+            if (args.length >= 2) {
+                String op = args[1].toLowerCase();
+                if (op.equals("set") || op.equals("add")) {
+                    if (!player.isOp()) {
+                        player.sendMessage("You do not have permission to use this subcommand.");
+                        return;
+                    }
+                    if (args.length < 3) {
+                        player.sendMessage("Usage: /garden plot " + op + " <level>");
+                        return;
+                    }
+                    int amount = parseAmount(player, args[2]);
+                    if (amount < 0) return;
+                    if (op.equals("set")) {
+                        gardenManager.setPlotLevel(player.getUniqueId(), amount);
+                        player.sendMessage("Garden plot level set to " + gardenManager.getPlotLevel(player.getUniqueId()) + ".");
+                    } else {
+                        int newLevel = gardenManager.addPlotLevel(player.getUniqueId(), amount);
+                        player.sendMessage("Garden plot level: " + newLevel + ".");
+                    }
+                    return;
+                }
+            }
+            int plotLevel = gardenManager.getPlotLevel(player.getUniqueId());
+            player.sendMessage("Garden Plot Level: " + plotLevel);
+        }
+
+        private void handleVisitors(Player player, String[] args) {
+            if (args.length >= 2) {
+                String op = args[1].toLowerCase();
+                if (op.equals("set") || op.equals("add")) {
+                    if (!player.isOp()) {
+                        player.sendMessage("You do not have permission to use this subcommand.");
+                        return;
+                    }
+                    if (args.length < 3) {
+                        player.sendMessage("Usage: /garden visitors " + op + " <amount>");
+                        return;
+                    }
+                    int amount = parseAmount(player, args[2]);
+                    if (amount < 0) return;
+                    if (op.equals("set")) {
+                        gardenManager.setVisitorCount(player.getUniqueId(), amount);
+                        player.sendMessage("Visitor count set to " + amount + ".");
+                    } else {
+                        int newCount = gardenManager.addVisitorCount(player.getUniqueId(), amount);
+                        player.sendMessage("Visitor count: " + newCount + ".");
+                    }
+                    return;
+                }
+            }
+            int visitors = gardenManager.getVisitorCount(player.getUniqueId());
+            player.sendMessage("Total Visitors: " + visitors);
+        }
+
+        private void handleCrop(Player player, String[] args) {
+            if (args.length >= 2) {
+                String op = args[1].toLowerCase();
+                if (op.equals("set") || op.equals("add")) {
+                    if (!player.isOp()) {
+                        player.sendMessage("You do not have permission to use this subcommand.");
+                        return;
+                    }
+                    if (args.length < 4) {
+                        player.sendMessage("Usage: /garden crop " + op + " <crop> <level>");
+                        return;
+                    }
+                    GardenManager.GardenCrop crop = parseCrop(player, args[2]);
+                    if (crop == null) return;
+                    int amount = parseAmount(player, args[3]);
+                    if (amount < 0) return;
+                    if (op.equals("set")) {
+                        gardenManager.setCropUpgrade(player.getUniqueId(), crop, amount);
+                        player.sendMessage(crop.getDisplayName() + " upgrade set to " + amount + ".");
+                    } else {
+                        int newLevel = gardenManager.addCropUpgrade(player.getUniqueId(), crop, amount);
+                        player.sendMessage(crop.getDisplayName() + " upgrade: " + newLevel + ".");
+                    }
+                    return;
+                }
+                GardenManager.GardenCrop crop = parseCrop(player, op);
+                if (crop == null) return;
+                int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
+                player.sendMessage(crop.getDisplayName() + " upgrade level: " + level);
+            } else {
+                player.sendMessage("=== Crop Upgrades ===");
+                for (GardenManager.GardenCrop crop : GardenManager.GardenCrop.values()) {
+                    int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
+                    player.sendMessage(crop.getDisplayName() + ": " + level);
+                }
+            }
+        }
+
+        private void handlePlots(Player player, String[] args) {
+            if (args.length >= 2) {
+                GardenManager.GardenPlot plot = parsePlot(player, args[1]);
+                if (plot == null) return;
+                if (!player.isOp()) {
+                    player.sendMessage("You do not have permission to unlock plots.");
+                    return;
+                }
+                gardenManager.unlockPlot(player.getUniqueId(), plot);
+                player.sendMessage("Unlocked plot: " + plot.getDisplayName() + ".");
+                return;
+            }
+            player.sendMessage("=== Garden Plots ===");
+            for (GardenManager.GardenPlot plot : GardenManager.GardenPlot.values()) {
+                boolean unlocked = gardenManager.isPlotUnlocked(player.getUniqueId(), plot);
+                player.sendMessage(plot.getDisplayName() + ": " + (unlocked ? "Unlocked" : "Locked"));
+            }
+        }
+
+        private void handleTier(Player player, String[] args) {
+            if (args.length >= 2) {
+                GardenManager.GardenCrop crop = parseCrop(player, args[1]);
+                if (crop == null) return;
+                if (args.length >= 3) {
+                    if (!player.isOp()) {
+                        player.sendMessage("You do not have permission to set plot tiers.");
+                        return;
+                    }
+                    GardenManager.PlotTier tier;
+                    if (args[2].equalsIgnoreCase("upgrade")) {
+                        tier = gardenManager.upgradeCropPlotTier(player.getUniqueId(), crop);
+                        player.sendMessage(crop.getDisplayName() + " plot tier upgraded to " + tier.getDisplayName() + ".");
+                        return;
+                    }
+                    try {
+                        tier = GardenManager.PlotTier.valueOf(args[2].toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        player.sendMessage("Unknown tier: " + args[2] + ". Valid tiers: " + String.join(", ", TIER_NAMES));
+                        return;
+                    }
+                    gardenManager.setCropPlotTier(player.getUniqueId(), crop, tier);
+                    player.sendMessage(crop.getDisplayName() + " plot tier set to " + tier.getDisplayName() + ".");
+                    return;
+                }
+                GardenManager.PlotTier tier = gardenManager.getCropPlotTier(player.getUniqueId(), crop);
+                player.sendMessage(crop.getDisplayName() + " plot tier: " + tier.getDisplayName());
+            } else {
+                player.sendMessage("=== Crop Plot Tiers ===");
+                for (GardenManager.GardenCrop crop : GardenManager.GardenCrop.values()) {
+                    GardenManager.PlotTier tier = gardenManager.getCropPlotTier(player.getUniqueId(), crop);
+                    player.sendMessage(crop.getDisplayName() + ": " + tier.getDisplayName());
+                }
+            }
+        }
+
+        private void handleHarvest(Player player, String[] args) {
+            if (args.length >= 2) {
+                GardenManager.CropType crop = parseCropType(player, args[1]);
+                if (crop == null) return;
+                int yield = gardenManager.harvest(player.getUniqueId(), crop);
+                long total = gardenManager.getHarvestCount(player.getUniqueId(), crop);
+                player.sendMessage("Harvested " + yield + "x " + crop.name() + ". Total: " + total + ".");
+                return;
+            }
+            player.sendMessage("=== Harvest Totals ===");
+            for (GardenManager.CropType crop : GardenManager.CropType.values()) {
+                long total = gardenManager.getHarvestCount(player.getUniqueId(), crop);
+                player.sendMessage(crop.name() + ": " + total);
+            }
+        }
+
+        private void handleHistory(Player player) {
+            List<String> history = gardenManager.getGardenHistory(player.getUniqueId());
+            player.sendMessage("=== Garden History ===");
+            if (history.isEmpty()) {
+                player.sendMessage("No garden history found.");
+            } else {
+                for (int i = 0; i < history.size(); i++) {
+                    player.sendMessage((i + 1) + ". " + history.get(i));
+                }
+            }
+        }
+
+        private void handleReset(Player player) {
+            if (!player.isOp()) {
+                player.sendMessage("You do not have permission to use this subcommand.");
+                return;
+            }
+            gardenManager.reset(player.getUniqueId());
+            player.sendMessage("Your garden data has been reset.");
+        }
+
+        private GardenManager.GardenPlot parsePlot(Player player, String input) {
+            try {
+                return GardenManager.GardenPlot.valueOf(input.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown plot: " + input + ". Valid plots: " + String.join(", ", PLOT_NAMES));
+                return null;
+            }
+        }
+
+        private GardenManager.GardenCrop parseCrop(Player player, String input) {
+            try {
+                return GardenManager.GardenCrop.valueOf(input.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown crop: " + input + ". Valid crops: " + String.join(", ", CROP_NAMES));
+                return null;
+            }
+        }
+
+        private GardenManager.CropType parseCropType(Player player, String input) {
+            try {
+                return GardenManager.CropType.valueOf(input.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown crop: " + input + ". Valid crops: " + String.join(", ", CROP_TYPE_NAMES));
+                return null;
+            }
+        }
+
+        private int parseAmount(Player player, String input) {
+            try {
+                int amount = Integer.parseInt(input);
+                if (amount < 0) {
+                    player.sendMessage("Amount must not be negative.");
+                    return -1;
+                }
+                return amount;
+            } catch (NumberFormatException e) {
+                player.sendMessage("Invalid amount: " + input);
+                return -1;
             }
         }
     }
