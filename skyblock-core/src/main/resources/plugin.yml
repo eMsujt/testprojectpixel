@@ -334,6 +334,11 @@ commands:
     description: Open the Runes menu.
     usage: /runes
     permission: skyblock.runes
+  enderchest:
+    description: Open your SkyBlock Ender Chest.
+    usage: /enderchest
+    aliases: [ec]
+    permission: skyblock.enderchest
   talisman:
     description: Open the Talisman Bag GUI.
     usage: /talisman

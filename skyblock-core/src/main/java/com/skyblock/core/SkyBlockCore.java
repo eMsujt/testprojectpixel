@@ -35,6 +35,7 @@ import com.skyblock.core.manager.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
 import com.skyblock.core.command.EnchantCommand;
+import com.skyblock.core.command.EnderChestCommand;
 import com.skyblock.core.command.MenuCommand;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.DungeonsMenu;
@@ -624,6 +625,11 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("talisman") != null) {
             getCommand("talisman").setExecutor(talismanCommand);
             getCommand("talisman").setTabCompleter(talismanCommand);
+        }
+        EnderChestCommand enderChestCommand = new EnderChestCommand();
+        if (getCommand("enderchest") != null) {
+            getCommand("enderchest").setExecutor(enderChestCommand);
+            getCommand("enderchest").setTabCompleter(enderChestCommand);
         }
         com.skyblock.core.command.RuneCommand runeCommand = new com.skyblock.core.command.RuneCommand(this);
         if (getCommand("runes") != null) {
