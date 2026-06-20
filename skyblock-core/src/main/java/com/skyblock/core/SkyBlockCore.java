@@ -67,7 +67,7 @@ import com.skyblock.core.minion.command.MinionCommand;
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
-import com.skyblock.core.pet.PetCommand;
+import com.skyblock.core.command.PetCommand;
 import com.skyblock.core.ability.AbilityCommand;
 import com.skyblock.core.manager.ItemAbilityManager;
 import com.skyblock.core.manager.PetManager;
