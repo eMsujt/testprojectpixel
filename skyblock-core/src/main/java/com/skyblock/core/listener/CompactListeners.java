@@ -1,7 +1,9 @@
 package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.manager.StatsManager;
 import com.skyblock.core.model.Skill;
+import com.skyblock.core.model.Stat;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Ageable;
@@ -11,6 +13,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -66,11 +69,21 @@ public final class CompactListeners implements Listener {
     );
 
     private final SkillManager skillManager = SkillManager.getInstance();
+    private final StatsManager statsManager = StatsManager.getInstance();
 
     private CompactListeners() {}
 
     public static CompactListeners getInstance() {
         return INSTANCE;
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) return;
+        if (!(event.getDamager() instanceof Player player)) return;
+        double strength = statsManager.get(player.getUniqueId(), Stat.STRENGTH);
+        long xp = Math.max(1L, (long) (event.getDamage() * (1.0 + strength / 100.0)));
+        grantXP(player, Skill.COMBAT, xp);
     }
 
     @EventHandler
