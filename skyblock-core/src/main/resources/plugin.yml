@@ -221,7 +221,7 @@ commands:
   island:
     description: Open your SkyBlock island menu.
     usage: /island
-    aliases: [is]
+    aliases: [is, home]
     permission: skyblock.island
   jacobscontest:
     description: Open the Jacob's Farming Contest menu.
