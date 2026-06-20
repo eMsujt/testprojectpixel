@@ -309,6 +309,10 @@ commands:
     description: List NPC shops and their buy/sell prices.
     usage: /shop [id]
     permission: skyblock.shop
+  npcshop:
+    description: Browse and buy from static Hypixel NPC shops via GUI.
+    usage: /npcshop [id]
+    permission: skyblock.npcshop
   season:
     description: View or change the current SkyBlock season.
     usage: /season <current|next|set <season>|advance>
@@ -533,6 +537,8 @@ permissions:
     description: Use the /sack command to view the contents of your sacks.
   skyblock.shop:
     description: Use the /shop command to view NPC shops and prices.
+  skyblock.npcshop:
+    description: Use the /npcshop command to browse NPC shops via GUI.
     default: true
   skyblock.storage:
     description: Use the /storage command to view and manage storage pages.
