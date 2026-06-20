@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.AuctionManager;
-import com.skyblock.core.manager.AuctionManager.AuctionListing;
+import com.skyblock.core.manager.AuctionManager.Listing;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,7 +39,7 @@ public final class AuctionMenu extends AbstractSkyBlockMenu {
             }
         }
 
-        List<AuctionListing> listings = AuctionManager.getInstance().getActiveListings();
+        List<Listing> listings = AuctionManager.getInstance().getListings();
 
         if (listings.isEmpty()) {
             setItem(22, new ItemBuilder(Material.BARRIER)
@@ -51,16 +51,16 @@ public final class AuctionMenu extends AbstractSkyBlockMenu {
 
         int count = Math.min(listings.size(), LISTING_SLOTS.length);
         for (int i = 0; i < count; i++) {
-            AuctionListing listing = listings.get(i);
+            Listing listing = listings.get(i);
             String name = itemDisplayName(listing.item());
             setItem(LISTING_SLOTS[i], new ItemBuilder(listing.item())
                     .displayName("§e" + name)
                     .lore(
-                            "§7Price: §6" + (long) listing.startingBid() + " coins",
+                            "§7Price: §6" + (long) listing.price() + " coins",
                             "§eClick to purchase!")
                     .build(),
                     event -> event.getWhoClicked().sendMessage(
-                            "§e" + name + " §7is listed for §6" + (long) listing.startingBid() + " coins§7."));
+                            "§e" + name + " §7is listed for §6" + (long) listing.price() + " coins§7."));
         }
     }
 
