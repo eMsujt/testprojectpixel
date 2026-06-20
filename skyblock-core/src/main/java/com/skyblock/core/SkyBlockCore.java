@@ -777,7 +777,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("chocolatefactory").setExecutor(chocolateFactoryCommand);
             getCommand("chocolatefactory").setTabCompleter(chocolateFactoryCommand);
         }
-        MenuCommand bazaarMenuCommand = new MenuCommand(p -> new BazaarMenu(this, p).open(p));
+        MenuCommand bazaarMenuCommand = new MenuCommand(p -> new BazaarMenu(p).open(p));
         if (getCommand("bazaarmenu") != null) {
             getCommand("bazaarmenu").setExecutor(bazaarMenuCommand);
             getCommand("bazaarmenu").setTabCompleter(bazaarMenuCommand);
