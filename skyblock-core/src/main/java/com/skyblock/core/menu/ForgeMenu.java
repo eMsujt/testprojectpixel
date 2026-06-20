@@ -27,8 +27,8 @@ import java.util.function.Consumer;
  */
 public final class ForgeMenu extends Menu {
 
-    /** Left-3-column slots (rows 1–4) for active forge jobs (up to {@link ForgeManager#MAX_SLOT_COUNT}). */
-    private static final int[] FORGE_SLOTS = {9, 10, 11, 18, 19, 20, 27};
+    /** Row-1 slots 10-14 for active forge jobs (5 visible forge slots). */
+    private static final int[] FORGE_SLOTS = {10, 11, 12, 13, 14};
 
     /** Body slots used to list the available recipes (cols 3-7, rows 1-4). */
     private static final int[] RECIPE_SLOTS = {
@@ -49,7 +49,7 @@ public final class ForgeMenu extends Menu {
     }
 
     public ForgeMenu(UUID playerId) {
-        super("§7§lForge", 6);
+        super("§6Dwarven Forge", 6);
         this.playerId = playerId;
     }
 
