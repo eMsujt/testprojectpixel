@@ -49,7 +49,7 @@ public final class BankMenu extends Menu {
     }
 
     public BankMenu(UUID playerId) {
-        super("§6§lBank Account", 6);
+        super("§6Bank", 6);
         this.playerId = playerId;
     }
 
@@ -66,7 +66,11 @@ public final class BankMenu extends Menu {
         BankManager bank = BankManager.getInstance();
         CoopManager coop = CoopManager.getInstance();
 
-        inventory = org.bukkit.Bukkit.createInventory(this, 54, "§6§lBank Account");
+        double currentBalance = showingCoop
+                ? (coop.getOwner(playerId) != null ? bank.getCoopBalance(coop.getOwner(playerId).toString()) : 0.0)
+                : bank.getBalance(playerId);
+        String dynamicTitle = "§6Bank §8[§6" + String.format("%,.0f", currentBalance) + "§8]";
+        inventory = org.bukkit.Bukkit.createInventory(this, 54, dynamicTitle);
 
         ItemStack pane = SkyblockUtils.buildItem(Material.YELLOW_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 54; slot++) {
@@ -101,9 +105,7 @@ public final class BankMenu extends Menu {
         });
 
         long purse = econ.getPurse(playerId);
-        double balance = showingCoop
-                ? (coopKey != null ? bank.getCoopBalance(coopKey) : 0.0)
-                : bank.getBalance(playerId);
+        double balance = currentBalance;
 
         inventory.setItem(PURSE_SLOT, SkyblockUtils.buildItem(Material.GOLD_NUGGET,
                 "§6Purse",
