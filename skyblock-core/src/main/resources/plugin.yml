@@ -182,6 +182,10 @@ commands:
     description: View and manage your Garden plot, visitors, and crop upgrades.
     usage: /garden <info|plot [set|add <level>]|visitors [set|add <amount>]|crop [set|add <crop> <level>]|reset>
     permission: skyblock.garden
+  compost:
+    description: View and manage your Garden Composter organic matter, fuel, and compost.
+    usage: /compost <info|matter <amount>|fuel <amount>|process|collect>
+    permission: skyblock.compost
   gemstone:
     description: View and manage your gemstone collection.
     usage: /gemstone <info|view <type>|types|add <type> <amount>>
@@ -430,6 +434,9 @@ permissions:
     default: true
   skyblock.kuudra:
     description: Use the /kuudra command to view and manage Kuudra keys and completions.
+    default: true
+  skyblock.compost:
+    description: Use the /compost command to view and manage the Garden Composter.
     default: true
   skyblock.garden:
     description: Use the /garden command to view and manage Garden plot, visitors, and crop upgrades.
