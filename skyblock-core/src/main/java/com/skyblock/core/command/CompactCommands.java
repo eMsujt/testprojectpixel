@@ -12,7 +12,9 @@ import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.AuctionHouseMenu;
+import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.CollectionMenu;
+import com.skyblock.core.menu.ProfileMenu;
 import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.MinionMenu;
 import com.skyblock.core.menu.PetsMenu;
@@ -82,6 +84,52 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new AuctionHouseMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /bazaar
+    // =========================================================================
+
+    public static final class BazaarCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new BazaarMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /profile
+    // =========================================================================
+
+    public static final class ProfileCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new ProfileMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
         }
 
         @Override
