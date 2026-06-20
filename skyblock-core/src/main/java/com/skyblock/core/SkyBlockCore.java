@@ -144,6 +144,7 @@ import com.skyblock.core.command.SlayerCommand;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.listener.SlayerListener;
 import com.skyblock.core.manager.StatCommand;
+import com.skyblock.core.manager.FortuneManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.command.SackCommand;
@@ -207,6 +208,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private MinionManager minionManager;
     private ForgeManager forgeManager;
     private StatManager statManager;
+    private FortuneManager fortuneManager;
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
     private SackManager sackManager;
@@ -307,6 +309,7 @@ public final class SkyBlockCore extends JavaPlugin {
         minionManager.startTickTask(this);
         forgeManager = ForgeManager.getInstance();
         statManager = StatManager.getInstance();
+        fortuneManager = FortuneManager.getInstance();
         wardrobeManager = WardrobeManager.getInstance();
         wardrobeManager.load(getDataFolder());
         accessoryBagManager = AccessoryBagManager.getInstance();
