@@ -103,9 +103,9 @@ import com.skyblock.core.manager.DojoManager;
 import com.skyblock.core.command.CommissionCommand;
 import com.skyblock.core.manager.CommissionManager;
 import com.skyblock.core.chocolate.ChocolateFactoryManager;
+import com.skyblock.core.command.ChocolateFactoryCommand;
 import com.skyblock.core.menu.MiningCommissionMenu;
 import com.skyblock.core.menu.BazaarMenu;
-import com.skyblock.core.menu.ChocolateFactoryMenu;
 import com.skyblock.core.menu.ForagingMenu;
 import com.skyblock.core.menu.JacobsContestMenu;
 import com.skyblock.core.manager.JacobsContestManager;
@@ -713,7 +713,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("miningcommission").setExecutor(miningCommissionCommand);
             getCommand("miningcommission").setTabCompleter(miningCommissionCommand);
         }
-        MenuCommand chocolateFactoryCommand = new MenuCommand(p -> new ChocolateFactoryMenu(p).open(p));
+        ChocolateFactoryCommand chocolateFactoryCommand = new ChocolateFactoryCommand(chocolateFactoryManager);
         if (getCommand("chocolatefactory") != null) {
             getCommand("chocolatefactory").setExecutor(chocolateFactoryCommand);
             getCommand("chocolatefactory").setTabCompleter(chocolateFactoryCommand);

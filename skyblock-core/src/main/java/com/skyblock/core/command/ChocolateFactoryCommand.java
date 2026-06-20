@@ -1,5 +1,7 @@
-package com.skyblock.core.chocolate;
+package com.skyblock.core.command;
 
+import com.skyblock.core.chocolate.ChocolateFactoryManager;
+import com.skyblock.core.menu.ChocolateFactoryMenu;
 import com.skyblock.core.model.Rarity;
 
 import org.bukkit.command.Command;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
+ *   <li>{@code /chocolatefactory}                      — open the Chocolate Factory menu</li>
  *   <li>{@code /chocolatefactory balance}              — show your current chocolate balance</li>
  *   <li>{@code /chocolatefactory production}           — show your chocolate-per-second rate</li>
  *   <li>{@code /chocolatefactory rabbits}              — list your rabbit counts by rarity</li>
@@ -44,7 +47,7 @@ public final class ChocolateFactoryCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /chocolatefactory <balance|production|rabbits|rarities|addrabbit>");
+            new ChocolateFactoryMenu(player).open(player);
             return true;
         }
 
