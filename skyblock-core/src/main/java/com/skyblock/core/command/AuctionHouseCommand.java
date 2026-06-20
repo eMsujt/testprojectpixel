@@ -1,4 +1,4 @@
-package com.skyblock.core.auction.command;
+package com.skyblock.core.command;
 
 import com.skyblock.core.menu.AuctionHouseMenu;
 import com.skyblock.core.manager.AuctionHouseManager;
@@ -254,7 +254,6 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
     }
 
-    /** Parses an auction category name, sending an error to the player on failure. */
     private AuctionHouseManager.AuctionCategory parseCategory(Player player, String input) {
         try {
             return AuctionHouseManager.AuctionCategory.valueOf(input.toUpperCase());
@@ -265,7 +264,6 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
     }
 
-    /** Matches a short (8-char prefix) or full UUID against active listings. */
     private UUID resolveId(Player player, String input) {
         for (UUID id : manager.getActiveListings()) {
             if (id.toString().startsWith(input) || id.toString().equals(input)) {

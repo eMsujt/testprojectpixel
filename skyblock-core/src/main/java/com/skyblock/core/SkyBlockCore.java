@@ -6,7 +6,7 @@ import com.skyblock.core.command.QuestCommand;
 import com.skyblock.core.crafting.CraftingCommand;
 import com.skyblock.core.crafting.manager.CraftingManager;
 import com.skyblock.core.manager.QuestManager;
-import com.skyblock.core.auction.command.AuctionHouseCommand;
+import com.skyblock.core.command.AuctionHouseCommand;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.command.KuudraCommand;
 import com.skyblock.core.command.BankCommand;
