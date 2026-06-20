@@ -38,7 +38,6 @@ import com.skyblock.core.command.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
 import com.skyblock.core.command.MenuCommand;
-import com.skyblock.core.command.EnchantCommand;
 import com.skyblock.core.command.MiningCommand;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.DungeonsMenu;
@@ -76,7 +75,6 @@ import com.skyblock.core.command.PetCommand;
 import com.skyblock.core.ability.AbilityCommand;
 import com.skyblock.core.manager.ItemAbilityManager;
 import com.skyblock.core.manager.PetManager;
-import com.skyblock.core.command.IslandCommand;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
@@ -767,7 +765,7 @@ public final class SkyBlockCore extends JavaPlugin {
         ProfileCommand profileCommand = new ProfileCommand(profileManager);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
-        IslandCommand islandCommand = new IslandCommand();
+        CompactCommands.IslandCommand islandCommand = new CompactCommands.IslandCommand();
         if (getCommand("island") != null) {
             getCommand("island").setExecutor(islandCommand);
             getCommand("island").setTabCompleter(islandCommand);
@@ -840,7 +838,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.command.ForgeCommand forgeCommand = new com.skyblock.core.command.ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
-        EnchantCommand enchantCommand = new EnchantCommand();
+        CompactCommands.EnchantCommand enchantCommand = new CompactCommands.EnchantCommand();
         getCommand("enchant").setExecutor(enchantCommand);
         getCommand("enchant").setTabCompleter(enchantCommand);
         MenuCommand talismanCommand = new MenuCommand(p -> new com.skyblock.core.menu.TalismanBagMenu(this, p).open(p));
