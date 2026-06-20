@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * job completes), and the body lists every available forge recipe with its
  * output, duration and ingredients.
  */
-public final class ForgeMenu extends AbstractSkyBlockMenu {
+public final class ForgeMenu extends Menu {
 
     /** Left-3-column slots (rows 1–4) for active forge jobs (up to {@link ForgeManager#MAX_SLOT_COUNT}). */
     private static final int[] FORGE_SLOTS = {9, 10, 11, 18, 19, 20, 27};
@@ -40,16 +40,22 @@ public final class ForgeMenu extends AbstractSkyBlockMenu {
 
     private static final int CLOSE_SLOT = 49;
 
+    private final UUID playerId;
     private Inventory inventory;
     private final Map<Integer, Consumer<InventoryClickEvent>> clickHandlers = new HashMap<>();
 
     public ForgeMenu(Player player) {
-        super(player, "§7§lForge", 6);
+        this(player.getUniqueId());
     }
 
+    public ForgeMenu(UUID playerId) {
+        super("§7§lForge", 6);
+        this.playerId = playerId;
+    }
+
+    /** Unused: this menu manages its own inventory via {@link #open(Player)}. */
     @Override
-    protected void populate() {
-        // ForgeMenu manages its own inventory in open() to support dynamic refresh
+    protected void build() {
     }
 
     @Override
@@ -57,7 +63,7 @@ public final class ForgeMenu extends AbstractSkyBlockMenu {
         clickHandlers.clear();
         inventory = Bukkit.createInventory(this, 54, getTitle());
 
-        UUID id = player.getUniqueId();
+        UUID id = playerId;
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
@@ -73,9 +79,9 @@ public final class ForgeMenu extends AbstractSkyBlockMenu {
                 .displayName("§cClose")
                 .lore("§7Close the forge.")
                 .build());
-        clickHandlers.put(CLOSE_SLOT, e -> player.closeInventory());
+        clickHandlers.put(CLOSE_SLOT, e -> p.closeInventory());
 
-        player.openInventory(inventory);
+        p.openInventory(inventory);
     }
 
     private void buildForgeSlots(UUID id) {
