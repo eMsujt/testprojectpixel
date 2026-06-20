@@ -104,7 +104,7 @@ public final class ScoreboardManager {
         List<String> lines = Arrays.asList(
             " ",
             dateLine,
-            ChatColor.GRAY + "⏣ " + ChatColor.GRAY + player.getWorld().getName(),
+            ChatColor.GRAY + "⏣ " + ChatColor.WHITE + player.getWorld().getName(),
             "  ",
             ChatColor.RED + "❤ " + ChatColor.GREEN + "Health "
                     + ChatColor.GREEN + currentHealth + ChatColor.RED + "/" + maxHealth,
