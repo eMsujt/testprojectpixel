@@ -55,7 +55,7 @@ commands:
     aliases: [nw]
     permission: skyblock.networth
   bazaar:
-    description: Open the Bazaar.
+    description: Open the Bazaar trading post.
     usage: /bazaar [product]
     aliases: [bz, bazar]
   bazaarmenu:
