@@ -88,7 +88,7 @@ import com.skyblock.core.mail.MailCommand;
 import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.command.CollectionsCommand;
 import com.skyblock.core.command.CollectionCommand;
-import com.skyblock.core.collections.listener.CollectionListener;
+import com.skyblock.core.listener.CollectionListener;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.EssenceShopManager;
 import com.skyblock.core.menu.EnchantingMenu;
@@ -401,7 +401,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.manager.AttributeManager.getInstance();
         com.skyblock.core.manager.BingoManager.getInstance();
         com.skyblock.core.bossbar.BossBarManager.getInstance();
-        com.skyblock.core.collections.manager.CollectionRewardManager.getInstance();
+        com.skyblock.core.manager.CollectionRewardManager.getInstance();
         com.skyblock.core.stats.CombatStatsManager.getInstance();
         com.skyblock.core.mob.CustomMobManager.getInstance();
         com.skyblock.core.manager.DragonManager.getInstance().load(getDataFolder());
