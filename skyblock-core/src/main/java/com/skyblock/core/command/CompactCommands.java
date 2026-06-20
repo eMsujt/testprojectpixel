@@ -24,6 +24,7 @@ import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.TalismanMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
+import com.skyblock.core.menu.SkillsMenu;
 import com.skyblock.core.menu.WarpMenu;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.season.SeasonManager;
@@ -1222,6 +1223,24 @@ public final class CompactCommands {
             for (WarpManager.SkyBlockLocation loc : WarpManager.SkyBlockLocation.values()) {
                 player.sendMessage("- " + loc.getDisplayName());
             }
+        }
+    }
+
+    // =========================================================================
+    // /skills
+    // =========================================================================
+
+    public static final class SkillsCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new SkillsMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
         }
     }
 }
