@@ -165,6 +165,8 @@ import com.skyblock.core.manager.PlayerDataManager;
 import com.skyblock.core.manager.ScoreboardManager;
 import com.skyblock.core.manager.RunecraftingManager;
 import com.skyblock.core.manager.SkyBlockEventManager;
+import com.skyblock.core.manager.CarpentryManager;
+import com.skyblock.core.manager.MobManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SkyBlockCore extends JavaPlugin {
@@ -250,6 +252,8 @@ public final class SkyBlockCore extends JavaPlugin {
     private ManaManager manaManager;
     private SkyBlockEventManager skyBlockEventManager;
     private TamingManager tamingManager;
+    private CarpentryManager carpentryManager;
+    private MobManager mobManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
@@ -376,6 +380,10 @@ public final class SkyBlockCore extends JavaPlugin {
         manaManager = ManaManager.getInstance();
         skyBlockEventManager = SkyBlockEventManager.getInstance();
         tamingManager = TamingManager.getInstance();
+        carpentryManager = CarpentryManager.getInstance();
+        carpentryManager.load(getDataFolder());
+        mobManager = MobManager.getInstance();
+        mobManager.init(this);
     }
 
     @Override
@@ -789,6 +797,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getLogger().severe("Failed to save data: " + e.getMessage());
         }
         RunecraftingManager.getInstance().save(getDataFolder());
+        CarpentryManager.getInstance().save(getDataFolder());
         SkyBlockEventManager.getInstance().stop();
         ScoreboardManager.getInstance().stop();
         instance = null;
