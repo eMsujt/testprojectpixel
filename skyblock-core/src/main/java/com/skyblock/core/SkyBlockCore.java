@@ -822,6 +822,7 @@ public final class SkyBlockCore extends JavaPlugin {
         }
         ScoreboardManager.getInstance().start(this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ScoreboardListener.getInstance(), this);
+        com.skyblock.core.manager.TabListManager.getInstance().start(this);
         manaManager.start(this);
         skyBlockEventManager.start(this);
         jacobsContestManager.start(this);
@@ -903,6 +904,7 @@ public final class SkyBlockCore extends JavaPlugin {
         CarpentryManager.getInstance().save(getDataFolder());
         SkyBlockEventManager.getInstance().stop();
         ScoreboardManager.getInstance().stop();
+        com.skyblock.core.manager.TabListManager.getInstance().stop();
         instance = null;
     }
 }
