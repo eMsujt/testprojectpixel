@@ -304,6 +304,14 @@ public final class SkyBlockCore extends JavaPlugin {
         return bazaarManager;
     }
 
+    public FairySoulManager getFairySoulManager() {
+        return fairySoulManager;
+    }
+
+    public WarpManager getWarpManager() {
+        return warpManager;
+    }
+
     private void initManagers() {
         // core data — loaded first; others may depend on skill/profile state
         skillsManager = SkillManager.getInstance();
