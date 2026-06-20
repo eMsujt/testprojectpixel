@@ -106,6 +106,15 @@ talismans:
 warps:
   max-per-player: 5
 
+# ─── Hub ──────────────────────────────────────────────────────────────────────
+hub:
+  world: world               # world the /hub and /spawn commands teleport to
+  x: 0.5
+  y: 64.0
+  z: 0.5
+  yaw: 0.0
+  pitch: 0.0
+
 # ─── Scoreboard ───────────────────────────────────────────────────────────────
 scoreboard:
   enabled: true
