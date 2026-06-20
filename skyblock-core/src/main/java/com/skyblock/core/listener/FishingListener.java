@@ -2,6 +2,8 @@ package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.manager.FishingManager.SeaCreature;
+import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.model.Skill;
 import com.skyblock.core.util.ChatUtil;
 import com.skyblock.core.manager.FishingManager.WaterType;
 import org.bukkit.Material;
@@ -19,6 +21,7 @@ public final class FishingListener implements Listener {
     private static final FishingListener INSTANCE = new FishingListener();
 
     private final FishingManager fishingManager = FishingManager.getInstance();
+    private final SkillManager skillManager = SkillManager.getInstance();
 
     private FishingListener() {}
 
@@ -39,6 +42,7 @@ public final class FishingListener implements Listener {
         double xp = isTreasure ? FishingManager.XP_TREASURE : FishingManager.XP_PER_CATCH;
         fishingManager.addXp(uuid, xp);
         fishingManager.addFishCaught(uuid);
+        skillManager.addXP(uuid, Skill.FISHING, (long) xp);
 
         player.getWorld().dropItemNaturally(event.getHook().getLocation(), loot);
         fishingManager.recordCatchEvent(uuid, "Caught " + loot.getType().name());
