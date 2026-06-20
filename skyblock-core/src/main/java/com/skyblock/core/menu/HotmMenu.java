@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.HeartOfTheMountainManager;
-import com.skyblock.core.manager.HeartOfTheMountainManager.HotMNode;
+import com.skyblock.core.manager.HOTMManager;
+import com.skyblock.core.manager.HOTMManager.HotMNode;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,7 +27,7 @@ public final class HotmMenu extends AbstractMenu {
     @Override
     protected void populate() {
         UUID playerId = player.getUniqueId();
-        HeartOfTheMountainManager hotm = HeartOfTheMountainManager.getInstance();
+        HOTMManager hotm = HOTMManager.getInstance();
 
         ItemBuilder pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r");
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane.build());
@@ -36,7 +36,7 @@ public final class HotmMenu extends AbstractMenu {
         setItem(SUMMARY_SLOT, new ItemBuilder(Material.BEACON)
                 .displayName("§bHeart of the Mountain")
                 .lore(
-                        "§7HOTM Tier: §e" + hotm.getHotmTier(playerId) + "§7/§e" + HeartOfTheMountainManager.MAX_TIER,
+                        "§7HOTM Tier: §e" + hotm.getHotmTier(playerId) + "§7/§e" + HOTMManager.MAX_TIER,
                         "§7Mithril Powder: §e" + hotm.getMithrilPowder(playerId),
                         "§7Gemstone Powder: §e" + hotm.getGemstonePowder(playerId))
                 .build());

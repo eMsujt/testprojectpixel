@@ -1,6 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.manager.HeartOfTheMountainManager.HotMNode;
+import com.skyblock.core.manager.HOTMManager.HotMNode;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HeartOfTheMountainManagerTest {
 
-    private final HeartOfTheMountainManager hotm = HeartOfTheMountainManager.getInstance();
+    private final HOTMManager hotm = HOTMManager.getInstance();
 
     @Test
     void getInstance_ReturnsSameInstance() {
-        assertSame(HeartOfTheMountainManager.getInstance(), HeartOfTheMountainManager.getInstance());
+        assertSame(HOTMManager.getInstance(), HOTMManager.getInstance());
     }
 
     @Test

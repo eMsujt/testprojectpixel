@@ -13,8 +13,8 @@ import com.skyblock.core.manager.CrimsonIsleManager;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.manager.GardenManager.CropType;
-import com.skyblock.core.manager.HeartOfTheMountainManager;
-import com.skyblock.core.manager.HeartOfTheMountainManager.HotMNode;
+import com.skyblock.core.manager.HOTMManager;
+import com.skyblock.core.manager.HOTMManager.HotMNode;
 import com.skyblock.core.manager.CommissionManager;
 import com.skyblock.core.manager.CommissionManager.CommissionLocation;
 import com.skyblock.core.manager.CommissionManager.CommissionType;
@@ -1586,7 +1586,7 @@ class MenuIntegrationTest {
 
         @AfterEach
         void cleanup() {
-            HeartOfTheMountainManager.getInstance().remove(PLAYER);
+            HOTMManager.getInstance().remove(PLAYER);
         }
 
         @Test
@@ -1606,32 +1606,32 @@ class MenuIntegrationTest {
 
         @Test
         void manager_maxTier_isSeven() {
-            assertEquals(7, HeartOfTheMountainManager.MAX_TIER);
+            assertEquals(7, HOTMManager.MAX_TIER);
         }
 
         @Test
         void manager_perkLevel_zeroForFreshPlayer() {
-            assertEquals(0, HeartOfTheMountainManager.getInstance().getLevel(PLAYER, HotMNode.MINING_SPEED));
+            assertEquals(0, HOTMManager.getInstance().getLevel(PLAYER, HotMNode.MINING_SPEED));
         }
 
         @Test
         void manager_hotmTier_oneForFreshPlayer() {
-            assertEquals(1, HeartOfTheMountainManager.getInstance().getHotmTier(PLAYER));
+            assertEquals(1, HOTMManager.getInstance().getHotmTier(PLAYER));
         }
 
         @Test
         void manager_mithrilPowder_zeroForFreshPlayer() {
-            assertEquals(0L, HeartOfTheMountainManager.getInstance().getMithrilPowder(PLAYER));
+            assertEquals(0L, HOTMManager.getInstance().getMithrilPowder(PLAYER));
         }
 
         @Test
         void manager_gemstonePowder_zeroForFreshPlayer() {
-            assertEquals(0L, HeartOfTheMountainManager.getInstance().getGemstonePowder(PLAYER));
+            assertEquals(0L, HOTMManager.getInstance().getGemstonePowder(PLAYER));
         }
 
         @Test
         void manager_upgrade_roundTrips() {
-            HeartOfTheMountainManager mgr = HeartOfTheMountainManager.getInstance();
+            HOTMManager mgr = HOTMManager.getInstance();
             int newLevel = mgr.upgrade(PLAYER, HotMNode.MINING_FORTUNE);
             assertEquals(1, newLevel);
             assertEquals(1, mgr.getLevel(PLAYER, HotMNode.MINING_FORTUNE));
@@ -1639,26 +1639,26 @@ class MenuIntegrationTest {
 
         @Test
         void manager_addMithrilPowder_roundTrips() {
-            HeartOfTheMountainManager mgr = HeartOfTheMountainManager.getInstance();
+            HOTMManager mgr = HOTMManager.getInstance();
             mgr.addMithrilPowder(PLAYER, 5000L);
             assertEquals(5000L, mgr.getMithrilPowder(PLAYER));
         }
 
         @Test
         void manager_purchaseUpgrade_failsWithNoPowder() {
-            assertEquals(-2, HeartOfTheMountainManager.getInstance().purchaseUpgrade(PLAYER, HotMNode.MINING_SPEED));
+            assertEquals(-2, HOTMManager.getInstance().purchaseUpgrade(PLAYER, HotMNode.MINING_SPEED));
         }
 
         @Test
         void manager_addGemstonePowder_roundTrips() {
-            HeartOfTheMountainManager mgr = HeartOfTheMountainManager.getInstance();
+            HOTMManager mgr = HOTMManager.getInstance();
             mgr.addGemstonePowder(PLAYER, 3000L);
             assertEquals(3000L, mgr.getGemstonePowder(PLAYER));
         }
 
         @Test
         void manager_upgrade_atMaxLevel_returnsNegativeOne() {
-            HeartOfTheMountainManager mgr = HeartOfTheMountainManager.getInstance();
+            HOTMManager mgr = HOTMManager.getInstance();
             mgr.setLevel(PLAYER, HotMNode.MINING_SPEED_BOOST, HotMNode.MINING_SPEED_BOOST.maxLevel);
             assertEquals(-1, mgr.upgrade(PLAYER, HotMNode.MINING_SPEED_BOOST));
         }
