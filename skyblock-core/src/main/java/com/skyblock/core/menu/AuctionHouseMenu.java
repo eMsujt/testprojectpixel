@@ -57,7 +57,7 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
     }
 
     public AuctionHouseMenu(Player player, int page) {
-        super(player, "§6§lAuction House", 54);
+        super(player, "§6§lAuction House", 6);
         this.page = Math.max(0, page);
     }
 
