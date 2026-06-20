@@ -298,6 +298,14 @@ public final class SkyBlockCore extends JavaPlugin {
         return bankManager;
     }
 
+    public MayorManager getMayorManager() {
+        return mayorManager;
+    }
+
+    public ForgeManager getForgeManager() {
+        return forgeManager;
+    }
+
     public AuctionHouseManager getAuctionHouseManager() {
         return auctionHouseManager;
     }
