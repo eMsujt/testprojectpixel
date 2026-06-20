@@ -166,7 +166,9 @@ import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.command.AccessoryBagCommand;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.rift.RiftCommand;
+import com.skyblock.core.manager.PlayerStatManager;
 import com.skyblock.core.manager.RiftManager;
+import com.skyblock.core.season.SeasonManager;
 import com.skyblock.core.crystalhollows.CrystalHollowsCommand;
 import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.storage.StorageManager;
@@ -269,6 +271,10 @@ public final class SkyBlockCore extends JavaPlugin {
     private TamingManager tamingManager;
     private CarpentryManager carpentryManager;
     private MobManager mobManager;
+    private PlayerStatManager playerStatManager;
+    private DailyRewardManager dailyRewardManager;
+    private RepairManager repairManager;
+    private SeasonManager seasonManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
