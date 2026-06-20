@@ -141,6 +141,7 @@ import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.command.SackCommand;
 import com.skyblock.core.manager.SackManager;
+import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
@@ -681,7 +682,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
         }
-        MenuCommand skyBlockCommand = new MenuCommand(p -> new SkyBlockMenu(p).open(p));
+        SkyBlockMenuCommand skyBlockCommand = new SkyBlockMenuCommand();
         if (getCommand("skyblock") != null) {
             getCommand("skyblock").setExecutor(skyBlockCommand);
             getCommand("skyblock").setTabCompleter(skyBlockCommand);
