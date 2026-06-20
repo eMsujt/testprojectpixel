@@ -1,43 +1,50 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.backpack.BackpackManager.BackpackTier;
 import com.skyblock.core.manager.StorageManager;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
 /**
- * Backpack GUI opened by {@code /storage}. The inventory is sized to the
- * player's {@link BackpackTier} (SMALL=9, MEDIUM=18, LARGE=27, JUMBO=36 slots)
- * and rendered with the stored items from page 0 of {@link StorageManager}.
+ * 6-row chest GUI titled 'Personal Vault' that exposes the player's 27 stored
+ * items (page 0, slots 0-26 of {@link StorageManager}) and fills the remaining
+ * rows with a decorative border.
  */
-public final class StorageMenu extends AbstractMenu {
+public final class StorageMenu extends AbstractSkyBlockMenu {
 
-    private final BackpackTier tier;
+    private static final int VAULT_SLOTS = 27;
+    private static final ItemStack PANE = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+            .displayName("§r").build();
 
-    public StorageMenu(JavaPlugin plugin, Player player, BackpackTier tier) {
-        super(plugin, player, "§8Backpack (" + tier.name() + ")", tier.slots);
-        this.tier = tier;
+    public StorageMenu(Player player) {
+        super(player, "Personal Vault", 6);
     }
 
     @Override
     protected void populate() {
         UUID playerId = player.getUniqueId();
         ItemStack[] contents = StorageManager.getInstance().getPage(playerId, 0);
-        for (int slot = 0; slot < tier.slots && slot < contents.length; slot++) {
-            ItemStack item = contents[slot];
+
+        for (int slot = 0; slot < VAULT_SLOTS; slot++) {
+            ItemStack item = (slot < contents.length) ? contents[slot] : null;
             if (item != null && item.getType() != Material.AIR) {
                 setItem(slot, item);
             }
+        }
+
+        for (int slot = VAULT_SLOTS; slot < 54; slot++) {
+            setItem(slot, PANE);
         }
     }
 
     @Override
     public void handleClick(InventoryClickEvent event) {
-        event.setCancelled(true);
+        if (event.getRawSlot() >= VAULT_SLOTS) {
+            event.setCancelled(true);
+        }
     }
 }
