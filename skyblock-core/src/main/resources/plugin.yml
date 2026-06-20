@@ -134,10 +134,10 @@ commands:
     usage: /dungeonclass [list|select <class>|info <class>]
     permission: skyblock.dungeonclass
   dungeon:
-    description: Open the dungeon menu and manage your dungeon runs.
-    usage: /dungeon [info|start|leave|complete|class|scores|floor|history]
+    description: Open your Dungeon menu.
+    usage: /dungeon
     aliases: [da]
-    permission: skyblock.dungeon
+    permission: skyblock.command.dungeon
   dungeons:
     description: Open the Catacombs menu.
     usage: /dungeons
@@ -353,10 +353,10 @@ commands:
     usage: /slay [type|start|info]
     permission: skyblock.slayer
   slayer:
-    description: Manage your slayer quests and view boss info.
-    usage: /slayer [info|start|type]
+    description: Open your Slayer Quests menu.
+    usage: /slayer
     aliases: [sl]
-    permission: skyblock.slayer
+    permission: skyblock.command.slayer
   stat:
     description: View your effective SkyBlock player stats.
     usage: /stat [<stat>]
@@ -627,4 +627,10 @@ permissions:
     default: true
   skyblock.command.minion:
     description: Use the /minion command to manage your placed minions.
+    default: true
+  skyblock.command.slayer:
+    description: Use the /slayer command to open your Slayer Quests menu.
+    default: true
+  skyblock.command.dungeon:
+    description: Use the /dungeon command to open your Dungeon menu.
     default: true
