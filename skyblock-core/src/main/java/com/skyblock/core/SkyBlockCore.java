@@ -814,6 +814,7 @@ public final class SkyBlockCore extends JavaPlugin {
         manaManager.start(this);
         skyBlockEventManager.start(this);
         jacobsContestManager.start(this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.JacobsContestListener.getInstance(), this);
         NpcCommand npcCommand = new NpcCommand(npcManager, com.skyblock.core.manager.EconomyManager.getInstance());
         if (getCommand("npc") != null) {
             getCommand("npc").setExecutor(npcCommand);
