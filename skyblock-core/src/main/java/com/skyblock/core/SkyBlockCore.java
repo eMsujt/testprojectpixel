@@ -15,7 +15,7 @@ import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.command.CalendarCommand;
 import com.skyblock.core.manager.CalendarManager;
-import com.skyblock.core.museum.MuseumCommand;
+import com.skyblock.core.command.MuseumCommand;
 import com.skyblock.core.manager.MuseumManager;
 import com.skyblock.core.command.EssenceCommand;
 import com.skyblock.core.manager.EssenceManager;
