@@ -2,6 +2,7 @@ package com.skyblock.core.command;
 
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.manager.SackManager.SackType;
+import com.skyblock.core.menu.SackMenu;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
@@ -9,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 
 /**
- * Lists the contents of each of the player's sacks.
+ * Opens the sack GUI, or lists sack contents as text with /sack list.
  */
 public final class SackCommand extends PlayerCommand {
 
@@ -20,10 +21,16 @@ public final class SackCommand extends PlayerCommand {
     }
 
     @Override
-    protected void openMenu(Player p) {}
+    protected void openMenu(Player p) {
+        new SackMenu(p).open(p);
+    }
 
     @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
+        if (args.length == 0) {
+            openMenu(player);
+            return true;
+        }
         player.sendMessage(ChatColor.GOLD + "Your Sacks:");
         boolean any = false;
         for (SackType type : SackType.values()) {
