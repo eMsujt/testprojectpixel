@@ -378,7 +378,7 @@ class MenuIntegrationTest {
         @Test
         void title_isAuctionHouse() {
             AuctionHouseMenu menu = new AuctionHouseMenu(mockPlayer);
-            assertEquals("§6§lAuction House", menu.getTitle());
+            assertEquals("§6Auction House", menu.getTitle());
         }
 
         @Test
@@ -1388,7 +1388,7 @@ class MenuIntegrationTest {
 
         @Test
         void title_isBazaar() {
-            assertEquals("§6§lBazaar", new BazaarMenu(mock(Player.class)).getTitle());
+            assertEquals("§6Bazaar", new BazaarMenu(mock(Player.class)).getTitle());
         }
 
         @Test
