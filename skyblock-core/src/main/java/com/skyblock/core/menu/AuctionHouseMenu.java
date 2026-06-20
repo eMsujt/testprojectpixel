@@ -48,6 +48,7 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
         for (int i = start; i < end; i++) {
             UUID id = ids.get(i);
             AuctionListing listing = manager.getListing(id);
+            if (listing == null) continue;
             ItemStack icon = new ItemBuilder(listing.item())
                     .displayName("§e" + listing.itemName())
                     .lore(
