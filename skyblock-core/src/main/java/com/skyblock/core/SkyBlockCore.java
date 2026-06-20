@@ -90,7 +90,6 @@ import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.mail.MailCommand;
 import com.skyblock.core.mail.MailManager;
 import com.skyblock.core.command.CollectionsCommand;
-import com.skyblock.core.command.CollectionCommand;
 import com.skyblock.core.listener.CollectionListener;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.EssenceShopManager;
@@ -817,9 +816,8 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("collections").setExecutor(collectionsCommand);
         getCommand("collections").setTabCompleter(collectionsCommand);
         if (getCommand("collection") != null) {
-            CollectionCommand collectionCommand = new CollectionCommand();
-            getCommand("collection").setExecutor(collectionCommand);
-            getCommand("collection").setTabCompleter(collectionCommand);
+            getCommand("collection").setExecutor(collectionsCommand);
+            getCommand("collection").setTabCompleter(collectionsCommand);
         }
         getServer().getPluginManager().registerEvents(new CollectionListener(collectionManager), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.listener.FairySoulListener(FairySoulManager.getInstance(), this), this);
