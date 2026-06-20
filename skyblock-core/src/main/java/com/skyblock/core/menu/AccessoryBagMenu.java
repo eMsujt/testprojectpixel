@@ -16,6 +16,9 @@ import java.util.UUID;
 
 public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
 
+    public static final int SUMMARY_SLOT = 4;
+    public static final int[] RARITY_SLOTS = {9, 10, 11, 12, 13, 14, 15, 16};
+
     public AccessoryBagMenu(Player player) {
         super(player, "§6Accessory Bag", 5);
     }
