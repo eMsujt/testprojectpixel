@@ -1,6 +1,5 @@
-package com.skyblock.core.bank.command;
+package com.skyblock.core.command;
 
-import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BankManager.BankTier;
 import com.skyblock.core.manager.BankManager.BankType;
@@ -13,24 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Handles the {@code /bank} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /bank balance}                           — show your current balance</li>
- *   <li>{@code /bank deposit <amount>}                  — deposit coins</li>
- *   <li>{@code /bank withdraw <amount>}                 — withdraw coins</li>
- *   <li>{@code /bank tier [tier]}                       — view or set your bank tier</li>
- *   <li>{@code /bank type [type]}                       — view or set your bank type</li>
- *   <li>{@code /bank history}                           — view recent transactions</li>
- *   <li>{@code /bank interest}                          — apply interest to your balance</li>
- *   <li>{@code /bank coop balance <coopName>}           — show co-op bank balance</li>
- *   <li>{@code /bank coop deposit <coopName> <amount>}  — deposit into co-op bank</li>
- *   <li>{@code /bank coop withdraw <coopName> <amount>} — withdraw from co-op bank</li>
- * </ul>
- * </p>
- */
 public final class BankCommand extends PlayerCommand {
 
     private final BankManager bankManager;
