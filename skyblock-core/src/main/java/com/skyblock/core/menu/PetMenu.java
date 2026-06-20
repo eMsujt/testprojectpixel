@@ -33,7 +33,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
     }
 
     public PetMenu(Player player) {
-        super(player, "§aPets", 6);
+        super(player, "§dPets", 6);
     }
 
     @Override

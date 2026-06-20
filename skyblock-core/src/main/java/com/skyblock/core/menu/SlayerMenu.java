@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public final class SlayerMenu extends AbstractSkyBlockMenu {
 
-    static final int[] BOSS_SLOTS = {11, 13, 15, 20, 22, 24};
+    static final int[] BOSS_SLOTS = {20, 21, 22, 23, 24};
 
     private static final int SUMMARY_SLOT = 31;
 
@@ -40,7 +40,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     }
 
     public SlayerMenu(Player player) {
-        super(player, "§cSlayer", 4);
+        super(player, "§cSlayer Quests", 6);
     }
 
     @Override
@@ -52,7 +52,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
 
         SlayerManager manager = SlayerManager.getInstance();
 
-        for (int i = 0; i < DISPLAYED_BOSSES.length; i++) {
+        for (int i = 0; i < DISPLAYED_BOSSES.length && i < BOSS_SLOTS.length; i++) {
             SlayerBoss boss = DISPLAYED_BOSSES[i];
             SlayerType type = boss.type;
             int level = manager.getLevel(playerId, type);

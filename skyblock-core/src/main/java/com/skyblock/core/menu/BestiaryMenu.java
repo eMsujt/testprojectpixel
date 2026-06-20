@@ -75,7 +75,7 @@ public final class BestiaryMenu extends Menu {
     }
 
     private BestiaryMenu(UUID playerId, BestiaryCategory category) {
-        super(category == null ? "§aBestiary" : "§aBestiary §8» §7" + category.displayName, 6);
+        super(category == null ? "§2Bestiary" : "§2Bestiary §8» §7" + category.displayName, 6);
         this.playerId = playerId;
         this.category = category;
     }
