@@ -19,6 +19,7 @@ import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.MinionMenu;
 import com.skyblock.core.menu.PetsMenu;
 import com.skyblock.core.menu.BestiaryMenu;
+import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.WardrobeMenu;
 import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.IslandMenu;
@@ -235,6 +236,18 @@ public final class CompactCommands {
         @Override
         public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
             return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /pet
+    // =========================================================================
+
+    public static final class PetCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new PetMenu(player).open(player);
         }
     }
 
