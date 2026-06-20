@@ -106,4 +106,22 @@ public final class DungeonsManager {
     public int getClassLevel(UUID playerId, DungeonClass cls) {
         return delegate().getClassLevel(playerId, toCore(cls));
     }
+
+    // -------------------------------------------------------------------------
+    // Mob kills
+    // -------------------------------------------------------------------------
+
+    /** Class XP awarded for slaying a single mob inside a dungeon. */
+    public static final double MOB_CLASS_XP = 30.0;
+
+    /**
+     * Records a mob kill by the given player while running a dungeon, awarding
+     * {@link #MOB_CLASS_XP} to their selected {@link DungeonClass}. No-op when
+     * the player has not chosen a class.
+     */
+    public void recordMob(UUID playerId) {
+        DungeonClass cls = getPlayerClass(playerId);
+        if (cls == null) return;
+        addClassXp(playerId, cls, MOB_CLASS_XP);
+    }
 }
