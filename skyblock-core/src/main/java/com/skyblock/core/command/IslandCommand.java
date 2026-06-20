@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public final class IslandCommand extends PlayerCommand {
 
-    private static final List<String> SUB_COMMANDS = Arrays.asList("create", "visit", "leave", "upgrade");
+    private static final List<String> SUB_COMMANDS = Arrays.asList("create", "home", "visit", "leave", "upgrade");
 
     @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
@@ -22,6 +22,7 @@ public final class IslandCommand extends PlayerCommand {
         }
         switch (args[0].toLowerCase()) {
             case "create" -> handleCreate(player);
+            case "home"  -> handleHome(player);
             case "visit"  -> handleVisit(player, args);
             case "leave"  -> handleLeave(player);
             case "upgrade" -> openMenu(player);
@@ -43,6 +44,17 @@ public final class IslandCommand extends PlayerCommand {
         }
         manager.createIsland(player);
         player.sendMessage("§aYour island has been created!");
+    }
+
+    private void handleHome(Player player) {
+        IslandManager manager = IslandManager.getInstance();
+        Optional<org.bukkit.World> world = manager.getIslandWorld(player.getUniqueId());
+        if (world.isEmpty()) {
+            player.sendMessage("§cYou do not have an island yet. Use /island create.");
+            return;
+        }
+        player.teleport(world.get().getSpawnLocation());
+        player.sendMessage("§aTeleported to your island.");
     }
 
     private void handleVisit(Player player, String[] args) {
