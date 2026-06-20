@@ -1,6 +1,5 @@
-package com.skyblock.core.wardrobe;
+package com.skyblock.core.command;
 
-import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.menu.WardrobeMenu;
 import org.bukkit.command.Command;

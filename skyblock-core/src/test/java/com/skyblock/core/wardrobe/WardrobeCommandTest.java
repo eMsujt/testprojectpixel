@@ -1,5 +1,6 @@
 package com.skyblock.core.wardrobe;
 
+import com.skyblock.core.command.WardrobeCommand;
 import com.skyblock.core.manager.WardrobeManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
