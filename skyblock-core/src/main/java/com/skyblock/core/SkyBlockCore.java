@@ -748,6 +748,11 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(tamingManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.armor.ArmorSetListener(com.skyblock.core.armor.ArmorSetManager.getInstance()), this);
         ActionBarManager.getInstance().start(this);
+        com.skyblock.core.command.RepairCommand repairCommand = new com.skyblock.core.command.RepairCommand(com.skyblock.core.manager.RepairManager.getInstance());
+        if (getCommand("repair") != null) {
+            getCommand("repair").setExecutor(repairCommand);
+            getCommand("repair").setTabCompleter(repairCommand);
+        }
     }
 
     @Override
