@@ -1273,7 +1273,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new SlayerMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
+            new SlayerMenu(player).open(player);
         }
 
         @Override

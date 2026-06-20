@@ -45,7 +45,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(15, new ItemBuilder(Material.NETHER_STAR).displayName("§aSlayer")
                 .lore("§7View your slayer quests.").build(),
-                e -> { e.setCancelled(true); new SlayerMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new SlayerMenu(player).open(player); });
 
         setItem(16, new ItemBuilder(Material.END_PORTAL_FRAME).displayName("§5Dungeons")
                 .lore("§7Explore the Catacombs.").build(),
