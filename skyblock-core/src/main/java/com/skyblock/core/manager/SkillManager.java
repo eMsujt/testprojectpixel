@@ -1,6 +1,6 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.config.Constants;
+import com.skyblock.core.data.SkyBlockXP;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,13 +27,13 @@ public final class SkillManager {
     /** Maximum level for the standard 60-level skills. */
     public static final int MAX_LEVEL = 60;
 
-    private static final long[] STANDARD_CURVE = Constants.SKILL_STANDARD_XP_CURVE;
+    private static final long[] STANDARD_CURVE = SkyBlockXP.STANDARD;
 
-    private static final long[] FIFTY_LEVEL_CURVE = Constants.SKILL_FIFTY_XP_CURVE;
+    private static final long[] FIFTY_LEVEL_CURVE = SkyBlockXP.FIFTY_LEVEL;
 
-    private static final long[] DUNGEONEERING_CURVE = Constants.SKILL_DUNGEONEERING_XP_CURVE;
+    private static final long[] DUNGEONEERING_CURVE = SkyBlockXP.DUNGEONEERING;
 
-    private static final long[] TWENTY_FIVE_LEVEL_CURVE = Constants.SKILL_TWENTY_FIVE_XP_CURVE;
+    private static final long[] TWENTY_FIVE_LEVEL_CURVE = SkyBlockXP.TWENTY_FIVE_LEVEL;
 
     /**
      * Per-level XP requirements for every skill, keyed by lowercase skill name.

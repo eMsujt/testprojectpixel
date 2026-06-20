@@ -1,7 +1,5 @@
 package com.skyblock.core.data;
 
-import com.skyblock.core.config.Constants;
-
 /**
  * Static XP-per-level tables for every SkyBlock skill category.
  *
@@ -13,35 +11,22 @@ public final class SkillXPTable {
     private SkillXPTable() {}
 
     /** 60-level curve: Farming, Mining, Combat, Foraging, Fishing, Enchanting, Alchemy, Taming. */
-    public static final long[] STANDARD = Constants.SKILL_STANDARD_XP_CURVE;
+    public static final long[] STANDARD = SkyBlockXP.STANDARD;
 
     /** 50-level curve: Carpentry (mirrors the standard skill curve up to level 50). */
-    public static final long[] FIFTY_LEVEL = Constants.SKILL_FIFTY_XP_CURVE;
+    public static final long[] FIFTY_LEVEL = SkyBlockXP.FIFTY_LEVEL;
 
     /** 50-level catacombs curve: Dungeoneering. */
-    public static final long[] DUNGEONEERING = Constants.SKILL_DUNGEONEERING_XP_CURVE;
+    public static final long[] DUNGEONEERING = SkyBlockXP.DUNGEONEERING;
 
     /** 25-level curve: Runecrafting, Social. */
-    public static final long[] TWENTY_FIVE_LEVEL = Constants.SKILL_TWENTY_FIVE_XP_CURVE;
+    public static final long[] TWENTY_FIVE_LEVEL = SkyBlockXP.TWENTY_FIVE_LEVEL;
 
     /**
      * Returns the XP table for the given lowercase skill name,
      * or {@code null} if the skill is unknown.
      */
     public static long[] forSkill(String skill) {
-        if (skill == null) return null;
-        switch (skill.toLowerCase()) {
-            case "farming": case "mining": case "combat": case "foraging":
-            case "fishing": case "enchanting": case "alchemy": case "taming":
-                return STANDARD;
-            case "carpentry":
-                return FIFTY_LEVEL;
-            case "dungeoneering":
-                return DUNGEONEERING;
-            case "runecrafting": case "social":
-                return TWENTY_FIVE_LEVEL;
-            default:
-                return null;
-        }
+        return SkyBlockXP.forSkill(skill);
     }
 }
