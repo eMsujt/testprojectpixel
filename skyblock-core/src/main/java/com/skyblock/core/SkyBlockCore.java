@@ -101,6 +101,7 @@ import com.skyblock.core.crimson.CrimsonCommand;
 import com.skyblock.core.manager.ReputationManager;
 import com.skyblock.core.manager.CrimsonIsleManager;
 import com.skyblock.core.manager.DojoManager;
+import com.skyblock.core.command.CommissionCommand;
 import com.skyblock.core.manager.CommissionManager;
 import com.skyblock.core.chocolate.ChocolateFactoryManager;
 import com.skyblock.core.menu.MiningCommissionMenu;
@@ -703,6 +704,11 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("dojo") != null) {
             getCommand("dojo").setExecutor(dojoCommand);
             getCommand("dojo").setTabCompleter(dojoCommand);
+        }
+        CommissionCommand commissionCommand = new CommissionCommand(commissionManager);
+        if (getCommand("commission") != null) {
+            getCommand("commission").setExecutor(commissionCommand);
+            getCommand("commission").setTabCompleter(commissionCommand);
         }
         MenuCommand miningCommissionCommand = new MenuCommand(p -> new MiningCommissionMenu(p).open(p));
         if (getCommand("miningcommission") != null) {

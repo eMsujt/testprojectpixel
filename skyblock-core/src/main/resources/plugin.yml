@@ -241,6 +241,11 @@ commands:
     description: View mining level, XP, speed bonus, ores, and zones.
     usage: /mining [ores|speedbonus|zones]
     permission: skyblock.mining
+  commission:
+    description: Manage King's Commissions.
+    usage: /commission [list|generate|claim|progress|stats]
+    aliases: [commissions]
+    permission: skyblock.commission
   miningcommission:
     description: Open the King's Commissions mining menu.
     usage: /miningcommission
@@ -471,6 +476,9 @@ permissions:
     default: true
   skyblock.dojo:
     description: Use the /dojo command to view Dojo challenge scores.
+    default: true
+  skyblock.commission:
+    description: Use the /commission command to manage King's Commissions.
     default: true
   skyblock.miningcommission:
     description: Use the /miningcommission command to view King's Commissions.
