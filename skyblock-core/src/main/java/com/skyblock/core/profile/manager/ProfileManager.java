@@ -73,7 +73,7 @@ public final class ProfileManager {
         }
     }
 
-    public static final int MAX_PROFILES = 4;
+    public static final int MAX_PROFILES = 5;
 
     /**
      * Static metadata for each SkyBlock profile mode.

@@ -666,7 +666,7 @@ public final class SkyBlockCore extends JavaPlugin {
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
         getCommand("skills").setExecutor(skillsCommand);
         getCommand("skills").setTabCompleter(skillsCommand);
-        ProfileCommand profileCommand = new ProfileCommand();
+        ProfileCommand profileCommand = new ProfileCommand(profile);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
         IslandCommand islandCommand = new IslandCommand();
