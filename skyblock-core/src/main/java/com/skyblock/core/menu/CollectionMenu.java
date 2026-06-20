@@ -1,6 +1,5 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.SkyblockUtils;
@@ -10,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public final class CollectionMenu extends AbstractMenu {
+public final class CollectionMenu extends AbstractSkyBlockMenu {
 
     private static final int[] CATEGORY_SLOTS = {20, 21, 22, 23, 24, 31};
 
@@ -23,8 +22,8 @@ public final class CollectionMenu extends AbstractMenu {
         Material.ENCHANTING_TABLE,// ENCHANTING
     };
 
-    public CollectionMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§a§lCollections", 54);
+    public CollectionMenu(Player player) {
+        super(player, "§a§lCollections", 6);
     }
 
     @Override

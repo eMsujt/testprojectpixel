@@ -12,24 +12,18 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.UUID;
 
-public final class RiftMenu extends Menu {
+public final class RiftMenu extends AbstractSkyBlockMenu {
 
     static final int SUMMARY_SLOT = 4;
     static final int[] ZONE_SLOTS = {19, 20, 21, 22, 23, 24, 25};
 
-    private final UUID playerId;
-
     public RiftMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public RiftMenu(UUID playerId) {
-        super("§5The Rift", 6);
-        this.playerId = playerId;
+        super(player, "§5The Rift", 6);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
         ItemStack pane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);

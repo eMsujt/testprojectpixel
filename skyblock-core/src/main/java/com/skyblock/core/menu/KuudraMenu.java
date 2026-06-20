@@ -19,7 +19,7 @@ import java.util.UUID;
  * essence/token/supplies data from {@link KuudraManager#TIER_DATA} and the
  * player's completion count. Top and bottom edges are gray-pane borders.
  */
-public final class KuudraMenu extends Menu {
+public final class KuudraMenu extends AbstractSkyBlockMenu {
 
     /** Inventory slots for the five Kuudra tiers (Basic → Infernal). */
     static final int[] TIER_SLOTS = {20, 21, 22, 23, 24};
@@ -37,19 +37,13 @@ public final class KuudraMenu extends Menu {
         COLORS.put(KuudraTier.INFERNAL, "§4");
     }
 
-    private final UUID playerId;
-
     public KuudraMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public KuudraMenu(UUID playerId) {
-        super("§cKuudra", 6);
-        this.playerId = playerId;
+        super(player, "§cKuudra", 6);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
