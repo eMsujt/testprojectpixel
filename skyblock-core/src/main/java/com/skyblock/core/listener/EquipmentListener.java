@@ -4,6 +4,7 @@ import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.manager.ItemStatManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
+import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,6 +29,12 @@ public final class EquipmentListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+        Player player = event.getPlayer();
+        Bukkit.getScheduler().runTaskLater(SkyBlockCore.getInstance(), () -> rescanArmor(player), 1L);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerArmorChange(PlayerArmorChangeEvent event) {
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(SkyBlockCore.getInstance(), () -> rescanArmor(player), 1L);
     }
