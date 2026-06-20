@@ -664,6 +664,7 @@ public final class SkyBlockCore extends JavaPlugin {
         IslandCommand islandCommand = new IslandCommand();
         if (getCommand("island") != null) {
             getCommand("island").setExecutor(islandCommand);
+            getCommand("island").setTabCompleter(islandCommand);
         }
         MinionCommand minionCommand = new MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
