@@ -1,6 +1,7 @@
 package com.skyblock.core.alchemy;
 
 import com.skyblock.core.manager.AlchemyManager;
+import com.skyblock.core.menu.AlchemyMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -43,7 +44,7 @@ public final class AlchemyCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("Usage: /alchemy <list|brew|status|collect|cancel>");
+            new AlchemyMenu(player).open(player);
             return true;
         }
 

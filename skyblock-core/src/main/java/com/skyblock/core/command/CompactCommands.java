@@ -11,6 +11,7 @@ import com.skyblock.core.manager.ReforgeManager;
 import com.skyblock.core.manager.Warp;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.CalendarMenu;
+import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
 import com.skyblock.core.menu.WarpMenu;
@@ -62,7 +63,7 @@ public final class CompactCommands {
                 return true;
             }
             if (args.length == 0) {
-                player.sendMessage("Usage: /fairysoul <count|areas|stats|collect>");
+                new FairySoulMenu(player.getUniqueId()).open(player);
                 return true;
             }
             switch (args[0].toLowerCase()) {
