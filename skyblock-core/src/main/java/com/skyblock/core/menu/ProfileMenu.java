@@ -18,7 +18,7 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
     private static final int SUMMARY_SLOT = 40;
 
     public ProfileMenu(Player player) {
-        super(player, "§aYour Profile", 5);
+        super(player, "§bYour Profile", 5);
     }
 
     @Override
