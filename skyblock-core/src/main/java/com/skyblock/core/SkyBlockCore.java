@@ -284,9 +284,14 @@ public final class SkyBlockCore extends JavaPlugin {
     private SeasonManager seasonManager;
     private ScoreboardManager scoreboardManager;
     private DungeonsManager dungeonsManager;
+    private com.skyblock.core.manager.NPCManager npcDataManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
+    }
+
+    public com.skyblock.core.manager.NPCManager getNpcDataManager() {
+        return npcDataManager;
     }
 
     public CalendarManager getCalendarManager() {
@@ -569,7 +574,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.manager.JacobManager.getInstance();
         com.skyblock.core.manager.JacobFarmingManager.getInstance();
         com.skyblock.core.magicfind.MagicFindManager.getInstance();
-        com.skyblock.core.manager.NPCManager.getInstance();
+        npcDataManager = com.skyblock.core.manager.NPCManager.getInstance();
         com.skyblock.core.manager.NetherwartIslandManager.getInstance();
         networthManager = NetworthManager.getInstance();
         com.skyblock.core.notification.NotificationManager.getInstance();
