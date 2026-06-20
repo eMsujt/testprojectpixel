@@ -339,6 +339,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return bestiaryManager;
     }
 
+    public WardrobeManager getWardrobeManager() {
+        return wardrobeManager;
+    }
+
     public FishingManager getFishingManager() {
         return fishingManager;
     }
