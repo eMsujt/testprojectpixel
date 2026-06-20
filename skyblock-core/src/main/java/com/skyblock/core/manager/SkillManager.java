@@ -269,8 +269,10 @@ public final class SkillManager {
         long[] cum = SKILL_CUMULATIVE_XP_TABLE.get(skill == null ? null : skill.toLowerCase());
         if (cum == null) return 0;
         int idx = Arrays.binarySearch(cum, totalXP);
-        // binarySearch returns -(insertionPoint)-1 when not found
-        return idx >= 0 ? idx + 1 : Math.max(0, -idx - 2);
+        // Found: cum[idx] is the threshold for level idx+1.
+        // Not found: binarySearch returns -(insertionPoint)-1; insertionPoint == number of
+        // thresholds passed == the current level (clamped to the curve length at the top end).
+        return idx >= 0 ? idx + 1 : Math.max(0, -idx - 1);
     }
 
     /**
