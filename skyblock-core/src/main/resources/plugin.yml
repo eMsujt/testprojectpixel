@@ -154,7 +154,7 @@ commands:
   forge:
     description: Forge items using the SkyBlock forge.
     usage: /forge [list|start|collect]
-    aliases: [blacksmith]
+    aliases: [blacksmith, skyforge]
   friend:
     description: Manage your SkyBlock friend list.
     usage: /friend <add|remove|list> [player]
