@@ -721,7 +721,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("fishing").setExecutor(fishingCommand);
         getCommand("fishing").setTabCompleter(fishingCommand);
         getServer().getPluginManager().registerEvents(new TrophyFishListener(trophyFishManager, fishingManager), this);
-        CompactCommands.FairySoulCommand fairySoulCommand = new CompactCommands.FairySoulCommand();
+        MenuCommand fairySoulCommand = new MenuCommand(p -> new com.skyblock.core.menu.FairySoulMenu(p).open(p));
         if (getCommand("fairysoul") != null) {
             getCommand("fairysoul").setExecutor(fairySoulCommand);
             getCommand("fairysoul").setTabCompleter(fairySoulCommand);
@@ -846,7 +846,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.command.ForgeCommand forgeCommand = new com.skyblock.core.command.ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
-        CompactCommands.EnchantCommand enchantCommand = new CompactCommands.EnchantCommand();
+        MenuCommand enchantCommand = new MenuCommand(p -> new com.skyblock.core.menu.EnchantingMenu(p).open(p));
         getCommand("enchant").setExecutor(enchantCommand);
         getCommand("enchant").setTabCompleter(enchantCommand);
         MenuCommand talismanCommand = new MenuCommand(p -> new com.skyblock.core.menu.TalismanBagMenu(this, p).open(p));
