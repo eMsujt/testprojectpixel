@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 public final class FairySoulMenu extends Menu {
 
-    static final int[] ISLAND_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7};
+    static final int[] ISLAND_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
     private static final int SUMMARY_SLOT = 49;
 
@@ -33,7 +33,7 @@ public final class FairySoulMenu extends Menu {
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
 
-        for (int slot = 8; slot < 54; slot++) setItem(slot, pane);
+        for (int slot = 13; slot < 54; slot++) setItem(slot, pane);
 
         FairySoulManager manager = FairySoulManager.getInstance();
         FairyIsland[] islands = FairyIsland.values();

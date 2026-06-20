@@ -24,16 +24,24 @@ import java.util.UUID;
  */
 public final class FairySoulManager {
 
+    /** Hard cap matching Hypixel SkyBlock's total fairy soul count. */
+    public static final int MAX_SOULS = 227;
+
     /** SkyBlock islands that contain fairy souls, each with a display name and total soul count. */
     public enum FairyIsland {
         HUB("Hub", 30),
-        FARMING_ISLANDS("Farming Islands", 10),
+        FARMING_ISLANDS("Farming Islands", 11),
         SPIDERS_DEN("Spider's Den", 6),
-        THE_END("The End", 2),
+        THE_END("The End", 12),
         CRIMSON_ISLE("Crimson Isle", 12),
         DEEP_CAVERNS("Deep Caverns", 5),
         THE_PARK("The Park", 8),
-        DUNGEON_HUB("Dungeon Hub", 2);
+        DUNGEON_HUB("Dungeon Hub", 2),
+        DWARVEN_MINES("Dwarven Mines", 16),
+        CRYSTAL_HOLLOWS("Crystal Hollows", 14),
+        JERRYS_WORKSHOP("Jerry's Workshop", 3),
+        THE_RIFT("The Rift", 98),
+        KUUDRA("Kuudra's Cavern", 10);
 
         private final String displayName;
         private final int soulCount;
