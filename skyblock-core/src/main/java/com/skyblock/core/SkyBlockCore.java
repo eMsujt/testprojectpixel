@@ -127,6 +127,7 @@ import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.manager.RepairManager;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
+import com.skyblock.core.manager.DungeonsManager;
 import com.skyblock.core.manager.MiningManager;
 import com.skyblock.core.mining.command.MiningZoneCommand;
 import com.skyblock.core.mining.manager.MiningZoneManager;
@@ -282,6 +283,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private RepairManager repairManager;
     private SeasonManager seasonManager;
     private ScoreboardManager scoreboardManager;
+    private DungeonsManager dungeonsManager;
 
     public static SkyBlockCore getInstance() {
         return instance;
@@ -289,6 +291,10 @@ public final class SkyBlockCore extends JavaPlugin {
 
     public CalendarManager getCalendarManager() {
         return calendarManager;
+    }
+
+    public DungeonsManager getDungeonsManager() {
+        return dungeonsManager;
     }
 
     public GardenManager getGardenManager() {
@@ -500,6 +506,7 @@ public final class SkyBlockCore extends JavaPlugin {
         foragingManager.load(getDataFolder());
         miningManager = MiningManager.getInstance();
         miningManager.load(getDataFolder());
+        dungeonsManager = DungeonsManager.getInstance();
         combatManager = CombatManager.getInstance();
         chatManager = ChatManager.getInstance();
         leaderboardManager = LeaderboardManager.getInstance();
