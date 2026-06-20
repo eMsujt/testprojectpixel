@@ -17,6 +17,8 @@ import com.skyblock.core.menu.MinionMenu;
 import com.skyblock.core.menu.PetsMenu;
 import com.skyblock.core.menu.WardrobeMenu;
 import com.skyblock.core.menu.FairySoulMenu;
+import com.skyblock.core.menu.IslandMenu;
+import com.skyblock.core.menu.TalismanMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
 import com.skyblock.core.menu.WarpMenu;
@@ -194,6 +196,52 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new FairySoulMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /talisman
+    // =========================================================================
+
+    public static final class TalismanCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new TalismanMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /island
+    // =========================================================================
+
+    public static final class IslandCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new IslandMenu(player.getUniqueId()).open(player);
         }
 
         @Override
