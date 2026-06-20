@@ -795,11 +795,6 @@ public final class SkyBlockCore extends JavaPlugin {
         ForagingCommand foragingCommand = new ForagingCommand(foragingManager);
         getCommand("foraging").setExecutor(foragingCommand);
         getCommand("foraging").setTabCompleter(foragingCommand);
-        CompactCommands.MiningCommand miningCommand = new CompactCommands.MiningCommand(miningManager);
-        if (getCommand("mining") != null) {
-            getCommand("mining").setExecutor(miningCommand);
-            getCommand("mining").setTabCompleter(miningCommand);
-        }
         if (getCommand("miningzone") != null) {
             MiningZoneCommand miningZoneCommand =
                     new MiningZoneCommand(MiningZoneManager.getInstance(), miningManager);
