@@ -132,7 +132,7 @@ mvn clean package -DskipTests
 1. Build the project (see above).
 2. Copy `skyblock-core/target/skyblock-core-1.0.0-SNAPSHOT.jar` into your Paper server's `plugins/` directory.
 3. Start or restart the server.
-4. The plugin registers automatically via `SkyblockPlugin#onEnable`.
+4. The plugin registers automatically via `SkyBlockCore#onEnable`.
 
 ---
 
@@ -144,9 +144,7 @@ The parent POM (`pom.xml`) aggregates all modules:
 |--------|---------|
 | `api` | Shared API interfaces and events |
 | `enchantments` | Custom enchantment definitions |
-| `items` | Custom item types and builders |
 | `dungeons` | Catacombs floor logic and dungeon rooms |
-| `foraging` | Foraging skill and log/sapling mechanics |
 | `farming` | Farming skill, crop, and Garden logic |
 | `storage` | Backpack, vault, and personal storage |
 | `progression` | Skill XP, collections, and HOTM tree |
