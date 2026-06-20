@@ -11,6 +11,7 @@ import com.skyblock.core.manager.Warp;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.CalendarMenu;
+import com.skyblock.core.menu.AuctionHouseMenu;
 import com.skyblock.core.menu.CollectionMenu;
 import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.MinionMenu;
@@ -58,6 +59,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new CollectionMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /auction
+    // =========================================================================
+
+    public static final class AuctionHouseCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new AuctionHouseMenu(player).open(player);
         }
 
         @Override
