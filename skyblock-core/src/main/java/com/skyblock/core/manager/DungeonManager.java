@@ -143,6 +143,27 @@ public final class DungeonManager {
         }
     }
 
+    /** Reward chest tiers awarded at the end of a dungeon run, each with a coin cost to open. */
+    public enum ChestTier {
+        WOOD("Wood Chest", 0L),
+        GOLD("Gold Chest", 50_000L),
+        DIAMOND("Diamond Chest", 100_000L),
+        EMERALD("Emerald Chest", 250_000L);
+
+        private final String displayName;
+        private final long openCost;
+
+        ChestTier(String displayName, long openCost) {
+            this.displayName = displayName;
+            this.openCost = openCost;
+        }
+
+        public String getDisplayName() { return displayName; }
+
+        /** Coin cost to open a chest of this tier. */
+        public long getOpenCost() { return openCost; }
+    }
+
     /** All dungeon types available in SkyBlock. */
     public enum DungeonType {
         ENTRANCE,
