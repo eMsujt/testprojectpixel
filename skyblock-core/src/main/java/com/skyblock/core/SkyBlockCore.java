@@ -8,6 +8,8 @@ import com.skyblock.core.crafting.manager.CraftingManager;
 import com.skyblock.core.manager.QuestManager;
 import com.skyblock.core.command.AuctionHouseCommand;
 import com.skyblock.core.manager.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionManager;
+import com.skyblock.core.menu.AuctionMenu;
 import com.skyblock.core.command.KuudraCommand;
 import com.skyblock.core.command.BankCommand;
 import com.skyblock.core.manager.BankManager;
@@ -192,6 +194,7 @@ public final class SkyBlockCore extends JavaPlugin {
     // economy
     private BankManager bankManager;
     private AuctionHouseManager auctionHouseManager;
+    private AuctionManager auctionManager;
     private BazaarManager bazaarManager;
 
     // progression / world content
@@ -304,6 +307,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return auctionHouseManager;
     }
 
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
+    }
+
     public BazaarManager getBazaarManager() {
         return bazaarManager;
     }
@@ -337,6 +344,7 @@ public final class SkyBlockCore extends JavaPlugin {
         bankManager.load(getDataFolder());
         auctionHouseManager = AuctionHouseManager.getInstance();
         auctionHouseManager.load(getDataFolder());
+        auctionManager = AuctionManager.getInstance();
         bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
 
@@ -509,13 +517,14 @@ public final class SkyBlockCore extends JavaPlugin {
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
         getCommand("auctionhouse").setExecutor(auctionHouseCommand);
         getCommand("auctionhouse").setTabCompleter(auctionHouseCommand);
-        if (getCommand("ah") != null) {
-            getCommand("ah").setExecutor(auctionHouseCommand);
-            getCommand("ah").setTabCompleter(auctionHouseCommand);
-        }
+        MenuCommand auctionMenuCommand = new MenuCommand(p -> new AuctionMenu(p).open(p));
         if (getCommand("auction") != null) {
-            getCommand("auction").setExecutor(auctionHouseCommand);
-            getCommand("auction").setTabCompleter(auctionHouseCommand);
+            getCommand("auction").setExecutor(auctionMenuCommand);
+            getCommand("auction").setTabCompleter(auctionMenuCommand);
+        }
+        if (getCommand("ah") != null) {
+            getCommand("ah").setExecutor(auctionMenuCommand);
+            getCommand("ah").setTabCompleter(auctionMenuCommand);
         }
         BazaarCommand bazaarCommand = new BazaarCommand(bazaarManager);
         if (getCommand("bazaar") != null) {
