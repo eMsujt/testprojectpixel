@@ -804,6 +804,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("rift").setExecutor(riftCommand);
         getCommand("rift").setTabCompleter(riftCommand);
         getServer().getPluginManager().registerEvents(riftManager, this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.RiftListener.getInstance(), this);
         SackCommand sackCommand = new SackCommand(sackManager);
         if (getCommand("sack") != null) {
             getCommand("sack").setExecutor(sackCommand);
