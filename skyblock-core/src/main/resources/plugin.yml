@@ -272,6 +272,7 @@ commands:
     description: Manage your placed minions.
     usage: /minion <list|place|upgrade|remove|info>
     aliases: [minions]
+    permission: skyblock.minion
   minionsmenu:
     description: Open the Minions GUI.
     usage: /minionsmenu
