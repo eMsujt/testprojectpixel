@@ -14,6 +14,7 @@ import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.CollectionMenu;
 import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.MinionMenu;
+import com.skyblock.core.menu.PetsMenu;
 import com.skyblock.core.menu.WardrobeMenu;
 import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.MiningMenu;
@@ -124,6 +125,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new WardrobeMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /pets
+    // =========================================================================
+
+    public static final class PetsCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new PetsMenu(player).open(player);
         }
 
         @Override
