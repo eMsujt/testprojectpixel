@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.skyblock.core.menu.EnderChestMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -55,13 +56,26 @@ public final class EnderChestManager {
     }
 
     /**
-     * Opens a player's Ender Chest, creating it lazily if needed.
+     * Opens a player's Ender Chest via {@link EnderChestMenu}.
      *
      * @param player the player to open the chest for
      */
     public void open(Player player) {
         Objects.requireNonNull(player, "player");
-        player.openInventory(getChest(player.getUniqueId()));
+        new EnderChestMenu(player.getUniqueId()).open(player);
+    }
+
+    /**
+     * Replaces the stored inventory for a player. Used by {@link EnderChestMenu}
+     * to register the menu-backed inventory so the manager's reference stays current.
+     *
+     * @param playerId the player's unique id
+     * @param inv      the new inventory to store
+     */
+    public void putChest(UUID playerId, Inventory inv) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(inv, "inv");
+        chests.put(playerId, inv);
     }
 
     /**
