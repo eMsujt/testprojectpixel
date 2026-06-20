@@ -1,4 +1,4 @@
-package com.skyblock.core.kuudra;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.KuudraManager;
 import com.skyblock.core.menu.KuudraMenu;
