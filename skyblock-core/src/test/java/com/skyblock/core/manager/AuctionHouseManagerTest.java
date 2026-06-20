@@ -1,7 +1,7 @@
-package com.skyblock.core.auction.manager;
+package com.skyblock.core.manager;
 
-import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionCategory;
-import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionType;
+import com.skyblock.core.manager.AuctionHouseManager.AuctionCategory;
+import com.skyblock.core.manager.AuctionHouseManager.AuctionType;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

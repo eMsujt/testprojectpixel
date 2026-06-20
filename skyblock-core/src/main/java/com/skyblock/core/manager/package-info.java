@@ -28,12 +28,11 @@
  *   <li>{@link com.skyblock.core.manager.SackManager} — per-item sack capacity tiers, auto-pickup storage, and Sack of Sacks aggregation.</li>
  *   <li>{@link com.skyblock.core.manager.ShopManager} — NPC shops with buy/sell pricing.</li>
  *   <li>{@link com.skyblock.core.manager.SkillManager} — per-player skill XP and levels.</li>
+ *   <li>{@link com.skyblock.core.manager.AuctionHouseManager} — BIN listings and ascending-auction bidding.</li>
  *   <li>{@link com.skyblock.core.manager.SlayerManager} — slayer quests, boss spawning, and tier escalation.</li>
  * </ul>
  *
- * <p>Two related managers live in their own feature sub-packages:
- * {@link com.skyblock.core.auction.manager.AuctionHouseManager} (BIN listings and
- * ascending-auction bidding) and
+ * <p>One related manager lives in its own feature sub-package:
  * {@link com.skyblock.core.crafting.manager.CraftingManager} (custom recipes and
  * crafting history).</p>
  *

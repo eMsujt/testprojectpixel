@@ -1,4 +1,4 @@
-package com.skyblock.core.auction.manager;
+package com.skyblock.core.manager;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
