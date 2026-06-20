@@ -343,6 +343,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return wardrobeManager;
     }
 
+    public MinionManager getMinionManager() {
+        return minionManager;
+    }
+
     public FishingManager getFishingManager() {
         return fishingManager;
     }
