@@ -1669,17 +1669,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isFishing() {
-            assertEquals("§bFishing", new FishingMenu().getTitle());
+            assertEquals("§9Fishing", new FishingMenu(mock(Player.class)).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new FishingMenu().getRows());
+            assertEquals(6, new FishingMenu(mock(Player.class)).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new FishingMenu());
+            assertDoesNotThrow(() -> new FishingMenu(mock(Player.class)));
         }
 
         @Test
