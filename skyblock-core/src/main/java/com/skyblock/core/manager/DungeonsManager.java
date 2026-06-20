@@ -46,6 +46,34 @@ public final class DungeonsManager {
         HEALER, MAGE, BERSERK, ARCHER, TANK
     }
 
+    public enum Floor {
+        F1(false, 30),
+        F2(false, 40),
+        F3(false, 50),
+        F4(false, 60),
+        F5(false, 80),
+        F6(false, 100),
+        F7(false, 120),
+        M1(true, 100),
+        M2(true, 120),
+        M3(true, 140),
+        M4(true, 160),
+        M5(true, 180),
+        M6(true, 200),
+        M7(true, 300);
+
+        private final boolean masterMode;
+        private final int requiredSecrets;
+
+        Floor(boolean masterMode, int requiredSecrets) {
+            this.masterMode = masterMode;
+            this.requiredSecrets = requiredSecrets;
+        }
+
+        public boolean isMasterMode() { return masterMode; }
+        public int getRequiredSecrets() { return requiredSecrets; }
+    }
+
     // -------------------------------------------------------------------------
     // Singleton
     // -------------------------------------------------------------------------
