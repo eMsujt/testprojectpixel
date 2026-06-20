@@ -393,6 +393,37 @@ public final class SkyBlockCore extends JavaPlugin {
         carpentryManager.load(getDataFolder());
         mobManager = MobManager.getInstance();
         mobManager.init(this);
+
+        // remaining singleton managers — eager-init so they are ready before first use
+        com.skyblock.core.manager.AccessoriesManager.getInstance();
+        com.skyblock.core.manager.AttributeManager.getInstance();
+        com.skyblock.core.manager.BingoManager.getInstance();
+        com.skyblock.core.bossbar.BossBarManager.getInstance();
+        com.skyblock.core.collections.manager.CollectionRewardManager.getInstance();
+        com.skyblock.core.stats.CombatStatsManager.getInstance();
+        com.skyblock.core.mob.CustomMobManager.getInstance();
+        com.skyblock.core.manager.DragonManager.getInstance().load(getDataFolder());
+        com.skyblock.core.manager.DungeonStatsManager.getInstance().load(getDataFolder());
+        com.skyblock.core.farming.manager.FarmingManager.getInstance();
+        com.skyblock.core.gemstone.GemstoneManager.getInstance();
+        com.skyblock.core.manager.ItemStatManager.getInstance();
+        com.skyblock.core.manager.JacobManager.getInstance();
+        com.skyblock.core.manager.JacobFarmingManager.getInstance();
+        com.skyblock.core.magicfind.MagicFindManager.getInstance();
+        com.skyblock.core.manager.NetherwartIslandManager.getInstance();
+        com.skyblock.core.manager.NetworthManager.getInstance();
+        com.skyblock.core.notification.NotificationManager.getInstance();
+        com.skyblock.core.manager.PestManager.getInstance().load(getDataFolder());
+        com.skyblock.core.manager.PotionManager.getInstance();
+        com.skyblock.core.manager.RuneManager.getInstance();
+        com.skyblock.core.enchant.SkyBlockEnchantManager.getInstance();
+        com.skyblock.core.manager.EnchantmentManager.getInstance();
+        com.skyblock.core.stats.StatsManager.getInstance();
+        com.skyblock.core.talisman.manager.TalismanBagManager.getInstance();
+        com.skyblock.core.talisman.manager.TalismanManager.getInstance();
+        com.skyblock.core.trophy.TrophyManager.getInstance();
+        com.skyblock.core.manager.CarnivalManager.getInstance();
+        com.skyblock.core.manager.ExperimentationTableManager.getInstance();
     }
 
     @Override
