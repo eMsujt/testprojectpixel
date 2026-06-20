@@ -1,51 +1,51 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.profile.manager.ProfileManager;
-import com.skyblock.core.profile.manager.ProfileManager.SkyBlockProfile;
-import org.bukkit.ChatColor;
+import com.skyblock.core.SkyBlockCore;
+import com.skyblock.core.menu.ProfileMenu;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Handles {@code /profile}: with no arguments it opens the profile menu; with a
- * number {@code /profile [1-4]} it switches the player to that profile.
+ * Handles {@code /profile [player]}: opens the ProfileMenu for the target player
+ * (defaults to self when no argument is given).
  */
 public final class ProfileCommand extends PlayerCommand {
 
-    private final ProfileManager profileManager;
-    private final Consumer<Player> menuOpener;
-
-    public ProfileCommand(ProfileManager profileManager, Consumer<Player> menuOpener) {
-        this.profileManager = profileManager;
-        this.menuOpener = menuOpener;
-    }
-
     @Override
     protected void openMenu(Player p) {
-        menuOpener.accept(p);
+        new ProfileMenu(SkyBlockCore.getInstance(), p).open(p);
     }
 
     @Override
     protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            menuOpener.accept(player);
+            openMenu(player);
             return true;
         }
-        int index;
-        try {
-            index = Integer.parseInt(args[0]);
-        } catch (NumberFormatException e) {
-            player.sendMessage(ChatColor.RED + "Usage: /profile [number]");
+        Player target = Bukkit.getPlayerExact(args[0]);
+        if (target == null) {
+            player.sendMessage("§cPlayer not found: " + args[0]);
             return true;
         }
-        SkyBlockProfile switched = profileManager.switchProfile(player.getUniqueId(), index);
-        if (switched == null) {
-            player.sendMessage(ChatColor.RED + "You have no profile #" + index + ".");
-            return true;
-        }
-        player.sendMessage(ChatColor.GREEN + "Switched to profile " + ChatColor.YELLOW + switched.name() + ChatColor.GREEN + ".");
+        new ProfileMenu(SkyBlockCore.getInstance(), target).open(player);
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            String prefix = args[0].toLowerCase();
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .filter(n -> n.toLowerCase().startsWith(prefix))
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 }
