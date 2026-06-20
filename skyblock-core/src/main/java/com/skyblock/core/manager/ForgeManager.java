@@ -135,6 +135,31 @@ public final class ForgeManager {
         }
     }
 
+    /**
+     * Lightweight immutable record of a single forge job, capturing the recipe
+     * together with its absolute start and finish wall-clock times (in millis).
+     *
+     * @param recipe     the recipe being forged
+     * @param startTime  the time the job started, in milliseconds
+     * @param finishTime the time the job completes, in milliseconds
+     */
+    public record ForgeEntry(ForgeRecipe recipe, long startTime, long finishTime) {
+
+        public ForgeEntry {
+            Objects.requireNonNull(recipe, "recipe");
+        }
+
+        /**
+         * Returns whether the forge job is complete at the given wall-clock time.
+         *
+         * @param nowMillis current time in milliseconds
+         * @return {@code true} if {@code nowMillis} has reached the finish time
+         */
+        public boolean isComplete(long nowMillis) {
+            return nowMillis >= finishTime;
+        }
+    }
+
     // ---------------------------------------------------------------------------
     // Recipe catalogue
     // ---------------------------------------------------------------------------
