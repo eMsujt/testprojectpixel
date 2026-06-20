@@ -1,6 +1,7 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.config.Constants;
+import org.bukkit.entity.EntityType;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -63,30 +64,36 @@ public final class SlayerManager {
     }
 
     public enum SlayerType {
-        ZOMBIE("Zombie",
+        ZOMBIE("Zombie",   EntityType.ZOMBIE,
                 new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
-        SPIDER("Spider",
+        SPIDER("Spider",   EntityType.SPIDER,
                 new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
-        WOLF("Wolf",
+        WOLF("Wolf",       EntityType.WOLF,
                 new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
-        ENDERMAN("Enderman",
+        ENDERMAN("Enderman", EntityType.ENDERMAN,
                 new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
-        BLAZE("Blaze",
+        BLAZE("Blaze",     EntityType.BLAZE,
                 new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000}),
-        VAMPIRE("Vampire",
+        VAMPIRE("Vampire", EntityType.BAT,
                 new int[]{5, 15, 200, 1_000, 5_000, 20_000, 100_000, 400_000, 1_000_000});
 
         private final String displayName;
+        public final EntityType entityType;
         /** Cumulative XP required to reach each level (index = level - 1). */
         public final int[] xpTable;
 
-        SlayerType(String displayName, int[] xpTable) {
+        SlayerType(String displayName, EntityType entityType, int[] xpTable) {
             this.displayName = displayName;
+            this.entityType = entityType;
             this.xpTable = xpTable;
         }
 
         public String getDisplayName() {
             return displayName;
+        }
+
+        public EntityType getEntityType() {
+            return entityType;
         }
     }
 
