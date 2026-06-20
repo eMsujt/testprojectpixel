@@ -11,6 +11,7 @@ import com.skyblock.core.manager.ReforgeManager;
 import com.skyblock.core.manager.Warp;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.CalendarMenu;
+import com.skyblock.core.menu.CollectionMenu;
 import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
@@ -41,6 +42,29 @@ import java.util.stream.Collectors;
 public final class CompactCommands {
 
     private CompactCommands() {}
+
+    // =========================================================================
+    // /collection
+    // =========================================================================
+
+    public static final class CollectionCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new CollectionMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
 
     // =========================================================================
     // /fairysoul
