@@ -79,7 +79,7 @@ public final class GardenMenu extends Menu {
     }
 
     public GardenMenu(UUID playerId) {
-        super("§aGarden", 5);
+        super("§aGarden", 6);
         this.playerId = playerId;
     }
 
@@ -88,7 +88,7 @@ public final class GardenMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 9; slot < 18; slot++) setItem(slot, pane);
-        for (int slot = 27; slot < 45; slot++) setItem(slot, pane);
+        for (int slot = 27; slot < 54; slot++) setItem(slot, pane);
 
         GardenManager manager = GardenManager.getInstance();
 
