@@ -83,7 +83,7 @@ import com.skyblock.core.leaderboard.LeaderboardCommand;
 import com.skyblock.core.leaderboard.LeaderboardManager;
 import com.skyblock.core.mail.MailCommand;
 import com.skyblock.core.mail.MailManager;
-import com.skyblock.core.collections.command.CollectionsCommand;
+import com.skyblock.core.command.CollectionsCommand;
 import com.skyblock.core.command.CollectionCommand;
 import com.skyblock.core.collections.listener.CollectionListener;
 import com.skyblock.core.listener.ProgressionListener;
