@@ -50,5 +50,6 @@ public final class NPCMenu extends AbstractSkyBlockMenu {
         ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+        for (int slot : new int[]{9, 17, 18, 26, 27, 35, 36, 44}) setItem(slot, pane);
     }
 }
