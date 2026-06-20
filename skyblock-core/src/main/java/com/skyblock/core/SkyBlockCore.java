@@ -815,14 +815,11 @@ public final class SkyBlockCore extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new CollectionListener(collectionManager), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.listener.FairySoulListener(FairySoulManager.getInstance(), this), this);
-        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.BestiaryListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.FishingListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.CompactListeners.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.SkillListener.getInstance(), this);
-        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.PetListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ChatListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.PlayerEventListener.getInstance(), this);
-        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.StatsListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.CombatListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.AbilityListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.MinionListener.getInstance(), this);
@@ -995,7 +992,6 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("storage").setTabCompleter(storageCommand);
         }
         scoreboardManager.start(this);
-        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ScoreboardListener.getInstance(), this);
         com.skyblock.core.manager.TabListManager.getInstance().start(this);
         manaManager.start(this);
         skyBlockEventManager.start(this);
