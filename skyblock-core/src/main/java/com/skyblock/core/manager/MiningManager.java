@@ -1,7 +1,10 @@
 package com.skyblock.core.manager;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -234,6 +237,64 @@ public final class MiningManager {
      */
     public int getSpeedBonusForPlayer(UUID playerId) {
         return getSpeedBonus(getLevel(playerId));
+    }
+
+    /**
+     * Removes all stored data for the given player.
+     *
+     * @param playerId the player whose data should be cleared
+     */
+    public void remove(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        miningXp.remove(playerId);
+        miningLevel.remove(playerId);
+    }
+
+    /**
+     * Loads per-player mining XP and level from {@code mining.yml} in the given folder.
+     *
+     * @param dataFolder the plugin data folder
+     */
+    public void load(File dataFolder) {
+        File file = new File(dataFolder, "mining.yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        miningXp.clear();
+        miningLevel.clear();
+        for (String key : cfg.getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(key);
+                if (cfg.contains(key + ".xp")) {
+                    double xp = cfg.getDouble(key + ".xp", 0.0);
+                    miningXp.put(uuid, xp);
+                    miningLevel.put(uuid, computeLevel(xp));
+                }
+            } catch (IllegalArgumentException ignored) {
+                // skip malformed keys
+            }
+        }
+    }
+
+    /**
+     * Saves per-player mining XP to {@code mining.yml} in the given folder.
+     *
+     * @param dataFolder the plugin data folder
+     */
+    public void save(File dataFolder) {
+        File file = new File(dataFolder, "mining.yml");
+        YamlConfiguration cfg = new YamlConfiguration();
+        for (Map.Entry<UUID, Double> entry : miningXp.entrySet()) {
+            if (entry.getValue() != 0) {
+                cfg.set(entry.getKey().toString() + ".xp", entry.getValue());
+            }
+        }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save mining.yml", e);
+        }
     }
 
     // ---------------------------------------------------------------------------
