@@ -140,7 +140,31 @@ public final class BazaarCommand extends PlayerCommand {
     }
 
     private void handleCancel(Player player, String[] args) {
-        player.sendMessage("Order cancellation is not yet supported.");
+        if (args.length < 3) {
+            player.sendMessage("Usage: /bazaar cancel buy|sell <orderId>");
+            return;
+        }
+        boolean isBuy;
+        switch (args[1].toLowerCase()) {
+            case "buy"  -> isBuy = true;
+            case "sell" -> isBuy = false;
+            default -> {
+                player.sendMessage("Usage: /bazaar cancel buy|sell <orderId>");
+                return;
+            }
+        }
+        java.util.UUID orderId;
+        try {
+            orderId = java.util.UUID.fromString(args[2]);
+        } catch (IllegalArgumentException e) {
+            player.sendMessage("Invalid order ID.");
+            return;
+        }
+        if (bazaarManager.cancelOrder(player.getUniqueId(), isBuy, orderId)) {
+            player.sendMessage("Order " + args[2] + " cancelled.");
+        } else {
+            player.sendMessage("No " + args[1].toLowerCase() + " order with that ID found.");
+        }
     }
 
     private void handleHistory(Player player) {

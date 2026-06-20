@@ -133,16 +133,19 @@ public final class BazaarManager {
     }
 
     public static final class Order {
+        private final UUID   id;
         private final UUID   owner;
         private       int    quantity;
         private final double priceEach;
 
         Order(UUID owner, int quantity, double priceEach) {
+            this.id        = UUID.randomUUID();
             this.owner     = owner;
             this.quantity  = quantity;
             this.priceEach = priceEach;
         }
 
+        public UUID   id()        { return id; }
         public UUID   owner()     { return owner; }
         public int    quantity()  { return quantity; }
         public double priceEach() { return priceEach; }
@@ -205,6 +208,30 @@ public final class BazaarManager {
     public double getHighestBid(String item) {
         List<Order> list = buyOrders.get(item);
         return (list == null || list.isEmpty()) ? 0.0 : list.get(0).priceEach;
+    }
+
+    /**
+     * Cancels a standing order owned by {@code player}.
+     *
+     * @param player  the owner's UUID
+     * @param isBuy   true to search buy orders, false for sell orders
+     * @param orderId the {@link Order#id()} to remove
+     * @return true if found and removed, false if not found or not owned by player
+     */
+    public boolean cancelOrder(UUID player, boolean isBuy, UUID orderId) {
+        Map<String, List<Order>> book = isBuy ? buyOrders : sellOrders;
+        for (Map.Entry<String, List<Order>> entry : book.entrySet()) {
+            List<Order> list = entry.getValue();
+            for (int i = 0; i < list.size(); i++) {
+                Order o = list.get(i);
+                if (o.id().equals(orderId) && o.owner().equals(player)) {
+                    list.remove(i);
+                    if (list.isEmpty()) book.remove(entry.getKey());
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // ---- Menu display prices ----
