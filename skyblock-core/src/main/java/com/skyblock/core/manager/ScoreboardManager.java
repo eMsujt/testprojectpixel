@@ -104,14 +104,13 @@ public final class ScoreboardManager {
         List<String> lines = Arrays.asList(
             " ",
             dateLine,
+            ChatColor.GRAY + "⏣ " + ChatColor.GRAY + player.getWorld().getName(),
             "  ",
             ChatColor.RED + "❤ " + ChatColor.GREEN + "Health "
                     + ChatColor.GREEN + currentHealth + ChatColor.RED + "/" + maxHealth,
             ChatColor.GREEN + "❈ Defense " + ChatColor.GREEN + defense,
             "   ",
             ChatColor.GOLD + "Purse: " + ChatColor.WHITE + formatCoins(coins),
-            "    ",
-            ChatColor.GRAY + "⏣ " + ChatColor.AQUA + player.getWorld().getName(),
             "     ",
             ChatColor.GRAY + "www.hypixel.net"
         );
