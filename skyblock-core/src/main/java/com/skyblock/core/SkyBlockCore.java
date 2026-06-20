@@ -120,6 +120,8 @@ import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.manager.MiningManager;
 import com.skyblock.core.mining.command.MiningCommand;
+import com.skyblock.core.mining.command.MiningZoneCommand;
+import com.skyblock.core.mining.manager.MiningZoneManager;
 import com.skyblock.core.manager.TradeManager;
 import com.skyblock.core.trade.TradeCommand;
 import com.skyblock.core.trade.TradeListener;
@@ -564,6 +566,12 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("mining") != null) {
             getCommand("mining").setExecutor(miningCommand);
             getCommand("mining").setTabCompleter(miningCommand);
+        }
+        if (getCommand("miningzone") != null) {
+            MiningZoneCommand miningZoneCommand =
+                    new MiningZoneCommand(MiningZoneManager.getInstance(), miningManager);
+            getCommand("miningzone").setExecutor(miningZoneCommand);
+            getCommand("miningzone").setTabCompleter(miningZoneCommand);
         }
         CombatCommand combatCommand = new CombatCommand(combatManager);
         getCommand("combat").setExecutor(combatCommand);

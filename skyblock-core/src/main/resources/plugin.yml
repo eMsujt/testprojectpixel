@@ -241,6 +241,7 @@ commands:
     permission: skyblock.miningcommission
   miningzone:
     description: View or change your current mining zone.
+    aliases: [mz]
     usage: /miningzone [list|set <zone>|clear]
     permission: skyblock.miningzone
   minion:
