@@ -784,6 +784,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new com.skyblock.core.listener.FairySoulListener(FairySoulManager.getInstance(), this), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.BestiaryListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.FishingListener.getInstance(), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.CompactListeners.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.SkillListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ChatListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.PlayerEventListener.getInstance(), this);
