@@ -1,6 +1,7 @@
 package com.skyblock.core.crystalhollows;
 
 import com.skyblock.core.manager.CrystalHollowsManager;
+import com.skyblock.core.menu.CrystalHollowsMenu;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,7 +45,7 @@ public final class CrystalHollowsCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            handleStatus(player);
+            new CrystalHollowsMenu(player.getUniqueId()).open(player);
             return true;
         }
 
