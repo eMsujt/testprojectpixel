@@ -1,5 +1,10 @@
 package com.skyblock.core.manager;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -221,6 +226,75 @@ public final class SackManager {
     public boolean reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return sackContents.remove(playerId) != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Persistence (one YAML file per player under {dataFolder}/sacks/<uuid>.yml)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Loads every player's sack contents from {@code dataFolder/sacks/<uuid>.yml}.
+     * Each file holds one section per {@link SackType}, mapping item id to count.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void load(File dataFolder) {
+        Objects.requireNonNull(dataFolder, "dataFolder");
+        File dir = new File(dataFolder, "sacks");
+        File[] files = dir.listFiles((d, name) -> name.endsWith(".yml"));
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            String base = file.getName().substring(0, file.getName().length() - 4);
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(base);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            for (SackType sackType : SackType.values()) {
+                ConfigurationSection section = cfg.getConfigurationSection(sackType.name());
+                if (section == null) {
+                    continue;
+                }
+                Map<String, Integer> contents = getOrCreateContents(uuid, sackType);
+                for (String itemId : section.getKeys(false)) {
+                    int count = section.getInt(itemId, 0);
+                    if (count > 0) {
+                        contents.put(itemId, count);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Saves every player's sack contents to {@code dataFolder/sacks/<uuid>.yml},
+     * one file per player.
+     *
+     * @param dataFolder the plugin's data folder
+     */
+    public void save(File dataFolder) {
+        Objects.requireNonNull(dataFolder, "dataFolder");
+        File dir = new File(dataFolder, "sacks");
+        if (!dir.exists() && !dir.mkdirs()) {
+            return;
+        }
+        for (Map.Entry<UUID, Map<SackType, Map<String, Integer>>> playerEntry : sackContents.entrySet()) {
+            YamlConfiguration cfg = new YamlConfiguration();
+            for (Map.Entry<SackType, Map<String, Integer>> sackEntry : playerEntry.getValue().entrySet()) {
+                for (Map.Entry<String, Integer> item : sackEntry.getValue().entrySet()) {
+                    cfg.set(sackEntry.getKey().name() + "." + item.getKey(), item.getValue());
+                }
+            }
+            try {
+                cfg.save(new File(dir, playerEntry.getKey() + ".yml"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Map<String, Integer> getOrCreateContents(UUID playerId, SackType sackType) {
