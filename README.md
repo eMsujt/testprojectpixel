@@ -177,6 +177,7 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `BazaarManager` | Buy/sell order book, instant buy/sell pricing, order fulfillment |
 | `BestiaryManager` | Mob-kill tracking and bestiary tiers |
 | `BingoManager` | Bingo card generation, goal tracking, and completion rewards |
+| `ChocolateFactoryManager` | Idle Chocolate Factory production, upgrades, and prestige |
 | `CalendarManager` | SkyBlock calendar, seasons, and scheduled events |
 | `CarnivalManager` | Carnival event games and rewards |
 | `CollectionManager` | Resource collections and tier-unlock thresholds |
@@ -188,6 +189,7 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `DungeonManager` | Catacombs floors F1–F7 + Master Mode, dungeon classes |
 | `EconomyManager` | Coins / purse balance |
 | `EnchantmentManager` / `EnchantingManager` | Custom enchantments and the enchant table |
+| `EnderChestManager` | Per-player Ender Chest contents and GUI |
 | `EssenceManager` | Essence currencies and shop upgrades |
 | `EventManager` | Server-wide event scheduling and lifecycle |
 | `ExperimentationTableManager` | Superpairs / Chronomatron / Ultrasequencer minigames |
@@ -216,6 +218,7 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `ReforgeManager` / `RepairManager` | Reforge stones/stats and item repair |
 | `ReputationManager` | Faction reputation tracking |
 | `RiftManager` | The Rift dimension state and currency |
+| `RunecraftingManager` | Runecrafting skill XP and rune creation recipes |
 | `RuneManager` | Rune item types, application, and active-rune effects |
 | `SackManager` | Sack storage and auto-pickup |
 | `ShopManager` | NPC shop catalogues and transactions |
@@ -235,7 +238,7 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | Command | Alias | Description |
 |---------|-------|-------------|
 | `/accessories` | — | View and manage your accessory bag |
-| `/accessorybag` | — | Open the Accessory Bag GUI |
+| `/accessorybag` | `/ab`, `/bag` | Open the Accessory Bag GUI |
 | `/achievement` | — | View your SkyBlock achievements |
 | `/alchemy` | — | Brew potions using the SkyBlock alchemy system |
 | `/auctionhouse` | `/ah` | Manage Auction House listings (BIN and bid-based) |
@@ -245,7 +248,9 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `/bestiary` | — | Track your mob kill counts and bestiary tiers |
 | `/booster` | — | Activate XP or coin boosters |
 | `/chat` | — | Switch your active chat channel |
+| `/chocolatefactory` | `/cf`, `/chocolate` | Open the Chocolate Factory idle-production menu |
 | `/collection` | `/col`, `/collections` | View your SkyBlock collection progress |
+| `/commission` | — | Manage Dwarven Mines King's Commissions (list, generate, claim) |
 | `/combat` | — | View and manage your combat stats |
 | `/coop` | — | Manage your co-op island group |
 | `/crafting` | — | Browse SkyBlock crafting recipes and track history |
@@ -254,6 +259,7 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `/dungeon` | — | Enter and manage Catacombs dungeon runs |
 | `/dungeonclass` | — | View and select your dungeon class |
 | `/enchanting` | — | View and apply SkyBlock enchantments |
+| `/enderchest` | — | Open your SkyBlock Ender Chest |
 | `/essence` | — | View and manage your SkyBlock essence balances |
 | `/event` | — | View and join active SkyBlock events |
 | `/fairysoul` | `/fairysouls` | View and manage your fairy soul collection |
@@ -263,6 +269,7 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `/friend` | — | Manage your SkyBlock friend list |
 | `/garden` | — | View and manage your Garden plot, visitors, and crop upgrades |
 | `/guild` | — | Create and manage player guilds |
+| `/island` | — | Open your SkyBlock island menu |
 | `/harp` | — | View Melody's Harp song progress and Intelligence bonus |
 | `/hotm` | `/hotmtree` | View and manage Heart of the Mountain perk tree |
 | `/jerryworkshop` | — | View Jerry's Workshop gifts, snow minions, and snow cannon |
@@ -278,9 +285,12 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `/profile` | — | View your SkyBlock profile |
 | `/quest` | — | Manage your SkyBlock quests |
 | `/reforge` | — | View and apply item reforges |
+| `/repair` | — | Repair items in hand or entire inventory (`hand`/`all`) |
 | `/rift` | — | View and manage your Rift dimension progress |
+| `/runecrafting` | — | View your Runecrafting skill level and rune collection |
 | `/run` | — | Track your dungeon run statistics |
 | `/sack` | — | View the contents of your sacks |
+| `/season` | — | View or set the current SkyBlock season (op-only set/advance) |
 | `/skyblock-level` | `/sblevel` | View and manage your SkyBlock level and XP |
 | `/slay` | `/slayer` | Manage Slayer quests and view boss info |
 | `/skills` | — | View your SkyBlock skill levels and XP |
