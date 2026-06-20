@@ -317,9 +317,7 @@ public final class SkyBlockCore extends JavaPlugin {
         return forgeManager;
     }
 
-    public ProfileManager getProfileManager() {
-        return profile;
-    }
+
 
     public com.skyblock.core.talisman.manager.TalismanManager getTalismanManager() {
         return talismanManager;
