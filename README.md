@@ -45,7 +45,7 @@ A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven
 - **Bank** — personal and co-op bank accounts with interest, deposits, and withdrawals (`BankManager` / `BankingManager`).
 - **Bazaar** — live buy/sell order book with instant buy/sell pricing and automated order fulfillment.
 - **Auction House** — BIN listings and bid-based auctions; all standard SkyBlock auction types.
-- **NPC shops** — NPC-driven shop catalogues (`ShopManager`) with configurable stock and prices.
+- **NPC shops** — NPC-driven shop catalogues (`ShopManager`, `NPCShopManager`) with configurable stock and prices.
 - **Sacks** — auto-pickup sacks with configurable per-resource storage limits.
 
 ### Combat & Slayer
@@ -172,47 +172,66 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | Manager | Responsibility |
 |---------|----------------|
 | `AccessoryManager` / `AccessoryBagManager` | Talismans/accessories and the magical-power bag |
+| `AccessoriesManager` | Accessory stat aggregation layer (complements `AccessoryBagManager`) |
+| `ActionBarManager` | Action bar XP, health, mana, and event display |
+| `AlchemyManager` | Alchemy skill XP and potion brewing recipes |
 | `AttributeManager` | Crimson Isle attribute shards and per-attribute levelling |
+| `BackpackManager` | Backpack tiers (Small 9 / Medium 18 / Large 27 / Jumbo 36) |
 | `BankManager` / `BankingManager` | Personal/co-op bank balance, interest, deposits/withdrawals |
 | `BazaarManager` | Buy/sell order book, instant buy/sell pricing, order fulfillment |
 | `BestiaryManager` | Mob-kill tracking and bestiary tiers |
 | `BingoManager` | Bingo card generation, goal tracking, and completion rewards |
-| `ChocolateFactoryManager` | Idle Chocolate Factory production, upgrades, and prestige |
 | `CalendarManager` | SkyBlock calendar, seasons, and scheduled events |
 | `CarnivalManager` | Carnival event games and rewards |
+| `CarpentryManager` | Carpentry skill XP and crafting recipes |
+| `ChatManager` | Chat channel switching (Global / Party / Guild / Trade) |
+| `ChocolateFactoryManager` | Idle Chocolate Factory production, upgrades, and prestige |
 | `CollectionManager` | Resource collections and tier-unlock thresholds |
+| `CollectionRewardManager` | Collection tier reward distribution |
+| `CombatManager` | Combat XP, kill counts, and death tracking |
 | `CommissionManager` | Dwarven Mines commissions — assignment, tracking, and rewards |
 | `CrimsonIsleManager` | Kuudra tiers and Mage/Barbarian faction reputation |
 | `CrystalHollowsManager` | Dwarven Mines / Crystal Hollows zones, gemstones, powder |
+| `DojoManager` | Dojo challenge scores and progress tracking |
 | `DragonManager` | Ender Dragon fights and contribution rewards |
 | `DungeonClassManager` | Dungeon class selection and class-specific perks |
 | `DungeonManager` | Catacombs floors F1–F7 + Master Mode, dungeon classes |
+| `DungeonStatsManager` | Dungeon run statistics, scores, and completion history |
 | `EconomyManager` | Coins / purse balance |
 | `EnchantmentManager` / `EnchantingManager` | Custom enchantments and the enchant table |
 | `EnderChestManager` | Per-player Ender Chest contents and GUI |
 | `EssenceManager` | Essence currencies and shop upgrades |
+| `EssenceShopManager` | Essence shop perk purchases and upgrade tiers |
 | `EventManager` | Server-wide event scheduling and lifecycle |
 | `ExperimentationTableManager` | Superpairs / Chronomatron / Ultrasequencer minigames |
 | `FairySoulManager` | Fairy soul discovery and exchange bonuses |
 | `FishingManager` | Sea creatures, fishing XP, and treasure |
 | `ForgeManager` | Forge item recipes and processing slots |
+| `FortuneManager` | Mining and farming fortune bonus calculations |
 | `GardenManager` | Jacob's farming contests, plot unlocks, crop milestones |
 | `HarpManager` | Melody's Harp song progress and Intelligence bonuses |
-| `HotmManager` | Heart of the Mountain tree — perk nodes, tiers, powder |
+| `HOTMManager` | Heart of the Mountain tree — perk nodes, tiers, powder |
 | `IslandManager` | Private island creation, upgrades, and visiting |
 | `ItemAbilityManager` | Weapon/armor item and full-set abilities with mana costs |
+| `ItemStatManager` | Per-item stat computation and lore display |
+| `JacobFarmingManager` | Jacob's farming event participation and crop rewards |
 | `JacobManager` | Jacob's farming contest scheduling and participation rewards |
+| `JacobsContestManager` | Jacob's contest crop-specific scheduling and medal tracking |
 | `JerryWorkshopManager` | Jerry's Workshop gifts, snow minions, and snow cannon |
 | `KuudraManager` | Kuudra boss tier management and contribution tracking |
+| `ManaManager` | Mana pool, regeneration rate, and overflow cost |
 | `MayorManager` | Mayor elections and active perks |
-| `MiningManager` | Mining XP, speed, fortune, and ores |
+| `MiningManager` | Mining XP, speed, fortune, ores, and powder |
 | `MinionManager` | Minion types/tiers, fuel, upgrade slots, hopper auto-sell |
 | `MobManager` | Custom mob registration, stats, and spawn management |
 | `MuseumManager` | Museum donations and completion rewards |
 | `NetworthManager` | Player net-worth valuation across items and currencies |
+| `NetherwartIslandManager` | Netherwart Island zone and crop-specific mechanics |
+| `NPCShopManager` | Static NPC shop catalogues (Hypixel Hub shops) |
 | `PartyManager` | Party invites, membership, and leadership |
 | `PestManager` | Garden pest spawning, tracking, and extermination rewards |
 | `PetManager` / `PetsManager` | Pet ownership, levelling, and active-pet perks |
+| `PlayerDataManager` | Per-player data loading, saving, and persistence |
 | `PotionManager` | Brewing-stand recipes, potion levels/durations, splash potions |
 | `QuestManager` | Quest tracking and completion |
 | `ReforgeManager` / `RepairManager` | Reforge stones/stats and item repair |
@@ -220,16 +239,23 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `RiftManager` | The Rift dimension state and currency |
 | `RunecraftingManager` | Runecrafting skill XP and rune creation recipes |
 | `RuneManager` | Rune item types, application, and active-rune effects |
+| `RunManager` | Dungeon run lifecycle, scoring, and completion |
 | `SackManager` | Sack storage and auto-pickup |
+| `ScoreboardManager` | Sidebar scoreboard display and layout |
 | `ShopManager` | NPC shop catalogues and transactions |
 | `SkillManager` | Skill levels and XP |
 | `SkyblockLevelManager` | SkyBlock level XP accumulation and tier rewards |
+| `SkyBlockEventManager` | SkyBlock event scheduling and zone-wide broadcast |
 | `SlayerManager` | Slayer quest tiers, boss spawn cost, and rewards |
 | `StatManager` | Effective player stat calculation and display |
 | `StorageManager` | Personal storage and backpack pages |
+| `TabListManager` | Tab list header/footer display |
+| `TalismanManager` / `TalismanBagManager` | Talisman bag GUI and stat aggregation |
+| `TamingManager` | Taming skill XP and pet passive bonuses |
 | `TradeManager` | Peer-to-peer trading sessions |
 | `TrophyFishManager` | Trophy fish catch tracking and drop-chance tables |
 | `WardrobeManager` | Named armor outfits and full-set swapping |
+| `WarpManager` | Warp point creation, storage, and teleportation |
 
 ---
 
@@ -237,49 +263,75 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 
 | Command | Alias | Description |
 |---------|-------|-------------|
+| `/accessory` | — | Manage accessory rarities and stat multipliers |
 | `/accessories` | — | View and manage your accessory bag |
 | `/accessorybag` | `/ab`, `/bag` | Open the Accessory Bag GUI |
+| `/ability` | — | View and manage item abilities |
 | `/achievement` | — | View your SkyBlock achievements |
 | `/alchemy` | — | Brew potions using the SkyBlock alchemy system |
-| `/auctionhouse` | `/ah` | Manage Auction House listings (BIN and bid-based) |
+| `/auctionhouse` | `/ah`, `/auction` | Manage Auction House listings (BIN and bid-based) |
 | `/backpack` | — | Create and manage personal item backpacks |
 | `/bank` | — | Personal and co-op bank deposit/withdraw/balance |
-| `/bazaar` | — | Open the Bazaar order book |
-| `/bestiary` | — | Track your mob kill counts and bestiary tiers |
+| `/banking` | `/coins` | Open the Banking GUI |
+| `/bazaar` | `/bz`, `/bazar` | Open the Bazaar order book |
+| `/bazaarmenu` | — | Open the Bazaar GUI |
+| `/bestiary` | `/bst` | Track your mob kill counts and bestiary tiers |
 | `/booster` | — | Activate XP or coin boosters |
+| `/calendar` | — | View the SkyBlock calendar and events |
 | `/chat` | — | Switch your active chat channel |
 | `/chocolatefactory` | `/cf`, `/chocolate` | Open the Chocolate Factory idle-production menu |
-| `/collection` | `/col`, `/collections` | View your SkyBlock collection progress |
-| `/commission` | — | Manage Dwarven Mines King's Commissions (list, generate, claim) |
+| `/collection` | `/col` | View your collection progress |
+| `/collections` | — | View your SkyBlock collection progress |
+| `/collectionsmenu` | — | Open the Collections GUI |
 | `/combat` | — | View and manage your combat stats |
+| `/commission` | `/commissions` | Manage King's Commissions (list, generate, claim) |
+| `/compost` | — | View and manage Garden Composter organic matter, fuel, and compost |
+| `/cooldown` | — | View and manage active skill/ability cooldowns |
 | `/coop` | — | Manage your co-op island group |
 | `/crafting` | — | Browse SkyBlock crafting recipes and track history |
 | `/crimson` | — | View and manage Crimson Isle faction and reputation |
+| `/crimsonisle` | — | Open the Crimson Isle overview menu |
 | `/crystalhollows` | — | View and manage Crystal Hollows zones and crystal progress |
-| `/dungeon` | — | Enter and manage Catacombs dungeon runs |
+| `/dailyreward` | — | Claim your daily coin reward or check time until next claim |
+| `/dojo` | — | Open the Dojo challenge scores menu |
+| `/dungeon` | `/da` | Enter and manage Catacombs dungeon runs |
 | `/dungeonclass` | — | View and select your dungeon class |
+| `/dungeons` | `/catacombs` | Open the Catacombs menu |
+| `/enchant` | — | Open the enchanting table GUI |
 | `/enchanting` | — | View and apply SkyBlock enchantments |
-| `/enderchest` | — | Open your SkyBlock Ender Chest |
+| `/enderchest` | `/ec` | Open your SkyBlock Ender Chest |
 | `/essence` | — | View and manage your SkyBlock essence balances |
+| `/essenceshop` | — | Open the Essence Shop to upgrade perks |
 | `/event` | — | View and join active SkyBlock events |
 | `/fairysoul` | `/fairysouls` | View and manage your fairy soul collection |
 | `/fishing` | — | View fishing stats and trophy fish catches |
 | `/foraging` | — | View foraging level, XP, and log chop counts |
-| `/forge` | — | Forge items using the SkyBlock forge |
+| `/foragingmenu` | — | Open the Foraging GUI |
+| `/forge` | `/blacksmith`, `/skyforge` | Forge items using the SkyBlock forge |
 | `/friend` | — | Manage your SkyBlock friend list |
 | `/garden` | — | View and manage your Garden plot, visitors, and crop upgrades |
+| `/gemstone` | — | View and manage your gemstone collection |
 | `/guild` | — | Create and manage player guilds |
-| `/island` | — | Open your SkyBlock island menu |
 | `/harp` | — | View Melody's Harp song progress and Intelligence bonus |
 | `/hotm` | `/hotmtree` | View and manage Heart of the Mountain perk tree |
+| `/hub` | `/spawn` | Teleport to the configured hub |
+| `/island` | `/is` | Open your SkyBlock island menu |
+| `/jacobscontest` | — | Open Jacob's Farming Contest menu |
 | `/jerryworkshop` | — | View Jerry's Workshop gifts, snow minions, and snow cannon |
 | `/kuudra` | — | Kuudra boss tiers and contribution tracking |
 | `/leaderboard` | `/lb` | View player leaderboards |
-| `/mail` | `/mailbox` | Send, read, and manage player mail messages |
+| `/mail` | — | Send, read, and manage player mail messages |
+| `/mailbox` | — | Mailbox system: list, read, delete, send |
 | `/mayor` | — | View the active mayor and vote for candidates |
 | `/menu` | — | Open the SkyBlock main menu |
+| `/mining` | — | View mining level, XP, speed, powder, zones, and HOTM info |
+| `/miningcommission` | — | Open the King's Commissions mining menu |
+| `/miningzone` | `/mz` | View or change your current mining zone |
 | `/minion` | `/minions` | Manage your placed minions, fuel, and upgrades |
+| `/minionsmenu` | — | Open the Minions GUI |
 | `/museum` | — | Donate items and view your museum collection progress |
+| `/npc` | — | Interact with SkyBlock NPCs and their shops |
+| `/npcshop` | — | Browse and buy from static NPC shops via GUI |
 | `/party` | — | Manage your party invites and membership |
 | `/pet` | `/pets` | Manage your pets and active-pet perks |
 | `/profile` | — | View your SkyBlock profile |
@@ -287,23 +339,28 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `/reforge` | — | View and apply item reforges |
 | `/repair` | — | Repair items in hand or entire inventory (`hand`/`all`) |
 | `/rift` | — | View and manage your Rift dimension progress |
-| `/runecrafting` | — | View your Runecrafting skill level and rune collection |
 | `/run` | — | Track your dungeon run statistics |
+| `/runes` | — | Open the Runes menu |
+| `/runecrafting` | — | View your Runecrafting skill level and rune collection |
 | `/sack` | — | View the contents of your sacks |
 | `/season` | — | View or set the current SkyBlock season (op-only set/advance) |
+| `/shop` | — | List NPC shops and their buy/sell prices |
+| `/skyblock` | `/sb`, `/sky` | Open the SkyBlock main menu |
 | `/skyblock-level` | `/sblevel` | View and manage your SkyBlock level and XP |
-| `/slay` | `/slayer` | Manage Slayer quests and view boss info |
+| `/slay` | — | Manage Slayer quests and view boss info |
+| `/slayer` | `/sl` | Manage Slayer quests and view boss info |
 | `/skills` | — | View your SkyBlock skill levels and XP |
 | `/stat` | — | View your effective SkyBlock player stats |
-| `/storage` | — | View and manage your personal storage pages |
 | `/stats` | — | View and manage your SkyBlock player stats menu |
+| `/storage` | — | View and manage your personal storage pages |
+| `/talisman` | `/ta` | Open the Talisman Bag GUI |
 | `/title` | — | Manage your SkyBlock title |
 | `/trade` | — | Trade items with another player |
 | `/trophyfish` | — | View trophy fish catch counts and drop chances |
 | `/trophyfishing` | — | Open the Trophy Fishing GUI (all 22 trophy fish types) |
 | `/vault` | — | Manage your personal vault balance and tier |
-| `/wardrobe` | — | View and manage your saved armor outfits |
-| `/warp` | — | Teleport to a named warp point |
+| `/wardrobe` | `/wd` | View and manage your saved armor outfits |
+| `/warp` | `/warps` | Teleport to a named warp point |
 
 ---
 
