@@ -1,5 +1,6 @@
 package com.skyblock.core.command;
 
+import com.skyblock.core.collections.gui.CollectionCategoryMenu;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.model.Collection;
@@ -71,6 +72,11 @@ public final class CollectionsCommand extends PlayerCommand {
                 handleCategory(player, category);
             }
             default -> {
+                CollectionCategory category = parseCategory(args[0]);
+                if (category != null) {
+                    new CollectionCategoryMenu(player.getUniqueId(), category).open(player);
+                    return true;
+                }
                 Collection collection = Collection.parse(args[0]);
                 if (collection == null) {
                     player.sendMessage("Unknown collection: " + args[0] +
