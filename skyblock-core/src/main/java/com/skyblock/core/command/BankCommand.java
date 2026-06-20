@@ -3,7 +3,7 @@ package com.skyblock.core.command;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BankManager.BankTier;
 import com.skyblock.core.manager.BankManager.BankType;
-import com.skyblock.core.menu.BankingMenu;
+import com.skyblock.core.menu.BankMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,7 +22,7 @@ public final class BankCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new BankingMenu(p.getUniqueId()).open(p);
+        new BankMenu(p.getUniqueId()).open(p);
     }
 
     @Override
