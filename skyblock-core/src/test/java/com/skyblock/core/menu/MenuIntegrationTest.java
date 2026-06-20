@@ -370,19 +370,19 @@ class MenuIntegrationTest {
 
         @Test
         void title_isAuctionHouse() {
-            AuctionHouseMenu menu = new AuctionHouseMenu(mockPlugin, mockPlayer);
+            AuctionHouseMenu menu = new AuctionHouseMenu(mockPlayer);
             assertEquals("§6§lAuction House", menu.getTitle());
         }
 
         @Test
         void rows_isSix() {
-            AuctionHouseMenu menu = new AuctionHouseMenu(mockPlugin, mockPlayer);
+            AuctionHouseMenu menu = new AuctionHouseMenu(mockPlayer);
             assertEquals(6, menu.getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new AuctionHouseMenu(mockPlugin, mockPlayer));
+            assertDoesNotThrow(() -> new AuctionHouseMenu(mockPlayer));
         }
 
         @Test
@@ -562,19 +562,19 @@ class MenuIntegrationTest {
 
         @Test
         void title_isPets() {
-            PetMenu menu = new PetMenu(mockPlugin, mockPlayer);
+            PetMenu menu = new PetMenu(mockPlayer);
             assertEquals("§dPets", menu.getTitle());
         }
 
         @Test
         void rows_isSix() {
-            PetMenu menu = new PetMenu(mockPlugin, mockPlayer);
+            PetMenu menu = new PetMenu(mockPlayer);
             assertEquals(6, menu.getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new PetMenu(mockPlugin, mockPlayer));
+            assertDoesNotThrow(() -> new PetMenu(mockPlayer));
         }
 
         @Test

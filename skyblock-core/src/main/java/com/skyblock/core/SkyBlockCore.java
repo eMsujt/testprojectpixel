@@ -552,7 +552,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("ability").setExecutor(abilityCommand);
             getCommand("ability").setTabCompleter(abilityCommand);
         }
-        MenuCommand petsCommand = new MenuCommand(p -> new PetMenu(this, p).open(p));
+        MenuCommand petsCommand = new MenuCommand(p -> new PetMenu(p).open(p));
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
