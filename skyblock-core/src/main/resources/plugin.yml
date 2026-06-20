@@ -293,6 +293,10 @@ commands:
     description: View the contents of your sacks.
     usage: /sack
     permission: skyblock.sack
+  shop:
+    description: List NPC shops and their buy/sell prices.
+    usage: /shop [id]
+    permission: skyblock.shop
   season:
     description: View or change the current SkyBlock season.
     usage: /season <current|next|set <season>|advance>
@@ -500,6 +504,8 @@ permissions:
     default: true
   skyblock.sack:
     description: Use the /sack command to view the contents of your sacks.
+  skyblock.shop:
+    description: Use the /shop command to view NPC shops and prices.
     default: true
   skyblock.storage:
     description: Use the /storage command to view and manage storage pages.
