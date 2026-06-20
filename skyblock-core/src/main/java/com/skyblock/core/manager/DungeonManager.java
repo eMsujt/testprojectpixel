@@ -66,57 +66,70 @@ public final class DungeonManager {
 
     /** All dungeon floors: Entrance, Catacombs FLOOR_1–FLOOR_7, and Master Mode MASTER_1–MASTER_7. */
     public enum DungeonFloor {
-        ENTRANCE("Entrance", "None", 0, false),
-        FLOOR_1("Floor 1", "Bonzo", 1, false),
-        FLOOR_2("Floor 2", "Scarf", 5, false),
-        FLOOR_3("Floor 3", "The Professor", 9, false),
-        FLOOR_4("Floor 4", "Thorn", 14, false),
-        FLOOR_5("Floor 5", "Livid", 19, false),
-        FLOOR_6("Floor 6", "Sadan", 24, false),
-        FLOOR_7("Floor 7", "Necron", 29, false),
-        MASTER_1("Master 1", "Bonzo", 1, true),
-        MASTER_2("Master 2", "Scarf", 2, true),
-        MASTER_3("Master 3", "The Professor", 3, true),
-        MASTER_4("Master 4", "Thorn", 4, true),
-        MASTER_5("Master 5", "Livid", 5, true),
-        MASTER_6("Master 6", "Sadan", 6, true),
-        MASTER_7("Master 7", "Necron", 7, true);
+        ENTRANCE("Entrance", "None", 0, false, 0),
+        FLOOR_1("Floor 1", "Bonzo", 1, false, 0),
+        FLOOR_2("Floor 2", "Scarf", 5, false, 0),
+        FLOOR_3("Floor 3", "The Professor", 9, false, 0),
+        FLOOR_4("Floor 4", "Thorn", 14, false, 0),
+        FLOOR_5("Floor 5", "Livid", 19, false, 0),
+        FLOOR_6("Floor 6", "Sadan", 24, false, 0),
+        FLOOR_7("Floor 7", "Necron", 29, false, 0),
+        MASTER_1("Master 1", "Bonzo", 1, true, 20),
+        MASTER_2("Master 2", "Scarf", 2, true, 22),
+        MASTER_3("Master 3", "The Professor", 3, true, 24),
+        MASTER_4("Master 4", "Thorn", 4, true, 26),
+        MASTER_5("Master 5", "Livid", 5, true, 28),
+        MASTER_6("Master 6", "Sadan", 6, true, 30),
+        MASTER_7("Master 7", "Necron", 7, true, 32);
 
         private final String displayName;
         private final String bossName;
         private final int floorNumber;
         private final boolean masterMode;
+        private final int requiredCatacombsLevel;
 
-        DungeonFloor(String displayName, String bossName, int floorNumber, boolean masterMode) {
+        DungeonFloor(String displayName, String bossName, int floorNumber, boolean masterMode, int requiredCatacombsLevel) {
             this.displayName = displayName;
             this.bossName = bossName;
             this.floorNumber = floorNumber;
             this.masterMode = masterMode;
+            this.requiredCatacombsLevel = requiredCatacombsLevel;
         }
 
         public String getDisplayName() { return displayName; }
         public String getBossName() { return bossName; }
         public int getFloorNumber() { return floorNumber; }
         public boolean isMasterMode() { return masterMode; }
+        public int getRequiredCatacombsLevel() { return requiredCatacombsLevel; }
     }
 
-    /** Playable dungeon classes, each granting a set of passive stat bonuses. */
+    /** Playable dungeon classes, each granting a set of passive stat bonuses and a class ability. */
     public enum DungeonClass {
-        HEALER("Healer", statMap(Stat.HEALTH, 100.0, Stat.INTELLIGENCE, 50.0, Stat.HEALTH_REGEN, 25.0)),
-        MAGE("Mage", statMap(Stat.INTELLIGENCE, 100.0, Stat.ABILITY_DAMAGE, 25.0)),
-        BERSERK("Berserk", statMap(Stat.STRENGTH, 50.0, Stat.CRIT_DAMAGE, 30.0)),
-        ARCHER("Archer", statMap(Stat.CRIT_CHANCE, 15.0, Stat.CRIT_DAMAGE, 25.0, Stat.ATTACK_SPEED, 20.0)),
-        TANK("Tank", statMap(Stat.HEALTH, 150.0, Stat.DEFENSE, 50.0, Stat.TRUE_DEFENSE, 10.0));
+        HEALER("Healer", "Healing Circle",
+                statMap(Stat.HEALTH, 100.0, Stat.INTELLIGENCE, 50.0, Stat.HEALTH_REGEN, 25.0)),
+        MAGE("Mage", "Ender Warp",
+                statMap(Stat.INTELLIGENCE, 100.0, Stat.ABILITY_DAMAGE, 25.0)),
+        BERSERK("Berserk", "Berserker Rage",
+                statMap(Stat.STRENGTH, 50.0, Stat.CRIT_DAMAGE, 30.0)),
+        ARCHER("Archer", "Rapid Fire",
+                statMap(Stat.CRIT_CHANCE, 15.0, Stat.CRIT_DAMAGE, 25.0, Stat.ATTACK_SPEED, 20.0)),
+        TANK("Tank", "Impenetrable",
+                statMap(Stat.HEALTH, 150.0, Stat.DEFENSE, 50.0, Stat.TRUE_DEFENSE, 10.0));
 
         private final String displayName;
+        private final String ability;
         private final Map<Stat, Double> statBonuses;
 
-        DungeonClass(String displayName, Map<Stat, Double> statBonuses) {
+        DungeonClass(String displayName, String ability, Map<Stat, Double> statBonuses) {
             this.displayName = displayName;
+            this.ability = ability;
             this.statBonuses = statBonuses;
         }
 
         public String getDisplayName() { return displayName; }
+
+        /** Returns the name of this class's passive ability. */
+        public String getAbility() { return ability; }
 
         /** Returns this class's passive stat bonuses (immutable). */
         public Map<Stat, Double> getStatBonuses() { return statBonuses; }
