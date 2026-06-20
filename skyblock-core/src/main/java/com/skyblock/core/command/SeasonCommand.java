@@ -1,5 +1,6 @@
-package com.skyblock.core.season;
+package com.skyblock.core.command;
 
+import com.skyblock.core.season.SeasonManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -10,18 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Handles the {@code /season} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /season current}         — display the current season and day</li>
- *   <li>{@code /season next}            — display the next season in the cycle</li>
- *   <li>{@code /season set <season>}    — (op) change the current season</li>
- *   <li>{@code /season advance}         — (op) advance to the next season</li>
- * </ul>
- * </p>
- */
 public final class SeasonCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("current", "next", "set", "advance");
@@ -108,7 +97,6 @@ public final class SeasonCommand implements TabExecutor {
         player.sendMessage("Season advanced to: " + newSeason.displayName());
     }
 
-    /** Parses a season name, sending an error to the player on failure. */
     private SeasonManager.Season parseSeason(Player player, String input) {
         try {
             return SeasonManager.Season.valueOf(input.toUpperCase());
