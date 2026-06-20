@@ -5,7 +5,6 @@ import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.WarpMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -13,26 +12,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Handles the {@code /warp} command (alias {@code /warps}).
- *
- * <p>With no arguments it opens the {@link WarpMenu} for the player; with a
- * warp name it teleports the player directly to that registered warp.</p>
- */
-public final class WarpCommand implements TabExecutor {
+public final class WarpCommand extends PlayerCommand {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
+    protected void openMenu(Player p) {
+        new WarpMenu(p).open(p);
+    }
 
+    @Override
+    protected boolean execute(Player player, Command command, String label, String[] args) {
         if (args.length == 0) {
-            new WarpMenu(player).open(player);
+            openMenu(player);
             return true;
         }
-
         String name = args[0].toLowerCase();
         Optional<Warp> warp = WarpManager.getInstance().getWarp(name);
         if (warp.isEmpty()) {
