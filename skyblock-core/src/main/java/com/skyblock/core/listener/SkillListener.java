@@ -7,9 +7,6 @@ import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.foraging.ForagingManager.TreeType;
 import com.skyblock.core.manager.AlchemyManager;
 import com.skyblock.core.manager.CollectionManager;
-import com.skyblock.core.manager.FishingManager;
-import com.skyblock.core.manager.FishingManager.SeaCreature;
-import com.skyblock.core.manager.FishingManager.WaterType;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Skill;
@@ -20,7 +17,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.FishHook;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,7 +29,6 @@ import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -45,7 +40,7 @@ import java.util.UUID;
 
 /**
  * Consolidated listener for all skill XP events: Mining, Farming, Foraging,
- * Fishing, Combat, and Alchemy.
+ * Combat, Enchanting, and Alchemy.
  */
 public final class SkillListener implements Listener {
 
@@ -145,7 +140,6 @@ public final class SkillListener implements Listener {
 
     private final SkillManager skillManager       = SkillManager.getInstance();
     private final CollectionManager collectionManager = CollectionManager.getInstance();
-    private final FishingManager fishingManager   = FishingManager.getInstance();
     private final StatManager statManager         = StatManager.getInstance();
     private final AlchemyManager alchemyManager   = AlchemyManager.getInstance();
     private final FarmingManager farmingManager   = FarmingManager.getInstance();
@@ -209,47 +203,6 @@ public final class SkillListener implements Listener {
                 player.sendMessage("§2[Foraging] §fYou gained §e+" + tree.getBaseXp() + " Foraging XP§f!");
             }
         }
-    }
-
-    // --- Fishing ---
-
-    @EventHandler
-    public void onPlayerFish(PlayerFishEvent event) {
-        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-
-        int level = fishingManager.getLevel(uuid);
-        ItemStack loot = fishingManager.rollLoot(level);
-
-        boolean isTreasure = loot.getType() == Material.MAP;
-        double xp = isTreasure ? FishingManager.XP_TREASURE : FishingManager.XP_PER_CATCH;
-        fishingManager.addXp(uuid, xp);
-        fishingManager.addFishCaught(uuid);
-
-        player.getWorld().dropItemNaturally(event.getHook().getLocation(), loot);
-
-        fishingManager.recordCatchEvent(uuid, "Caught " + loot.getType().name());
-
-        player.sendMessage("§9[Fishing] §fYou caught §e" + loot.getType().name().replace('_', ' ')
-                + "§f! §7(+" + (int) xp + " XP)");
-
-        WaterType waterType = detectWaterType(event.getHook());
-        SeaCreature creature = fishingManager.rollSeaCreature(level, waterType, 0.0);
-        if (creature != null) {
-            player.sendMessage("§3[Sea Creature] §fA §b" + creature.name().replace('_', ' ')
-                    + " §fhas spawned from the " + waterType.name().toLowerCase() + "!");
-            fishingManager.recordCatchEvent(uuid, "Sea creature: " + creature.name()
-                    + " [" + waterType.name() + "]");
-        }
-    }
-
-    private static WaterType detectWaterType(FishHook hook) {
-        Material block = hook.getLocation().getBlock().getType();
-        if (block == Material.LAVA || block == Material.LAVA_CAULDRON) {
-            return WaterType.LAVA;
-        }
-        return WaterType.WATER;
     }
 
     // --- Combat ---
