@@ -1,9 +1,9 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.SlayerManager.SlayerBoss;
 import com.skyblock.core.manager.SlayerManager.SlayerType;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -50,7 +50,7 @@ public final class SlayerMenu extends AbstractMenu {
     @Override
     protected void populate() {
         UUID playerId = player.getUniqueId();
-        ItemStack pane = SkyblockUtils.buildItem(Material.RED_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = new ItemBuilder(Material.RED_STAINED_GLASS_PANE).name("§r").build();
 
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
@@ -65,17 +65,19 @@ public final class SlayerMenu extends AbstractMenu {
             int[] data = SlayerManager.SLAYER_BOSS_DATA.get(type.name());
             int maxLevel = data != null ? data[0] : SlayerManager.MAX_LEVEL;
 
-            setItem(BOSS_SLOTS[i], SkyblockUtils.buildItem(HEAD_ICONS.get(type),
-                    "§c" + boss.getDisplayName(),
-                    "§7Type: §e" + type.getDisplayName(),
-                    "§7Level: §e" + level + "§7/§e" + maxLevel,
-                    "§7XP: §e" + xp,
-                    "§7Bosses slain: §e" + kills));
+            setItem(BOSS_SLOTS[i], new ItemBuilder(HEAD_ICONS.get(type))
+                    .name("§c" + boss.getDisplayName())
+                    .lore("§7Type: §e" + type.getDisplayName(),
+                            "§7Level: §e" + level + "§7/§e" + maxLevel,
+                            "§7XP: §e" + xp,
+                            "§7Bosses slain: §e" + kills)
+                    .build());
         }
 
-        setItem(SUMMARY_SLOT, SkyblockUtils.buildItem(Material.DIAMOND_SWORD,
-                "§cSlayer Overview",
-                "§7Defeat slayer bosses to earn",
-                "§7slayer XP and rare drops."));
+        setItem(SUMMARY_SLOT, new ItemBuilder(Material.DIAMOND_SWORD)
+                .name("§cSlayer Overview")
+                .lore("§7Defeat slayer bosses to earn",
+                        "§7slayer XP and rare drops.")
+                .build());
     }
 }
