@@ -4,28 +4,45 @@ import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.manager.IslandManager.IslandUpgrade;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
 /**
- * 54-slot Island menu. A grass block at slot 13 shows the player's current
- * island level, total XP, and XP required to reach the next level. Island
- * upgrades are displayed across row 4 (slots 28–35).
+ * 54-slot Island menu. Slot 13 shows the player's island level/XP overview.
+ * Row 3 holds clickable options (Visit, Manage, Settings). Row 4 displays
+ * island upgrades.
  */
 public final class IslandMenu extends Menu {
 
-    static final int OVERVIEW_SLOT = 13;
-    static final int BEACON_SLOT = 22;
+    static final int OVERVIEW_SLOT   = 13;
+    static final int VISIT_SLOT      = 20;
+    static final int MANAGE_SLOT     = 22;
+    static final int SETTINGS_SLOT   = 24;
     static final int[] UPGRADE_SLOTS = {28, 29, 30, 31, 32, 33, 34, 35};
 
     private static final IslandUpgrade[] DISPLAYED_UPGRADES = IslandUpgrade.values();
 
     private final UUID owner;
+    private Player viewer;
 
     public IslandMenu(UUID owner) {
         super("§a§lYour Island", 6);
         this.owner = owner;
+    }
+
+    @Override
+    public void open(Player player) {
+        this.viewer = player;
+        super.open(player);
+    }
+
+    @Override
+    public void handleClick(InventoryClickEvent event) {
+        event.setCancelled(true);
+        super.handleClick(event);
     }
 
     @Override
@@ -53,6 +70,40 @@ public final class IslandMenu extends Menu {
                         "§7Biome: §e" + manager.getIslandBiome(owner))
                 .build());
 
+        setItem(VISIT_SLOT, new ItemBuilder(Material.OAK_DOOR)
+                .displayName("§aVisit Island")
+                .lore("§7Teleport to your island.")
+                .build(),
+                e -> {
+                    Player p = (Player) e.getWhoClicked();
+                    p.closeInventory();
+                    manager.getIslandWorld(owner).ifPresent(world ->
+                            p.teleport(world.getSpawnLocation()));
+                });
+
+        int memberCount = manager.getIsland(owner)
+                .map(island -> island.getMembers().size())
+                .orElse(0);
+        setItem(MANAGE_SLOT, new ItemBuilder(Material.EMERALD)
+                .displayName("§eManage Members")
+                .lore(
+                        "§7Members: §e" + memberCount,
+                        "§7Click to manage island members.")
+                .build(),
+                e -> ((Player) e.getWhoClicked())
+                        .sendMessage("§7Use §e/island manage §7to manage members."));
+
+        String warpName = manager.getWarpName(owner);
+        setItem(SETTINGS_SLOT, new ItemBuilder(Material.COMPARATOR)
+                .displayName("§bIsland Settings")
+                .lore(
+                        "§7Warp: " + (warpName != null ? "§e" + warpName : "§cNone"),
+                        "§7Visitors: §e" + manager.getVisitorCount(owner),
+                        "§7Click to view settings.")
+                .build(),
+                e -> ((Player) e.getWhoClicked())
+                        .sendMessage("§7Use §e/island settings §7to change settings."));
+
         for (int i = 0; i < DISPLAYED_UPGRADES.length && i < UPGRADE_SLOTS.length; i++) {
             IslandUpgrade upgrade = DISPLAYED_UPGRADES[i];
             int upgradeLevel = manager.getIsland(owner)
@@ -60,8 +111,7 @@ public final class IslandMenu extends Menu {
                     .orElse(0);
             setItem(UPGRADE_SLOTS[i], new ItemBuilder(Material.LIME_STAINED_GLASS_PANE)
                     .displayName("§a" + upgrade.getDisplayName())
-                    .lore(
-                            "§7Level: §e" + upgradeLevel + "§7/§e" + upgrade.getMaxLevel())
+                    .lore("§7Level: §e" + upgradeLevel + "§7/§e" + upgrade.getMaxLevel())
                     .build());
         }
     }
