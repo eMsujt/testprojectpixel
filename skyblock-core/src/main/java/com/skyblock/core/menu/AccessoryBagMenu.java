@@ -1,6 +1,5 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.util.SkyblockUtils;
@@ -16,14 +15,14 @@ import java.util.UUID;
  * value shows the count of accessories the player owns at that rarity.
  * A summary head at slot 4 reports slot usage and total magic power.
  */
-public final class AccessoryBagMenu extends AbstractMenu {
+public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
 
     static final int SUMMARY_SLOT = 4;
     /** One slot per {@link AccessoryRarity}, left-to-right across row 1. */
     static final int[] RARITY_SLOTS = {9, 10, 11, 12, 13, 14, 15, 16};
 
-    public AccessoryBagMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§5Accessory Bag", 54);
+    public AccessoryBagMenu(Player player) {
+        super(player, "§5Accessory Bag", 6);
     }
 
     @Override

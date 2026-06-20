@@ -19,26 +19,20 @@ import java.util.UUID;
  * trophy tier reached, and how many more catches reach the next tier. The
  * summary head at the top reports total trophy points and types caught.
  */
-public final class TrophyFishingMenu extends Menu {
+public final class TrophyFishingMenu extends AbstractSkyBlockMenu {
 
     static final int SUMMARY_SLOT = 4;
 
     /** First inner slot; the trophy fish fill rows 2–6 (slots 9 onward). */
     private static final int FIRST_SLOT = 9;
 
-    private final UUID playerId;
-
     public TrophyFishingMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public TrophyFishingMenu(UUID playerId) {
-        super("§3Trophy Fishing", 6);
-        this.playerId = playerId;
+        super(player, "§3Trophy Fishing", 6);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
 

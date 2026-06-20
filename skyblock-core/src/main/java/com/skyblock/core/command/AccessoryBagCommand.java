@@ -34,7 +34,7 @@ public final class AccessoryBagCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            new AccessoryBagMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
+            new AccessoryBagMenu(player).open(player);
             return true;
         }
 

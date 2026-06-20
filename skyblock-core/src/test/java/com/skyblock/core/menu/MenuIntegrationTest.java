@@ -2355,17 +2355,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isAccessoryBag() {
-            assertEquals("§5Accessory Bag", new AccessoryBagMenu(mockPlugin, mockPlayer).getTitle());
+            assertEquals("§5Accessory Bag", new AccessoryBagMenu(mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new AccessoryBagMenu(mockPlugin, mockPlayer).getRows());
+            assertEquals(6, new AccessoryBagMenu(mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new AccessoryBagMenu(mockPlugin, mockPlayer));
+            assertDoesNotThrow(() -> new AccessoryBagMenu(mockPlayer));
         }
 
         @Test
