@@ -831,7 +831,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.command.ForgeCommand forgeCommand = new com.skyblock.core.command.ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
-        MenuCommand enchantCommand = new MenuCommand(p -> new EnchantingMenu(this, p).open(p));
+        MenuCommand enchantCommand = new MenuCommand(p -> new EnchantingMenu(p).open(p));
         getCommand("enchant").setExecutor(enchantCommand);
         getCommand("enchant").setTabCompleter(enchantCommand);
         MenuCommand talismanCommand = new MenuCommand(p -> new com.skyblock.core.menu.TalismanBagMenu(this, p).open(p));

@@ -51,13 +51,13 @@ public final class SkyBlockMenu extends Menu {
                 .lore("§7Explore the Catacombs.").build(),
                 e -> { e.setCancelled(true); new DungeonsMenu(player.getUniqueId()).open(player); });
 
-        setItem(19, new ItemBuilder(Material.ENCHANTING_TABLE).displayName("§5Enchanting")
-                .lore("§7Enchant your items.").build(),
-                e -> { e.setCancelled(true); new EnchantingMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
+        setItem(19, new ItemBuilder(Material.GOLD_NUGGET).displayName("§6Auction House")
+                .lore("§7Buy and sell items.").build(),
+                e -> { e.setCancelled(true); new AuctionHouseMenu(player).open(player); });
 
-        setItem(20, new ItemBuilder(Material.FISHING_ROD).displayName("§9Fishing")
-                .lore("§7Cast your line and fish.").build(),
-                e -> { e.setCancelled(true); new FishingMenu(player).open(player); });
+        setItem(20, new ItemBuilder(Material.GOLD_INGOT).displayName("§6Bazaar")
+                .lore("§7Trade commodities instantly.").build(),
+                e -> { e.setCancelled(true); new BazaarMenu(player).open(player); });
 
         setItem(21, new ItemBuilder(Material.GOLD_BLOCK).displayName("§6Bank")
                 .lore("§7Deposit and withdraw coins.").build(),
@@ -78,6 +78,14 @@ public final class SkyBlockMenu extends Menu {
         setItem(25, new ItemBuilder(Material.DIAMOND).displayName("§aStats")
                 .lore("§7View your SkyBlock stats.").build(),
                 e -> { e.setCancelled(true); new StatsMenu(player).open(player); });
+
+        setItem(28, new ItemBuilder(Material.ENCHANTING_TABLE).displayName("§5Enchanting")
+                .lore("§7Enchant your items.").build(),
+                e -> { e.setCancelled(true); new EnchantingMenu(player).open(player); });
+
+        setItem(29, new ItemBuilder(Material.FISHING_ROD).displayName("§9Fishing")
+                .lore("§7Cast your line and fish.").build(),
+                e -> { e.setCancelled(true); new FishingMenu(player).open(player); });
     }
 
     @Override

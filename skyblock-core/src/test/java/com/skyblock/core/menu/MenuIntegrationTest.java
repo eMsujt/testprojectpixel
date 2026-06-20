@@ -2056,17 +2056,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isEnchantingTable() {
-            assertEquals("§5§lEnchanting Table", new EnchantingMenu(mockPlugin, mockPlayer).getTitle());
+            assertEquals("§5§lEnchanting Table", new EnchantingMenu(mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new EnchantingMenu(mockPlugin, mockPlayer).getRows());
+            assertEquals(6, new EnchantingMenu(mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new EnchantingMenu(mockPlugin, mockPlayer));
+            assertDoesNotThrow(() -> new EnchantingMenu(mockPlayer));
         }
 
         @Test

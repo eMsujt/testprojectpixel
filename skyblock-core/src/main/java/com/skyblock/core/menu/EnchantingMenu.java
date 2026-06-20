@@ -10,6 +10,8 @@ import org.bukkit.inventory.ItemStack;
 
 public final class EnchantingMenu extends AbstractSkyBlockMenu {
 
+    public static final int TABLE_SLOT = 22;
+
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
@@ -18,7 +20,7 @@ public final class EnchantingMenu extends AbstractSkyBlockMenu {
     };
 
     public EnchantingMenu(Player player) {
-        super(player, "§5Enchanting Table", 6);
+        super(player, "§5§lEnchanting Table", 6);
     }
 
     @Override
