@@ -2,7 +2,7 @@ package com.skyblock.core;
 
 import com.skyblock.core.manager.ActionBarManager;
 import com.skyblock.core.manager.AccessoryManager;
-import com.skyblock.core.quest.command.QuestCommand;
+import com.skyblock.core.command.QuestCommand;
 import com.skyblock.core.crafting.CraftingCommand;
 import com.skyblock.core.crafting.manager.CraftingManager;
 import com.skyblock.core.manager.QuestManager;
