@@ -22,13 +22,21 @@ import java.util.UUID;
  */
 public final class CollectionsMenu extends Menu {
 
-    private static final int[] CATEGORY_SLOTS = {20, 21, 22, 23, 24};
+    private static final CollectionCategory[] CATEGORY_ORDER = {
+        CollectionCategory.FORAGING,
+        CollectionCategory.FARMING,
+        CollectionCategory.MINING,
+        CollectionCategory.COMBAT,
+        CollectionCategory.FISHING,
+    };
+
+    private static final int[] CATEGORY_SLOTS = {0, 1, 2, 3, 4};
 
     private static final Material[] CATEGORY_ICONS = {
-        Material.WHEAT,        // FARMING
+        Material.WHEAT,        // FORAGING
+        Material.WHEAT_SEEDS,  // FARMING
         Material.COBBLESTONE,  // MINING
         Material.IRON_SWORD,   // COMBAT
-        Material.OAK_LOG,      // FORAGING
         Material.COD,          // FISHING
     };
 
@@ -44,12 +52,11 @@ public final class CollectionsMenu extends Menu {
         fillBorder();
 
         CollectionManager manager = CollectionManager.getInstance();
-        CollectionCategory[] categories = CollectionCategory.values();
-        for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
-            final CollectionCategory category = categories[i];
+        for (int i = 0; i < CATEGORY_ORDER.length && i < CATEGORY_SLOTS.length; i++) {
+            final CollectionCategory category = CATEGORY_ORDER[i];
             long total = manager.getTotalForCategory(playerId, category);
             setItem(CATEGORY_SLOTS[i], SkyblockUtils.buildItem(CATEGORY_ICONS[i],
-                    "§a" + category.getDisplayName(),
+                    "§e" + category.getDisplayName(),
                     "§7Total collected: §e" + total,
                     "§7View your " + category.getDisplayName().toLowerCase() + " collections."),
                     event -> {
