@@ -340,6 +340,10 @@ commands:
     description: Open the Runes menu.
     usage: /runes
     permission: skyblock.runes
+  runecrafting:
+    description: View your Runecrafting skill and runes.
+    usage: /runecrafting
+    permission: skyblock.runecrafting
   enderchest:
     description: Open your SkyBlock Ender Chest.
     usage: /enderchest
