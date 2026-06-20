@@ -43,4 +43,16 @@ public final class GatheringListener implements Listener {
         Player player = event.getPlayer();
         foragingManager.recordChop(player.getUniqueId(), tree, 1);
     }
+
+    @EventHandler
+    public void onForagingXp(BlockBreakEvent event) {
+        Block block = event.getBlock();
+        TreeType tree = TREE_MAP.get(block.getType());
+        if (tree == null) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        player.sendMessage("§2[Foraging] §fYou gained §e+" + tree.getBaseXp() + " Foraging XP§f!");
+    }
 }
