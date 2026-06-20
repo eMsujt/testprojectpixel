@@ -34,8 +34,6 @@ import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.command.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
-import com.skyblock.core.command.EnchantCommand;
-import com.skyblock.core.command.EnderChestCommand;
 import com.skyblock.core.command.MenuCommand;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.DungeonsMenu;
@@ -152,7 +150,6 @@ import com.skyblock.core.command.SackCommand;
 import com.skyblock.core.command.ShopCommand;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.manager.ShopManager;
-import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
@@ -662,7 +659,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.command.ForgeCommand forgeCommand = new com.skyblock.core.command.ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
-        EnchantCommand enchantCommand = new EnchantCommand();
+        MenuCommand enchantCommand = new MenuCommand(p -> new EnchantingMenu(this, p).open(p));
         getCommand("enchant").setExecutor(enchantCommand);
         getCommand("enchant").setTabCompleter(enchantCommand);
         MenuCommand talismanCommand = new MenuCommand(p -> new com.skyblock.core.menu.TalismanBagMenu(this, p).open(p));
@@ -670,12 +667,12 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("talisman").setExecutor(talismanCommand);
             getCommand("talisman").setTabCompleter(talismanCommand);
         }
-        EnderChestCommand enderChestCommand = new EnderChestCommand();
+        MenuCommand enderChestCommand = new MenuCommand(p -> com.skyblock.core.manager.EnderChestManager.getInstance().open(p));
         if (getCommand("enderchest") != null) {
             getCommand("enderchest").setExecutor(enderChestCommand);
             getCommand("enderchest").setTabCompleter(enderChestCommand);
         }
-        com.skyblock.core.command.RuneCommand runeCommand = new com.skyblock.core.command.RuneCommand(this);
+        MenuCommand runeCommand = new MenuCommand(p -> new com.skyblock.core.menu.RuneMenu(this, p).open(p));
         if (getCommand("runes") != null) {
             getCommand("runes").setExecutor(runeCommand);
         }
@@ -764,7 +761,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
         }
-        SkyBlockMenuCommand skyBlockCommand = new SkyBlockMenuCommand();
+        MenuCommand skyBlockCommand = new MenuCommand(p -> new SkyBlockMenu(p).open(p));
         if (getCommand("skyblock") != null) {
             getCommand("skyblock").setExecutor(skyBlockCommand);
             getCommand("skyblock").setTabCompleter(skyBlockCommand);
