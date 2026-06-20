@@ -103,7 +103,7 @@ import com.skyblock.core.manager.CrimsonIsleManager;
 import com.skyblock.core.manager.DojoManager;
 import com.skyblock.core.command.CommissionCommand;
 import com.skyblock.core.manager.CommissionManager;
-import com.skyblock.core.chocolate.ChocolateFactoryManager;
+import com.skyblock.core.manager.ChocolateFactoryManager;
 import com.skyblock.core.command.ChocolateFactoryCommand;
 import com.skyblock.core.menu.MiningCommissionMenu;
 import com.skyblock.core.menu.BazaarMenu;

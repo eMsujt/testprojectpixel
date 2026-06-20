@@ -1,6 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.chocolate.ChocolateFactoryManager;
+import com.skyblock.core.manager.ChocolateFactoryManager;
 import com.skyblock.core.manager.AlchemyManager;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;

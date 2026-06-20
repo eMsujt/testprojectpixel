@@ -1,4 +1,4 @@
-package com.skyblock.core.chocolate;
+package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Rarity;
 
