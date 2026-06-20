@@ -75,7 +75,7 @@ import com.skyblock.core.command.IslandCommand;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
-import com.skyblock.core.reforge.ReforgeCommand;
+import com.skyblock.core.command.ReforgeCommand;
 import com.skyblock.core.backpack.BackpackCommand;
 import com.skyblock.core.backpack.BackpackManager;
 import com.skyblock.core.event.EventCommand;
