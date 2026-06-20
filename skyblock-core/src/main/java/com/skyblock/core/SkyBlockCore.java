@@ -649,7 +649,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("mail").setExecutor(mailCommand);
             getCommand("mail").setTabCompleter(mailCommand);
         }
-        MenuCommand forgeCommand = new MenuCommand(p -> new ForgeMenu(p).open(p));
+        com.skyblock.core.command.ForgeCommand forgeCommand = new com.skyblock.core.command.ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
         EnchantCommand enchantCommand = new EnchantCommand();
