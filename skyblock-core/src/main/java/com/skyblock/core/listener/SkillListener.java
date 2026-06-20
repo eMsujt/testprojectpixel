@@ -2,6 +2,7 @@ package com.skyblock.core.listener;
 
 import com.skyblock.core.combat.calculator.DamageFormula;
 import com.skyblock.core.farming.manager.FarmingManager;
+import com.skyblock.core.util.ChatUtil;
 import com.skyblock.core.farming.manager.FarmingManager.CropType;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.foraging.ForagingManager.TreeType;
@@ -200,7 +201,7 @@ public final class SkillListener implements Listener {
             }
             if (tree != null) {
                 foragingManager.recordChop(uuid, tree, 1);
-                player.sendMessage("§2[Foraging] §fYou gained §e+" + tree.getBaseXp() + " Foraging XP§f!");
+                ChatUtil.send(player, "§2[Foraging] §fYou gained §e+" + tree.getBaseXp() + " Foraging XP§f!");
             }
         }
     }

@@ -2,6 +2,7 @@ package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.JacobsContestManager;
 import com.skyblock.core.manager.JacobsContestManager.CropType;
+import com.skyblock.core.util.ChatUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -53,7 +54,7 @@ public final class JacobsContestListener implements Listener {
         contestManager.addScore(uuid, crop, 1L);
 
         long score = contestManager.getActiveScore(uuid, crop);
-        player.sendMessage("§6[Jacob's Contest] §f" + crop.getDisplayName()
+        ChatUtil.send(player, "§6[Jacob's Contest] §f" + crop.getDisplayName()
                 + ": §e" + score + " §f(" + contestManager.getActiveMedal(uuid, crop).getDisplayName() + ")");
     }
 }

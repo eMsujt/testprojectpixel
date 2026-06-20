@@ -2,6 +2,7 @@ package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.menu.Menu;
+import com.skyblock.core.util.ChatUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,7 +40,7 @@ public final class PlayerEventListener implements Listener {
         long penalty = (long) (purse * 0.05);
         if (penalty > 0) {
             bankManager.removeFromPurse(uuid, penalty);
-            player.sendMessage("§cYou lost §6" + penalty + " coins §cfrom your purse on death.");
+            ChatUtil.sendError(player, "You lost §6" + penalty + " coins §cfrom your purse on death.");
         }
     }
 }

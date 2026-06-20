@@ -1,6 +1,7 @@
 package com.skyblock.core.farming.listener;
 
 import com.skyblock.core.farming.manager.FarmingManager;
+import com.skyblock.core.util.ChatUtil;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -63,7 +64,7 @@ public final class CropMilestoneListener implements Listener {
         int total = farmingManager.getHarvests(player.getUniqueId(), crop);
         for (int milestone : MILESTONES) {
             if (total == milestone) {
-                player.sendMessage("[Farming] Milestone reached: " + milestone
+                ChatUtil.send(player, "[Farming] Milestone reached: " + milestone
                         + " " + crop.getDisplayName() + " harvested!");
                 break;
             }

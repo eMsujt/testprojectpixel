@@ -2,6 +2,7 @@ package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.ItemAbilityManager;
 import com.skyblock.core.manager.ManaManager;
+import com.skyblock.core.util.ChatUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -66,16 +67,15 @@ public final class AbilityListener implements Listener {
         switch (abilities.activate(id, type, mana.getCurrentMana(id))) {
             case SUCCESS -> {
                 mana.useMana(id, type.manaCost);
-                player.sendMessage(ChatColor.AQUA + "Used " + format(type)
-                        + ChatColor.AQUA + "! (" + type.manaCost + " mana)");
+                ChatUtil.send(player, "§bUsed " + format(type) + "§b! (" + type.manaCost + " mana)");
             }
             case NOT_UNLOCKED ->
-                    player.sendMessage(ChatColor.RED + "You have not unlocked " + format(type) + ChatColor.RED + ".");
+                    ChatUtil.sendError(player, "You have not unlocked " + format(type) + "§c.");
             case ON_COOLDOWN ->
-                    player.sendMessage(ChatColor.RED + "That ability is on cooldown ("
+                    ChatUtil.sendError(player, "That ability is on cooldown ("
                             + abilities.getRemainingCooldown(id, type) + "s).");
             case NOT_ENOUGH_MANA ->
-                    player.sendMessage(ChatColor.RED + "Not enough mana! (" + type.manaCost + " required)");
+                    ChatUtil.sendError(player, "Not enough mana! (" + type.manaCost + " required)");
         }
     }
 
@@ -101,6 +101,6 @@ public final class AbilityListener implements Listener {
             sb.append(cap ? Character.toUpperCase(c) : c);
             cap = c == ' ';
         }
-        return ChatColor.GOLD + sb.toString();
+        return "§6" + sb.toString();
     }
 }
