@@ -1,4 +1,4 @@
-package com.skyblock.core.quest.command;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.QuestManager;
 import com.skyblock.core.manager.QuestManager.QuestData;
