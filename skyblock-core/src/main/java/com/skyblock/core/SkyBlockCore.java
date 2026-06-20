@@ -19,7 +19,7 @@ import com.skyblock.core.museum.MuseumCommand;
 import com.skyblock.core.manager.MuseumManager;
 import com.skyblock.core.manager.EssenceCommand;
 import com.skyblock.core.manager.EssenceManager;
-import com.skyblock.core.dungeon.command.DungeonCommand;
+import com.skyblock.core.command.DungeonCommand;
 import com.skyblock.core.dungeon.command.DungeonClassCommand;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonClassManager;

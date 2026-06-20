@@ -1,7 +1,6 @@
-package com.skyblock.core.dungeon.command;
+package com.skyblock.core.command;
 
 import com.skyblock.core.SkyBlockCore;
-import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.DungeonManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -202,7 +201,7 @@ public final class DungeonCommand extends PlayerCommand {
     }
 
     private void handleHistory(Player player) {
-        java.util.List<String> history = dungeonManager.getDungeonHistory(player.getUniqueId());
+        List<String> history = dungeonManager.getDungeonHistory(player.getUniqueId());
         player.sendMessage("=== Dungeon History ===");
         if (history.isEmpty()) {
             player.sendMessage("No dungeon history found.");
