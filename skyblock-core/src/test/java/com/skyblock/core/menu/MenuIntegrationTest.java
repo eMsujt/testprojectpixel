@@ -641,13 +641,11 @@ class MenuIntegrationTest {
     class MinionMenuTests {
 
         private UUID owner;
-        private JavaPlugin mockPlugin;
         private Player mockPlayer;
 
         @BeforeEach
         void reset() {
             owner = UUID.randomUUID();
-            mockPlugin = mock(JavaPlugin.class);
             mockPlayer = mock(Player.class);
             when(mockPlayer.getUniqueId()).thenReturn(owner);
             MinionManager.getInstance().clearMinions(owner);
@@ -655,17 +653,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isMinions() {
-            assertEquals("§6§lYour Minions", new MinionMenu(mockPlugin, mockPlayer).getTitle());
+            assertEquals("§6§lYour Minions", new MinionMenu(mockPlayer).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new MinionMenu(mockPlugin, mockPlayer).getRows());
+            assertEquals(6, new MinionMenu(mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new MinionMenu(mockPlugin, mockPlayer));
+            assertDoesNotThrow(() -> new MinionMenu(mockPlayer));
         }
 
         @Test
