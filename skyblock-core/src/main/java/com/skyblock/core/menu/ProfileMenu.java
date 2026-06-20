@@ -1,99 +1,60 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
-import com.skyblock.core.manager.EconomyManager;
-import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.model.Stat;
-import com.skyblock.core.stats.StatsManager;
-import com.skyblock.core.stats.StatsManager.PlayerStats;
+import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.UUID;
+import java.util.List;
 
 public final class ProfileMenu extends AbstractMenu {
 
-    private static final int HEAD_SLOT    = 13;
-    private static final int COMBAT_SLOT  = 20;
-    private static final int SKILLS_SLOT  = 22;
-    private static final int OTHER_SLOT   = 24;
+    static final int[] PROFILE_SLOTS = {10, 11, 12, 13, 14, 15, 16};
+    private static final int NEW_SLOT = 22;
 
     public ProfileMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§b§l" + player.getName() + "'s SkyBlock Profile", 54);
+        super(plugin, player, "§bSkyBlock Profiles", 36);
     }
 
     @Override
     protected void populate() {
-        fillBorder();
-
-        UUID id = player.getUniqueId();
-        EconomyManager eco = EconomyManager.getInstance();
-        PlayerStats stats = StatsManager.getInstance().getStats(id);
-        SkillManager skills = SkillManager.getInstance();
-
-        // Player head — economy overview
-        ItemStack skull = new ItemBuilder(Material.PLAYER_HEAD)
-                .displayName("§a" + player.getName())
-                .lore(
-                        "§7Purse: §6" + String.format("%,.0f", (double) eco.getPurse(id)) + " Coins",
-                        "§7Bank: §6" + String.format("%,.0f", (double) eco.getBank(id)) + " Coins")
-                .build();
-        if (skull.getItemMeta() instanceof SkullMeta meta) {
-            meta.setOwningPlayer(player);
-            skull.setItemMeta(meta);
-        }
-        setItem(HEAD_SLOT, skull, e -> e.setCancelled(true));
-
-        // Combat stats panel
-        setItem(COMBAT_SLOT, new ItemBuilder(Material.DIAMOND_SWORD)
-                .displayName("§cCombat Stats")
-                .lore(
-                        "§7❤ Health: §c" + fmt(stats.getStat(Stat.HEALTH)),
-                        "§7❈ Defense: §a" + fmt(stats.getStat(Stat.DEFENSE)),
-                        "§7❁ Strength: §c" + fmt(stats.getStat(Stat.STRENGTH)),
-                        "§7☣ Crit Chance: §6" + fmt(stats.getStat(Stat.CRIT_CHANCE)) + "%",
-                        "§7☠ Crit Damage: §6" + fmt(stats.getStat(Stat.CRIT_DAMAGE)) + "%")
-                .build(), e -> e.setCancelled(true));
-
-        // Skills summary panel
-        setItem(SKILLS_SLOT, new ItemBuilder(Material.EXPERIENCE_BOTTLE)
-                .displayName("§aSkill Levels")
-                .lore(
-                        "§7Farming: §e" + skills.getSkillLevel(id, "farming"),
-                        "§7Mining: §e"   + skills.getSkillLevel(id, "mining"),
-                        "§7Combat: §e"   + skills.getSkillLevel(id, "combat"),
-                        "§7Foraging: §e" + skills.getSkillLevel(id, "foraging"),
-                        "§7Fishing: §e"  + skills.getSkillLevel(id, "fishing"))
-                .build(), e -> e.setCancelled(true));
-
-        // Utility/gathering stats panel
-        setItem(OTHER_SLOT, new ItemBuilder(Material.GOLD_NUGGET)
-                .displayName("§6Other Stats")
-                .lore(
-                        "§7✦ Speed: §f"           + fmt(stats.getStat(Stat.SPEED)),
-                        "§7✎ Intelligence: §b"    + fmt(stats.getStat(Stat.INTELLIGENCE)),
-                        "§7✯ Magic Find: §b"      + fmt(stats.getStat(Stat.MAGIC_FIND)),
-                        "§7⸕ Mining Speed: §b"    + fmt(stats.getStat(Stat.MINING_SPEED)),
-                        "§7☘ Mining Fortune: §6"  + fmt(stats.getStat(Stat.MINING_FORTUNE)))
-                .build(), e -> e.setCancelled(true));
-    }
-
-    private static String fmt(double value) {
-        return value == Math.floor(value) ? Long.toString((long) value) : Double.toString(value);
-    }
-
-    private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.CYAN_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-        for (int slot = 0; slot < 54; slot++) {
+        ItemStack pane = new ItemBuilder(Material.BLUE_STAINED_GLASS_PANE).name("§r").build();
+        for (int slot = 0; slot < 36; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 27 || col == 0 || col == 8) {
                 setItem(slot, pane);
             }
+        }
+
+        ProfileManager pm = ProfileManager.getInstance();
+        List<ProfileManager.SkyBlockProfile> profiles = pm.getProfilesForOwner(player.getUniqueId());
+        ProfileManager.SkyBlockProfile active = pm.getActiveProfile(player.getUniqueId());
+
+        for (int i = 0; i < profiles.size() && i < PROFILE_SLOTS.length; i++) {
+            ProfileManager.SkyBlockProfile profile = profiles.get(i);
+            boolean isActive = active != null && profile.profileId().equals(active.profileId());
+            int slot = PROFILE_SLOTS[i];
+            int index = i + 1;
+            setItem(slot, new ItemBuilder(Material.PAPER)
+                    .name((isActive ? "§a§l" : "§e") + profile.name())
+                    .lore("§7Mode: §f" + profile.gameMode().getDisplayName(),
+                            isActive ? "§a(Currently Active)" : "§7Click to switch")
+                    .build(), e -> {
+                e.setCancelled(true);
+                pm.switchProfile(player.getUniqueId(), index);
+                player.closeInventory();
+                player.sendMessage("§aSwitched to profile \"" + profile.name() + "\".");
+            });
+        }
+
+        if (profiles.size() < ProfileManager.MAX_PROFILES) {
+            setItem(NEW_SLOT, new ItemBuilder(Material.LIME_DYE)
+                    .name("§aCreate New Profile")
+                    .lore("§7Use /profile create <name>",
+                            "§7Slots: §e" + profiles.size() + "§7/§e" + ProfileManager.MAX_PROFILES)
+                    .build(), e -> e.setCancelled(true));
         }
     }
 }
