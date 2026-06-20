@@ -27,6 +27,13 @@ public final class SkillManager {
     /** Maximum level for the standard 60-level skills. */
     public static final int MAX_LEVEL = 60;
 
+    /**
+     * Per-level XP deltas for the standard 60-level skills (Farming, Mining, Combat,
+     * Foraging, Fishing, Enchanting, Alchemy, Taming).
+     * Entry {@code i} is the XP needed to advance from level {@code i} to level {@code i+1}.
+     */
+    public static final long[] XP_TABLE = SkyBlockXP.STANDARD.clone();
+
     private static final long[] STANDARD_CURVE = SkyBlockXP.STANDARD;
 
     private static final long[] FIFTY_LEVEL_CURVE = SkyBlockXP.FIFTY_LEVEL;
