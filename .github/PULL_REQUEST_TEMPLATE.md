@@ -18,6 +18,12 @@
 
 -
 
+## How to test
+
+<!-- Steps to verify the change: commands to run, in-game actions, expected results. -->
+
+-
+
 ## Checklist
 
 - [ ] `mvn clean install` passes locally
