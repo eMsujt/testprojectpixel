@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -48,6 +49,12 @@ public final class SkillManager {
      */
     public static final Map<String, long[]> SKILL_XP_TABLE;
 
+    /**
+     * Cumulative XP required to reach each level, keyed by lowercase skill name.
+     * Entry {@code i} is the total XP a player must accumulate to reach level {@code i+1}.
+     */
+    public static final Map<String, long[]> SKILL_CUMULATIVE_XP_TABLE;
+
     static {
         Map<String, long[]> m = new LinkedHashMap<>();
         m.put("farming",       STANDARD_CURVE.clone());
@@ -63,6 +70,21 @@ public final class SkillManager {
         m.put("runecrafting",  TWENTY_FIVE_LEVEL_CURVE.clone());
         m.put("social",        TWENTY_FIVE_LEVEL_CURVE.clone());
         SKILL_XP_TABLE = Collections.unmodifiableMap(m);
+
+        Map<String, long[]> cum = new LinkedHashMap<>();
+        cum.put("farming",       SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("mining",        SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("combat",        SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("foraging",      SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("fishing",       SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("enchanting",    SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("alchemy",       SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("taming",        SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("carpentry",     SkyBlockXP.FIFTY_LEVEL_CUMULATIVE.clone());
+        cum.put("dungeoneering", SkyBlockXP.DUNGEONEERING_CUMULATIVE.clone());
+        cum.put("runecrafting",  SkyBlockXP.TWENTY_FIVE_LEVEL_CUMULATIVE.clone());
+        cum.put("social",        SkyBlockXP.TWENTY_FIVE_LEVEL_CUMULATIVE.clone());
+        SKILL_CUMULATIVE_XP_TABLE = Collections.unmodifiableMap(cum);
     }
 
     // -------------------------------------------------------------------------
@@ -240,20 +262,37 @@ public final class SkillManager {
     // -------------------------------------------------------------------------
 
     /**
-     * Resolves a raw XP total to a level using the given skill's XP table.
+     * Resolves a raw XP total to a level using the given skill's cumulative XP table.
      * Returns 0 if the skill is unknown.
      */
     public static int levelForXp(String skill, long totalXP) {
-        long[] table = SKILL_XP_TABLE.get(skill == null ? null : skill.toLowerCase());
-        if (table == null) return 0;
-        long cumulative = 0;
-        int level = 0;
-        for (long threshold : table) {
-            cumulative += threshold;
-            if (totalXP < cumulative) break;
-            level++;
-        }
-        return level;
+        long[] cum = SKILL_CUMULATIVE_XP_TABLE.get(skill == null ? null : skill.toLowerCase());
+        if (cum == null) return 0;
+        int idx = Arrays.binarySearch(cum, totalXP);
+        // binarySearch returns -(insertionPoint)-1 when not found
+        return idx >= 0 ? idx + 1 : Math.max(0, -idx - 2);
+    }
+
+    /**
+     * Returns the total XP required to reach the given level in the given skill,
+     * or -1 if the skill is unknown or the level is out of range.
+     */
+    public static long xpForLevel(String skill, int level) {
+        if (level <= 0) return 0;
+        long[] cum = SKILL_CUMULATIVE_XP_TABLE.get(skill == null ? null : skill.toLowerCase());
+        if (cum == null || level > cum.length) return -1;
+        return cum[level - 1];
+    }
+
+    /**
+     * Returns the XP still needed for a player to advance to the next level,
+     * or 0 if already at max level.
+     */
+    public long xpToNextLevel(UUID playerId, Skill skill) {
+        int level = getLevel(playerId, skill);
+        long nextRequired = xpForLevel(skill.key(), level + 1);
+        if (nextRequired < 0) return 0;
+        return nextRequired - getXp(playerId, skill);
     }
 
     /** Returns the maximum level for the given skill, or 0 if unknown. */
