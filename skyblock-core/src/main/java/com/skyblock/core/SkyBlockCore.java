@@ -155,6 +155,7 @@ import com.skyblock.core.command.SackCommand;
 import com.skyblock.core.command.NPCShopCommand;
 import com.skyblock.core.command.ShopCommand;
 import com.skyblock.core.manager.NPCShopManager;
+import com.skyblock.core.manager.NetworthManager;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.command.WarpCommand;
@@ -219,6 +220,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private WardrobeManager wardrobeManager;
     private AccessoryBagManager accessoryBagManager;
     private SackManager sackManager;
+    private NetworthManager networthManager;
     private StorageManager storageManager;
     private com.skyblock.core.manager.StorageManager storageCoordinator;
 
@@ -450,7 +452,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.manager.JacobFarmingManager.getInstance();
         com.skyblock.core.magicfind.MagicFindManager.getInstance();
         com.skyblock.core.manager.NetherwartIslandManager.getInstance();
-        com.skyblock.core.manager.NetworthManager.getInstance();
+        networthManager = NetworthManager.getInstance();
         com.skyblock.core.notification.NotificationManager.getInstance();
         com.skyblock.core.manager.PestManager.getInstance().load(getDataFolder());
         com.skyblock.core.manager.PotionManager.getInstance();
