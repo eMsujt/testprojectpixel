@@ -38,7 +38,7 @@ public final class ScoreboardManager implements Listener {
     public void start(Plugin plugin) {
         this.plugin = plugin;
         for (Player player : Bukkit.getOnlinePlayers()) {
-            startForPlayer(player);
+            initPlayer(player);
         }
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -56,7 +56,7 @@ public final class ScoreboardManager implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        startForPlayer(event.getPlayer());
+        initPlayer(event.getPlayer());
     }
 
     @EventHandler
@@ -64,7 +64,7 @@ public final class ScoreboardManager implements Listener {
         stopForPlayer(event.getPlayer());
     }
 
-    public void startForPlayer(Player player) {
+    public void initPlayer(Player player) {
         stopForPlayer(player);
         SkyBlockScoreboard board = new SkyBlockScoreboard(player, TITLE);
         boards.put(player.getUniqueId(), board);
