@@ -464,14 +464,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
         if (getCommand("slayer") != null) {
-            getCommand("slayer").setExecutor((sender, cmd, label, args) -> {
-                if (sender instanceof org.bukkit.entity.Player p) {
-                    new SlayerMenu(this, p).open(p);
-                } else {
-                    sender.sendMessage("This command can only be used by players.");
-                }
-                return true;
-            });
+            getCommand("slayer").setExecutor(new com.skyblock.core.command.SlayerCommand(this));
         }
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);
