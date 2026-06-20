@@ -1,7 +1,9 @@
 package com.skyblock.core.command;
 
+import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.CalendarManager;
+import com.skyblock.core.manager.EnchantingManager;
 import com.skyblock.core.manager.HOTMManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.manager.MayorManager;
@@ -10,13 +12,18 @@ import com.skyblock.core.manager.RepairManager;
 import com.skyblock.core.manager.ReforgeManager;
 import com.skyblock.core.manager.Warp;
 import com.skyblock.core.manager.WarpManager;
+import com.skyblock.core.menu.AccessoryBagMenu;
+import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
 import com.skyblock.core.menu.WarpMenu;
+import com.skyblock.core.model.AccessoryRarity;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.season.SeasonManager;
+import com.skyblock.core.talisman.manager.TalismanManager;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -34,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Single compilation unit for small, independent SkyBlock commands.
@@ -913,6 +921,695 @@ public final class CompactCommands {
             player.sendMessage("  Strength: +" + reforge.getStrengthBonus());
             player.sendMessage("  Defense:  +" + reforge.getDefenseBonus());
             player.sendMessage("  Speed:    +" + reforge.getSpeedBonus());
+        }
+    }
+
+    // =========================================================================
+    // /bank
+    // =========================================================================
+
+    public static final class BankCommand extends PlayerCommand {
+
+        private final BankManager bankManager;
+
+        public BankCommand(BankManager bankManager) {
+            this.bankManager = bankManager;
+        }
+
+        @Override
+        protected void openMenu(Player p) {
+            new BankMenu(p.getUniqueId()).open(p);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            if (args.length == 0) {
+                openMenu(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "balance"  -> handleBalance(player);
+                case "deposit"  -> handleDeposit(player, args);
+                case "withdraw" -> handleWithdraw(player, args);
+                case "tier"     -> handleTier(player, args);
+                case "type"     -> handleType(player, args);
+                case "history"  -> handleHistory(player);
+                case "interest" -> handleInterest(player);
+                case "coop"     -> handleCoop(player, args);
+                default         -> sendHelp(player);
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String lower = args[0].toLowerCase();
+                return Arrays.asList("balance", "deposit", "withdraw", "tier", "type", "history", "interest", "coop").stream()
+                        .filter(s -> s.startsWith(lower))
+                        .toList();
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("coop")) {
+                String lower = args[1].toLowerCase();
+                return Arrays.asList("balance", "deposit", "withdraw").stream()
+                        .filter(s -> s.startsWith(lower))
+                        .toList();
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("type")) {
+                String lower = args[1].toLowerCase();
+                return Arrays.stream(BankManager.BankType.values())
+                        .map(t -> t.name().toLowerCase())
+                        .filter(s -> s.startsWith(lower))
+                        .toList();
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("tier")) {
+                String lower = args[1].toLowerCase();
+                return Arrays.stream(BankManager.BankTier.values())
+                        .map(t -> t.name().toLowerCase())
+                        .filter(s -> s.startsWith(lower))
+                        .toList();
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleBalance(Player player) {
+            double balance = bankManager.getBalance(player.getUniqueId());
+            player.sendMessage("Your bank balance: " + balance + " coins");
+        }
+
+        private void handleDeposit(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /bank deposit <amount>");
+                return;
+            }
+            double amount;
+            try {
+                amount = Double.parseDouble(args[1]);
+            } catch (NumberFormatException e) {
+                player.sendMessage("Invalid amount.");
+                return;
+            }
+            try {
+                bankManager.deposit(player.getUniqueId(), amount);
+                player.sendMessage("Deposited " + amount + " coins. New balance: " + bankManager.getBalance(player.getUniqueId()));
+            } catch (IllegalArgumentException e) {
+                player.sendMessage(e.getMessage());
+            }
+        }
+
+        private void handleWithdraw(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /bank withdraw <amount>");
+                return;
+            }
+            double amount;
+            try {
+                amount = Double.parseDouble(args[1]);
+            } catch (NumberFormatException e) {
+                player.sendMessage("Invalid amount.");
+                return;
+            }
+            try {
+                bankManager.withdraw(player.getUniqueId(), amount);
+                player.sendMessage("Withdrew " + amount + " coins. New balance: " + bankManager.getBalance(player.getUniqueId()));
+            } catch (IllegalArgumentException e) {
+                player.sendMessage(e.getMessage());
+            }
+        }
+
+        private void handleTier(Player player, String[] args) {
+            if (args.length < 2) {
+                BankManager.BankTier tier = bankManager.getTier(player.getUniqueId());
+                player.sendMessage("Your bank tier: " + tier.getDisplayName() + " (interest rate: " + tier.getInterestRate() + "%)");
+                return;
+            }
+            try {
+                BankManager.BankTier tier = BankManager.BankTier.valueOf(args[1].toUpperCase());
+                bankManager.setTier(player.getUniqueId(), tier);
+                player.sendMessage("Bank tier set to: " + tier.getDisplayName());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown tier. Valid tiers: STARTER, GOLD, DELUXE, SUPER_DELUXE, PREMIER, PREMIER_PLUS");
+            }
+        }
+
+        private void handleType(Player player, String[] args) {
+            if (args.length < 2) {
+                BankManager.BankType type = bankManager.getBankType(player.getUniqueId());
+                player.sendMessage("Your bank type: " + type.getDisplayName() + (type.isShared() ? " (shared with island)" : ""));
+                return;
+            }
+            try {
+                BankManager.BankType type = BankManager.BankType.valueOf(args[1].toUpperCase());
+                bankManager.setBankType(player.getUniqueId(), type);
+                player.sendMessage("Bank type set to: " + type.getDisplayName());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown type. Valid types: PERSONAL, ISLAND");
+            }
+        }
+
+        private void handleHistory(Player player) {
+            List<String> history = bankManager.getAccount(player.getUniqueId()).transactionHistory();
+            if (history.isEmpty()) {
+                player.sendMessage("No transactions recorded.");
+                return;
+            }
+            player.sendMessage("=== Transaction History ===");
+            int start = Math.max(0, history.size() - 10);
+            for (int i = start; i < history.size(); i++) {
+                player.sendMessage(history.get(i));
+            }
+        }
+
+        private void handleInterest(Player player) {
+            double interest = bankManager.applyInterest(player.getUniqueId());
+            if (interest <= 0) {
+                player.sendMessage("No interest applied (balance is zero).");
+            } else {
+                player.sendMessage(String.format("Interest applied: +%.2f coins. New balance: %.2f coins",
+                        interest, bankManager.getBalance(player.getUniqueId())));
+            }
+        }
+
+        private void handleCoop(Player player, String[] args) {
+            if (args.length < 3) {
+                player.sendMessage("Usage: /bank coop <balance|deposit|withdraw> <coopName> [amount]");
+                return;
+            }
+            String sub = args[1].toLowerCase();
+            String coopName = args[2];
+            switch (sub) {
+                case "balance" -> {
+                    double balance = bankManager.getCoopBalance(coopName);
+                    player.sendMessage("Co-op bank balance (" + coopName + "): " + balance + " coins");
+                }
+                case "deposit" -> {
+                    if (args.length < 4) {
+                        player.sendMessage("Usage: /bank coop deposit <coopName> <amount>");
+                        return;
+                    }
+                    double amount = parseAmount(player, args[3]);
+                    if (amount <= 0) return;
+                    try {
+                        bankManager.depositCoop(coopName, amount);
+                        player.sendMessage("Deposited " + amount + " coins into co-op bank (" + coopName
+                                + "). New balance: " + bankManager.getCoopBalance(coopName));
+                    } catch (IllegalArgumentException e) {
+                        player.sendMessage(e.getMessage());
+                    }
+                }
+                case "withdraw" -> {
+                    if (args.length < 4) {
+                        player.sendMessage("Usage: /bank coop withdraw <coopName> <amount>");
+                        return;
+                    }
+                    double amount = parseAmount(player, args[3]);
+                    if (amount <= 0) return;
+                    try {
+                        bankManager.withdrawCoop(coopName, amount);
+                        player.sendMessage("Withdrew " + amount + " coins from co-op bank (" + coopName
+                                + "). New balance: " + bankManager.getCoopBalance(coopName));
+                    } catch (IllegalArgumentException e) {
+                        player.sendMessage(e.getMessage());
+                    }
+                }
+                default -> player.sendMessage("Usage: /bank coop <balance|deposit|withdraw> <coopName> [amount]");
+            }
+        }
+
+        private double parseAmount(Player player, String input) {
+            try {
+                double amount = Double.parseDouble(input);
+                if (amount <= 0) {
+                    player.sendMessage("Amount must be a positive number.");
+                    return 0;
+                }
+                return amount;
+            } catch (NumberFormatException e) {
+                player.sendMessage("Invalid amount: " + input);
+                return 0;
+            }
+        }
+
+        private void sendHelp(Player player) {
+            player.sendMessage("=== Bank Commands ===");
+            player.sendMessage("/bank balance — view your balance");
+            player.sendMessage("/bank deposit <amount> — deposit coins");
+            player.sendMessage("/bank withdraw <amount> — withdraw coins");
+            player.sendMessage("/bank tier [tier] — view or set your bank tier");
+            player.sendMessage("/bank type [type] — view or set your bank type");
+            player.sendMessage("/bank history — view recent transactions");
+            player.sendMessage("/bank interest — apply interest to your balance");
+            player.sendMessage("/bank coop <balance|deposit|withdraw> <coopName> [amount] — manage co-op bank");
+        }
+    }
+
+    // =========================================================================
+    // /accessorybag
+    // =========================================================================
+
+    public static final class AccessoryBagCommand implements TabExecutor {
+
+        private static final List<String> SUBCOMMANDS = Arrays.asList("list", "add", "remove", "bonuses", "rarity", "tier");
+
+        private final AccessoryBagManager accessoryBagManager;
+
+        public AccessoryBagCommand(AccessoryBagManager accessoryBagManager) {
+            this.accessoryBagManager = accessoryBagManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (args.length == 0) {
+                new AccessoryBagMenu(player).open(player);
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "list"    -> handleList(player);
+                case "add"     -> handleAdd(player, args);
+                case "remove"  -> handleRemove(player, args);
+                case "bonuses" -> handleBonuses(player);
+                case "rarity"  -> handleRarity(player, args);
+                case "tier"    -> handleTier(player, args);
+                default        -> player.sendMessage("Unknown subcommand. Usage: /accessorybag <list|add|remove|bonuses|rarity|tier>");
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 2) {
+                String sub = args[0].toLowerCase();
+                if (sub.equals("add") || sub.equals("remove")) {
+                    String prefix = args[1].toUpperCase();
+                    return Arrays.stream(TalismanManager.TalismanType.values())
+                            .map(Enum::name)
+                            .filter(n -> n.startsWith(prefix))
+                            .sorted()
+                            .collect(Collectors.toList());
+                }
+                if (sub.equals("rarity")) {
+                    String prefix = args[1].toUpperCase();
+                    return Arrays.stream(AccessoryRarity.values())
+                            .map(Enum::name)
+                            .filter(n -> n.startsWith(prefix))
+                            .sorted()
+                            .collect(Collectors.toList());
+                }
+                if (sub.equals("tier")) {
+                    String prefix = args[1].toUpperCase();
+                    return Arrays.stream(AccessoryBagManager.AccessoryTier.values())
+                            .map(Enum::name)
+                            .filter(n -> n.startsWith(prefix))
+                            .sorted()
+                            .collect(Collectors.toList());
+                }
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleList(Player player) {
+            var contents = accessoryBagManager.getContents(player.getUniqueId());
+            int size = accessoryBagManager.getSize(player.getUniqueId());
+            player.sendMessage(String.format("=== Accessory Bag (%d/%d) ===", size, AccessoryBagManager.MAX_SLOTS));
+            if (contents.isEmpty()) {
+                player.sendMessage("Your accessory bag is empty. Use /accessorybag add <type> to add accessories.");
+                return;
+            }
+            contents.stream()
+                    .sorted((a, b) -> a.name().compareTo(b.name()))
+                    .forEach(t -> player.sendMessage(String.format("  %s — +%.1f %s", t.name(), t.bonus, t.stat.name())));
+        }
+
+        private void handleAdd(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /accessorybag add <type>");
+                return;
+            }
+            TalismanManager.TalismanType type = parseType(args[1]);
+            if (type == null) {
+                player.sendMessage("Unknown accessory type: " + args[1] + ". Use /accessorybag add for available types.");
+                return;
+            }
+            if (accessoryBagManager.hasAccessory(player.getUniqueId(), type)) {
+                player.sendMessage(type.name() + " is already in your accessory bag.");
+                return;
+            }
+            if (accessoryBagManager.getSize(player.getUniqueId()) >= AccessoryBagManager.MAX_SLOTS) {
+                player.sendMessage("Your accessory bag is full (" + AccessoryBagManager.MAX_SLOTS + "/" + AccessoryBagManager.MAX_SLOTS + ").");
+                return;
+            }
+            accessoryBagManager.addAccessory(player.getUniqueId(), type);
+            player.sendMessage(String.format("Added %s to your accessory bag (+%.1f %s).", type.name(), type.bonus, type.stat.name()));
+        }
+
+        private void handleRemove(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /accessorybag remove <type>");
+                return;
+            }
+            TalismanManager.TalismanType type = parseType(args[1]);
+            if (type == null) {
+                player.sendMessage("Unknown accessory type: " + args[1] + ". Use /accessorybag list to see your accessories.");
+                return;
+            }
+            if (accessoryBagManager.removeAccessory(player.getUniqueId(), type)) {
+                player.sendMessage("Removed " + type.name() + " from your accessory bag.");
+            } else {
+                player.sendMessage(type.name() + " is not in your accessory bag.");
+            }
+        }
+
+        private void handleBonuses(Player player) {
+            Map<Stat, Double> bonuses = accessoryBagManager.getTotalBonuses(player.getUniqueId());
+            if (bonuses.isEmpty()) {
+                player.sendMessage("Your accessory bag is empty. Add accessories with /accessorybag add <type>.");
+                return;
+            }
+            player.sendMessage("=== Accessory Bag Bonuses ===");
+            bonuses.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(e -> player.sendMessage(String.format("+%.1f %s", e.getValue(), e.getKey().name())));
+        }
+
+        private void handleRarity(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /accessorybag rarity <COMMON|UNCOMMON|RARE|EPIC|LEGENDARY|MYTHIC|SPECIAL|VERY_SPECIAL>");
+                return;
+            }
+            AccessoryRarity rarity;
+            try {
+                rarity = AccessoryRarity.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown rarity: " + args[1] + ". Valid values: COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, SPECIAL, VERY_SPECIAL.");
+                return;
+            }
+            var contents = accessoryBagManager.getContentsByRarity(player.getUniqueId(), rarity);
+            player.sendMessage(String.format("=== %s Accessories (x%.1f multiplier) ===",
+                    rarity.getDisplayName(), rarity.statMultiplier));
+            if (contents.isEmpty()) {
+                player.sendMessage("You have no " + rarity.getDisplayName() + " accessories in your bag.");
+                return;
+            }
+            contents.stream()
+                    .sorted((a, b) -> a.name().compareTo(b.name()))
+                    .forEach(t -> player.sendMessage(String.format("  %s — +%.1f %s", t.name(), t.bonus, t.stat.name())));
+        }
+
+        private void handleTier(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /accessorybag tier <COMMON|UNCOMMON|RARE|EPIC|LEGENDARY|MYTHIC|SPECIAL>");
+                return;
+            }
+            AccessoryBagManager.AccessoryTier tier;
+            try {
+                tier = AccessoryBagManager.AccessoryTier.valueOf(args[1].toUpperCase());
+            } catch (IllegalArgumentException e) {
+                player.sendMessage("Unknown tier: " + args[1] + ". Valid values: COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, SPECIAL.");
+                return;
+            }
+            int magicPower = accessoryBagManager.getMagicPower(player.getUniqueId(), tier);
+            player.sendMessage(String.format("=== %s Tier (%d magic power each) ===",
+                    tier.getDisplayName(), tier.magicPower));
+            player.sendMessage(String.format("Total magic power from %s accessories: %d",
+                    tier.getDisplayName(), magicPower));
+        }
+
+        private static TalismanManager.TalismanType parseType(String name) {
+            try {
+                return TalismanManager.TalismanType.valueOf(name.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
+
+    // =========================================================================
+    // /enchanting
+    // =========================================================================
+
+    public static final class EnchantingCommand implements TabExecutor {
+
+        private static final List<String> SUBCOMMANDS =
+                Arrays.asList("list", "info", "apply", "remove", "view", "type", "book", "history");
+
+        private static final List<String> BOOK_SUBCOMMANDS = Arrays.asList("add", "list", "apply");
+
+        private final EnchantingManager enchantingManager;
+
+        public EnchantingCommand(EnchantingManager enchantingManager) {
+            this.enchantingManager = enchantingManager;
+        }
+
+        @Override
+        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
+            if (args.length == 0) {
+                player.sendMessage("Usage: /enchanting <list|info|apply|remove|view|type>");
+                return true;
+            }
+            switch (args[0].toLowerCase()) {
+                case "list"    -> handleList(player);
+                case "info"    -> handleInfo(player, args);
+                case "apply"   -> handleApply(player, args);
+                case "remove"  -> handleRemove(player, args);
+                case "view"    -> handleView(player);
+                case "type"    -> handleType(player);
+                case "book"    -> handleBook(player, args);
+                case "history" -> handleHistory(player);
+                default        -> player.sendMessage("Unknown subcommand. Usage: /enchanting <list|info|apply|remove|view|type|book|history>");
+            }
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (args.length == 1) {
+                String prefix = args[0].toLowerCase();
+                return SUBCOMMANDS.stream()
+                        .filter(s -> s.startsWith(prefix))
+                        .collect(Collectors.toList());
+            }
+            if (args.length == 2) {
+                String sub = args[0].toLowerCase();
+                if (sub.equals("info") || sub.equals("apply") || sub.equals("remove")) {
+                    String prefix = args[1].toLowerCase();
+                    return Arrays.stream(EnchantingManager.SkyBlockEnchantment.values())
+                            .map(e -> e.name().toLowerCase())
+                            .filter(n -> n.startsWith(prefix))
+                            .sorted()
+                            .collect(Collectors.toList());
+                }
+                if (sub.equals("book")) {
+                    String prefix = args[1].toLowerCase();
+                    return BOOK_SUBCOMMANDS.stream()
+                            .filter(s -> s.startsWith(prefix))
+                            .collect(Collectors.toList());
+                }
+            }
+            if (args.length == 3 && args[0].equalsIgnoreCase("book") && args[1].equalsIgnoreCase("add")) {
+                String prefix = args[2].toLowerCase();
+                return Arrays.stream(EnchantingManager.SkyBlockEnchantment.values())
+                        .map(e -> e.name().toLowerCase())
+                        .filter(n -> n.startsWith(prefix))
+                        .sorted()
+                        .collect(Collectors.toList());
+            }
+            return Collections.emptyList();
+        }
+
+        private void handleList(Player player) {
+            player.sendMessage("=== SkyBlock Enchant Types ===");
+            Arrays.stream(EnchantingManager.SkyBlockEnchantment.values())
+                    .forEach(e -> player.sendMessage(String.format(
+                            "%s (max level: %d)",
+                            e.getDisplayName(),
+                            e.getMaxLevel())));
+        }
+
+        private void handleInfo(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /enchanting info <enchantment>");
+                return;
+            }
+            EnchantingManager.SkyBlockEnchantment type = parseType(args[1]);
+            if (type == null) {
+                player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchanting list to see available enchantments.");
+                return;
+            }
+            int currentLevel = enchantingManager.getLevel(player.getUniqueId(), type);
+            int maxLevel = type.getMaxLevel();
+            player.sendMessage(String.format("%s — current level: %d / max level: %d",
+                    type.getDisplayName(), currentLevel, maxLevel));
+        }
+
+        private void handleApply(Player player, String[] args) {
+            if (args.length < 3) {
+                player.sendMessage("Usage: /enchanting apply <enchantment> <level>");
+                return;
+            }
+            EnchantingManager.SkyBlockEnchantment type = parseType(args[1]);
+            if (type == null) {
+                player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchanting list to see available enchantments.");
+                return;
+            }
+            int level;
+            try {
+                level = Integer.parseInt(args[2]);
+            } catch (NumberFormatException e) {
+                player.sendMessage("Level must be a number.");
+                return;
+            }
+            try {
+                enchantingManager.setEnchantment(player.getUniqueId(), type, level);
+                player.sendMessage("Applied " + type.getDisplayName() + " level " + level + ".");
+            } catch (IllegalArgumentException e) {
+                player.sendMessage(e.getMessage());
+            }
+        }
+
+        private void handleRemove(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /enchanting remove <enchantment>");
+                return;
+            }
+            EnchantingManager.SkyBlockEnchantment type = parseType(args[1]);
+            if (type == null) {
+                player.sendMessage("Unknown enchantment: " + args[1] + ". Use /enchanting list to see available enchantments.");
+                return;
+            }
+            boolean removed = enchantingManager.removeEnchantment(player.getUniqueId(), type);
+            if (removed) {
+                player.sendMessage("Removed " + type.getDisplayName() + ".");
+            } else {
+                player.sendMessage("You do not have " + type.getDisplayName() + " applied.");
+            }
+        }
+
+        private void handleView(Player player) {
+            Map<EnchantingManager.SkyBlockEnchantment, Integer> enchantments =
+                    enchantingManager.getEnchantments(player.getUniqueId());
+            if (enchantments.isEmpty()) {
+                player.sendMessage("You have no active enchantments.");
+                return;
+            }
+            player.sendMessage("=== Your Enchantments ===");
+            enchantments.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(e -> player.sendMessage(
+                            e.getKey().getDisplayName() + " " + e.getValue()));
+        }
+
+        private void handleType(Player player) {
+            player.sendMessage("=== SkyBlock Enchant Names ===");
+            Arrays.stream(EnchantingManager.SkyBlockEnchant.values())
+                    .forEach(e -> player.sendMessage(e.name()));
+        }
+
+        private void handleBook(Player player, String[] args) {
+            if (args.length < 2) {
+                player.sendMessage("Usage: /enchanting book <add|list|apply>");
+                return;
+            }
+            switch (args[1].toLowerCase()) {
+                case "add" -> {
+                    if (args.length < 4) {
+                        player.sendMessage("Usage: /enchanting book add <enchantment> <level> [name]");
+                        return;
+                    }
+                    EnchantingManager.SkyBlockEnchantment type = parseType(args[2]);
+                    if (type == null) {
+                        player.sendMessage("Unknown enchantment: " + args[2] + ". Use /enchanting list to see available enchantments.");
+                        return;
+                    }
+                    int level;
+                    try {
+                        level = Integer.parseInt(args[3]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage("Level must be a number.");
+                        return;
+                    }
+                    String bookName = args.length >= 5
+                            ? String.join(" ", Arrays.copyOfRange(args, 4, args.length))
+                            : type.getDisplayName() + " Book " + SkyblockUtils.toRoman(level);
+                    try {
+                        EnchantingManager.EnchantmentBook book =
+                                new EnchantingManager.EnchantmentBook(bookName, type, level);
+                        enchantingManager.addBook(player.getUniqueId(), book);
+                        player.sendMessage("Added book \"" + bookName + "\" to your inventory.");
+                    } catch (IllegalArgumentException e) {
+                        player.sendMessage(e.getMessage());
+                    }
+                }
+                case "list" -> {
+                    List<EnchantingManager.EnchantmentBook> books =
+                            enchantingManager.getBooks(player.getUniqueId());
+                    if (books.isEmpty()) {
+                        player.sendMessage("You have no enchantment books.");
+                        return;
+                    }
+                    player.sendMessage("=== Your Enchantment Books ===");
+                    IntStream.range(0, books.size()).forEach(i -> {
+                        EnchantingManager.EnchantmentBook b = books.get(i);
+                        player.sendMessage(String.format("%d. %s (%s %d)",
+                                i + 1, b.name(), b.enchantment().getDisplayName(), b.level()));
+                    });
+                }
+                case "apply" -> {
+                    if (args.length < 3) {
+                        player.sendMessage("Usage: /enchanting book apply <index>");
+                        return;
+                    }
+                    int index;
+                    try {
+                        index = Integer.parseInt(args[2]) - 1;
+                    } catch (NumberFormatException e) {
+                        player.sendMessage("Index must be a number.");
+                        return;
+                    }
+                    try {
+                        EnchantingManager.EnchantmentBook book =
+                                enchantingManager.applyBook(player.getUniqueId(), index);
+                        player.sendMessage("Applied \"" + book.name() + "\" — "
+                                + book.enchantment().getDisplayName() + " " + book.level() + " is now active.");
+                    } catch (IndexOutOfBoundsException e) {
+                        player.sendMessage("No book at that index. Use /enchanting book list to see your books.");
+                    }
+                }
+                default -> player.sendMessage("Usage: /enchanting book <add|list|apply>");
+            }
+        }
+
+        private void handleHistory(Player player) {
+            List<String> history = enchantingManager.getEnchantingHistory(player.getUniqueId());
+            if (history.isEmpty()) {
+                player.sendMessage("You have no enchanting history.");
+                return;
+            }
+            player.sendMessage("=== Your Enchanting History ===");
+            for (int i = 0; i < history.size(); i++) {
+                player.sendMessage((i + 1) + ". " + history.get(i));
+            }
+        }
+
+        private static EnchantingManager.SkyBlockEnchantment parseType(String name) {
+            try {
+                return EnchantingManager.SkyBlockEnchantment.valueOf(name.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
         }
     }
 
