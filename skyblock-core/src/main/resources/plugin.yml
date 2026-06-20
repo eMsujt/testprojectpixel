@@ -31,7 +31,7 @@ commands:
     usage: /alchemy [list|brew|status|collect|cancel]
   auctionhouse:
     description: Manage Auction House listings (BIN and bid-based).
-    usage: /auctionhouse <list|create|bid|view|cancel|mine>
+    usage: /auctionhouse <list|create|bid|view|cancel|mine|history>
     aliases: [ah, auction]
   backpack:
     description: Create and manage personal item backpacks.
