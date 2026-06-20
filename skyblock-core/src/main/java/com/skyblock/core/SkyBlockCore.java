@@ -46,7 +46,7 @@ import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.MinionMenu;
 import com.skyblock.core.menu.ProfileMenu;
 import com.skyblock.core.menu.ForgeMenu;
-import com.skyblock.core.menu.SkyBlockMenu;
+import com.skyblock.core.command.SkyBlockCommand;
 import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.StatsMenu;
 import com.skyblock.core.menu.CrimsonIsleMenu;
@@ -945,10 +945,8 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
         }
-        MenuCommand skyBlockCommand = new MenuCommand(p -> new SkyBlockMenu(p).open(p));
         if (getCommand("skyblock") != null) {
-            getCommand("skyblock").setExecutor(skyBlockCommand);
-            getCommand("skyblock").setTabCompleter(skyBlockCommand);
+            getCommand("skyblock").setExecutor(new SkyBlockCommand());
         }
         TitleCommand titleCommand = new TitleCommand(titleManager);
         if (getCommand("title") != null) {
