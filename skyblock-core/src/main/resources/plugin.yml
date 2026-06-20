@@ -150,6 +150,7 @@ commands:
   enchanting:
     description: View and apply SkyBlock enchantments.
     usage: /enchanting <list|info|apply|remove|view>
+    permission: skyblock.command.enchanting
   essence:
     description: View and manage your SkyBlock essence balances.
     usage: /essence <balance|add|remove> [type] [amount]
@@ -170,10 +171,11 @@ commands:
   fishing:
     description: View fishing stats and trophy fish catches.
     usage: /fishing [trophy [<fish>|reset]]
+    permission: skyblock.command.fishing
   foraging:
     description: View foraging level, XP, and log chop counts.
     usage: /foraging [info <log>|reset]
-    permission: skyblock.foraging
+    permission: skyblock.command.foraging
   foragingmenu:
     description: Open the Foraging GUI.
     usage: /foragingmenu
@@ -645,4 +647,13 @@ permissions:
     default: true
   skyblock.command.purse:
     description: Use the /purse command to view your coin purse balance.
+    default: true
+  skyblock.command.foraging:
+    description: Use the /foraging command to view foraging level, XP, and log chop counts.
+    default: true
+  skyblock.command.fishing:
+    description: Use the /fishing command to view fishing stats and trophy fish catches.
+    default: true
+  skyblock.command.enchanting:
+    description: Use the /enchanting command to view and apply SkyBlock enchantments.
     default: true
