@@ -134,7 +134,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new ProfileMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
+            new ProfileMenu(player).open(player);
         }
 
         @Override
