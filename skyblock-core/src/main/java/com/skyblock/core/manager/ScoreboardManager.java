@@ -19,7 +19,7 @@ public final class ScoreboardManager {
     private static final ScoreboardManager INSTANCE = new ScoreboardManager();
 
     private static final long UPDATE_INTERVAL_TICKS = 20L;
-    private static final String TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "SKYBLOCK";
+    private static final String TITLE = ChatColor.YELLOW + "" + ChatColor.BOLD + "SKYBLOCK";
 
     private final Map<UUID, SkyBlockScoreboard> boards = new HashMap<>();
     private final Map<UUID, BukkitTask> tasks = new HashMap<>();
