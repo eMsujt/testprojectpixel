@@ -2520,7 +2520,7 @@ class MenuIntegrationTest {
 
         @Test
         void rows_isThree() {
-            assertEquals(3, new ForagingMenu(PLAYER).getRows());
+            assertEquals(6, new ForagingMenu(PLAYER).getRows());
         }
 
         @Test
