@@ -11,7 +11,7 @@ import com.skyblock.core.auction.manager.AuctionHouseManager;
 import com.skyblock.core.kuudra.KuudraCommand;
 import com.skyblock.core.bank.command.BankCommand;
 import com.skyblock.core.manager.BankManager;
-import com.skyblock.core.bazaar.command.BazaarCommand;
+import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.CalendarCommand;
 import com.skyblock.core.manager.CalendarManager;
