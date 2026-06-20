@@ -33,7 +33,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(12, new ItemBuilder(Material.CAT_SPAWN_EGG).displayName("§aPets")
                 .lore("§7Manage your pets.").build(),
-                e -> { e.setCancelled(true); new PetMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new PetMenu(player).open(player); });
 
         setItem(13, new ItemBuilder(Material.PISTON).displayName("§aMinions")
                 .lore("§7Manage your minions.").build(),
@@ -53,7 +53,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(19, new ItemBuilder(Material.GOLD_NUGGET).displayName("§6Auction House")
                 .lore("§7Buy and sell items.").build(),
-                e -> { e.setCancelled(true); new AuctionHouseMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new AuctionHouseMenu(player).open(player); });
 
         setItem(20, new ItemBuilder(Material.GOLD_INGOT).displayName("§6Bazaar")
                 .lore("§7Trade commodities instantly.").build(),

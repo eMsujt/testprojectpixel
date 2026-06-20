@@ -1,6 +1,5 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionListing;
 import com.skyblock.core.util.ItemBuilder;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
  * slots fill the middle four rows (10–43); a yellow-pane footer spans the
  * bottom row (45–53) with a prev-page button at slot 45 and next-page at 53.
  */
-public final class AuctionHouseMenu extends AbstractMenu {
+public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
 
     static final int[] LISTING_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -55,12 +54,12 @@ public final class AuctionHouseMenu extends AbstractMenu {
 
     private final int page;
 
-    public AuctionHouseMenu(JavaPlugin plugin, Player player) {
-        this(plugin, player, 0);
+    public AuctionHouseMenu(Player player) {
+        this(player, 0);
     }
 
-    public AuctionHouseMenu(JavaPlugin plugin, Player player, int page) {
-        super(plugin, player, "§6§lAuction House", 54);
+    public AuctionHouseMenu(Player player, int page) {
+        super(player, "§6§lAuction House", 54);
         this.page = Math.max(0, page);
     }
 
@@ -117,7 +116,7 @@ public final class AuctionHouseMenu extends AbstractMenu {
                     .build(),
                     event -> {
                         event.setCancelled(true);
-                        new AuctionHouseMenu(plugin, player, page - 1).open(player);
+                        new AuctionHouseMenu(player, page - 1).open(player);
                     });
         }
 
@@ -128,7 +127,7 @@ public final class AuctionHouseMenu extends AbstractMenu {
                     .build(),
                     event -> {
                         event.setCancelled(true);
-                        new AuctionHouseMenu(plugin, player, page + 1).open(player);
+                        new AuctionHouseMenu(player, page + 1).open(player);
                     });
         }
     }

@@ -1,6 +1,5 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
@@ -12,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.EnumMap;
 import java.util.Map;
 
-public final class PetMenu extends AbstractMenu {
+public final class PetMenu extends AbstractSkyBlockMenu {
 
     public static final Map<Rarity, Material> RARITY_WOOL;
 
@@ -28,8 +27,8 @@ public final class PetMenu extends AbstractMenu {
         RARITY_WOOL.put(Rarity.SPECIAL,   Material.RED_WOOL);
     }
 
-    public PetMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§dPets", 54);
+    public PetMenu(Player player) {
+        super(player, "§dPets", 54);
     }
 
     @Override

@@ -86,7 +86,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new PetMenu(com.skyblock.core.SkyBlockCore.getInstance(), (Player) e.getWhoClicked()).open((Player) e.getWhoClicked());
+                    new PetMenu((Player) e.getWhoClicked()).open((Player) e.getWhoClicked());
                 });
 
         setItem(15, new ItemBuilder(Material.FISHING_ROD)
