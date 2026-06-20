@@ -150,7 +150,9 @@ import com.skyblock.core.manager.StatCommand;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.command.ProfileCommand;
 import com.skyblock.core.command.SackCommand;
+import com.skyblock.core.command.ShopCommand;
 import com.skyblock.core.manager.SackManager;
+import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.WarpCommand;
 import com.skyblock.core.manager.WarpManager;
@@ -290,6 +292,7 @@ public final class SkyBlockCore extends JavaPlugin {
         calendarManager = CalendarManager.getInstance();
         essenceManager = EssenceManager.getInstance();
         essenceShopManager = EssenceShopManager.getInstance();
+        ShopManager.getInstance().load(getDataFolder());
         dungeonManager = DungeonManager.getInstance();
         dungeonManager.load(getDataFolder());
         dungeonClassManager = DungeonClassManager.getInstance();
@@ -472,6 +475,11 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("essenceshop") != null) {
             getCommand("essenceshop").setExecutor(essenceShopCommand);
             getCommand("essenceshop").setTabCompleter(essenceShopCommand);
+        }
+        ShopCommand shopCommand = new ShopCommand(ShopManager.getInstance());
+        if (getCommand("shop") != null) {
+            getCommand("shop").setExecutor(shopCommand);
+            getCommand("shop").setTabCompleter(shopCommand);
         }
         DungeonCommand dungeonCommand = new DungeonCommand(dungeonManager);
         getCommand("dungeon").setExecutor(dungeonCommand);
