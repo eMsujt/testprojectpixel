@@ -34,7 +34,28 @@ public final class ForagingManager {
         CHERRY
     }
 
-    /** Foraging zones in The Park and other SkyBlock foraging areas. */
+    /** Foraging areas in The Park and other SkyBlock foraging zones. */
+    public enum ForagingArea {
+        DARK_THICKET("Dark Thicket", TreeType.DARK_OAK),
+        SPRUCE_WOODS("Spruce Woods", TreeType.SPRUCE),
+        BIRCH_PARK("Birch Park", TreeType.BIRCH),
+        SAVANNA_WOODLAND("Savanna Woodland", TreeType.ACACIA),
+        JUNGLE_ISLAND("Jungle Island", TreeType.JUNGLE);
+
+        private final String displayName;
+        private final TreeType primaryTree;
+
+        ForagingArea(String displayName, TreeType primaryTree) {
+            this.displayName = displayName;
+            this.primaryTree = primaryTree;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public TreeType getPrimaryTree() { return primaryTree; }
+    }
+
+    /** @deprecated Use {@link ForagingArea} instead. */
+    @Deprecated
     public enum ForagingZone {
         DARK_THICKET("Dark Thicket", TreeType.DARK_OAK),
         BIRCH_PARK("Birch Park", TreeType.BIRCH),
@@ -166,6 +187,8 @@ public final class ForagingManager {
     private final Map<UUID, Double> foragingXp = new HashMap<>();
     /** Per-player foraging level cache. */
     private final Map<UUID, Integer> foragingLevel = new HashMap<>();
+    /** Per-player current foraging area. */
+    private final Map<UUID, ForagingArea> playerAreas = new HashMap<>();
 
     private ForagingManager() {}
 
@@ -291,6 +314,39 @@ public final class ForagingManager {
     }
 
     /**
+     * Returns the foraging area the player is currently in, or {@code null} if none.
+     *
+     * @param playerId the player to look up
+     * @return the player's current area, or {@code null}
+     */
+    public ForagingArea getArea(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        return playerAreas.get(playerId);
+    }
+
+    /**
+     * Sets the player's current foraging area.
+     *
+     * @param playerId the player to update
+     * @param area     the area the player is entering, must not be null
+     */
+    public void setArea(UUID playerId, ForagingArea area) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(area, "area");
+        playerAreas.put(playerId, area);
+    }
+
+    /**
+     * Removes the player's current area assignment (e.g. on quit or hub travel).
+     *
+     * @param playerId the player to clear
+     */
+    public void clearArea(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        playerAreas.remove(playerId);
+    }
+
+    /**
      * Resets the player's foraging progression back to zero.
      *
      * @param playerId the player's UUID
@@ -300,6 +356,7 @@ public final class ForagingManager {
         chops.remove(playerId);
         foragingXp.remove(playerId);
         foragingLevel.remove(playerId);
+        playerAreas.remove(playerId);
     }
 
     // ---------------------------------------------------------------------------
