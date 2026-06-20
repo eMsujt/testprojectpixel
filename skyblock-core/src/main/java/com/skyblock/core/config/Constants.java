@@ -62,7 +62,7 @@ public final class Constants {
     /** Runecrafting XP curve (caps at level 25). */
     public static final long[] SKILL_TWENTY_FIVE_XP_CURVE = {
             50, 100, 125, 175, 225, 300, 400, 500, 625, 750,
-            900, 1050, 1200, 1500, 2000, 2500, 3000, 3500, 4000, 4500,
+            900, 1000, 1200, 1500, 2000, 2500, 3000, 3500, 4000, 4500,
             5000, 5500, 6000, 6500, 7000
     };
 
