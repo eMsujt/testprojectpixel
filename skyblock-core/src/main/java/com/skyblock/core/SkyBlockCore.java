@@ -319,6 +319,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return islandManager;
     }
 
+    public AccessoryBagManager getAccessoryBagManager() {
+        return accessoryBagManager;
+    }
+
     public ForgeManager getForgeManager() {
         return forgeManager;
     }
