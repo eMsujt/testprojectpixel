@@ -328,11 +328,13 @@ a copy. See [`docs/FEATURES.md`](docs/FEATURES.md) for the full per-manager feat
 | `/minion` | `/minions` | Manage your placed minions, fuel, and upgrades |
 | `/minionsmenu` | — | Open the Minions GUI |
 | `/museum` | — | Donate items and view your museum collection progress |
+| `/networth` | `/nw` | Show your liquid net worth (purse + bank balance) |
 | `/npc` | — | Interact with SkyBlock NPCs and their shops |
 | `/npcshop` | — | Browse and buy from static NPC shops via GUI |
 | `/party` | — | Manage your party invites and membership |
 | `/pet` | `/pets` | Manage your pets and active-pet perks |
 | `/profile` | — | View your SkyBlock profile |
+| `/purse` | — | View your current coin purse balance |
 | `/quest` | — | Manage your SkyBlock quests |
 | `/reforge` | — | View and apply item reforges |
 | `/repair` | — | Repair items in hand or entire inventory (`hand`/`all`) |
