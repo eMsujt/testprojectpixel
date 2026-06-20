@@ -323,6 +323,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return bazaarManager;
     }
 
+    public EssenceManager getEssenceManager() {
+        return essenceManager;
+    }
+
     public FairySoulManager getFairySoulManager() {
         return fairySoulManager;
     }
