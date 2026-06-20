@@ -1168,7 +1168,7 @@ public final class CompactCommands {
                 return true;
             }
             if (args.length == 0) {
-                new WarpMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
+                new WarpMenu(player).open(player);
                 return true;
             }
             switch (args[0].toLowerCase()) {
