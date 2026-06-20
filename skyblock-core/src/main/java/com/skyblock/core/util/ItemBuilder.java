@@ -1,6 +1,8 @@
 package com.skyblock.core.util;
 
+import com.skyblock.core.model.Rarity;
 import com.skyblock.core.model.Stat;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /** Fluent builder for constructing {@link ItemStack}s used in GUI menus and elsewhere. */
@@ -110,6 +113,20 @@ public class ItemBuilder {
         String sign = value < 0 ? "" : "+";
         return addLore(ChatColor.GRAY + stat.getDisplayName() + ": " + color + sign + amount
                 + " " + stat.getSymbol());
+    }
+
+    /**
+     * Appends a Hypixel-style bold rarity footer line to the lore, e.g.
+     * {@code §5§lEPIC}, colored to match the rarity tier.
+     */
+    public ItemBuilder rarity(Rarity rarity) {
+        if (rarity == null) {
+            return this;
+        }
+        NamedTextColor named = NamedTextColor.nearestTo(rarity.getColor());
+        ChatColor color = ChatColor.valueOf(named.toString().toUpperCase(Locale.ROOT));
+        return addLore(color.toString() + ChatColor.BOLD
+                + rarity.getDisplayName().toUpperCase(Locale.ROOT));
     }
 
     /** Sets the stack size. */
