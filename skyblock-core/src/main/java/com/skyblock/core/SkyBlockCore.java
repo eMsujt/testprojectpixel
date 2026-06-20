@@ -155,6 +155,7 @@ import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.command.SkyBlockMenuCommand;
 import com.skyblock.core.command.WarpCommand;
+import com.skyblock.core.command.HubCommand;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.manager.AlchemyManager;
@@ -740,6 +741,8 @@ public final class SkyBlockCore extends JavaPlugin {
         WarpCommand warpCommand = new WarpCommand(warpManager);
         getCommand("warp").setExecutor(warpCommand);
         getCommand("warp").setTabCompleter(warpCommand);
+        HubCommand hubCommand = new HubCommand();
+        getCommand("hub").setExecutor(hubCommand);
         AchievementCommand achievementCommand = new AchievementCommand(achievementManager);
         getCommand("achievement").setExecutor(achievementCommand);
         getCommand("achievement").setTabCompleter(achievementCommand);

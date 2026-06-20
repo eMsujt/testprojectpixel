@@ -378,7 +378,12 @@ commands:
     description: Teleport to a named warp point.
     usage: /warp [name|set <name>|delete <name>]
     permission: skyblock.warp
-    aliases: [hub, warps]
+    aliases: [warps]
+  hub:
+    description: Teleport to the configured hub.
+    usage: /hub
+    permission: skyblock.warp
+    aliases: [spawn]
 
 permissions:
   skyblock.use:
