@@ -1,9 +1,13 @@
 package com.skyblock.core.listener;
 
+import com.skyblock.core.manager.BestiaryManager;
+import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.ScoreboardManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.StatsManager;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
+import com.skyblock.core.stats.PlayerStatsCalculator;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Ageable;
@@ -17,6 +21,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumSet;
@@ -32,6 +38,7 @@ public final class CompactListeners implements Listener {
     private static final long CARPENTRY_XP_PLANK =  1L;
     private static final long FARMING_CROP_XP    =  3L;
     private static final long FORAGING_LOG_XP    =  6L;
+    private static final long PET_XP_PER_KILL    =  5L;
 
     // All farmable materials; Ageable ones require max age to award XP.
     private static final Set<Material> CROP_MATERIALS = EnumSet.of(
@@ -70,6 +77,7 @@ public final class CompactListeners implements Listener {
 
     private final SkillManager skillManager = SkillManager.getInstance();
     private final StatsManager statsManager = StatsManager.getInstance();
+    private final PetManager petManager = PetManager.getInstance();
 
     private CompactListeners() {}
 
@@ -137,6 +145,37 @@ public final class CompactListeners implements Listener {
         }
         if (plankCount <= 0) return;
         grantXP(player, Skill.CARPENTRY, CARPENTRY_XP_PLANK * plankCount);
+    }
+
+    @EventHandler
+    public void onEntityDeathBestiary(EntityDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) return;
+        String mobType = event.getEntity().getType().name().toLowerCase();
+        BestiaryManager.getInstance().recordKill(killer.getUniqueId(), mobType);
+    }
+
+    @EventHandler
+    public void onEntityDeathPet(EntityDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer == null) return;
+        UUID uuid = killer.getUniqueId();
+        if (petManager.getActivePet(uuid) == null) return;
+        petManager.addPetXp(uuid, PET_XP_PER_KILL);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        PlayerStatsCalculator.getInstance().calculate(player.getUniqueId());
+        ScoreboardManager.getInstance().initPlayer(player);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        PlayerStatsCalculator.getInstance().evict(player.getUniqueId());
+        ScoreboardManager.getInstance().stopForPlayer(player);
     }
 
     private void grantXP(Player player, Skill skill, long amount) {
