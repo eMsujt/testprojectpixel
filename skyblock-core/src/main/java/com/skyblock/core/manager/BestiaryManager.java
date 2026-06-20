@@ -217,6 +217,18 @@ public final class BestiaryManager {
     }
 
     /**
+     * Increments the player's kill count for {@code mobType}, advancing the
+     * milestone tier as cumulative kills cross the {@link #getTier} thresholds.
+     * Alias for {@link #recordKill(UUID, String)}.
+     *
+     * @param player  the killer's UUID
+     * @param mobType the mob type identifier (e.g. "zombie", "skeleton")
+     */
+    public void addKill(UUID player, String mobType) {
+        recordKill(player, mobType);
+    }
+
+    /**
      * Returns the number of kills the player has for the given mob type.
      *
      * @param playerId the player's UUID
