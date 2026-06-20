@@ -28,13 +28,13 @@ public final class ReforgeMenu extends Menu {
     }
 
     public ReforgeMenu() {
-        super("§6Reforge Item", 3);
+        super("§6Reforge Item", 6);
     }
 
     @Override
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 27; slot++) {
+        for (int slot = 0; slot < 54; slot++) {
             if (slot != ITEM_SLOT && slot != REFORGE_SLOT && slot != RESULT_SLOT) {
                 setItem(slot, pane);
             }
