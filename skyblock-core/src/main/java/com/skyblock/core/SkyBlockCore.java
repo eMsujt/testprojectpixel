@@ -24,6 +24,7 @@ import com.skyblock.core.command.DungeonCommand;
 import com.skyblock.core.dungeon.command.DungeonClassCommand;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonClassManager;
+import com.skyblock.core.manager.PlayerStatManager;
 import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.manager.EnchantingManager;
 import com.skyblock.core.fishing.command.FishingCommand;
@@ -231,6 +232,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private CommissionManager commissionManager;
     private ChocolateFactoryManager chocolateFactoryManager;
     private EnchantingManager enchantingManager;
+    private PlayerStatManager playerStatManager;
     private FishingManager fishingManager;
     private GuildManager guildManager;
     private PartyManager partyManager;
@@ -374,6 +376,7 @@ public final class SkyBlockCore extends JavaPlugin {
         chocolateFactoryManager = ChocolateFactoryManager.getInstance();
         enchantingManager = EnchantingManager.getInstance();
         enchantingManager.load(getDataFolder());
+        playerStatManager = PlayerStatManager.getInstance();
         fishingManager = FishingManager.getInstance();
         fishingManager.load(getDataFolder());
         guildManager = GuildManager.getInstance();
