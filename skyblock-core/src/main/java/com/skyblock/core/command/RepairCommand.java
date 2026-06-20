@@ -1,4 +1,4 @@
-package com.skyblock.core.repair;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.RepairManager;
 import org.bukkit.command.Command;
@@ -11,16 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Handles the {@code /repair} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /repair hand} — repair the item in the player's main hand</li>
- *   <li>{@code /repair all}  — repair every repairable item in the player's inventory</li>
- * </ul>
- * </p>
- */
 public final class RepairCommand implements TabExecutor {
 
     private final RepairManager repairManager;
