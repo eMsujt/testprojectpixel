@@ -13,6 +13,7 @@ import com.skyblock.core.menu.AuctionMenu;
 import com.skyblock.core.command.KuudraCommand;
 import com.skyblock.core.command.BankCommand;
 import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.manager.PurseManager;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.command.CompactCommands;
@@ -194,6 +195,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private CollectionManager collectionManager;
 
     // economy
+    private PurseManager purseManager;
     private BankManager bankManager;
     private AuctionHouseManager auctionHouseManager;
     private AuctionManager auctionManager;
@@ -305,6 +307,10 @@ public final class SkyBlockCore extends JavaPlugin {
         return bankManager;
     }
 
+    public PurseManager getPurseManager() {
+        return purseManager;
+    }
+
     public MayorManager getMayorManager() {
         return mayorManager;
     }
@@ -405,6 +411,7 @@ public final class SkyBlockCore extends JavaPlugin {
         collectionManager = CollectionManager.getInstance();
         collectionManager.load(getDataFolder());
         // economy
+        purseManager = PurseManager.getInstance();
         bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
         auctionHouseManager = AuctionHouseManager.getInstance();
