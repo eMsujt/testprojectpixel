@@ -181,6 +181,13 @@ class MenuIntegrationTest {
     class FairySoulMenuTests {
 
         private final UUID PLAYER = UUID.randomUUID();
+        private Player mockPlayer;
+
+        @BeforeEach
+        void setup() {
+            mockPlayer = mock(Player.class);
+            when(mockPlayer.getUniqueId()).thenReturn(PLAYER);
+        }
 
         @AfterEach
         void cleanup() {
@@ -189,32 +196,32 @@ class MenuIntegrationTest {
 
         @Test
         void title_isFairySouls() {
-            assertEquals("§dFairy Souls", new FairySoulMenu(PLAYER).getTitle());
+            assertTrue(new FairySoulMenu(mockPlayer).getTitle().startsWith("§dFairy Souls §7("));
         }
 
         @Test
-        void rows_isSix() {
-            assertEquals(6, new FairySoulMenu(PLAYER).getRows());
+        void rows_isFive() {
+            assertEquals(5, new FairySoulMenu(mockPlayer).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new FairySoulMenu(PLAYER));
+            assertDoesNotThrow(() -> new FairySoulMenu(mockPlayer));
         }
 
         @Test
-        void islandSlots_count_isEight() {
-            assertEquals(8, FairySoulMenu.ISLAND_SLOTS.length);
+        void islandSlots_count_isThirteen() {
+            assertEquals(13, FairySoulMenu.ISLAND_SLOTS.length);
         }
 
         @Test
-        void islandSlots_firstIsZero() {
-            assertEquals(0, FairySoulMenu.ISLAND_SLOTS[0]);
+        void islandSlots_firstIsNineteen() {
+            assertEquals(19, FairySoulMenu.ISLAND_SLOTS[0]);
         }
 
         @Test
-        void islandSlots_lastIsSeven() {
-            assertEquals(7, FairySoulMenu.ISLAND_SLOTS[FairySoulMenu.ISLAND_SLOTS.length - 1]);
+        void islandSlots_lastIsThirtyThree() {
+            assertEquals(33, FairySoulMenu.ISLAND_SLOTS[FairySoulMenu.ISLAND_SLOTS.length - 1]);
         }
 
         @Test
