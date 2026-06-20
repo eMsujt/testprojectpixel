@@ -11,12 +11,9 @@ import com.skyblock.core.manager.ReforgeManager;
 import com.skyblock.core.manager.Warp;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.CalendarMenu;
-import com.skyblock.core.menu.EnchantingMenu;
-import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
-import com.skyblock.core.menu.TalismanMenu;
 import com.skyblock.core.menu.WarpMenu;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.season.SeasonManager;
@@ -44,52 +41,6 @@ import java.util.stream.Collectors;
 public final class CompactCommands {
 
     private CompactCommands() {}
-
-    // =========================================================================
-    // /fairysoul
-    // =========================================================================
-
-    public static final class FairySoulCommand extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new FairySoulMenu(player).open(player);
-        }
-
-        @Override
-        protected boolean execute(Player player, Command command, String label, String[] args) {
-            openMenu(player);
-            return true;
-        }
-
-        @Override
-        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            return Collections.emptyList();
-        }
-    }
-
-    // =========================================================================
-    // /talisman
-    // =========================================================================
-
-    public static final class TalismanCommand extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new TalismanMenu(player).open(player);
-        }
-
-        @Override
-        protected boolean execute(Player player, Command command, String label, String[] args) {
-            openMenu(player);
-            return true;
-        }
-
-        @Override
-        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            return Collections.emptyList();
-        }
-    }
 
     // =========================================================================
     // /island
@@ -185,18 +136,6 @@ public final class CompactCommands {
                         .toList();
             }
             return List.of();
-        }
-    }
-
-    // =========================================================================
-    // /enchant
-    // =========================================================================
-
-    public static final class EnchantCommand extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new EnchantingMenu(player).open(player);
         }
     }
 
