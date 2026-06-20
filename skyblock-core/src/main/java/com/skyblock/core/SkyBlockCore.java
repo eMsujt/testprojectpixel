@@ -221,6 +221,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private AccessoryBagManager accessoryBagManager;
     private SackManager sackManager;
     private NetworthManager networthManager;
+    private com.skyblock.core.talisman.manager.TalismanManager talismanManager;
     private StorageManager storageManager;
     private com.skyblock.core.manager.StorageManager storageCoordinator;
 
@@ -303,6 +304,10 @@ public final class SkyBlockCore extends JavaPlugin {
 
     public ForgeManager getForgeManager() {
         return forgeManager;
+    }
+
+    public com.skyblock.core.talisman.manager.TalismanManager getTalismanManager() {
+        return talismanManager;
     }
 
     public AuctionHouseManager getAuctionHouseManager() {
@@ -526,7 +531,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.manager.EnchantmentManager.getInstance();
         com.skyblock.core.stats.StatsManager.getInstance();
         com.skyblock.core.talisman.manager.TalismanBagManager.getInstance();
-        com.skyblock.core.talisman.manager.TalismanManager.getInstance();
+        talismanManager = com.skyblock.core.talisman.manager.TalismanManager.getInstance();
         com.skyblock.core.trophy.TrophyManager.getInstance();
         com.skyblock.core.manager.CarnivalManager.getInstance();
         com.skyblock.core.manager.EnderChestManager.getInstance();
