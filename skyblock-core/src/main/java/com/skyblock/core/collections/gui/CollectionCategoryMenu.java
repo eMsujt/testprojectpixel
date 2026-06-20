@@ -1,6 +1,8 @@
-package com.skyblock.core.menu;
+package com.skyblock.core.collections.gui;
 
 import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.menu.CollectionsMenu;
+import com.skyblock.core.menu.Menu;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.ItemBuilder;
@@ -14,14 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Shows all collection items for a single {@link CollectionCategory}.
- *
- * <p>A 54-slot chest titled {@code §<color>Collections › <Category>} with a
- * gray glass-pane top/bottom border. Items fill slots 9–44 showing each
- * collection's gathered count, current tier, and items needed for the next
- * tier. A back arrow at slot 4 returns the player to {@link CollectionsMenu}.</p>
- */
 public class CollectionCategoryMenu extends Menu {
 
     private static final Map<String, String> CATEGORY_COLORS = new HashMap<>();
