@@ -63,8 +63,12 @@ public final class IslandManager implements Listener {
      * @param trustees     UUIDs of players trusted on the island (mutable copy held internally)
      * @param level        island upgrade level, at least 0
      * @param blocksPlaced total blocks placed on the island
+     * @param minionSlots  number of minion slots available on the island
      */
-    public record IslandData(UUID owner, List<UUID> trustees, int level, long blocksPlaced) {
+    public record IslandData(UUID owner, List<UUID> trustees, int level, long blocksPlaced, int minionSlots) {
+        /** Default number of minion slots for a new island. */
+        public static final int DEFAULT_MINION_SLOTS = 5;
+
         public IslandData {
             Objects.requireNonNull(owner, "owner");
             Objects.requireNonNull(trustees, "trustees");
@@ -460,7 +464,7 @@ public final class IslandManager implements Listener {
     public IslandData getOrCreateIslandData(UUID owner) {
         Objects.requireNonNull(owner, "owner");
         return islandData.computeIfAbsent(owner,
-                id -> new IslandData(id, new ArrayList<>(), 0, 0L));
+                id -> new IslandData(id, new ArrayList<>(), 0, 0L, IslandData.DEFAULT_MINION_SLOTS));
     }
 
     /**
@@ -534,7 +538,33 @@ public final class IslandManager implements Listener {
         Objects.requireNonNull(owner, "owner");
         if (level < 0) throw new IllegalArgumentException("level must be >= 0, got " + level);
         IslandData d = getOrCreateIslandData(owner);
-        islandData.put(owner, new IslandData(d.owner(), d.trustees, level, d.blocksPlaced()));
+        islandData.put(owner, new IslandData(d.owner(), d.trustees, level, d.blocksPlaced(), d.minionSlots()));
+    }
+
+    /**
+     * Returns the number of minion slots on the owner's island, or
+     * {@link IslandData#DEFAULT_MINION_SLOTS} if no record exists.
+     *
+     * @param owner the island owner's UUID
+     * @return the minion slot count
+     */
+    public int getMinionSlots(UUID owner) {
+        Objects.requireNonNull(owner, "owner");
+        IslandData d = islandData.get(owner);
+        return d == null ? IslandData.DEFAULT_MINION_SLOTS : d.minionSlots();
+    }
+
+    /**
+     * Sets the number of minion slots on the owner's island data record.
+     *
+     * @param owner       the island owner's UUID
+     * @param minionSlots the new minion slot count (must be >= 0)
+     */
+    public void setMinionSlots(UUID owner, int minionSlots) {
+        Objects.requireNonNull(owner, "owner");
+        if (minionSlots < 0) throw new IllegalArgumentException("minionSlots must be >= 0, got " + minionSlots);
+        IslandData d = getOrCreateIslandData(owner);
+        islandData.put(owner, new IslandData(d.owner(), d.trustees, d.level(), d.blocksPlaced(), minionSlots));
     }
 
     /**
@@ -577,7 +607,7 @@ public final class IslandManager implements Listener {
         Objects.requireNonNull(owner, "owner");
         if (amount < 0) throw new IllegalArgumentException("amount must be >= 0, got " + amount);
         IslandData d = getOrCreateIslandData(owner);
-        islandData.put(owner, new IslandData(d.owner(), d.trustees, d.level(), d.blocksPlaced() + amount));
+        islandData.put(owner, new IslandData(d.owner(), d.trustees, d.level(), d.blocksPlaced() + amount, d.minionSlots()));
     }
 
     // -------------------------------------------------------------------------
@@ -683,6 +713,7 @@ public final class IslandManager implements Listener {
                 UUID owner = UUID.fromString(key);
                 int level = cfg.getInt(key + ".level", 0);
                 long blocks = cfg.getLong(key + ".blocksPlaced", 0L);
+                int minionSlots = cfg.getInt(key + ".minionSlots", IslandData.DEFAULT_MINION_SLOTS);
                 long xp = cfg.getLong(key + ".islandXp", 0L);
                 if (xp > 0) {
                     islandXp.put(owner, xp);
@@ -696,7 +727,7 @@ public final class IslandManager implements Listener {
                         // skip malformed trustee entries
                     }
                 }
-                islandData.put(owner, new IslandData(owner, trustees, level, blocks));
+                islandData.put(owner, new IslandData(owner, trustees, level, blocks, minionSlots));
             } catch (IllegalArgumentException ignored) {
                 // skip malformed UUID keys
             }
@@ -748,6 +779,7 @@ public final class IslandManager implements Listener {
             IslandData d = entry.getValue();
             cfg.set(key + ".level", d.level());
             cfg.set(key + ".blocksPlaced", d.blocksPlaced());
+            cfg.set(key + ".minionSlots", d.minionSlots());
             long xp = islandXp.getOrDefault(entry.getKey(), 0L);
             if (xp > 0) {
                 cfg.set(key + ".islandXp", xp);
