@@ -269,6 +269,18 @@ public final class SkyBlockCore extends JavaPlugin {
         return instance;
     }
 
+    public CalendarManager getCalendarManager() {
+        return calendarManager;
+    }
+
+    public GardenManager getGardenManager() {
+        return gardenManager;
+    }
+
+    public CollectionManager getCollectionManager() {
+        return collectionManager;
+    }
+
     private void initManagers() {
         // core data — loaded first; others may depend on skill/profile state
         skillsManager = SkillManager.getInstance();
