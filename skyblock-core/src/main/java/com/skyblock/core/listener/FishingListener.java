@@ -2,6 +2,7 @@ package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.manager.FishingManager.SeaCreature;
+import com.skyblock.core.util.ChatUtil;
 import com.skyblock.core.manager.FishingManager.WaterType;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.model.Skill;
@@ -48,7 +49,7 @@ public final class FishingListener implements Listener {
 
         player.getWorld().dropItemNaturally(event.getHook().getLocation(), loot);
         fishingManager.recordCatchEvent(uuid, "Caught " + loot.getType().name());
-        player.sendMessage("§9[Fishing] §fYou caught §e" + loot.getType().name().replace('_', ' ')
+        ChatUtil.send(player, "§9[Fishing] §fYou caught §e" + loot.getType().name().replace('_', ' ')
                 + "§f! §7(+" + (int) xp + " XP)");
 
         if (after > before) {
@@ -58,7 +59,7 @@ public final class FishingListener implements Listener {
         WaterType waterType = detectWaterType(event.getHook());
         SeaCreature creature = fishingManager.rollSeaCreature(level, waterType, 0.0);
         if (creature != null) {
-            player.sendMessage("§3[Sea Creature] §fA §b" + creature.name().replace('_', ' ')
+            ChatUtil.send(player, "§3[Sea Creature] §fA §b" + creature.name().replace('_', ' ')
                     + " §fhas spawned from the " + waterType.name().toLowerCase() + "!");
             fishingManager.recordCatchEvent(uuid, "Sea creature: " + creature.name()
                     + " [" + waterType.name() + "]");

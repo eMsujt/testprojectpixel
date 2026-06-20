@@ -2,6 +2,7 @@ package com.skyblock.core.fishing.listener;
 
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.manager.TrophyFishManager;
+import com.skyblock.core.util.ChatUtil;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -60,7 +61,7 @@ public final class TrophyFishListener implements Listener {
         }
 
         trophyFishManager.recordCatch(player.getUniqueId(), caught);
-        player.sendMessage("§6[Trophy Fishing] §eYou caught a §f"
+        ChatUtil.send(player, "§6[Trophy Fishing] §eYou caught a §f"
                 + caught.name().replace('_', ' ') + "§e!");
     }
 

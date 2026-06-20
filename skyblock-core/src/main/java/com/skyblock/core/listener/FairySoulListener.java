@@ -2,6 +2,7 @@ package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.FairySoulManager.FairyIsland;
+import com.skyblock.core.util.ChatUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -55,7 +56,7 @@ public final class FairySoulListener implements Listener {
 
         Player player = event.getPlayer();
         if (fairySoulManager.collectSoul(player.getUniqueId(), island, soulIndex)) {
-            player.sendMessage("§d§lFairy Soul §r§dcollected! §7("
+            ChatUtil.send(player, "§d§lFairy Soul §r§dcollected! §7("
                     + fairySoulManager.getFoundCount(player.getUniqueId())
                     + "/" + fairySoulManager.getTotalSouls() + ")");
         }

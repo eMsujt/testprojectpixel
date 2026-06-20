@@ -2,6 +2,7 @@ package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.SlayerManager;
 import com.skyblock.core.manager.SlayerManager.SlayerQuest;
+import com.skyblock.core.util.ChatUtil;
 import com.skyblock.core.manager.SlayerManager.SlayerReward;
 import com.skyblock.core.manager.SlayerManager.SlayerType;
 import org.bukkit.entity.EntityType;
@@ -54,9 +55,9 @@ public final class SlayerListener implements Listener {
             SlayerManager.BossFight fight = slayerManager.getBossFight(uuid);
             if (fight != null && fight.isDead()) {
                 SlayerReward reward = slayerManager.killBoss(uuid);
-                killer.sendMessage("§c§lSlayer Boss slain! §r§7(+" + reward.getXp() + " XP)");
+                ChatUtil.send(killer, "§c§lSlayer Boss slain! §r§7(+" + reward.getXp() + " XP)");
                 if (!reward.getDrops().isEmpty()) {
-                    killer.sendMessage("§6Drops: §e" + String.join("§7, §e", reward.getDrops()));
+                    ChatUtil.send(killer, "§6Drops: §e" + String.join("§7, §e", reward.getDrops()));
                 }
             }
             return;
@@ -68,10 +69,10 @@ public final class SlayerListener implements Listener {
 
         int kills = slayerManager.addQuestKill(uuid);
         int required = SlayerManager.KILLS_TO_SPAWN_BOSS.getOrDefault(quest.tier, Integer.MAX_VALUE);
-        killer.sendMessage("§7[Slayer] §fKills: §e" + kills + "§7/§e" + required);
+        ChatUtil.send(killer, "§7[Slayer] §fKills: §e" + kills + "§7/§e" + required);
 
         if (slayerManager.canSpawnBoss(uuid)) {
-            killer.sendMessage("§c§lYou can now summon the Slayer Boss! §r§7Use /slayer to open the menu.");
+            ChatUtil.send(killer, "§c§lYou can now summon the Slayer Boss! §r§7Use /slayer to open the menu.");
         }
     }
 }
