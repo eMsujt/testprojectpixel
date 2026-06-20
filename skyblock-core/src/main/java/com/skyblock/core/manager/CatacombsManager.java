@@ -42,6 +42,11 @@ public final class CatacombsManager {
 
         public boolean isMasterMode() { return masterMode; }
         public int getRequiredCatacombsLevel() { return requiredCatacombsLevel; }
+
+        public String getDisplayName() {
+            if (this == ENTRANCE) return "Entrance";
+            return "Floor " + name().substring(1);
+        }
     }
 
     public enum DungeonClass {
