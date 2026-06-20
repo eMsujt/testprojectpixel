@@ -1,10 +1,8 @@
-package com.skyblock.core.hotm.command;
+package com.skyblock.core.command;
 
 import com.skyblock.core.SkyBlockCore;
-import com.skyblock.core.command.PlayerCommand;
-import com.skyblock.core.manager.HeartOfTheMountainManager;
+import com.skyblock.core.manager.HOTMManager;
 import com.skyblock.core.menu.HotmMenu;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,28 +12,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Handles the {@code /hotmtree} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /hotmtree view [perk]}        — show level for one or all perks</li>
- *   <li>{@code /hotmtree upgrade <perk>}     — (op) upgrade a perk by one level</li>
- *   <li>{@code /hotmtree set <perk> <level>} — (op) set a perk to an exact level</li>
- *   <li>{@code /hotmtree reset}              — (op) reset all perks to zero</li>
- * </ul>
- * </p>
- */
 public final class HOTMCommand extends PlayerCommand {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("view", "upgrade", "set", "reset", "powder", "history");
-    private static final List<String> PERK_NAMES = Arrays.stream(HeartOfTheMountainManager.HotMNode.values())
+    private static final List<String> PERK_NAMES = Arrays.stream(HOTMManager.HotMNode.values())
             .map(p -> p.name().toLowerCase())
             .collect(Collectors.toList());
 
-    private final HeartOfTheMountainManager hotmManager;
+    private final HOTMManager hotmManager;
 
-    public HOTMCommand(HeartOfTheMountainManager hotmManager) {
+    public HOTMCommand(HOTMManager hotmManager) {
         this.hotmManager = hotmManager;
     }
 
@@ -85,13 +71,13 @@ public final class HOTMCommand extends PlayerCommand {
 
     private void handleView(Player player, String[] args) {
         if (args.length >= 2) {
-            HeartOfTheMountainManager.HotMNode perk = parsePerk(player, args[1]);
+            HOTMManager.HotMNode perk = parsePerk(player, args[1]);
             if (perk == null) return;
             int level = hotmManager.getLevel(player.getUniqueId(), perk);
             player.sendMessage(perk.getDisplayName() + ": " + level + "/" + perk.maxLevel);
         } else {
             player.sendMessage("=== Heart of the Mountain ===");
-            for (HeartOfTheMountainManager.HotMNode perk : HeartOfTheMountainManager.HotMNode.values()) {
+            for (HOTMManager.HotMNode perk : HOTMManager.HotMNode.values()) {
                 int level = hotmManager.getLevel(player.getUniqueId(), perk);
                 player.sendMessage(perk.getDisplayName() + ": " + level + "/" + perk.maxLevel);
             }
@@ -107,7 +93,7 @@ public final class HOTMCommand extends PlayerCommand {
             player.sendMessage("Usage: /hotmtree upgrade <perk>");
             return;
         }
-        HeartOfTheMountainManager.HotMNode perk = parsePerk(player, args[1]);
+        HOTMManager.HotMNode perk = parsePerk(player, args[1]);
         if (perk == null) return;
         int newLevel = hotmManager.upgrade(player.getUniqueId(), perk);
         if (newLevel == -1) {
@@ -126,7 +112,7 @@ public final class HOTMCommand extends PlayerCommand {
             player.sendMessage("Usage: /hotmtree set <perk> <level>");
             return;
         }
-        HeartOfTheMountainManager.HotMNode perk = parsePerk(player, args[1]);
+        HOTMManager.HotMNode perk = parsePerk(player, args[1]);
         if (perk == null) return;
         int level = parseLevel(player, args[2]);
         if (level < 0) return;
@@ -194,9 +180,9 @@ public final class HOTMCommand extends PlayerCommand {
         }
     }
 
-    private HeartOfTheMountainManager.HotMNode parsePerk(Player player, String input) {
+    private HOTMManager.HotMNode parsePerk(Player player, String input) {
         try {
-            return HeartOfTheMountainManager.HotMNode.valueOf(input.toUpperCase());
+            return HOTMManager.HotMNode.valueOf(input.toUpperCase());
         } catch (IllegalArgumentException e) {
             player.sendMessage("Unknown perk: " + input + ". Valid perks: " + String.join(", ", PERK_NAMES));
             return null;

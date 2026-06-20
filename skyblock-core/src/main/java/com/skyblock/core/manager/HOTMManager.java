@@ -14,17 +14,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Canonical singleton tracking each player's Heart of the Mountain progression:
- * perk-tree node levels, Mithril/Gemstone Powder balances, mining-XP-driven
- * HOTM tier, and an event history.
- *
- * <p>Perk levels are stored as an {@code int[]} indexed by {@link HotMNode#ordinal()}.
- * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
- */
-public final class HeartOfTheMountainManager {
+public final class HOTMManager {
 
-    /** Every upgradeable perk in the Heart of the Mountain tree. */
     public enum HotMNode {
         MINING_SPEED(50, "Mining Speed"),
         MINING_SPEED_BOOST(1, "Mining Speed Boost"),
@@ -51,7 +42,6 @@ public final class HeartOfTheMountainManager {
         MANIACAL_MINER(1, "Maniacal Miner"),
         VEIN_SEEKER(1, "Vein Seeker");
 
-        /** Maximum level for this node. */
         public final int maxLevel;
         private final String displayName;
 
@@ -65,20 +55,10 @@ public final class HeartOfTheMountainManager {
         }
     }
 
-    /** Highest HOTM tier reachable. */
     public static final int MAX_TIER = 7;
 
-    /**
-     * Cumulative Mining XP required to reach each HOTM tier, indexed by
-     * {@code tier - 1}. Index 0 (tier 1) is always {@code 0}.
-     */
     private static final long[] TIER_XP_THRESHOLDS = {0L, 3000L, 9000L, 25000L, 60000L, 100000L, 150000L};
 
-    /**
-     * Per-level powder cost for each HOTM node.
-     * Index 0 = cost to upgrade to level 1, index N-1 = cost to upgrade to level N.
-     * Single-entry arrays represent one-time unlock costs.
-     */
     public static final Map<String, int[]> NODE_POWDER_COSTS;
 
     static {
@@ -110,41 +90,34 @@ public final class HeartOfTheMountainManager {
         NODE_POWDER_COSTS = Collections.unmodifiableMap(m);
     }
 
-    /**
-     * Static metadata for each HOTM node.
-     * Each int[] is {@code {maxLevel, bonusPerLevel}} where {@code bonusPerLevel}
-     * is the primary stat increase per upgrade (0 for toggle/ability nodes).
-     */
     public static final Map<String, int[]> PERK_DATA;
 
     static {
         Map<String, int[]> p = new LinkedHashMap<>();
-        // multi-level nodes — {maxLevel, bonusPerLevel}
-        p.put("MINING_SPEED",            new int[]{50,  20}); // +20 Mining Speed/level
-        p.put("MINING_FORTUNE",          new int[]{50,   5}); // +5 Mining Fortune/level
-        p.put("DAILY_POWDER",            new int[]{100,  1}); // +1 daily Mithril Powder/level
-        p.put("EFFICIENT_MINER",         new int[]{100,  1}); // +0.1% extra block chance/level (×10 scaled)
-        p.put("QUICK_FORGE",             new int[]{20,   5}); // -0.5% forge time/level (×10 scaled)
-        p.put("TITANIUM_INSANITY",       new int[]{50,   2}); // +2 bonus rolls/level
-        p.put("LUCK_OF_THE_CAVE",        new int[]{45,   1}); // +1% luck/level
-        p.put("POWDER_BUFF",             new int[]{50,   1}); // +1% Mithril Powder/level
-        p.put("MOLE",                    new int[]{200,  1}); // +1 cumulative block/level
-        p.put("PROFESSIONAL",            new int[]{140,  4}); // +4 Mining Speed when mining ores/level
-        p.put("LONESOME_MINER",          new int[]{45,   5}); // +5 bonus stats in Crystal Hollows/level
-        p.put("GREAT_EXPLORER",          new int[]{20,   3}); // +3% chest find chance/level
-        p.put("FORTUNATE",               new int[]{20,   4}); // +4 Gemstone Mining Fortune/level
-        p.put("MINING_EXPERIENCE_BOOST", new int[]{100,  1}); // +1 bonus Mining XP/level
-        p.put("SEASONED_MINEMAN",        new int[]{100,  1}); // +1 Mining Wisdom/level
-        p.put("ANOMALOUS_DESIRE",        new int[]{20,   2}); // +2% Gemstone Crystal chance/level
-        // ability/toggle nodes — {maxLevel, 0}
-        p.put("MINING_SPEED_BOOST",      new int[]{1,    0}); // active ability: +200% Mining Speed for 10 s
-        p.put("PICKOBULUS",              new int[]{3,    0}); // active ability: AOE pickaxe throw
-        p.put("MINING_MADNESS",          new int[]{1,    0}); // toggle: double Mining Speed & Fortune
-        p.put("SKY_MALL",               new int[]{1,    0}); // toggle: random daily perk
-        p.put("GOBLIN_KILLER",           new int[]{1,    0}); // toggle: Goblins drop Mithril Powder
-        p.put("STAR_POWDER",             new int[]{1,    0}); // toggle: Mithril Golems drop Mithril Powder
-        p.put("MANIACAL_MINER",          new int[]{1,    0}); // passive: mining grants Haste II
-        p.put("VEIN_SEEKER",             new int[]{1,    0}); // toggle: highlight ore veins
+        p.put("MINING_SPEED",            new int[]{50,  20});
+        p.put("MINING_FORTUNE",          new int[]{50,   5});
+        p.put("DAILY_POWDER",            new int[]{100,  1});
+        p.put("EFFICIENT_MINER",         new int[]{100,  1});
+        p.put("QUICK_FORGE",             new int[]{20,   5});
+        p.put("TITANIUM_INSANITY",       new int[]{50,   2});
+        p.put("LUCK_OF_THE_CAVE",        new int[]{45,   1});
+        p.put("POWDER_BUFF",             new int[]{50,   1});
+        p.put("MOLE",                    new int[]{200,  1});
+        p.put("PROFESSIONAL",            new int[]{140,  4});
+        p.put("LONESOME_MINER",          new int[]{45,   5});
+        p.put("GREAT_EXPLORER",          new int[]{20,   3});
+        p.put("FORTUNATE",               new int[]{20,   4});
+        p.put("MINING_EXPERIENCE_BOOST", new int[]{100,  1});
+        p.put("SEASONED_MINEMAN",        new int[]{100,  1});
+        p.put("ANOMALOUS_DESIRE",        new int[]{20,   2});
+        p.put("MINING_SPEED_BOOST",      new int[]{1,    0});
+        p.put("PICKOBULUS",              new int[]{3,    0});
+        p.put("MINING_MADNESS",          new int[]{1,    0});
+        p.put("SKY_MALL",               new int[]{1,    0});
+        p.put("GOBLIN_KILLER",           new int[]{1,    0});
+        p.put("STAR_POWDER",             new int[]{1,    0});
+        p.put("MANIACAL_MINER",          new int[]{1,    0});
+        p.put("VEIN_SEEKER",             new int[]{1,    0});
         PERK_DATA = Collections.unmodifiableMap(p);
     }
 
@@ -156,40 +129,22 @@ public final class HeartOfTheMountainManager {
         return costs;
     }
 
-    private static final HeartOfTheMountainManager INSTANCE = new HeartOfTheMountainManager();
+    private static final HOTMManager INSTANCE = new HOTMManager();
 
-    /** Per-player node levels; absent entries default to all-zeros. */
     private final Map<UUID, int[]> playerPerks = new HashMap<>();
-    /** Per-player HOTM tree tier (1–{@value #MAX_TIER}). */
     private final Map<UUID, Integer> hotmTier = new HashMap<>();
-    /** Per-player cumulative Mining XP driving the HOTM tier. */
     private final Map<UUID, Long> miningXp = new HashMap<>();
-    /** Per-player Mithril Powder balance. */
     private final Map<UUID, Long> mithrilPowder = new HashMap<>();
-    /** Per-player Gemstone Powder balance. */
     private final Map<UUID, Long> gemstonePowder = new HashMap<>();
-    /** Per-player HOTM event history. */
     private final Map<UUID, List<String>> hotmHistory = new HashMap<>();
 
-    private HeartOfTheMountainManager() {
+    private HOTMManager() {
     }
 
-    /**
-     * Returns the single shared {@code HeartOfTheMountainManager} instance.
-     *
-     * @return the singleton instance
-     */
-    public static HeartOfTheMountainManager getInstance() {
+    public static HOTMManager getInstance() {
         return INSTANCE;
     }
 
-    /**
-     * Returns the current level of a node for the given player.
-     *
-     * @param playerId the player to look up
-     * @param node     the node to query
-     * @return the current level, {@code 0} if not unlocked
-     */
     public int getLevel(UUID playerId, HotMNode node) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(node, "node");
@@ -197,14 +152,6 @@ public final class HeartOfTheMountainManager {
         return levels == null ? 0 : levels[node.ordinal()];
     }
 
-    /**
-     * Sets the level of a node for the given player.
-     *
-     * @param playerId the player to update
-     * @param node     the node to set
-     * @param level    the new level (clamped to {@code [0, node.maxLevel]})
-     * @throws IllegalArgumentException if {@code level} is negative
-     */
     public void setLevel(UUID playerId, HotMNode node, int level) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(node, "node");
@@ -216,13 +163,6 @@ public final class HeartOfTheMountainManager {
         levels[node.ordinal()] = clamped;
     }
 
-    /**
-     * Upgrades a node by one level, up to its maximum.
-     *
-     * @param playerId the player to upgrade
-     * @param node     the node to upgrade
-     * @return the new level after the upgrade, or {@code -1} if already at max
-     */
     public int upgrade(UUID playerId, HotMNode node) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(node, "node");
@@ -236,14 +176,6 @@ public final class HeartOfTheMountainManager {
         return current + 1;
     }
 
-    /**
-     * Returns the Mithril Powder cost to raise a node from {@code currentLevel}
-     * to the next level.
-     *
-     * @param node         the node to price
-     * @param currentLevel the node's current level
-     * @return the powder cost of the next level, or {@code -1} if already maxed
-     */
     public int getUpgradeCost(HotMNode node, int currentLevel) {
         Objects.requireNonNull(node, "node");
         int[] costs = NODE_POWDER_COSTS.get(node.name());
@@ -253,14 +185,6 @@ public final class HeartOfTheMountainManager {
         return costs[currentLevel];
     }
 
-    /**
-     * Returns the cumulative stat bonus a player gains from a node at its
-     * current level, derived from {@link #PERK_DATA}'s per-level value.
-     *
-     * @param playerId the player to look up
-     * @param node     the node to evaluate
-     * @return {@code bonusPerLevel * currentLevel}, {@code 0} for toggle/ability nodes
-     */
     public int getPerkBonus(UUID playerId, HotMNode node) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(node, "node");
@@ -271,14 +195,6 @@ public final class HeartOfTheMountainManager {
         return data[1] * getLevel(playerId, node);
     }
 
-    /**
-     * Upgrades a node by one level, deducting the required Mithril Powder.
-     *
-     * @param playerId the player to upgrade
-     * @param node     the node to upgrade
-     * @return the new level after the upgrade, {@code -1} if already at max,
-     *         or {@code -2} if the player cannot afford the next level
-     */
     public int purchaseUpgrade(UUID playerId, HotMNode node) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(node, "node");
@@ -293,12 +209,6 @@ public final class HeartOfTheMountainManager {
         return upgrade(playerId, node);
     }
 
-    /**
-     * Returns a copy of all node levels for the given player.
-     *
-     * @param playerId the player to look up
-     * @return array of node levels indexed by {@link HotMNode#ordinal()}, all-zeros if no data
-     */
     public int[] getAllLevels(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         int[] levels = playerPerks.get(playerId);
@@ -308,11 +218,6 @@ public final class HeartOfTheMountainManager {
         return Arrays.copyOf(levels, levels.length);
     }
 
-    /**
-     * Resets all node levels for the given player to zero.
-     *
-     * @param playerId the player to reset
-     */
     public void reset(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         int[] levels = playerPerks.get(playerId);
@@ -321,25 +226,11 @@ public final class HeartOfTheMountainManager {
         }
     }
 
-    /**
-     * Returns the player's cumulative Mining XP.
-     *
-     * @param playerId the player to look up
-     * @return total Mining XP, {@code 0} if none recorded
-     */
     public long getMiningXp(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return miningXp.getOrDefault(playerId, 0L);
     }
 
-    /**
-     * Adds Mining XP to a player, advancing their HOTM tier if a new threshold
-     * is reached.
-     *
-     * @param playerId the player to credit
-     * @param amount   the Mining XP to add (must be non-negative)
-     * @return the player's HOTM tier after the gain
-     */
     public int addMiningXp(UUID playerId, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
@@ -353,36 +244,17 @@ public final class HeartOfTheMountainManager {
         return getHotmTier(playerId);
     }
 
-    /**
-     * Returns the player's current Mithril Powder balance.
-     *
-     * @param playerId the player to look up
-     * @return the balance, {@code 0} if none recorded
-     */
     public long getMithrilPowder(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return mithrilPowder.getOrDefault(playerId, 0L);
     }
 
-    /**
-     * Adds Mithril Powder to a player's balance.
-     *
-     * @param playerId the player to credit
-     * @param amount   the amount to add (must be non-negative)
-     */
     public void addMithrilPowder(UUID playerId, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
         mithrilPowder.merge(playerId, amount, Long::sum);
     }
 
-    /**
-     * Deducts Mithril Powder from a player's balance.
-     *
-     * @param playerId the player to debit
-     * @param amount   the amount to deduct (must be non-negative)
-     * @return {@code true} if deducted successfully, {@code false} if insufficient balance
-     */
     public boolean spendMithrilPowder(UUID playerId, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
@@ -393,36 +265,17 @@ public final class HeartOfTheMountainManager {
         return true;
     }
 
-    /**
-     * Returns the player's current Gemstone Powder balance.
-     *
-     * @param playerId the player to look up
-     * @return the balance, {@code 0} if none recorded
-     */
     public long getGemstonePowder(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return gemstonePowder.getOrDefault(playerId, 0L);
     }
 
-    /**
-     * Adds Gemstone Powder to a player's balance.
-     *
-     * @param playerId the player to credit
-     * @param amount   the amount to add (must be non-negative)
-     */
     public void addGemstonePowder(UUID playerId, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
         gemstonePowder.merge(playerId, amount, Long::sum);
     }
 
-    /**
-     * Deducts Gemstone Powder from a player's balance.
-     *
-     * @param playerId the player to debit
-     * @param amount   the amount to deduct (must be non-negative)
-     * @return {@code true} if deducted successfully, {@code false} if insufficient balance
-     */
     public boolean spendGemstonePowder(UUID playerId, long amount) {
         Objects.requireNonNull(playerId, "playerId");
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative");
@@ -433,29 +286,16 @@ public final class HeartOfTheMountainManager {
         return true;
     }
 
-    /**
-     * Returns the player's current HOTM tree tier.
-     *
-     * @param playerId the player to look up
-     * @return the tier (1–{@value #MAX_TIER}), {@code 1} if not set
-     */
     public int getHotmTier(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return hotmTier.getOrDefault(playerId, 1);
     }
 
-    /**
-     * Sets the player's HOTM tree tier.
-     *
-     * @param playerId the player to update
-     * @param tier     the new tier (clamped to {@code [1, MAX_TIER]})
-     */
     public void setHotmTier(UUID playerId, int tier) {
         Objects.requireNonNull(playerId, "playerId");
         hotmTier.put(playerId, Math.max(1, Math.min(MAX_TIER, tier)));
     }
 
-    /** Computes the HOTM tier reachable with the given cumulative Mining XP. */
     private static int computeTier(long totalXp) {
         int tier = 1;
         for (int i = 1; i < TIER_XP_THRESHOLDS.length; i++) {
@@ -468,33 +308,16 @@ public final class HeartOfTheMountainManager {
         return tier;
     }
 
-    /**
-     * Records a HOTM event summary for the given player.
-     *
-     * @param playerId the player to record for
-     * @param summary  a short description of the event
-     */
     public void recordHotmEvent(UUID playerId, String summary) {
         Objects.requireNonNull(playerId, "playerId");
         hotmHistory.computeIfAbsent(playerId, id -> new ArrayList<>()).add(summary);
     }
 
-    /**
-     * Returns the HOTM event history for the given player.
-     *
-     * @param playerId the player to look up
-     * @return list of event summaries, empty if none recorded
-     */
     public List<String> getHotmHistory(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return hotmHistory.getOrDefault(playerId, Collections.emptyList());
     }
 
-    /**
-     * Returns the full HOTM event history map for all players.
-     *
-     * @return unmodifiable view of the history map
-     */
     public Map<UUID, List<String>> getAllHotmHistory() {
         return Collections.unmodifiableMap(hotmHistory);
     }
@@ -506,12 +329,6 @@ public final class HeartOfTheMountainManager {
                 + " | Gemstone Powder: " + getGemstonePowder(playerId);
     }
 
-    /**
-     * Removes all HOTM data for the given player (e.g. on quit).
-     *
-     * @param playerId the player to remove
-     * @return {@code true} if the player had data, {@code false} otherwise
-     */
     public boolean remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         hotmTier.remove(playerId);
