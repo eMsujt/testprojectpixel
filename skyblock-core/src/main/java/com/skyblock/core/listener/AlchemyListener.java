@@ -55,10 +55,10 @@ public final class AlchemyListener implements Listener {
     public void onBrew(BrewEvent event) {
         Location loc = event.getBlock().getLocation();
         UUID uuid = brewerMap.get(loc);
-        if (uuid == null) {
-            return;
+        if (uuid != null) {
+            alchemyManager.addXp(uuid, XP_PER_BREW);
         }
-        alchemyManager.addXp(uuid, XP_PER_BREW);
+        alchemyManager.processCompletedJobs(System.currentTimeMillis());
     }
 
     public Map<Location, UUID> getBrewerMap() {
