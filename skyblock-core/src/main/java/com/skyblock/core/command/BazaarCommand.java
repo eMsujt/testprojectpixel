@@ -35,7 +35,7 @@ public final class BazaarCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new BazaarMenu(com.skyblock.core.SkyBlockCore.getInstance(), p).open(p);
+        new BazaarMenu(p).open(p);
     }
 
     @Override

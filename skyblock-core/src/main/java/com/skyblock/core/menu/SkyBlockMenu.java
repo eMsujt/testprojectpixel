@@ -57,7 +57,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(20, new ItemBuilder(Material.GOLD_INGOT).displayName("§6Bazaar")
                 .lore("§7Trade commodities instantly.").build(),
-                e -> { e.setCancelled(true); new BazaarMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
+                e -> { e.setCancelled(true); new BazaarMenu(player).open(player); });
 
         setItem(21, new ItemBuilder(Material.GOLD_BLOCK).displayName("§6Bank")
                 .lore("§7Deposit and withdraw coins.").build(),

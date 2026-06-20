@@ -1385,17 +1385,17 @@ class MenuIntegrationTest {
 
         @Test
         void title_isBazaar() {
-            assertEquals("§6§lBazaar", new BazaarMenu(mock(JavaPlugin.class), mock(Player.class)).getTitle());
+            assertEquals("§6§lBazaar", new BazaarMenu(mock(Player.class)).getTitle());
         }
 
         @Test
         void rows_isSix() {
-            assertEquals(6, new BazaarMenu(mock(JavaPlugin.class), mock(Player.class)).getRows());
+            assertEquals(6, new BazaarMenu(mock(Player.class)).getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new BazaarMenu(mock(JavaPlugin.class), mock(Player.class)));
+            assertDoesNotThrow(() -> new BazaarMenu(mock(Player.class)));
         }
 
         @Test

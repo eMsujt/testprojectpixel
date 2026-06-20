@@ -1,6 +1,5 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarOrder;
 import com.skyblock.core.util.SkyblockUtils;
@@ -17,7 +16,7 @@ import java.util.List;
  * gray panes frames the top and bottom rows; an empty-state barrier appears
  * when the player has no orders.
  */
-public final class BazaarMenu extends AbstractMenu {
+public final class BazaarMenu extends AbstractSkyBlockMenu {
 
     /** Order slots filling the middle four rows (10–43, edges excluded). */
     static final int[] ORDER_SLOTS = {
@@ -27,8 +26,8 @@ public final class BazaarMenu extends AbstractMenu {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    public BazaarMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§6§lBazaar", 54);
+    public BazaarMenu(Player player) {
+        super(player, "§6§lBazaar", 6);
     }
 
     @Override

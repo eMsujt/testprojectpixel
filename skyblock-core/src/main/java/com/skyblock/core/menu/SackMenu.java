@@ -13,9 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-public final class SackMenu extends Menu {
+public final class SackMenu extends AbstractSkyBlockMenu {
 
     private static final SackType[] TYPES = SackType.values();
 
@@ -35,21 +34,15 @@ public final class SackMenu extends Menu {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    private final UUID playerId;
     private SackType selectedType;
 
-    public SackMenu(UUID playerId) {
-        super("Sack", 6);
-        this.playerId = playerId;
+    public SackMenu(Player player) {
+        super(player, "Sack", 6);
         this.selectedType = TYPES[0];
     }
 
-    public SackMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
     @Override
-    protected void build() {
+    protected void populate() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = TYPES.length; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
@@ -66,7 +59,7 @@ public final class SackMenu extends Menu {
             setItem(i, builder.build());
         }
 
-        Map<String, Integer> contents = manager.getSackContents(playerId, selectedType);
+        Map<String, Integer> contents = manager.getSackContents(player.getUniqueId(), selectedType);
         if (contents.isEmpty()) {
             setItem(31, new ItemBuilder(Material.BARRIER)
                     .displayName("§cEmpty Sack")
@@ -94,8 +87,8 @@ public final class SackMenu extends Menu {
         int slot = event.getRawSlot();
         if (slot >= 0 && slot < TYPES.length && TYPES[slot] != selectedType) {
             selectedType = TYPES[slot];
-            if (event.getWhoClicked() instanceof Player player) {
-                open(player);
+            if (event.getWhoClicked() instanceof Player clicker) {
+                open(clicker);
             }
         }
     }
