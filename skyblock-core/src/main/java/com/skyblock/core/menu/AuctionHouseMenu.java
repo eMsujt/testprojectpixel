@@ -92,8 +92,12 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                             "§eClick to purchase!")
                     .build();
             setItem(LISTING_SLOTS[i - start], icon,
-                    event -> event.getWhoClicked().sendMessage(
-                            "§e" + listing.itemName() + " §7is listed for §6" + (long) listing.price() + " coins§7."));
+                    event -> {
+                        event.setCancelled(true);
+                        if (event.isLeftClick()) {
+                            new AuctionConfirmMenu(player, listing.id()).open(player);
+                        }
+                    });
         }
 
         if (listings.isEmpty()) {
