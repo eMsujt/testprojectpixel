@@ -33,7 +33,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         RARITY_WOOL = Collections.unmodifiableMap(m);
     }
 
-    private static final Map<PetType, Material> TYPE_ICON;
+    static final Map<PetType, Material> TYPE_ICON;
 
     static {
         Map<PetType, Material> m = new EnumMap<>(PetType.class);
