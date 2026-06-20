@@ -2,12 +2,15 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.collections.gui.CollectionCategoryMenu;
 import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public final class CollectionMenu extends Menu {
@@ -56,6 +59,41 @@ public final class CollectionMenu extends Menu {
                         new CollectionCategoryMenu(playerId, category)
                                 .open((Player) event.getWhoClicked());
                     });
+        }
+
+        // Rows 1–4 (slots 9–44): per-collection progress across all categories
+        int slot = 9;
+        outer:
+        for (CollectionCategory category : CATEGORY_ORDER) {
+            for (Collection c : category.getCollections()) {
+                if (slot > 44) break outer;
+                long count = manager.getItems(playerId, c);
+                int tier = manager.getTier(playerId, c);
+                long toNext = manager.getItemsToNextTier(playerId, c);
+
+                List<String> lore = new ArrayList<>();
+                lore.add("§7Collected: §e" + count);
+                lore.add("§7Tier: §e" + tier);
+                if (toNext > 0) {
+                    lore.add("§7Next tier in: §e" + toNext + " §7more");
+                } else {
+                    lore.add("§aMaxed!");
+                }
+
+                setItem(slot, new ItemBuilder(resolveMaterial(c))
+                        .name("§a" + c.getDisplayName())
+                        .lore(lore)
+                        .build());
+                slot++;
+            }
+        }
+    }
+
+    private static Material resolveMaterial(Collection c) {
+        try {
+            return Material.valueOf(c.name());
+        } catch (IllegalArgumentException e) {
+            return Material.PAPER;
         }
     }
 
