@@ -3,18 +3,24 @@ package com.skyblock.core.listener;
 import com.skyblock.core.combat.calculator.CombatEngine;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
+import com.skyblock.core.stats.CombatStatsManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 /**
- * Applies the full SkyBlock damage formula to melee combat.
+ * Applies the full SkyBlock damage formula to melee combat and records combat
+ * statistics.
  *
  * <p>When a player deals melee damage, the event damage is recomputed from the
  * attacker's Strength, Crit Chance, and Crit Damage stats via {@link CombatEngine}.
  * When a player takes damage, it is reduced by the SkyBlock defense formula
  * ({@code damage × 100 / (100 + defense)}).</p>
+ *
+ * <p>Damage dealt/taken and kills/deaths are also recorded into
+ * {@link CombatStatsManager}.</p>
  */
 public final class CombatListener implements Listener {
 
@@ -44,6 +50,27 @@ public final class CombatListener implements Listener {
             double defense = stats.getStat(defender.getUniqueId(), Stat.DEFENSE);
             double reduced = event.getDamage() * 100.0 / (100.0 + Math.max(0.0, defense));
             event.setDamage(reduced);
+        }
+
+        CombatStatsManager combatStats = CombatStatsManager.getInstance();
+        double finalDamage = event.getFinalDamage();
+        if (event.getDamager() instanceof Player) {
+            combatStats.addDamageDealt(((Player) event.getDamager()).getUniqueId(), finalDamage);
+        }
+        if (event.getEntity() instanceof Player) {
+            combatStats.addDamageTaken(((Player) event.getEntity()).getUniqueId(), finalDamage);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        CombatStatsManager combatStats = CombatStatsManager.getInstance();
+        Player victim = event.getEntity();
+        combatStats.recordDeath(victim.getUniqueId());
+
+        Player killer = victim.getKiller();
+        if (killer != null) {
+            combatStats.recordKill(killer.getUniqueId());
         }
     }
 }
