@@ -8,6 +8,8 @@ import com.skyblock.core.foraging.ForagingManager.TreeType;
 import com.skyblock.core.manager.AlchemyManager;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.manager.FishingManager;
+import com.skyblock.core.manager.FishingManager.SeaCreature;
+import com.skyblock.core.manager.FishingManager.WaterType;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Skill;
@@ -18,6 +20,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FishHook;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -230,6 +233,23 @@ public final class SkillListener implements Listener {
 
         player.sendMessage("§9[Fishing] §fYou caught §e" + loot.getType().name().replace('_', ' ')
                 + "§f! §7(+" + (int) xp + " XP)");
+
+        WaterType waterType = detectWaterType(event.getHook());
+        SeaCreature creature = fishingManager.rollSeaCreature(level, waterType, 0.0);
+        if (creature != null) {
+            player.sendMessage("§3[Sea Creature] §fA §b" + creature.name().replace('_', ' ')
+                    + " §fhas spawned from the " + waterType.name().toLowerCase() + "!");
+            fishingManager.recordCatchEvent(uuid, "Sea creature: " + creature.name()
+                    + " [" + waterType.name() + "]");
+        }
+    }
+
+    private static WaterType detectWaterType(FishHook hook) {
+        Material block = hook.getLocation().getBlock().getType();
+        if (block == Material.LAVA || block == Material.LAVA_CAULDRON) {
+            return WaterType.LAVA;
+        }
+        return WaterType.WATER;
     }
 
     // --- Combat ---
