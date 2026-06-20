@@ -801,6 +801,7 @@ public final class SkyBlockCore extends JavaPlugin {
         MenuCommand storageMenuCommand = new MenuCommand(p -> new com.skyblock.core.menu.StorageMenu(SkyBlockCore.getInstance(), p, backpackManager.getTier(p.getUniqueId())).open(p));
         getCommand("storage").setExecutor(storageMenuCommand);
         ScoreboardManager.getInstance().start(this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ScoreboardListener.getInstance(), this);
         manaManager.start(this);
         skyBlockEventManager.start(this);
         jacobsContestManager.start(this);
