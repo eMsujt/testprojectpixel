@@ -1,5 +1,6 @@
 package com.skyblock.core.util;
 
+import com.skyblock.core.manager.PetsManager.PetRarity;
 import com.skyblock.core.model.Rarity;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -99,6 +100,24 @@ public final class SkyblockUtils {
             case SPECIAL:   return ChatColor.RED;
             default:        return ChatColor.WHITE;
         }
+    }
+
+    /** Returns the legacy {@link ChatColor} matching a pet's {@link PetRarity} color code. */
+    public static ChatColor rarityColor(PetRarity rarity) {
+        if (rarity == null) return ChatColor.WHITE;
+        switch (rarity) {
+            case UNCOMMON:  return ChatColor.GREEN;
+            case RARE:      return ChatColor.BLUE;
+            case EPIC:      return ChatColor.DARK_PURPLE;
+            case LEGENDARY: return ChatColor.GOLD;
+            case MYTHIC:    return ChatColor.LIGHT_PURPLE;
+            default:        return ChatColor.WHITE;
+        }
+    }
+
+    /** Formats an XP amount with grouping separators (e.g. 1234567 → "1,234,567"). */
+    public static String formatXP(double xp) {
+        return String.format(Locale.ROOT, "%,.0f", xp);
     }
 
     /** Returns the legacy {@link ChatColor} for a rarity name string (e.g. {@code "LEGENDARY"}). */
