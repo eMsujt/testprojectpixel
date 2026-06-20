@@ -1,5 +1,6 @@
 package com.skyblock.core.backpack;
 
+import com.skyblock.core.menu.BackpackMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -41,7 +42,7 @@ public final class BackpackCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            sendHelp(player);
+            new BackpackMenu(player).open(player);
             return true;
         }
 
