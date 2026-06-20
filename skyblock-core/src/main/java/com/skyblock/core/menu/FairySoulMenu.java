@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 public final class FairySoulMenu extends Menu {
 
-    static final int[] ISLAND_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    static final int[] ISLAND_SLOTS = {0, 1, 2, 3, 4, 5, 6, 7};
 
     private static final int SUMMARY_SLOT = 49;
 
@@ -38,7 +38,7 @@ public final class FairySoulMenu extends Menu {
         FairySoulManager manager = FairySoulManager.getInstance();
         FairyIsland[] islands = FairyIsland.values();
 
-        for (int i = 0; i < islands.length; i++) {
+        for (int i = 0; i < islands.length && i < ISLAND_SLOTS.length; i++) {
             FairyIsland island = islands[i];
             int found = manager.getFoundCount(playerId, island);
             int total = island.getSoulCount();
