@@ -111,6 +111,10 @@ commands:
     usage: /dungeons
     aliases: [dungeon, catacombs]
     permission: skyblock.dungeons
+  enchant:
+    description: Open the enchanting table GUI.
+    usage: /enchant
+    permission: skyblock.enchant
   enchanting:
     description: View and apply SkyBlock enchantments.
     usage: /enchanting <list|info|apply|remove|view>
