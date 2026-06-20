@@ -557,6 +557,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.manager.BingoManager.getInstance();
         com.skyblock.core.bossbar.BossBarManager.getInstance();
         com.skyblock.core.manager.CollectionRewardManager.getInstance();
+        com.skyblock.core.manager.CombatStatsManager.getInstance();
         com.skyblock.core.stats.CombatStatsManager.getInstance();
         com.skyblock.core.mob.CustomMobManager.getInstance();
         com.skyblock.core.manager.DragonManager.getInstance().load(getDataFolder());
@@ -567,6 +568,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.manager.JacobManager.getInstance();
         com.skyblock.core.manager.JacobFarmingManager.getInstance();
         com.skyblock.core.magicfind.MagicFindManager.getInstance();
+        com.skyblock.core.manager.NPCManager.getInstance();
         com.skyblock.core.manager.NetherwartIslandManager.getInstance();
         networthManager = NetworthManager.getInstance();
         com.skyblock.core.notification.NotificationManager.getInstance();
