@@ -1,6 +1,8 @@
 package com.skyblock.core.mining.command;
 
+import com.skyblock.core.manager.HOTMManager;
 import com.skyblock.core.manager.MiningManager;
+import com.skyblock.core.menu.MiningMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public final class MiningCommand implements TabExecutor {
 
-    private static final List<String> SUBCOMMANDS = Arrays.asList("ores", "speedbonus", "zones");
+    private static final List<String> SUBCOMMANDS = Arrays.asList("ores", "speedbonus", "zones", "powder", "hotm", "menu");
 
     private final MiningManager miningManager;
 
@@ -52,6 +54,9 @@ public final class MiningCommand implements TabExecutor {
             case "ores"       -> handleOres(player);
             case "speedbonus" -> handleSpeedBonus(player);
             case "zones"      -> handleZones(player);
+            case "powder"     -> handlePowder(player);
+            case "hotm"       -> handleHotm(player);
+            case "menu"       -> new MiningMenu(player).open(player);
             default           -> sendHelp(player);
         }
         return true;
@@ -104,11 +109,38 @@ public final class MiningCommand implements TabExecutor {
         }
     }
 
+    private void handlePowder(Player player) {
+        UUID id = player.getUniqueId();
+        HOTMManager hotm = HOTMManager.getInstance();
+        player.sendMessage("=== Mining Powder ===");
+        player.sendMessage("Mithril Powder:  " + String.format("%,d", hotm.getMithrilPowder(id)));
+        player.sendMessage("Gemstone Powder: " + String.format("%,d", hotm.getGemstonePowder(id)));
+    }
+
+    private void handleHotm(Player player) {
+        UUID id = player.getUniqueId();
+        HOTMManager hotm = HOTMManager.getInstance();
+        int tier = hotm.getHotmTier(id);
+        long xp = hotm.getMiningXp(id);
+        player.sendMessage("=== Heart of the Mountain ===");
+        player.sendMessage("HOTM Tier: " + tier + " / " + HOTMManager.MAX_TIER);
+        player.sendMessage("HOTM XP:   " + String.format("%,d", xp));
+        player.sendMessage("Mithril Powder:  " + String.format("%,d", hotm.getMithrilPowder(id)));
+        player.sendMessage("Gemstone Powder: " + String.format("%,d", hotm.getGemstonePowder(id)));
+        if (!hotm.getHotmHistory(id).isEmpty()) {
+            List<String> history = hotm.getHotmHistory(id);
+            player.sendMessage("Last upgrade: " + history.get(history.size() - 1));
+        }
+    }
+
     private void sendHelp(Player player) {
         player.sendMessage("=== Mining Commands ===");
         player.sendMessage("/mining                — show mining level, XP, and speed bonus");
         player.sendMessage("/mining ores           — list ore types and their XP values");
         player.sendMessage("/mining speedbonus     — show the full speed-bonus table");
         player.sendMessage("/mining zones          — list mining zones and their level requirements");
+        player.sendMessage("/mining powder         — show Mithril and Gemstone powder amounts");
+        player.sendMessage("/mining hotm           — show Heart of the Mountain tier and XP");
+        player.sendMessage("/mining menu           — open the Mining overview menu");
     }
 }

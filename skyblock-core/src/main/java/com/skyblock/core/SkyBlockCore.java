@@ -357,6 +357,7 @@ public final class SkyBlockCore extends JavaPlugin {
         foragingManager = ForagingManager.getInstance();
         foragingManager.load(getDataFolder());
         miningManager = MiningManager.getInstance();
+        miningManager.load(getDataFolder());
         combatManager = CombatManager.getInstance();
         chatManager = ChatManager.getInstance();
         leaderboardManager = LeaderboardManager.getInstance();
@@ -878,6 +879,7 @@ public final class SkyBlockCore extends JavaPlugin {
         QuestManager.getInstance().save(getDataFolder());
         BackpackManager.getInstance().save(getDataFolder());
         ForagingManager.getInstance().save(getDataFolder());
+        MiningManager.getInstance().save(getDataFolder());
         CollectionManager.getInstance().save(getDataFolder());
         MailManager.getInstance().save(getDataFolder());
         CoopManager.getInstance().save(getDataFolder());

@@ -239,8 +239,8 @@ commands:
     description: Open the SkyBlock main menu.
     usage: /menu
   mining:
-    description: View mining level, XP, speed bonus, ores, and zones.
-    usage: /mining [ores|speedbonus|zones]
+    description: View mining level, XP, speed bonus, ores, zones, powder, and HOTM info.
+    usage: /mining [ores|speedbonus|zones|powder|hotm|menu]
     permission: skyblock.mining
   commission:
     description: Manage King's Commissions.
