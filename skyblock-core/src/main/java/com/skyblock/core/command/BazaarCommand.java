@@ -1,6 +1,5 @@
-package com.skyblock.core.bazaar.command;
+package com.skyblock.core.command;
 
-import com.skyblock.core.command.PlayerCommand;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BuyOrder;
 import com.skyblock.core.manager.BazaarManager.SellOrder;
