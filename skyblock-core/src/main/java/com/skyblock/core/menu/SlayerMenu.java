@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 public final class SlayerMenu extends AbstractMenu {
 
-    static final int[] BOSS_SLOTS = {20, 22, 24, 31};
+    static final int[] BOSS_SLOTS = {20, 21, 22, 23, 24};
 
     private static final int SUMMARY_SLOT = 49;
 
@@ -29,7 +29,8 @@ public final class SlayerMenu extends AbstractMenu {
             SlayerBoss.REVENANT_HORROR,
             SlayerBoss.TARANTULA_BROODFATHER,
             SlayerBoss.SVEN_PACKMASTER,
-            SlayerBoss.VOIDGLOOM_SERAPH
+            SlayerBoss.VOIDGLOOM_SERAPH,
+            SlayerBoss.INFERNO_DEMONLORD
     };
 
     private static final Map<SlayerType, Material> HEAD_ICONS = new EnumMap<>(SlayerType.class);
@@ -39,10 +40,11 @@ public final class SlayerMenu extends AbstractMenu {
         HEAD_ICONS.put(SlayerType.SPIDER,   Material.SPIDER_EYE);
         HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE);
         HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_PEARL);
+        HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_POWDER);
     }
 
     public SlayerMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§cSlayer Quests", 54);
+        super(plugin, player, "§c§lSlayer Quests", 54);
     }
 
     @Override
