@@ -1,6 +1,6 @@
-package com.skyblock.core.manager;
+package com.skyblock.core.command;
 
-import com.skyblock.core.command.PlayerCommand;
+import com.skyblock.core.manager.EssenceManager;
 import com.skyblock.core.menu.EssenceMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -132,7 +132,6 @@ public final class EssenceCommand extends PlayerCommand {
         }
     }
 
-    /** Parses an essence type name, sending an error to the player on failure. */
     private EssenceManager.EssenceType parseType(Player player, String input) {
         try {
             return EssenceManager.EssenceType.valueOf(input.toUpperCase());
@@ -143,7 +142,6 @@ public final class EssenceCommand extends PlayerCommand {
         }
     }
 
-    /** Parses a positive integer amount, sending an error to the player on failure. */
     private int parseAmount(Player player, String input) {
         try {
             int amount = Integer.parseInt(input);
