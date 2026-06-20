@@ -16,6 +16,8 @@ public class SkyBlockItem {
     private final ItemStack itemStack;
 
     public SkyBlockItem(String id, String displayName, Rarity rarity, Material material) {
+        if (id == null || id.isBlank()) throw new IllegalArgumentException("id must not be null or blank");
+        if (displayName == null || displayName.isBlank()) throw new IllegalArgumentException("displayName must not be null or blank");
         this.id = id;
         this.displayName = displayName;
         this.rarity = rarity;
@@ -27,6 +29,8 @@ public class SkyBlockItem {
     }
 
     public SkyBlockItem(String id, String displayName, Rarity rarity, ItemStack base) {
+        if (id == null || id.isBlank()) throw new IllegalArgumentException("id must not be null or blank");
+        if (displayName == null || displayName.isBlank()) throw new IllegalArgumentException("displayName must not be null or blank");
         this.id = id;
         this.displayName = displayName;
         this.rarity = rarity;
