@@ -2,21 +2,14 @@ package com.skyblock.core.command;
 
 import com.skyblock.core.manager.RunecraftingManager;
 import com.skyblock.core.manager.RunecraftingManager.RuneType;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public final class RunecraftingCommand implements CommandExecutor {
+public final class RunecraftingCommand extends PlayerCommand {
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
+    protected void openMenu(Player player) {
         RunecraftingManager manager = RunecraftingManager.getInstance();
         UUID id = player.getUniqueId();
         player.sendMessage("§5§lRunecrafting");
@@ -30,6 +23,5 @@ public final class RunecraftingCommand implements CommandExecutor {
                         + " §8(lvl " + manager.getRuneLevel(id, type) + ")");
             }
         }
-        return true;
     }
 }
