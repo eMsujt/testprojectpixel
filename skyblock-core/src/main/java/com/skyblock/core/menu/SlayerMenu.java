@@ -17,7 +17,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
 
     static final int[] BOSS_SLOTS = {11, 13, 15, 20, 22, 24};
 
-    private static final int SUMMARY_SLOT = 49;
+    private static final int SUMMARY_SLOT = 31;
 
     private static final SlayerBoss[] DISPLAYED_BOSSES = {
             SlayerBoss.REVENANT_HORROR,
@@ -40,7 +40,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     }
 
     public SlayerMenu(Player player) {
-        super(player, "§cSlayer", 6);
+        super(player, "§cSlayer", 4);
     }
 
     @Override
