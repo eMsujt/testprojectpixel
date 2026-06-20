@@ -1,6 +1,7 @@
 package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.CollectionManager;
+import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,8 +27,8 @@ public final class CollectionListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        String collection = event.getBlock().getType().name();
-        collectionManager.addItems(player.getUniqueId(), collection, 1);
+        Material material = event.getBlock().getType();
+        collectionManager.addCollection(player.getUniqueId(), material, 1);
     }
 
     @EventHandler
