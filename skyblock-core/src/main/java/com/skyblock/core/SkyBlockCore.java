@@ -487,6 +487,7 @@ public final class SkyBlockCore extends JavaPlugin {
         guildManager.load(getDataFolder());
         partyManager = PartyManager.getInstance();
         fairySoulManager = FairySoulManager.getInstance();
+        fairySoulManager.load(getDataFolder());
         harpManager = HarpManager.getInstance();
         harpManager.load(getDataFolder());
         jerryWorkshopManager = JerryWorkshopManager.getInstance();
@@ -1033,6 +1034,7 @@ public final class SkyBlockCore extends JavaPlugin {
         DungeonManager.getInstance().save(getDataFolder());
         SlayerManager.getInstance().save(getDataFolder());
         BestiaryManager.getInstance().save(getDataFolder());
+        FairySoulManager.getInstance().save(getDataFolder());
         fishingManager.save(getDataFolder());
         IslandManager.getInstance().save(getDataFolder());
         GardenManager.getInstance().save(getDataFolder());
