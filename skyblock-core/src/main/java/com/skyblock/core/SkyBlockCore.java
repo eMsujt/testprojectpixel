@@ -52,6 +52,7 @@ import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.HarpManager;
 import com.skyblock.core.manager.JerryWorkshopManager;
 import com.skyblock.core.manager.GardenManager;
+import com.skyblock.core.command.GardenCommand;
 import com.skyblock.core.guild.GuildCommand;
 import com.skyblock.core.guild.GuildManager;
 import com.skyblock.core.command.HOTMCommand;
@@ -506,8 +507,11 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
-        MenuCommand gardenCommand = new MenuCommand(p -> new GardenMenu(p).open(p));
-        getCommand("garden").setExecutor(gardenCommand);
+        GardenCommand gardenCommand = new GardenCommand(GardenManager.getInstance());
+        if (getCommand("garden") != null) {
+            getCommand("garden").setExecutor(gardenCommand);
+            getCommand("garden").setTabCompleter(gardenCommand);
+        }
         MenuCommand dungeonsCommand = new MenuCommand(p -> new DungeonsMenu(p.getUniqueId()).open(p));
         if (getCommand("dungeons") != null) {
             getCommand("dungeons").setExecutor(dungeonsCommand);

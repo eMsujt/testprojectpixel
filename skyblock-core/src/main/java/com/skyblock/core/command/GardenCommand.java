@@ -1,4 +1,4 @@
-package com.skyblock.core.garden;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.GardenManager;
 
@@ -13,21 +13,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Handles the {@code /garden} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /garden info}                              — view plot level and visitor count</li>
- *   <li>{@code /garden plot [set|add] <level>}            — (op) view or modify plot level</li>
- *   <li>{@code /garden visitors [set|add] <amount>}       — (op) view or modify visitor count</li>
- *   <li>{@code /garden crop [<crop>]}                     — view crop upgrade levels</li>
- *   <li>{@code /garden crop set <crop> <level>}           — (op) set a crop upgrade level</li>
- *   <li>{@code /garden crop add <crop> <amount>}          — (op) add to a crop upgrade level</li>
- *   <li>{@code /garden reset}                             — (op) reset all garden data</li>
- * </ul>
- * </p>
- */
 public final class GardenCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("info", "plot", "visitors", "crop", "plots", "tier", "harvest", "history", "reset");
@@ -118,10 +103,6 @@ public final class GardenCommand implements TabExecutor {
         return Collections.emptyList();
     }
 
-    // -------------------------------------------------------------------------
-    // Subcommand handlers
-    // -------------------------------------------------------------------------
-
     private void handleInfo(Player player) {
         int plotLevel = gardenManager.getPlotLevel(player.getUniqueId());
         int visitors = gardenManager.getVisitorCount(player.getUniqueId());
@@ -211,7 +192,6 @@ public final class GardenCommand implements TabExecutor {
                 }
                 return;
             }
-            // treat as crop name for view
             GardenManager.GardenCrop crop = parseCrop(player, op);
             if (crop == null) return;
             int level = gardenManager.getCropUpgrade(player.getUniqueId(), crop);
@@ -318,10 +298,6 @@ public final class GardenCommand implements TabExecutor {
         player.sendMessage("Your garden data has been reset.");
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
     private GardenManager.GardenPlot parsePlot(Player player, String input) {
         try {
             return GardenManager.GardenPlot.valueOf(input.toUpperCase());
@@ -362,5 +338,4 @@ public final class GardenCommand implements TabExecutor {
             return -1;
         }
     }
-
 }
