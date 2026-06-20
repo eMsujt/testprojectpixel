@@ -1,8 +1,8 @@
 package com.skyblock.core.menu;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import com.skyblock.core.auction.manager.AuctionHouseManager;
-import com.skyblock.core.auction.manager.AuctionHouseManager.AuctionListing;
+import com.skyblock.core.manager.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager.AuctionListing;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

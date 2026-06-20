@@ -2,7 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.chocolate.ChocolateFactoryManager;
 import com.skyblock.core.manager.AlchemyManager;
-import com.skyblock.core.auction.manager.AuctionHouseManager;
+import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BankManager.BankTier;
 import com.skyblock.core.manager.BankManager.BankType;
