@@ -1,46 +1,53 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
-import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.model.Skill;
-import com.skyblock.core.util.ItemBuilder;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.model.Skill;
+import com.skyblock.core.util.ItemBuilder;
 
-/**
- * Canonical Skills hub menu. Displays one {@link Material#PLAYER_HEAD} per
- * skill with the player's current level and total XP in the lore.
- */
 public class SkillsMenu extends AbstractMenu {
 
-    /** Skills that have a head skin — shown in the menu. */
-    private static final List<Skill> MENU_SKILLS = Arrays.stream(Skill.values())
-            .filter(s -> s.texture != null)
-            .collect(Collectors.toList());
+    private static final Skill[] SKILLS = {
+        Skill.FARMING, Skill.MINING, Skill.COMBAT, Skill.FORAGING,
+        Skill.FISHING, Skill.ENCHANTING, Skill.ALCHEMY, Skill.TAMING
+    };
 
-    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32};
+    private static final Color[] COLORS = {
+        Color.fromRGB(0,   200, 0),    // Farming  — green
+        Color.fromRGB(128, 128, 128),  // Mining   — gray
+        Color.fromRGB(200, 0,   0),    // Combat   — red
+        Color.fromRGB(100, 60,  0),    // Foraging — brown
+        Color.fromRGB(0,   150, 200),  // Fishing  — aqua
+        Color.fromRGB(150, 0,   200),  // Enchanting — purple
+        Color.fromRGB(255, 200, 0),    // Alchemy  — yellow
+        Color.fromRGB(200, 100, 0),    // Taming   — orange
+    };
+
+    // Two centred rows (1 and 2), four icons each
+    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25};
 
     public SkillsMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§aSkills", 54);
+        super(plugin, player, "§aYour Skills", 54);
     }
 
     @Override
     protected void populate() {
         fillBorder();
         SkillManager skills = SkillManager.getInstance();
-        for (int i = 0; i < MENU_SKILLS.size(); i++) {
-            Skill skill = MENU_SKILLS.get(i);
+        for (int i = 0; i < SKILLS.length; i++) {
+            Skill skill = SKILLS[i];
             long xp = skills.getSkillXP(player.getUniqueId(), skill.key());
             int level = SkillManager.levelForXp(skill.key(), xp);
-            setItem(SLOTS[i], new ItemBuilder(Material.PLAYER_HEAD)
-                    .skullTexture(skill.texture)
+            setItem(SLOTS[i], new ItemBuilder(Material.LEATHER_CHESTPLATE)
+                    .leatherColor(COLORS[i])
                     .displayName("§a" + skill.displayName)
                     .lore("§7Level: §e" + level, "§7Total XP: §e" + xp)
+                    .flags(org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES)
                     .build(),
                     e -> e.setCancelled(true));
         }
