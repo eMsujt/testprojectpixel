@@ -14,7 +14,7 @@ import java.util.List;
 public final class PetsMenu extends AbstractSkyBlockMenu {
 
     public PetsMenu(Player player) {
-        super(player, "Your Pets", 54);
+        super(player, "§aPets", 6);
     }
 
     @Override
