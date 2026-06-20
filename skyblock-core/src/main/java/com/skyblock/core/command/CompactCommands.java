@@ -65,7 +65,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new CollectionMenu(player).open(player);
+            new CollectionMenu(player.getUniqueId()).open(player);
         }
 
         @Override
