@@ -172,6 +172,7 @@ import com.skyblock.core.crystalhollows.CrystalHollowsCommand;
 import com.skyblock.core.manager.CrystalHollowsManager;
 import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.command.StorageCommand;
+import com.skyblock.core.manager.NPCManager;
 import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.npc.NpcCommand;
 import com.skyblock.core.npc.NPCListener;
@@ -269,6 +270,7 @@ public final class SkyBlockCore extends JavaPlugin {
     private CrystalHollowsManager crystalHollowsManager;
     private JacobsContestManager jacobsContestManager;
     private NpcManager npcManager;
+    private NPCManager npcDataManager;
     private NPCShopManager npcShopManager;
     private RunecraftingManager runecraftingManager;
     private ManaManager manaManager;
@@ -309,16 +311,16 @@ public final class SkyBlockCore extends JavaPlugin {
         return mayorManager;
     }
 
+    public NPCManager getNpcDataManager() {
+        return npcDataManager;
+    }
+
     public IslandManager getIslandManager() {
         return islandManager;
     }
 
     public ForgeManager getForgeManager() {
         return forgeManager;
-    }
-
-    public ProfileManager getProfileManager() {
-        return profile;
     }
 
     public com.skyblock.core.talisman.manager.TalismanManager getTalismanManager() {
@@ -521,6 +523,7 @@ public final class SkyBlockCore extends JavaPlugin {
         crystalHollowsManager = CrystalHollowsManager.getInstance();
         jacobsContestManager = JacobsContestManager.getInstance();
         npcManager = NpcManager.getInstance();
+        npcDataManager = NPCManager.getInstance();
         npcShopManager = NPCShopManager.getInstance();
         npcShopManager.registerDefaults();
         runecraftingManager = RunecraftingManager.getInstance();
