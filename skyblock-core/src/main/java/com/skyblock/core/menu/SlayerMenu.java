@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public final class SlayerMenu extends AbstractSkyBlockMenu {
 
-    static final int[] BOSS_SLOTS = {20, 21, 22, 23, 24};
+    static final int[] BOSS_SLOTS = {11, 13, 15, 20, 22, 24};
 
     private static final int SUMMARY_SLOT = 49;
 
@@ -24,7 +24,8 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
             SlayerBoss.TARANTULA_BROODFATHER,
             SlayerBoss.SVEN_PACKMASTER,
             SlayerBoss.VOIDGLOOM_SERAPH,
-            SlayerBoss.INFERNO_DEMONLORD
+            SlayerBoss.INFERNO_DEMONLORD,
+            SlayerBoss.RIFTSTALKER_BLOODFIEND
     };
 
     private static final Map<SlayerType, Material> HEAD_ICONS = new EnumMap<>(SlayerType.class);
@@ -35,10 +36,11 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
         HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE);
         HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_PEARL);
         HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_POWDER);
+        HEAD_ICONS.put(SlayerType.VAMPIRE,  Material.REDSTONE);
     }
 
     public SlayerMenu(Player player) {
-        super(player, "§cSlayer Quests", 6);
+        super(player, "§cSlayer", 6);
     }
 
     @Override
