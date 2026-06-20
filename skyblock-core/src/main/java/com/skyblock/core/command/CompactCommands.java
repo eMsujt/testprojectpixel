@@ -13,6 +13,7 @@ import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.CollectionMenu;
 import com.skyblock.core.menu.EssenceMenu;
+import com.skyblock.core.menu.WardrobeMenu;
 import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
@@ -76,6 +77,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new EssenceMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /wardrobe
+    // =========================================================================
+
+    public static final class WardrobeCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new WardrobeMenu(player).open(player);
         }
 
         @Override
