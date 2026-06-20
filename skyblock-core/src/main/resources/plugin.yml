@@ -106,10 +106,15 @@ commands:
     description: View and select your dungeon class.
     usage: /dungeonclass [list|select <class>|info <class>]
     permission: skyblock.dungeonclass
+  dungeon:
+    description: Open the dungeon menu and manage your dungeon runs.
+    usage: /dungeon [info|start|leave|complete|class|scores|floor|history]
+    aliases: [da]
+    permission: skyblock.dungeon
   dungeons:
     description: Open the Catacombs menu.
     usage: /dungeons
-    aliases: [dungeon, catacombs]
+    aliases: [catacombs]
     permission: skyblock.dungeons
   enchant:
     description: Open the enchanting table GUI.
@@ -468,6 +473,9 @@ permissions:
     default: true
   skyblock.jacobscontest:
     description: Use the /jacobscontest command to open Jacob's Farming Contest.
+    default: true
+  skyblock.dungeon:
+    description: Use the /dungeon command to open the dungeon menu.
     default: true
   skyblock.dungeons:
     description: Use the /dungeons command to open the Dungeons menu.
