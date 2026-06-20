@@ -226,14 +226,10 @@ public final class SkillListener implements Listener {
 
         player.getWorld().dropItemNaturally(event.getHook().getLocation(), loot);
 
-        FishingManager.SeaCreature creature = fishingManager.rollSeaCreature(level);
-        String summary = "Caught " + loot.getType().name()
-                + (creature != null ? " + sea creature: " + creature.name() : "");
-        fishingManager.recordCatchEvent(uuid, summary);
+        fishingManager.recordCatchEvent(uuid, "Caught " + loot.getType().name());
 
         player.sendMessage("§9[Fishing] §fYou caught §e" + loot.getType().name().replace('_', ' ')
-                + "§f! §7(+" + (int) xp + " XP)"
-                + (creature != null ? " §c+ " + creature.name().replace('_', ' ') : ""));
+                + "§f! §7(+" + (int) xp + " XP)");
     }
 
     // --- Combat ---
