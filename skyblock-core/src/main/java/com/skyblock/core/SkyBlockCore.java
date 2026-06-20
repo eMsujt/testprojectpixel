@@ -74,7 +74,6 @@ import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.command.PetCommand;
 import com.skyblock.core.ability.AbilityCommand;
 import com.skyblock.core.manager.ItemAbilityManager;
-import com.skyblock.core.manager.ItemStatsManager;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.profile.manager.ProfileManager;
@@ -1007,7 +1006,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(tamingManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.armor.ArmorSetListener(com.skyblock.core.armor.ArmorSetManager.getInstance()), this);
-        ItemStatsManager.getInstance().start(this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.EquipmentListener.getInstance(), this);
         ActionBarManager.getInstance().start(this);
         DailyRewardCommand dailyRewardCommand = new DailyRewardCommand(DailyRewardManager.getInstance(), com.skyblock.core.manager.EconomyManager.getInstance());
         if (getCommand("dailyreward") != null) {
