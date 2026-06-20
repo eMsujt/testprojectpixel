@@ -1,6 +1,6 @@
-package com.skyblock.core.manager;
+package com.skyblock.core.command;
 
-import com.skyblock.core.command.PlayerCommand;
+import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.menu.BestiaryMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,8 +18,11 @@ import java.util.stream.Collectors;
  *
  * <p>Subcommands:
  * <ul>
- *   <li>{@code /bestiary}            — show all recorded kill counts</li>
+ *   <li>{@code /bestiary}            — open the bestiary menu</li>
+ *   <li>{@code /bestiary list}       — show all recorded kill counts</li>
  *   <li>{@code /bestiary view <mob>} — show kill count for a specific mob</li>
+ *   <li>{@code /bestiary families}   — show kills grouped by family</li>
+ *   <li>{@code /bestiary categories} — show kills grouped by category</li>
  *   <li>{@code /bestiary reset}      — reset all kill counts</li>
  * </ul>
  * </p>
