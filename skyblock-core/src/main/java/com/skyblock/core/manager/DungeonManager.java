@@ -288,6 +288,32 @@ public final class DungeonManager {
         }
     }
 
+    /** A live dungeon session: the floor being run plus each participant's chosen class. */
+    public static final class DungeonSession {
+        private final DungeonFloor floor;
+        private final Map<UUID, DungeonClass> classes;
+        private final long startTimeMillis;
+
+        DungeonSession(DungeonFloor floor, Map<UUID, DungeonClass> classes, long startTimeMillis) {
+            this.floor = Objects.requireNonNull(floor, "floor");
+            this.classes = new LinkedHashMap<>(Objects.requireNonNull(classes, "classes"));
+            this.startTimeMillis = startTimeMillis;
+        }
+
+        public DungeonFloor getFloor() { return floor; }
+
+        /** Returns the participant-to-class assignments (immutable). */
+        public Map<UUID, DungeonClass> getClasses() { return Collections.unmodifiableMap(classes); }
+
+        public long getStartTimeMillis() { return startTimeMillis; }
+
+        /** Returns the class chosen by the given participant, or {@code null} if not in this session. */
+        public DungeonClass getClass(UUID playerId) { return classes.get(playerId); }
+
+        /** Returns the set of participants in this session. */
+        public Set<UUID> getParticipants() { return Collections.unmodifiableSet(classes.keySet()); }
+    }
+
     // -------------------------------------------------------------------------
     // Static floor metadata
     // -------------------------------------------------------------------------
