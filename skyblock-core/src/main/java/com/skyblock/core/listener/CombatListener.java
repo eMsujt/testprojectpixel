@@ -1,11 +1,16 @@
 package com.skyblock.core.listener;
 
+import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.combat.calculator.CombatEngine;
 import com.skyblock.core.manager.GardenManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stats.CombatStatsManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -60,14 +65,19 @@ public final class CombatListener implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         StatManager stats = StatManager.getInstance();
+        boolean isCrit = false;
 
         if (event.getDamager() instanceof Player) {
             Player attacker = (Player) event.getDamager();
             double strength = stats.getStat(attacker.getUniqueId(), Stat.STRENGTH);
             double critChance = stats.getStat(attacker.getUniqueId(), Stat.CRIT_CHANCE);
             double critDamage = stats.getStat(attacker.getUniqueId(), Stat.CRIT_DAMAGE);
-            double damage = CombatEngine.calculateDamage(event.getDamage(), strength, critChance, critDamage);
-            event.setDamage(damage);
+            isCrit = CombatEngine.rollCrit(critChance);
+            double damage = CombatEngine.applyStrength(event.getDamage(), strength);
+            if (isCrit) {
+                damage = CombatEngine.applyCrit(damage, critDamage);
+            }
+            event.setDamage(Math.max(0.0, damage));
         }
 
         if (event.getEntity() instanceof Player) {
@@ -85,6 +95,22 @@ public final class CombatListener implements Listener {
         if (event.getEntity() instanceof Player) {
             combatStats.addDamageTaken(((Player) event.getEntity()).getUniqueId(), finalDamage);
         }
+
+        spawnDamageIndicator(event.getEntity().getLocation(), finalDamage, isCrit);
+    }
+
+    private void spawnDamageIndicator(Location location, double damage, boolean isCrit) {
+        Location display = location.clone().add(0, 1.5, 0);
+        ArmorStand stand = (ArmorStand) location.getWorld().spawnEntity(display, EntityType.ARMOR_STAND);
+        String label = isCrit
+                ? "§c§l✧ " + (long) damage
+                : "§f" + (long) damage;
+        stand.setCustomName(label);
+        stand.setCustomNameVisible(true);
+        stand.setGravity(false);
+        stand.setVisible(false);
+        stand.setInvulnerable(true);
+        Bukkit.getScheduler().runTaskLater(SkyBlockCore.getInstance(), stand::remove, 30L);
     }
 
     @EventHandler
