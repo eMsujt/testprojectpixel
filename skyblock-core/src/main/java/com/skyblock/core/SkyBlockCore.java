@@ -29,7 +29,7 @@ import com.skyblock.core.fishing.command.FishingCommand;
 import com.skyblock.core.fishing.listener.TrophyFishListener;
 import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.FishingManager;
-import com.skyblock.core.fairysoul.FairySoulCommand;
+import com.skyblock.core.command.FairySoulCommand;
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.command.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
