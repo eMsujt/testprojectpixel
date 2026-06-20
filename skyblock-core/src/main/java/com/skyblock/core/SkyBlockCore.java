@@ -13,7 +13,7 @@ import com.skyblock.core.command.BankCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.core.manager.CalendarCommand;
+import com.skyblock.core.command.CalendarCommand;
 import com.skyblock.core.manager.CalendarManager;
 import com.skyblock.core.museum.MuseumCommand;
 import com.skyblock.core.manager.MuseumManager;
@@ -675,7 +675,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("runes") != null) {
             getCommand("runes").setExecutor(runeCommand);
         }
-        CalendarCommand calendarCommand = new CalendarCommand(calendarManager);
+        CalendarCommand calendarCommand = new CalendarCommand();
         if (getCommand("calendar") != null) {
             getCommand("calendar").setExecutor(calendarCommand);
             getCommand("calendar").setTabCompleter(calendarCommand);
