@@ -1,4 +1,4 @@
-package com.skyblock.core.accessory.command;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.menu.AccessoryBagMenu;
@@ -16,18 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Handles the {@code /accessorybag} command.
- *
- * <p>Subcommands:
- * <ul>
- *   <li>{@code /accessorybag list}           — list all accessories in your bag</li>
- *   <li>{@code /accessorybag add <type>}     — add an accessory to your bag</li>
- *   <li>{@code /accessorybag remove <type>}  — remove an accessory from your bag</li>
- *   <li>{@code /accessorybag bonuses}        — show total stat bonuses from bag contents</li>
- * </ul>
- * </p>
- */
 public final class AccessoryBagCommand implements TabExecutor {
 
     private static final List<String> SUBCOMMANDS = Arrays.asList("list", "add", "remove", "bonuses", "rarity", "tier");

@@ -157,7 +157,7 @@ import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.manager.AlchemyManager;
 import com.skyblock.core.command.WardrobeCommand;
 import com.skyblock.core.manager.WardrobeManager;
-import com.skyblock.core.accessory.command.AccessoryBagCommand;
+import com.skyblock.core.command.AccessoryBagCommand;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.rift.RiftCommand;
 import com.skyblock.core.manager.RiftManager;
