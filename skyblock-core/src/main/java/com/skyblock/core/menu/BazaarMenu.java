@@ -2,6 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarOrder;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,24 +33,27 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = SkyblockUtils.buildItem(Material.YELLOW_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE).displayName("§r").build();
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         List<BazaarOrder> orders = BazaarManager.getInstance().getOrdersForPlayer(player.getUniqueId());
 
         for (int i = 0; i < orders.size() && i < ORDER_SLOTS.length; i++) {
             BazaarOrder order = orders.get(i);
-            setItem(ORDER_SLOTS[i], SkyblockUtils.buildItem(Material.PAPER,
-                    "§e" + order.type().getDisplayName(),
-                    "§7Item: §f" + order.itemId(),
-                    "§7Quantity: §e" + order.quantity(),
-                    "§7Price each: §6" + (long) order.priceEach() + " coins"));
+            setItem(ORDER_SLOTS[i], new ItemBuilder(Material.PAPER)
+                    .displayName("§e" + order.type().getDisplayName())
+                    .lore(
+                            "§7Item: §f" + order.itemId(),
+                            "§7Quantity: §e" + order.quantity(),
+                            "§7Price each: §6" + (long) order.priceEach() + " coins")
+                    .build());
         }
 
         if (orders.isEmpty()) {
-            setItem(22, SkyblockUtils.buildItem(Material.BARRIER,
-                    "§cNo Orders",
-                    "§7You have no standing bazaar orders."));
+            setItem(22, new ItemBuilder(Material.BARRIER)
+                    .displayName("§cNo Orders")
+                    .lore("§7You have no standing bazaar orders.")
+                    .build());
         }
     }
 }
