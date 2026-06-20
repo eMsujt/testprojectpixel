@@ -1,8 +1,7 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.manager.HOTMManager;
-import com.skyblock.core.menu.HotmMenu;
+import com.skyblock.core.menu.HOTMMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,7 +26,7 @@ public final class HOTMCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new HotmMenu(SkyBlockCore.getInstance(), p).open(p);
+        new HOTMMenu(p).open(p);
     }
 
     @Override
