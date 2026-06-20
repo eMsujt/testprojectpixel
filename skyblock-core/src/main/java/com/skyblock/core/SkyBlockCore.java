@@ -11,7 +11,6 @@ import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.AuctionManager;
 import com.skyblock.core.menu.AuctionMenu;
 import com.skyblock.core.command.KuudraCommand;
-import com.skyblock.core.command.BankCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.PurseManager;
 import com.skyblock.core.command.BazaarCommand;
@@ -27,7 +26,6 @@ import com.skyblock.core.dungeon.command.DungeonClassCommand;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonClassManager;
 import com.skyblock.core.manager.PlayerStatManager;
-import com.skyblock.core.enchanting.EnchantingCommand;
 import com.skyblock.core.manager.EnchantingManager;
 import com.skyblock.core.fishing.command.FishingCommand;
 import com.skyblock.core.fishing.listener.TrophyFishListener;
@@ -163,7 +161,6 @@ import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.manager.AlchemyManager;
 import com.skyblock.core.command.WardrobeCommand;
 import com.skyblock.core.manager.WardrobeManager;
-import com.skyblock.core.command.AccessoryBagCommand;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.rift.RiftCommand;
 import com.skyblock.core.manager.RiftManager;
@@ -599,7 +596,7 @@ public final class SkyBlockCore extends JavaPlugin {
     public void onEnable() {
         instance = this;
         initManagers();
-        BankCommand bankCommand = new BankCommand(bankManager);
+        CompactCommands.BankCommand bankCommand = new CompactCommands.BankCommand(bankManager);
         getCommand("bank").setExecutor(bankCommand);
         getCommand("bank").setTabCompleter(bankCommand);
         getCommand("banking").setExecutor(bankCommand);
@@ -764,7 +761,7 @@ public final class SkyBlockCore extends JavaPlugin {
         KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
         getCommand("kuudra").setExecutor(kuudraCommand);
         getCommand("kuudra").setTabCompleter(kuudraCommand);
-        EnchantingCommand enchantingCommand = new EnchantingCommand(enchantingManager);
+        CompactCommands.EnchantingCommand enchantingCommand = new CompactCommands.EnchantingCommand(enchantingManager);
         getCommand("enchanting").setExecutor(enchantingCommand);
         getCommand("enchanting").setTabCompleter(enchantingCommand);
         CompactCommands.ReforgeCommand reforgeCommand = new CompactCommands.ReforgeCommand(reforgeManager);
@@ -975,7 +972,7 @@ public final class SkyBlockCore extends JavaPlugin {
         WardrobeCommand wardrobeCommand = new WardrobeCommand(wardrobeManager);
         getCommand("wardrobe").setExecutor(wardrobeCommand);
         getCommand("wardrobe").setTabCompleter(wardrobeCommand);
-        AccessoryBagCommand accessoryBagCommand = new AccessoryBagCommand(accessoryBagManager);
+        CompactCommands.AccessoryBagCommand accessoryBagCommand = new CompactCommands.AccessoryBagCommand(accessoryBagManager);
         getCommand("accessories").setExecutor(accessoryBagCommand);
         getCommand("accessories").setTabCompleter(accessoryBagCommand);
         if (getCommand("accessorybag") != null) {
