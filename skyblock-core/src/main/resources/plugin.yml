@@ -337,6 +337,7 @@ commands:
   talisman:
     description: Open the Talisman Bag GUI.
     usage: /talisman
+    aliases: [ta]
     permission: skyblock.talisman
   title:
     description: Title system
