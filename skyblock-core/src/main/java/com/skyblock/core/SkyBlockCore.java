@@ -424,6 +424,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.talisman.manager.TalismanManager.getInstance();
         com.skyblock.core.trophy.TrophyManager.getInstance();
         com.skyblock.core.manager.CarnivalManager.getInstance();
+        com.skyblock.core.manager.EnderChestManager.getInstance();
         com.skyblock.core.manager.ExperimentationTableManager.getInstance();
     }
 
