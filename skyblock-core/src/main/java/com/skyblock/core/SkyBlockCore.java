@@ -97,6 +97,7 @@ import com.skyblock.core.combat.command.CombatCommand;
 import com.skyblock.core.combat.manager.CombatManager;
 import com.skyblock.core.coop.CoopCommand;
 import com.skyblock.core.coop.CoopManager;
+import com.skyblock.core.command.CrimsonIsleCommand;
 import com.skyblock.core.crimson.CrimsonCommand;
 import com.skyblock.core.manager.ReputationManager;
 import com.skyblock.core.manager.CrimsonIsleManager;
@@ -697,7 +698,7 @@ public final class SkyBlockCore extends JavaPlugin {
         CrimsonCommand crimsonCommand = new CrimsonCommand(reputationManager);
         getCommand("crimson").setExecutor(crimsonCommand);
         getCommand("crimson").setTabCompleter(crimsonCommand);
-        MenuCommand crimsonIsleCommand = new MenuCommand(p -> new CrimsonIsleMenu(p.getUniqueId()).open(p));
+        CrimsonIsleCommand crimsonIsleCommand = new CrimsonIsleCommand(crimsonIsleManager);
         if (getCommand("crimsonisle") != null) {
             getCommand("crimsonisle").setExecutor(crimsonIsleCommand);
             getCommand("crimsonisle").setTabCompleter(crimsonIsleCommand);
