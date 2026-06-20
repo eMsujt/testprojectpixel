@@ -1,11 +1,9 @@
-package com.skyblock.core.collections.gui;
+package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.ItemBuilder;
-import com.skyblock.core.menu.CollectionsMenu;
-import com.skyblock.core.menu.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

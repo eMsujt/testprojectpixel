@@ -1,4 +1,4 @@
-package com.skyblock.core.collections.listener;
+package com.skyblock.core.listener;
 
 import com.skyblock.core.manager.CollectionManager;
 import org.bukkit.entity.Item;

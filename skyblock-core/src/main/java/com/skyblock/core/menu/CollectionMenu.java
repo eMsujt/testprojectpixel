@@ -1,7 +1,6 @@
 package com.skyblock.core.menu;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import com.skyblock.core.collections.gui.CollectionCategoryMenu;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.SkyblockUtils;

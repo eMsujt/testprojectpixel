@@ -1,6 +1,5 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.collections.gui.CollectionCategoryMenu;
 import com.skyblock.core.manager.CollectionManager;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.util.SkyblockUtils;

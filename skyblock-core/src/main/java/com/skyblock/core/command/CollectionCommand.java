@@ -1,6 +1,6 @@
 package com.skyblock.core.command;
 
-import com.skyblock.core.collections.gui.CollectionCategoryMenu;
+import com.skyblock.core.menu.CollectionCategoryMenu;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.model.CollectionCategory;
 import org.bukkit.command.Command;
