@@ -153,6 +153,19 @@ public final class DungeonManager {
     // Inner classes
     // -------------------------------------------------------------------------
 
+    /** Snapshot of a player's dungeon state: selected class, per-class XP, total completions, and run status. */
+    public record DungeonData(
+            String selectedClass,
+            Map<String, Integer> classXp,
+            int completions,
+            boolean inRun) {
+
+        public DungeonData {
+            Objects.requireNonNull(selectedClass, "selectedClass");
+            Objects.requireNonNull(classXp, "classXp");
+        }
+    }
+
     /** Immutable metadata for a single dungeon floor. */
     public static final class FloorMeta {
         private final String displayName;
