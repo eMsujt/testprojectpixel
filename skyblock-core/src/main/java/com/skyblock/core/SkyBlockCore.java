@@ -38,6 +38,7 @@ import com.skyblock.core.command.BestiaryCommand;
 import com.skyblock.core.manager.HarpCommand;
 import com.skyblock.core.manager.TrophyFishCommand;
 import com.skyblock.core.command.MenuCommand;
+import com.skyblock.core.command.EnchantCommand;
 import com.skyblock.core.command.MiningCommand;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.DungeonsMenu;
@@ -840,7 +841,7 @@ public final class SkyBlockCore extends JavaPlugin {
         com.skyblock.core.command.ForgeCommand forgeCommand = new com.skyblock.core.command.ForgeCommand(forgeManager);
         getCommand("forge").setExecutor(forgeCommand);
         getCommand("forge").setTabCompleter(forgeCommand);
-        MenuCommand enchantCommand = new MenuCommand(p -> new EnchantingMenu(p).open(p));
+        EnchantCommand enchantCommand = new EnchantCommand();
         getCommand("enchant").setExecutor(enchantCommand);
         getCommand("enchant").setTabCompleter(enchantCommand);
         MenuCommand talismanCommand = new MenuCommand(p -> new com.skyblock.core.menu.TalismanBagMenu(this, p).open(p));
