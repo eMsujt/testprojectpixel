@@ -287,7 +287,10 @@ commands:
   pet:
     description: Manage your pets.
     usage: /pet [list|equip|unequip|info]
-    aliases: [pets]
+  pets:
+    description: Open the Pet Menu GUI.
+    usage: /pets
+    permission: skyblock.pets
   profile:
     description: View your SkyBlock profile.
     usage: /profile [player]
@@ -599,6 +602,9 @@ permissions:
     default: true
   skyblock.miningzone:
     description: Use the /miningzone command to view or change your mining zone.
+    default: true
+  skyblock.pets:
+    description: Use the /pets command to open the Pet Menu GUI.
     default: true
   skyblock.repair:
     description: Use the /repair command to repair items.
