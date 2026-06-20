@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,24 +41,13 @@ public final class PetMenu extends AbstractMenu {
         PetType[] types = PetType.values();
         for (int i = 0; i < types.length && i < 36; i++) {
             PetType type = types[i];
-            String color = colorCode(type.defaultRarity);
+            String color = SkyblockUtils.rarityColor(type.defaultRarity).toString();
             setItem(9 + i, new ItemBuilder(spawnEggFor(type))
                     .displayName(color + type.getDisplayName())
                     .lore("§7Rarity: " + color + type.defaultRarity.getDisplayName(),
                           "§7Category: §e" + type.getCategory().getDisplayName())
                     .build(),
                     e -> e.setCancelled(true));
-        }
-    }
-
-    private static String colorCode(Rarity rarity) {
-        switch (rarity) {
-            case COMMON:    return "§f";
-            case UNCOMMON:  return "§a";
-            case RARE:      return "§9";
-            case EPIC:      return "§5";
-            case LEGENDARY: return "§6";
-            default:        return "§f";
         }
     }
 

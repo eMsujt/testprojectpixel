@@ -2,6 +2,7 @@ package com.skyblock.core.minion.gui;
 
 import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import com.skyblock.core.menu.Menu;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -20,16 +21,10 @@ public class MinionInventoryMenu extends Menu {
     /** Slot for the close button. */
     private static final int CLOSE_SLOT = 22;
 
-    /** Roman numerals indexed by tier number (index 0 unused). */
-    private static final String[] ROMAN = {
-            "", "I", "II", "III", "IV", "V",
-            "VI", "VII", "VIII", "IX", "X", "XI"
-    };
-
     private final MinionManager.MinionData data;
 
     public MinionInventoryMenu(MinionManager.MinionData data) {
-        super("§a" + data.type.getDisplayName() + " " + ROMAN[Math.min(data.getTier().ordinal() + 1, ROMAN.length - 1)], 3);
+        super("§a" + data.type.getDisplayName() + " " + SkyblockUtils.toRoman(data.getTier().ordinal() + 1), 3);
         this.data = data;
     }
 

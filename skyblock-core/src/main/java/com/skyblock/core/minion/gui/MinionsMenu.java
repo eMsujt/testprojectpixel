@@ -5,6 +5,7 @@ import com.skyblock.core.manager.MinionManager.MinionData;
 import com.skyblock.core.manager.MinionManager.MinionType;
 import com.skyblock.core.menu.Menu;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -35,11 +36,6 @@ public class MinionsMenu extends Menu {
         19, 20, 21, 22, 23, 24, 25,
         28, 29, 30, 31, 32, 33, 34,
         37, 38, 39, 40, 41, 42, 43
-    };
-
-    private static final String[] ROMAN = {
-        "", "I", "II", "III", "IV", "V",
-        "VI", "VII", "VIII", "IX", "X", "XI"
     };
 
     /** Broad category each minion type belongs to; controls grouping order. */
@@ -156,7 +152,6 @@ public class MinionsMenu extends Menu {
     }
 
     private static String roman(MinionManager.MinionTier tier) {
-        int index = tier.ordinal() + 1;
-        return index < ROMAN.length ? ROMAN[index] : String.valueOf(index);
+        return SkyblockUtils.toRoman(tier.ordinal() + 1);
     }
 }
