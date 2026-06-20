@@ -14,7 +14,9 @@ import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.AuctionHouseMenu;
 import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.CollectionMenu;
+import com.skyblock.core.menu.DungeonMenu;
 import com.skyblock.core.menu.ProfileMenu;
+import com.skyblock.core.menu.SlayerMenu;
 import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.MinionMenu;
 import com.skyblock.core.menu.PetsMenu;
@@ -1260,6 +1262,52 @@ public final class CompactCommands {
             for (WarpManager.SkyBlockLocation loc : WarpManager.SkyBlockLocation.values()) {
                 player.sendMessage("- " + loc.getDisplayName());
             }
+        }
+    }
+
+    // =========================================================================
+    // /slayer
+    // =========================================================================
+
+    public static final class SlayerCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new SlayerMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
+        }
+    }
+
+    // =========================================================================
+    // /dungeon
+    // =========================================================================
+
+    public static final class DungeonCommand extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new DungeonMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return Collections.emptyList();
         }
     }
 
