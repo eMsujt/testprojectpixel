@@ -1,6 +1,8 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.model.Stat;
 import com.skyblock.core.scoreboard.SkyBlockScoreboard;
+import com.skyblock.core.stats.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -83,20 +85,35 @@ public final class ScoreboardManager {
         if (board == null) {
             return;
         }
+
         CalendarManager cal = CalendarManager.getInstance();
-        String calendarDate = ChatColor.AQUA + cal.getCurrentMonth().getDisplayName()
-                + " " + cal.getCurrentDayOfMonth();
+        int dom = cal.getCurrentDayOfMonth();
+        String dateLine = ChatColor.AQUA + cal.getCurrentMonth().getDisplayName()
+                + " " + dom + ordinal(dom);
+
+        StatsManager.PlayerStats stats =
+                StatsManager.getInstance().getCachedStats(player.getUniqueId());
+        int maxHealth = (int) stats.getStat(Stat.HEALTH);
+        int currentHealth = maxHealth > 0
+                ? (int) Math.ceil(player.getHealth() / player.getMaxHealth() * maxHealth)
+                : (int) player.getHealth();
+        int defense = (int) stats.getStat(Stat.DEFENSE);
+
         double coins = EconomyManager.getInstance().getBalance(player.getUniqueId());
+
         List<String> lines = Arrays.asList(
-            calendarDate,
             " ",
-            ChatColor.YELLOW + "Coins",
-            ChatColor.WHITE + formatCoins(coins),
+            dateLine,
             "  ",
-            ChatColor.AQUA + "Location",
-            ChatColor.WHITE + player.getWorld().getName(),
+            ChatColor.RED + "❤ " + ChatColor.GREEN + "Health "
+                    + ChatColor.GREEN + currentHealth + ChatColor.RED + "/" + maxHealth,
+            ChatColor.GREEN + "❈ Defense " + ChatColor.GREEN + defense,
             "   ",
-            ChatColor.GRAY + "skyblock.example.net"
+            ChatColor.GOLD + "Purse: " + ChatColor.WHITE + formatCoins(coins),
+            "    ",
+            ChatColor.GRAY + "⏣ " + ChatColor.AQUA + player.getWorld().getName(),
+            "     ",
+            ChatColor.GRAY + "www.hypixel.net"
         );
         board.updateLines(lines);
     }
@@ -109,5 +126,15 @@ public final class ScoreboardManager {
             return String.format("%.1fK", coins / 1_000);
         }
         return String.format("%.0f", coins);
+    }
+
+    private static String ordinal(int n) {
+        if (n >= 11 && n <= 13) return "th";
+        switch (n % 10) {
+            case 1: return "st";
+            case 2: return "nd";
+            case 3: return "rd";
+            default: return "th";
+        }
     }
 }
