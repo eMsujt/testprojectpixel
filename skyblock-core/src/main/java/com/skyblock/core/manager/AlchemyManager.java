@@ -1,8 +1,5 @@
 package com.skyblock.core.manager;
 
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -24,7 +21,7 @@ import java.util.UUID;
  *
  * <p>Not thread-safe; synchronize externally if needed.</p>
  */
-public final class AlchemyManager implements Listener {
+public final class AlchemyManager {
 
     /** Potion types representing the output potions produced by brewing. */
     public enum PotionType {
@@ -164,12 +161,10 @@ public final class AlchemyManager implements Listener {
         return INSTANCE;
     }
 
-    @EventHandler
-    public void onBrew(BrewEvent event) {
-        long now = System.currentTimeMillis();
+    public void processCompletedJobs(long nowMillis) {
         List<UUID> completed = new ArrayList<>();
         for (UUID uuid : activeJobs.keySet()) {
-            if (activeJobs.get(uuid).isComplete(now)) {
+            if (activeJobs.get(uuid).isComplete(nowMillis)) {
                 completed.add(uuid);
             }
         }
