@@ -301,6 +301,10 @@ commands:
     description: View and manage your personal storage pages.
     usage: /storage [info|upgrade|reset]
     permission: skyblock.storage
+  runes:
+    description: Open the Runes menu.
+    usage: /runes
+    permission: skyblock.runes
   talisman:
     description: Open the Talisman Bag GUI.
     usage: /talisman
