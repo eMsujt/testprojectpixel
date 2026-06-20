@@ -37,7 +37,7 @@ public final class ProfileCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new ProfileMenu(SkyBlockCore.getInstance(), p).open(p);
+        new ProfileMenu(p).open(p);
     }
 
     @Override
