@@ -3,7 +3,6 @@ package com.skyblock.core.util;
 import com.skyblock.core.model.Rarity;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
 import org.bukkit.inventory.ItemStack;
@@ -15,22 +14,9 @@ import java.util.function.BiConsumer;
 
 public final class SkyblockUtils {
 
-    public static final String PREFIX = "§6§lSkyBlock §r§7» ";
+    public static final String PREFIX = ChatUtil.PREFIX;
 
     private SkyblockUtils() {}
-
-    public static String colorize(String message) {
-        if (message == null) return "";
-        return ChatColor.translateAlternateColorCodes('&', message);
-    }
-
-    public static void sendPrefixed(Player player, String... messages) {
-        if (player == null || messages == null) return;
-        for (String message : messages) {
-            if (message == null) continue;
-            player.sendMessage(PREFIX + colorize(message));
-        }
-    }
 
     public static ItemStack createSkull(String base64Texture) {
         return createSkullWithTexture(base64Texture, null, null);
