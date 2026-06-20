@@ -71,16 +71,17 @@ public final class SkillListener implements Listener {
             Map.entry(Material.NETHER_GOLD_ORE,         15L)
     );
 
-    private static final Map<Material, Long> CROP_XP = Map.of(
-            Material.WHEAT,       3L,
-            Material.CARROTS,     3L,
-            Material.POTATOES,    3L,
-            Material.BEETROOTS,   3L,
-            Material.NETHER_WART, 5L,
-            Material.MELON,       2L,
-            Material.PUMPKIN,     5L,
-            Material.COCOA,       3L,
-            Material.SUGAR_CANE,  3L
+    private static final Map<Material, Long> CROP_XP = Map.ofEntries(
+            Map.entry(Material.WHEAT,          4L),
+            Map.entry(Material.CARROTS,        3L),
+            Map.entry(Material.POTATOES,       3L),
+            Map.entry(Material.BEETROOTS,      3L),
+            Map.entry(Material.NETHER_WART,    5L),
+            Map.entry(Material.MELON,          4L),
+            Map.entry(Material.PUMPKIN,        5L),
+            Map.entry(Material.COCOA,          3L),
+            Map.entry(Material.SUGAR_CANE,     3L),
+            Map.entry(Material.CACTUS,         2L)
     );
 
     private static final Map<Material, CropType> CROP_MAP = new EnumMap<>(Material.class);
