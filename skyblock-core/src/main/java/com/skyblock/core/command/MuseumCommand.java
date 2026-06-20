@@ -1,4 +1,4 @@
-package com.skyblock.core.museum;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.MuseumManager;
 
