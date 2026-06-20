@@ -1,4 +1,4 @@
-package com.skyblock.core.reforge;
+package com.skyblock.core.command;
 
 import com.skyblock.core.manager.ReforgeManager;
 import org.bukkit.command.Command;
