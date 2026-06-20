@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.backpack.BackpackManager;
-import com.skyblock.core.backpack.BackpackManager.BackpackTier;
+import com.skyblock.core.manager.BackpackManager;
+import com.skyblock.core.manager.BackpackManager.BackpackTier;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

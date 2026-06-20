@@ -80,7 +80,7 @@ import com.skyblock.core.manager.IslandManager;
 import com.skyblock.core.profile.manager.ProfileManager;
 import com.skyblock.core.manager.ReforgeManager;
 import com.skyblock.core.backpack.BackpackCommand;
-import com.skyblock.core.backpack.BackpackManager;
+import com.skyblock.core.manager.BackpackManager;
 import com.skyblock.core.event.EventCommand;
 import com.skyblock.core.manager.EventManager;
 import com.skyblock.core.chat.ChatCommand;

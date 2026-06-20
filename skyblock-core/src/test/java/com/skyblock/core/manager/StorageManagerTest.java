@@ -1,7 +1,7 @@
 package com.skyblock.core.manager;
 
-import com.skyblock.core.backpack.BackpackManager;
-import com.skyblock.core.backpack.BackpackManager.BackpackTier;
+import com.skyblock.core.manager.BackpackManager;
+import com.skyblock.core.manager.BackpackManager.BackpackTier;
 import com.skyblock.core.vault.VaultManager;
 import com.skyblock.core.vault.VaultManager.VaultTier;
 import org.junit.jupiter.api.Test;

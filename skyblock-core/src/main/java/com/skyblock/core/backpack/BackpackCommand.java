@@ -1,5 +1,6 @@
 package com.skyblock.core.backpack;
 
+import com.skyblock.core.manager.BackpackManager;
 import com.skyblock.core.menu.BackpackMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -87,7 +88,7 @@ public final class BackpackCommand implements TabExecutor {
             return;
         }
         if (args.length < 2) {
-            player.sendMessage("Usage: /backpack upgrade <SMALL|MEDIUM|LARGE|JUMBO>");
+            player.sendMessage("Usage: /backpack upgrade <SMALL|MEDIUM|LARGE|GREATER>");
             return;
         }
         BackpackManager.BackpackTier tier;
