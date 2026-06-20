@@ -120,6 +120,8 @@ import com.skyblock.core.mailbox.MailboxManager;
 import com.skyblock.core.friend.FriendCommand;
 import com.skyblock.core.friend.FriendManager;
 import com.skyblock.core.manager.ForgeManager;
+import com.skyblock.core.manager.RepairManager;
+import com.skyblock.core.command.RepairCommand;
 import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.manager.MiningManager;
@@ -774,6 +776,11 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("season") != null) {
             getCommand("season").setExecutor(seasonCommand);
             getCommand("season").setTabCompleter(seasonCommand);
+        }
+        RepairCommand repairCommand = new RepairCommand(RepairManager.getInstance());
+        if (getCommand("repair") != null) {
+            getCommand("repair").setExecutor(repairCommand);
+            getCommand("repair").setTabCompleter(repairCommand);
         }
     }
 
