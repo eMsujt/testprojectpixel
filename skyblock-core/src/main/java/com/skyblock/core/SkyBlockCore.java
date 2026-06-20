@@ -67,6 +67,8 @@ import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
 import com.skyblock.core.pet.PetCommand;
+import com.skyblock.core.ability.AbilityCommand;
+import com.skyblock.core.manager.ItemAbilityManager;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.command.IslandCommand;
 import com.skyblock.core.manager.IslandManager;
@@ -452,6 +454,11 @@ public final class SkyBlockCore extends JavaPlugin {
         PetCommand petCommand = new PetCommand(petManager);
         getCommand("pet").setExecutor(petCommand);
         getCommand("pet").setTabCompleter(petCommand);
+        AbilityCommand abilityCommand = new AbilityCommand(ItemAbilityManager.getInstance());
+        if (getCommand("ability") != null) {
+            getCommand("ability").setExecutor(abilityCommand);
+            getCommand("ability").setTabCompleter(abilityCommand);
+        }
         MenuCommand petsCommand = new MenuCommand(p -> new PetMenu(this, p).open(p));
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
