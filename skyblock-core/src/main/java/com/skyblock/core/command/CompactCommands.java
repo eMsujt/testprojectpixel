@@ -1258,7 +1258,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new SkillsMenu(player).open(player);
+            new SkillsMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player);
         }
 
         @Override
