@@ -656,7 +656,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getCommand("fishing").setExecutor(fishingCommand);
         getCommand("fishing").setTabCompleter(fishingCommand);
         getServer().getPluginManager().registerEvents(new TrophyFishListener(trophyFishManager, fishingManager), this);
-        CompactCommands.FairySoulCommand fairySoulCommand = new CompactCommands.FairySoulCommand(fairySoulManager);
+        CompactCommands.FairySoulCommand fairySoulCommand = new CompactCommands.FairySoulCommand();
         if (getCommand("fairysoul") != null) {
             getCommand("fairysoul").setExecutor(fairySoulCommand);
             getCommand("fairysoul").setTabCompleter(fairySoulCommand);
