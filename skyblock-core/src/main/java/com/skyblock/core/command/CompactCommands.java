@@ -2,7 +2,6 @@ package com.skyblock.core.command;
 
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.CalendarManager;
-import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.HOTMManager;
 import com.skyblock.core.manager.MayorManager;
 import com.skyblock.core.manager.MiningManager;
@@ -190,111 +189,22 @@ public final class CompactCommands {
     // /fairysoul
     // =========================================================================
 
-    public static final class FairySoulCommand implements TabExecutor {
+    public static final class FairySoulCommand extends PlayerCommand {
 
-        private static final List<String> SUBCOMMANDS = Arrays.asList("count", "areas", "stats", "collect");
-
-        private final FairySoulManager fairySoulManager;
-
-        public FairySoulCommand(FairySoulManager fairySoulManager) {
-            this.fairySoulManager = fairySoulManager;
+        @Override
+        protected void openMenu(Player player) {
+            new FairySoulMenu(player.getUniqueId()).open(player);
         }
 
         @Override
-        public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            if (!(sender instanceof Player player)) {
-                sender.sendMessage("This command can only be used by players.");
-                return true;
-            }
-            if (args.length == 0) {
-                new FairySoulMenu(player.getUniqueId()).open(player);
-                return true;
-            }
-            switch (args[0].toLowerCase()) {
-                case "count"   -> handleCount(player);
-                case "areas"   -> handleAreas(player);
-                case "stats"   -> handleStats(player);
-                case "collect" -> handleCollect(player, args);
-                default        -> player.sendMessage("Unknown subcommand. Usage: /fairysoul <count|areas|stats|collect>");
-            }
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
             return true;
         }
 
         @Override
         public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            if (args.length == 1) {
-                String prefix = args[0].toLowerCase();
-                return SUBCOMMANDS.stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
-            }
-            if (args.length == 2 && args[0].equalsIgnoreCase("collect")) {
-                String prefix = args[1].toUpperCase();
-                return Arrays.stream(FairySoulManager.FairyIsland.values())
-                        .map(Enum::name)
-                        .filter(n -> n.startsWith(prefix))
-                        .collect(Collectors.toList());
-            }
             return Collections.emptyList();
-        }
-
-        private void handleCount(Player player) {
-            int count = fairySoulManager.getFoundCount(player.getUniqueId());
-            int total = fairySoulManager.getTotalSouls();
-            player.sendMessage("Fairy Souls found: " + count + " / " + total);
-        }
-
-        private void handleAreas(Player player) {
-            player.sendMessage("=== Fairy Soul Islands ===");
-            for (FairySoulManager.FairyIsland island : FairySoulManager.FairyIsland.values()) {
-                int found = fairySoulManager.getFoundCount(player.getUniqueId(), island);
-                player.sendMessage(island.getDisplayName() + ": " + found + " / " + island.getSoulCount());
-            }
-        }
-
-        private void handleStats(Player player) {
-            Map<Stat, Double> bonuses = fairySoulManager.getStatBonuses(player.getUniqueId());
-            if (bonuses.isEmpty()) {
-                player.sendMessage("You have not earned any fairy soul stat bonuses yet.");
-                return;
-            }
-            player.sendMessage("=== Fairy Soul Bonuses ===");
-            bonuses.forEach((stat, amount) ->
-                    player.sendMessage(stat.getSymbol() + " " + stat.getDisplayName() + ": +" + amount));
-        }
-
-        private void handleCollect(Player player, String[] args) {
-            if (!player.isOp()) {
-                player.sendMessage("You do not have permission to use this subcommand.");
-                return;
-            }
-            if (args.length < 3) {
-                player.sendMessage("Usage: /fairysoul collect <island> <index>");
-                return;
-            }
-            FairySoulManager.FairyIsland island;
-            try {
-                island = FairySoulManager.FairyIsland.valueOf(args[1].toUpperCase());
-            } catch (IllegalArgumentException e) {
-                player.sendMessage("Unknown island: " + args[1]);
-                return;
-            }
-            int soulIndex;
-            try {
-                soulIndex = Integer.parseInt(args[2]);
-            } catch (NumberFormatException e) {
-                player.sendMessage("Invalid soul index: must be an integer.");
-                return;
-            }
-            try {
-                boolean added = fairySoulManager.collectSoul(player.getUniqueId(), island, soulIndex);
-                if (added) {
-                    player.sendMessage("Fairy Soul found! Total: "
-                            + fairySoulManager.getFoundCount(player.getUniqueId()));
-                } else {
-                    player.sendMessage("You have already found that fairy soul.");
-                }
-            } catch (IllegalArgumentException e) {
-                player.sendMessage(e.getMessage());
-            }
         }
     }
 
