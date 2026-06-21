@@ -39,6 +39,7 @@ import com.skyblock.core.menu.ForgeMenu;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.HotmMenu;
 import com.skyblock.core.menu.IslandMenu;
+import com.skyblock.core.menu.ProfileMenu;
 import com.skyblock.core.menu.MayorMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
@@ -3269,6 +3270,29 @@ public final class Commands {
         @Override
         protected void openMenu(Player player) {
             new IslandMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /profile (simple menu opener)
+    // =========================================================================
+
+    public static final class ProfileCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new ProfileMenu(player).open(player);
         }
 
         @Override
