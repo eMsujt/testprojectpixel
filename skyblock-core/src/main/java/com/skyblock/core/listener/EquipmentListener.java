@@ -41,22 +41,33 @@ public final class EquipmentListener implements Listener {
 
     @EventHandler
     public void onItemHeld(PlayerItemHeldEvent event) {
-        rescanArmor(event.getPlayer());
+        Player player = event.getPlayer();
+        // The held slot hasn't switched yet, so read the item in the slot being switched TO.
+        recompute(player, player.getInventory().getItem(event.getNewSlot()));
     }
 
     private void rescanArmor(Player player) {
+        recompute(player, player.getInventory().getItemInMainHand());
+    }
+
+    /** Recomputes a player's gear bonuses from their armor plus the given held item. */
+    private void recompute(Player player, ItemStack heldItem) {
         UUID id = player.getUniqueId();
         StatManager sm = StatManager.getInstance();
         sm.clearBonuses(id);
         ItemStatManager ism = ItemStatManager.getInstance();
         for (ItemStack piece : player.getInventory().getArmorContents()) {
-            if (piece == null) {
-                continue;
-            }
-            Map<Stat, Integer> stats = ism.getStats(piece);
-            for (Map.Entry<Stat, Integer> entry : stats.entrySet()) {
-                sm.addBonus(id, entry.getKey(), entry.getValue());
-            }
+            applyItemStats(sm, ism, id, piece);
+        }
+        applyItemStats(sm, ism, id, heldItem);
+    }
+
+    private static void applyItemStats(StatManager sm, ItemStatManager ism, UUID id, ItemStack item) {
+        if (item == null) {
+            return;
+        }
+        for (Map.Entry<Stat, Integer> entry : ism.getStats(item).entrySet()) {
+            sm.addBonus(id, entry.getKey(), entry.getValue());
         }
     }
 }
