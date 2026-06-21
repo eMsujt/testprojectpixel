@@ -49,7 +49,7 @@ public final class CollectionsMenu extends AbstractSkyBlockMenu {
         java.util.UUID uuid = player.getUniqueId();
         CollectionCategory[] categories = CollectionCategory.values();
 
-        for (int i = 0; i < categories.length; i++) {
+        for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
             CollectionCategory cat = categories[i];
             long total = manager.getTotalForCategory(uuid, cat);
             int tiers = 0;
