@@ -23,32 +23,17 @@ import java.util.UUID;
  */
 public final class GardenManager {
 
-    /** Individual purchasable plots in the Garden (24 total). */
+    /** Individual purchasable plots in the Garden. */
     public enum GardenPlot {
-        CENTER("Center"),
-        NORTH_1("North 1"),
-        NORTH_2("North 2"),
-        NORTH_3("North 3"),
-        NORTH_4("North 4"),
-        SOUTH_1("South 1"),
-        SOUTH_2("South 2"),
-        SOUTH_3("South 3"),
-        SOUTH_4("South 4"),
-        EAST_1("East 1"),
-        EAST_2("East 2"),
-        EAST_3("East 3"),
-        EAST_4("East 4"),
-        WEST_1("West 1"),
-        WEST_2("West 2"),
-        WEST_3("West 3"),
-        WEST_4("West 4"),
-        NORTH_EAST_1("North East 1"),
-        NORTH_EAST_2("North East 2"),
-        NORTH_EAST_3("North East 3"),
-        NORTH_WEST_1("North West 1"),
-        NORTH_WEST_2("North West 2"),
-        SOUTH_EAST_1("South East 1"),
-        SOUTH_WEST_1("South West 1");
+        PLOT_1("Plot 1"),
+        PLOT_2("Plot 2"),
+        PLOT_3("Plot 3"),
+        PLOT_4("Plot 4"),
+        PLOT_5("Plot 5"),
+        PLOT_6("Plot 6"),
+        PLOT_7("Plot 7"),
+        PLOT_8("Plot 8"),
+        PLOT_9("Plot 9");
 
         private final String displayName;
 
@@ -384,7 +369,7 @@ public final class GardenManager {
      */
     public void setPlotLevel(UUID playerId, int level) {
         Objects.requireNonNull(playerId, "playerId");
-        plotLevels.put(playerId, Math.max(1, Math.min(24, level)));
+        plotLevels.put(playerId, Math.max(1, Math.min(GardenPlot.values().length, level)));
     }
 
     /**
@@ -397,7 +382,7 @@ public final class GardenManager {
     public int addPlotLevel(UUID playerId, int amount) {
         Objects.requireNonNull(playerId, "playerId");
         int current = getPlotLevel(playerId);
-        int updated = Math.max(1, Math.min(24, current + amount));
+        int updated = Math.max(1, Math.min(GardenPlot.values().length, current + amount));
         plotLevels.put(playerId, updated);
         return updated;
     }
