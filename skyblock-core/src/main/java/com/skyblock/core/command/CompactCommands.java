@@ -965,7 +965,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player p) {
-            new BankMenu(p.getUniqueId()).open(p);
+            new BankMenu(p).open(p);
         }
 
         @Override
@@ -2899,7 +2899,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new BankMenu(player.getUniqueId()).open(player);
+            new BankMenu(player).open(player);
         }
 
         @Override
