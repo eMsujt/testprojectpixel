@@ -27,7 +27,7 @@ public final class WardrobeMenu extends Menu {
     private final UUID playerId;
 
     public WardrobeMenu(UUID playerId) {
-        super("§eWardrobe", 6);
+        super("§6Wardrobe", 6);
         this.playerId = playerId;
     }
 
