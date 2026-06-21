@@ -27,6 +27,7 @@ import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.BestiaryMenu;
 import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.CollectionsMenu;
+import com.skyblock.core.menu.CombatMenu;
 import com.skyblock.core.menu.DungeonsMenu;
 import com.skyblock.core.menu.EnchantingMenu;
 import com.skyblock.core.menu.EssenceMenu;
@@ -3176,6 +3177,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new WardrobeMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /combat (simple menu opener)
+    // =========================================================================
+
+    public static final class CombatCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new CombatMenu(player).open(player);
         }
 
         @Override
