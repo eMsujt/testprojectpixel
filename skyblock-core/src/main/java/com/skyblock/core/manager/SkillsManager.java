@@ -55,12 +55,12 @@ public final class SkillsManager {
     }
 
     /**
-     * Adds XP (fractional part truncated) to the player's skill, detects any level-ups,
-     * applies the corresponding stat rewards, and returns the new total XP.
+     * Adds XP (rounded to the nearest whole point) to the player's skill, detects any
+     * level-ups, applies the corresponding stat rewards, and returns the new total XP.
      */
     public long addXp(UUID playerId, Skill skill, double amount) {
         int oldLevel = delegate.getLevel(playerId, skill);
-        long newTotal = delegate.addXP(playerId, skill, (long) amount);
+        long newTotal = delegate.addXP(playerId, skill, Math.round(amount));
         int newLevel = delegate.getLevel(playerId, skill);
         if (newLevel > oldLevel) {
             delegate.grantLevelUpRewards(playerId, skill, oldLevel, newLevel);
