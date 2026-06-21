@@ -1,6 +1,11 @@
 package com.skyblock.core;
 
 import com.skyblock.core.bank.model.BankAccount;
+import com.skyblock.core.manager.AccessoryManager;
+import com.skyblock.core.foraging.ForagingManager;
+import com.skyblock.core.foraging.ForagingManager.TreeType;
+import com.skyblock.core.model.AccessoryRarity;
+import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionCategory;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionType;
@@ -5941,6 +5946,316 @@ class ManagersTest {
         void addXp_returnsNewTotalXP() {
             long total = manager.addXp(playerId, Skill.FORAGING, 100.0);
             assertEquals(100L, total);
+        }
+    }
+
+    @Nested
+    class ForagingManagerTests {
+
+        private ForagingManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = ForagingManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.reset(playerId);
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(ForagingManager.getInstance(), ForagingManager.getInstance());
+        }
+
+        @Test
+        void getXp_freshPlayer_returnsZero() {
+            assertEquals(0.0, manager.getXp(playerId));
+        }
+
+        @Test
+        void getLevel_freshPlayer_returnsOne() {
+            assertEquals(1, manager.getLevel(playerId));
+        }
+
+        @Test
+        void getChops_freshPlayer_returnsZero() {
+            assertEquals(0, manager.getChops(playerId, TreeType.OAK));
+        }
+
+        @Test
+        void recordChop_xp_accumulatesXp() {
+            manager.recordChop(playerId, 30);
+            manager.recordChop(playerId, 20);
+            assertEquals(50.0, manager.getXp(playerId));
+        }
+
+        @Test
+        void recordChop_xp_nonPositive_throws() {
+            assertThrows(IllegalArgumentException.class, () -> manager.recordChop(playerId, 0));
+        }
+
+        @Test
+        void recordChop_xp_nullPlayer_throws() {
+            assertThrows(NullPointerException.class, () -> manager.recordChop(null, 10));
+        }
+
+        @Test
+        void recordChop_tree_incrementsChopCountAndReturnsTotal() {
+            assertEquals(3, manager.recordChop(playerId, TreeType.OAK, 3));
+            assertEquals(5, manager.recordChop(playerId, TreeType.OAK, 2));
+            assertEquals(5, manager.getChops(playerId, TreeType.OAK));
+        }
+
+        @Test
+        void recordChop_tree_awardsBaseXpTimesAmount() {
+            manager.recordChop(playerId, TreeType.OAK, 2);
+            assertEquals(TreeType.OAK.getBaseXp() * 2.0, manager.getXp(playerId));
+        }
+
+        @Test
+        void recordChop_tree_nonPositiveAmount_throws() {
+            assertThrows(IllegalArgumentException.class, () -> manager.recordChop(playerId, TreeType.OAK, 0));
+        }
+
+        @Test
+        void recordChop_tree_nullTree_throws() {
+            assertThrows(NullPointerException.class, () -> manager.recordChop(playerId, null, 1));
+        }
+
+        @Test
+        void getChops_differentTrees_trackedSeparately() {
+            manager.recordChop(playerId, TreeType.OAK, 1);
+            manager.recordChop(playerId, TreeType.BIRCH, 4);
+            assertEquals(1, manager.getChops(playerId, TreeType.OAK));
+            assertEquals(4, manager.getChops(playerId, TreeType.BIRCH));
+        }
+
+        @Test
+        void getLevel_enoughXp_raisesLevel() {
+            // level 2 requires 50 * 2^2 = 200 xp
+            manager.recordChop(playerId, 200);
+            assertEquals(2, manager.getLevel(playerId));
+        }
+
+        @Test
+        void getSpeedMultiplier_levelOne_returnsBase() {
+            assertEquals(1.0, manager.getSpeedMultiplier(1));
+        }
+
+        @Test
+        void getSpeedMultiplier_levelFifty_returnsMax() {
+            assertEquals(2.60, manager.getSpeedMultiplier(50));
+        }
+
+        @Test
+        void getSpeedMultiplier_outOfRange_returnsBase() {
+            assertEquals(1.0, manager.getSpeedMultiplier(0));
+        }
+
+        @Test
+        void getSpeedMultiplierForPlayer_freshPlayer_returnsBase() {
+            assertEquals(1.0, manager.getSpeedMultiplierForPlayer(playerId));
+        }
+
+        @Test
+        void getArea_freshPlayer_returnsNull() {
+            assertNull(manager.getArea(playerId));
+        }
+
+        @Test
+        void setArea_thenGetArea_returnsArea() {
+            manager.setArea(playerId, ForagingManager.ForagingArea.BIRCH_PARK);
+            assertEquals(ForagingManager.ForagingArea.BIRCH_PARK, manager.getArea(playerId));
+        }
+
+        @Test
+        void setArea_nullArea_throws() {
+            assertThrows(NullPointerException.class, () -> manager.setArea(playerId, null));
+        }
+
+        @Test
+        void clearArea_removesArea() {
+            manager.setArea(playerId, ForagingManager.ForagingArea.BIRCH_PARK);
+            manager.clearArea(playerId);
+            assertNull(manager.getArea(playerId));
+        }
+
+        @Test
+        void reset_clearsAllProgress() {
+            manager.recordChop(playerId, TreeType.OAK, 5);
+            manager.setArea(playerId, ForagingManager.ForagingArea.BIRCH_PARK);
+            manager.reset(playerId);
+            assertEquals(0.0, manager.getXp(playerId));
+            assertEquals(1, manager.getLevel(playerId));
+            assertEquals(0, manager.getChops(playerId, TreeType.OAK));
+            assertNull(manager.getArea(playerId));
+        }
+
+        @Test
+        void woodXpMap_containsEveryTreeMaterial() {
+            for (TreeType tree : TreeType.values()) {
+                assertEquals(tree.getBaseXp(), ForagingManager.WOOD_XP_MAP.get(tree.getMaterial()));
+            }
+        }
+    }
+
+    @Nested
+    class AccessoryManagerTests {
+
+        private AccessoryManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = AccessoryManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.clearAccessories(playerId);
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(AccessoryManager.getInstance(), AccessoryManager.getInstance());
+        }
+
+        @Test
+        void getRarity_unsetAccessory_returnsCommon() {
+            assertEquals(AccessoryRarity.COMMON, manager.getRarity(playerId, TalismanType.SPEED_TALISMAN));
+        }
+
+        @Test
+        void setRarity_thenGetRarity_returnsAssignedRarity() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.EPIC);
+            assertEquals(AccessoryRarity.EPIC, manager.getRarity(playerId, TalismanType.SPEED_TALISMAN));
+        }
+
+        @Test
+        void setRarity_nullRarity_throws() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, null));
+        }
+
+        @Test
+        void removeAccessory_existing_returnsTrueAndResetsToCommon() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.RARE);
+            assertTrue(manager.removeAccessory(playerId, TalismanType.SPEED_TALISMAN));
+            assertEquals(AccessoryRarity.COMMON, manager.getRarity(playerId, TalismanType.SPEED_TALISMAN));
+        }
+
+        @Test
+        void removeAccessory_absent_returnsFalse() {
+            assertFalse(manager.removeAccessory(playerId, TalismanType.SPEED_TALISMAN));
+        }
+
+        @Test
+        void getAccessories_freshPlayer_returnsEmptyMap() {
+            assertTrue(manager.getAccessories(playerId).isEmpty());
+        }
+
+        @Test
+        void getAccessories_returnsUnmodifiableView() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.RARE);
+            Map<TalismanType, AccessoryRarity> accessories = manager.getAccessories(playerId);
+            assertThrows(UnsupportedOperationException.class,
+                    () -> accessories.put(TalismanType.SPEED_RING, AccessoryRarity.EPIC));
+        }
+
+        @Test
+        void magicalPowerFor_matchesRarityTable() {
+            assertEquals(3, AccessoryManager.magicalPowerFor(AccessoryRarity.COMMON));
+            assertEquals(16, AccessoryManager.magicalPowerFor(AccessoryRarity.LEGENDARY));
+            assertEquals(22, AccessoryManager.magicalPowerFor(AccessoryRarity.MYTHIC));
+        }
+
+        @Test
+        void magicalPowerFor_nullRarity_throws() {
+            assertThrows(NullPointerException.class, () -> AccessoryManager.magicalPowerFor(null));
+        }
+
+        @Test
+        void getTotalMagicalPower_freshPlayer_returnsZero() {
+            assertEquals(0, manager.getTotalMagicalPower(playerId));
+        }
+
+        @Test
+        void getTotalMagicalPower_sumsAllAccessories() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.LEGENDARY); // 16
+            manager.setRarity(playerId, TalismanType.SPEED_RING, AccessoryRarity.RARE);          // 8
+            assertEquals(24, manager.getTotalMagicalPower(playerId));
+        }
+
+        @Test
+        void getAvailableTuningPoints_isMagicalPowerOverTen() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.MYTHIC); // 22
+            manager.setRarity(playerId, TalismanType.SPEED_RING, AccessoryRarity.RARE);       // 8 -> 30 total
+            assertEquals(3, manager.getAvailableTuningPoints(playerId));
+        }
+
+        @Test
+        void getTuningPoints_freshPlayer_returnsZero() {
+            assertEquals(0, manager.getTuningPoints(playerId, Stat.STRENGTH));
+        }
+
+        @Test
+        void setTuningPoints_withinAvailable_appliesAllocation() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.MYTHIC); // 22 -> 2 points
+            assertTrue(manager.setTuningPoints(playerId, Stat.STRENGTH, 2));
+            assertEquals(2, manager.getTuningPoints(playerId, Stat.STRENGTH));
+            assertEquals(2, manager.getAllocatedTuningPoints(playerId));
+        }
+
+        @Test
+        void setTuningPoints_exceedingAvailable_isRejected() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.RARE); // 8 -> 0 points
+            assertFalse(manager.setTuningPoints(playerId, Stat.STRENGTH, 1));
+            assertEquals(0, manager.getTuningPoints(playerId, Stat.STRENGTH));
+        }
+
+        @Test
+        void setTuningPoints_negative_throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.setTuningPoints(playerId, Stat.STRENGTH, -1));
+        }
+
+        @Test
+        void setTuningPoints_zero_clearsAllocation() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.MYTHIC);
+            manager.setTuningPoints(playerId, Stat.STRENGTH, 2);
+            assertTrue(manager.setTuningPoints(playerId, Stat.STRENGTH, 0));
+            assertEquals(0, manager.getTuningPoints(playerId, Stat.STRENGTH));
+        }
+
+        @Test
+        void getTuning_returnsUnmodifiableView() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.MYTHIC);
+            manager.setTuningPoints(playerId, Stat.STRENGTH, 1);
+            Map<Stat, Integer> tuning = manager.getTuning(playerId);
+            assertThrows(UnsupportedOperationException.class, () -> tuning.put(Stat.DEFENSE, 1));
+        }
+
+        @Test
+        void resetTuning_clearsAllocationsButKeepsAccessories() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.MYTHIC);
+            manager.setTuningPoints(playerId, Stat.STRENGTH, 2);
+            manager.resetTuning(playerId);
+            assertEquals(0, manager.getAllocatedTuningPoints(playerId));
+            assertEquals(AccessoryRarity.MYTHIC, manager.getRarity(playerId, TalismanType.SPEED_TALISMAN));
+        }
+
+        @Test
+        void clearAccessories_removesRaritiesAndTuning() {
+            manager.setRarity(playerId, TalismanType.SPEED_TALISMAN, AccessoryRarity.MYTHIC);
+            manager.setTuningPoints(playerId, Stat.STRENGTH, 1);
+            manager.clearAccessories(playerId);
+            assertTrue(manager.getAccessories(playerId).isEmpty());
+            assertEquals(0, manager.getAllocatedTuningPoints(playerId));
         }
     }
 }
