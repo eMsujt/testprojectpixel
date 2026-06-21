@@ -33,27 +33,27 @@ public final class PetMenu extends AbstractSkyBlockMenu {
     }
 
     public PetMenu(Player player) {
-        super(player, "§aPets", 6);
+        super(player, "§dYour Pets", 6);
     }
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+        ItemStack pane = new ItemBuilder(Material.PINK_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
 
         PetManager manager = PetManager.getInstance();
         UUID playerId = player.getUniqueId();
         List<Pet> pets = manager.getPets(playerId);
         UUID activePetId = manager.getActivePetId(playerId);
 
-        for (int i = 0; i < pets.size() && i < 45; i++) {
+        for (int i = 0; i < pets.size() && i < 36; i++) {
             Pet pet = pets.get(i);
             boolean isActive = pet.id.equals(activePetId);
             int level = manager.getPetData(playerId, pet.type).getLevel();
             String color = SkyblockUtils.rarityColor(pet.rarity).toString();
             Material icon = RARITY_WOOL.getOrDefault(pet.rarity, Material.WHITE_WOOL);
             String activeTag = isActive ? " §a§l[ACTIVE]" : "";
-            setItem(i, new ItemBuilder(icon)
+            setItem(i + 9, new ItemBuilder(icon)
                     .displayName(color + pet.type.getDisplayName() + activeTag)
                     .lore("§7Level: §e" + level,
                           "§7Rarity: " + color + pet.rarity.getDisplayName(),
@@ -72,7 +72,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         }
 
         if (pets.isEmpty()) {
-            setItem(22, new ItemBuilder(Material.BARRIER)
+            setItem(31, new ItemBuilder(Material.BARRIER)
                     .displayName("§cNo Pets")
                     .lore("§7You have no pets yet.")
                     .build());
