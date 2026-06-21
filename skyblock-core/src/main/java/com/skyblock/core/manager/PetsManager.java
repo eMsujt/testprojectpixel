@@ -277,9 +277,18 @@ public final class PetsManager {
      * @throws IllegalArgumentException if amount is negative or the pet is not found
      */
     public Pet addXp(UUID playerId, UUID petId, long amount) {
-        long total = addExperience(playerId, petId, amount);
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(petId, "petId");
+        if (amount < 0) {
+            throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        }
         PetData pet = findPet(playerId, petId);
-        return new Pet(pet.type.getDisplayName(), pet.type, pet.rarity, pet.getLevel(), total);
+        if (pet == null) {
+            throw new IllegalArgumentException("Pet " + petId + " does not belong to player " + playerId);
+        }
+        long cap = XP_TABLE[MAX_LEVEL - 1];
+        pet.experience = Math.min(cap, pet.experience + amount);
+        return new Pet(pet.type.getDisplayName(), pet.type, pet.rarity, pet.getLevel(), pet.experience);
     }
 
     /** Clears all pets and the active slot for the given player. */
