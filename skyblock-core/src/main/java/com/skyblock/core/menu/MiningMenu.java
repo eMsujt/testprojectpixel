@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public final class MiningMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE = "§bMining";
+    private static final String TITLE = "§8Mining";
     private static final int CLOSE_SLOT = 53;
 
     /** Inventory slots for each MineType in declaration order. */
