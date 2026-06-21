@@ -133,8 +133,8 @@ public final class MiningManager {
      * value granted per level (0 for toggle/ability-style perks with no numeric scaling).
      */
     public enum HotmPerk {
-        MINING_SPEED         ("Mining Speed",           50,  20),
-        MINING_FORTUNE       ("Mining Fortune",         50,   5),
+        MINING_SPEED_BOOST   ("Mining Speed Boost",      1,   0),
+        MINING_FORTUNE       ("Mining Fortune",          50,   5),
         DAILY_POWDER         ("Daily Powder",          100,   1),
         EFFICIENT_MINER      ("Efficient Miner",       100,   1),
         QUICK_FORGE          ("Quick Forge",            20,   5),
@@ -154,6 +154,7 @@ public final class MiningManager {
         SEASONED_MINEMAN     ("Seasoned Mineman",      100,   1),
         ANOMALOUS_DESIRE     ("Anomalous Desire",       20,   2),
         MANIACAL_MINER       ("Maniacal Miner",          1,   0),
+        PICKOBULUS           ("Pickobulus",              1,   0),
         VEIN_SEEKER          ("Vein Seeker",             1,   0);
 
         private final String displayName;
