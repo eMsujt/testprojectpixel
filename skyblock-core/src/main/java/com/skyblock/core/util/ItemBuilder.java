@@ -45,6 +45,23 @@ public class ItemBuilder {
         this.item = base.clone();
     }
 
+    /**
+     * Starts a builder for a SkyBlock item by its NEU internal name (e.g. {@code MITHRIL_ORE}):
+     * a real 1:1 Hypixel head texture when one is registered, otherwise the item's vanilla
+     * {@link Material}. Enchanted items get the usual glow. Never returns {@code null}.
+     */
+    public static ItemBuilder forItem(String internalName) {
+        String texture = HeadTextures.item(internalName);
+        if (texture != null) {
+            return new ItemBuilder(Material.PLAYER_HEAD).skullTexture(texture);
+        }
+        ItemBuilder b = new ItemBuilder(HeadTextures.itemMaterial(internalName));
+        if (internalName != null && internalName.startsWith("ENCHANTED_")) {
+            b.glow();
+        }
+        return b;
+    }
+
     /** Swaps the underlying material, preserving the current stack size. */
     public ItemBuilder material(Material material) {
         if (material != null) {

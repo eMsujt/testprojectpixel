@@ -1,5 +1,7 @@
 package com.skyblock.core.util;
 
+import org.bukkit.Material;
+
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -14,6 +16,7 @@ public final class HeadTextures {
     private static final Properties MINIONS = load("/minion_heads.properties");
     private static final Properties PETS = load("/pet_heads.properties");
     private static final Properties ITEMS = load("/item_heads.properties");
+    private static final Properties ITEM_MATERIALS = load("/item_materials.properties");
 
     private HeadTextures() {}
 
@@ -42,5 +45,29 @@ public final class HeadTextures {
      */
     public static String item(String internalName) {
         return internalName == null ? null : ITEMS.getProperty(internalName);
+    }
+
+    /**
+     * Resolves the vanilla {@link Material} for a SkyBlock item (by NEU internal name) for use when
+     * the item has no custom head texture. Falls back to the internal name itself being a material
+     * (e.g. {@code WHEAT}), then to {@link Material#PAPER} so an icon always renders.
+     */
+    public static Material itemMaterial(String internalName) {
+        if (internalName != null) {
+            Material m = parse(ITEM_MATERIALS.getProperty(internalName));
+            if (m != null) return m;
+            m = parse(internalName);
+            if (m != null) return m;
+        }
+        return Material.PAPER;
+    }
+
+    private static Material parse(String name) {
+        if (name == null) return null;
+        try {
+            return Material.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }
