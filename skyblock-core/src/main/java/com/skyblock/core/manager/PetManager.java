@@ -532,6 +532,7 @@ public final class PetManager {
         equippedPets.put(playerId, petId);
         Pet pet = collection.get(petId);
         recordPetEvent(playerId, "Equipped pet " + pet.type.name() + " (" + pet.rarity.name() + ")");
+        refreshPetBonus(playerId);
         return true;
     }
 
@@ -542,7 +543,33 @@ public final class PetManager {
      */
     public boolean unequipPet(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        return equippedPets.remove(playerId) != null;
+        boolean had = equippedPets.remove(playerId) != null;
+        refreshPetBonus(playerId);
+        return had;
+    }
+
+    /** Tracks the stat bonus currently applied for the player's active pet, for exact removal. */
+    private final Map<UUID, AppliedPetBonus> appliedPetBonuses = new HashMap<>();
+
+    private record AppliedPetBonus(Stat stat, double amount) {}
+
+    /** Re-applies the active pet's level-scaled stat bonus, removing any previously applied one. */
+    private void refreshPetBonus(UUID playerId) {
+        AppliedPetBonus previous = appliedPetBonuses.remove(playerId);
+        if (previous != null) {
+            StatManager.getInstance().addBonus(playerId, previous.stat(), -previous.amount());
+        }
+        Pet pet = getActivePet(playerId);
+        if (pet == null) {
+            return;
+        }
+        PetStatBonus bonus = pet.type.getStatBonus();
+        double amount = bonus.bonusPerLevel() * getLevel(playerId, pet.type);
+        if (amount == 0.0) {
+            return;
+        }
+        StatManager.getInstance().addBonus(playerId, bonus.stat(), amount);
+        appliedPetBonuses.put(playerId, new AppliedPetBonus(bonus.stat(), amount));
     }
 
     /** Returns the UUID of the player's currently equipped pet, or {@code null} if none. */
