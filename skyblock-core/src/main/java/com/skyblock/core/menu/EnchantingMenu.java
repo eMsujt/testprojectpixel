@@ -2,7 +2,6 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.EnchantingManager;
 import com.skyblock.core.manager.EnchantingManager.SkyBlockEnchantment;
-import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -37,13 +36,11 @@ public final class EnchantingMenu extends AbstractSkyBlockMenu {
             boolean ultimate = mgr.isUltimate(enchant);
             String prefix = ultimate ? "§d§l" : "§9";
             Material mat = ultimate ? Material.KNOWLEDGE_BOOK : Material.ENCHANTED_BOOK;
-            setItem(SLOTS[i], new ItemBuilder(mat)
-                    .displayName(prefix + formatName(enchant.name()))
-                    .lore(
-                            "§7Level: §e" + playerLevel + " §8/ §e" + maxLevel,
-                            "§7Cost (Lv 1): §e" + cost + " exp",
-                            ultimate ? "§d✦ Ultimate Enchantment" : "")
-                    .build(),
+            setItem(SLOTS[i], SkyblockUtils.buildItem(mat,
+                    prefix + formatName(enchant.name()),
+                    "§7Level: §e" + playerLevel + " §8/ §e" + maxLevel,
+                    "§7Cost (Lv 1): §e" + cost + " exp",
+                    ultimate ? "§d✦ Ultimate Enchantment" : ""),
                     e -> e.setCancelled(true));
         }
     }

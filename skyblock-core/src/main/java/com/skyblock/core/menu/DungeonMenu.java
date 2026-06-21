@@ -5,7 +5,7 @@ import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.manager.DungeonManager.FloorMeta;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -57,7 +57,7 @@ public final class DungeonMenu extends AbstractMenu {
     @Override
     protected void populate() {
         UUID playerId = player.getUniqueId();
-        ItemStack pane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = SkyblockUtils.buildItem(Material.PURPLE_STAINED_GLASS_PANE, "§r");
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
@@ -71,13 +71,11 @@ public final class DungeonMenu extends AbstractMenu {
             long bestSecs = manager.getBestTime(playerId, key);
             String bestStr = bestSecs > 0 ? bestSecs + "s" : "—";
 
-            setItem(F_SLOTS[i], new ItemBuilder(Material.WITHER_SKELETON_SKULL)
-                    .displayName("§f" + meta.getDisplayName())
-                    .lore(
-                            "§7Boss: §c" + meta.getBossName(),
-                            "§7Completions: §e" + completions,
-                            "§7Best time: §e" + bestStr)
-                    .build());
+            setItem(F_SLOTS[i], SkyblockUtils.buildItem(Material.WITHER_SKELETON_SKULL,
+                    "§f" + meta.getDisplayName(),
+                    "§7Boss: §c" + meta.getBossName(),
+                    "§7Completions: §e" + completions,
+                    "§7Best time: §e" + bestStr));
         }
 
         for (int i = 0; i < M_KEYS.length; i++) {
@@ -87,14 +85,12 @@ public final class DungeonMenu extends AbstractMenu {
             long bestSecs = manager.getBestTime(playerId, key);
             String bestStr = bestSecs > 0 ? bestSecs + "s" : "—";
 
-            setItem(M_SLOTS[i], new ItemBuilder(Material.NETHER_STAR)
-                    .displayName("§5" + meta.getDisplayName())
-                    .lore(
-                            "§7Boss: §c" + meta.getBossName(),
-                            "§7Min catacombs level: §e" + meta.getMinCatacombsLevel(),
-                            "§7Completions: §e" + completions,
-                            "§7Best time: §e" + bestStr)
-                    .build());
+            setItem(M_SLOTS[i], SkyblockUtils.buildItem(Material.NETHER_STAR,
+                    "§5" + meta.getDisplayName(),
+                    "§7Boss: §c" + meta.getBossName(),
+                    "§7Min catacombs level: §e" + meta.getMinCatacombsLevel(),
+                    "§7Completions: §e" + completions,
+                    "§7Best time: §e" + bestStr));
         }
 
         DungeonClass selected = manager.getClass(playerId);
@@ -115,18 +111,14 @@ public final class DungeonMenu extends AbstractMenu {
             lore.add("");
             lore.add(active ? "§aSelected class" : "§eClick to select");
 
-            setItem(CLASS_SLOTS[i], new ItemBuilder(CLASS_ICONS.get(cls))
-                    .displayName((active ? "§a§l" : "§f") + cls.getDisplayName())
-                    .lore(lore.toArray(new String[0]))
-                    .build());
+            setItem(CLASS_SLOTS[i], SkyblockUtils.createNamedItem(CLASS_ICONS.get(cls),
+                    (active ? "§a§l" : "§f") + cls.getDisplayName(), lore));
         }
 
-        setItem(SUMMARY_SLOT, new ItemBuilder(Material.COMPASS)
-                .displayName("§5Dungeon Overview")
-                .lore(
-                        "§7Explore The Catacombs and",
-                        "§7defeat powerful bosses.")
-                .build());
+        setItem(SUMMARY_SLOT, SkyblockUtils.buildItem(Material.COMPASS,
+                "§5Dungeon Overview",
+                "§7Explore The Catacombs and",
+                "§7defeat powerful bosses."));
     }
 
     @Override
