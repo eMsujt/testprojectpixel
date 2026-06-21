@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.model.Stat;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -108,9 +109,13 @@ public final class ActionBarManager implements Listener {
     }
 
     private static String render(Player player) {
+        UUID id = player.getUniqueId();
+        int defense = (int) StatManager.getInstance().getStat(id, Stat.DEFENSE);
+        ManaManager mana = ManaManager.getInstance();
         return String.format(
-                "§c%.0f/%.0f❤     §a0§a❈ Defense     §b100/100✎ Mana",
-                player.getHealth(), player.getMaxHealth());
+                "§c%.0f/%.0f❤     §a%d❈ Defense     §b%d/%d✎ Mana",
+                player.getHealth(), player.getMaxHealth(),
+                defense, mana.getCurrentMana(id), mana.getMaxMana(id));
     }
 
 }
