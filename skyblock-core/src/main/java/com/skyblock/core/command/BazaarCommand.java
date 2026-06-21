@@ -1,7 +1,7 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.core.manager.BazaarManager.Order;
+import com.skyblock.core.manager.BazaarManager.BazaarBazaarOrder;
 import com.skyblock.core.menu.BazaarMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -90,7 +90,7 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Quantity and price must be positive.");
             return;
         }
-        bazaarManager.addBuyOrder(player.getUniqueId(), item, qty, price);
+        bazaarManager.addBuyBazaarOrder(player.getUniqueId(), item, qty, price);
         player.sendMessage("Buy order placed for " + qty + "x " + item + " at " + price + " each.");
     }
 
@@ -113,7 +113,7 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Quantity and price must be positive.");
             return;
         }
-        bazaarManager.addSellOrder(player.getUniqueId(), item, qty, price);
+        bazaarManager.addSellBazaarOrder(player.getUniqueId(), item, qty, price);
         player.sendMessage("Sell order placed for " + qty + "x " + item + " at " + price + " each.");
     }
 
@@ -123,18 +123,18 @@ public final class BazaarCommand extends PlayerCommand {
             return;
         }
         String item = args[1];
-        List<Order> buys = bazaarManager.getBuyOrders(item);
-        List<Order> sells = bazaarManager.getSellOrders(item);
+        List<BazaarOrder> buys = bazaarManager.getBuyBazaarOrders(item);
+        List<BazaarOrder> sells = bazaarManager.getSellBazaarOrders(item);
 
         player.sendMessage("=== Bazaar: " + item + " ===");
         player.sendMessage("Lowest ask: " + formatPrice(bazaarManager.getLowestAsk(item)));
         player.sendMessage("Highest bid: " + bazaarManager.getHighestBid(item));
         player.sendMessage("Buy orders (" + buys.size() + "):");
-        for (Order o : buys) {
+        for (BazaarOrder o : buys) {
             player.sendMessage("  " + o.quantity() + "x @ " + o.priceEach() + " [" + o.owner() + "]");
         }
         player.sendMessage("Sell orders (" + sells.size() + "):");
-        for (Order o : sells) {
+        for (BazaarOrder o : sells) {
             player.sendMessage("  " + o.quantity() + "x @ " + o.priceEach() + " [" + o.owner() + "]");
         }
     }
@@ -160,8 +160,8 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Invalid order ID.");
             return;
         }
-        if (bazaarManager.cancelOrder(player.getUniqueId(), isBuy, orderId)) {
-            player.sendMessage("Order " + args[2] + " cancelled.");
+        if (bazaarManager.cancelBazaarOrder(player.getUniqueId(), isBuy, orderId)) {
+            player.sendMessage("BazaarOrder " + args[2] + " cancelled.");
         } else {
             player.sendMessage("No " + args[1].toLowerCase() + " order with that ID found.");
         }
