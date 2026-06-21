@@ -28,7 +28,7 @@ public final class ReforgeMenu extends Menu {
     }
 
     public ReforgeMenu() {
-        super("§6Reforge Item", 6);
+        super("§9Reforge Item", 6);
     }
 
     @Override
@@ -45,7 +45,7 @@ public final class ReforgeMenu extends Menu {
                 .lore("§7Drag your item here.")
                 .build());
 
-        setItem(REFORGE_SLOT, new ItemBuilder(Material.ANVIL)
+        setItem(REFORGE_SLOT, new ItemBuilder(Material.BARRIER)
                 .displayName("§6Reforge")
                 .lore("§7Click to apply a random reforge", "§7to the item in the left slot.")
                 .build());
