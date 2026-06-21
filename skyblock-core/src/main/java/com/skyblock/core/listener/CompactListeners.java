@@ -75,7 +75,7 @@ public final class CompactListeners implements Listener {
     );
 
     private final SkillManager skillManager = SkillManager.getInstance();
-    private final StatsManager statsManager = StatsManager.getInstance();
+    private final com.skyblock.core.manager.StatsManager statsManager = com.skyblock.core.manager.StatsManager.getInstance();
     private final PetManager petManager = PetManager.getInstance();
 
     private CompactListeners() {}
