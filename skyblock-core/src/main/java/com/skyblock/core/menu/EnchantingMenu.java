@@ -3,10 +3,10 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.EnchantingManager;
 import com.skyblock.core.manager.EnchantingManager.SkyBlockEnchantment;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 public final class EnchantingMenu extends AbstractSkyBlockMenu {
 
@@ -25,9 +25,7 @@ public final class EnchantingMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
-        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
+        SkyblockUtils.fillBorder(getRows(), this::setItem, Material.PURPLE_STAINED_GLASS_PANE);
 
         EnchantingManager mgr = EnchantingManager.getInstance();
         SkyBlockEnchantment[] enchants = SkyBlockEnchantment.values();
