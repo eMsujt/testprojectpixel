@@ -4,7 +4,6 @@ import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.PetManager;
 import com.skyblock.core.manager.ScoreboardManager;
 import com.skyblock.core.manager.SkillManager;
-import com.skyblock.core.manager.StatsManager;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stats.StatsManager;
