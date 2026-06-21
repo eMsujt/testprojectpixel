@@ -35,6 +35,7 @@ import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.FishingMenu;
 import com.skyblock.core.menu.ForgeMenu;
 import com.skyblock.core.menu.GardenMenu;
+import com.skyblock.core.menu.HotmMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
@@ -3560,6 +3561,28 @@ public final class CompactCommands {
         }
     }
 
+    // =========================================================================
+    // /hotm (simple menu opener — uses HotmMenu)
+    // =========================================================================
+
+    public static final class HotmCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new HotmMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
 
 
 }
