@@ -46,7 +46,7 @@ public final class MinionMenu extends AbstractSkyBlockMenu {
     };
 
     public MinionMenu(Player player) {
-        super(player, "§6Minion Menu", 6);
+        super(player, "§6§lYour Minions", 6);
     }
 
     @Override
