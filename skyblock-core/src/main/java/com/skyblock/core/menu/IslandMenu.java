@@ -5,20 +5,15 @@ import com.skyblock.core.manager.IslandManager.IslandUpgrade;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-/**
- * 54-slot Island menu. Slot 13 shows the player's island level/XP overview.
- * Row 3 holds clickable options (Visit, Manage, Settings). Row 4 displays
- * island upgrades.
- */
-public final class IslandMenu extends Menu {
+public final class IslandMenu extends AbstractSkyBlockMenu {
+
+    private static final String TITLE = "§aIsland Management";
 
     static final int OVERVIEW_SLOT   = 13;
-    static final int BEACON_SLOT     = 49;
     static final int VISIT_SLOT      = 20;
     static final int MANAGE_SLOT     = 22;
     static final int SETTINGS_SLOT   = 24;
@@ -26,36 +21,20 @@ public final class IslandMenu extends Menu {
 
     private static final IslandUpgrade[] DISPLAYED_UPGRADES = IslandUpgrade.values();
 
-    private final UUID owner;
-    private Player viewer;
-
-    public IslandMenu(UUID owner) {
-        super("§a§lYour Island", 6);
-        this.owner = owner;
+    public IslandMenu(Player player) {
+        super(player, TITLE, 6);
     }
 
     @Override
-    public void open(Player player) {
-        this.viewer = player;
-        super.open(player);
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        event.setCancelled(true);
-        super.handleClick(event);
-    }
-
-    @Override
-    protected void build() {
+    protected void populate() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
         setItem(9, pane);  setItem(17, pane);
         setItem(18, pane); setItem(26, pane);
         setItem(27, pane); setItem(36, pane); setItem(44, pane);
 
+        UUID owner = player.getUniqueId();
         IslandManager manager = IslandManager.getInstance();
         long xp = manager.getIslandXp(owner);
         int level = IslandManager.levelFromXp(xp);
@@ -76,10 +55,10 @@ public final class IslandMenu extends Menu {
                 .lore("§7Teleport to your island.")
                 .build(),
                 e -> {
-                    Player p = (Player) e.getWhoClicked();
-                    p.closeInventory();
+                    e.setCancelled(true);
+                    player.closeInventory();
                     manager.getIslandWorld(owner).ifPresent(world ->
-                            p.teleport(world.getSpawnLocation()));
+                            player.teleport(world.getSpawnLocation()));
                 });
 
         int memberCount = manager.getIsland(owner)
@@ -91,8 +70,10 @@ public final class IslandMenu extends Menu {
                         "§7Members: §e" + memberCount,
                         "§7Click to manage island members.")
                 .build(),
-                e -> ((Player) e.getWhoClicked())
-                        .sendMessage("§7Use §e/island manage §7to manage members."));
+                e -> {
+                    e.setCancelled(true);
+                    player.sendMessage("§7Use §e/island manage §7to manage members.");
+                });
 
         String warpName = manager.getWarpName(owner);
         setItem(SETTINGS_SLOT, new ItemBuilder(Material.COMPARATOR)
@@ -102,8 +83,10 @@ public final class IslandMenu extends Menu {
                         "§7Visitors: §e" + manager.getVisitorCount(owner),
                         "§7Click to view settings.")
                 .build(),
-                e -> ((Player) e.getWhoClicked())
-                        .sendMessage("§7Use §e/island settings §7to change settings."));
+                e -> {
+                    e.setCancelled(true);
+                    player.sendMessage("§7Use §e/island settings §7to change settings.");
+                });
 
         for (int i = 0; i < DISPLAYED_UPGRADES.length && i < UPGRADE_SLOTS.length; i++) {
             IslandUpgrade upgrade = DISPLAYED_UPGRADES[i];
