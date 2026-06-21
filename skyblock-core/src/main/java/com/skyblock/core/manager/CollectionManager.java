@@ -30,6 +30,12 @@ public final class CollectionManager {
     /** Per-collection cumulative tier thresholds (index 0 = tier I, index 8 = tier IX). */
     public static final Map<Collection, int[]> TIER_DATA;
 
+    /**
+     * Primary unlock reward for each collection tier (index 0 = tier I, index 8 = tier IX).
+     * Mirrors Hypixel SkyBlock's collection unlock table.
+     */
+    public static final Map<Collection, String[]> UNLOCK_REWARDS;
+
     static {
         Map<Collection, int[]> m = new EnumMap<>(Collection.class);
         // Farming
@@ -92,6 +98,68 @@ public final class CollectionManager {
         TIER_DATA = Collections.unmodifiableMap(m);
     }
 
+    static {
+        Map<Collection, String[]> r = new EnumMap<>(Collection.class);
+        // Farming
+        r.put(Collection.WHEAT,               new String[]{"Wheat Minion I",          "Enchanted Bread",              "Wheat Minion II",          "Farm Merchant",             "Wheat Minion III",          "Wheat Minion IV",          "Enchanted Hay Bale",          "Wheat Minion V",          "Wheat Minion VI"});
+        r.put(Collection.CARROT,              new String[]{"Carrot Minion I",         "Enchanted Carrot",             "Carrot Minion II",         "Farm Crystal",              "Carrot Minion III",         "Carrot Minion IV",         "Enchanted Carrot on a Stick", "Carrot Minion V",         "Carrot Minion VI"});
+        r.put(Collection.POTATO,              new String[]{"Potato Minion I",         "Enchanted Potato",             "Potato Minion II",         "Baked Potato",              "Potato Minion III",         "Potato Minion IV",         "Enchanted Baked Potato",      "Potato Minion V",         "Potato Minion VI"});
+        r.put(Collection.PUMPKIN,             new String[]{"Pumpkin Minion I",        "Enchanted Pumpkin",            "Pumpkin Minion II",        "Farmer's Boots",            "Pumpkin Minion III",        "Pumpkin Minion IV",         "Jack o' Lantern",            "Pumpkin Minion V",        "Autumn's Gift"});
+        r.put(Collection.MELON,               new String[]{"Melon Minion I",          "Enchanted Melon",              "Melon Minion II",          "Melon Chestplate",          "Melon Minion III",          "Enchanted Glistering Melon", "Melon Helmet",               "Enchanted Melon Block",   "Theoretical Hoe"});
+        r.put(Collection.MUSHROOM,            new String[]{"Mushroom Minion I",       "Enchanted Red Mushroom",       "Mushroom Minion II",       "Mushroom Armor",            "Mushroom Minion III",       "Mushroom Minion IV",        "Magical Mushroom Soup",       "Mushroom Minion V",       "Mushroom Minion VI"});
+        r.put(Collection.CACTUS,              new String[]{"Cactus Minion I",         "Enchanted Cactus Green",       "Cactus Minion II",         "Cactus Minion III",         "Cactus Knife",              "Cactus Minion IV",          "Cactus Minion V",             "Enchanted Cactus",        "Cactus Minion VI"});
+        r.put(Collection.SUGAR_CANE,          new String[]{"Sugar Cane Minion I",     "Enchanted Sugar",              "Sugar Cane Minion II",     "Sugar Cane Minion III",     "Sugar Cane Minion IV",      "Enchanted Paper",           "Raft",                        "Enchanted Sugar Cane",    "Sugar Cane Minion V"});
+        r.put(Collection.NETHER_WART,         new String[]{"Nether Wart Minion I",    "Enchanted Nether Wart",        "Nether Wart Minion II",    "Nether Wart Minion III",    "Speed Potion",              "Nether Wart Minion IV",     "Nether Wart Minion V",        "Enchanted Nether Wart Block", "Nether Wart Minion VI"});
+        r.put(Collection.COCOA_BEANS,         new String[]{"Cocoa Minion I",          "Enchanted Cocoa Bean",         "Cocoa Minion II",          "Cookie",                    "Cocoa Minion III",          "Cocoa Minion IV",           "Enchanted Cookie",            "Cocoa Minion V",          "Cocoa Minion VI"});
+        // Mining
+        r.put(Collection.COBBLESTONE,         new String[]{"Cobblestone Minion I",    "Enchanted Cobblestone",        "Cobblestone Minion II",    "Stone Pickaxe",             "Cobblestone Minion III",    "Cobblestone Minion IV",     "Hardened Diamond Armor",      "Cobblestone Minion V",    "Cobblestone Minion VI"});
+        r.put(Collection.COAL,                new String[]{"Coal Minion I",           "Enchanted Coal",               "Coal Minion II",           "Coal Minion III",           "Coal Minion IV",            "Enchanted Coal Block",      "Coal Minion V",               "Fuming Potato Book",      "Coal Minion VI"});
+        r.put(Collection.IRON_INGOT,          new String[]{"Iron Minion I",           "Enchanted Iron",               "Iron Minion II",           "Iron Minion III",           "Iron Minion IV",            "Enchanted Iron Block",      "Iron Minion V",               "Rogue Sword",             "Iron Minion VI"});
+        r.put(Collection.GOLD_INGOT,          new String[]{"Gold Minion I",           "Enchanted Gold",               "Gold Minion II",           "Promising Shovel",          "Gold Minion III",           "Enchanted Gold Block",      "Gold Minion IV",              "Tightly-Tied Hay Bale",   "Gold Minion V"});
+        r.put(Collection.DIAMOND,             new String[]{"Diamond Minion I",        "Enchanted Diamond",            "Diamond Minion II",        "Diamond Minion III",        "Diamond Spreading",         "Enchanted Diamond Block",   "Diamond Minion IV",           "Diamond Minion V",        "Perfect Diamond"});
+        r.put(Collection.EMERALD,             new String[]{"Emerald Minion I",        "Enchanted Emerald",            "Emerald Minion II",        "Emerald Minion III",        "Emerald Minion IV",         "Enchanted Emerald Block",   "Emerald Minion V",            "Speed Boost Potion",      "Emerald Minion VI"});
+        r.put(Collection.REDSTONE,            new String[]{"Redstone Minion I",       "Enchanted Redstone",           "Redstone Minion II",       "Redstone Minion III",       "Power Orb I",               "Enchanted Redstone Block",  "Power Orb II",                "Redstone Minion IV",      "Midas Staff"});
+        r.put(Collection.LAPIS_LAZULI,        new String[]{"Lapis Minion I",          "Enchanted Lapis",              "Lapis Minion II",          "Lapis Armor",               "Lapis Minion III",          "Enchanted Lapis Block",     "Lapis Minion IV",             "Lapis Minion V",          "Lapis Minion VI"});
+        r.put(Collection.QUARTZ,              new String[]{"Quartz Minion I",         "Enchanted Quartz",             "Quartz Minion II",         "Quartz Minion III",         "Quartz Minion IV",          "Enchanted Quartz Block",    "Stonk",                       "Quartz Minion V",         "Quartz Minion VI"});
+        r.put(Collection.OBSIDIAN,            new String[]{"Obsidian Minion I",       "Enchanted Obsidian",           "Obsidian Minion II",       "Obsidian Minion III",       "Obsidian Chestplate",       "Obsidian Minion IV",        "Obsidian Minion V",           "Plasma Bucket",           "Obsidian Minion VI"});
+        r.put(Collection.GLOWSTONE,           new String[]{"Glowstone Minion I",      "Enchanted Glowstone Dust",     "Glowstone Minion II",      "Glowstone Minion III",      "Glowstone Minion IV",       "Enchanted Glowstone Block", "Glowstone Minion V",          "Potion Affinity Artifact","Glowstone Minion VI"});
+        r.put(Collection.GRAVEL,              new String[]{"Gravel Minion I",         "Enchanted Flint",              "Gravel Minion II",         "Gravel Minion III",         "Gravel Minion IV",          "Flint Shovel",              "Gravel Minion V",             "Flint and Steel",         "Gravel Minion VI"});
+        r.put(Collection.ICE,                 new String[]{"Ice Minion I",            "Enchanted Ice",                "Ice Minion II",            "Ice Minion III",            "Ice Cream Truck",           "Enchanted Ice",             "Ice Minion IV",               "Ice Minion V",            "Blaze and Slime"});
+        r.put(Collection.NETHERRACK,          new String[]{"Netherrack Minion I",     "Enchanted Netherrack",         "Netherrack Minion II",     "Netherrack Minion III",     "Netherrack Minion IV",      "Netherrack Minion V",       "Netherrack Minion VI",        "Netherrack Minion VII",   "Netherrack Minion VIII"});
+        r.put(Collection.SAND,                new String[]{"Sand Minion I",           "Enchanted Sand",               "Sand Minion II",           "Sand Minion III",           "Sand Minion IV",            "Enchanted Sandstone",       "Sand Minion V",               "Sand Minion VI",          "Desert Island Crystal"});
+        r.put(Collection.END_STONE,           new String[]{"End Stone Minion I",      "Enchanted End Stone",          "End Stone Minion II",      "Wise Dragon Helmet",        "End Stone Minion III",      "Enchanted End Stone",       "End Stone Minion IV",         "Null Ovoid",              "End Stone Minion V"});
+        // Combat
+        r.put(Collection.ROTTEN_FLESH,        new String[]{"Zombie Minion I",         "Enchanted Rotten Flesh",       "Zombie Minion II",         "Zombie Minion III",         "Zombie Minion IV",          "Enchanted Steak",           "Revive Stone",                "Zombie Minion V",         "Zombie Minion VI"});
+        r.put(Collection.BONE,                new String[]{"Skeleton Minion I",       "Enchanted Bone",               "Skeleton Minion II",       "Skeleton Minion III",       "Skeleton Minion IV",        "Bone Necklace",             "Skeleton Minion V",           "Bonzo's Mask",            "Skeleton Minion VI"});
+        r.put(Collection.SPIDER_EYE,          new String[]{"Spider Minion I",         "Enchanted Spider Eye",         "Spider Minion II",         "Spider Minion III",         "Tarantula Helmet",          "Spider Minion IV",          "Enchanted Fermented Spider Eye", "Tarantula Talisman",   "Tarantula Boots"});
+        r.put(Collection.STRING,              new String[]{"Spider Minion I",         "Enchanted String",             "Spider Minion II",         "Spider Minion III",         "Enchanted String",          "Spider Minion IV",          "Enchanted Carpet",            "Spider Minion V",         "Spider Hat"});
+        r.put(Collection.GUNPOWDER,           new String[]{"Creeper Minion I",        "Enchanted Gunpowder",          "Creeper Minion II",        "Creeper Minion III",        "Creeper Minion IV",         "Flare Gun",                 "Creeper Minion V",            "Enchanted TNT",           "Creeper Minion VI"});
+        r.put(Collection.ENDER_PEARL,         new String[]{"Enderman Minion I",       "Enchanted Ender Pearl",        "Enderman Minion II",       "Enderman Minion III",       "Ender Artifact",            "Enderman Minion IV",        "Enchanted Eye of Ender",      "Enderman Minion V",       "Enderman Minion VI"});
+        r.put(Collection.GHAST_TEAR,          new String[]{"Ghast Minion I",          "Enchanted Ghast Tear",         "Ghast Minion II",          "Ghast Minion III",          "Enchanted Magma Cream",     "Ghast Minion IV",           "Ghast Minion V",              "Ghast Minion VI",         "Phantom Rod"});
+        r.put(Collection.SLIME_BALL,          new String[]{"Slime Minion I",          "Enchanted Slime Ball",         "Slime Minion II",          "Slime Minion III",          "Slime Minion IV",           "Enchanted Slime Block",     "Slime Minion V",              "Slime Hat",               "Slime Minion VI"});
+        r.put(Collection.BLAZE_ROD,           new String[]{"Blaze Minion I",          "Enchanted Blaze Powder",       "Blaze Minion II",          "Speed Boost",               "Blaze Minion III",          "Enchanted Blaze Rod",       "Blaze Minion IV",             "Fire Protection V Book",  "Blaze Minion V"});
+        r.put(Collection.MAGMA_CREAM,         new String[]{"Magma Cube Minion I",     "Enchanted Magma Cream",        "Magma Cube Minion II",     "Magma Cube Minion III",     "Magma Cube Minion IV",      "Enchanted Magma Block",     "Magma Cube Minion V",         "Magma Cube Minion VI",    "Magma Cube Minion VII"});
+        // Foraging
+        r.put(Collection.OAK_LOG,             new String[]{"Oak Wood Minion I",       "Enchanted Oak Wood",           "Oak Wood Minion II",       "Jungle Stick",              "Oak Wood Minion III",       "Enchanted Wood",            "Oak Wood Minion IV",          "Oak Wood Minion V",       "Jungle Wood Sword"});
+        r.put(Collection.SPRUCE_LOG,          new String[]{"Spruce Wood Minion I",    "Enchanted Spruce Wood",        "Spruce Wood Minion II",    "Spruce Wood Minion III",    "Spruce Wood Minion IV",     "Enchanted Spruce Wood",     "Spruce Wood Minion V",        "Spruce Wood Minion VI",   "Spruce Wood Minion VII"});
+        r.put(Collection.BIRCH_LOG,           new String[]{"Birch Wood Minion I",     "Enchanted Birch Wood",         "Birch Wood Minion II",     "Birch Wood Minion III",     "Birch Wood Minion IV",      "Enchanted Birch Wood",      "Birch Wood Minion V",         "Birch Wood Minion VI",    "Treecapitator"});
+        r.put(Collection.JUNGLE_LOG,          new String[]{"Jungle Wood Minion I",    "Enchanted Jungle Wood",        "Jungle Wood Minion II",    "Jungle Axe",                "Jungle Wood Minion III",    "Jungle Wood Minion IV",     "Enchanted Jungle Wood",       "Jungle Wood Minion V",    "Overgrown Grass"});
+        r.put(Collection.ACACIA_LOG,          new String[]{"Acacia Wood Minion I",    "Enchanted Acacia Wood",        "Acacia Wood Minion II",    "Acacia Wood Minion III",    "Acacia Wood Minion IV",     "Enchanted Acacia Wood",     "Acacia Wood Minion V",        "Acacia Wood Minion VI",   "Acacia Wood Minion VII"});
+        r.put(Collection.DARK_OAK_LOG,        new String[]{"Dark Oak Wood Minion I",  "Enchanted Dark Oak Wood",      "Dark Oak Wood Minion II",  "Dark Oak Wood Minion III",  "Dark Oak Wood Minion IV",   "Enchanted Dark Oak Wood",   "Dark Oak Wood Minion V",      "Dark Oak Wood Minion VI", "Dark Oak Wood Minion VII"});
+        // Fishing
+        r.put(Collection.RAW_FISH,            new String[]{"Fishing Minion I",        "Enchanted Raw Fish",           "Fishing Minion II",        "Fishing Minion III",        "Fishing Minion IV",         "Fishing Minion V",          "Enchanted Cooked Fish",       "Fishing Minion VI",       "Fishing Minion VII"});
+        r.put(Collection.RAW_SALMON,          new String[]{"Fishing Minion I",        "Enchanted Raw Salmon",         "Fishing Minion II",        "Fishing Minion III",        "Fishing Minion IV",         "Rod of the Sea",            "Enchanted Cooked Salmon",     "Fishing Minion V",        "Salmon Hat"});
+        r.put(Collection.CLOWNFISH,           new String[]{"Luck of the Sea II Book", "Enchanted Clownfish",          "Luck of the Sea III Book", "Sea Walker Boots",          "Sea Walker Leggings",       "Sea Walker Chestplate",     "Sea Walker Helmet",           "Sea Guardian Boots",      "Sea Walker Boots II"});
+        r.put(Collection.PUFFERFISH,          new String[]{"Scavenger I Book",        "Enchanted Pufferfish",         "Weakness Potion",          "Pufferfish Potion",         "Speed Potion V",            "Ender Bow",                 "Enchanted Pufferfish Block",  "Night Vision Potion",     "Water Breathing Potion"});
+        r.put(Collection.PRISMARINE_SHARD,    new String[]{"Magmafish",               "Enchanted Prismarine Shard",   "Sea Lantern",              "Prismarine Minion I",       "Prismarine Minion II",      "Prismarine Minion III",     "Prismarine Minion IV",        "Prismarine Minion V",     "Prismarine Minion VI"});
+        r.put(Collection.PRISMARINE_CRYSTALS, new String[]{"Prismarine Minion I",     "Enchanted Prismarine Crystals","Sea Lantern",              "Prismarine Minion II",      "Prismarine Minion III",     "Prismarine Minion IV",      "Enchanted Sea Lantern",       "Prismarine Minion V",     "Prismarine Minion VI"});
+        r.put(Collection.CLAY,                new String[]{"Clay Minion I",           "Enchanted Clay",               "Clay Minion II",           "Clay Minion III",           "Clay Minion IV",            "Enchanted Clay Block",      "Clay Minion V",               "Clay Minion VI",          "Clay Minion VII"});
+        r.put(Collection.LILY_PAD,            new String[]{"Lily Pad Minion I",       "Enchanted Lily Pad",           "Lily Pad Minion II",       "Lily Pad Minion III",       "Lily Pad Minion IV",        "Lily Pad Minion V",         "Enchanted Lily Pad",          "Lily Pad Minion VI",      "Lily Pad Minion VII"});
+        r.put(Collection.INK_SAC,             new String[]{"Squid Minion I",          "Enchanted Ink Sac",            "Squid Minion II",          "Squid Minion III",          "Squid Minion IV",           "Enchanted Black Dye",       "Squid Minion V",              "Squid Minion VI",         "Squid Pet"});
+        r.put(Collection.SPONGE,              new String[]{"Sponge Minion I",         "Enchanted Sponge",             "Sponge Minion II",         "Sponge Minion III",         "Sponge Minion IV",          "Sponge Minion V",           "Enchanted Sponge",            "Sponge Minion VI",        "Sponge Minion VII"});
+        UNLOCK_REWARDS = Collections.unmodifiableMap(r);
+    }
+
     private static final CollectionManager INSTANCE = new CollectionManager();
 
     private final Map<UUID, Map<Collection, Long>> playerCollections = new HashMap<>();
@@ -144,6 +212,13 @@ public final class CollectionManager {
         int tier = 0;
         while (tier < thresholds.length && items >= thresholds[tier]) tier++;
         return tier;
+    }
+
+    /** Returns the unlock reward label for the given 1-based tier, or {@code null} if out of range. */
+    public static String getUnlockReward(Collection collection, int tier) {
+        String[] rewards = UNLOCK_REWARDS.get(collection);
+        if (rewards == null || tier < 1 || tier > rewards.length) return null;
+        return rewards[tier - 1];
     }
 
     /** Returns how many more items are needed to unlock the next tier, or {@code 0} if maxed. */
