@@ -12,7 +12,6 @@ import com.skyblock.core.manager.AuctionManager;
 import com.skyblock.core.menu.AuctionMenu;
 import com.skyblock.core.command.KuudraCommand;
 import com.skyblock.core.manager.BankManager;
-import com.skyblock.core.manager.PurseManager;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.command.CompactCommands;
@@ -131,7 +130,8 @@ import com.skyblock.core.achievement.AchievementCommand;
 import com.skyblock.core.achievement.AchievementManager;
 import com.skyblock.core.level.SkyblockLevelCommand;
 import com.skyblock.core.manager.SkyblockLevelManager;
-import com.skyblock.core.menu.manager.SkyBlockMenuManager;
+import com.skyblock.core.menu.SkyBlockMainMenu;
+import com.skyblock.core.menu.manager.MenuManager;
 import com.skyblock.core.run.RunCommand;
 import com.skyblock.core.dungeon.manager.RunManager;
 import com.skyblock.core.title.TitleCommand;
@@ -187,7 +187,6 @@ public final class SkyBlockCore extends JavaPlugin {
     private CollectionManager collectionManager;
 
     // economy
-    private PurseManager purseManager;
     private BankManager bankManager;
     private AuctionHouseManager auctionHouseManager;
     private AuctionManager auctionManager;
@@ -310,10 +309,6 @@ public final class SkyBlockCore extends JavaPlugin {
         return bankManager;
     }
 
-    public PurseManager getPurseManager() {
-        return purseManager;
-    }
-
     public MayorManager getMayorManager() {
         return mayorManager;
     }
@@ -426,7 +421,6 @@ public final class SkyBlockCore extends JavaPlugin {
         collectionManager = CollectionManager.getInstance();
         collectionManager.load(getDataFolder());
         // economy
-        purseManager = PurseManager.getInstance();
         bankManager = BankManager.getInstance();
         bankManager.load(getDataFolder());
         auctionHouseManager = AuctionHouseManager.getInstance();
@@ -955,7 +949,7 @@ public final class SkyBlockCore extends JavaPlugin {
         SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
         getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
-        MenuCommand menuCommand = new MenuCommand(p -> SkyBlockMenuManager.getInstance().openMainMenu(p));
+        MenuCommand menuCommand = new MenuCommand(p -> MenuManager.getInstance().openMenu(p, new SkyBlockMainMenu(p)));
         if (getCommand("menu") != null) {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
