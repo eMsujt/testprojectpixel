@@ -121,6 +121,15 @@ public final class MiningManager {
         public int getPowderReward()  { return powderReward; }
     }
 
+    /** The five placeable crystals in the Crystal Hollows. */
+    public enum Crystal {
+        JADE,
+        AMBER,
+        TOPAZ,
+        SAPPHIRE,
+        AMETHYST;
+    }
+
     /** The two powder currencies earned from mining in SkyBlock. */
     public enum Powder {
         MITHRIL,
