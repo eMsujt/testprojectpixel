@@ -711,3 +711,33 @@ permissions:
   skyblock.command.enchanting:
     description: Use the /enchanting command to view and apply SkyBlock enchantments.
     default: true
+  skyblock.enchant:
+    description: Use the /enchant command to open the enchanting table GUI.
+    default: true
+  skyblock.talisman:
+    description: Use the /talisman command to open the Talisman Bag GUI.
+    default: true
+  skyblock.enderchest:
+    description: Use the /enderchest command to open your SkyBlock Ender Chest.
+    default: true
+  skyblock.runecrafting:
+    description: Use the /runecrafting command to view your Runecrafting skill.
+    default: true
+  skyblock.runes:
+    description: Use the /runes command to open the Runes menu.
+    default: true
+  skyblock.mining:
+    description: Use the /mining command to view mining stats and HOTM info.
+    default: true
+  skyblock.hotm:
+    description: Use the /hotm command to view and manage Heart of the Mountain perks.
+    default: true
+  skyblock.command.forge:
+    description: Use the /forge command to forge items.
+    default: true
+  skyblock.essenceshop:
+    description: Use the /essenceshop command to open the Essence Shop.
+    default: true
+  skyblock.crimsonisle:
+    description: Use the /crimsonisle command to open the Crimson Isle overview.
+    default: true
