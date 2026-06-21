@@ -20,9 +20,11 @@ import com.skyblock.core.manager.Warp;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.AccessoryBagMenu;
+import com.skyblock.core.menu.AuctionHouseMenu;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.CollectionsMenu;
+import com.skyblock.core.menu.DungeonsMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
@@ -2863,6 +2865,75 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new PetMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /bank (simple menu opener)
+    // =========================================================================
+
+    public static final class BankCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new BankMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /auction (simple menu opener)
+    // =========================================================================
+
+    public static final class AuctionCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new AuctionHouseMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /dungeons (simple menu opener)
+    // =========================================================================
+
+    public static final class DungeonsCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new DungeonsMenu(player.getUniqueId()).open(player);
         }
 
         @Override
