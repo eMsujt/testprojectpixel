@@ -310,6 +310,8 @@ public final class FishingManager {
     private final Map<UUID, Map<FishingTreasure, Integer>> treasureCounts = new HashMap<>();
     /** Per-player catch event history. */
     private final Map<UUID, List<String>> catchHistory = new ConcurrentHashMap<>();
+    /** Per-player per-FishType catch counts. */
+    private final Map<UUID, Map<FishType, Integer>> fishTypeCounts = new HashMap<>();
 
     private final Random random = new Random();
 
@@ -582,6 +584,44 @@ public final class FishingManager {
         return "Fishing Stats: Common: " + common + " | Uncommon: " + uncommon
                 + " | Rare: " + rare + " | Epic: " + epic + " | Legendary: " + legendary
                 + " | Total: " + total;
+    }
+
+    /** Increments the catch count for a specific FishType and returns the new count. */
+    public int addCatch(UUID playerId, FishType fishType) {
+        Objects.requireNonNull(playerId, "playerId");
+        Objects.requireNonNull(fishType, "fishType");
+        return fishTypeCounts
+                .computeIfAbsent(playerId, k -> new HashMap<>())
+                .merge(fishType, 1, Integer::sum);
+    }
+
+    /** Returns the FishType with the highest catch count for the player, or {@code null} if none recorded. */
+    public FishType getTopFish(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        Map<FishType, Integer> counts = fishTypeCounts.get(playerId);
+        if (counts == null || counts.isEmpty()) {
+            return null;
+        }
+        FishType top = null;
+        int max = -1;
+        for (Map.Entry<FishType, Integer> entry : counts.entrySet()) {
+            if (entry.getValue() > max) {
+                max = entry.getValue();
+                top = entry.getKey();
+            }
+        }
+        return top;
+    }
+
+    /** Clears all fishing data for the given player. */
+    public void resetPlayer(UUID playerId) {
+        Objects.requireNonNull(playerId, "playerId");
+        fishingXp.remove(playerId);
+        fishingLevel.remove(playerId);
+        totalFishCaught.remove(playerId);
+        treasureCounts.remove(playerId);
+        catchHistory.remove(playerId);
+        fishTypeCounts.remove(playerId);
     }
 
     public Map<UUID, List<String>> getAllCatchHistory() {

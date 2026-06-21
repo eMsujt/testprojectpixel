@@ -15,6 +15,8 @@ import com.skyblock.core.manager.BestiaryManager.BestiaryFamily;
 import com.skyblock.core.manager.BestiaryManager.BestiaryMob;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonManager.DungeonClass;
+import com.skyblock.core.manager.FishingManager;
+import com.skyblock.core.manager.FishingManager.FishType;
 import com.skyblock.core.manager.FishingManager.TrophyFish;
 import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.manager.PetsManager.PetData;
@@ -5717,6 +5719,49 @@ class ManagersTest {
         @Test
         void reset_noData_returnsFalse() {
             assertFalse(manager.reset(playerId));
+        }
+    }
+
+    @Nested
+    class FishingManagerTests {
+
+        private FishingManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = FishingManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.resetPlayer(playerId);
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(FishingManager.getInstance(), FishingManager.getInstance());
+        }
+
+        @Test
+        void addCatch_incrementsCatchCount() {
+            assertEquals(1, manager.addCatch(playerId, FishType.PUFFERFISH));
+            assertEquals(2, manager.addCatch(playerId, FishType.PUFFERFISH));
+            assertEquals(1, manager.addCatch(playerId, FishType.INK_SAC));
+        }
+
+        @Test
+        void getTopFish_returnsCorrectFishType() {
+            manager.addCatch(playerId, FishType.INK_SAC);
+            manager.addCatch(playerId, FishType.PUFFERFISH);
+            manager.addCatch(playerId, FishType.PUFFERFISH);
+            assertEquals(FishType.PUFFERFISH, manager.getTopFish(playerId));
+        }
+
+        @Test
+        void getTopFish_noData_returnsNull() {
+            assertNull(manager.getTopFish(playerId));
         }
     }
 }
