@@ -37,7 +37,7 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
     private int selectedTab;
 
     public BazaarMenu(Player player) {
-        super(player, "§6Bazaar", 6);
+        super(player, "§aBazaar", 6);
         this.selectedTab = 0;
     }
 
