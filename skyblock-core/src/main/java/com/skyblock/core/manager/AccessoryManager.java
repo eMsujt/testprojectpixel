@@ -230,6 +230,7 @@ public final class AccessoryManager {
         } else {
             playerTuning.computeIfAbsent(playerId, id -> new EnumMap<>(Stat.class)).put(stat, points);
         }
+        refreshTuningBonus(playerId);
         return true;
     }
 
@@ -253,5 +254,39 @@ public final class AccessoryManager {
     public void resetTuning(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         playerTuning.remove(playerId);
+        refreshTuningBonus(playerId);
+    }
+
+    /** Bonuses currently applied from tuning, for exact removal on re-allocation. */
+    private final Map<UUID, Map<Stat, Double>> appliedTuning = new HashMap<>();
+
+    /**
+     * Re-applies the player's tuning-point bonuses to {@link StatManager} (1 stat per point),
+     * removing any previously applied amounts so re-allocating stays balanced.
+     */
+    private void refreshTuningBonus(UUID playerId) {
+        StatManager stats = StatManager.getInstance();
+        Map<Stat, Double> previous = appliedTuning.remove(playerId);
+        if (previous != null) {
+            for (Map.Entry<Stat, Double> entry : previous.entrySet()) {
+                stats.addBonus(playerId, entry.getKey(), -entry.getValue());
+            }
+        }
+        Map<Stat, Integer> tuning = getTuning(playerId);
+        if (tuning.isEmpty()) {
+            return;
+        }
+        Map<Stat, Double> applied = new EnumMap<>(Stat.class);
+        for (Map.Entry<Stat, Integer> entry : tuning.entrySet()) {
+            double amount = entry.getValue();
+            if (amount == 0.0) {
+                continue;
+            }
+            stats.addBonus(playerId, entry.getKey(), amount);
+            applied.put(entry.getKey(), amount);
+        }
+        if (!applied.isEmpty()) {
+            appliedTuning.put(playerId, applied);
+        }
     }
 }
