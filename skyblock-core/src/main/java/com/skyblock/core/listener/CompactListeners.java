@@ -7,7 +7,7 @@ import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.StatsManager;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stats.PlayerStatsCalculator;
+import com.skyblock.core.stats.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Ageable;
@@ -167,14 +167,14 @@ public final class CompactListeners implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        PlayerStatsCalculator.getInstance().calculate(player.getUniqueId());
+        StatsManager.getInstance().getStats(player.getUniqueId());
         ScoreboardManager.getInstance().initPlayer(player);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        PlayerStatsCalculator.getInstance().evict(player.getUniqueId());
+        StatsManager.getInstance().remove(player.getUniqueId());
         ScoreboardManager.getInstance().stopForPlayer(player);
     }
 
