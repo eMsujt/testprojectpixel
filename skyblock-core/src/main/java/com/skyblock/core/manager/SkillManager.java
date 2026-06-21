@@ -182,8 +182,27 @@ public final class SkillManager {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(skill, "skill");
         if (amount < 0) throw new IllegalArgumentException("amount must not be negative, got " + amount);
+        long gained = applyWisdom(playerId, skill, amount);
         Map<Skill, Long> xp = xpMap.computeIfAbsent(playerId, id -> new EnumMap<>(Skill.class));
-        return xp.merge(skill, amount, Long::sum);
+        return xp.merge(skill, gained, Long::sum);
+    }
+
+    /** Boosts skill XP by the matching Wisdom stat (Combat/Mining/Farming); others are unchanged. */
+    private static long applyWisdom(UUID playerId, Skill skill, long amount) {
+        Stat wisdom = switch (skill) {
+            case COMBAT -> Stat.COMBAT_WISDOM;
+            case MINING -> Stat.MINING_WISDOM;
+            case FARMING -> Stat.FARMING_WISDOM;
+            default -> null;
+        };
+        if (wisdom == null) {
+            return amount;
+        }
+        double value = StatManager.getInstance().getStat(playerId, wisdom);
+        if (value <= 0.0) {
+            return amount;
+        }
+        return Math.round(amount * (1.0 + value / 100.0));
     }
 
     /** Returns total accumulated XP for the given skill (0 if none recorded). */
