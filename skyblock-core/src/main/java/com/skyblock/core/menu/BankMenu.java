@@ -79,6 +79,9 @@ public final class BankMenu extends Menu {
                 inventory.setItem(slot, pane);
             }
         }
+        inventory.setItem(4, SkyblockUtils.buildItem(Material.GOLD_INGOT,
+                "§6Bank",
+                "§7Balance: §6" + String.format("%,.0f", currentBalance) + " Coins"));
 
         UUID coopOwner = coop.getOwner(playerId);
         String coopKey = coopOwner != null ? coopOwner.toString() : null;
