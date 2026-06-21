@@ -80,7 +80,7 @@ public final class PetsMenu extends AbstractSkyBlockMenu {
                         if (cur == null || !cur.id.equals(pet.id)) {
                             pets.setActivePet(player.getUniqueId(), pet.id);
                             player.sendMessage("§dPet §f" + pet.type.getDisplayName() + " §dis now active.");
-                            open();
+                            open(player);
                         }
                     });
         }
