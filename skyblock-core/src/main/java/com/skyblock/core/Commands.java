@@ -34,6 +34,7 @@ import com.skyblock.core.menu.EnchantingMenu;
 import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.FishingMenu;
+import com.skyblock.core.menu.ForagingMenu;
 import com.skyblock.core.menu.ForgeMenu;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.HotmMenu;
@@ -2990,7 +2991,7 @@ public final class Commands {
 
         @Override
         protected void openMenu(Player player) {
-            new DungeonsMenu(player.getUniqueId()).open(player);
+            new DungeonsMenu(player).open(player);
         }
 
         @Override
@@ -3635,6 +3636,44 @@ public final class Commands {
         @Override
         protected void openMenu(Player player) {
             new BankingMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    public static final class ForagingCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new ForagingMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    public static final class AccessoryCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new AccessoryBagMenu(player).open(player);
         }
 
         @Override

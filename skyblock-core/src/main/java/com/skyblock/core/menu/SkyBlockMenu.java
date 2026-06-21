@@ -49,7 +49,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(16, new ItemBuilder(Material.END_PORTAL_FRAME).displayName("§5Dungeons")
                 .lore("§7Explore the Catacombs.").build(),
-                e -> { e.setCancelled(true); new DungeonsMenu(player.getUniqueId()).open(player); });
+                e -> { e.setCancelled(true); new DungeonsMenu(player).open(player); });
 
         setItem(19, new ItemBuilder(Material.GOLD_NUGGET).displayName("§6Auction House")
                 .lore("§7Buy and sell items.").build(),

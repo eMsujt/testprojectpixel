@@ -691,7 +691,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("compost").setExecutor(compostCommand);
             getCommand("compost").setTabCompleter(compostCommand);
         }
-        MenuCommand dungeonsCommand = new MenuCommand(p -> new DungeonsMenu(p.getUniqueId()).open(p));
+        MenuCommand dungeonsCommand = new MenuCommand(p -> new DungeonsMenu(p).open(p));
         if (getCommand("dungeons") != null) {
             getCommand("dungeons").setExecutor(dungeonsCommand);
         }
