@@ -6,6 +6,10 @@ description: SkyBlock plugin for Paper
 load: POSTWORLD
 
 commands:
+  ability:
+    description: View and manage item abilities.
+    usage: /ability <list|info|equip|unequip|unlock>
+    permission: skyblock.ability
   accessory:
     description: Manage accessory rarities and stat multipliers.
     usage: /accessory <list|info|setrarity|remove>
@@ -19,10 +23,6 @@ commands:
     usage: /accessorybag [list|add|remove|bonuses|rarity|tier]
     aliases: [ab, bag]
     permission: skyblock.accessories
-  ability:
-    description: View and manage item abilities.
-    usage: /ability <list|info|equip|unequip|unlock>
-    permission: skyblock.ability
   achievement:
     description: View your SkyBlock achievements.
     usage: /achievement [list|view]
@@ -30,14 +30,14 @@ commands:
     description: Brew potions using the SkyBlock alchemy system.
     usage: /alchemy [list|brew|status|collect|cancel]
     aliases: [alch]
-  auctionhouse:
-    description: Manage Auction House listings (BIN and bid-based).
-    usage: /auctionhouse <list|create|bid|view|cancel|mine|history>
   auction:
     description: Open the Auction House GUI.
     usage: /auction
     aliases: [ah]
     permission: skyblock.auction
+  auctionhouse:
+    description: Manage Auction House listings (BIN and bid-based).
+    usage: /auctionhouse <list|create|bid|view|cancel|mine|history>
   backpack:
     description: Create and manage personal item backpacks.
     usage: /backpack <create <name>|delete <name>|list>
@@ -55,11 +55,6 @@ commands:
     usage: /banking
     aliases: [coins]
     permission: skyblock.bank
-  networth:
-    description: Show your liquid net worth (purse + bank balance).
-    usage: /networth
-    aliases: [nw]
-    permission: skyblock.networth
   bazaar:
     description: Open the Bazaar trading post.
     usage: /bazaar [product]
@@ -104,6 +99,15 @@ commands:
   combat:
     description: View and manage your combat stats.
     usage: /combat [info|kills|deaths|mobkills|reset]
+  commission:
+    description: Manage King's Commissions.
+    usage: /commission [list|generate|claim|progress|stats]
+    aliases: [commissions]
+    permission: skyblock.commission
+  compost:
+    description: View and manage your Garden Composter organic matter, fuel, and compost.
+    usage: /compost <info|matter <amount>|fuel <amount>|process|collect>
+    permission: skyblock.compost
   cooldown:
     description: View and manage active skill/ability cooldowns.
     usage: /cooldown <list|check|set|clear|clearall>
@@ -135,23 +139,23 @@ commands:
     description: Open the Dojo challenge scores menu.
     usage: /dojo
     permission: skyblock.dojo
-  dungeonclass:
-    description: View and select your dungeon class.
-    usage: /dungeonclass [list|select <class>|info <class>]
-    permission: skyblock.dungeonclass
   dungeon:
     description: Open your Dungeon menu.
     usage: /dungeon
     aliases: [da]
     permission: skyblock.command.dungeon
+  dungeonclass:
+    description: View and select your dungeon class.
+    usage: /dungeonclass [list|select <class>|info <class>]
+    permission: skyblock.dungeonclass
+  dungeonmenu:
+    description: Open the Dungeon GUI.
+    usage: /dungeonmenu
+    permission: skyblock.dungeons
   dungeons:
     description: Open the Catacombs menu.
     usage: /dungeons
     aliases: [catacombs]
-    permission: skyblock.dungeons
-  dungeonmenu:
-    description: Open the Dungeon GUI.
-    usage: /dungeonmenu
     permission: skyblock.dungeons
   enchant:
     description: Open the enchanting table GUI.
@@ -161,6 +165,11 @@ commands:
     description: View and apply SkyBlock enchantments.
     usage: /enchanting <list|info|apply|remove|view>
     permission: skyblock.command.enchanting
+  enderchest:
+    description: Open your SkyBlock Ender Chest.
+    usage: /enderchest
+    aliases: [ec]
+    permission: skyblock.enderchest
   essence:
     description: View and manage your SkyBlock essence balances.
     usage: /essence <balance|add|remove> [type] [amount]
@@ -211,10 +220,6 @@ commands:
     description: Open the Garden GUI.
     usage: /gardenmenu
     permission: skyblock.garden
-  compost:
-    description: View and manage your Garden Composter organic matter, fuel, and compost.
-    usage: /compost <info|matter <amount>|fuel <amount>|process|collect>
-    permission: skyblock.compost
   gemstone:
     description: View and manage your gemstone collection.
     usage: /gemstone <info|view <type>|types|add <type> <amount>>
@@ -235,6 +240,11 @@ commands:
     description: View and manage Heart of the Mountain perk tree.
     usage: /hotmtree <view [perk]|upgrade <perk>|set <perk> <level>|reset>
     permission: skyblock.hotm
+  hub:
+    description: Teleport to the configured hub.
+    usage: /hub
+    permission: skyblock.hub
+    aliases: [spawn]
   island:
     description: Open your SkyBlock island menu.
     usage: /island
@@ -279,19 +289,14 @@ commands:
     description: View mining level, XP, speed bonus, ores, zones, powder, and HOTM info.
     usage: /mining [ores|speedbonus|zones|powder|hotm|menu]
     permission: skyblock.mining
-  commission:
-    description: Manage King's Commissions.
-    usage: /commission [list|generate|claim|progress|stats]
-    aliases: [commissions]
-    permission: skyblock.commission
   miningcommission:
     description: Open the King's Commissions mining menu.
     usage: /miningcommission
     permission: skyblock.miningcommission
   miningzone:
     description: View or change your current mining zone.
-    aliases: [mz]
     usage: /miningzone [list|set <zone>|clear]
+    aliases: [mz]
     permission: skyblock.miningzone
   minion:
     description: Manage your placed minions.
@@ -309,10 +314,19 @@ commands:
     description: Donate items and view your museum collection.
     usage: /museum [info|view <category>|donate <item>|reset]
     permission: skyblock.museum
+  networth:
+    description: Show your liquid net worth (purse + bank balance).
+    usage: /networth
+    aliases: [nw]
+    permission: skyblock.networth
   npc:
     description: Interact with SkyBlock NPCs and their shops.
     usage: /npc <list|shops|shop <npc>|buy <npc> <item>|type>
     permission: skyblock.npc
+  npcshop:
+    description: Browse and buy from static Hypixel NPC shops via GUI.
+    usage: /npcshop [id]
+    permission: skyblock.npcshop
   party:
     description: Manage your party.
     usage: /party <invite|accept|decline|kick|leave|list>
@@ -356,6 +370,14 @@ commands:
     description: Track your dungeon run statistics.
     usage: /run [info [floor]|reset]
     permission: skyblock.run
+  runes:
+    description: Open the Runes menu.
+    usage: /runes
+    permission: skyblock.runes
+  runecrafting:
+    description: View your Runecrafting skill and runes.
+    usage: /runecrafting
+    permission: skyblock.runecrafting
   sack:
     description: View the contents of your sacks.
     usage: /sack
@@ -364,18 +386,14 @@ commands:
     description: Open your sacks.
     usage: /sacks
     permission: skyblock.sacks
-  shop:
-    description: List NPC shops and their buy/sell prices.
-    usage: /shop [id]
-    permission: skyblock.shop
-  npcshop:
-    description: Browse and buy from static Hypixel NPC shops via GUI.
-    usage: /npcshop [id]
-    permission: skyblock.npcshop
   season:
     description: View or change the current SkyBlock season.
     usage: /season <current|next|set <season>|advance>
     permission: skyblock.season
+  shop:
+    description: List NPC shops and their buy/sell prices.
+    usage: /shop [id]
+    permission: skyblock.shop
   skills:
     description: Open the Skills Menu.
     usage: /skills [skill]
@@ -383,8 +401,8 @@ commands:
     permission: skyblock.command.skills
   skyblock:
     description: Open the SkyBlock main menu.
-    aliases: [sb, sky]
     usage: /skyblock
+    aliases: [sb, sky]
     permission: skyblock.use
   skyblock-level:
     description: View and manage your SkyBlock level and XP.
@@ -412,19 +430,6 @@ commands:
     description: View and manage your personal storage pages.
     usage: /storage [info|upgrade|reset]
     permission: skyblock.storage
-  runes:
-    description: Open the Runes menu.
-    usage: /runes
-    permission: skyblock.runes
-  runecrafting:
-    description: View your Runecrafting skill and runes.
-    usage: /runecrafting
-    permission: skyblock.runecrafting
-  enderchest:
-    description: Open your SkyBlock Ender Chest.
-    usage: /enderchest
-    aliases: [ec]
-    permission: skyblock.enderchest
   talisman:
     description: Open the Talisman Bag GUI.
     usage: /talisman
@@ -463,11 +468,6 @@ commands:
     usage: /warp [name|set <name>|delete <name>]
     permission: skyblock.warp
     aliases: [warps]
-  hub:
-    description: Teleport to the configured hub.
-    usage: /hub
-    permission: skyblock.hub
-    aliases: [spawn]
 
 permissions:
   skyblock.ban:
