@@ -89,15 +89,16 @@ public final class FishingManager {
 
     /** Sea creatures that can be summoned while fishing, grouped by the {@link WaterType} they spawn in. */
     public enum SeaCreature {
-        // --- Water (all 16 Hypixel sea creatures, ascending minLevel) ---
+        // --- Water (all 17 Hypixel sea creatures, ascending minLevel) ---
         SEA_WALKER(1,   0.30,  WaterType.WATER),
-        SQUID(1,        0.28,  WaterType.WATER),
-        ZOMBIE_MERMAN(1, 0.26, WaterType.WATER),
-        THE_FISH(1,     0.22,  WaterType.WATER),
-        NIGHT_SQUID(5,  0.25,  WaterType.WATER),
+        SQUID(3,        0.28,  WaterType.WATER),
+        ZOMBIE_MERMAN(5, 0.26, WaterType.WATER),
+        THE_FISH(8,     0.22,  WaterType.WATER),
+        NIGHT_SQUID(10, 0.25,  WaterType.WATER),
         SEA_GUARDIAN(15, 0.14, WaterType.WATER),
         SEA_WITCH(20,   0.10,  WaterType.WATER),
         SEA_ARCHER(25,  0.08,  WaterType.WATER),
+        SEA_LEECH(28,   0.07,  WaterType.WATER),
         MONSTER_OF_THE_DEEP(30, 0.06, WaterType.WATER),
         WATER_HYDRA(30, 0.05,  WaterType.WATER),
         CATFISH(35,     0.04,  WaterType.WATER),
