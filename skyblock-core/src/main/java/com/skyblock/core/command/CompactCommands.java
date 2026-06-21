@@ -23,9 +23,11 @@ import com.skyblock.core.menu.AccessoryBagMenu;
 import com.skyblock.core.menu.AuctionHouseMenu;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.BazaarMenu;
+import com.skyblock.core.menu.BestiaryMenu;
 import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.DungeonsMenu;
+import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
@@ -3004,6 +3006,52 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new BazaarMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /bestiary (simple menu opener)
+    // =========================================================================
+
+    public static final class BestiaryCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new BestiaryMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /fairysouls (simple menu opener)
+    // =========================================================================
+
+    public static final class FairySoulCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new FairySoulMenu(player).open(player);
         }
 
         @Override
