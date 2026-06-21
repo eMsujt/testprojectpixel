@@ -19,24 +19,21 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * GUI menu opened by {@code /garden}. Renders three rows of Garden state:
+ * 6-row chest GUI titled '§2Garden' extending AbstractSkyBlockMenu.
  *
+ * <p>Layout (rows 0-5, 9 columns):
  * <ul>
- *   <li>a <b>visitor-queue row</b> of paper offers, each showing the visitor's
- *       name, the crops they want and the copper reward they pay;</li>
- *   <li>the nine <b>crop-plot</b> slots from {@link GardenManager}, showing for
- *       each crop whether its plot is unlocked, its current {@link PlotTier} and
- *       the farming-fortune bonus that tier grants;</li>
- *   <li>a <b>crop-progress row</b> with one item per harvestable crop, showing
- *       the total harvested and the player's milestone progress.</li>
+ *   <li>Row 0: panes with summary item at slot 4.</li>
+ *   <li>Row 1: visitor-queue row — one paper offer per queued visitor.</li>
+ *   <li>Row 2: crop-plot row — unlock state and {@link PlotTier} per crop.</li>
+ *   <li>Row 3: crop-progress row — harvest totals and milestone progress.</li>
+ *   <li>Rows 4-5: panes.</li>
  * </ul>
- *
- * <p>A crop plot is treated as unlocked when its unlock cost is free or the
- * player holds enough copper to unlock it (see
- * {@link GardenManager#getCropPlotUnlockCost(GardenCrop)} and
- * {@link GardenManager#getCopper(UUID)}).</p>
  */
-public final class GardenMenu extends Menu {
+public final class GardenMenu extends AbstractSkyBlockMenu {
+
+    private static final String TITLE = "§2Garden";
+    private static final int ROWS = 6;
 
     static final int SUMMARY_SLOT = 4;
     /** First slot of the visitor-queue row; offers occupy {@code VISITOR_SLOT .. +8}. */
@@ -72,28 +69,22 @@ public final class GardenMenu extends Menu {
             new VisitorOffer(VisitorType.ANITA, Map.of(GardenCrop.MELON, 480), 6_500L),
             new VisitorOffer(VisitorType.GRANDMA_WOLF, Map.of(GardenCrop.SUGAR_CANE, 384), 9_000L));
 
-    private final UUID playerId;
-
     public GardenMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public GardenMenu(UUID playerId) {
-        super("§aGarden", 6);
-        this.playerId = playerId;
+        super(player, TITLE, ROWS);
     }
 
     @Override
-    protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
-        for (int slot = 9; slot < 18; slot++) setItem(slot, pane);
-        for (int slot = 27; slot < 54; slot++) setItem(slot, pane);
-
+    protected void populate() {
+        UUID playerId = player.getUniqueId();
         GardenManager manager = GardenManager.getInstance();
 
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < ROWS * 9; slot++) {
+            setItem(slot, pane);
+        }
+
         setItem(SUMMARY_SLOT, new ItemBuilder(Material.JUKEBOX)
-                .displayName("§aGarden")
+                .displayName("§2Garden")
                 .lore(
                         "§7Garden Level: §e" + manager.getGardenLevel(playerId)
                                 + "§7/§e" + manager.getMaxGardenLevel(),
@@ -105,11 +96,10 @@ public final class GardenMenu extends Menu {
                 .build());
 
         buildVisitorQueue();
-        buildCropPlots(manager);
-        buildCropProgress(manager);
+        buildCropPlots(manager, playerId);
+        buildCropProgress(manager, playerId);
     }
 
-    /** Renders the visitor-queue row: one paper offer per queued visitor. */
     private void buildVisitorQueue() {
         int index = 0;
         for (VisitorOffer offer : VISITOR_QUEUE) {
@@ -131,8 +121,7 @@ public final class GardenMenu extends Menu {
         }
     }
 
-    /** Renders the nine crop-plot slots with their unlock state and tier. */
-    private void buildCropPlots(GardenManager manager) {
+    private void buildCropPlots(GardenManager manager, UUID playerId) {
         int index = 0;
         for (GardenCrop crop : GardenCrop.values()) {
             Long unlockCost = GardenManager.CROP_PLOT_UNLOCK_COSTS.get(crop);
@@ -161,8 +150,7 @@ public final class GardenMenu extends Menu {
         }
     }
 
-    /** Renders the crop-progress row: one item per harvestable crop. */
-    private void buildCropProgress(GardenManager manager) {
+    private void buildCropProgress(GardenManager manager, UUID playerId) {
         int index = 0;
         for (CropType crop : CropType.values()) {
             if (index >= 9) {
