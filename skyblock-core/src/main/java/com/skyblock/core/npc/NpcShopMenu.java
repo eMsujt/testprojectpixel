@@ -5,6 +5,8 @@ import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.manager.ShopManager.ShopEntry;
 import com.skyblock.core.menu.AbstractMenu;
 import com.skyblock.core.npc.NpcManager.NpcDefinition;
+import com.skyblock.core.util.HeadTextures;
+import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -47,18 +49,19 @@ public final class NpcShopMenu extends AbstractMenu {
 
         for (int i = 0; i < entries.size() && i < ITEM_SLOTS.length; i++) {
             ShopEntry entry = entries.get(i);
-            Material mat = parseMaterial(entry.itemId());
+            Material mat = HeadTextures.itemMaterial(entry.itemId());
             int slot = ITEM_SLOTS[i];
             String sellLine = entry.sellPrice() > 0
                     ? "§7Sell Price: §6" + entry.sellPrice() + " coins"
                     : "§7Not sellable";
-            setItem(slot,
-                    SkyblockUtils.buildItem(mat,
-                            "§e" + formatName(entry.itemId()),
-                            "§7Buy Price: §6" + entry.buyPrice() + " coins",
+            ItemStack icon = ItemBuilder.forItem(entry.itemId())
+                    .displayName("§e" + formatName(entry.itemId()))
+                    .lore("§7Buy Price: §6" + entry.buyPrice() + " coins",
                             sellLine,
                             "",
-                            "§eLeft-click to purchase!"),
+                            "§eLeft-click to purchase!")
+                    .build();
+            setItem(slot, icon,
                     event -> {
                         event.setCancelled(true);
                         Player buyer = (Player) event.getWhoClicked();
@@ -77,14 +80,6 @@ public final class NpcShopMenu extends AbstractMenu {
                 "§6" + npc.name(),
                 "§7Browse and purchase items",
                 "§7from this merchant."));
-    }
-
-    private static Material parseMaterial(String itemId) {
-        try {
-            return Material.valueOf(itemId.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            return Material.PAPER;
-        }
     }
 
     private static String formatName(String itemId) {
