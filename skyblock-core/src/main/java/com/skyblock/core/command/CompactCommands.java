@@ -22,6 +22,7 @@ import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.AccessoryBagMenu;
 import com.skyblock.core.menu.AuctionHouseMenu;
 import com.skyblock.core.menu.AlchemyMenu;
+import com.skyblock.core.menu.BankingMenu;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.BestiaryMenu;
@@ -3611,6 +3612,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new HotmMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /banking (simple menu opener — uses BankingMenu)
+    // =========================================================================
+
+    public static final class BankingCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new BankingMenu(player).open(player);
         }
 
         @Override
