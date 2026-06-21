@@ -2971,4 +2971,27 @@ public final class CompactCommands {
         }
     }
 
+    // =========================================================================
+    // /reforge (simple menu opener)
+    // =========================================================================
+
+    public static final class ReforgeCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new ReforgeMenu().open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
 }
