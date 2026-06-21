@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 /**
- * 4-row Wardrobe menu. Slots 0-8 each represent one of the nine armor presets
+ * 6-row Wardrobe menu. Slots 0-8 each represent one of the nine armor presets
  * stored in {@link WardrobeManager}. Locked slots show a barrier; unlocked but
  * empty slots show a gray pane; occupied slots show the saved helmet.
  */
@@ -21,7 +21,7 @@ public final class WardrobeMenu extends Menu {
     private final UUID playerId;
 
     public WardrobeMenu(UUID playerId) {
-        super("§6Wardrobe", 4);
+        super("§eWardrobe", 6);
         this.playerId = playerId;
     }
 
