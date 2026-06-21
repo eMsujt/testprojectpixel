@@ -31,7 +31,27 @@ public final class ActionBarManager implements Listener {
     private static final long REFRESH_TICKS = 4L;
 
     private final Map<UUID, BukkitTask> tasks = new HashMap<>();
+    /** Temporary action-bar overrides (e.g. ability use / cooldown), with their expiry millis. */
+    private final Map<UUID, String> overrideText = new HashMap<>();
+    private final Map<UUID, Long> overrideUntil = new HashMap<>();
     private Plugin plugin;
+
+    /** Briefly replaces the HUD with {@code message} (Hypixel-style ability flash). */
+    public void flash(Player player, String message) {
+        UUID id = player.getUniqueId();
+        overrideText.put(id, message);
+        overrideUntil.put(id, System.currentTimeMillis() + 2000L);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(message));
+    }
+
+    private String currentText(Player player) {
+        UUID id = player.getUniqueId();
+        Long until = overrideUntil.get(id);
+        if (until != null && System.currentTimeMillis() < until) {
+            return overrideText.getOrDefault(id, render(player));
+        }
+        return render(player);
+    }
 
     private ActionBarManager() {}
 
@@ -74,7 +94,7 @@ public final class ActionBarManager implements Listener {
                     tasks.remove(player.getUniqueId());
                     return;
                 }
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(render(player)));
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(currentText(player)));
             }
         }.runTaskTimer(plugin, 0L, REFRESH_TICKS);
         tasks.put(player.getUniqueId(), task);
