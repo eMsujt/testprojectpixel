@@ -137,7 +137,7 @@ public final class BazaarManager {
         public double  totalCoins()        { return totalCoins; }
     }
 
-    public static final class BazaarOrder {
+    public static class BazaarOrder {
         private final UUID   id;
         private final UUID   owner;
         private       int    quantity;
