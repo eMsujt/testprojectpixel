@@ -15,5 +15,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: skyblock-plugin-jar
-          path: skyblock-core/target/skyblock-core-*-shaded.jar
+          path: skyblock-core/target/skyblock-core-*.jar
           if-no-files-found: error
