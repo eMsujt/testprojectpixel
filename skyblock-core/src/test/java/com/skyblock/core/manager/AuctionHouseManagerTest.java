@@ -87,6 +87,63 @@ class AuctionHouseManagerTest {
                 () -> ah.placeBid(UUID.randomUUID(), UUID.randomUUID(), 1000));
     }
 
+    // -------------------------------------------------------------------------
+    // binListing() accessor
+    // -------------------------------------------------------------------------
+
+    @Test
+    void binListing_TrueForBin_FalseForAuction() {
+        UUID seller = UUID.randomUUID();
+        UUID binId = ah.createListing(seller, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+        UUID auctionId = ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+
+        assertTrue(ah.getListing(binId).binListing());
+        assertFalse(ah.getListing(auctionId).binListing());
+    }
+
+    // -------------------------------------------------------------------------
+    // getBinListings / getBidListings
+    // -------------------------------------------------------------------------
+
+    @Test
+    void getBinListings_ReturnsOnlyBinListings() {
+        UUID seller = UUID.randomUUID();
+        ah.createListing(seller, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+        ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+
+        java.util.List<AuctionHouseManager.AuctionListing> bins = ah.getBinListings();
+        assertEquals(1, bins.size());
+        assertTrue(bins.get(0).binListing());
+    }
+
+    @Test
+    void getBidListings_ReturnsOnlyAuctionListings() {
+        UUID seller = UUID.randomUUID();
+        ah.createListing(seller, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+        ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+        ah.createListing(seller, item(), "Terminator", AuctionCategory.WEAPONS, 200, AuctionType.AUCTION);
+
+        java.util.List<AuctionHouseManager.AuctionListing> bids = ah.getBidListings();
+        assertEquals(2, bids.size());
+        bids.forEach(l -> assertFalse(l.binListing()));
+    }
+
+    @Test
+    void getBinListings_EmptyWhenNoBinActive() {
+        UUID seller = UUID.randomUUID();
+        ah.createListing(seller, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+
+        assertTrue(ah.getBinListings().isEmpty());
+    }
+
+    @Test
+    void getBidListings_EmptyWhenNoBidAuctionActive() {
+        UUID seller = UUID.randomUUID();
+        ah.createListing(seller, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+
+        assertTrue(ah.getBidListings().isEmpty());
+    }
+
     @Test
     void getListingsByCategory_ReturnsOnlyMatchingCategory() {
         UUID seller = UUID.randomUUID();
