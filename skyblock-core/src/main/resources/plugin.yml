@@ -169,6 +169,10 @@ commands:
     usage: /fairysoul [info|collect <key>|reset]
     permission: skyblock.fairysoul
     aliases: [fairysouls]
+  farming:
+    description: Open the Garden / Farming GUI.
+    usage: /farming
+    permission: skyblock.command.farming
   fishing:
     description: View fishing stats and trophy fish catches.
     usage: /fishing [trophy [<fish>|reset]]
@@ -675,6 +679,9 @@ permissions:
     default: true
   skyblock.command.fishing:
     description: Use the /fishing command to view fishing stats and trophy fish catches.
+    default: true
+  skyblock.command.farming:
+    description: Use the /farming command to open the Garden / Farming GUI.
     default: true
   skyblock.command.enchanting:
     description: Use the /enchanting command to view and apply SkyBlock enchantments.

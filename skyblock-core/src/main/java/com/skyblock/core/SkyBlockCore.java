@@ -688,6 +688,11 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("garden").setExecutor(gardenCommand);
             getCommand("garden").setTabCompleter(gardenCommand);
         }
+        MenuCommand farmingCommand = new MenuCommand(p -> new GardenMenu(p).open(p));
+        if (getCommand("farming") != null) {
+            getCommand("farming").setExecutor(farmingCommand);
+            getCommand("farming").setTabCompleter(farmingCommand);
+        }
         CompostCommand compostCommand = new CompostCommand(GardenManager.getInstance());
         if (getCommand("compost") != null) {
             getCommand("compost").setExecutor(compostCommand);
