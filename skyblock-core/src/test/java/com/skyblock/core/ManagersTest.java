@@ -1465,6 +1465,54 @@ class ManagersTest {
         }
 
         // -------------------------------------------------------------------------
+        // Listing-type filters (binListing / getBinListings / getBidListings)
+        // -------------------------------------------------------------------------
+
+        @Test
+        void binListing_TrueForBin_FalseForAuction() {
+            UUID binId = ah.createListing(sellerId, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+            UUID auctionId = ah.createListing(sellerId, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+
+            assertTrue(ah.getListing(binId).binListing());
+            assertFalse(ah.getListing(auctionId).binListing());
+        }
+
+        @Test
+        void getBinListings_ReturnsOnlyBinListings() {
+            ah.createListing(sellerId, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+            ah.createListing(sellerId, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+
+            List<AuctionHouseManager.AuctionListing> bins = ah.getBinListings();
+            assertEquals(1, bins.size());
+            assertTrue(bins.get(0).binListing());
+        }
+
+        @Test
+        void getBidListings_ReturnsOnlyAuctionListings() {
+            ah.createListing(sellerId, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+            ah.createListing(sellerId, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+            ah.createListing(sellerId, item(), "Terminator", AuctionCategory.WEAPONS, 200, AuctionType.AUCTION);
+
+            List<AuctionHouseManager.AuctionListing> bids = ah.getBidListings();
+            assertEquals(2, bids.size());
+            bids.forEach(l -> assertFalse(l.binListing()));
+        }
+
+        @Test
+        void getBinListings_EmptyWhenNoBinActive() {
+            ah.createListing(sellerId, item(), "Aspect", AuctionCategory.WEAPONS, 100, AuctionType.AUCTION);
+
+            assertTrue(ah.getBinListings().isEmpty());
+        }
+
+        @Test
+        void getBidListings_EmptyWhenNoBidAuctionActive() {
+            ah.createListing(sellerId, item(), "Hyperion", AuctionCategory.WEAPONS, 1000, AuctionType.BIN);
+
+            assertTrue(ah.getBidListings().isEmpty());
+        }
+
+        // -------------------------------------------------------------------------
         // clear
         // -------------------------------------------------------------------------
 
