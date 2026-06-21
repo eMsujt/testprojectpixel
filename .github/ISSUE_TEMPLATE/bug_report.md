@@ -1,33 +1,30 @@
 ---
-name: Bug report
-about: Report a problem with a gameplay system or module
-title: "[Bug] "
+name: Bug Report
+about: Report a bug or unexpected behavior
+title: "[BUG] "
 labels: bug
+assignees: ''
 ---
 
 ## Description
-
 <!-- A clear and concise description of the bug. -->
 
-## Module
+## Steps to Reproduce
+1. 
+2. 
+3. 
 
-<!-- Which Maven module is affected? (see the module list in the root pom.xml) -->
-
-## Steps to reproduce
-
-1.
-2.
-3.
-
-## Expected behavior
-
+## Expected Behavior
 <!-- What you expected to happen. -->
 
-## Actual behavior
-
-<!-- What actually happened. Include relevant log output. -->
+## Actual Behavior
+<!-- What actually happened. Include error messages, stack traces, or screenshots if applicable. -->
 
 ## Environment
+- Server version:
+- Plugin version:
+- Java version:
+- OS:
 
-- JDK version:
-- Maven version:
+## Additional Context
+<!-- Any other context about the problem here. -->
