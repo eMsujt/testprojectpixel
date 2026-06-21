@@ -679,10 +679,17 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
+        if (getCommand("petsmenu") != null) {
+            getCommand("petsmenu").setExecutor(petsCommand);
+        }
         Commands.GardenCommand gardenCommand = new Commands.GardenCommand(GardenManager.getInstance());
         if (getCommand("garden") != null) {
             getCommand("garden").setExecutor(gardenCommand);
             getCommand("garden").setTabCompleter(gardenCommand);
+        }
+        if (getCommand("gardenmenu") != null) {
+            getCommand("gardenmenu").setExecutor(gardenCommand);
+            getCommand("gardenmenu").setTabCompleter(gardenCommand);
         }
         MenuCommand farmingCommand = new MenuCommand(p -> new GardenMenu(p).open(p));
         if (getCommand("farming") != null) {
@@ -697,6 +704,9 @@ public final class SkyBlockCore extends JavaPlugin {
         MenuCommand dungeonsCommand = new MenuCommand(p -> new DungeonsMenu(p).open(p));
         if (getCommand("dungeons") != null) {
             getCommand("dungeons").setExecutor(dungeonsCommand);
+        }
+        if (getCommand("dungeonmenu") != null) {
+            getCommand("dungeonmenu").setExecutor(dungeonsCommand);
         }
         MenuCommand miningCommand = new MenuCommand(p -> new MiningMenu(p).open(p));
         if (getCommand("mining") != null) {
@@ -776,10 +786,18 @@ public final class SkyBlockCore extends JavaPlugin {
         ProfileCommand profileCommand = new ProfileCommand(profileManager);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
+        if (getCommand("profilemenu") != null) {
+            getCommand("profilemenu").setExecutor(profileCommand);
+            getCommand("profilemenu").setTabCompleter(profileCommand);
+        }
         Commands.IslandCommand islandCommand = new Commands.IslandCommand();
         if (getCommand("island") != null) {
             getCommand("island").setExecutor(islandCommand);
             getCommand("island").setTabCompleter(islandCommand);
+        }
+        if (getCommand("islandmenu") != null) {
+            getCommand("islandmenu").setExecutor(islandCommand);
+            getCommand("islandmenu").setTabCompleter(islandCommand);
         }
         Commands.MinionCommand minionCommand = new Commands.MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
@@ -983,6 +1001,14 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("accessorybag").setExecutor(accessoryBagCommand);
             getCommand("accessorybag").setTabCompleter(accessoryBagCommand);
         }
+        if (getCommand("accessory") != null) {
+            getCommand("accessory").setExecutor(accessoryBagCommand);
+            getCommand("accessory").setTabCompleter(accessoryBagCommand);
+        }
+        if (getCommand("talismanbag") != null) {
+            getCommand("talismanbag").setExecutor(accessoryBagCommand);
+            getCommand("talismanbag").setTabCompleter(accessoryBagCommand);
+        }
         RiftCommand riftCommand = new RiftCommand(riftManager);
         getCommand("rift").setExecutor(riftCommand);
         getCommand("rift").setTabCompleter(riftCommand);
@@ -992,6 +1018,10 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("sack") != null) {
             getCommand("sack").setExecutor(sackCommand);
             getCommand("sack").setTabCompleter(sackCommand);
+        }
+        if (getCommand("sacks") != null) {
+            getCommand("sacks").setExecutor(sackCommand);
+            getCommand("sacks").setTabCompleter(sackCommand);
         }
         CrystalHollowsCommand crystalHollowsCommand = new CrystalHollowsCommand(crystalHollowsManager);
         getCommand("crystalhollows").setExecutor(crystalHollowsCommand);
