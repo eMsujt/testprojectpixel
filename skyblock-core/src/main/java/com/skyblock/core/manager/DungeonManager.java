@@ -164,6 +164,31 @@ public final class DungeonManager {
         public long getOpenCost() { return openCost; }
     }
 
+    /** Each floor's final boss with display name, associated floor, and Hypixel-accurate max HP. */
+    public enum FloorBoss {
+        BONZO("Bonzo",           DungeonFloor.FLOOR_1,   6_000_000L),
+        SCARF("Scarf",           DungeonFloor.FLOOR_2,  15_000_000L),
+        THE_PROFESSOR("The Professor", DungeonFloor.FLOOR_3, 60_000_000L),
+        THORN("Thorn",           DungeonFloor.FLOOR_4,  60_000_000L),
+        LIVID("Livid",           DungeonFloor.FLOOR_5,   6_000_000L),
+        SADAN("Sadan",           DungeonFloor.FLOOR_6,   7_000_000L),
+        NECRON("Necron",         DungeonFloor.FLOOR_7, 900_000_000L);
+
+        private final String displayName;
+        private final DungeonFloor floor;
+        private final long maxHp;
+
+        FloorBoss(String displayName, DungeonFloor floor, long maxHp) {
+            this.displayName = displayName;
+            this.floor = floor;
+            this.maxHp = maxHp;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public DungeonFloor getFloor() { return floor; }
+        public long getMaxHp() { return maxHp; }
+    }
+
     /** All dungeon types available in SkyBlock. */
     public enum DungeonType {
         ENTRANCE,
