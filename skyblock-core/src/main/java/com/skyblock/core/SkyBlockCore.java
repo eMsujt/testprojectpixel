@@ -682,14 +682,14 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("petsmenu") != null) {
             getCommand("petsmenu").setExecutor(petsCommand);
         }
-        Commands.GardenCommand gardenCommand = new Commands.GardenCommand(GardenManager.getInstance());
+        Commands.GardenCmd gardenCmd = new Commands.GardenCmd();
         if (getCommand("garden") != null) {
-            getCommand("garden").setExecutor(gardenCommand);
-            getCommand("garden").setTabCompleter(gardenCommand);
+            getCommand("garden").setExecutor(gardenCmd);
+            getCommand("garden").setTabCompleter(gardenCmd);
         }
         if (getCommand("gardenmenu") != null) {
-            getCommand("gardenmenu").setExecutor(gardenCommand);
-            getCommand("gardenmenu").setTabCompleter(gardenCommand);
+            getCommand("gardenmenu").setExecutor(gardenCmd);
+            getCommand("gardenmenu").setTabCompleter(gardenCmd);
         }
         MenuCommand farmingCommand = new MenuCommand(p -> new GardenMenu(p).open(p));
         if (getCommand("farming") != null) {
@@ -701,12 +701,12 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("compost").setExecutor(compostCommand);
             getCommand("compost").setTabCompleter(compostCommand);
         }
-        MenuCommand dungeonsCommand = new MenuCommand(p -> new DungeonsMenu(p).open(p));
+        Commands.DungeonsCmd dungeonsCmd = new Commands.DungeonsCmd();
         if (getCommand("dungeons") != null) {
-            getCommand("dungeons").setExecutor(dungeonsCommand);
+            getCommand("dungeons").setExecutor(dungeonsCmd);
         }
         if (getCommand("dungeonmenu") != null) {
-            getCommand("dungeonmenu").setExecutor(dungeonsCommand);
+            getCommand("dungeonmenu").setExecutor(dungeonsCmd);
         }
         MenuCommand miningCommand = new MenuCommand(p -> new MiningMenu(p).open(p));
         if (getCommand("mining") != null) {
