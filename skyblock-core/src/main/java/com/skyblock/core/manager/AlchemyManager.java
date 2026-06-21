@@ -103,6 +103,56 @@ public final class AlchemyManager {
         public int getMaxLevel() { return maxLevel; }
     }
 
+    /**
+     * Catalogue of 20 Hypixel alchemy recipes available at the Brewing Stand.
+     * Each constant carries its display name, primary ingredient, base potion
+     * output key, brew duration in seconds, and XP reward.
+     */
+    public enum BrewingRecipe {
+        SPEED_I         ("Swiftness Potion I",          "Sugar",                   "SPEED",           20,  10.0),
+        SPEED_II        ("Swiftness Potion II",         "Sugar",                   "SPEED_II",        40,  25.0),
+        STRENGTH_I      ("Strength Potion I",           "Blaze_Powder",            "STRENGTH",        30,  20.0),
+        STRENGTH_II     ("Strength Potion II",          "Blaze_Powder",            "STRENGTH_II",     60,  45.0),
+        CRIT_CHANCE     ("Critical Chance Potion",      "Spider_Eye",              "CRIT_CHANCE",     25,  18.0),
+        CRIT_DAMAGE     ("Critical Damage Potion",      "Spider_Eye",              "CRIT_DAMAGE",     50,  35.0),
+        HEALING_I       ("Healing Potion I",            "Glistering_Melon",        "INSTANT_HEAL",    20,  15.0),
+        HEALING_II      ("Healing Potion II",           "Glistering_Melon",        "INSTANT_HEAL_II", 45,  35.0),
+        FIRE_RESISTANCE ("Fire Resistance Potion",      "Magma_Cream",             "FIRE_RESISTANCE", 35,  20.0),
+        NIGHT_VISION    ("Night Vision Potion",         "Golden_Carrot",           "NIGHT_VISION",    25,  18.0),
+        INVISIBILITY    ("Invisibility Potion",         "Fermented_Spider_Eye",    "INVISIBILITY",    50,  40.0),
+        POISON          ("Poison Potion",               "Spider_Eye",              "POISON",          40,  30.0),
+        HASTE           ("Haste Potion",                "Sugar_Cane",              "HASTE",           30,  22.0),
+        REGENERATION    ("Regeneration Potion",         "Ghast_Tear",              "REGENERATION",    35,  28.0),
+        WATER_BREATHING ("Water Breathing Potion",      "Pufferfish",              "WATER_BREATHING", 30,  20.0),
+        JUMP_BOOST      ("Jump Boost Potion",           "Rabbit_Foot",             "JUMP",            30,  22.0),
+        EXPERIENCE      ("Experience Potion",           "Rabbit_Foot",             "EXPERIENCE",      45,  38.0),
+        INTELLIGENCE    ("Intelligence Potion",         "Nether_Quartz",           "INTELLIGENCE",    40,  32.0),
+        RESISTANCE      ("Resistance Potion",           "Iron_Ingot",              "RESISTANCE",      35,  25.0),
+        ABSORPTION      ("Absorption Potion",           "Golden_Apple",            "ABSORPTION",      45,  38.0);
+
+        public final String displayName;
+        /** Primary non-Nether-Wart ingredient for this recipe. */
+        public final String ingredient;
+        public final String outputPotion;
+        public final int durationSeconds;
+        public final double xpReward;
+
+        BrewingRecipe(String displayName, String ingredient, String outputPotion,
+                      int durationSeconds, double xpReward) {
+            this.displayName     = displayName;
+            this.ingredient      = ingredient;
+            this.outputPotion    = outputPotion;
+            this.durationSeconds = durationSeconds;
+            this.xpReward        = xpReward;
+        }
+
+        public String getDisplayName()   { return displayName; }
+        public String getIngredient()    { return ingredient; }
+        public String getOutputPotion()  { return outputPotion; }
+        public int getDurationSeconds()  { return durationSeconds; }
+        public double getXpReward()      { return xpReward; }
+    }
+
     /** A potion recipe that can be brewed at the Brewing Stand. */
     public static final class PotionRecipe {
         private final String id;
