@@ -89,6 +89,14 @@ public final class CombatListener implements Listener {
             if (isCrit) {
                 damage = CombatEngine.applyCrit(damage, critDamage);
             }
+            // Ferocity: every 100 grants a guaranteed extra hit, the remainder a chance for one more.
+            // Combined into one event (same total damage) to avoid re-triggering this handler.
+            double ferocity = stats.getStat(attacker.getUniqueId(), Stat.FEROCITY);
+            int hits = 1 + (int) (ferocity / 100.0);
+            if (Math.random() * 100.0 < ferocity % 100.0) {
+                hits++;
+            }
+            damage *= hits;
             event.setDamage(Math.max(0.0, damage));
         }
 
