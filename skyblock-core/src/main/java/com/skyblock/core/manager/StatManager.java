@@ -35,8 +35,14 @@ public final class StatManager {
     /** Per-player base stat overrides; absent entries fall back to {@link #BASE_VALUES}. */
     private final Map<UUID, Map<Stat, Double>> playerStats = new HashMap<>();
 
-    /** Per-player bonus stats accumulated from equipment, potions, etc. */
+    /** Per-player bonus stats from skills, pets, potions, etc. (accumulated, not auto-cleared). */
     private final Map<UUID, Map<Stat, Double>> playerBonuses = new HashMap<>();
+
+    /**
+     * Per-player bonuses from worn/held gear, kept separate so recomputing equipment never wipes
+     * the accumulated bonuses above. Replaced wholesale via {@link #setEquipmentBonuses}.
+     */
+    private final Map<UUID, Map<Stat, Double>> equipmentBonuses = new HashMap<>();
 
     private StatManager() {
     }
@@ -106,7 +112,12 @@ public final class StatManager {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
         Map<Stat, Double> bonuses = playerBonuses.get(playerId);
-        return bonuses == null ? 0.0 : bonuses.getOrDefault(stat, 0.0);
+        Map<Stat, Double> equipment = equipmentBonuses.get(playerId);
+        double total = bonuses == null ? 0.0 : bonuses.getOrDefault(stat, 0.0);
+        if (equipment != null) {
+            total += equipment.getOrDefault(stat, 0.0);
+        }
+        return total;
     }
 
     /**
@@ -128,13 +139,30 @@ public final class StatManager {
     }
 
     /**
-     * Clears all bonuses for the given player (e.g. when recalculating equipment).
+     * Clears the accumulated (non-equipment) bonuses for the given player.
      *
      * @param playerId the player whose bonuses should be reset
      */
     public void clearBonuses(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         playerBonuses.remove(playerId);
+    }
+
+    /**
+     * Replaces the player's equipment bonuses wholesale (from a full armor + held-item rescan).
+     * Kept separate from {@link #addBonus} bonuses so a gear rescan never wipes skill/pet/etc.
+     * bonuses.
+     *
+     * @param playerId the player to update
+     * @param bonuses  the new equipment bonuses; empty or null clears them
+     */
+    public void setEquipmentBonuses(UUID playerId, Map<Stat, Double> bonuses) {
+        Objects.requireNonNull(playerId, "playerId");
+        if (bonuses == null || bonuses.isEmpty()) {
+            equipmentBonuses.remove(playerId);
+            return;
+        }
+        equipmentBonuses.put(playerId, new EnumMap<>(bonuses));
     }
 
     /**
@@ -145,6 +173,7 @@ public final class StatManager {
     public Set<UUID> getTrackedPlayers() {
         Set<UUID> all = new HashSet<>(playerStats.keySet());
         all.addAll(playerBonuses.keySet());
+        all.addAll(equipmentBonuses.keySet());
         return Collections.unmodifiableSet(all);
     }
 
@@ -158,6 +187,7 @@ public final class StatManager {
         Objects.requireNonNull(playerId, "playerId");
         boolean hadStats = playerStats.remove(playerId) != null;
         boolean hadBonuses = playerBonuses.remove(playerId) != null;
-        return hadStats || hadBonuses;
+        boolean hadEquipment = equipmentBonuses.remove(playerId) != null;
+        return hadStats || hadBonuses || hadEquipment;
     }
 }
