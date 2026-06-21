@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SacksManagerTest {
+class SackManagerTest {
 
     private SackManager manager;
     private UUID playerId;
