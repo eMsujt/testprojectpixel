@@ -22,7 +22,7 @@ import com.skyblock.core.manager.WarpManager;
 import com.skyblock.core.menu.AccessoryBagMenu;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.CalendarMenu;
-import com.skyblock.core.menu.CollectionMenu;
+import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
@@ -2815,7 +2815,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new CollectionMenu(player.getUniqueId()).open(player);
+            new CollectionsMenu(player.getUniqueId()).open(player);
         }
 
         @Override
