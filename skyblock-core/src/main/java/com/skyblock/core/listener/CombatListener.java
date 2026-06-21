@@ -3,7 +3,6 @@ package com.skyblock.core.listener;
 import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.combat.calculator.CombatEngine;
 import com.skyblock.core.manager.GardenManager;
-import com.skyblock.core.manager.ItemStatManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.stats.CombatStatsManager;
@@ -19,10 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -194,35 +191,5 @@ public final class CombatListener implements Listener {
         }
     }
 
-    // --- Armor stat scanning (formerly ItemStatsManager) ---
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        rescanArmor(event.getPlayer());
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) {
-            return;
-        }
-        // schedule 1 tick so the inventory state reflects the completed click
-        Bukkit.getScheduler().runTaskLater(SkyBlockCore.getInstance(), () -> rescanArmor(player), 1L);
-    }
-
-    private void rescanArmor(Player player) {
-        UUID id = player.getUniqueId();
-        StatManager sm = StatManager.getInstance();
-        sm.clearBonuses(id);
-        ItemStatManager ism = ItemStatManager.getInstance();
-        for (ItemStack piece : player.getInventory().getArmorContents()) {
-            if (piece == null) {
-                continue;
-            }
-            Map<Stat, Integer> stats = ism.getStats(piece);
-            for (Map.Entry<Stat, Integer> entry : stats.entrySet()) {
-                sm.addBonus(id, entry.getKey(), entry.getValue());
-            }
-        }
-    }
+    // Armor/held stat scanning is owned by EquipmentListener (single source of truth).
 }

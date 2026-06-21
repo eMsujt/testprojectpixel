@@ -12,12 +12,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.EnumMap;
 import java.util.Map;
-import java.util.UUID;
 
 public final class EquipmentListener implements Listener {
 
@@ -48,21 +50,46 @@ public final class EquipmentListener implements Listener {
         recompute(player, player.getInventory().getItem(event.getNewSlot()));
     }
 
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        rescanArmor(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getWhoClicked() instanceof Player player) {
+            // Run 1 tick later so the inventory reflects the completed click.
+            Bukkit.getScheduler().runTaskLater(SkyBlockCore.getInstance(), () -> rescanArmor(player), 1L);
+        }
+    }
+
     private void rescanArmor(Player player) {
         recompute(player, player.getInventory().getItemInMainHand());
     }
 
-    /** Recomputes a player's gear bonuses from their armor plus the given held item. */
+    /**
+     * Recomputes a player's gear bonuses from their armor plus the given held item, replacing only
+     * the equipment bonuses so skill/pet/potion bonuses are preserved.
+     */
     private void recompute(Player player, ItemStack heldItem) {
-        UUID id = player.getUniqueId();
-        StatManager sm = StatManager.getInstance();
-        sm.clearBonuses(id);
         ItemStatManager ism = ItemStatManager.getInstance();
+        Map<Stat, Double> totals = new EnumMap<>(Stat.class);
         for (ItemStack piece : player.getInventory().getArmorContents()) {
-            applyItemStats(sm, ism, id, piece);
+            accumulate(totals, ism, piece);
         }
-        applyItemStats(sm, ism, id, heldItem);
+        accumulate(totals, ism, heldItem);
+        StatManager sm = StatManager.getInstance();
+        sm.setEquipmentBonuses(player.getUniqueId(), totals);
         applyMaxHealth(player, sm);
+    }
+
+    private static void accumulate(Map<Stat, Double> totals, ItemStatManager ism, ItemStack item) {
+        if (item == null) {
+            return;
+        }
+        for (Map.Entry<Stat, Integer> entry : ism.getStats(item).entrySet()) {
+            totals.merge(entry.getKey(), (double) entry.getValue(), Double::sum);
+        }
     }
 
     /**
@@ -78,15 +105,6 @@ public final class EquipmentListener implements Listener {
         attr.setBaseValue(maxHealth);
         if (player.getHealth() > maxHealth) {
             player.setHealth(maxHealth);
-        }
-    }
-
-    private static void applyItemStats(StatManager sm, ItemStatManager ism, UUID id, ItemStack item) {
-        if (item == null) {
-            return;
-        }
-        for (Map.Entry<Stat, Integer> entry : ism.getStats(item).entrySet()) {
-            sm.addBonus(id, entry.getKey(), entry.getValue());
         }
     }
 }
