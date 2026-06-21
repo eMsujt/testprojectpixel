@@ -47,13 +47,13 @@ public final class SkillsManager {
      * Per-level XP deltas for every skill, keyed by lowercase skill name.
      * Delegates to {@link SkillManager#SKILL_XP_TABLE}.
      */
-    public static final Map<String, long[]> SKILL_XP_TABLES = SkillManager.SKILL_XP_TABLE;
+    public static final Map<String, long[]> SKILL_XP_TABLE = SkillManager.SKILL_XP_TABLE;
 
     /**
      * Cumulative XP to reach each level for every skill, keyed by lowercase skill name.
      * Delegates to {@link SkillManager#SKILL_CUMULATIVE_XP_TABLE}.
      */
-    public static final Map<String, long[]> SKILL_CUMULATIVE_XP_TABLES = SkillManager.SKILL_CUMULATIVE_XP_TABLE;
+    public static final Map<String, long[]> SKILL_CUMULATIVE_XP_TABLE = SkillManager.SKILL_CUMULATIVE_XP_TABLE;
 
     private static final SkillsManager INSTANCE = new SkillsManager();
 
