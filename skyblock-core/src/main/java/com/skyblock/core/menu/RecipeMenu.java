@@ -5,9 +5,13 @@ import com.skyblock.core.item.SkyblockItems;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.ItemData;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Read-only crafting recipe viewer (Hypixel "Recipe Book" style): shows an item's real 3x3 recipe
@@ -65,11 +69,81 @@ public final class RecipeMenu extends Menu {
 
         ItemStack result = SkyblockItems.build(itemId, 1);
         if (result != null) {
-            setItem(25, result);
+            ItemStack craftButton = new ItemBuilder(result)
+                    .addLore("")
+                    .addLore("§eClick to craft!")
+                    .build();
+            setItem(25, craftButton, e -> attemptCraft((Player) e.getWhoClicked()));
         }
 
         setItem(49, new ItemBuilder(Material.BARRIER).displayName("§cClose").build(),
                 e -> e.getWhoClicked().closeInventory());
+    }
+
+    private void attemptCraft(Player player) {
+        RecipeData.Ingredient[] grid = RecipeData.grid(itemId);
+        if (grid == null) {
+            return;
+        }
+        Map<String, Integer> need = new HashMap<>();
+        for (RecipeData.Ingredient ing : grid) {
+            if (ing != null) {
+                need.merge(ing.id(), ing.count(), Integer::sum);
+            }
+        }
+        for (Map.Entry<String, Integer> e : need.entrySet()) {
+            if (countOf(player, e.getKey()) < e.getValue()) {
+                player.sendMessage("§cYou don't have the ingredients to craft this.");
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1f, 1f);
+                return;
+            }
+        }
+        for (Map.Entry<String, Integer> e : need.entrySet()) {
+            consume(player, e.getKey(), e.getValue());
+        }
+        ItemStack result = SkyblockItems.build(itemId, 1);
+        for (ItemStack leftover : player.getInventory().addItem(result).values()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+        }
+        player.sendMessage("§aCrafted §r" + displayName(itemId) + "§a!");
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.7f, 1.4f);
+    }
+
+    private static int countOf(Player player, String id) {
+        int total = 0;
+        for (ItemStack stack : player.getInventory().getStorageContents()) {
+            if (stack != null && matches(stack, id)) {
+                total += stack.getAmount();
+            }
+        }
+        return total;
+    }
+
+    private static void consume(Player player, String id, int count) {
+        ItemStack[] contents = player.getInventory().getStorageContents();
+        int remaining = count;
+        for (int i = 0; i < contents.length && remaining > 0; i++) {
+            ItemStack stack = contents[i];
+            if (stack == null || !matches(stack, id)) {
+                continue;
+            }
+            int take = Math.min(remaining, stack.getAmount());
+            stack.setAmount(stack.getAmount() - take);
+            remaining -= take;
+            if (stack.getAmount() <= 0) {
+                contents[i] = null;
+            }
+        }
+        player.getInventory().setStorageContents(contents);
+    }
+
+    /** Matches a custom item by its stamped id, or a plain vanilla item by its material name. */
+    private static boolean matches(ItemStack stack, String ingredientId) {
+        String stampedId = SkyblockItems.idOf(stack);
+        if (stampedId != null) {
+            return stampedId.equals(ingredientId);
+        }
+        return stack.getType().name().equals(ingredientId);
     }
 
     @Override
