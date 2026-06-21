@@ -13,6 +13,7 @@ public final class HeadTextures {
 
     private static final Properties MINIONS = load("/minion_heads.properties");
     private static final Properties PETS = load("/pet_heads.properties");
+    private static final Properties ITEMS = load("/item_heads.properties");
 
     private HeadTextures() {}
 
@@ -33,5 +34,13 @@ public final class HeadTextures {
     /** Base64 head texture for a pet type (by enum name), or {@code null} if not registered. */
     public static String pet(String typeName) {
         return typeName == null ? null : PETS.getProperty(typeName);
+    }
+
+    /**
+     * Base64 head texture for a SkyBlock item (by NEU internal name, e.g. {@code SPEED_TALISMAN}),
+     * or {@code null} if the item has no custom head and should fall back to a vanilla material.
+     */
+    public static String item(String internalName) {
+        return internalName == null ? null : ITEMS.getProperty(internalName);
     }
 }

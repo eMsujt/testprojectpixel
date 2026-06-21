@@ -92,6 +92,10 @@ public final class SkyBlockMenu extends Menu {
         setItem(29, new ItemBuilder(Material.FISHING_ROD).displayName("§9Fishing")
                 .lore("§7Cast your line and fish.").build(),
                 e -> { e.setCancelled(true); new FishingMenu(player).open(player); });
+
+        setItem(30, new ItemBuilder(Material.CRAFTING_TABLE).displayName("§6Items")
+                .lore("§7Browse every SkyBlock item with", "§7its real in-game texture.").build(),
+                e -> { e.setCancelled(true); new ItemsMenu(player).open(player); });
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.skyblock.core.items;
 
 import com.skyblock.core.model.ItemType;
 import com.skyblock.core.model.Rarity;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,47 +25,49 @@ public final class CustomItemManager {
     public enum SkyBlockItem {
 
         // --- Weapons ---
-        ASPECT_OF_THE_END("ASPECT_OF_THE_END", "Aspect of the End",       ItemType.WEAPON,    Rarity.EPIC),
-        LEAPING_SWORD     ("LEAPING_SWORD",     "Leaping Sword",           ItemType.WEAPON,    Rarity.RARE),
-        ZOMBIE_SWORD      ("ZOMBIE_SWORD",       "Zombie Sword",            ItemType.WEAPON,    Rarity.RARE),
-        THICK_SWORD       ("THICK_SWORD",        "Thick Sword",             ItemType.WEAPON,    Rarity.UNCOMMON),
-        JERRY_SWORD       ("JERRY_SWORD",        "Jerry Sword",             ItemType.WEAPON,    Rarity.COMMON),
-        ASPECT_OF_THE_DRAGONS("ASPECT_OF_THE_DRAGONS", "Aspect of the Dragons", ItemType.WEAPON, Rarity.LEGENDARY),
-        LIVID_DAGGER      ("LIVID_DAGGER",       "Livid Dagger",            ItemType.WEAPON,    Rarity.LEGENDARY),
+        ASPECT_OF_THE_END("ASPECT_OF_THE_END", "Aspect of the End",       ItemType.WEAPON,    Rarity.EPIC,      Material.DIAMOND_SWORD),
+        LEAPING_SWORD     ("LEAPING_SWORD",     "Leaping Sword",           ItemType.WEAPON,    Rarity.RARE,      Material.GOLDEN_SWORD),
+        ZOMBIE_SWORD      ("ZOMBIE_SWORD",       "Zombie Sword",            ItemType.WEAPON,    Rarity.RARE,      Material.IRON_SWORD),
+        THICK_SWORD       ("THICK_SWORD",        "Thick Sword",             ItemType.WEAPON,    Rarity.UNCOMMON,  Material.IRON_SWORD),
+        JERRY_SWORD       ("JERRY_SWORD",        "Jerry Sword",             ItemType.WEAPON,    Rarity.COMMON,    Material.WOODEN_SWORD),
+        ASPECT_OF_THE_DRAGONS("ASPECT_OF_THE_DRAGONS", "Aspect of the Dragons", ItemType.WEAPON, Rarity.LEGENDARY, Material.GOLDEN_SWORD),
+        LIVID_DAGGER      ("LIVID_DAGGER",       "Livid Dagger",            ItemType.WEAPON,    Rarity.LEGENDARY, Material.IRON_SWORD),
 
         // --- Tools ---
-        TREECAPITATOR     ("TREECAPITATOR",      "Treecapitator",           ItemType.TOOL,      Rarity.RARE),
-        PROMISING_SHOVEL  ("PROMISING_SHOVEL",   "Promising Shovel",        ItemType.TOOL,      Rarity.COMMON),
-        JUNGLE_AXE        ("JUNGLE_AXE",         "Jungle Axe",              ItemType.TOOL,      Rarity.UNCOMMON),
+        TREECAPITATOR     ("TREECAPITATOR",      "Treecapitator",           ItemType.TOOL,      Rarity.RARE,      Material.GOLDEN_AXE),
+        PROMISING_SHOVEL  ("PROMISING_SHOVEL",   "Promising Shovel",        ItemType.TOOL,      Rarity.COMMON,    Material.GOLDEN_SHOVEL),
+        JUNGLE_AXE        ("JUNGLE_AXE",         "Jungle Axe",              ItemType.TOOL,      Rarity.UNCOMMON,  Material.WOODEN_AXE),
 
         // --- Armor ---
-        HARDENED_DIAMOND_HELMET   ("HARDENED_DIAMOND_HELMET",    "Hardened Diamond Helmet",    ItemType.ARMOR, Rarity.RARE),
-        HARDENED_DIAMOND_CHESTPLATE("HARDENED_DIAMOND_CHESTPLATE","Hardened Diamond Chestplate",ItemType.ARMOR, Rarity.RARE),
-        HARDENED_DIAMOND_LEGGINGS ("HARDENED_DIAMOND_LEGGINGS",  "Hardened Diamond Leggings",  ItemType.ARMOR, Rarity.RARE),
-        HARDENED_DIAMOND_BOOTS    ("HARDENED_DIAMOND_BOOTS",     "Hardened Diamond Boots",     ItemType.ARMOR, Rarity.RARE),
-        SUPERIOR_DRAGON_HELMET    ("SUPERIOR_DRAGON_HELMET",     "Superior Dragon Helmet",     ItemType.ARMOR, Rarity.LEGENDARY),
-        SUPERIOR_DRAGON_CHESTPLATE("SUPERIOR_DRAGON_CHESTPLATE", "Superior Dragon Chestplate", ItemType.ARMOR, Rarity.LEGENDARY),
-        SUPERIOR_DRAGON_LEGGINGS  ("SUPERIOR_DRAGON_LEGGINGS",   "Superior Dragon Leggings",   ItemType.ARMOR, Rarity.LEGENDARY),
-        SUPERIOR_DRAGON_BOOTS     ("SUPERIOR_DRAGON_BOOTS",      "Superior Dragon Boots",      ItemType.ARMOR, Rarity.LEGENDARY),
+        HARDENED_DIAMOND_HELMET   ("HARDENED_DIAMOND_HELMET",    "Hardened Diamond Helmet",    ItemType.ARMOR, Rarity.RARE,      Material.DIAMOND_HELMET),
+        HARDENED_DIAMOND_CHESTPLATE("HARDENED_DIAMOND_CHESTPLATE","Hardened Diamond Chestplate",ItemType.ARMOR, Rarity.RARE,      Material.DIAMOND_CHESTPLATE),
+        HARDENED_DIAMOND_LEGGINGS ("HARDENED_DIAMOND_LEGGINGS",  "Hardened Diamond Leggings",  ItemType.ARMOR, Rarity.RARE,      Material.DIAMOND_LEGGINGS),
+        HARDENED_DIAMOND_BOOTS    ("HARDENED_DIAMOND_BOOTS",     "Hardened Diamond Boots",     ItemType.ARMOR, Rarity.RARE,      Material.DIAMOND_BOOTS),
+        SUPERIOR_DRAGON_HELMET    ("SUPERIOR_DRAGON_HELMET",     "Superior Dragon Helmet",     ItemType.ARMOR, Rarity.LEGENDARY, Material.PLAYER_HEAD),
+        SUPERIOR_DRAGON_CHESTPLATE("SUPERIOR_DRAGON_CHESTPLATE", "Superior Dragon Chestplate", ItemType.ARMOR, Rarity.LEGENDARY, Material.LEATHER_CHESTPLATE),
+        SUPERIOR_DRAGON_LEGGINGS  ("SUPERIOR_DRAGON_LEGGINGS",   "Superior Dragon Leggings",   ItemType.ARMOR, Rarity.LEGENDARY, Material.LEATHER_LEGGINGS),
+        SUPERIOR_DRAGON_BOOTS     ("SUPERIOR_DRAGON_BOOTS",      "Superior Dragon Boots",      ItemType.ARMOR, Rarity.LEGENDARY, Material.LEATHER_BOOTS),
 
         // --- Accessories ---
-        SPEED_TALISMAN    ("SPEED_TALISMAN",     "Speed Talisman",          ItemType.ACCESSORY, Rarity.COMMON),
-        FEATHER_TALISMAN  ("FEATHER_TALISMAN",   "Feather Talisman",        ItemType.ACCESSORY, Rarity.COMMON),
-        VACCINE_TALISMAN  ("VACCINE_TALISMAN",   "Vaccine Talisman",        ItemType.ACCESSORY, Rarity.UNCOMMON),
+        SPEED_TALISMAN    ("SPEED_TALISMAN",     "Speed Talisman",          ItemType.ACCESSORY, Rarity.COMMON,   Material.PLAYER_HEAD),
+        FEATHER_TALISMAN  ("FEATHER_TALISMAN",   "Feather Talisman",        ItemType.ACCESSORY, Rarity.COMMON,   Material.PLAYER_HEAD),
+        VACCINE_TALISMAN  ("VACCINE_TALISMAN",   "Vaccine Talisman",        ItemType.ACCESSORY, Rarity.UNCOMMON, Material.PLAYER_HEAD),
 
         // --- Consumables ---
-        MANA_FLUX_POWER_ORB("MANA_FLUX_POWER_ORB", "Mana Flux Power Orb", ItemType.CONSUMABLE, Rarity.UNCOMMON);
+        MANA_FLUX_POWER_ORB("MANA_FLUX_POWER_ORB", "Mana Flux Power Orb", ItemType.CONSUMABLE, Rarity.UNCOMMON, Material.PLAYER_HEAD);
 
         private final String id;
         private final String displayName;
         private final ItemType itemType;
         private final Rarity rarity;
+        private final Material material;
 
-        SkyBlockItem(String id, String displayName, ItemType itemType, Rarity rarity) {
+        SkyBlockItem(String id, String displayName, ItemType itemType, Rarity rarity, Material material) {
             this.id = id;
             this.displayName = displayName;
             this.itemType = itemType;
             this.rarity = rarity;
+            this.material = material;
         }
 
         /** Returns the unique string id of this item. */
@@ -84,6 +88,21 @@ public final class CustomItemManager {
         /** Returns the rarity tier of this item. */
         public Rarity getRarity() {
             return rarity;
+        }
+
+        /** Returns the vanilla material used when no custom head texture is registered. */
+        public Material getMaterial() {
+            return material;
+        }
+
+        /**
+         * Builds a ready-to-use {@link ItemStack} for this item: a real 1:1 Hypixel head texture
+         * when one is registered for this id, otherwise the vanilla {@link #getMaterial() material},
+         * with a rarity-colored name and rarity footer.
+         */
+        public ItemStack toItemStack() {
+            return new com.skyblock.core.item.SkyBlockItem(id, displayName, rarity, material)
+                    .getItemStack();
         }
     }
 
