@@ -23,7 +23,7 @@ public final class StorageMenu extends AbstractSkyBlockMenu {
     private final int slots;
 
     public StorageMenu(Player player) {
-        super(player, "§6Backpack §7(" + tierOf(player) + ")", 6);
+        super(player, "§8Storage", 6);
         this.slots = tierOf(player).getSlots();
     }
 
