@@ -32,6 +32,7 @@ import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
 import com.skyblock.core.menu.PetMenu;
+import com.skyblock.core.menu.SkillsMenu;
 import com.skyblock.core.menu.SlayerMenu;
 import com.skyblock.core.menu.WardrobeMenu;
 import com.skyblock.core.menu.WarpMenu;
@@ -3052,6 +3053,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new FairySoulMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /skills (simple menu opener)
+    // =========================================================================
+
+    public static final class SkillsCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new SkillsMenu(player).open(player);
         }
 
         @Override
