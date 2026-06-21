@@ -148,6 +148,13 @@ public final class PetsManager {
         }
     }
 
+    /**
+     * Immutable snapshot of a single pet: its display name, type, rarity,
+     * current level, and total experience.
+     */
+    public record Pet(String name, PetType type, PetRarity rarity, int level, long xp) {
+    }
+
     private static final PetsManager INSTANCE = new PetsManager();
 
     /** All pets owned by each player. */
@@ -258,6 +265,21 @@ public final class PetsManager {
         long cap = XP_TABLE[MAX_LEVEL - 1];
         pet.experience = Math.min(cap, pet.experience + amount);
         return pet.experience;
+    }
+
+    /**
+     * Adds experience to the given pet and returns an updated {@link Pet} snapshot.
+     *
+     * <p>Equivalent to {@link #addExperience(UUID, UUID, long)} but returning the
+     * pet's resulting state (name, type, rarity, level, total XP) rather than only
+     * its new total.</p>
+     *
+     * @throws IllegalArgumentException if amount is negative or the pet is not found
+     */
+    public Pet addXp(UUID playerId, UUID petId, long amount) {
+        long total = addExperience(playerId, petId, amount);
+        PetData pet = findPet(playerId, petId);
+        return new Pet(pet.type.getDisplayName(), pet.type, pet.rarity, pet.getLevel(), total);
     }
 
     /** Clears all pets and the active slot for the given player. */
