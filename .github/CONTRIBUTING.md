@@ -1,34 +1,32 @@
 # Contributing to SkyBlock Core
 
-SkyBlock Core is a Minecraft SkyBlock plugin built on top of the Paper 1.8.8 API. The project is structured as a Maven multi-module build; the main game logic lives in the `skyblock-core` module under `com.skyblock.core`.
+SkyBlock Core is a Minecraft SkyBlock plugin built on top of the Paper API. The project is structured as a Maven multi-module build; the main game logic lives in the `skyblock-core` module under `com.skyblock.core`.
 
 ## Prerequisites
 
-- **Java 17** (JDK 17+)
+- **Java 21** (JDK 21+) — matches `<java.version>` in `pom.xml`
 - **Maven 3.9+**
-- **Paper 1.8.8** (provided at runtime; the build pulls it from the local repo or a configured remote)
+- **Paper API** (provided at runtime; pulled from the PaperMC repository configured in `pom.xml`)
 
 ## Building
 
-Build and test the core module from the repository root:
+Build and package the core module from the repository root (this is the command CI runs):
 
 ```bash
-mvn -pl skyblock-core -am test
+mvn clean package -pl skyblock-core --no-transfer-progress
 ```
 
 Run the full reactor build:
 
 ```bash
-mvn clean install
+mvn clean package
 ```
 
-Run tests only:
+Run tests only for the core module:
 
 ```bash
-mvn test
+mvn -pl skyblock-core -am test
 ```
-
-> Note: the `items` and `plugin` modules have known pre-existing compile issues. Use the `-pl skyblock-core -am` flag to target only the core module when iterating locally.
 
 ## Branching strategy
 
@@ -37,13 +35,15 @@ mvn test
 - Bug fixes: `fix/<short-description>`
 - Open a pull request against `main` when your branch is ready for review.
 
-## Pull request guidelines
+## Pull request checklist
 
-- One logical change per PR; keep diffs small and focused.
-- All tests must pass (`mvn -pl skyblock-core -am test`) before opening a PR.
-- Match the surrounding code style — naming, formatting, comment density.
-- Write a clear PR description: what changed, why, and how to verify it.
-- Do not reformat unrelated code or introduce new dependencies without discussion.
+- [ ] `mvn clean package` passes locally
+- [ ] One logical change per PR; diffs are small and focused
+- [ ] Tests added or updated to cover the change
+- [ ] `plugin.yml` updated if commands or permissions changed
+- [ ] Code matches the surrounding style — naming, formatting, comment density
+- [ ] No reformatting of unrelated code and no new dependencies without discussion
+- [ ] New functionality reuses the canonical managers under `com.skyblock.core.manager` where applicable
 
 ## Reporting issues
 
