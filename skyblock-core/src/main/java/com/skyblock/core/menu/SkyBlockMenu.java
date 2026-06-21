@@ -23,6 +23,12 @@ public final class SkyBlockMenu extends Menu {
             if (slot < 9 || slot >= 45 || col == 0 || col == 8) setItem(slot, pane);
         }
 
+        // "Your SkyBlock Profile" — the player's own head, like Hypixel (top-centre, slot 4).
+        setItem(4, new ItemBuilder(Material.PLAYER_HEAD).skullOwner(player)
+                .displayName("§aYour SkyBlock Profile")
+                .lore("§7Name: §a" + player.getName(), "", "§7View your stats, skills and", "§7overall progress.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new StatsMenu(player).open(player); });
+
         setItem(10, new ItemBuilder(Material.DIAMOND_SWORD).displayName("§aSkills")
                 .lore("§7View your skill levels and XP.").build(),
                 e -> { e.setCancelled(true); new SkillsMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
