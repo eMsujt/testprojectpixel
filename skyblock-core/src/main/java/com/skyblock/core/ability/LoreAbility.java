@@ -22,20 +22,25 @@ public final class LoreAbility {
             Pattern.compile("^Ability: (.+?)\\s+(SNEAK RIGHT CLICK|RIGHT CLICK)$");
     private static final Pattern MANA = Pattern.compile("Mana Cost: ([0-9,]+)");
     private static final Pattern BLOCKS = Pattern.compile("([0-9]+) blocks");
+    private static final Pattern COOLDOWN = Pattern.compile("Cooldown: ([0-9]+)s");
 
     public final String name;
     public final Trigger trigger;
     public final int manaCost;
     /** A numeric magnitude pulled from the description (e.g. teleport blocks); 0 if none. */
     public final int magnitude;
+    /** Cooldown in seconds parsed from the lore; 0 if the ability has no cooldown. */
+    public final int cooldownSeconds;
     /** The ability's description lines (color stripped), so effects can read their own params. */
     public final List<String> lines;
 
-    public LoreAbility(String name, Trigger trigger, int manaCost, int magnitude, List<String> lines) {
+    public LoreAbility(String name, Trigger trigger, int manaCost, int magnitude,
+                       int cooldownSeconds, List<String> lines) {
         this.name = name;
         this.trigger = trigger;
         this.manaCost = manaCost;
         this.magnitude = magnitude;
+        this.cooldownSeconds = cooldownSeconds;
         this.lines = lines;
     }
 
@@ -48,6 +53,7 @@ public final class LoreAbility {
         Trigger trigger = null;
         int mana = 0;
         int magnitude = 0;
+        int cooldown = 0;
         List<String> lines = new ArrayList<>();
 
         for (String raw : lore) {
@@ -56,12 +62,13 @@ public final class LoreAbility {
 
             Matcher a = ABILITY.matcher(line);
             if (a.matches()) {
-                if (name != null) out.add(new LoreAbility(name, trigger, mana, magnitude, lines));
+                if (name != null) out.add(new LoreAbility(name, trigger, mana, magnitude, cooldown, lines));
                 name = a.group(1).trim();
                 trigger = a.group(2).equals("SNEAK RIGHT CLICK")
                         ? Trigger.SNEAK_RIGHT_CLICK : Trigger.RIGHT_CLICK;
                 mana = 0;
                 magnitude = 0;
+                cooldown = 0;
                 lines = new ArrayList<>();
                 continue;
             }
@@ -82,8 +89,15 @@ public final class LoreAbility {
                 } catch (NumberFormatException ignored) {
                 }
             }
+            Matcher cd = COOLDOWN.matcher(line);
+            if (cd.find()) {
+                try {
+                    cooldown = Integer.parseInt(cd.group(1));
+                } catch (NumberFormatException ignored) {
+                }
+            }
         }
-        if (name != null) out.add(new LoreAbility(name, trigger, mana, magnitude, lines));
+        if (name != null) out.add(new LoreAbility(name, trigger, mana, magnitude, cooldown, lines));
         return out;
     }
 }
