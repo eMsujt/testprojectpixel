@@ -553,6 +553,11 @@ public final class PetManager {
 
     private record AppliedPetBonus(Stat stat, double amount) {}
 
+    /** Re-applies the active pet's stat bonus (e.g. after data load when the player joins). */
+    public void reapplyActivePetBonus(UUID playerId) {
+        refreshPetBonus(playerId);
+    }
+
     /** Re-applies the active pet's level-scaled stat bonus, removing any previously applied one. */
     private void refreshPetBonus(UUID playerId) {
         AppliedPetBonus previous = appliedPetBonuses.remove(playerId);

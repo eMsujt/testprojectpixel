@@ -167,6 +167,8 @@ public final class CompactListeners implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         StatsManager.getInstance().getAll(player.getUniqueId());
+        // Persisted pets are loaded directly (bypassing equipPet), so re-apply the bonus on join.
+        petManager.reapplyActivePetBonus(player.getUniqueId());
         ScoreboardManager.getInstance().initPlayer(player);
     }
 
