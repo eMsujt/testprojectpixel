@@ -1,5 +1,6 @@
 package com.skyblock.core;
 
+import com.skyblock.core.bank.model.BankAccount;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionCategory;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionType;
@@ -25,8 +26,42 @@ import com.skyblock.core.manager.SlayerManager.QuestTier;
 import com.skyblock.core.manager.SlayerManager.SlayerQuest;
 import com.skyblock.core.manager.SlayerManager.SlayerReward;
 import com.skyblock.core.manager.SlayerManager.SlayerType;
+import com.skyblock.core.manager.AuctionManager;
+import com.skyblock.core.manager.AuctionManager.Listing;
+import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.manager.BankManager.BankTier;
+import com.skyblock.core.manager.BankManager.BankType;
+import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.manager.DungeonsManager;
+import com.skyblock.core.manager.EssenceManager;
+import com.skyblock.core.manager.EssenceManager.EssenceItem;
+import com.skyblock.core.manager.EssenceManager.EssenceShopPerk;
+import com.skyblock.core.manager.EssenceManager.EssenceType;
+import com.skyblock.core.manager.ForgeManager;
+import com.skyblock.core.manager.ForgeManager.ForgeJob;
+import com.skyblock.core.manager.ForgeManager.ForgeRecipe;
+import com.skyblock.core.manager.IslandManager;
+import com.skyblock.core.manager.IslandManager.IslandData;
+import com.skyblock.core.manager.MinionManager;
+import com.skyblock.core.manager.MinionManager.MinionData;
+import com.skyblock.core.manager.MinionManager.MinionTier;
+import com.skyblock.core.manager.MinionManager.MinionType;
+import com.skyblock.core.manager.PetManager;
+import com.skyblock.core.manager.ReforgeManager;
+import com.skyblock.core.manager.ReforgeManager.ReforgeStone;
+import com.skyblock.core.manager.ReforgeManager.ReforgeType;
+import com.skyblock.core.manager.SackManager;
+import com.skyblock.core.manager.SackManager.CapacityTier;
+import com.skyblock.core.manager.SackManager.SackType;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.TrophyFishManager.TrophyTier;
+import com.skyblock.core.manager.WardrobeManager;
+import com.skyblock.core.manager.WardrobeManager.WardrobeSlot;
+import com.skyblock.core.model.Collection;
+import com.skyblock.core.model.CollectionCategory;
+import com.skyblock.core.model.Rarity;
+import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.AfterEach;
@@ -2802,6 +2837,2472 @@ class ManagersTest {
         @Test
         void computeExplorerScore_ZeroTotalRoomsGivesZeroRoomPoints() {
             assertEquals(20, DungeonManager.computeExplorerScore(0, 0, 10));
+        }
+    }
+
+    @Nested
+    class AuctionManagerTests {
+
+        private AuctionManager auctions;
+        private UUID seller;
+        private UUID buyer;
+
+        @BeforeEach
+        void setUp() {
+            auctions = AuctionManager.getInstance();
+            auctions.clear();
+            seller = UUID.randomUUID();
+            buyer = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            auctions.clear();
+        }
+
+        @Test
+        void getInstance_ReturnsSameInstance() {
+            assertSame(AuctionManager.getInstance(), AuctionManager.getInstance());
+        }
+
+        @Test
+        void getInstance_ReturnsNonNull() {
+            assertNotNull(AuctionManager.getInstance());
+        }
+
+        @Test
+        void createListing_ReturnsActiveListingWithGivenFields() {
+            UUID id = auctions.createListing(seller, item(), "Hyperion", "Weapons", 1000);
+            assertTrue(auctions.isActive(id));
+            Listing listing = auctions.getListing(id);
+            assertEquals(id, listing.id());
+            assertEquals(seller, listing.seller());
+            assertEquals("Hyperion", listing.itemName());
+            assertEquals("Weapons", listing.category());
+            assertEquals(1000, listing.price());
+        }
+
+        @Test
+        void createListing_AssignsDistinctIds() {
+            UUID a = auctions.createListing(seller, item(), "Sword", "Weapons", 100);
+            UUID b = auctions.createListing(seller, item(), "Sword", "Weapons", 100);
+            assertNotEquals(a, b);
+            assertEquals(2, auctions.getListings().size());
+        }
+
+        @Test
+        void createListing_NegativePrice_Throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> auctions.createListing(seller, item(), "Sword", "Weapons", -1));
+        }
+
+        @Test
+        void createListing_NullArgument_Throws() {
+            assertThrows(NullPointerException.class,
+                    () -> auctions.createListing(null, item(), "Sword", "Weapons", 100));
+            assertThrows(NullPointerException.class,
+                    () -> auctions.createListing(seller, null, "Sword", "Weapons", 100));
+            assertThrows(NullPointerException.class,
+                    () -> auctions.createListing(seller, item(), null, "Weapons", 100));
+            assertThrows(NullPointerException.class,
+                    () -> auctions.createListing(seller, item(), "Sword", null, 100));
+        }
+
+        @Test
+        void getListing_UnknownId_Throws() {
+            assertThrows(IllegalArgumentException.class, () -> auctions.getListing(UUID.randomUUID()));
+        }
+
+        @Test
+        void isActive_UnknownId_ReturnsFalse() {
+            assertFalse(auctions.isActive(UUID.randomUUID()));
+        }
+
+        @Test
+        void purchase_ConsumesListingCreditsSellerNetOfTaxAndItemToBuyer() {
+            UUID id = auctions.createListing(seller, item(), "Hyperion", "Weapons", 1000);
+            auctions.purchase(id, buyer);
+            assertFalse(auctions.isActive(id));
+            assertEquals(990.0, auctions.getPendingCoins(seller));
+            assertEquals(1, auctions.getPendingItems(buyer).size());
+        }
+
+        @Test
+        void purchase_BySeller_Throws() {
+            UUID id = auctions.createListing(seller, item(), "Hyperion", "Weapons", 1000);
+            assertThrows(IllegalArgumentException.class, () -> auctions.purchase(id, seller));
+            assertTrue(auctions.isActive(id));
+        }
+
+        @Test
+        void purchase_UnknownListing_Throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> auctions.purchase(UUID.randomUUID(), buyer));
+        }
+
+        @Test
+        void cancelListing_RemovesListingAndReturnsItemToSeller() {
+            UUID id = auctions.createListing(seller, item(), "Hyperion", "Weapons", 1000);
+            auctions.cancelListing(id, seller);
+            assertFalse(auctions.isActive(id));
+            assertEquals(1, auctions.getPendingItems(seller).size());
+        }
+
+        @Test
+        void cancelListing_ByNonSeller_Throws() {
+            UUID id = auctions.createListing(seller, item(), "Hyperion", "Weapons", 1000);
+            assertThrows(IllegalArgumentException.class, () -> auctions.cancelListing(id, buyer));
+            assertTrue(auctions.isActive(id));
+        }
+
+        @Test
+        void cancelListing_UnknownListing_Throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> auctions.cancelListing(UUID.randomUUID(), seller));
+        }
+
+        @Test
+        void getListings_ReturnsAllActiveListings() {
+            auctions.createListing(seller, item(), "Sword", "Weapons", 100);
+            auctions.createListing(seller, item(), "Helmet", "Armor", 200);
+            assertEquals(2, auctions.getListings().size());
+        }
+
+        @Test
+        void getListingsByCategory_ReturnsOnlyMatchingCategoryCaseInsensitively() {
+            auctions.createListing(seller, item(), "Sword", "Weapons", 100);
+            auctions.createListing(seller, item(), "Helmet", "Armor", 200);
+            assertEquals(1, auctions.getListingsByCategory("weapons").size());
+            assertEquals(1, auctions.getListingsByCategory("ARMOR").size());
+            assertTrue(auctions.getListingsByCategory("Accessories").isEmpty());
+        }
+
+        @Test
+        void searchListings_MatchesItemNameSubstringCaseInsensitively() {
+            auctions.createListing(seller, item(), "Aspect of the End", "Weapons", 100);
+            auctions.createListing(seller, item(), "Diamond Helmet", "Armor", 200);
+            assertEquals(1, auctions.searchListings("aspect").size());
+            assertEquals(1, auctions.searchListings("HELMET").size());
+            assertTrue(auctions.searchListings("hyperion").isEmpty());
+        }
+
+        @Test
+        void getListingsBySeller_ReturnsOnlyThatSellersListings() {
+            UUID other = UUID.randomUUID();
+            auctions.createListing(seller, item(), "Sword", "Weapons", 100);
+            auctions.createListing(seller, item(), "Bow", "Weapons", 100);
+            auctions.createListing(other, item(), "Helmet", "Armor", 200);
+            assertEquals(2, auctions.getListingsBySeller(seller).size());
+            assertEquals(1, auctions.getListingsBySeller(other).size());
+        }
+
+        @Test
+        void getPendingCoins_DefaultsToZero() {
+            assertEquals(0.0, auctions.getPendingCoins(seller));
+        }
+
+        @Test
+        void getPendingItems_DefaultsToEmpty() {
+            assertTrue(auctions.getPendingItems(buyer).isEmpty());
+        }
+
+        @Test
+        void claimCoins_ReturnsAndClearsBalance() {
+            UUID id = auctions.createListing(seller, item(), "Hyperion", "Weapons", 1000);
+            auctions.purchase(id, buyer);
+            assertEquals(990.0, auctions.claimCoins(seller));
+            assertEquals(0.0, auctions.getPendingCoins(seller));
+        }
+
+        @Test
+        void claimCoins_WithNothingPending_ReturnsZero() {
+            assertEquals(0.0, auctions.claimCoins(seller));
+        }
+
+        @Test
+        void claimItems_ReturnsAndClearsQueue() {
+            UUID id = auctions.createListing(seller, item(), "Hyperion", "Weapons", 1000);
+            auctions.purchase(id, buyer);
+            assertEquals(1, auctions.claimItems(buyer).size());
+            assertTrue(auctions.getPendingItems(buyer).isEmpty());
+        }
+
+        @Test
+        void claimItems_WithNothingPending_ReturnsEmptyList() {
+            assertTrue(auctions.claimItems(buyer).isEmpty());
+        }
+
+        @Test
+        void clear_RemovesListingsAndEscrowState() {
+            UUID id = auctions.createListing(seller, item(), "Hyperion", "Weapons", 1000);
+            auctions.purchase(id, buyer);
+            auctions.clear();
+            assertTrue(auctions.getListings().isEmpty());
+            assertEquals(0.0, auctions.getPendingCoins(seller));
+            assertTrue(auctions.getPendingItems(buyer).isEmpty());
+        }
+    }
+
+    @Nested
+    class BankManagerTests {
+
+        private BankManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = BankManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.clear();
+        }
+
+        @Test
+        void testInitialBalanceIsZero() {
+            assertEquals(0.0, manager.getBalance(playerId));
+        }
+
+        @Test
+        void getAccount_freshPlayer_hasZeroBalanceAndEmptyHistory() {
+            BankAccount account = manager.getAccount(playerId);
+            assertEquals(0.0, account.balance());
+            assertTrue(account.transactionHistory().isEmpty());
+        }
+
+        @Test
+        void getAccount_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class, () -> manager.getAccount(null));
+        }
+
+        @Test
+        void getTier_freshPlayer_isStarter() {
+            assertEquals(BankTier.STARTER, manager.getTier(playerId));
+        }
+
+        @Test
+        void getBankType_freshPlayer_isPersonal() {
+            assertEquals(BankType.PERSONAL, manager.getBankType(playerId));
+        }
+
+        @Test
+        void deposit_increasesBalance() {
+            manager.deposit(playerId, 100.0);
+            assertEquals(100.0, manager.getBalance(playerId));
+        }
+
+        @Test
+        void deposit_accumulates() {
+            manager.deposit(playerId, 100.0);
+            manager.deposit(playerId, 50.0);
+            assertEquals(150.0, manager.getBalance(playerId));
+        }
+
+        @Test
+        void deposit_recordsHistory() {
+            manager.deposit(playerId, 100.0);
+            assertFalse(manager.getBankHistory(playerId).isEmpty());
+        }
+
+        @Test
+        void deposit_zeroAmount_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.deposit(playerId, 0.0));
+        }
+
+        @Test
+        void deposit_negativeAmount_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.deposit(playerId, -1.0));
+        }
+
+        @Test
+        void withdraw_decreasesBalance() {
+            manager.deposit(playerId, 100.0);
+            manager.withdraw(playerId, 40.0);
+            assertEquals(60.0, manager.getBalance(playerId));
+        }
+
+        @Test
+        void withdraw_entireBalance_leavesZero() {
+            manager.deposit(playerId, 100.0);
+            manager.withdraw(playerId, 100.0);
+            assertEquals(0.0, manager.getBalance(playerId));
+        }
+
+        @Test
+        void withdraw_moreThanBalance_throwsIllegalArgument() {
+            manager.deposit(playerId, 50.0);
+            assertThrows(IllegalArgumentException.class, () -> manager.withdraw(playerId, 100.0));
+        }
+
+        @Test
+        void withdraw_zeroAmount_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.withdraw(playerId, 0.0));
+        }
+
+        @Test
+        void withdraw_negativeAmount_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.withdraw(playerId, -1.0));
+        }
+
+        @Test
+        void setTier_andGetTier_roundTrips() {
+            manager.setTier(playerId, BankTier.GOLD);
+            assertEquals(BankTier.GOLD, manager.getTier(playerId));
+        }
+
+        @Test
+        void bankTier_forBalance_picksLowestFittingTier() {
+            assertEquals(BankTier.STARTER, BankTier.forBalance(1_000.0));
+            assertEquals(BankTier.PREMIER_PLUS, BankTier.forBalance(Double.MAX_VALUE));
+        }
+
+        @Test
+        void setBankType_andGetBankType_roundTrips() {
+            manager.setBankType(playerId, BankType.ISLAND);
+            assertEquals(BankType.ISLAND, manager.getBankType(playerId));
+            assertTrue(BankType.ISLAND.isShared());
+        }
+
+        @Test
+        void getPurseBalance_freshPlayer_isZero() {
+            assertEquals(0L, manager.getPurseBalance(playerId));
+        }
+
+        @Test
+        void addToPurse_accumulates() {
+            manager.addToPurse(playerId, 100L);
+            manager.addToPurse(playerId, 50L);
+            assertEquals(150L, manager.getPurseBalance(playerId));
+        }
+
+        @Test
+        void addToPurse_nonPositive_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.addToPurse(playerId, 0L));
+        }
+
+        @Test
+        void setPurseBalance_negative_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.setPurseBalance(playerId, -1L));
+        }
+
+        @Test
+        void removeFromPurse_decreases() {
+            manager.setPurseBalance(playerId, 100L);
+            manager.removeFromPurse(playerId, 40L);
+            assertEquals(60L, manager.getPurseBalance(playerId));
+        }
+
+        @Test
+        void removeFromPurse_moreThanBalance_throwsIllegalArgument() {
+            manager.setPurseBalance(playerId, 50L);
+            assertThrows(IllegalArgumentException.class, () -> manager.removeFromPurse(playerId, 100L));
+        }
+
+        @Test
+        void applyInterest_addsInterestToBalance() {
+            manager.deposit(playerId, 1_000_000.0);
+            manager.setTier(playerId, BankTier.STARTER);
+            double interest = manager.applyInterest(playerId);
+            assertTrue(interest > 0);
+            assertEquals(1_000_000.0 + interest, manager.getBalance(playerId));
+        }
+
+        @Test
+        void applyInterest_isCappedAtTierCap() {
+            manager.deposit(playerId, 500_000_000.0);
+            manager.setTier(playerId, BankTier.STARTER);
+            double interest = manager.applyInterest(playerId);
+            assertTrue(interest <= BankTier.STARTER.getInterestCap());
+        }
+
+        @Test
+        void getCoopBalance_unknownCoop_isZero() {
+            assertEquals(0.0, manager.getCoopBalance("nope"));
+        }
+
+        @Test
+        void depositCoop_thenWithdrawCoop_roundTrips() {
+            manager.depositCoop("crew", 100.0);
+            assertEquals(100.0, manager.getCoopBalance("crew"));
+            manager.withdrawCoop("crew", 40.0);
+            assertEquals(60.0, manager.getCoopBalance("crew"));
+        }
+
+        @Test
+        void withdrawCoop_moreThanBalance_throwsIllegalArgument() {
+            manager.depositCoop("crew", 50.0);
+            assertThrows(IllegalArgumentException.class, () -> manager.withdrawCoop("crew", 100.0));
+        }
+
+        @Test
+        void removeCoop_existing_returnsTrue() {
+            manager.depositCoop("crew", 10.0);
+            assertTrue(manager.removeCoop("crew"));
+            assertEquals(0.0, manager.getCoopBalance("crew"));
+        }
+
+        @Test
+        void removeCoop_unknown_returnsFalse() {
+            assertFalse(manager.removeCoop("ghost"));
+        }
+
+        @Test
+        void getBankHistory_unknownPlayer_isEmpty() {
+            assertTrue(manager.getBankHistory(UUID.randomUUID()).isEmpty());
+        }
+
+        @Test
+        void getBankHistory_isUnmodifiable() {
+            manager.deposit(playerId, 10.0);
+            assertThrows(UnsupportedOperationException.class,
+                    () -> manager.getBankHistory(playerId).add("hack"));
+        }
+
+        @Test
+        void clear_resetsBalancesAndPurse() {
+            manager.deposit(playerId, 100.0);
+            manager.setPurseBalance(playerId, 50L);
+            manager.clear();
+            assertEquals(0.0, manager.getBalance(playerId));
+            assertEquals(0L, manager.getPurseBalance(playerId));
+        }
+    }
+
+    @Nested
+    class CollectionManagerTests {
+
+        private CollectionManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = CollectionManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.reset(playerId);
+        }
+
+        @Test
+        void getInstance_ReturnsSameInstance() {
+            assertSame(CollectionManager.getInstance(), CollectionManager.getInstance());
+        }
+
+        @Test
+        void getInstance_ReturnsNonNull() {
+            assertNotNull(CollectionManager.getInstance());
+        }
+
+        @Test
+        void maxTier_IsNine() {
+            assertEquals(9, CollectionManager.MAX_TIER);
+        }
+
+        @Test
+        void tierData_ContainsAllCollectionEnumValues() {
+            for (Collection c : Collection.values()) {
+                assertTrue(CollectionManager.TIER_DATA.containsKey(c));
+            }
+        }
+
+        @Test
+        void tierData_EachEntryHasNineTiers() {
+            for (Map.Entry<Collection, int[]> e : CollectionManager.TIER_DATA.entrySet()) {
+                assertEquals(CollectionManager.MAX_TIER, e.getValue().length);
+            }
+        }
+
+        @Test
+        void tierData_ThresholdsAreStrictlyIncreasing() {
+            for (Map.Entry<Collection, int[]> e : CollectionManager.TIER_DATA.entrySet()) {
+                int[] t = e.getValue();
+                for (int i = 1; i < t.length; i++) {
+                    assertTrue(t[i] > t[i - 1]);
+                }
+            }
+        }
+
+        @Test
+        void getItems_freshPlayer_returnsZero() {
+            assertEquals(0L, manager.getItems(playerId, Collection.COAL));
+        }
+
+        @Test
+        void addItems_accumulates_and_returnsTotal() {
+            manager.addItems(playerId, Collection.WHEAT, 30L);
+            long total = manager.addItems(playerId, Collection.WHEAT, 25L);
+            assertEquals(55L, total);
+            assertEquals(55L, manager.getItems(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void addItems_zeroAmount_isNoop() {
+            manager.addItems(playerId, Collection.COAL, 50L);
+            manager.addItems(playerId, Collection.COAL, 0L);
+            assertEquals(50L, manager.getItems(playerId, Collection.COAL));
+        }
+
+        @Test
+        void addItems_negative_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addItems(playerId, Collection.WHEAT, -1L));
+        }
+
+        @Test
+        void addItems_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.addItems(null, Collection.WHEAT, 10L));
+        }
+
+        @Test
+        void getItems_unknownPlayer_returnsZero() {
+            assertEquals(0L, manager.getItems(UUID.randomUUID(), Collection.COAL));
+        }
+
+        @Test
+        void getTier_freshPlayer_isZero() {
+            assertEquals(0, manager.getTier(playerId, Collection.DIAMOND));
+        }
+
+        @Test
+        void getTier_justBelowFirstThreshold_isZero() {
+            manager.addItems(playerId, Collection.COAL, 49L);
+            assertEquals(0, manager.getTier(playerId, Collection.COAL));
+        }
+
+        @Test
+        void getTier_atFirstThreshold_isTierOne() {
+            manager.addItems(playerId, Collection.WHEAT, 50L);
+            assertEquals(1, manager.getTier(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void getTier_atSecondThreshold_isTierTwo() {
+            manager.addItems(playerId, Collection.WHEAT, 100L);
+            assertEquals(2, manager.getTier(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void getItemsToNextTier_atTierZero_equalsFirstThreshold() {
+            assertEquals(50L, manager.getItemsToNextTier(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void getItemsToNextTier_partialProgress_returnsRemainder() {
+            manager.addItems(playerId, Collection.WHEAT, 30L);
+            assertEquals(20L, manager.getItemsToNextTier(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void getItemsToNextTier_maxed_returnsZero() {
+            manager.addItems(playerId, Collection.WHEAT, 100_000L);
+            assertEquals(0L, manager.getItemsToNextTier(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void hasUnlockedTier_falseBeforeThreshold() {
+            manager.addItems(playerId, Collection.WHEAT, 49L);
+            assertFalse(manager.hasUnlockedTier(playerId, Collection.WHEAT, 1));
+        }
+
+        @Test
+        void hasUnlockedTier_trueAtThreshold() {
+            manager.addItems(playerId, Collection.WHEAT, 50L);
+            assertTrue(manager.hasUnlockedTier(playerId, Collection.WHEAT, 1));
+        }
+
+        @Test
+        void isMaxed_falseBeforeMaxTier() {
+            manager.addItems(playerId, Collection.WHEAT, 50_000L);
+            assertFalse(manager.isMaxed(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void isMaxed_trueAtMaxTier() {
+            manager.addItems(playerId, Collection.WHEAT, 100_000L);
+            assertTrue(manager.isMaxed(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void getProgressToNextTier_atZero_returnsZero() {
+            assertEquals(0.0, manager.getProgressToNextTier(playerId, Collection.COAL), 1e-9);
+        }
+
+        @Test
+        void getProgressToNextTier_halfwayToTierOne() {
+            manager.addItems(playerId, Collection.WHEAT, 25L);
+            assertEquals(0.5, manager.getProgressToNextTier(playerId, Collection.WHEAT), 1e-9);
+        }
+
+        @Test
+        void getProgressToNextTier_maxed_returnsOne() {
+            manager.addItems(playerId, Collection.WHEAT, 100_000L);
+            assertEquals(1.0, manager.getProgressToNextTier(playerId, Collection.WHEAT), 1e-9);
+        }
+
+        @Test
+        void addItems_byName_unknownName_returnsMinusOne() {
+            assertEquals(-1L, manager.addItems(playerId, "notacollection", 10L));
+        }
+
+        @Test
+        void addItems_byName_knownName_accumulates() {
+            manager.addItems(playerId, "wheat", 60L);
+            assertEquals(60L, manager.getItems(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void reset_removesPlayerData() {
+            manager.addItems(playerId, Collection.WHEAT, 100L);
+            assertTrue(manager.reset(playerId));
+            assertEquals(0L, manager.getItems(playerId, Collection.WHEAT));
+        }
+
+        @Test
+        void reset_unknownPlayer_returnsFalse() {
+            assertFalse(manager.reset(UUID.randomUUID()));
+        }
+
+        @Test
+        void reset_calledTwice_secondCallReturnsFalse() {
+            manager.addItems(playerId, Collection.COAL, 10L);
+            manager.reset(playerId);
+            assertFalse(manager.reset(playerId));
+        }
+
+        @Test
+        void getAll_freshPlayer_returnsEmptyMap() {
+            assertTrue(manager.getAll(playerId).isEmpty());
+        }
+
+        @Test
+        void getAll_afterAdding_containsEntry() {
+            manager.addItems(playerId, Collection.COAL, 75L);
+            Map<Collection, Long> all = manager.getAll(playerId);
+            assertEquals(1, all.size());
+            assertEquals(75L, all.get(Collection.COAL));
+        }
+
+        @Test
+        void getAll_returnsUnmodifiableView() {
+            manager.addItems(playerId, Collection.DIAMOND, 10L);
+            Map<Collection, Long> all = manager.getAll(playerId);
+            assertThrows(UnsupportedOperationException.class, () -> all.put(Collection.COAL, 1L));
+        }
+
+        @Test
+        void getTotalForCategory_sumsFarmingCollections() {
+            manager.addItems(playerId, Collection.WHEAT, 30L);
+            manager.addItems(playerId, Collection.CARROT, 20L);
+            assertEquals(50L, manager.getTotalForCategory(playerId, CollectionCategory.FARMING));
+        }
+
+        @Test
+        void getTotalForCategory_sumsMiningCollections() {
+            manager.addItems(playerId, Collection.COAL, 60L);
+            manager.addItems(playerId, Collection.DIAMOND, 40L);
+            assertEquals(100L, manager.getTotalForCategory(playerId, CollectionCategory.MINING));
+        }
+
+        @Test
+        void getTotalForCategory_unrelatedCategory_returnsZero() {
+            manager.addItems(playerId, Collection.WHEAT, 100L);
+            assertEquals(0L, manager.getTotalForCategory(playerId, CollectionCategory.COMBAT));
+        }
+
+        @Test
+        void getTotalTiersUnlocked_freshPlayer_isZero() {
+            assertEquals(0, manager.getTotalTiersUnlocked(playerId));
+        }
+
+        @Test
+        void getTotalTiersUnlocked_incrementsWithProgress() {
+            manager.addItems(playerId, Collection.WHEAT, 50L);
+            manager.addItems(playerId, Collection.COAL, 100L);
+            assertTrue(manager.getTotalTiersUnlocked(playerId) >= 3);
+        }
+
+        @Test
+        void recordCollectionEvent_andGetCollectionsHistory_accumulates() {
+            manager.recordCollectionEvent(playerId, "event one");
+            manager.recordCollectionEvent(playerId, "event two");
+            List<String> history = manager.getCollectionsHistory(playerId);
+            assertEquals(2, history.size());
+            assertTrue(history.contains("event one"));
+            assertTrue(history.contains("event two"));
+        }
+
+        @Test
+        void addItems_crossingTier_recordsHistoryEntry() {
+            manager.addItems(playerId, Collection.COAL, 50L);
+            List<String> history = manager.getCollectionsHistory(playerId);
+            assertFalse(history.isEmpty());
+            assertTrue(history.stream().anyMatch(e -> e.contains("tier 1") || e.contains("tier I")));
+        }
+
+        @Test
+        void getAllCollectionsHistory_includesAllPlayers() {
+            UUID other = UUID.randomUUID();
+            manager.recordCollectionEvent(playerId, "a");
+            manager.recordCollectionEvent(other, "b");
+            Map<UUID, List<String>> all = manager.getAllCollectionsHistory();
+            assertTrue(all.containsKey(playerId));
+            assertTrue(all.containsKey(other));
+            manager.reset(other);
+        }
+
+        @Test
+        void getCollectionsHistory_unknownPlayer_returnsEmptyList() {
+            assertTrue(manager.getCollectionsHistory(UUID.randomUUID()).isEmpty());
+        }
+
+        @Test
+        void getCollectionStats_noCollections_returnsNoneMessage() {
+            String stats = manager.getCollectionStats(playerId);
+            assertTrue(stats.startsWith("Top Collections:"));
+            assertTrue(stats.contains("none"));
+        }
+
+        @Test
+        void getCollectionStats_withEntries_listsTopCollections() {
+            manager.addItems(playerId, Collection.WHEAT, 500L);
+            manager.addItems(playerId, Collection.COAL, 200L);
+            String stats = manager.getCollectionStats(playerId);
+            assertTrue(stats.contains("Wheat") || stats.contains("Coal"));
+        }
+    }
+
+    @Nested
+    class DungeonsManagerTests {
+
+        private DungeonsManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = DungeonsManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(manager, DungeonsManager.getInstance());
+        }
+
+        @Test
+        void floorType_normalFloors_areNotMasterMode() {
+            assertFalse(DungeonsManager.FloorType.ENTRANCE.isMasterMode());
+            assertFalse(DungeonsManager.FloorType.FLOOR_1.isMasterMode());
+            assertFalse(DungeonsManager.FloorType.FLOOR_7.isMasterMode());
+        }
+
+        @Test
+        void floorType_masterFloors_areMasterMode() {
+            assertTrue(DungeonsManager.FloorType.MASTER_1.isMasterMode());
+            assertTrue(DungeonsManager.FloorType.MASTER_7.isMasterMode());
+        }
+
+        @Test
+        void floorType_hasFifteenConstants() {
+            assertEquals(15, DungeonsManager.FloorType.values().length);
+        }
+
+        @Test
+        void floor_normalFloorRequiredSecrets_matchTable() {
+            assertFalse(DungeonsManager.Floor.F1.isMasterMode());
+            assertEquals(30, DungeonsManager.Floor.F1.getRequiredSecrets());
+            assertEquals(120, DungeonsManager.Floor.F7.getRequiredSecrets());
+        }
+
+        @Test
+        void floor_masterFloorsAreMasterMode() {
+            assertTrue(DungeonsManager.Floor.M1.isMasterMode());
+            assertEquals(300, DungeonsManager.Floor.M7.getRequiredSecrets());
+        }
+
+        @Test
+        void getDungeonFloor_freshPlayer_defaultsToOne() {
+            assertEquals(1, manager.getDungeonFloor(playerId));
+        }
+
+        @Test
+        void setDungeonFloor_roundTrips() {
+            manager.setDungeonFloor(playerId, 5);
+            assertEquals(5, manager.getDungeonFloor(playerId));
+        }
+
+        @Test
+        void setDungeonFloor_clampsToValidRange() {
+            manager.setDungeonFloor(playerId, 99);
+            assertEquals(7, manager.getDungeonFloor(playerId));
+            manager.setDungeonFloor(playerId, 0);
+            assertEquals(1, manager.getDungeonFloor(playerId));
+        }
+
+        @Test
+        void getHighestFloor_freshPlayer_defaultsToZero() {
+            assertEquals(0, manager.getHighestFloor(playerId));
+        }
+
+        @Test
+        void setHighestFloor_roundTrips() {
+            manager.setHighestFloor(playerId, 4);
+            assertEquals(4, manager.getHighestFloor(playerId));
+        }
+
+        @Test
+        void setHighestFloor_clampsToValidRange() {
+            manager.setHighestFloor(playerId, 99);
+            assertEquals(7, manager.getHighestFloor(playerId));
+        }
+
+        @Test
+        void getPlayerClass_freshPlayer_isNull() {
+            assertNull(manager.getPlayerClass(playerId));
+        }
+
+        @Test
+        void setPlayerClass_roundTrips() {
+            manager.setPlayerClass(playerId, DungeonsManager.DungeonClass.MAGE);
+            assertEquals(DungeonsManager.DungeonClass.MAGE, manager.getPlayerClass(playerId));
+        }
+
+        @Test
+        void getClassXp_freshPlayer_isZero() {
+            assertEquals(0.0, manager.getClassXp(playerId, DungeonsManager.DungeonClass.ARCHER));
+        }
+
+        @Test
+        void addClassXp_accumulatesAndReturnsTotal() {
+            manager.addClassXp(playerId, DungeonsManager.DungeonClass.BERSERK, 30.0);
+            double total = manager.addClassXp(playerId, DungeonsManager.DungeonClass.BERSERK, 20.0);
+            assertEquals(50.0, total);
+            assertEquals(50.0, manager.getClassXp(playerId, DungeonsManager.DungeonClass.BERSERK));
+        }
+
+        @Test
+        void addClassXp_differentClassesAreIndependent() {
+            manager.addClassXp(playerId, DungeonsManager.DungeonClass.TANK, 100.0);
+            assertEquals(0.0, manager.getClassXp(playerId, DungeonsManager.DungeonClass.HEALER));
+        }
+
+        @Test
+        void getClassLevel_freshPlayer_isZero() {
+            assertEquals(0, manager.getClassLevel(playerId, DungeonsManager.DungeonClass.HEALER));
+        }
+
+        @Test
+        void getClassLevel_atFirstThreshold_isOne() {
+            manager.addClassXp(playerId, DungeonsManager.DungeonClass.MAGE, 50.0);
+            assertEquals(1, manager.getClassLevel(playerId, DungeonsManager.DungeonClass.MAGE));
+        }
+
+        @Test
+        void recordMob_withSelectedClass_awardsMobClassXp() {
+            manager.setPlayerClass(playerId, DungeonsManager.DungeonClass.ARCHER);
+            manager.recordMob(playerId);
+            assertEquals(DungeonsManager.MOB_CLASS_XP,
+                    manager.getClassXp(playerId, DungeonsManager.DungeonClass.ARCHER));
+        }
+
+        @Test
+        void recordMob_withoutSelectedClass_isNoOp() {
+            manager.recordMob(playerId);
+            for (DungeonsManager.DungeonClass cls : DungeonsManager.DungeonClass.values()) {
+                assertEquals(0.0, manager.getClassXp(playerId, cls));
+            }
+        }
+    }
+
+    @Nested
+    class EssenceManagerTests {
+
+        private EssenceManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = EssenceManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.remove(playerId);
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(manager, EssenceManager.getInstance());
+        }
+
+        @Test
+        void getBalance_freshPlayer_isZero() {
+            assertEquals(0, manager.getBalance(playerId, EssenceType.WITHER));
+        }
+
+        @Test
+        void addEssence_accumulatesAndReturnsNewBalance() {
+            assertEquals(100, manager.addEssence(playerId, EssenceType.WITHER, 100));
+            assertEquals(150, manager.addEssence(playerId, EssenceType.WITHER, 50));
+            assertEquals(150, manager.getBalance(playerId, EssenceType.WITHER));
+        }
+
+        @Test
+        void addEssence_typesAreIndependent() {
+            manager.addEssence(playerId, EssenceType.WITHER, 100);
+            assertEquals(0, manager.getBalance(playerId, EssenceType.DRAGON));
+        }
+
+        @Test
+        void addEssence_nonPositiveAmount_throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addEssence(playerId, EssenceType.WITHER, 0));
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addEssence(playerId, EssenceType.WITHER, -5));
+        }
+
+        @Test
+        void removeEssence_withSufficientBalance_succeeds() {
+            manager.addEssence(playerId, EssenceType.GOLD, 100);
+            assertTrue(manager.removeEssence(playerId, EssenceType.GOLD, 40));
+            assertEquals(60, manager.getBalance(playerId, EssenceType.GOLD));
+        }
+
+        @Test
+        void removeEssence_withInsufficientBalance_failsAndLeavesBalance() {
+            manager.addEssence(playerId, EssenceType.GOLD, 30);
+            assertFalse(manager.removeEssence(playerId, EssenceType.GOLD, 40));
+            assertEquals(30, manager.getBalance(playerId, EssenceType.GOLD));
+        }
+
+        @Test
+        void removeEssence_nonPositiveAmount_throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.removeEssence(playerId, EssenceType.GOLD, 0));
+        }
+
+        @Test
+        void getPerkLevel_freshPlayer_isZero() {
+            assertEquals(0, manager.getPerkLevel(playerId, EssenceShopPerk.HEALTH));
+        }
+
+        @Test
+        void purchasePerk_withEnoughEssence_succeedsAndDeductsCost() {
+            manager.addEssence(playerId, EssenceType.WITHER, 1000);
+            assertTrue(manager.purchasePerk(playerId, EssenceShopPerk.HEALTH));
+            assertEquals(1, manager.getPerkLevel(playerId, EssenceShopPerk.HEALTH));
+            assertEquals(900, manager.getBalance(playerId, EssenceType.WITHER));
+        }
+
+        @Test
+        void purchasePerk_withInsufficientEssence_fails() {
+            manager.addEssence(playerId, EssenceType.WITHER, 50);
+            assertFalse(manager.purchasePerk(playerId, EssenceShopPerk.HEALTH));
+            assertEquals(0, manager.getPerkLevel(playerId, EssenceShopPerk.HEALTH));
+            assertEquals(50, manager.getBalance(playerId, EssenceType.WITHER));
+        }
+
+        @Test
+        void getUpgradeCost_scalesWithCurrentLevel() {
+            assertEquals(100, EssenceShopPerk.HEALTH.getUpgradeCost(0));
+            assertEquals(200, EssenceShopPerk.HEALTH.getUpgradeCost(1));
+        }
+
+        @Test
+        void canUnlock_belowRequirement_isFalse() {
+            manager.addEssence(playerId, EssenceType.WITHER, 100);
+            assertFalse(manager.canUnlock(playerId, EssenceItem.WITHER_CLOAK));
+        }
+
+        @Test
+        void canUnlock_atRequirement_isTrue() {
+            manager.addEssence(playerId, EssenceType.WITHER, EssenceItem.WITHER_CLOAK.getRequiredEssence());
+            assertTrue(manager.canUnlock(playerId, EssenceItem.WITHER_CLOAK));
+        }
+
+        @Test
+        void remove_withData_returnsTrueAndClearsState() {
+            manager.addEssence(playerId, EssenceType.WITHER, 500);
+            assertTrue(manager.remove(playerId));
+            assertEquals(0, manager.getBalance(playerId, EssenceType.WITHER));
+        }
+
+        @Test
+        void remove_freshPlayer_returnsFalse() {
+            assertFalse(manager.remove(playerId));
+        }
+    }
+
+    @Nested
+    class ForgeManagerTests {
+
+        private ForgeManager manager;
+        private UUID playerId;
+
+        private static final long NOW = 1_000_000L;
+        private static final String REFINED_MITHRIL = "refined_mithril";
+
+        @BeforeEach
+        void setUp() {
+            manager = ForgeManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.cancelForge(playerId);
+        }
+
+        @Test
+        void startForge_autoSlot_returnsJobInSlotZero() {
+            ForgeJob job = manager.startForge(playerId, REFINED_MITHRIL, NOW);
+            assertEquals(0, job.getSlot());
+            assertEquals(ForgeRecipe.REFINED_MITHRIL, job.getRecipe());
+        }
+
+        @Test
+        void startForge_autoSlot_secondJobUsesNextSlot() {
+            manager.startForge(playerId, REFINED_MITHRIL, NOW);
+            ForgeJob second = manager.startForge(playerId, REFINED_MITHRIL, NOW);
+            assertEquals(1, second.getSlot());
+        }
+
+        @Test
+        void startForge_unknownRecipe_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.startForge(playerId, "no_such_recipe", NOW));
+        }
+
+        @Test
+        void startForge_allSlotsBusy_throwsIllegalState() {
+            int slots = manager.getSlotCount(playerId);
+            for (int i = 0; i < slots; i++) {
+                manager.startForge(playerId, REFINED_MITHRIL, NOW);
+            }
+            assertThrows(IllegalStateException.class,
+                    () -> manager.startForge(playerId, REFINED_MITHRIL, NOW));
+        }
+
+        @Test
+        void startForge_specificSlot_occupiesThatSlot() {
+            ForgeJob job = manager.startForge(playerId, REFINED_MITHRIL, 1, NOW);
+            assertEquals(1, job.getSlot());
+            assertSame(job, manager.getJob(playerId, 1));
+        }
+
+        @Test
+        void startForge_slotOutOfRange_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.startForge(playerId, REFINED_MITHRIL, 99, NOW));
+        }
+
+        @Test
+        void startForge_negativeSlot_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.startForge(playerId, REFINED_MITHRIL, -1, NOW));
+        }
+
+        @Test
+        void startForge_duplicateSlot_throwsIllegalState() {
+            manager.startForge(playerId, REFINED_MITHRIL, 0, NOW);
+            assertThrows(IllegalStateException.class,
+                    () -> manager.startForge(playerId, REFINED_MITHRIL, 0, NOW));
+        }
+
+        @Test
+        void getActiveJob_noJobs_returnsNull() {
+            assertNull(manager.getActiveJob(playerId));
+        }
+
+        @Test
+        void getActiveJob_returnsLowestSlotJob() {
+            manager.startForge(playerId, REFINED_MITHRIL, 1, NOW);
+            ForgeJob slot0 = manager.startForge(playerId, REFINED_MITHRIL, 0, NOW);
+            assertSame(slot0, manager.getActiveJob(playerId));
+        }
+
+        @Test
+        void getActiveJobs_freshPlayer_isEmpty() {
+            assertTrue(manager.getActiveJobs(playerId).isEmpty());
+        }
+
+        @Test
+        void getActiveJobs_afterStart_containsJob() {
+            ForgeJob job = manager.startForge(playerId, REFINED_MITHRIL, NOW);
+            assertEquals(1, manager.getActiveJobs(playerId).size());
+            assertSame(job, manager.getActiveJobs(playerId).get(0));
+        }
+
+        @Test
+        void getJob_emptySlot_returnsNull() {
+            assertNull(manager.getJob(playerId, 0));
+        }
+
+        @Test
+        void collectForge_completedJob_removesSlotAndReturnsJob() {
+            ForgeJob job = manager.startForge(playerId, REFINED_MITHRIL, 0, NOW);
+            long doneAt = NOW + (long) job.getDurationSeconds() * 1000L;
+            ForgeJob collected = manager.collectForge(playerId, 0, doneAt);
+            assertSame(job, collected);
+            assertNull(manager.getJob(playerId, 0));
+        }
+
+        @Test
+        void collectForge_notYetComplete_throwsIllegalState() {
+            manager.startForge(playerId, REFINED_MITHRIL, 0, NOW);
+            assertThrows(IllegalStateException.class,
+                    () -> manager.collectForge(playerId, 0, NOW + 1L));
+        }
+
+        @Test
+        void collectForge_emptySlot_throwsIllegalState() {
+            assertThrows(IllegalStateException.class,
+                    () -> manager.collectForge(playerId, 0, NOW + 999_999_999L));
+        }
+
+        @Test
+        void collectForge_autoSlot_picksFirstComplete() {
+            ForgeJob job = manager.startForge(playerId, REFINED_MITHRIL, NOW);
+            long doneAt = NOW + (long) job.getDurationSeconds() * 1000L;
+            ForgeJob collected = manager.collectForge(playerId, doneAt);
+            assertSame(job, collected);
+            assertTrue(manager.getActiveJobs(playerId).isEmpty());
+        }
+
+        @Test
+        void collectForge_autoSlot_noJobs_throwsIllegalState() {
+            assertThrows(IllegalStateException.class,
+                    () -> manager.collectForge(playerId, NOW + 999_999_999L));
+        }
+
+        @Test
+        void cancelForge_occupiedSlot_returnsTrueAndFreesSlot() {
+            manager.startForge(playerId, REFINED_MITHRIL, 0, NOW);
+            assertTrue(manager.cancelForge(playerId, 0));
+            assertNull(manager.getJob(playerId, 0));
+        }
+
+        @Test
+        void cancelForge_emptySlot_returnsFalse() {
+            assertFalse(manager.cancelForge(playerId, 0));
+        }
+
+        @Test
+        void cancelForge_autoSlot_cancelsLowestJob() {
+            manager.startForge(playerId, REFINED_MITHRIL, 0, NOW);
+            assertTrue(manager.cancelForge(playerId));
+            assertTrue(manager.getActiveJobs(playerId).isEmpty());
+        }
+
+        @Test
+        void cancelForge_autoSlot_noJobs_returnsFalse() {
+            assertFalse(manager.cancelForge(playerId));
+        }
+
+        @Test
+        void getSlotCount_freshPlayer_returnsDefault() {
+            assertEquals(ForgeManager.DEFAULT_SLOT_COUNT, manager.getSlotCount(playerId));
+        }
+
+        @Test
+        void setSlotCount_validValue_isReflected() {
+            manager.setSlotCount(playerId, 5);
+            assertEquals(5, manager.getSlotCount(playerId));
+        }
+
+        @Test
+        void setSlotCount_exceedsMax_clampedToMax() {
+            manager.setSlotCount(playerId, 999);
+            assertEquals(ForgeManager.MAX_SLOT_COUNT, manager.getSlotCount(playerId));
+        }
+
+        @Test
+        void setSlotCount_belowMin_clampedToDefault() {
+            manager.setSlotCount(playerId, 0);
+            assertEquals(ForgeManager.DEFAULT_SLOT_COUNT, manager.getSlotCount(playerId));
+        }
+
+        @Test
+        void getQuickForgeLevel_freshPlayer_isZero() {
+            assertEquals(0, manager.getQuickForgeLevel(playerId));
+        }
+
+        @Test
+        void setQuickForgeLevel_validValue_isReflected() {
+            manager.setQuickForgeLevel(playerId, 10);
+            assertEquals(10, manager.getQuickForgeLevel(playerId));
+        }
+
+        @Test
+        void setQuickForgeLevel_exceedsMax_clampedToMax() {
+            manager.setQuickForgeLevel(playerId, 999);
+            assertEquals(ForgeManager.MAX_QUICK_FORGE_LEVEL, manager.getQuickForgeLevel(playerId));
+        }
+
+        @Test
+        void setQuickForgeLevel_negative_clampedToZero() {
+            manager.setQuickForgeLevel(playerId, -5);
+            assertEquals(0, manager.getQuickForgeLevel(playerId));
+        }
+
+        @Test
+        void quickForgeReduction_levelZero_isZero() {
+            assertEquals(0.0, ForgeManager.quickForgeReduction(0), 1e-9);
+        }
+
+        @Test
+        void quickForgeReduction_maxLevel_isThirtyPercent() {
+            assertEquals(0.30, ForgeManager.quickForgeReduction(20), 1e-9);
+        }
+
+        @Test
+        void quickForgeReduction_levelOne_isTenPointFivePercent() {
+            assertEquals(0.105, ForgeManager.quickForgeReduction(1), 1e-9);
+        }
+
+        @Test
+        void effectiveDurationSeconds_levelZero_equalsFull() {
+            int full = ForgeRecipe.REFINED_MITHRIL.getDurationSeconds();
+            assertEquals(full, ForgeManager.effectiveDurationSeconds(ForgeRecipe.REFINED_MITHRIL, 0));
+        }
+
+        @Test
+        void effectiveDurationSeconds_maxLevel_reducedByThirtyPercent() {
+            int full = ForgeRecipe.REFINED_MITHRIL.getDurationSeconds();
+            int expected = (int) Math.round(full * 0.70);
+            assertEquals(expected, ForgeManager.effectiveDurationSeconds(ForgeRecipe.REFINED_MITHRIL, 20));
+        }
+
+        @Test
+        void startForge_quickForgeApplied_jobDurationIsReduced() {
+            manager.setQuickForgeLevel(playerId, 20);
+            ForgeJob job = manager.startForge(playerId, REFINED_MITHRIL, NOW);
+            int expected = ForgeManager.effectiveDurationSeconds(ForgeRecipe.REFINED_MITHRIL, 20);
+            assertEquals(expected, job.getDurationSeconds());
+        }
+
+        @Test
+        void getRecipes_returnsNonEmptyMap() {
+            assertFalse(manager.getRecipes().isEmpty());
+        }
+
+        @Test
+        void getRecipe_knownId_returnsRecipe() {
+            assertNotNull(manager.getRecipe(REFINED_MITHRIL));
+        }
+
+        @Test
+        void getRecipe_unknownId_returnsNull() {
+            assertNull(manager.getRecipe("not_a_recipe"));
+        }
+
+        @Test
+        void forgeJob_isComplete_trueWhenDurationElapsed() {
+            ForgeJob job = manager.startForge(playerId, REFINED_MITHRIL, 0, NOW);
+            long finishAt = NOW + (long) job.getDurationSeconds() * 1000L;
+            assertFalse(job.isComplete(finishAt - 1));
+            assertTrue(job.isComplete(finishAt));
+        }
+
+        @Test
+        void startForge_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.startForge(null, REFINED_MITHRIL, NOW));
+        }
+
+        @Test
+        void cancelForge_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.cancelForge(null, 0));
+        }
+
+        @Test
+        void getActiveJobs_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.getActiveJobs(null));
+        }
+    }
+
+    @Nested
+    class IslandManagerTests {
+
+        private IslandManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = IslandManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @Test
+        void getIslandData_freshPlayer_returnsEmpty() {
+            assertTrue(manager.getIslandData(playerId).isEmpty());
+        }
+
+        @Test
+        void getOrCreateIslandData_createsDefaultRecord() {
+            IslandData data = manager.getOrCreateIslandData(playerId);
+            assertEquals(playerId, data.owner());
+            assertEquals(0, data.level());
+            assertEquals(0L, data.blocksPlaced());
+            assertEquals(IslandData.DEFAULT_MINION_SLOTS, data.minionSlots());
+            assertTrue(data.trustees().isEmpty());
+        }
+
+        @Test
+        void getOrCreateIslandData_isIdempotent() {
+            IslandData first = manager.getOrCreateIslandData(playerId);
+            IslandData second = manager.getOrCreateIslandData(playerId);
+            assertSame(first, second);
+        }
+
+        @Test
+        void getIslandLevel_freshPlayer_isZero() {
+            assertEquals(0, manager.getIslandLevel(playerId));
+        }
+
+        @Test
+        void setLevel_updatesIslandLevel() {
+            manager.setLevel(playerId, 7);
+            assertEquals(7, manager.getIslandLevel(playerId));
+        }
+
+        @Test
+        void setLevel_negative_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.setLevel(playerId, -1));
+        }
+
+        @Test
+        void levelFromXp_usesSqrtFormula() {
+            assertEquals(0, IslandManager.levelFromXp(0L));
+            assertEquals(1, IslandManager.levelFromXp(100L));
+            assertEquals(2, IslandManager.levelFromXp(400L));
+        }
+
+        @Test
+        void levelFromXp_negative_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> IslandManager.levelFromXp(-1L));
+        }
+
+        @Test
+        void addIslandXp_accumulatesAndDerivesLevel() {
+            assertEquals(100L, manager.addIslandXp(playerId, 100L));
+            assertEquals(400L, manager.addIslandXp(playerId, 300L));
+            assertEquals(400L, manager.getIslandXp(playerId));
+            assertEquals(2, manager.getIslandLevel(playerId));
+            assertEquals(2, manager.getIslandLevelFromXp(playerId));
+        }
+
+        @Test
+        void addIslandXp_negative_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.addIslandXp(playerId, -1L));
+        }
+
+        @Test
+        void getMinionSlots_freshPlayer_isDefault() {
+            assertEquals(IslandData.DEFAULT_MINION_SLOTS, manager.getMinionSlots(playerId));
+        }
+
+        @Test
+        void setMinionSlots_updatesValue() {
+            manager.setMinionSlots(playerId, 12);
+            assertEquals(12, manager.getMinionSlots(playerId));
+        }
+
+        @Test
+        void setMinionSlots_negative_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.setMinionSlots(playerId, -1));
+        }
+
+        @Test
+        void addTrustee_newTrustee_returnsTrue() {
+            UUID trustee = UUID.randomUUID();
+            assertTrue(manager.addTrustee(playerId, trustee));
+            assertTrue(manager.getIslandData(playerId).orElseThrow().trustees().contains(trustee));
+        }
+
+        @Test
+        void addTrustee_duplicate_returnsFalse() {
+            UUID trustee = UUID.randomUUID();
+            manager.addTrustee(playerId, trustee);
+            assertFalse(manager.addTrustee(playerId, trustee));
+        }
+
+        @Test
+        void removeTrustee_existing_returnsTrue() {
+            UUID trustee = UUID.randomUUID();
+            manager.addTrustee(playerId, trustee);
+            assertTrue(manager.removeTrustee(playerId, trustee));
+            assertFalse(manager.getIslandData(playerId).orElseThrow().trustees().contains(trustee));
+        }
+
+        @Test
+        void removeTrustee_noIsland_returnsFalse() {
+            assertFalse(manager.removeTrustee(playerId, UUID.randomUUID()));
+        }
+
+        @Test
+        void addBlocksPlaced_accumulates() {
+            manager.addBlocksPlaced(playerId, 10L);
+            manager.addBlocksPlaced(playerId, 5L);
+            assertEquals(15L, manager.getIslandData(playerId).orElseThrow().blocksPlaced());
+        }
+
+        @Test
+        void addBlocksPlaced_negative_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class, () -> manager.addBlocksPlaced(playerId, -1L));
+        }
+
+        @Test
+        void islandData_nullOwner_throwsNullPointer() {
+            assertThrows(NullPointerException.class, () -> manager.getOrCreateIslandData(null));
+        }
+
+        @Test
+        void getIslandBiome_freshPlayer_defaultsToPlains() {
+            assertEquals("PLAINS", manager.getIslandBiome(playerId));
+        }
+
+        @Test
+        void setIslandBiome_updatesValue() {
+            manager.setIslandBiome(playerId, "DESERT");
+            assertEquals("DESERT", manager.getIslandBiome(playerId));
+        }
+
+        @Test
+        void isIslandUnlocked_freshPlayer_isFalse() {
+            assertFalse(manager.isIslandUnlocked(playerId));
+        }
+
+        @Test
+        void setIslandUnlocked_updatesValue() {
+            manager.setIslandUnlocked(playerId, true);
+            assertTrue(manager.isIslandUnlocked(playerId));
+        }
+
+        @Test
+        void addVisitor_incrementsCount() {
+            manager.addVisitor(playerId);
+            manager.addVisitor(playerId);
+            assertEquals(2, manager.getVisitorCount(playerId));
+        }
+
+        @Test
+        void hasIsland_freshPlayer_isFalse() {
+            assertFalse(manager.hasIsland(playerId));
+        }
+    }
+
+    @Nested
+    class MinionManagerTests {
+
+        private MinionManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = MinionManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.clearMinions(playerId);
+        }
+
+        @Test
+        void getInstance_ReturnsSameInstance() {
+            assertSame(MinionManager.getInstance(), MinionManager.getInstance());
+        }
+
+        @Test
+        void placeMinion_ReturnsDataWithCorrectOwnerAndType() {
+            MinionData data = manager.placeMinion(playerId, MinionType.COBBLESTONE, MinionTier.TIER_1);
+            assertEquals(playerId, data.owner);
+            assertEquals(MinionType.COBBLESTONE, data.type);
+            assertEquals(MinionTier.TIER_1, data.getTier());
+            assertNotNull(data.id);
+        }
+
+        @Test
+        void placeMinion_AppearsInGetMinions() {
+            MinionData data = manager.placeMinion(playerId, MinionType.WHEAT, MinionTier.TIER_1);
+            List<UUID> minions = manager.getMinions(playerId);
+            assertEquals(1, minions.size());
+            assertEquals(data.id, minions.get(0));
+        }
+
+        @Test
+        void placeMinion_MultipleMinionsTrackedInOrder() {
+            MinionData first  = manager.placeMinion(playerId, MinionType.WHEAT, MinionTier.TIER_1);
+            MinionData second = manager.placeMinion(playerId, MinionType.COAL, MinionTier.TIER_2);
+            List<UUID> minions = manager.getMinions(playerId);
+            assertEquals(2, minions.size());
+            assertEquals(first.id, minions.get(0));
+            assertEquals(second.id, minions.get(1));
+        }
+
+        @Test
+        void placeMinion_ThrowsWhenSlotCapReached() {
+            manager.setMaxSlots(playerId, MinionManager.BASE_SLOTS);
+            for (int i = 0; i < MinionManager.BASE_SLOTS; i++) {
+                manager.placeMinion(playerId, MinionType.COBBLESTONE, MinionTier.TIER_1);
+            }
+            assertThrows(IllegalStateException.class,
+                    () -> manager.placeMinion(playerId, MinionType.WHEAT, MinionTier.TIER_1));
+        }
+
+        @Test
+        void removeMinion_ReturnsTrueAndRemovesFromGetMinions() {
+            MinionData data = manager.placeMinion(playerId, MinionType.WHEAT, MinionTier.TIER_1);
+            assertTrue(manager.removeMinion(data.id));
+            assertTrue(manager.getMinions(playerId).isEmpty());
+            assertNull(manager.getMinion(data.id));
+        }
+
+        @Test
+        void removeMinion_ReturnsFalseForUnknownId() {
+            assertFalse(manager.removeMinion(UUID.randomUUID()));
+        }
+
+        @Test
+        void getMinions_EmptyForFreshPlayer() {
+            assertTrue(manager.getMinions(playerId).isEmpty());
+        }
+
+        @Test
+        void clearMinions_RemovesAllMinionsAndReturnsCount() {
+            manager.placeMinion(playerId, MinionType.WHEAT, MinionTier.TIER_1);
+            manager.placeMinion(playerId, MinionType.COBBLESTONE, MinionTier.TIER_1);
+            int removed = manager.clearMinions(playerId);
+            assertEquals(2, removed);
+            assertTrue(manager.getMinions(playerId).isEmpty());
+        }
+
+        @Test
+        void clearMinions_ReturnsZeroForFreshPlayer() {
+            assertEquals(0, manager.clearMinions(playerId));
+        }
+
+        @Test
+        void setMaxSlots_ThrowsWhenBelowBaseSlots() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.setMaxSlots(playerId, MinionManager.BASE_SLOTS - 1));
+        }
+
+        @Test
+        void setMaxSlots_AllowsPlacingUpToNewCap() {
+            int cap = MinionManager.BASE_SLOTS + 2;
+            manager.setMaxSlots(playerId, cap);
+            assertEquals(cap, manager.getMaxSlots(playerId));
+            for (int i = 0; i < cap; i++) {
+                manager.placeMinion(playerId, MinionType.WHEAT, MinionTier.TIER_1);
+            }
+            assertEquals(cap, manager.getMinions(playerId).size());
+        }
+    }
+
+    @Nested
+    class PetManagerTests {
+
+        private PetManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = PetManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.reset(playerId);
+        }
+
+        @Test
+        void addPet_storesThePet() {
+            PetManager.Pet pet = manager.addPet(playerId, PetManager.PetType.ENDER_DRAGON, Rarity.LEGENDARY);
+            assertNotNull(pet);
+            assertEquals(PetManager.PetType.ENDER_DRAGON, pet.type);
+            assertEquals(Rarity.LEGENDARY, pet.rarity);
+            List<PetManager.Pet> pets = manager.getPets(playerId);
+            assertEquals(1, pets.size());
+            assertSame(pet, pets.get(0));
+        }
+
+        @Test
+        void addPet_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.addPet(null, PetManager.PetType.CHICKEN, Rarity.COMMON));
+        }
+
+        @Test
+        void getPets_freshPlayer_returnsEmptyList() {
+            assertTrue(manager.getPets(playerId).isEmpty());
+        }
+
+        @Test
+        void removePet_existingPet_returnsTrueAndRemoves() {
+            PetManager.Pet pet = manager.addPet(playerId, PetManager.PetType.CHICKEN, Rarity.COMMON);
+            assertTrue(manager.removePet(playerId, pet.id));
+            assertTrue(manager.getPets(playerId).isEmpty());
+        }
+
+        @Test
+        void removePet_unknownPet_returnsFalse() {
+            assertFalse(manager.removePet(playerId, UUID.randomUUID()));
+        }
+
+        @Test
+        void equipPet_ownedPet_becomesActive() {
+            PetManager.Pet pet = manager.addPet(playerId, PetManager.PetType.WOLF, Rarity.EPIC);
+            assertTrue(manager.equipPet(playerId, pet.id));
+            assertEquals(pet.id, manager.getActivePetId(playerId));
+            assertSame(pet, manager.getActivePet(playerId));
+        }
+
+        @Test
+        void equipPet_unownedPet_returnsFalse() {
+            assertFalse(manager.equipPet(playerId, UUID.randomUUID()));
+        }
+
+        @Test
+        void unequipPet_afterEquip_returnsTrueAndClears() {
+            PetManager.Pet pet = manager.addPet(playerId, PetManager.PetType.WOLF, Rarity.EPIC);
+            manager.equipPet(playerId, pet.id);
+            assertTrue(manager.unequipPet(playerId));
+            assertNull(manager.getActivePetId(playerId));
+        }
+
+        @Test
+        void unequipPet_noActivePet_returnsFalse() {
+            assertFalse(manager.unequipPet(playerId));
+        }
+
+        @Test
+        void removePet_equippedPet_alsoUnequips() {
+            PetManager.Pet pet = manager.addPet(playerId, PetManager.PetType.WOLF, Rarity.EPIC);
+            manager.equipPet(playerId, pet.id);
+            assertTrue(manager.removePet(playerId, pet.id));
+            assertNull(manager.getActivePetId(playerId));
+        }
+
+        @Test
+        void addExperience_accumulates_andReturnsTotal() {
+            manager.addExperience(playerId, PetManager.PetType.CHICKEN, 60L);
+            long total = manager.addExperience(playerId, PetManager.PetType.CHICKEN, 40L);
+            assertEquals(100L, total);
+            assertEquals(100L, manager.getExperience(playerId, PetManager.PetType.CHICKEN));
+        }
+
+        @Test
+        void addExperience_negative_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addExperience(playerId, PetManager.PetType.CHICKEN, -1L));
+        }
+
+        @Test
+        void getLevel_freshPlayer_isLevelOne() {
+            assertEquals(1, manager.getLevel(playerId, PetManager.PetType.CHICKEN));
+        }
+
+        @Test
+        void getLevel_atFirstThreshold_isLevelTwo() {
+            manager.addExperience(playerId, PetManager.PetType.CHICKEN, 100L);
+            assertEquals(2, manager.getLevel(playerId, PetManager.PetType.CHICKEN));
+        }
+
+        @Test
+        void addPetXp_noActivePet_returnsMinusOne() {
+            assertEquals(-1L, manager.addPetXp(playerId, 50L));
+        }
+
+        @Test
+        void addPetXp_activePet_accumulatesAndTracksLevel() {
+            PetManager.Pet pet = manager.addPet(playerId, PetManager.PetType.CHICKEN, Rarity.COMMON);
+            manager.equipPet(playerId, pet.id);
+            assertEquals(100L, manager.addPetXp(playerId, 100L));
+            assertEquals(100L, manager.getPetXp(playerId));
+            assertEquals(2, manager.getPetLevel(playerId));
+        }
+
+        @Test
+        void reset_removesPlayerData() {
+            manager.addPet(playerId, PetManager.PetType.CHICKEN, Rarity.COMMON);
+            assertTrue(manager.reset(playerId));
+            assertTrue(manager.getPets(playerId).isEmpty());
+        }
+
+        @Test
+        void reset_unknownPlayer_returnsFalse() {
+            assertFalse(manager.reset(UUID.randomUUID()));
+        }
+    }
+
+    @Nested
+    class ReforgeManagerTests {
+
+        private ReforgeManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = ReforgeManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.clearReforge(playerId);
+            manager.clearSlotReforges(playerId);
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(ReforgeManager.getInstance(), ReforgeManager.getInstance());
+        }
+
+        @Test
+        void testGetAllReforges_includesEveryReforgeType() {
+            assertTrue(ReforgeType.values().length > 1);
+            assertEquals(ReforgeType.NONE, ReforgeType.values()[0]);
+            assertEquals(ReforgeType.SUPERIOR, ReforgeType.fromName("Superior"));
+        }
+
+        @Test
+        void getReforge_freshPlayer_defaultsToNone() {
+            assertEquals(ReforgeType.NONE, manager.getReforge(playerId));
+        }
+
+        @Test
+        void setReforge_thenGetReforge_returnsSetValue() {
+            manager.setReforge(playerId, ReforgeType.SHARP);
+            assertEquals(ReforgeType.SHARP, manager.getReforge(playerId));
+        }
+
+        @Test
+        void clearReforge_resetsToNone() {
+            manager.setReforge(playerId, ReforgeType.PERFECT);
+            manager.clearReforge(playerId);
+            assertEquals(ReforgeType.NONE, manager.getReforge(playerId));
+        }
+
+        @Test
+        void getAllReforges_reflectsSetReforge() {
+            manager.setReforge(playerId, ReforgeType.ANCIENT);
+            assertEquals(ReforgeType.ANCIENT, manager.getAllReforges().get(playerId));
+        }
+
+        @Test
+        void getAllReforges_isUnmodifiable() {
+            assertThrows(UnsupportedOperationException.class,
+                    () -> manager.getAllReforges().put(playerId, ReforgeType.SHARP));
+        }
+
+        @Test
+        void getReforge_rejectsNullPlayerId() {
+            assertThrows(NullPointerException.class, () -> manager.getReforge(null));
+        }
+
+        @Test
+        void setReforge_rejectsNullReforge() {
+            assertThrows(NullPointerException.class, () -> manager.setReforge(playerId, null));
+        }
+
+        @Test
+        void getSlotReforge_freshSlot_defaultsToNone() {
+            assertEquals(ReforgeType.NONE, manager.getSlotReforge(playerId, "weapon"));
+        }
+
+        @Test
+        void setSlotReforge_thenGetSlotReforge_returnsSetValue() {
+            manager.setSlotReforge(playerId, "weapon", ReforgeType.LEGENDARY);
+            assertEquals(ReforgeType.LEGENDARY, manager.getSlotReforge(playerId, "weapon"));
+        }
+
+        @Test
+        void setSlotReforge_none_clearsSlot() {
+            manager.setSlotReforge(playerId, "weapon", ReforgeType.LEGENDARY);
+            manager.setSlotReforge(playerId, "weapon", ReforgeType.NONE);
+            assertEquals(ReforgeType.NONE, manager.getSlotReforge(playerId, "weapon"));
+        }
+
+        @Test
+        void clearSlotReforges_removesAllSlots() {
+            manager.setSlotReforge(playerId, "weapon", ReforgeType.LEGENDARY);
+            manager.setSlotReforge(playerId, "helmet", ReforgeType.GENTLE);
+            manager.clearSlotReforges(playerId);
+            assertEquals(ReforgeType.NONE, manager.getSlotReforge(playerId, "weapon"));
+            assertEquals(ReforgeType.NONE, manager.getSlotReforge(playerId, "helmet"));
+        }
+
+        @Test
+        void applyStone_setsResolvedReforge() {
+            ReforgeType applied = manager.applyStone(playerId, ReforgeStone.SHARP);
+            assertEquals(ReforgeType.SHARP, applied);
+            assertEquals(ReforgeType.SHARP, manager.getReforge(playerId));
+        }
+
+        @Test
+        void applyStone_toSlot_setsResolvedSlotReforge() {
+            ReforgeType applied = manager.applyStone(playerId, "weapon", ReforgeStone.PERFECT);
+            assertEquals(ReforgeType.PERFECT, applied);
+            assertEquals(ReforgeType.PERFECT, manager.getSlotReforge(playerId, "weapon"));
+        }
+
+        @Test
+        void getReforgeCost_increasesWithRarity() {
+            assertEquals(250, ReforgeManager.getReforgeCost(Rarity.COMMON));
+            assertEquals(1000, ReforgeManager.getReforgeCost(Rarity.RARE));
+            assertTrue(ReforgeManager.getReforgeCost(Rarity.COMMON)
+                    < ReforgeManager.getReforgeCost(Rarity.MYTHIC));
+        }
+    }
+
+    @Nested
+    class SackManagerTests {
+
+        private SackManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = SackManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.reset(playerId);
+        }
+
+        @Test
+        void getSackContents_freshPlayer_returnsEmptyMap() {
+            assertTrue(manager.getSackContents(playerId, SackType.MINING).isEmpty());
+        }
+
+        @Test
+        void getItemCount_freshPlayer_returnsZero() {
+            assertEquals(0, manager.getItemCount(playerId, SackType.MINING, "COBBLESTONE"));
+        }
+
+        @Test
+        void getTotalItemCount_freshPlayer_returnsZero() {
+            assertEquals(0, manager.getTotalItemCount(playerId, "COBBLESTONE"));
+        }
+
+        @Test
+        void addItem_storesItemAndReturnsZeroOverflow() {
+            int overflow = manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 100);
+            assertEquals(0, overflow);
+            assertEquals(100, manager.getItemCount(playerId, SackType.MINING, "COBBLESTONE"));
+        }
+
+        @Test
+        void addItem_accumulates() {
+            manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 50);
+            manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 30);
+            assertEquals(80, manager.getItemCount(playerId, SackType.MINING, "COBBLESTONE"));
+        }
+
+        @Test
+        void addItem_exceedsCapacity_returnsOverflow() {
+            int cap = CapacityTier.SMALL.getCapacity();
+            int overflow = manager.addItem(playerId, SackType.MINING, "COBBLESTONE", cap + 500);
+            assertEquals(500, overflow);
+            assertEquals(cap, manager.getItemCount(playerId, SackType.MINING, "COBBLESTONE"));
+        }
+
+        @Test
+        void addItem_alreadyFull_returnsFullAmountAsOverflow() {
+            int cap = CapacityTier.SMALL.getCapacity();
+            manager.addItem(playerId, SackType.MINING, "COBBLESTONE", cap);
+            int overflow = manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 10);
+            assertEquals(10, overflow);
+            assertEquals(cap, manager.getItemCount(playerId, SackType.MINING, "COBBLESTONE"));
+        }
+
+        @Test
+        void addItem_zeroAmount_returnsZeroAndChangesNothing() {
+            int overflow = manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 0);
+            assertEquals(0, overflow);
+            assertEquals(0, manager.getItemCount(playerId, SackType.MINING, "COBBLESTONE"));
+        }
+
+        @Test
+        void addItem_negativeAmount_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addItem(playerId, SackType.MINING, "COBBLESTONE", -1));
+        }
+
+        @Test
+        void addItem_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.addItem(null, SackType.MINING, "COBBLESTONE", 1));
+        }
+
+        @Test
+        void addItem_nullSackType_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.addItem(playerId, null, "COBBLESTONE", 1));
+        }
+
+        @Test
+        void addItem_nullItemId_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.addItem(playerId, SackType.MINING, null, 1));
+        }
+
+        @Test
+        void removeItem_reducesCount() {
+            manager.addItem(playerId, SackType.FARMING, "WHEAT", 100);
+            int remaining = manager.removeItem(playerId, SackType.FARMING, "WHEAT", 40);
+            assertEquals(60, remaining);
+            assertEquals(60, manager.getItemCount(playerId, SackType.FARMING, "WHEAT"));
+        }
+
+        @Test
+        void removeItem_moreThanPresent_clampsToZero() {
+            manager.addItem(playerId, SackType.FARMING, "WHEAT", 10);
+            int remaining = manager.removeItem(playerId, SackType.FARMING, "WHEAT", 50);
+            assertEquals(0, remaining);
+            assertEquals(0, manager.getItemCount(playerId, SackType.FARMING, "WHEAT"));
+        }
+
+        @Test
+        void removeItem_fromEmptySack_returnsZero() {
+            assertEquals(0, manager.removeItem(playerId, SackType.FARMING, "WHEAT", 10));
+        }
+
+        @Test
+        void removeItem_negativeAmount_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.removeItem(playerId, SackType.FARMING, "WHEAT", -1));
+        }
+
+        @Test
+        void removeItem_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.removeItem(null, SackType.FARMING, "WHEAT", 1));
+        }
+
+        @Test
+        void getSackContents_reflectsAddedItems() {
+            manager.addItem(playerId, SackType.COMBAT, "BONE", 200);
+            manager.addItem(playerId, SackType.COMBAT, "ROTTEN_FLESH", 50);
+            Map<String, Integer> contents = manager.getSackContents(playerId, SackType.COMBAT);
+            assertEquals(200, contents.get("BONE"));
+            assertEquals(50, contents.get("ROTTEN_FLESH"));
+        }
+
+        @Test
+        void getSackContents_isUnmodifiable() {
+            manager.addItem(playerId, SackType.COMBAT, "BONE", 10);
+            Map<String, Integer> contents = manager.getSackContents(playerId, SackType.COMBAT);
+            assertThrows(UnsupportedOperationException.class, () -> contents.put("BONE", 999));
+        }
+
+        @Test
+        void getSackContents_differentSackTypesAreIsolated() {
+            manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 100);
+            assertTrue(manager.getSackContents(playerId, SackType.FARMING).isEmpty());
+        }
+
+        @Test
+        void getTotalItemCount_aggregatesAcrossSackTypes() {
+            manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 100);
+            manager.addItem(playerId, SackType.COMBAT, "COBBLESTONE", 200);
+            assertEquals(300, manager.getTotalItemCount(playerId, "COBBLESTONE"));
+        }
+
+        @Test
+        void getTotalItemCount_onlyCountsRequestedItem() {
+            manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 100);
+            manager.addItem(playerId, SackType.MINING, "STONE", 50);
+            assertEquals(100, manager.getTotalItemCount(playerId, "COBBLESTONE"));
+        }
+
+        @Test
+        void getTotalItemCount_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.getTotalItemCount(null, "COBBLESTONE"));
+        }
+
+        @Test
+        void getTotalItemCount_nullItemId_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.getTotalItemCount(playerId, null));
+        }
+
+        @Test
+        void getItemTier_unregisteredItem_returnsDefaultTier() {
+            assertEquals(SackManager.DEFAULT_TIER, manager.getItemTier("UNKNOWN_ITEM"));
+        }
+
+        @Test
+        void setItemTier_changesEffectiveCapacity() {
+            manager.setItemTier("DIAMOND", CapacityTier.JUMBO);
+            assertEquals(CapacityTier.JUMBO, manager.getItemTier("DIAMOND"));
+            int overflow = manager.addItem(playerId, SackType.MINING, "DIAMOND", CapacityTier.JUMBO.getCapacity());
+            assertEquals(0, overflow);
+            assertEquals(CapacityTier.JUMBO.getCapacity(), manager.getItemCount(playerId, SackType.MINING, "DIAMOND"));
+        }
+
+        @Test
+        void setItemTier_nullItemId_throwsNullPointer() {
+            assertThrows(NullPointerException.class, () -> manager.setItemTier(null, CapacityTier.LARGE));
+        }
+
+        @Test
+        void setItemTier_nullTier_throwsNullPointer() {
+            assertThrows(NullPointerException.class, () -> manager.setItemTier("DIAMOND", null));
+        }
+
+        @Test
+        void capacityTier_valuesAreOrdered() {
+            assertTrue(CapacityTier.SMALL.getCapacity() < CapacityTier.MEDIUM.getCapacity());
+            assertTrue(CapacityTier.MEDIUM.getCapacity() < CapacityTier.LARGE.getCapacity());
+            assertTrue(CapacityTier.LARGE.getCapacity() < CapacityTier.JUMBO.getCapacity());
+        }
+
+        @Test
+        void reset_existingPlayer_returnsTrueAndClearsData() {
+            manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 10);
+            assertTrue(manager.reset(playerId));
+            assertEquals(0, manager.getItemCount(playerId, SackType.MINING, "COBBLESTONE"));
+        }
+
+        @Test
+        void reset_unknownPlayer_returnsFalse() {
+            assertFalse(manager.reset(UUID.randomUUID()));
+        }
+
+        @Test
+        void reset_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class, () -> manager.reset(null));
+        }
+
+        @Test
+        void multiplePlayersAreIsolated() {
+            UUID other = UUID.randomUUID();
+            try {
+                manager.addItem(playerId, SackType.MINING, "COBBLESTONE", 100);
+                assertEquals(0, manager.getItemCount(other, SackType.MINING, "COBBLESTONE"));
+            } finally {
+                manager.reset(other);
+            }
+        }
+    }
+
+    @Nested
+    class SkillManagerTests {
+
+        private SkillManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = SkillManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @Test
+        void addXp_doubleVariant_accumulatesAndConvertsToLong() {
+            manager.addXp(playerId, Skill.MINING, 50.9);
+            assertEquals(50L, manager.getXP(playerId, Skill.MINING));
+        }
+
+        @Test
+        void addXP_returnsNewTotal() {
+            manager.addXP(playerId, Skill.COMBAT, 100L);
+            long total = manager.addXP(playerId, Skill.COMBAT, 200L);
+            assertEquals(300L, total);
+        }
+
+        @Test
+        void addXP_negativeAmount_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addXP(playerId, Skill.FARMING, -1L));
+        }
+
+        @Test
+        void addXP_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.addXP(null, Skill.FARMING, 50L));
+        }
+
+        @Test
+        void getXP_unknownPlayer_returnsZero() {
+            assertEquals(0L, manager.getXP(UUID.randomUUID(), Skill.FISHING));
+        }
+
+        @Test
+        void getLevel_freshPlayer_isZero() {
+            assertEquals(0, manager.getLevel(playerId, Skill.FORAGING));
+        }
+
+        @Test
+        void getLevel_afterEnoughXp_incrementsCorrectly() {
+            manager.addXP(playerId, Skill.FARMING, 175L);
+            assertEquals(2, manager.getLevel(playerId, Skill.FARMING));
+        }
+
+        @Test
+        void setSkillXP_overwritesPreviousValue() {
+            manager.addXP(playerId, Skill.ALCHEMY, 1000L);
+            manager.setSkillXP(playerId, "alchemy", 50L);
+            assertEquals(50L, manager.getSkillXP(playerId, "alchemy"));
+            assertEquals(1, manager.getSkillLevel(playerId, "alchemy"));
+        }
+
+        @Test
+        void setSkillXP_unknownSkill_isNoOp() {
+            assertDoesNotThrow(() -> manager.setSkillXP(playerId, "notaskill", 999L));
+            assertEquals(0L, manager.getSkillXP(playerId, "notaskill"));
+        }
+
+        @Test
+        void getSkillXPs_returnsOnlyEnteredSkills() {
+            manager.addXP(playerId, Skill.TAMING, 50L);
+            manager.addXP(playerId, Skill.ENCHANTING, 175L);
+            Map<String, Long> xps = manager.getSkillXPs(playerId);
+            assertEquals(2, xps.size());
+            assertEquals(50L, xps.get("taming"));
+            assertEquals(175L, xps.get("enchanting"));
+        }
+
+        @Test
+        void getSkillXPs_unknownPlayer_returnsEmptyMap() {
+            assertTrue(manager.getSkillXPs(UUID.randomUUID()).isEmpty());
+        }
+
+        @Test
+        void xpToNextLevel_atLevelZero_equalsFirstThreshold() {
+            long next = manager.xpToNextLevel(playerId, Skill.FARMING);
+            assertEquals(SkillManager.xpForLevel("farming", 1), next);
+        }
+
+        @Test
+        void xpToNextLevel_atMaxLevel_returnsZero() {
+            manager.addXP(playerId, Skill.FARMING, Long.MAX_VALUE / 2);
+            assertEquals(0L, manager.xpToNextLevel(playerId, Skill.FARMING));
+        }
+
+        @Test
+        void getSkillsStats_containsAllSkillNames() {
+            String stats = manager.getSkillsStats(playerId);
+            assertTrue(stats.startsWith("Skills Stats:"));
+            for (Skill skill : Skill.values()) {
+                assertTrue(stats.contains(skill.displayName));
+            }
+        }
+
+        @Test
+        void addCollection_andGetCollectionCount_accumulates() {
+            manager.addCollection(playerId, "wheat", 10);
+            manager.addCollection(playerId, "wheat", 5);
+            assertEquals(15, manager.getCollectionCount(playerId, "wheat"));
+        }
+
+        @Test
+        void getCollectionCount_unknownCollection_returnsZero() {
+            assertEquals(0, manager.getCollectionCount(playerId, "diamond"));
+        }
+
+        @Test
+        void getAllSkillXP_includesRegisteredPlayer() {
+            manager.addXP(playerId, Skill.COMBAT, 300L);
+            Map<UUID, Long> all = manager.getAllSkillXP("combat");
+            assertTrue(all.containsKey(playerId));
+            assertEquals(300L, all.get(playerId));
+        }
+
+        @Test
+        void xpForLevel_level0_returnsZero() {
+            assertEquals(0L, SkillManager.xpForLevel("farming", 0));
+        }
+
+        @Test
+        void xpForLevel_unknownSkill_returnsMinusOne() {
+            assertEquals(-1L, SkillManager.xpForLevel("notaskill", 1));
+        }
+
+        @Test
+        void xpForLevel_beyondMax_returnsMinusOne() {
+            int max = SkillManager.maxLevel("farming");
+            assertEquals(-1L, SkillManager.xpForLevel("farming", max + 1));
+        }
+    }
+
+    @Nested
+    class WardrobeManagerTests {
+
+        private WardrobeManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = WardrobeManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.reset(playerId);
+        }
+
+        private static ItemStack[] emptyArmor() {
+            return new ItemStack[4];
+        }
+
+        @Test
+        void slotInitiallyEmpty_getOutfitReturnsNull() {
+            assertNull(manager.getOutfit(playerId, WardrobeSlot.SLOT_1));
+        }
+
+        @Test
+        void slotInitiallyEmpty_getOutfitByNameReturnsNull() {
+            assertNull(manager.getOutfit(playerId, "nonexistent"));
+        }
+
+        @Test
+        void saveOutfit_byName_returnsTrueAndPersists() {
+            assertTrue(manager.saveOutfit(playerId, "diamond", emptyArmor()));
+            assertNotNull(manager.getOutfit(playerId, "diamond"));
+        }
+
+        @Test
+        void saveOutfit_bySlot_returnsTrueWhenUnlocked() {
+            assertTrue(manager.saveOutfit(playerId, WardrobeSlot.SLOT_1, emptyArmor()));
+            assertNotNull(manager.getOutfit(playerId, WardrobeSlot.SLOT_1));
+        }
+
+        @Test
+        void getOutfit_returnsCopy_mutationDoesNotAffectStore() {
+            manager.saveOutfit(playerId, "set", emptyArmor());
+            ItemStack[] copy = manager.getOutfit(playerId, "set");
+            copy[0] = null;
+            assertNotNull(manager.getOutfit(playerId, "set"));
+        }
+
+        @Test
+        void deleteOutfit_byName_removesAndReturnsTrue() {
+            manager.saveOutfit(playerId, "diamond", emptyArmor());
+            assertTrue(manager.deleteOutfit(playerId, "diamond"));
+            assertNull(manager.getOutfit(playerId, "diamond"));
+        }
+
+        @Test
+        void deleteOutfit_bySlot_removesAndReturnsTrue() {
+            manager.saveOutfit(playerId, WardrobeSlot.SLOT_1, emptyArmor());
+            assertTrue(manager.deleteOutfit(playerId, WardrobeSlot.SLOT_1));
+            assertNull(manager.getOutfit(playerId, WardrobeSlot.SLOT_1));
+        }
+
+        @Test
+        void deleteOutfit_nonexistent_returnsFalse() {
+            assertFalse(manager.deleteOutfit(playerId, "ghost"));
+        }
+
+        @Test
+        void deleteOutfit_noOutfitsAtAll_returnsFalse() {
+            UUID freshPlayer = UUID.randomUUID();
+            assertFalse(manager.deleteOutfit(freshPlayer, "anything"));
+        }
+
+        @Test
+        void getOutfitNames_emptyBeforeSave() {
+            assertTrue(manager.getOutfitNames(playerId).isEmpty());
+        }
+
+        @Test
+        void getOutfitNames_containsSavedName() {
+            manager.saveOutfit(playerId, "gold", emptyArmor());
+            assertTrue(manager.getOutfitNames(playerId).contains("gold"));
+        }
+
+        @Test
+        void getOutfitNames_isUnmodifiable() {
+            manager.saveOutfit(playerId, "iron", emptyArmor());
+            assertThrows(UnsupportedOperationException.class,
+                    () -> manager.getOutfitNames(playerId).add("hacked"));
+        }
+
+        @Test
+        void getOutfitNames_decreasesAfterDelete() {
+            manager.saveOutfit(playerId, "a", emptyArmor());
+            manager.saveOutfit(playerId, "b", emptyArmor());
+            manager.deleteOutfit(playerId, "a");
+            assertFalse(manager.getOutfitNames(playerId).contains("a"));
+            assertTrue(manager.getOutfitNames(playerId).contains("b"));
+        }
+
+        @Test
+        void saveOutfit_atCapWithNewName_returnsFalse() {
+            for (int i = 0; i < WardrobeManager.MAX_OUTFITS; i++) {
+                assertTrue(manager.saveOutfit(playerId, "outfit" + i, emptyArmor()));
+            }
+            assertFalse(manager.saveOutfit(playerId, "overflow", emptyArmor()));
+        }
+
+        @Test
+        void saveOutfit_atCapWithExistingName_overwritesAndReturnsTrue() {
+            for (int i = 0; i < WardrobeManager.MAX_OUTFITS; i++) {
+                manager.saveOutfit(playerId, "outfit" + i, emptyArmor());
+            }
+            assertTrue(manager.saveOutfit(playerId, "outfit0", emptyArmor()));
+        }
+
+        @Test
+        void getActiveArmorSet_initiallyNull() {
+            assertNull(manager.getActiveArmorSet(playerId));
+        }
+
+        @Test
+        void setActiveArmorSet_persistsAndIsReadBack() {
+            manager.saveOutfit(playerId, "netherite", emptyArmor());
+            manager.setActiveArmorSet(playerId, "netherite");
+            assertEquals("netherite", manager.getActiveArmorSet(playerId));
+        }
+
+        @Test
+        void clearActiveArmorSet_returnsTrueWhenActive() {
+            manager.saveOutfit(playerId, "netherite", emptyArmor());
+            manager.setActiveArmorSet(playerId, "netherite");
+            assertTrue(manager.clearActiveArmorSet(playerId));
+            assertNull(manager.getActiveArmorSet(playerId));
+        }
+
+        @Test
+        void clearActiveArmorSet_returnsFalseWhenNoneActive() {
+            assertFalse(manager.clearActiveArmorSet(playerId));
+        }
+
+        @Test
+        void defaultSlots_alwaysUnlocked() {
+            for (WardrobeSlot slot : WardrobeSlot.values()) {
+                if (slot.getSlotNumber() <= WardrobeManager.DEFAULT_UNLOCKED_SLOTS) {
+                    assertTrue(manager.isSlotUnlocked(playerId, slot));
+                }
+            }
+        }
+
+        @Test
+        void nonDefaultSlots_lockedUntilUnlocked() {
+            for (WardrobeSlot slot : WardrobeSlot.values()) {
+                if (slot.getSlotNumber() > WardrobeManager.DEFAULT_UNLOCKED_SLOTS) {
+                    assertFalse(manager.isSlotUnlocked(playerId, slot));
+                }
+            }
+        }
+
+        @Test
+        void unlockSlot_defaultSlot_returnsFalseAlreadyAvailable() {
+            assertFalse(manager.unlockSlot(playerId, WardrobeSlot.SLOT_1));
+        }
+
+        @Test
+        void unlockSlot_nonDefault_returnsTrueThenFalse() {
+            assertTrue(manager.unlockSlot(playerId, WardrobeSlot.SLOT_3));
+            assertFalse(manager.unlockSlot(playerId, WardrobeSlot.SLOT_3));
+            assertTrue(manager.isSlotUnlocked(playerId, WardrobeSlot.SLOT_3));
+        }
+
+        @Test
+        void wardrobeSlot_slotNumbers_match() {
+            for (WardrobeSlot slot : WardrobeSlot.values()) {
+                assertTrue(slot.getSlotNumber() >= 1 && slot.getSlotNumber() <= 9);
+            }
+        }
+
+        @Test
+        void wardrobeSlot_pageAndSet_bounds() {
+            for (WardrobeSlot slot : WardrobeSlot.values()) {
+                assertTrue(slot.getPage() >= 1 && slot.getPage() <= 3);
+                assertTrue(slot.getSet() >= 1 && slot.getSet() <= 3);
+            }
+        }
+
+        @Test
+        void remove_playerWithData_returnsTrue() {
+            manager.saveOutfit(playerId, "set", emptyArmor());
+            assertTrue(manager.remove(playerId));
+            assertNull(manager.getOutfit(playerId, "set"));
+        }
+
+        @Test
+        void remove_playerWithNoData_returnsFalse() {
+            UUID fresh = UUID.randomUUID();
+            assertFalse(manager.remove(fresh));
+        }
+
+        @Test
+        void reset_clearsAllDataForPlayer() {
+            manager.saveOutfit(playerId, "set", emptyArmor());
+            manager.setActiveArmorSet(playerId, "set");
+            manager.reset(playerId);
+            assertNull(manager.getOutfit(playerId, "set"));
+            assertNull(manager.getActiveArmorSet(playerId));
+            assertTrue(manager.getOutfitNames(playerId).isEmpty());
+        }
+
+        @Test
+        void clear_removesAllPlayersData() {
+            UUID other = UUID.randomUUID();
+            manager.saveOutfit(playerId, "s1", emptyArmor());
+            manager.saveOutfit(other, "s2", emptyArmor());
+            manager.clear();
+            assertNull(manager.getOutfit(playerId, "s1"));
+            assertNull(manager.getOutfit(other, "s2"));
+            manager.reset(other);
+        }
+
+        @Test
+        void saveOutfit_nullPlayerId_throwsNPE() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.saveOutfit(null, "x", emptyArmor()));
+        }
+
+        @Test
+        void saveOutfit_nullName_throwsNPE() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.saveOutfit(playerId, (String) null, emptyArmor()));
+        }
+
+        @Test
+        void getOutfit_nullPlayerId_throwsNPE() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.getOutfit(null, "x"));
+        }
+
+        @Test
+        void deleteOutfit_nullPlayerId_throwsNPE() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.deleteOutfit(null, "x"));
+        }
+
+        @Test
+        void getOutfitNames_nullPlayerId_throwsNPE() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.getOutfitNames(null));
+        }
+
+        @Test
+        void isSlotUnlocked_nullSlot_throwsNPE() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.isSlotUnlocked(playerId, null));
+        }
+
+        @Test
+        void unlockSlot_nullSlot_throwsNPE() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.unlockSlot(playerId, null));
         }
     }
 }
