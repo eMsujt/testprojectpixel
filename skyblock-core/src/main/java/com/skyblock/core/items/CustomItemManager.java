@@ -30,12 +30,12 @@ public final class CustomItemManager {
         ZOMBIE_SWORD      ("ZOMBIE_SWORD",       "Zombie Sword",            ItemType.WEAPON,    Rarity.RARE,      Material.IRON_SWORD),
         THICK_SWORD       ("THICK_SWORD",        "Thick Sword",             ItemType.WEAPON,    Rarity.UNCOMMON,  Material.IRON_SWORD),
         JERRY_SWORD       ("JERRY_SWORD",        "Jerry Sword",             ItemType.WEAPON,    Rarity.COMMON,    Material.WOODEN_SWORD),
-        ASPECT_OF_THE_DRAGONS("ASPECT_OF_THE_DRAGONS", "Aspect of the Dragons", ItemType.WEAPON, Rarity.LEGENDARY, Material.GOLDEN_SWORD),
+        ASPECT_OF_THE_DRAGONS("ASPECT_OF_THE_DRAGON", "Aspect of the Dragons", ItemType.WEAPON, Rarity.LEGENDARY, Material.GOLDEN_SWORD),
         LIVID_DAGGER      ("LIVID_DAGGER",       "Livid Dagger",            ItemType.WEAPON,    Rarity.LEGENDARY, Material.IRON_SWORD),
 
         // --- Tools ---
-        TREECAPITATOR     ("TREECAPITATOR",      "Treecapitator",           ItemType.TOOL,      Rarity.RARE,      Material.GOLDEN_AXE),
-        PROMISING_SHOVEL  ("PROMISING_SHOVEL",   "Promising Shovel",        ItemType.TOOL,      Rarity.COMMON,    Material.GOLDEN_SHOVEL),
+        TREECAPITATOR     ("TREECAPITATOR_AXE",   "Treecapitator",           ItemType.TOOL,      Rarity.RARE,      Material.GOLDEN_AXE),
+        PROMISING_SHOVEL  ("PROMISING_SPADE",     "Promising Shovel",        ItemType.TOOL,      Rarity.COMMON,    Material.GOLDEN_SHOVEL),
         JUNGLE_AXE        ("JUNGLE_AXE",         "Jungle Axe",              ItemType.TOOL,      Rarity.UNCOMMON,  Material.WOODEN_AXE),
 
         // --- Armor ---

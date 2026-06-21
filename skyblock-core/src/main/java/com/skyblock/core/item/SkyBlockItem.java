@@ -3,6 +3,7 @@ package com.skyblock.core.item;
 import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.HeadTextures;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.ItemData;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,10 +30,17 @@ public class SkyBlockItem {
         ItemBuilder builder = texture != null
                 ? new ItemBuilder(Material.PLAYER_HEAD).skullTexture(texture)
                 : new ItemBuilder(material);
-        this.itemStack = builder
-                .displayName(color + ChatColor.BOLD.toString() + displayName)
-                .addLore(color + ChatColor.BOLD.toString() + rarity.getDisplayName().toUpperCase())
-                .build();
+        // Use the real Hypixel display name + lore for this id when available (full 1:1 tooltip),
+        // otherwise a generic name with a rarity footer.
+        if (ItemData.has(id)) {
+            String realName = ItemData.name(id);
+            builder.displayName(realName != null ? realName : color + ChatColor.BOLD.toString() + displayName)
+                   .lore(ItemData.lore(id));
+        } else {
+            builder.displayName(color + ChatColor.BOLD.toString() + displayName)
+                   .addLore(color + ChatColor.BOLD.toString() + rarity.getDisplayName().toUpperCase());
+        }
+        this.itemStack = builder.build();
     }
 
     public SkyBlockItem(String id, String displayName, Rarity rarity, ItemStack base) {
