@@ -62,6 +62,7 @@ import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.manager.SackManager.CapacityTier;
 import com.skyblock.core.manager.SackManager.SackType;
 import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.manager.SkillsManager;
 import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.TrophyFishManager.TrophyTier;
 import com.skyblock.core.manager.WardrobeManager;
@@ -5762,6 +5763,184 @@ class ManagersTest {
         @Test
         void getTopFish_noData_returnsNull() {
             assertNull(manager.getTopFish(playerId));
+        }
+    }
+
+    @Nested
+    class SkillsManagerTests {
+
+        private SkillsManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = SkillsManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        // -------------------------------------------------------------------------
+        // Singleton
+        // -------------------------------------------------------------------------
+
+        @Test
+        void getInstance_ReturnsSameInstance() {
+            assertSame(SkillsManager.getInstance(), SkillsManager.getInstance());
+        }
+
+        @Test
+        void getInstance_ReturnsNonNull() {
+            assertNotNull(SkillsManager.getInstance());
+        }
+
+        // -------------------------------------------------------------------------
+        // Static XP threshold arrays
+        // -------------------------------------------------------------------------
+
+        @Test
+        void xpThresholds_standardHas60Entries() {
+            assertEquals(60, SkillsManager.XP_THRESHOLDS.length);
+        }
+
+        @Test
+        void xpThresholds_firstEntryIs50() {
+            assertEquals(50L, SkillsManager.XP_THRESHOLDS[0]);
+        }
+
+        @Test
+        void xpThresholdsCumulative_firstEntryIs50() {
+            assertEquals(50L, SkillsManager.XP_THRESHOLDS_CUMULATIVE[0]);
+        }
+
+        @Test
+        void xpThresholds_carpentryHas50Entries() {
+            assertEquals(50, SkillsManager.XP_THRESHOLDS_CARPENTRY.length);
+        }
+
+        @Test
+        void xpThresholds_dungeoneering_firstEntryIs50() {
+            assertEquals(50L, SkillsManager.XP_THRESHOLDS_DUNGEONEERING[0]);
+        }
+
+        @Test
+        void xpThresholds_runecraftingHas25Entries() {
+            assertEquals(25, SkillsManager.XP_THRESHOLDS_RUNECRAFTING.length);
+        }
+
+        @Test
+        void skillXpTable_containsAllStandardSkills() {
+            assertTrue(SkillsManager.SKILL_XP_TABLE.containsKey("farming"));
+            assertTrue(SkillsManager.SKILL_XP_TABLE.containsKey("mining"));
+            assertTrue(SkillsManager.SKILL_XP_TABLE.containsKey("combat"));
+            assertTrue(SkillsManager.SKILL_XP_TABLE.containsKey("fishing"));
+        }
+
+        // -------------------------------------------------------------------------
+        // Static utility methods
+        // -------------------------------------------------------------------------
+
+        @Test
+        void levelForXp_farmingLevel1At50Xp() {
+            assertEquals(1, SkillsManager.levelForXp("farming", 50L));
+        }
+
+        @Test
+        void levelForXp_farmingLevel2At175Xp() {
+            assertEquals(2, SkillsManager.levelForXp("farming", 175L));
+        }
+
+        @Test
+        void levelForXp_zeroXpReturnsLevel0() {
+            assertEquals(0, SkillsManager.levelForXp("farming", 0L));
+        }
+
+        @Test
+        void xpForLevel_farming_level1Returns50() {
+            assertEquals(50L, SkillsManager.xpForLevel("farming", 1));
+        }
+
+        @Test
+        void maxLevel_farmingIs60() {
+            assertEquals(60, SkillsManager.maxLevel("farming"));
+        }
+
+        @Test
+        void maxLevel_runecraftingIs25() {
+            assertEquals(25, SkillsManager.maxLevel("runecrafting"));
+        }
+
+        // -------------------------------------------------------------------------
+        // Delegation to SkillManager
+        // -------------------------------------------------------------------------
+
+        @Test
+        void getSkillXP_freshPlayerReturnsZero() {
+            assertEquals(0L, manager.getSkillXP(playerId, "farming"));
+        }
+
+        @Test
+        void getSkillLevel_freshPlayerReturnsZero() {
+            assertEquals(0, manager.getSkillLevel(playerId, "farming"));
+        }
+
+        @Test
+        void addSkillXP_accumulatesAndGetSkillXPReflectsTotal() {
+            manager.addSkillXP(playerId, "farming", 50L);
+            manager.addSkillXP(playerId, "farming", 25L);
+            assertEquals(75L, manager.getSkillXP(playerId, "farming"));
+        }
+
+        @Test
+        void addSkillXP_enoughXpForLevel1_getSkillLevelReturnsOne() {
+            manager.addSkillXP(playerId, "farming", 50L);
+            assertEquals(1, manager.getSkillLevel(playerId, "farming"));
+        }
+
+        @Test
+        void setSkillXP_overwritesPreviousValue() {
+            manager.addSkillXP(playerId, "mining", 1000L);
+            manager.setSkillXP(playerId, "mining", 50L);
+            assertEquals(50L, manager.getSkillXP(playerId, "mining"));
+        }
+
+        @Test
+        void addXP_accumulatesAndGetXPReflectsTotal() {
+            manager.addXP(playerId, Skill.COMBAT, 100L);
+            manager.addXP(playerId, Skill.COMBAT, 150L);
+            assertEquals(250L, manager.getXP(playerId, Skill.COMBAT));
+        }
+
+        @Test
+        void getLevel_afterEnoughXp_returnsCorrectLevel() {
+            manager.addXP(playerId, Skill.FISHING, 175L);
+            assertEquals(2, manager.getLevel(playerId, Skill.FISHING));
+        }
+
+        // -------------------------------------------------------------------------
+        // addXp (double variant — rounds and grants level-up rewards)
+        // -------------------------------------------------------------------------
+
+        @Test
+        void addXp_doubleIsRoundedToNearestLong() {
+            manager.addXp(playerId, Skill.MINING, 49.4);
+            assertEquals(49L, manager.getXP(playerId, Skill.MINING));
+        }
+
+        @Test
+        void addXp_doubleRoundsUp() {
+            manager.addXp(playerId, Skill.MINING, 49.6);
+            assertEquals(50L, manager.getXP(playerId, Skill.MINING));
+        }
+
+        @Test
+        void addXp_crossingLevelThreshold_getsGrantedLevelUp() {
+            manager.addXp(playerId, Skill.FARMING, 50.0);
+            assertEquals(1, manager.getLevel(playerId, Skill.FARMING));
+        }
+
+        @Test
+        void addXp_returnsNewTotalXP() {
+            long total = manager.addXp(playerId, Skill.FORAGING, 100.0);
+            assertEquals(100L, total);
         }
     }
 }
