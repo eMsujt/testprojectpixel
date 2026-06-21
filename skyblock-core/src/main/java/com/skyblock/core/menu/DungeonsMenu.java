@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public final class DungeonsMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE = "§5Catacombs";
+    private static final String TITLE = "§bDungeons";
     private static final int ROWS = 6;
     private static final int CLOSE_SLOT = 49;
 
