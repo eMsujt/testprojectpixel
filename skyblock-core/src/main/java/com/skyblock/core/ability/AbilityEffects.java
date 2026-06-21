@@ -1,6 +1,8 @@
 package com.skyblock.core.ability;
 
+import com.skyblock.core.SkyBlockCore;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -8,6 +10,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.RayTraceResult;
@@ -31,7 +35,7 @@ public final class AbilityEffects {
         if (abilityName == null) return false;
         return switch (abilityName.toLowerCase(Locale.ROOT)) {
             case "instant transmission", "ether transmission", "dragon rage", "giant's slam",
-                 "weird transmission", "instant heal", "implosion", "leap" -> true;
+                 "weird transmission", "instant heal", "implosion", "leap", "showtime" -> true;
             default -> false;
         };
     }
@@ -53,8 +57,23 @@ public final class AbilityEffects {
             case "instant heal" -> instantHeal(player, ability);
             case "implosion" -> implosion(player, parseDamage(ability));
             case "leap" -> leap(player, parseDamage(ability));
+            case "showtime" -> showtime(player, parseDamage(ability));
             default -> { }
         }
+    }
+
+    /** Shared key tagging an ability projectile with the damage it deals on impact. */
+    public static NamespacedKey projectileDamageKey() {
+        return new NamespacedKey(SkyBlockCore.getInstance(), "ability_proj_dmg");
+    }
+
+    /** Launches a projectile that bursts for AoE damage on impact (handled by the hit listener). */
+    private static void showtime(Player player, double damage) {
+        Snowball ball = player.launchProjectile(Snowball.class);
+        ball.setShooter(player);
+        ball.getPersistentDataContainer().set(projectileDamageKey(), PersistentDataType.DOUBLE, damage);
+        ball.setVelocity(player.getEyeLocation().getDirection().multiply(1.6));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SNOWBALL_THROW, 1f, 0.8f);
     }
 
     /** Launches the player up and forward, then damages nearby monsters (Leaping Sword). */
