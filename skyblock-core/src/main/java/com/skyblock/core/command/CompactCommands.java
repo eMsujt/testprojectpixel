@@ -37,6 +37,7 @@ import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.SacksMenu;
 import com.skyblock.core.menu.SkillsMenu;
 import com.skyblock.core.menu.SlayerMenu;
+import com.skyblock.core.menu.TrophyFishingMenu;
 import com.skyblock.core.menu.WardrobeMenu;
 import com.skyblock.core.menu.WarpMenu;
 import com.skyblock.core.minion.gui.MinionsMenu;
@@ -3263,6 +3264,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new GardenMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /trophyfish (simple menu opener)
+    // =========================================================================
+
+    public static final class TrophyFishCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new TrophyFishingMenu(player).open(player);
         }
 
         @Override
