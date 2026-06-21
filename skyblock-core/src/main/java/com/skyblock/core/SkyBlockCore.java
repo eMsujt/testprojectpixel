@@ -857,6 +857,7 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.EquipmentListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.AbilityListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ItemAbilityListener.getInstance(), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.ProjectileAbilityListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.MinionListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.InventoryListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.mob.MobLootListener(com.skyblock.core.mob.MobLootManager.getInstance()), this);
