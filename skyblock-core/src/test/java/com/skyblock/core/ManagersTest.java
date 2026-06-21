@@ -31,7 +31,13 @@ import com.skyblock.core.manager.AuctionManager.Listing;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.manager.BankManager.BankTier;
 import com.skyblock.core.manager.BankManager.BankType;
+import com.skyblock.core.manager.BankingManager;
 import com.skyblock.core.manager.CollectionManager;
+import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.manager.FairySoulManager;
+import com.skyblock.core.manager.FairySoulManager.FairyIsland;
+import com.skyblock.core.manager.RunecraftingManager;
+import com.skyblock.core.manager.RunecraftingManager.RuneType;
 import com.skyblock.core.manager.DungeonsManager;
 import com.skyblock.core.manager.EssenceManager;
 import com.skyblock.core.manager.EssenceManager.EssenceItem;
@@ -2352,6 +2358,19 @@ class ManagersTest {
         @Test
         void reset_unknownPlayer_returnsFalse() {
             assertFalse(manager.reset(UUID.randomUUID()));
+        }
+
+        @Test
+        void addExperience_zeroAmount_keepsRunningTotal() {
+            manager.addExperience(playerId, SlayerType.ZOMBIE, 40L);
+            assertEquals(40L, manager.addExperience(playerId, SlayerType.ZOMBIE, 0L));
+        }
+
+        @Test
+        void getKillCount_afterReset_returnsZero() {
+            manager.addKill(playerId, SlayerType.SPIDER);
+            manager.reset(playerId);
+            assertEquals(0, manager.getKillCount(playerId, SlayerType.SPIDER));
         }
 
         // --- setBossActive / isBossActive ---
@@ -5303,6 +5322,401 @@ class ManagersTest {
         void unlockSlot_nullSlot_throwsNPE() {
             assertThrows(NullPointerException.class,
                     () -> manager.unlockSlot(playerId, null));
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(WardrobeManager.getInstance(), WardrobeManager.getInstance());
+        }
+
+        @Test
+        void getOutfit_returnsArmorArrayOfLengthFour() {
+            manager.saveOutfit(playerId, "set", emptyArmor());
+            assertEquals(4, manager.getOutfit(playerId, "set").length);
+        }
+    }
+
+    @Nested
+    class FairySoulManagerTests {
+
+        private FairySoulManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = FairySoulManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.resetPlayer(playerId);
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(FairySoulManager.getInstance(), FairySoulManager.getInstance());
+        }
+
+        @Test
+        void getTotalSouls_matchesMaxSouls() {
+            assertEquals(FairySoulManager.MAX_SOULS, manager.getTotalSouls());
+        }
+
+        @Test
+        void collectSoul_freshSoul_returnsTrue() {
+            assertTrue(manager.collectSoul(playerId, FairyIsland.HUB, 1));
+        }
+
+        @Test
+        void collectSoul_sameSoulTwice_returnsFalseSecondTime() {
+            manager.collectSoul(playerId, FairyIsland.HUB, 1);
+            assertFalse(manager.collectSoul(playerId, FairyIsland.HUB, 1));
+        }
+
+        @Test
+        void collectSoul_indexBelowOne_throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.collectSoul(playerId, FairyIsland.HUB, 0));
+        }
+
+        @Test
+        void collectSoul_indexAboveSoulCount_throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.collectSoul(playerId, FairyIsland.HUB, FairyIsland.HUB.getSoulCount() + 1));
+        }
+
+        @Test
+        void collectSoul_nullPlayer_throwsNPE() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.collectSoul(null, FairyIsland.HUB, 1));
+        }
+
+        @Test
+        void hasCollected_afterCollect_returnsTrue() {
+            manager.collectSoul(playerId, FairyIsland.HUB, 2);
+            assertTrue(manager.hasCollected(playerId, FairyIsland.HUB, 2));
+        }
+
+        @Test
+        void hasCollected_uncollected_returnsFalse() {
+            assertFalse(manager.hasCollected(playerId, FairyIsland.HUB, 2));
+        }
+
+        @Test
+        void getFoundCount_freshPlayer_returnsZero() {
+            assertEquals(0, manager.getFoundCount(playerId));
+        }
+
+        @Test
+        void getFoundCount_countsDistinctSouls() {
+            manager.collectSoul(playerId, FairyIsland.HUB, 1);
+            manager.collectSoul(playerId, FairyIsland.THE_END, 1);
+            assertEquals(2, manager.getFoundCount(playerId));
+        }
+
+        @Test
+        void getFoundCount_perIsland_onlyCountsThatIsland() {
+            manager.collectSoul(playerId, FairyIsland.HUB, 1);
+            manager.collectSoul(playerId, FairyIsland.HUB, 2);
+            manager.collectSoul(playerId, FairyIsland.THE_END, 1);
+            assertEquals(2, manager.getFoundCount(playerId, FairyIsland.HUB));
+            assertEquals(1, manager.getFoundCount(playerId, FairyIsland.THE_END));
+        }
+
+        @Test
+        void getStatBonuses_freshPlayer_isEmpty() {
+            assertTrue(manager.getStatBonuses(playerId).isEmpty());
+        }
+
+        @Test
+        void getStatBonuses_fiveSouls_grantsFirstRewardStat() {
+            for (int i = 1; i <= FairySoulManager.SOULS_PER_REWARD; i++) {
+                manager.collectSoul(playerId, FairyIsland.HUB, i);
+            }
+            assertEquals(3.0, manager.getStatBonuses(playerId).get(Stat.HEALTH), 0.001);
+        }
+
+        @Test
+        void getStatBonuses_isUnmodifiable() {
+            for (int i = 1; i <= FairySoulManager.SOULS_PER_REWARD; i++) {
+                manager.collectSoul(playerId, FairyIsland.HUB, i);
+            }
+            assertThrows(UnsupportedOperationException.class,
+                    () -> manager.getStatBonuses(playerId).put(Stat.HEALTH, 99.0));
+        }
+
+        @Test
+        void getHealthBonus_belowFirstMilestone_isZero() {
+            manager.collectSoul(playerId, FairyIsland.HUB, 1);
+            assertEquals(0.0, manager.getHealthBonus(playerId), 0.001);
+        }
+
+        @Test
+        void getHealthBonus_fiveSouls_isThree() {
+            for (int i = 1; i <= FairySoulManager.SOULS_PER_REWARD; i++) {
+                manager.collectSoul(playerId, FairyIsland.HUB, i);
+            }
+            assertEquals(3.0, manager.getHealthBonus(playerId), 0.001);
+        }
+
+        @Test
+        void resetPlayer_withData_returnsTrueAndClears() {
+            manager.collectSoul(playerId, FairyIsland.HUB, 1);
+            assertTrue(manager.resetPlayer(playerId));
+            assertEquals(0, manager.getFoundCount(playerId));
+        }
+
+        @Test
+        void resetPlayer_noData_returnsFalse() {
+            assertFalse(manager.resetPlayer(playerId));
+        }
+
+        @Test
+        void resetPlayer_doesNotAffectOtherPlayers() {
+            UUID other = UUID.randomUUID();
+            try {
+                manager.collectSoul(other, FairyIsland.HUB, 1);
+                manager.resetPlayer(playerId);
+                assertEquals(1, manager.getFoundCount(other));
+            } finally {
+                manager.resetPlayer(other);
+            }
+        }
+    }
+
+    @Nested
+    class BankingManagerTests {
+
+        private BankingManager manager;
+        private EconomyManager economy;
+        private BankManager bank;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = BankingManager.getInstance();
+            economy = EconomyManager.getInstance();
+            bank = BankManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            economy.clear(playerId);
+            bank.clear();
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(BankingManager.getInstance(), BankingManager.getInstance());
+        }
+
+        @Test
+        void deposit_movesCoinsFromPurseToBank() {
+            economy.setPurse(playerId, 1000L);
+            assertTrue(manager.deposit(playerId, 400L));
+            assertEquals(600L, manager.getPurseBalance(playerId));
+            assertEquals(400.0, manager.getBankBalance(playerId));
+        }
+
+        @Test
+        void deposit_insufficientPurse_returnsFalseAndLeavesBalances() {
+            economy.setPurse(playerId, 100L);
+            assertFalse(manager.deposit(playerId, 500L));
+            assertEquals(100L, manager.getPurseBalance(playerId));
+            assertEquals(0.0, manager.getBankBalance(playerId));
+        }
+
+        @Test
+        void deposit_nonPositiveAmount_throws() {
+            assertThrows(IllegalArgumentException.class, () -> manager.deposit(playerId, 0L));
+            assertThrows(IllegalArgumentException.class, () -> manager.deposit(playerId, -5L));
+        }
+
+        @Test
+        void deposit_nullPlayer_throwsNPE() {
+            assertThrows(NullPointerException.class, () -> manager.deposit(null, 100L));
+        }
+
+        @Test
+        void withdraw_movesCoinsFromBankToPurse() {
+            economy.setPurse(playerId, 1000L);
+            manager.deposit(playerId, 800L);
+            assertTrue(manager.withdraw(playerId, 300L));
+            assertEquals(500L, manager.getPurseBalance(playerId));
+            assertEquals(500.0, manager.getBankBalance(playerId));
+        }
+
+        @Test
+        void withdraw_insufficientBank_returnsFalseAndLeavesBalances() {
+            economy.setPurse(playerId, 200L);
+            manager.deposit(playerId, 100L);
+            assertFalse(manager.withdraw(playerId, 500L));
+            assertEquals(100L, manager.getPurseBalance(playerId));
+            assertEquals(100.0, manager.getBankBalance(playerId));
+        }
+
+        @Test
+        void withdraw_nonPositiveAmount_throws() {
+            assertThrows(IllegalArgumentException.class, () -> manager.withdraw(playerId, 0L));
+            assertThrows(IllegalArgumentException.class, () -> manager.withdraw(playerId, -1L));
+        }
+
+        @Test
+        void depositThenWithdraw_conservesTotalCoins() {
+            economy.setPurse(playerId, 1000L);
+            manager.deposit(playerId, 600L);
+            manager.withdraw(playerId, 250L);
+            assertEquals(650L, manager.getPurseBalance(playerId));
+            assertEquals(350.0, manager.getBankBalance(playerId));
+        }
+
+        @Test
+        void freshPlayer_purseAndBankAreZero() {
+            assertEquals(0L, manager.getPurseBalance(playerId));
+            assertEquals(0.0, manager.getBankBalance(playerId));
+        }
+    }
+
+    @Nested
+    class RunecraftingManagerTests {
+
+        private RunecraftingManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = RunecraftingManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.reset(playerId);
+        }
+
+        @Test
+        void getInstance_returnsSameInstance() {
+            assertSame(RunecraftingManager.getInstance(), RunecraftingManager.getInstance());
+        }
+
+        @Test
+        void addSkillXp_accumulatesAndReturnsTotal() {
+            manager.addSkillXp(playerId, 30L);
+            assertEquals(80L, manager.addSkillXp(playerId, 50L));
+            assertEquals(80L, manager.getSkillXp(playerId));
+        }
+
+        @Test
+        void addSkillXp_negative_throws() {
+            assertThrows(IllegalArgumentException.class, () -> manager.addSkillXp(playerId, -1L));
+        }
+
+        @Test
+        void getSkillLevel_freshPlayer_isZero() {
+            assertEquals(0, manager.getSkillLevel(playerId));
+        }
+
+        @Test
+        void getSkillLevel_atFirstThreshold_isOne() {
+            manager.addSkillXp(playerId, RunecraftingManager.XP_TABLE[0]);
+            assertEquals(1, manager.getSkillLevel(playerId));
+        }
+
+        @Test
+        void getSkillLevel_justBelowFirstThreshold_isZero() {
+            manager.addSkillXp(playerId, RunecraftingManager.XP_TABLE[0] - 1);
+            assertEquals(0, manager.getSkillLevel(playerId));
+        }
+
+        @Test
+        void getSkillLevel_hugeXp_capsAtMaxSkillLevel() {
+            manager.addSkillXp(playerId, Long.MAX_VALUE);
+            assertEquals(RunecraftingManager.MAX_SKILL_LEVEL, manager.getSkillLevel(playerId));
+        }
+
+        @Test
+        void addRuneXp_accumulatesPerType() {
+            manager.addRuneXp(playerId, RuneType.FIERY, 200L);
+            assertEquals(500L, manager.addRuneXp(playerId, RuneType.FIERY, 300L));
+            assertEquals(0L, manager.getRuneXp(playerId, RuneType.ICY));
+        }
+
+        @Test
+        void addRuneXp_negative_throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addRuneXp(playerId, RuneType.FIERY, -1L));
+        }
+
+        @Test
+        void getRuneLevel_freshPlayer_isZero() {
+            assertEquals(0, manager.getRuneLevel(playerId, RuneType.FIERY));
+        }
+
+        @Test
+        void getRuneLevel_firstThreshold_isOne() {
+            manager.addRuneXp(playerId, RuneType.FIERY, 500L);
+            assertEquals(1, manager.getRuneLevel(playerId, RuneType.FIERY));
+        }
+
+        @Test
+        void getRuneLevel_thirdThreshold_isMaxLevel() {
+            // L1=500, L2=+1000=1500, L3=+1500=3000
+            manager.addRuneXp(playerId, RuneType.FIERY, 3000L);
+            assertEquals(RuneType.FIERY.getMaxLevel(), manager.getRuneLevel(playerId, RuneType.FIERY));
+        }
+
+        @Test
+        void addRune_accumulatesCount() {
+            manager.addRune(playerId, RuneType.GOLDEN, 2);
+            assertEquals(5, manager.addRune(playerId, RuneType.GOLDEN, 3));
+            assertEquals(5, manager.getRuneCount(playerId, RuneType.GOLDEN));
+        }
+
+        @Test
+        void addRune_negative_throws() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addRune(playerId, RuneType.GOLDEN, -1));
+        }
+
+        @Test
+        void getRuneCount_freshPlayer_isZero() {
+            assertEquals(0, manager.getRuneCount(playerId, RuneType.GOLDEN));
+        }
+
+        @Test
+        void getAllRuneCounts_freshPlayer_isEmpty() {
+            assertTrue(manager.getAllRuneCounts(playerId).isEmpty());
+        }
+
+        @Test
+        void getAllRuneCounts_isUnmodifiable() {
+            manager.addRune(playerId, RuneType.GOLDEN, 1);
+            assertThrows(UnsupportedOperationException.class,
+                    () -> manager.getAllRuneCounts(playerId).put(RuneType.ICY, 1));
+        }
+
+        @Test
+        void getAllRuneCounts_reflectsAddedRunes() {
+            manager.addRune(playerId, RuneType.GOLDEN, 4);
+            assertEquals(4, manager.getAllRuneCounts(playerId).get(RuneType.GOLDEN));
+        }
+
+        @Test
+        void reset_withData_returnsTrueAndClearsAll() {
+            manager.addSkillXp(playerId, 100L);
+            manager.addRuneXp(playerId, RuneType.FIERY, 100L);
+            manager.addRune(playerId, RuneType.FIERY, 1);
+            assertTrue(manager.reset(playerId));
+            assertEquals(0L, manager.getSkillXp(playerId));
+            assertEquals(0L, manager.getRuneXp(playerId, RuneType.FIERY));
+            assertEquals(0, manager.getRuneCount(playerId, RuneType.FIERY));
+        }
+
+        @Test
+        void reset_noData_returnsFalse() {
+            assertFalse(manager.reset(playerId));
         }
     }
 }
