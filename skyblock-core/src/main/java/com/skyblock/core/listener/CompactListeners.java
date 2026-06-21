@@ -6,7 +6,7 @@ import com.skyblock.core.manager.ScoreboardManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stats.StatsManager;
+import com.skyblock.core.manager.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Ageable;
@@ -75,7 +75,7 @@ public final class CompactListeners implements Listener {
     );
 
     private final SkillManager skillManager = SkillManager.getInstance();
-    private final com.skyblock.core.manager.StatsManager statsManager = com.skyblock.core.manager.StatsManager.getInstance();
+    private final StatsManager statsManager = StatsManager.getInstance();
     private final PetManager petManager = PetManager.getInstance();
 
     private CompactListeners() {}
@@ -166,7 +166,7 @@ public final class CompactListeners implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        StatsManager.getInstance().getStats(player.getUniqueId());
+        StatsManager.getInstance().getAll(player.getUniqueId());
         ScoreboardManager.getInstance().initPlayer(player);
     }
 
