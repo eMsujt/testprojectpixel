@@ -37,7 +37,7 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
     private int selectedTab;
 
     public BazaarMenu(Player player) {
-        super(player, "§aBazaar", 6);
+        super(player, "§6Bazaar", 6);
         this.selectedTab = 0;
     }
 
@@ -99,7 +99,7 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
         List<BazaarProduct> result = new ArrayList<>();
         String cat = CATEGORIES[selectedTab];
         for (BazaarProduct p : BazaarProduct.values()) {
-            if ("ALL".equals(cat) || cat.equals(p.getCategory())) {
+            if ("ALL".equals(cat) || cat.equals(p.getCategory().name())) {
                 result.add(p);
             }
         }
