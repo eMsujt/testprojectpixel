@@ -207,6 +207,18 @@ public class ItemBuilder {
         return this;
     }
 
+    /**
+     * Sets a {@link Material#PLAYER_HEAD} to show the given player's own skin — used for the
+     * "Your SkyBlock Profile" head, exactly like Hypixel.
+     */
+    public ItemBuilder skullOwner(org.bukkit.OfflinePlayer owner) {
+        ItemMeta meta = item.getItemMeta();
+        if (!(meta instanceof SkullMeta skullMeta)) return this;
+        skullMeta.setOwningPlayer(owner);
+        item.setItemMeta(skullMeta);
+        return this;
+    }
+
     /** Dyes leather armor the given {@link Color}; no-op for non-leather items. */
     public ItemBuilder leatherColor(Color color) {
         ItemMeta meta = item.getItemMeta();
