@@ -87,6 +87,26 @@ public final class FishingManager {
         WINTER
     }
 
+    /** Locations across SkyBlock where fishing can be done, each with its own creature pool. */
+    public enum FishingZone {
+        HUB("Hub"),
+        BARN("The Barn"),
+        MUSHROOM_DESERT("Mushroom Desert"),
+        SPIDERS_DEN("Spider's Den"),
+        CRIMSON_ISLE("Crimson Isle"),
+        CRYSTAL_HOLLOWS("Crystal Hollows"),
+        BACKWATER_BAYOU("Backwater Bayou"),
+        JERRYS_WORKSHOP("Jerry's Workshop"),
+        PRIVATE_ISLAND("Private Island");
+
+        /** Human-readable display name. */
+        public final String displayName;
+
+        FishingZone(String displayName) {
+            this.displayName = displayName;
+        }
+    }
+
     /** Sea creatures that can be summoned while fishing, grouped by the {@link WaterType} they spawn in. */
     public enum SeaCreature {
         // --- Water (all 17 Hypixel sea creatures, ascending minLevel) ---
