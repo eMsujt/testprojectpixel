@@ -3,7 +3,6 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.manager.ForgeManager.ForgeJob;
 import com.skyblock.core.manager.ForgeManager.ForgeRecipe;
-import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -69,10 +68,8 @@ public final class ForgeMenu extends Menu {
         buildForgeSlots(id);
         buildRecipeList();
 
-        inventory.setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .lore("§7Close the forge.")
-                .build());
+        inventory.setItem(CLOSE_SLOT, SkyblockUtils.buildItem(Material.BARRIER,
+                "§cClose", "§7Close the forge."));
         clickHandlers.put(CLOSE_SLOT, e -> p.closeInventory());
 
         p.openInventory(inventory);
@@ -86,27 +83,24 @@ public final class ForgeMenu extends Menu {
         for (int i = 0; i < FORGE_SLOTS.length; i++) {
             int displaySlot = FORGE_SLOTS[i];
             if (i >= slotCount) {
-                inventory.setItem(displaySlot, new ItemBuilder(Material.IRON_BARS)
-                        .displayName("§7Locked Forge Slot")
-                        .lore("§7Unlock more slots via Heart", "§7of the Mountain.")
-                        .build());
+                inventory.setItem(displaySlot, SkyblockUtils.buildItem(Material.IRON_BARS,
+                        "§7Locked Forge Slot",
+                        "§7Unlock more slots via Heart", "§7of the Mountain."));
                 continue;
             }
 
             ForgeJob job = manager.getJob(id, i);
             if (job == null) {
-                inventory.setItem(displaySlot, new ItemBuilder(Material.FURNACE)
-                        .displayName("§aForge Slot " + (i + 1))
-                        .lore("§7Empty.", "§7Use §e/forge start <recipe> §7to begin.")
-                        .build());
+                inventory.setItem(displaySlot, SkyblockUtils.buildItem(Material.FURNACE,
+                        "§aForge Slot " + (i + 1),
+                        "§7Empty.", "§7Use §e/forge start <recipe> §7to begin."));
                 continue;
             }
 
             if (job.isComplete(now)) {
-                inventory.setItem(displaySlot, new ItemBuilder(Material.ANVIL)
-                        .displayName("§a" + job.getRecipe().getDisplayName())
-                        .lore("§7Slot " + (i + 1), "§aReady to claim!", "", "§eClick to collect!")
-                        .build());
+                inventory.setItem(displaySlot, SkyblockUtils.buildItem(Material.ANVIL,
+                        "§a" + job.getRecipe().getDisplayName(),
+                        "§7Slot " + (i + 1), "§aReady to claim!", "", "§eClick to collect!"));
                 final int slotIdx = i;
                 clickHandlers.put(displaySlot, e -> {
                     try {
@@ -123,11 +117,10 @@ public final class ForgeMenu extends Menu {
             } else {
                 long elapsed = (now - job.getStartTimeMillis()) / 1000L;
                 long remaining = Math.max(0, job.getDurationSeconds() - elapsed);
-                inventory.setItem(displaySlot, new ItemBuilder(Material.BLAST_FURNACE)
-                        .displayName("§e" + job.getRecipe().getDisplayName())
-                        .lore("§7Slot " + (i + 1), "§7Forging...",
-                                "§7Time remaining: §e" + formatDuration((int) remaining))
-                        .build());
+                inventory.setItem(displaySlot, SkyblockUtils.buildItem(Material.BLAST_FURNACE,
+                        "§e" + job.getRecipe().getDisplayName(),
+                        "§7Slot " + (i + 1), "§7Forging...",
+                        "§7Time remaining: §e" + formatDuration((int) remaining)));
             }
         }
     }
@@ -144,10 +137,8 @@ public final class ForgeMenu extends Menu {
             for (Map.Entry<String, Integer> e : recipe.getIngredients().entrySet()) {
                 lore.add("§8 • §f" + e.getValue() + "x " + e.getKey());
             }
-            inventory.setItem(RECIPE_SLOTS[i], new ItemBuilder(Material.BOOK)
-                    .displayName("§6" + recipe.getDisplayName())
-                    .lore(lore)
-                    .build());
+            inventory.setItem(RECIPE_SLOTS[i], SkyblockUtils.createNamedItem(Material.BOOK,
+                    "§6" + recipe.getDisplayName(), lore));
         }
     }
 
