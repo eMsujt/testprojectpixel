@@ -13,6 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +30,8 @@ public final class AbilityEffects {
     public static boolean isImplemented(String abilityName) {
         if (abilityName == null) return false;
         return switch (abilityName.toLowerCase(Locale.ROOT)) {
-            case "instant transmission", "ether transmission", "dragon rage", "giant's slam" -> true;
+            case "instant transmission", "ether transmission", "dragon rage", "giant's slam",
+                 "weird transmission", "instant heal" -> true;
             default -> false;
         };
     }
@@ -45,8 +47,42 @@ public final class AbilityEffects {
                             false);
             case "dragon rage" -> dragonRage(player, parseDamage(ability));
             case "giant's slam" -> giantsSlam(player, parseDamage(ability));
+            case "weird transmission" ->
+                    teleport(player, clipForward(player, ability.magnitude > 0 ? ability.magnitude : 3),
+                            false);
+            case "instant heal" -> instantHeal(player, ability);
             default -> { }
         }
+    }
+
+    private static final Pattern HEAL_FLAT = Pattern.compile("Heal for ([0-9,]+)");
+    private static final Pattern PERCENT = Pattern.compile("([0-9]+)%");
+
+    /** Heals the player by the lore-stated flat amount plus its percent of max health. */
+    private static void instantHeal(Player player, LoreAbility ability) {
+        double maxHealth = player.getMaxHealth();
+        double heal = firstNumber(ability.lines, HEAL_FLAT, 0)
+                + maxHealth * (firstNumber(ability.lines, PERCENT, 0) / 100.0);
+        if (heal <= 0) {
+            heal = maxHealth * 0.2;
+        }
+        player.setHealth(Math.min(maxHealth, player.getHealth() + heal));
+        player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0),
+                8, 0.4, 0.4, 0.4, 0);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.6f, 1.6f);
+    }
+
+    private static double firstNumber(List<String> lines, Pattern pattern, double fallback) {
+        for (String line : lines) {
+            Matcher m = pattern.matcher(line);
+            if (m.find()) {
+                try {
+                    return Double.parseDouble(m.group(1).replace(",", ""));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return fallback;
     }
 
     // "...take 12,000 \n damage" (number and word split across lines) or "100,000 damage ...".
