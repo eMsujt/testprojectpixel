@@ -54,6 +54,13 @@ public final class PetsMenu extends AbstractSkyBlockMenu {
                 e -> e.setCancelled(true));
 
         List<PetData> petList = pets.getPets(id);
+        if (petList.isEmpty()) {
+            setItem(31, new ItemBuilder(Material.BARRIER)
+                    .displayName("§cNo Pets")
+                    .lore("§7You don't own any pets yet.")
+                    .build(),
+                    e -> e.setCancelled(true));
+        }
         for (int i = 0; i < petList.size() && i < PET_SLOTS.length; i++) {
             PetData pet = petList.get(i);
             List<String> lore = new ArrayList<>();
