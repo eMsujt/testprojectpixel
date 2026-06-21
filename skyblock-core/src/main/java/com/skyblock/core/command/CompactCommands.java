@@ -107,7 +107,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new IslandMenu(player.getUniqueId()).open(player);
+            new IslandMenu(player).open(player);
         }
 
         private void handleCreate(Player player) {
@@ -3214,29 +3214,6 @@ public final class CompactCommands {
     }
 
     // =========================================================================
-    // /pets (simple menu opener)
-    // =========================================================================
-
-    public static final class PetsCmd extends PlayerCommand {
-
-        @Override
-        protected void openMenu(Player player) {
-            new PetMenu(player).open(player);
-        }
-
-        @Override
-        protected boolean execute(Player player, Command command, String label, String[] args) {
-            openMenu(player);
-            return true;
-        }
-
-        @Override
-        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-            return List.of();
-        }
-    }
-
-    // =========================================================================
     // /island (simple menu opener)
     // =========================================================================
 
@@ -3244,7 +3221,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new IslandMenu(player.getUniqueId()).open(player);
+            new IslandMenu(player).open(player);
         }
 
         @Override
