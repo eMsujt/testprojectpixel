@@ -81,6 +81,14 @@ public final class EquipmentListener implements Listener {
         StatManager sm = StatManager.getInstance();
         sm.setEquipmentBonuses(player.getUniqueId(), totals);
         applyMaxHealth(player, sm);
+        applyWalkSpeed(player, sm);
+    }
+
+    /** Sets the player's walk speed from their Speed stat (100 Speed = vanilla 0.2). */
+    private void applyWalkSpeed(Player player, StatManager sm) {
+        double speed = sm.getStat(player.getUniqueId(), Stat.SPEED);
+        float walk = (float) Math.max(0.05, Math.min(1.0, 0.2 * (speed / 100.0)));
+        player.setWalkSpeed(walk);
     }
 
     private static void accumulate(Map<Stat, Double> totals, ItemStatManager ism, ItemStack item) {
