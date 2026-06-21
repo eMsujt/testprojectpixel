@@ -4,12 +4,12 @@ import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.manager.ForgeManager.ForgeJob;
 import com.skyblock.core.manager.ForgeManager.ForgeRecipe;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,13 +64,7 @@ public final class ForgeMenu extends Menu {
         inventory = Bukkit.createInventory(this, 54, getTitle());
 
         UUID id = playerId;
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                inventory.setItem(slot, pane);
-            }
-        }
+        SkyblockUtils.fillBorder(getRows(), inventory::setItem, Material.GRAY_STAINED_GLASS_PANE);
 
         buildForgeSlots(id);
         buildRecipeList();

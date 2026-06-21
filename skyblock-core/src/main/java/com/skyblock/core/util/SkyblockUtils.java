@@ -41,6 +41,15 @@ public final class SkyblockUtils {
     }
 
     /**
+     * Fills the border of an N-row (9-wide) inventory with a blank, named
+     * glass pane of {@code paneMaterial}. Convenience overload that builds the
+     * standard {@code "§r"}-named border pane so callers don't repeat it.
+     */
+    public static void fillBorder(int rows, BiConsumer<Integer, ItemStack> setter, Material paneMaterial) {
+        fillBorder(rows, setter, new ItemBuilder(paneMaterial).displayName("§r").build());
+    }
+
+    /**
      * Fills the border of an N-row (9-wide) inventory with {@code pane}.
      * Border = top row, bottom row, leftmost and rightmost column of middle rows.
      */

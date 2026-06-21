@@ -7,7 +7,6 @@ import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -45,9 +44,8 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     @Override
     protected void populate() {
         UUID playerId = player.getUniqueId();
-        ItemStack pane = new ItemBuilder(Material.RED_STAINED_GLASS_PANE).displayName("§r").build();
 
-        SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
+        SkyblockUtils.fillBorder(getRows(), this::setItem, Material.RED_STAINED_GLASS_PANE);
 
         SlayerManager manager = SlayerManager.getInstance();
 
