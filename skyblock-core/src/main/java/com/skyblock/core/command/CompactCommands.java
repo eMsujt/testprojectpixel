@@ -2103,7 +2103,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player p) {
-            new WardrobeMenu(p.getUniqueId()).open(p);
+            new WardrobeMenu(p).open(p);
         }
 
         @Override
@@ -3196,7 +3196,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new WardrobeMenu(player.getUniqueId()).open(player);
+            new WardrobeMenu(player).open(player);
         }
 
         @Override

@@ -77,7 +77,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new WardrobeMenu(player.getUniqueId()).open(player);
+                    new WardrobeMenu(player).open(player);
                 });
 
         setItem(14, new ItemBuilder(Material.CAT_SPAWN_EGG)

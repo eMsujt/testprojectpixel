@@ -65,7 +65,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(22, new ItemBuilder(Material.LEATHER_CHESTPLATE).displayName("§aWardrobe")
                 .lore("§7Manage your armor sets.").build(),
-                e -> { e.setCancelled(true); new WardrobeMenu(player.getUniqueId()).open(player); });
+                e -> { e.setCancelled(true); new WardrobeMenu(player).open(player); });
 
         setItem(23, new ItemBuilder(Material.ENDER_CHEST).displayName("§5Accessory Bag")
                 .lore("§7Manage your accessories.").build(),

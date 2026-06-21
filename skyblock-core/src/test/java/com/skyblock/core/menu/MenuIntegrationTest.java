@@ -498,6 +498,13 @@ class MenuIntegrationTest {
     class WardrobeMenuTests {
 
         private final UUID PLAYER = UUID.randomUUID();
+        private Player mockPlayer;
+
+        @BeforeEach
+        void setup() {
+            mockPlayer = mock(Player.class);
+            when(mockPlayer.getUniqueId()).thenReturn(PLAYER);
+        }
 
         @AfterEach
         void cleanup() {
@@ -506,19 +513,19 @@ class MenuIntegrationTest {
 
         @Test
         void title_isWardrobe() {
-            WardrobeMenu menu = new WardrobeMenu(PLAYER);
-            assertEquals("§eWardrobe", menu.getTitle());
+            WardrobeMenu menu = new WardrobeMenu(mockPlayer);
+            assertEquals("§6Wardrobe", menu.getTitle());
         }
 
         @Test
         void rows_isSix() {
-            WardrobeMenu menu = new WardrobeMenu(PLAYER);
+            WardrobeMenu menu = new WardrobeMenu(mockPlayer);
             assertEquals(6, menu.getRows());
         }
 
         @Test
         void constructor_doesNotThrow() {
-            assertDoesNotThrow(() -> new WardrobeMenu(PLAYER));
+            assertDoesNotThrow(() -> new WardrobeMenu(mockPlayer));
         }
 
         @Test
