@@ -72,7 +72,7 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
             double buyPrice  = manager.getDisplayBuyPrice(product);
             double sellPrice = manager.getDisplaySellPrice(product);
 
-            setItem(ORDER_SLOTS[i], new ItemBuilder(resolveMaterial(product))
+            setItem(ORDER_SLOTS[i], ItemBuilder.forItem(product.getItemId())
                     .displayName("§f" + product.getDisplayName())
                     .lore(
                         "§7Buy:  §6" + formatCoins(buyPrice, true),
@@ -104,14 +104,6 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
             }
         }
         return result;
-    }
-
-    private static Material resolveMaterial(BazaarProduct product) {
-        try {
-            return Material.valueOf(product.getItemId());
-        } catch (IllegalArgumentException e) {
-            return Material.PAPER;
-        }
     }
 
     private static String formatCoins(double coins, boolean isBuy) {
