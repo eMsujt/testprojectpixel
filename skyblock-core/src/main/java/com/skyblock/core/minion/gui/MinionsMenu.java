@@ -88,7 +88,11 @@ public class MinionsMenu extends Menu {
 
         for (int i = 0; i < minions.size() && i < INNER_SLOTS.length; i++) {
             MinionData data = minions.get(i);
-            setItem(INNER_SLOTS[i], new ItemBuilder(Material.DISPENSER)
+            String tex = com.skyblock.core.util.HeadTextures.minion(data.type.name());
+            ItemBuilder icon = tex != null
+                    ? new ItemBuilder(Material.PLAYER_HEAD).skullTexture(tex)
+                    : new ItemBuilder(Material.DISPENSER);
+            setItem(INNER_SLOTS[i], icon
                     .displayName("§a" + data.type.getDisplayName())
                     .lore(
                             "§7Category: §e" + categoryOf(data.type).label,
