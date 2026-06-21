@@ -1,11 +1,10 @@
 package com.skyblock.core.menu;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import com.skyblock.core.manager.DungeonManager;
 import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.manager.DungeonManager.FloorMeta;
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.util.SkyblockUtils;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,19 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * 54-slot Dungeon overview menu opened by {@code /dungeon}.
- *
- * <p>Row 1 shows F1–F7 as wither-skull items; row 2 shows M1–M7 as
- * nether-star items. Each tile displays the boss name, the player's
- * completion count and best time for that floor. Top and bottom edges
- * are purple-pane borders.</p>
- */
-public final class DungeonMenu extends AbstractMenu {
+public final class DungeonMenu extends AbstractSkyBlockMenu {
 
-    /** Inventory slots for the seven normal floors (F1–F7). */
+    private static final String TITLE = "§4Catacombs";
+
     static final int[] F_SLOTS = {10, 11, 12, 13, 14, 15, 16};
-    /** Inventory slots for the seven master floors (M1–M7). */
     static final int[] M_SLOTS = {19, 20, 21, 22, 23, 24, 25};
 
     private static final String[] F_KEYS = {"F1", "F2", "F3", "F4", "F5", "F6", "F7"};
@@ -37,9 +28,7 @@ public final class DungeonMenu extends AbstractMenu {
 
     private static final int SUMMARY_SLOT = 49;
 
-    /** Inventory slots for the five playable dungeon classes (row 4, centered). */
     static final int[] CLASS_SLOTS = {29, 30, 31, 32, 33};
-    /** Icon shown for each dungeon class. */
     static final Map<DungeonClass, Material> CLASS_ICONS = new EnumMap<>(DungeonClass.class);
 
     static {
@@ -50,14 +39,14 @@ public final class DungeonMenu extends AbstractMenu {
         CLASS_ICONS.put(DungeonClass.TANK,    Material.SHIELD);
     }
 
-    public DungeonMenu(JavaPlugin plugin, Player player) {
-        super(plugin, player, "§5§lCatacombs", 54);
+    public DungeonMenu(Player player) {
+        super(player, TITLE, 6);
     }
 
     @Override
     protected void populate() {
         UUID playerId = player.getUniqueId();
-        ItemStack pane = SkyblockUtils.buildItem(Material.PURPLE_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE).displayName("§r").build();
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
@@ -71,11 +60,12 @@ public final class DungeonMenu extends AbstractMenu {
             long bestSecs = manager.getBestTime(playerId, key);
             String bestStr = bestSecs > 0 ? bestSecs + "s" : "—";
 
-            setItem(F_SLOTS[i], SkyblockUtils.buildItem(Material.WITHER_SKELETON_SKULL,
-                    "§f" + meta.getDisplayName(),
-                    "§7Boss: §c" + meta.getBossName(),
-                    "§7Completions: §e" + completions,
-                    "§7Best time: §e" + bestStr));
+            setItem(F_SLOTS[i], new ItemBuilder(Material.WITHER_SKELETON_SKULL)
+                    .displayName("§f" + meta.getDisplayName())
+                    .lore("§7Boss: §c" + meta.getBossName(),
+                          "§7Completions: §e" + completions,
+                          "§7Best time: §e" + bestStr)
+                    .build());
         }
 
         for (int i = 0; i < M_KEYS.length; i++) {
@@ -85,12 +75,13 @@ public final class DungeonMenu extends AbstractMenu {
             long bestSecs = manager.getBestTime(playerId, key);
             String bestStr = bestSecs > 0 ? bestSecs + "s" : "—";
 
-            setItem(M_SLOTS[i], SkyblockUtils.buildItem(Material.NETHER_STAR,
-                    "§5" + meta.getDisplayName(),
-                    "§7Boss: §c" + meta.getBossName(),
-                    "§7Min catacombs level: §e" + meta.getMinCatacombsLevel(),
-                    "§7Completions: §e" + completions,
-                    "§7Best time: §e" + bestStr));
+            setItem(M_SLOTS[i], new ItemBuilder(Material.NETHER_STAR)
+                    .displayName("§5" + meta.getDisplayName())
+                    .lore("§7Boss: §c" + meta.getBossName(),
+                          "§7Min catacombs level: §e" + meta.getMinCatacombsLevel(),
+                          "§7Completions: §e" + completions,
+                          "§7Best time: §e" + bestStr)
+                    .build());
         }
 
         DungeonClass selected = manager.getClass(playerId);
@@ -111,14 +102,16 @@ public final class DungeonMenu extends AbstractMenu {
             lore.add("");
             lore.add(active ? "§aSelected class" : "§eClick to select");
 
-            setItem(CLASS_SLOTS[i], SkyblockUtils.createNamedItem(CLASS_ICONS.get(cls),
-                    (active ? "§a§l" : "§f") + cls.getDisplayName(), lore));
+            setItem(CLASS_SLOTS[i], new ItemBuilder(CLASS_ICONS.get(cls))
+                    .displayName((active ? "§a§l" : "§f") + cls.getDisplayName())
+                    .lore(lore.toArray(new String[0]))
+                    .build());
         }
 
-        setItem(SUMMARY_SLOT, SkyblockUtils.buildItem(Material.COMPASS,
-                "§5Dungeon Overview",
-                "§7Explore The Catacombs and",
-                "§7defeat powerful bosses."));
+        setItem(SUMMARY_SLOT, new ItemBuilder(Material.COMPASS)
+                .displayName("§5Dungeon Overview")
+                .lore("§7Explore The Catacombs and", "§7defeat powerful bosses.")
+                .build());
     }
 
     @Override

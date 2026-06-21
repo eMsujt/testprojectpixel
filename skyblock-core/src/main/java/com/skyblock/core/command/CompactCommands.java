@@ -2299,7 +2299,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player p) {
-            new com.skyblock.core.menu.DungeonMenu(SkyBlockCore.getInstance(), p).open(p);
+            new com.skyblock.core.menu.DungeonMenu(p).open(p);
         }
 
         @Override
@@ -2309,7 +2309,7 @@ public final class CompactCommands {
                 return true;
             }
             switch (args[0].toLowerCase()) {
-                case "menu"     -> new com.skyblock.core.menu.DungeonMenu(SkyBlockCore.getInstance(), player).open(player);
+                case "menu"     -> new com.skyblock.core.menu.DungeonMenu(player).open(player);
                 case "info"     -> handleInfo(player);
                 case "start"    -> handleStart(player, args);
                 case "leave"    -> handleLeave(player);
@@ -3451,7 +3451,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new com.skyblock.core.menu.DungeonMenu(SkyBlockCore.getInstance(), player).open(player);
+            new com.skyblock.core.menu.DungeonMenu(player).open(player);
         }
 
         @Override
