@@ -29,6 +29,7 @@ commands:
   alchemy:
     description: Brew potions using the SkyBlock alchemy system.
     usage: /alchemy [list|brew|status|collect|cancel]
+    aliases: [alch]
   auctionhouse:
     description: Manage Auction House listings (BIN and bid-based).
     usage: /auctionhouse <list|create|bid|view|cancel|mine|history>
