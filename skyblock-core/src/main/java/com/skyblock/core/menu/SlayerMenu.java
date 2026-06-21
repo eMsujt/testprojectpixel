@@ -14,8 +14,8 @@ import java.util.UUID;
 
 public final class SlayerMenu extends AbstractSkyBlockMenu {
 
-    // five consecutive slots across the centre row
-    static final int[] BOSS_SLOTS = {20, 21, 22, 23, 24};
+    // six consecutive slots across the centre row (one per slayer boss)
+    static final int[] BOSS_SLOTS = {19, 20, 21, 22, 23, 24};
 
     private static final SlayerBoss[] DISPLAYED_BOSSES = {
             SlayerBoss.REVENANT_HORROR,
@@ -38,7 +38,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     }
 
     public SlayerMenu(Player player) {
-        super(player, "§cSlayer Quests", 6);
+        super(player, "§4Slayer", 6);
     }
 
     @Override
