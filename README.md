@@ -1,3 +1,8 @@
+<div align="center">
+
+<!-- Project logo — replace docs/assets/logo.png with the real artwork -->
+<img src="docs/assets/logo.png" alt="SkyBlock Core logo" width="160" height="160">
+
 # SkyBlock Core
 
 > **A faithful Hypixel SkyBlock recreation for Paper 1.21+ servers — skills, dungeons, economy, and beyond.**
@@ -6,6 +11,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
 [![Paper](https://img.shields.io/badge/Paper-1.21%2B-brightgreen.svg)](https://papermc.io/)
+
+</div>
 
 A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven multi-module project targeting Paper 1.21+, it recreates the full SkyBlock progression loop — from private islands and skills to dungeons, the economy, and end-game zones — as a self-contained server-side plugin.
 
@@ -28,6 +35,22 @@ A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven
 ---
 
 ## Features
+
+At a glance — every major SkyBlock system is implemented and wired into `skyblock-core`:
+
+| System | Highlights |
+|--------|------------|
+| **Skills & Progression** | 12 skills with authentic XP tables, 200+ collections, SkyBlock Level, Fairy Souls |
+| **Private Islands** | Per-player islands, co-op sharing, 20+ minion types, island/visitor/warp upgrades |
+| **Economy** | Coins/purse, personal & co-op banks, live Bazaar order book, Auction House, NPC shops, sacks |
+| **Combat & Slayer** | Custom mobs, SkyBlock damage formula, item/set abilities, 6 Slayer tiers, Bestiary |
+| **Dungeons** | Catacombs F1–F7 + Master Mode, 5 classes, score system, essence shop, Experimentation Table |
+| **Gear & Accessories** | 50+ enchantments, reforges, Forge, pets (1–100), talismans, wardrobe, runes |
+| **End-game Zones** | Dwarven Mines/Crystal Hollows + HOTM, Crimson Isle/Kuudra, The Rift, Jerry's Workshop, Carnival |
+| **Social & QoL** | Parties, guilds, friends, mail, leaderboards, mayor elections, calendar, notifications |
+| **Additional Systems** | Garden & Jacob's Contest, Trophy Fishing, Museum, Chocolate Factory, Net Worth, potions, Bingo |
+
+The detailed breakdown for each system follows.
 
 ### Skills & Progression
 - **12 skills** — Combat, Mining, Farming, Foraging, Fishing, Enchanting, Alchemy, Taming, Social, Carpentry, Runecrafting, and Dungeoneering, each with authentic Hypixel XP tables and level caps.
