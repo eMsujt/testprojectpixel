@@ -15,9 +15,8 @@ import java.util.UUID;
 
 public final class SlayerMenu extends AbstractSkyBlockMenu {
 
-    static final int[] BOSS_SLOTS = {20, 21, 22, 23, 24};
-
-    private static final int SUMMARY_SLOT = 31;
+    // one slot per row, rows 1–5, center column
+    static final int[] BOSS_SLOTS = {13, 22, 31, 40, 49};
 
     private static final SlayerBoss[] DISPLAYED_BOSSES = {
             SlayerBoss.REVENANT_HORROR,
@@ -40,7 +39,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     }
 
     public SlayerMenu(Player player) {
-        super(player, "§cSlayer Quests", 6);
+        super(player, "§cSlayer", 6);
     }
 
     @Override
@@ -70,10 +69,5 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
                     .build());
         }
 
-        setItem(SUMMARY_SLOT, new ItemBuilder(Material.DIAMOND_SWORD)
-                .displayName("§cSlayer Overview")
-                .lore("§7Defeat slayer bosses to earn",
-                        "§7slayer XP and rare drops.")
-                .build());
     }
 }
