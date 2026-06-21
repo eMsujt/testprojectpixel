@@ -1,5 +1,6 @@
 package com.skyblock.core.listener;
 
+import com.skyblock.core.item.SkyblockItems;
 import com.skyblock.core.manager.CollectionManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
@@ -42,17 +43,29 @@ public final class CollectionListener implements Listener {
         ItemStack stack = item.getItemStack();
         collectionManager.addItems(
                 event.getPlayer().getUniqueId(),
-                stack.getType().name(),
+                collectionKey(stack),
                 stack.getAmount());
     }
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         Player killer = event.getEntity().getKiller();
-        if (killer == null) {
+        if (killer == null || event.getEntity() instanceof Player) {
             return;
         }
-        String collection = event.getEntity().getType().name();
-        collectionManager.addItems(killer.getUniqueId(), collection, 1);
+        // Credit the collection of what the mob actually dropped (vanilla by material, custom by
+        // its stamped id), not the mob's type — which never matched a collection.
+        for (ItemStack drop : event.getDrops()) {
+            if (drop == null || drop.getType() == Material.AIR) {
+                continue;
+            }
+            collectionManager.addItems(killer.getUniqueId(), collectionKey(drop), drop.getAmount());
+        }
+    }
+
+    /** Collection key for an item: its stamped SkyBlock id if present, else its material name. */
+    private static String collectionKey(ItemStack stack) {
+        String id = SkyblockItems.idOf(stack);
+        return id != null ? id : stack.getType().name();
     }
 }
