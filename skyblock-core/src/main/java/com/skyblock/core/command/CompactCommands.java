@@ -3161,14 +3161,14 @@ public final class CompactCommands {
     }
 
     // =========================================================================
-    // /minion (simple menu opener)
+    // /island (simple menu opener)
     // =========================================================================
 
-    public static final class MinionCmd extends PlayerCommand {
+    public static final class IslandCmd extends PlayerCommand {
 
         @Override
         protected void openMenu(Player player) {
-            new MinionsMenu(player).open(player);
+            new IslandMenu(player.getUniqueId()).open(player);
         }
 
         @Override
