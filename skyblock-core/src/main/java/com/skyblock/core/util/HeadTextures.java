@@ -12,6 +12,7 @@ import java.util.Properties;
 public final class HeadTextures {
 
     private static final Properties MINIONS = load("/minion_heads.properties");
+    private static final Properties PETS = load("/pet_heads.properties");
 
     private HeadTextures() {}
 
@@ -27,5 +28,10 @@ public final class HeadTextures {
     /** Base64 head texture for a minion type (by enum name), or {@code null} if not registered. */
     public static String minion(String typeName) {
         return typeName == null ? null : MINIONS.getProperty(typeName);
+    }
+
+    /** Base64 head texture for a pet type (by enum name), or {@code null} if not registered. */
+    public static String pet(String typeName) {
+        return typeName == null ? null : PETS.getProperty(typeName);
     }
 }

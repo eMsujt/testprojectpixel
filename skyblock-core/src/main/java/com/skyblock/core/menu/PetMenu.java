@@ -51,9 +51,12 @@ public final class PetMenu extends AbstractSkyBlockMenu {
             boolean isActive = pet.id.equals(activePetId);
             int level = manager.getPetData(playerId, pet.type).getLevel();
             String color = SkyblockUtils.rarityColor(pet.rarity).toString();
-            Material icon = RARITY_WOOL.getOrDefault(pet.rarity, Material.WHITE_WOOL);
+            String petTex = com.skyblock.core.util.HeadTextures.pet(pet.type.name());
+            ItemBuilder petIcon = petTex != null
+                    ? new ItemBuilder(Material.PLAYER_HEAD).skullTexture(petTex)
+                    : new ItemBuilder(RARITY_WOOL.getOrDefault(pet.rarity, Material.WHITE_WOOL));
             String activeTag = isActive ? " §a§l[ACTIVE]" : "";
-            setItem(i + 9, new ItemBuilder(icon)
+            setItem(i + 9, petIcon
                     .displayName(color + pet.type.getDisplayName() + activeTag)
                     .lore("§7Level: §e" + level,
                           "§7Rarity: " + color + pet.rarity.getDisplayName(),
