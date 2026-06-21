@@ -74,7 +74,27 @@ public final class ForgeManager {
         GOLDEN_PICKAXE(      "Golden Pickaxe",               "GOLDEN_PICKAXE",               1, 900,
                 Map.of("GOLD_INGOT", 3, "STICK", 2)),
         ENCHANTED_BOW(       "Enchanted Bow",                "ENCHANTED_BOW",                1, 1800,
-                Map.of("STRING", 3, "STICK", 3));
+                Map.of("STRING", 3, "STICK", 3)),
+        GOLEM_SWORD(         "Golem Sword",                  "GOLEM_SWORD",                  1, 172800,
+                Map.of("IRON_GOLEM_FRAGMENT", 50, "REFINED_MITHRIL", 8, "IRON_INGOT", 64)),
+        MIDAS_STAFF(         "Midas Staff",                  "MIDAS_STAFF",                  1, 259200,
+                Map.of("GOLD_INGOT", 512, "REFINED_GOLD", 12, "ENCHANTED_GOLD_BLOCK", 8)),
+        TITANIUM_TALISMAN(   "Titanium Talisman",            "TITANIUM_TALISMAN",            1, 43200,
+                Map.of("REFINED_TITANIUM", 8, "MITHRIL_ORE", 20)),
+        DIVAN_ALLOY(         "Divan's Alloy",                "DIVAN_ALLOY",                  1, 86400,
+                Map.of("REFINED_TITANIUM", 6, "REFINED_MITHRIL", 6, "POWER_CRYSTAL", 1)),
+        HOT_STUFF(           "Hot Stuff",                    "HOT_STUFF",                    1, 21600,
+                Map.of("SEARING_STONE", 3, "COAL", 256)),
+        MITHRIL_CHESTPLATE(  "Mithril Chestplate",           "MITHRIL_CHESTPLATE",           1, 14400,
+                Map.of("REFINED_MITHRIL", 12, "IRON_INGOT", 8)),
+        MITHRIL_LEGGINGS(    "Mithril Leggings",             "MITHRIL_LEGGINGS",             1, 14400,
+                Map.of("REFINED_MITHRIL", 10, "IRON_INGOT", 7)),
+        MITHRIL_HELMET(      "Mithril Helmet",               "MITHRIL_HELMET",               1, 10800,
+                Map.of("REFINED_MITHRIL", 8, "IRON_INGOT", 5)),
+        MITHRIL_BOOTS(       "Mithril Boots",                "MITHRIL_BOOTS",                1, 10800,
+                Map.of("REFINED_MITHRIL", 6, "IRON_INGOT", 4)),
+        REFINED_DIAMOND(     "Refined Diamond",              "REFINED_DIAMOND",              1, 1200,
+                Map.of("DIAMOND", 16));
 
         private final String displayName;
         private final String outputItem;
