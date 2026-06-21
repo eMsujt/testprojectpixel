@@ -33,9 +33,11 @@ public final class FishingManager {
 
     /** All fish types obtainable through SkyBlock fishing. */
     public enum FishType {
+        // Vanilla-based drops
+        RAW_FISH,
+        RAW_SALMON,
         PUFFERFISH,
-        SEA_CREATURE,
-        FISHING_TREASURE,
+        CLOWNFISH,
         INK_SAC,
         LILY_PAD,
         NAUTILUS_SHELL,
@@ -43,6 +45,23 @@ public final class FishingManager {
         PRISMARINE_SHARD,
         SPONGE,
         SEA_LANTERN,
+        // SkyBlock-specific fish
+        MAHI_MAHI,
+        SULPHUR_SKITTER,
+        OBFUSCATED_FISH_1,
+        OBFUSCATED_FISH_2,
+        OBFUSCATED_FISH_3,
+        BLOBFISH,
+        SLUGFISH,
+        FLYFISH,
+        LAVA_HORSE,
+        MANA_RAY,
+        VOLCANIC_STONEFISH,
+        VANILLE,
+        SKELETON_FISH,
+        // Special drops
+        SEA_CREATURE,
+        FISHING_TREASURE,
         TREASURE_MAP
     }
 
