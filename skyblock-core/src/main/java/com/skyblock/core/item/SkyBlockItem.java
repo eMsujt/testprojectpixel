@@ -1,6 +1,7 @@
 package com.skyblock.core.item;
 
 import com.skyblock.core.model.Rarity;
+import com.skyblock.core.util.HeadTextures;
 import com.skyblock.core.util.ItemBuilder;
 import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.ChatColor;
@@ -22,7 +23,13 @@ public class SkyBlockItem {
         this.displayName = displayName;
         this.rarity = rarity;
         ChatColor color = SkyblockUtils.rarityColor(rarity);
-        this.itemStack = new ItemBuilder(material)
+        // Prefer the real Hypixel head texture for this item id when one is registered, so items
+        // render 1:1; otherwise fall back to the supplied vanilla material.
+        String texture = HeadTextures.item(id);
+        ItemBuilder builder = texture != null
+                ? new ItemBuilder(Material.PLAYER_HEAD).skullTexture(texture)
+                : new ItemBuilder(material);
+        this.itemStack = builder
                 .displayName(color + ChatColor.BOLD.toString() + displayName)
                 .addLore(color + ChatColor.BOLD.toString() + rarity.getDisplayName().toUpperCase())
                 .build();
