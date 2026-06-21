@@ -173,7 +173,7 @@ public final class ReforgeManager {
         FAST("Fast Reforge Stone",              "Fast",         0,  0, 25),
         FAIR("Fair Reforge Stone",              "Fair",        10, 10, 10),
         EPIC("Epic Reforge Stone",              "Epic",        30, 20, 15),
-        STORMY("Stormy Reforge Stone",          "Stormy",       0,  0,  0),
+        STORMY("Stormy Reforge Stone",          "Stormy",       0, 20, 10),
         ITCHY("Itchy Reforge Stone",            "Itchy",        5,  0,  0),
         UNPLEASANT("Unpleasant Reforge Stone",  "Unpleasant",   0,  0,  5),
         FORCEFUL("Forceful Reforge Stone",      "Forceful",     5,  0, 20),
