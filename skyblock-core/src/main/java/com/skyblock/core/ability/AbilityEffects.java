@@ -31,7 +31,7 @@ public final class AbilityEffects {
         if (abilityName == null) return false;
         return switch (abilityName.toLowerCase(Locale.ROOT)) {
             case "instant transmission", "ether transmission", "dragon rage", "giant's slam",
-                 "weird transmission", "instant heal" -> true;
+                 "weird transmission", "instant heal", "implosion" -> true;
             default -> false;
         };
     }
@@ -51,8 +51,22 @@ public final class AbilityEffects {
                     teleport(player, clipForward(player, ability.magnitude > 0 ? ability.magnitude : 3),
                             false);
             case "instant heal" -> instantHeal(player, ability);
+            case "implosion" -> implosion(player, parseDamage(ability));
             default -> { }
         }
+    }
+
+    /** AoE burst: damages every monster around the player (no knockback), explosion feedback. */
+    private static void implosion(Player player, double damage) {
+        Location center = player.getLocation();
+        double radius = 6.0;
+        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (entity instanceof Monster monster) {
+                monster.damage(damage, player);
+            }
+        }
+        player.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 1f, 1.2f);
+        player.getWorld().spawnParticle(Particle.EXPLOSION, center, 3, 1.5, 0.5, 1.5, 0.0);
     }
 
     private static final Pattern HEAL_FLAT = Pattern.compile("Heal for ([0-9,]+)");
@@ -86,8 +100,8 @@ public final class AbilityEffects {
     }
 
     // "...take 12,000 \n damage" (number and word split across lines) or "100,000 damage ...".
-    private static final Pattern TAKE_DAMAGE = Pattern.compile("take\\s+([0-9,]+)");
-    private static final Pattern N_DAMAGE = Pattern.compile("([0-9,]+)\\s+damage");
+    private static final Pattern TAKE_DAMAGE = Pattern.compile("take\\s+([0-9,]+(?:\\.[0-9]+)?)");
+    private static final Pattern N_DAMAGE = Pattern.compile("([0-9,]+(?:\\.[0-9]+)?)\\s+damage");
 
     /** Pulls the ability's damage value from its description; 1000 if none is stated. */
     private static double parseDamage(LoreAbility ability) {
