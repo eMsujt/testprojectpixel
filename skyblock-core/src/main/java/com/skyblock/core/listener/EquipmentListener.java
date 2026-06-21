@@ -6,6 +6,8 @@ import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -60,6 +62,23 @@ public final class EquipmentListener implements Listener {
             applyItemStats(sm, ism, id, piece);
         }
         applyItemStats(sm, ism, id, heldItem);
+        applyMaxHealth(player, sm);
+    }
+
+    /**
+     * Updates the player's max health to their current SkyBlock Health stat, so equipping or
+     * removing health gear takes effect immediately (not only on respawn).
+     */
+    private void applyMaxHealth(Player player, StatManager sm) {
+        AttributeInstance attr = player.getAttribute(Attribute.MAX_HEALTH);
+        if (attr == null) {
+            return;
+        }
+        double maxHealth = Math.max(1.0, sm.getStat(player.getUniqueId(), Stat.HEALTH));
+        attr.setBaseValue(maxHealth);
+        if (player.getHealth() > maxHealth) {
+            player.setHealth(maxHealth);
+        }
     }
 
     private static void applyItemStats(StatManager sm, ItemStatManager ism, UUID id, ItemStack item) {
