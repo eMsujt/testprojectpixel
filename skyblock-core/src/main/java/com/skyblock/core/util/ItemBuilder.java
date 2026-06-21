@@ -194,7 +194,7 @@ public class ItemBuilder {
         ItemMeta meta = item.getItemMeta();
         if (!(meta instanceof SkullMeta skullMeta)) return this;
         String json = new String(Base64.getDecoder().decode(base64));
-        String url = json.replaceAll(".*\"url\"\\s*:\\s*\"([^\"]+)\".*", "$1");
+        String url = json.replaceAll("(?s).*\"url\"\\s*:\\s*\"([^\"]+)\".*", "$1");
         try {
             PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
             PlayerTextures textures = profile.getTextures();
