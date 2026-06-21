@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.data.SkyBlockXP;
 import com.skyblock.core.model.Skill;
 
 import java.util.UUID;
@@ -9,6 +10,19 @@ import java.util.UUID;
  * and other callers that import this class by name.
  */
 public final class SkillsManager {
+
+    /**
+     * XP required to advance from level N-1 to level N for the standard 60-level skills
+     * (Farming, Mining, Combat, Foraging, Fishing, Enchanting, Alchemy, Taming).
+     * Entry {@code i} covers the step from level {@code i} to level {@code i+1}.
+     */
+    public static final long[] XP_THRESHOLDS = SkyBlockXP.STANDARD.clone();
+
+    /**
+     * Cumulative XP required to reach each level for the standard 60-level skills.
+     * Entry {@code i} is the total XP needed to reach level {@code i+1}.
+     */
+    public static final long[] XP_THRESHOLDS_CUMULATIVE = SkyBlockXP.STANDARD_CUMULATIVE.clone();
 
     private static final SkillsManager INSTANCE = new SkillsManager();
 
@@ -38,6 +52,20 @@ public final class SkillsManager {
 
     public long addXP(UUID playerId, Skill skill, long amount) {
         return delegate.addXP(playerId, skill, amount);
+    }
+
+    /**
+     * Adds XP (fractional part truncated) to the player's skill, detects any level-ups,
+     * applies the corresponding stat rewards, and returns the new total XP.
+     */
+    public long addXp(UUID playerId, Skill skill, double amount) {
+        int oldLevel = delegate.getLevel(playerId, skill);
+        long newTotal = delegate.addXP(playerId, skill, (long) amount);
+        int newLevel = delegate.getLevel(playerId, skill);
+        if (newLevel > oldLevel) {
+            delegate.grantLevelUpRewards(playerId, skill, oldLevel, newLevel);
+        }
+        return newTotal;
     }
 
     public long getXP(UUID playerId, Skill skill) {
