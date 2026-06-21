@@ -18,7 +18,7 @@
 
 -
 
-## How to test
+## Testing Done
 
 <!-- Steps to verify the change: commands to run, in-game actions, expected results. -->
 
