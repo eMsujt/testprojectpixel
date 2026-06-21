@@ -32,7 +32,7 @@ import java.util.UUID;
  */
 public final class GardenMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE = "§2Garden";
+    private static final String TITLE = "§aGarden";
     private static final int ROWS = 6;
 
     static final int SUMMARY_SLOT = 4;
