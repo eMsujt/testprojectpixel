@@ -2,183 +2,151 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.coop.CoopManager;
 import com.skyblock.core.manager.BankManager;
+import com.skyblock.core.manager.BankManager.BankTier;
 import com.skyblock.core.manager.EconomyManager;
-import com.skyblock.core.util.SkyblockUtils;
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 /**
- * Canonical 27-slot (3-row) Bank menu with Personal and Co-op tabs.
- *
- * <p>Gray-pane border on all four edges; the two tab buttons (Personal at slot
- * 10, Co-op at slot 11) toggle which account the menu acts on. The active
- * account's balance is shown at slot 13 alongside the purse at slot 12;
- * Deposit All (EMERALD) at slot 15 and Withdraw All (DROPPER) at slot 16
- * move coins between the purse and the active account. Close barrier at
- * slot 22.</p>
- *
- * <p>The Co-op tab keys its balance off the player's island owner via
- * {@link CoopManager}; players not in a co-op see a zero balance and cannot
- * deposit or withdraw on that tab.</p>
+ * 4-row chest GUI titled '§6Bank Account'. Shows Personal and Co-op bank tabs,
+ * purse balance, current bank balance, and Deposit All / Withdraw All actions.
  */
-public final class BankMenu extends Menu {
+public final class BankMenu extends AbstractSkyBlockMenu {
 
-    private static final int PERSONAL_TAB_SLOT = 10;
-    private static final int COOP_TAB_SLOT      = 11;
-    private static final int PURSE_SLOT         = 12;
-    private static final int BALANCE_SLOT       = 13;
-    private static final int DEPOSIT_SLOT       = 15;
-    private static final int WITHDRAW_SLOT      = 16;
-    private static final int CLOSE_SLOT         = 49;
+    private static final String TITLE         = "§6Bank Account";
+    private static final int    HEADER_SLOT   = 4;
+    private static final int    PERSONAL_SLOT = 10;
+    private static final int    COOP_SLOT     = 11;
+    private static final int    PURSE_SLOT    = 12;
+    private static final int    BALANCE_SLOT  = 13;
+    private static final int    DEPOSIT_SLOT  = 15;
+    private static final int    WITHDRAW_SLOT = 16;
+    private static final int    CLOSE_SLOT    = 31;
 
-    private final UUID playerId;
-    private Inventory inventory;
     private boolean showingCoop;
-    private final Map<Integer, Consumer<InventoryClickEvent>> handlers = new HashMap<>();
 
     public BankMenu(Player player) {
-        this(player.getUniqueId());
-    }
-
-    public BankMenu(UUID playerId) {
-        super("§6§lBank Account", 6);
-        this.playerId = playerId;
-    }
-
-    /** Unused: this menu manages its own inventory via {@link #open(Player)}. */
-    @Override
-    protected void build() {
+        super(player, TITLE, 4);
     }
 
     @Override
-    public void open(Player player) {
-        handlers.clear();
+    protected void populate() {
+        ItemStack pane = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 9; slot++)  setItem(slot, pane);
+        for (int slot = 27; slot < 36; slot++) setItem(slot, pane);
 
-        EconomyManager econ = EconomyManager.getInstance();
+        UUID uuid = player.getUniqueId();
         BankManager bank = BankManager.getInstance();
+        EconomyManager econ = EconomyManager.getInstance();
         CoopManager coop = CoopManager.getInstance();
 
-        double currentBalance = showingCoop
-                ? (coop.getOwner(playerId) != null ? bank.getCoopBalance(coop.getOwner(playerId).toString()) : 0.0)
-                : bank.getBalance(playerId);
-        String dynamicTitle = "§6Bank §8[§6" + String.format("%,.0f", currentBalance) + "§8]";
-        inventory = org.bukkit.Bukkit.createInventory(this, 54, dynamicTitle);
-
-        ItemStack pane = SkyblockUtils.buildItem(Material.YELLOW_STAINED_GLASS_PANE, "§r");
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                inventory.setItem(slot, pane);
-            }
-        }
-        inventory.setItem(4, SkyblockUtils.buildItem(Material.GOLD_INGOT,
-                "§6Bank",
-                "§7Balance: §6" + String.format("%,.0f", currentBalance) + " Coins"));
-
-        UUID coopOwner = coop.getOwner(playerId);
+        UUID coopOwner = coop.getOwner(uuid);
         String coopKey = coopOwner != null ? coopOwner.toString() : null;
 
-        // Tabs.
-        inventory.setItem(PERSONAL_TAB_SLOT, SkyblockUtils.buildItem(Material.GOLD_BLOCK,
-                (showingCoop ? "§7" : "§6") + "Personal Bank",
-                showingCoop ? "§7Click to view." : "§eViewing."));
-        handlers.put(PERSONAL_TAB_SLOT, e -> {
-            if (showingCoop) {
-                showingCoop = false;
-                open(player);
-            }
-        });
+        double balance = showingCoop
+                ? (coopKey != null ? bank.getCoopBalance(coopKey) : 0.0)
+                : bank.getBalance(uuid);
+        long purse = econ.getPurse(uuid);
+        BankTier tier = bank.getTier(uuid);
 
-        inventory.setItem(COOP_TAB_SLOT, SkyblockUtils.buildItem(Material.EMERALD_BLOCK,
-                (showingCoop ? "§6" : "§7") + "Co-op Bank",
-                showingCoop ? "§eViewing." : "§7Click to view."));
-        handlers.put(COOP_TAB_SLOT, e -> {
-            if (!showingCoop) {
-                showingCoop = true;
-                open(player);
-            }
-        });
+        setItem(HEADER_SLOT, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName("§6Bank Account")
+                .lore("§7Tier: §e" + tier.getDisplayName())
+                .build());
 
-        long purse = econ.getPurse(playerId);
-        double balance = currentBalance;
+        setItem(PERSONAL_SLOT, new ItemBuilder(Material.GOLD_BLOCK)
+                .displayName((showingCoop ? "§7" : "§6") + "Personal Bank")
+                .lore(showingCoop ? "§7Click to view." : "§eViewing.")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    if (showingCoop) {
+                        showingCoop = false;
+                        open(player);
+                    }
+                });
 
-        inventory.setItem(PURSE_SLOT, SkyblockUtils.buildItem(Material.GOLD_NUGGET,
-                "§6Purse",
-                "§7Balance: §6" + String.format("%,.0f", (double) purse) + " Coins"));
+        setItem(COOP_SLOT, new ItemBuilder(Material.EMERALD_BLOCK)
+                .displayName((showingCoop ? "§6" : "§7") + "Co-op Bank")
+                .lore(showingCoop ? "§eViewing." : "§7Click to view.")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    if (!showingCoop) {
+                        showingCoop = true;
+                        open(player);
+                    }
+                });
 
-        inventory.setItem(BALANCE_SLOT, SkyblockUtils.buildItem(Material.GOLD_INGOT,
-                showingCoop ? "§6Co-op Bank" : "§6Personal Bank",
-                "§7Balance: §6" + String.format("%,.0f", balance) + " Coins"));
+        setItem(PURSE_SLOT, new ItemBuilder(Material.GOLD_NUGGET)
+                .displayName("§6Purse")
+                .lore("§7Balance: §6" + String.format("%,.0f", (double) purse) + " Coins")
+                .build());
 
-        inventory.setItem(DEPOSIT_SLOT, SkyblockUtils.buildItem(Material.EMERALD,
-                "§aDeposit All",
-                "§7Move all purse coins into the bank."));
-        handlers.put(DEPOSIT_SLOT, e -> {
-            if (showingCoop && coopKey == null) {
-                player.sendMessage("§cYou are not in a co-op.");
-                return;
-            }
-            long p = econ.getPurse(playerId);
-            if (p > 0) {
-                econ.withdraw(playerId, p);
-                if (showingCoop) {
-                    bank.depositCoop(coopKey, p);
-                } else {
-                    bank.deposit(playerId, p);
-                }
-                player.sendMessage("§aDeposited §6" + String.format("%,.0f", (double) p) + " §acoins into your bank.");
-                open(player);
-            }
-        });
+        setItem(BALANCE_SLOT, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName(showingCoop ? "§6Co-op Bank" : "§6Personal Bank")
+                .lore("§7Balance: §6" + String.format("%,.0f", balance) + " Coins")
+                .build());
 
-        inventory.setItem(WITHDRAW_SLOT, SkyblockUtils.buildItem(Material.DROPPER,
-                "§eWithdraw All",
-                "§7Move all bank coins to your purse."));
-        handlers.put(WITHDRAW_SLOT, e -> {
-            if (showingCoop && coopKey == null) {
-                player.sendMessage("§cYou are not in a co-op.");
-                return;
-            }
-            double b = showingCoop ? bank.getCoopBalance(coopKey) : bank.getBalance(playerId);
-            if (b > 0) {
-                if (showingCoop) {
-                    bank.withdrawCoop(coopKey, b);
-                } else {
-                    bank.withdraw(playerId, b);
-                }
-                econ.addPurse(playerId, (long) b);
-                player.sendMessage("§aWithdrew §6" + String.format("%,.0f", b) + " §acoins from your bank.");
-                open(player);
-            }
-        });
+        setItem(DEPOSIT_SLOT, new ItemBuilder(Material.EMERALD)
+                .displayName("§aDeposit All")
+                .lore("§7Move all purse coins into the bank.", "", "§eClick to deposit!")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    if (showingCoop && coopKey == null) {
+                        player.sendMessage("§cYou are not in a co-op.");
+                        return;
+                    }
+                    long p = econ.getPurse(uuid);
+                    if (p > 0) {
+                        econ.withdraw(uuid, p);
+                        if (showingCoop) {
+                            bank.depositCoop(coopKey, p);
+                        } else {
+                            bank.deposit(uuid, p);
+                        }
+                        player.sendMessage("§aDeposited §6" + String.format("%,.0f", (double) p) + " §acoins into your bank.");
+                        open(player);
+                    }
+                });
 
-        inventory.setItem(CLOSE_SLOT, SkyblockUtils.buildItem(Material.BARRIER,
-                "§cClose",
-                "§7Close the bank."));
-        handlers.put(CLOSE_SLOT, e -> player.closeInventory());
+        setItem(WITHDRAW_SLOT, new ItemBuilder(Material.DROPPER)
+                .displayName("§eWithdraw All")
+                .lore("§7Move all bank coins to your purse.", "", "§eClick to withdraw!")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    if (showingCoop && coopKey == null) {
+                        player.sendMessage("§cYou are not in a co-op.");
+                        return;
+                    }
+                    double b = showingCoop
+                            ? bank.getCoopBalance(coopKey)
+                            : bank.getBalance(uuid);
+                    if (b > 0) {
+                        if (showingCoop) {
+                            bank.withdrawCoop(coopKey, b);
+                        } else {
+                            bank.withdraw(uuid, b);
+                        }
+                        econ.addPurse(uuid, (long) b);
+                        player.sendMessage("§aWithdrew §6" + String.format("%,.0f", b) + " §acoins from your bank.");
+                        open(player);
+                    }
+                });
 
-        player.openInventory(inventory);
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        event.setCancelled(true);
-        Consumer<InventoryClickEvent> handler = handlers.get(event.getSlot());
-        if (handler != null) {
-            handler.accept(event);
-        }
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return inventory;
+        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .lore("§7Click to close.")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    player.closeInventory();
+                });
     }
 }
