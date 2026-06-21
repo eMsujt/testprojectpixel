@@ -22,7 +22,22 @@ public final class RunecraftingManager {
         CLOUDY(3),
         ENCHANT(3),
         GRAND(3),
-        AMBER(3);
+        AMBER(3),
+        KINETIC(3),
+        SPIRIT(3),
+        WITHER(3),
+        ZOMBIE(3),
+        SPIDER(3),
+        WOLF(3),
+        ENDERMAN(3),
+        BLAZE(3),
+        PIGMAN(3),
+        NETHER(3),
+        RAINBOW(3),
+        SPARKLING(3),
+        THUNDER(3),
+        DRAGON(3),
+        CRYSTAL(3);
 
         private final int maxLevel;
 
