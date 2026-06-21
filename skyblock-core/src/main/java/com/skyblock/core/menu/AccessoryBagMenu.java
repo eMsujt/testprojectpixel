@@ -1,7 +1,6 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.AccessoryManager;
-import com.skyblock.core.model.AccessoryRarity;
+import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.talisman.manager.TalismanManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
@@ -11,68 +10,40 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
 
-    public static final int SUMMARY_SLOT = 4;
-    public static final int[] RARITY_SLOTS = {9, 10, 11, 12, 13, 14, 15, 16};
-
     public AccessoryBagMenu(Player player) {
-        super(player, "§5Accessory Bag", 6);
+        super(player, "§6Accessory Bag", 4);
     }
 
     @Override
     protected void populate() {
         UUID id = player.getUniqueId();
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 45; slot++) setItem(slot, pane);
+        for (int slot = 0; slot < 36; slot++) setItem(slot, pane);
 
-        Map<TalismanManager.TalismanType, AccessoryRarity> accessories =
-                AccessoryManager.getInstance().getAccessories(id);
-        List<TalismanManager.TalismanType> types = new ArrayList<>(accessories.keySet());
-        for (int i = 0; i < 36 && i < types.size(); i++) {
+        AccessoryBagManager mgr = AccessoryBagManager.getInstance();
+        List<TalismanManager.TalismanType> types = new ArrayList<>(mgr.getContents(id));
+        for (int i = 0; i < 27 && i < types.size(); i++) {
             TalismanManager.TalismanType type = types.get(i);
-            AccessoryRarity rarity = accessories.get(type);
-            String color = rarityColor(rarity);
-            setItem(i, new ItemBuilder(rarityMaterial(rarity))
-                    .displayName(color + formatName(type.name()))
-                    .lore("§7+" + type.bonus + " " + type.stat.getDisplayName(),
-                          color + rarity.getDisplayName())
+            setItem(i, new ItemBuilder(Material.EMERALD)
+                    .displayName("§6" + formatName(type.name()))
+                    .lore("§7+" + type.bonus + " " + type.stat.getDisplayName())
                     .build());
         }
+
+        int power = mgr.getTotalMagicPower(id);
+        setItem(31, new ItemBuilder(Material.NETHER_STAR)
+                .displayName("§6Magic Power")
+                .lore("§7Total: §e" + power)
+                .build());
     }
 
     @Override
     public void handleClick(InventoryClickEvent event) {
         event.setCancelled(true);
-    }
-
-    private static String rarityColor(AccessoryRarity rarity) {
-        switch (rarity) {
-            case UNCOMMON:    return "§a";
-            case RARE:        return "§9";
-            case EPIC:        return "§5";
-            case LEGENDARY:   return "§6";
-            case MYTHIC:      return "§d";
-            case SPECIAL:     return "§c";
-            case VERY_SPECIAL: return "§c";
-            default:          return "§f";
-        }
-    }
-
-    private static Material rarityMaterial(AccessoryRarity rarity) {
-        switch (rarity) {
-            case UNCOMMON:    return Material.GOLD_INGOT;
-            case RARE:        return Material.DIAMOND;
-            case EPIC:        return Material.AMETHYST_SHARD;
-            case LEGENDARY:   return Material.NETHER_STAR;
-            case MYTHIC:      return Material.TOTEM_OF_UNDYING;
-            case SPECIAL:     return Material.BLAZE_ROD;
-            case VERY_SPECIAL: return Material.BLAZE_POWDER;
-            default:          return Material.IRON_INGOT;
-        }
     }
 
     private static String formatName(String enumName) {
