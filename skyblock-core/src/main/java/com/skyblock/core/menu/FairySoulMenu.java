@@ -15,27 +15,37 @@ public final class FairySoulMenu extends AbstractSkyBlockMenu {
 
     static final int[] ISLAND_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33};
 
-    private static final int SUMMARY_SLOT = 40;
+    private static final int HEADER_SLOT = 4;
+    private static final int SUMMARY_SLOT = 49;
 
     public FairySoulMenu(Player player) {
-        super(player, buildTitle(player), 5);
-    }
-
-    private static String buildTitle(Player player) {
-        int found = FairySoulManager.getInstance().getFoundCount(player.getUniqueId());
-        return "§dFairy Souls §7(" + found + "/227)";
+        super(player, "§dFairy Souls", 6);
     }
 
     @Override
     protected void populate() {
         UUID playerId = player.getUniqueId();
         FairySoulManager manager = FairySoulManager.getInstance();
+        int totalFound = manager.getFoundCount(playerId);
 
+        // Row 0: pink pane border with overview header at slot 4
+        ItemStack pinkPane = new ItemBuilder(Material.PINK_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 9; slot++) {
+            if (slot != HEADER_SLOT) setItem(slot, pinkPane);
+        }
+        setItem(HEADER_SLOT, new ItemBuilder(Material.NETHER_STAR)
+                .displayName("§dFairy Souls")
+                .lore("§7Found: §e" + totalFound + "§7/§e" + FairySoulManager.MAX_SOULS,
+                      "§7Every §e" + FairySoulManager.SOULS_PER_REWARD + " §7souls grants a bonus.")
+                .build());
+
+        // Row 1: purple pane separator
         ItemStack purplePane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 9; slot <= 17; slot++) {
             setItem(slot, purplePane);
         }
 
+        // Island items (rows 2–3)
         FairyIsland[] islands = FairyIsland.values();
         for (int i = 0; i < islands.length && i < ISLAND_SLOTS.length; i++) {
             FairyIsland island = islands[i];
@@ -59,8 +69,8 @@ public final class FairySoulMenu extends AbstractSkyBlockMenu {
                     .build());
         }
 
-        int totalFound = manager.getFoundCount(playerId);
-        ItemBuilder summary = new ItemBuilder(Material.NETHER_STAR)
+        // Summary item at row 5 center (slot 49)
+        ItemBuilder summary = new ItemBuilder(Material.ENCHANTED_BOOK)
                 .displayName("§dFairy Soul Overview")
                 .lore(
                         "§7Total found: §e" + totalFound + "§7/§e" + FairySoulManager.MAX_SOULS,
