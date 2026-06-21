@@ -1,14 +1,18 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Stat;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Singleton for reading and writing SkyBlock stat lines on {@link ItemStack} lore.
@@ -23,6 +27,18 @@ public final class ItemStatManager {
 
     /** Prefix added to every stat lore line so they can be identified and stripped. */
     private static final String STAT_PREFIX = "§a+";
+
+    /** Matches a real Hypixel-format stat line (color codes stripped), e.g. "Strength: +100". */
+    private static final Pattern HYPIXEL_STAT = Pattern.compile("^(.+?): ([+-]?[0-9,]+)");
+
+    /** Stat display name -> Stat, for parsing real Hypixel item lore. */
+    private static final Map<String, Stat> STAT_BY_NAME = new HashMap<>();
+
+    static {
+        for (Stat stat : Stat.values()) {
+            STAT_BY_NAME.put(stat.getDisplayName(), stat);
+        }
+    }
 
     private static final ItemStatManager INSTANCE = new ItemStatManager();
 
@@ -89,6 +105,22 @@ public final class ItemStatManager {
                 } catch (NumberFormatException ignored) {
                 }
                 break;
+            }
+        }
+
+        // Also parse real Hypixel-format stat lines (e.g. "§7Strength: §c+100") so 1:1 items
+        // contribute stats too. Only exact stat-name matches count, so non-stat lore is ignored;
+        // putIfAbsent keeps any project-format value already parsed above.
+        for (String raw : lore) {
+            if (raw == null) continue;
+            Matcher m = HYPIXEL_STAT.matcher(ChatColor.stripColor(raw).trim());
+            if (!m.find()) continue;
+            Stat stat = STAT_BY_NAME.get(m.group(1).trim());
+            if (stat == null) continue;
+            try {
+                int value = Integer.parseInt(m.group(2).replace(",", ""));
+                if (value != 0) result.putIfAbsent(stat, value);
+            } catch (NumberFormatException ignored) {
             }
         }
         return result;
