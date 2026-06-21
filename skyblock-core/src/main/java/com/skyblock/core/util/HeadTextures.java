@@ -1,0 +1,31 @@
+package com.skyblock.core.util;
+
+import java.io.InputStream;
+import java.util.Properties;
+
+/**
+ * Central registry of real Hypixel head textures (base64), loaded from resource files so
+ * menus can show 1:1 icons. Sourced from the NotEnoughUpdates community repo. Lookups return
+ * {@code null} when a texture isn't registered, so callers fall back to a plain material —
+ * never breaking a menu.
+ */
+public final class HeadTextures {
+
+    private static final Properties MINIONS = load("/minion_heads.properties");
+
+    private HeadTextures() {}
+
+    private static Properties load(String path) {
+        Properties p = new Properties();
+        try (InputStream in = HeadTextures.class.getResourceAsStream(path)) {
+            if (in != null) p.load(in);
+        } catch (Exception ignored) {
+        }
+        return p;
+    }
+
+    /** Base64 head texture for a minion type (by enum name), or {@code null} if not registered. */
+    public static String minion(String typeName) {
+        return typeName == null ? null : MINIONS.getProperty(typeName);
+    }
+}
