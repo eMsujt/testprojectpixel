@@ -121,6 +121,12 @@ public final class MiningManager {
         public int getPowderReward()  { return powderReward; }
     }
 
+    /** The two powder currencies earned from mining in SkyBlock. */
+    public enum Powder {
+        MITHRIL,
+        GEMSTONE;
+    }
+
     /**
      * All 22 passive Heart-of-the-Mountain perks, ordered as they appear in the HOTM tree.
      * Each entry stores the perk's display name, maximum upgrade level, and the flat bonus
@@ -362,6 +368,35 @@ public final class MiningManager {
     public long getGemstonePowder(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return gemstonePowder.getOrDefault(playerId, 0L);
+    }
+
+    /**
+     * Adds the given {@link Powder} type to the player's total.
+     *
+     * @param playerId the player receiving powder
+     * @param type     which powder currency
+     * @param amount   powder to add, must not be negative
+     * @return the player's new powder total for {@code type}
+     */
+    public long addPowder(UUID playerId, Powder type, long amount) {
+        Objects.requireNonNull(type, "type");
+        return type == Powder.MITHRIL
+                ? addMithrilPowder(playerId, amount)
+                : addGemstonePowder(playerId, amount);
+    }
+
+    /**
+     * Returns the player's current total for the given {@link Powder} type.
+     *
+     * @param playerId the player to look up
+     * @param type     which powder currency
+     * @return powder total, {@code 0} if none recorded
+     */
+    public long getPowder(UUID playerId, Powder type) {
+        Objects.requireNonNull(type, "type");
+        return type == Powder.MITHRIL
+                ? getMithrilPowder(playerId)
+                : getGemstonePowder(playerId);
     }
 
     /**
