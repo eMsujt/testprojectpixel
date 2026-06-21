@@ -76,6 +76,15 @@ public class CollectionCategoryMenu extends Menu {
     }
 
     private static Material resolveMaterial(Collection c) {
+        // Legacy/SkyBlock collection names that don't match a modern Bukkit Material — map them
+        // to the correct vanilla item so they show their real icon instead of falling to PAPER.
+        switch (c.name()) {
+            case "MUSHROOM":   return Material.RED_MUSHROOM;
+            case "RAW_FISH":   return Material.COD;
+            case "RAW_SALMON": return Material.SALMON;
+            case "CLOWNFISH":  return Material.TROPICAL_FISH;
+            default:           break;
+        }
         try {
             return Material.valueOf(c.name());
         } catch (IllegalArgumentException e) {

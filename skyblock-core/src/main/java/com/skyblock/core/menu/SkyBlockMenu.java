@@ -43,7 +43,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(13, new ItemBuilder(Material.PISTON).displayName("§aMinions")
                 .lore("§7Manage your minions.").build(),
-                e -> e.setCancelled(true));
+                e -> { e.setCancelled(true); new com.skyblock.core.minion.gui.MinionsMenu(player).open(player); });
 
         setItem(14, new ItemBuilder(Material.BONE).displayName("§aBestiary")
                 .lore("§7Track the mobs you've slain.").build(),
@@ -79,7 +79,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(24, new ItemBuilder(Material.CHEST).displayName("§aStorage")
                 .lore("§7Access your personal storage.").build(),
-                e -> e.setCancelled(true));
+                e -> { e.setCancelled(true); new StorageMenu(player).open(player); });
 
         setItem(25, new ItemBuilder(Material.DIAMOND).displayName("§aStats")
                 .lore("§7View your SkyBlock stats.").build(),
