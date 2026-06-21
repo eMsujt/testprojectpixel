@@ -64,6 +64,10 @@ commands:
     usage: /sbitem [<id> [amount]]
     aliases: [sbgive]
     permission: skyblock.admin
+  recipe:
+    description: View the real crafting recipe for any SkyBlock item.
+    usage: /recipe <id>
+    aliases: [viewrecipe]
   bazaarmenu:
     description: Open the Bazaar GUI.
     usage: /bazaarmenu
