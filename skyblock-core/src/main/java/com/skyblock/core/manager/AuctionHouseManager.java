@@ -212,6 +212,11 @@ public final class AuctionHouseManager {
                 throw new IllegalArgumentException("startingBid must not be negative: " + startingBid);
             }
         }
+
+        /** Returns {@code true} if this is a buy-it-now listing, {@code false} for a bid-based auction. */
+        public boolean binListing() {
+            return type == AuctionType.BIN;
+        }
     }
 
     private static final class ListingState {
@@ -327,6 +332,30 @@ public final class AuctionHouseManager {
         return listings.values().stream()
                 .map(s -> s.listing)
                 .filter(l -> l.category() == category)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all active buy-it-now listings.
+     *
+     * @return BIN listings; empty list if none
+     */
+    public List<AuctionListing> getBinListings() {
+        return listings.values().stream()
+                .map(s -> s.listing)
+                .filter(AuctionListing::binListing)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns all active bid-based auction listings.
+     *
+     * @return bid-only listings; empty list if none
+     */
+    public List<AuctionListing> getBidListings() {
+        return listings.values().stream()
+                .map(s -> s.listing)
+                .filter(l -> !l.binListing())
                 .collect(Collectors.toList());
     }
 
