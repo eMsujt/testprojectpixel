@@ -1037,6 +1037,7 @@ public final class SkyBlockCore extends JavaPlugin {
         }
         getServer().getPluginManager().registerEvents(new NPCListener(this, npcManager), this);
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.listener.PlayerListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(tamingManager, this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.armor.ArmorSetListener(com.skyblock.core.armor.ArmorSetManager.getInstance()), this);
         ActionBarManager.getInstance().start(this);
