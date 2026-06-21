@@ -1,7 +1,11 @@
 package com.skyblock.core.listener;
 
+import com.skyblock.core.combat.RareDropTable;
+import com.skyblock.core.item.SkyblockItems;
 import com.skyblock.core.manager.CombatManager;
 import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.manager.StatManager;
+import com.skyblock.core.model.Stat;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -10,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.UUID;
 
@@ -39,6 +45,29 @@ public final class EntityListener implements Listener {
             cm.addXp(uuid, CombatManager.XP_PER_KILL);
         }
         dropCoins(event, killer);
+        dropRareLoot(event, killer);
+    }
+
+    /** Rolls the mob's rare drop, with the chance boosted by the killer's Magic Find. */
+    private static void dropRareLoot(EntityDeathEvent event, Player killer) {
+        String dropId = RareDropTable.dropFor(event.getEntityType());
+        if (dropId == null) {
+            return;
+        }
+        double magicFind = StatManager.getInstance().getStat(killer.getUniqueId(), Stat.MAGIC_FIND);
+        double chance = RareDropTable.BASE_CHANCE * (1.0 + magicFind / 100.0);
+        if (Math.random() * 100.0 >= chance) {
+            return;
+        }
+        ItemStack item = SkyblockItems.build(dropId, 1);
+        if (item == null) {
+            return;
+        }
+        event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), item);
+        ItemMeta meta = item.getItemMeta();
+        String name = meta != null && meta.hasDisplayName() ? meta.getDisplayName() : dropId;
+        killer.sendMessage("§b§lRARE DROP! §r" + name);
+        killer.playSound(killer.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1.5f);
     }
 
     /** Hostile mobs drop coins to the killer's purse, scaled to the mob's max health. */
