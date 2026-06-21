@@ -290,11 +290,65 @@ public final class MinionManager {
     /** Per-player set of unique minion "TYPE:TIER" strings ever placed or upgraded to. */
     private final Map<UUID, Set<String>> uniqueMinions = new HashMap<>();
 
+    /**
+     * Per-minion scheduled task that drives a single {@link MinionData}'s
+     * production loop independently of the global {@link #tickTask}.
+     *
+     * <p>Call {@link #start} to schedule it and {@link #stop} to cancel it.
+     * {@link #isRunning()} returns {@code true} only while the task is live.</p>
+     */
+    public final class ActiveMinionTask extends BukkitRunnable {
+        private final MinionData data;
+        private BukkitTask task;
+
+        /** Creates an unscheduled task for the given minion. */
+        public ActiveMinionTask(MinionData data) {
+            this.data = Objects.requireNonNull(data, "data");
+        }
+
+        /** Returns the minion this task drives. */
+        public MinionData getData() {
+            return data;
+        }
+
+        /** {@code true} if the task has been scheduled and not yet stopped. */
+        public boolean isRunning() {
+            return task != null;
+        }
+
+        /**
+         * Schedules this task to tick the minion every
+         * {@link MinionManager#TICK_INTERVAL_TICKS} server ticks.
+         * If already running, the previous task is cancelled first.
+         */
+        public void start(JavaPlugin plugin) {
+            Objects.requireNonNull(plugin, "plugin");
+            stop();
+            task = runTaskTimer(plugin, TICK_INTERVAL_TICKS, TICK_INTERVAL_TICKS);
+        }
+
+        /** Cancels the scheduled task. No-op if not running. */
+        public void stop() {
+            if (task != null) {
+                task.cancel();
+                task = null;
+            }
+        }
+
+        @Override
+        public void run() {
+            tick(data);
+        }
+    }
+
     /** Interval (in server ticks) between minion production passes; 20 ticks = 1 second. */
     private static final long TICK_INTERVAL_TICKS = 20L;
 
     /** Repeating production task, or {@code null} when not running. */
     private BukkitTask tickTask;
+
+    /** Per-minion active tasks; populated by {@link #startMinionTask}. */
+    private final Map<UUID, ActiveMinionTask> activeTasks = new HashMap<>();
 
     private MinionManager() {
     }
@@ -391,6 +445,7 @@ public final class MinionManager {
             }
         }
         locationIndex.values().remove(minionId);
+        stopMinionTask(minionId);
         return true;
     }
 
@@ -602,6 +657,70 @@ public final class MinionManager {
         }
     }
 
+    /**
+     * Starts an {@link ActiveMinionTask} for the given minion ID, replacing any
+     * existing task for that minion. Returns the new task, or {@code null} if
+     * the minion is unknown.
+     */
+    public ActiveMinionTask startMinionTask(UUID minionId, JavaPlugin plugin) {
+        Objects.requireNonNull(minionId, "minionId");
+        Objects.requireNonNull(plugin, "plugin");
+        MinionData data = minions.get(minionId);
+        if (data == null) {
+            return null;
+        }
+        ActiveMinionTask existing = activeTasks.get(minionId);
+        if (existing != null) {
+            existing.stop();
+        }
+        ActiveMinionTask task = new ActiveMinionTask(data);
+        task.start(plugin);
+        activeTasks.put(minionId, task);
+        return task;
+    }
+
+    /**
+     * Stops and removes the {@link ActiveMinionTask} for the given minion.
+     * Returns {@code true} if a task was running.
+     */
+    public boolean stopMinionTask(UUID minionId) {
+        Objects.requireNonNull(minionId, "minionId");
+        ActiveMinionTask task = activeTasks.remove(minionId);
+        if (task == null) {
+            return false;
+        }
+        task.stop();
+        return true;
+    }
+
+    /**
+     * Returns the live {@link ActiveMinionTask} for the given minion, or
+     * {@code null} if none is scheduled.
+     */
+    public ActiveMinionTask getActiveTask(UUID minionId) {
+        Objects.requireNonNull(minionId, "minionId");
+        return activeTasks.get(minionId);
+    }
+
+    /**
+     * Starts per-minion tasks for every currently tracked minion, replacing any
+     * already-running tasks.
+     */
+    public void startAllMinionTasks(JavaPlugin plugin) {
+        Objects.requireNonNull(plugin, "plugin");
+        for (UUID id : minions.keySet()) {
+            startMinionTask(id, plugin);
+        }
+    }
+
+    /** Stops and removes every per-minion task. */
+    public void stopAllMinionTasks() {
+        for (ActiveMinionTask task : activeTasks.values()) {
+            task.stop();
+        }
+        activeTasks.clear();
+    }
+
     /** Removes all of the owner's minions and state; returns how many were removed. */
     public int clearMinions(UUID owner) {
         Objects.requireNonNull(owner, "owner");
@@ -612,6 +731,7 @@ public final class MinionManager {
         for (UUID id : list) {
             minions.remove(id);
             locationIndex.values().remove(id);
+            stopMinionTask(id);
         }
         uniqueMinions.remove(owner);
         playerMaxSlots.remove(owner);
