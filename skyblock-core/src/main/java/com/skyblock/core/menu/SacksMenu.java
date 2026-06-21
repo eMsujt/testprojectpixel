@@ -19,7 +19,7 @@ public final class SacksMenu extends AbstractSkyBlockMenu {
     };
 
     public SacksMenu(Player player) {
-        super(player, "§6Sacks", 6);
+        super(player, "§6Sacks of Holding", 6);
     }
 
     @Override
