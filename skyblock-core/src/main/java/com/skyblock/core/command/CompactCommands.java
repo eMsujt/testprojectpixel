@@ -3183,4 +3183,27 @@ public final class CompactCommands {
         }
     }
 
+    // =========================================================================
+    // /collections (simple menu opener)
+    // =========================================================================
+
+    public static final class CollectionsCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new CollectionsMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
 }
