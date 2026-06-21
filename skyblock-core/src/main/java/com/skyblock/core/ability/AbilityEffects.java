@@ -31,7 +31,7 @@ public final class AbilityEffects {
         if (abilityName == null) return false;
         return switch (abilityName.toLowerCase(Locale.ROOT)) {
             case "instant transmission", "ether transmission", "dragon rage", "giant's slam",
-                 "weird transmission", "instant heal", "implosion" -> true;
+                 "weird transmission", "instant heal", "implosion", "leap" -> true;
             default -> false;
         };
     }
@@ -52,8 +52,28 @@ public final class AbilityEffects {
                             false);
             case "instant heal" -> instantHeal(player, ability);
             case "implosion" -> implosion(player, parseDamage(ability));
+            case "leap" -> leap(player, parseDamage(ability));
             default -> { }
         }
+    }
+
+    /** Launches the player up and forward, then damages nearby monsters (Leaping Sword). */
+    private static void leap(Player player, double damage) {
+        Vector look = player.getEyeLocation().getDirection();
+        Vector velocity = new Vector(look.getX(), 0, look.getZ());
+        if (velocity.lengthSquared() > 1.0e-6) {
+            velocity.normalize().multiply(0.6);
+        }
+        velocity.setY(1.0);
+        player.setVelocity(velocity);
+
+        double radius = 5.0;
+        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (entity instanceof Monster monster) {
+                monster.damage(damage, player);
+            }
+        }
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1f, 1.4f);
     }
 
     /** AoE burst: damages every monster around the player (no knockback), explosion feedback. */
