@@ -19,7 +19,7 @@ import java.util.UUID;
  */
 public final class AlchemyMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE       = "§2Alchemy";
+    private static final String TITLE       = "§dAlchemy";
     private static final int    SUMMARY_SLOT = 4;
 
     private static final int[] RECIPE_SLOTS = {
