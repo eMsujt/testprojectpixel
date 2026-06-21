@@ -198,6 +198,20 @@ public final class FairySoulManager {
     }
 
     /**
+     * Returns the total permanent Health bonus the player has earned from fairy souls.
+     *
+     * <p>Mirrors the Hypixel formula: each {@link #SOULS_PER_REWARD}-soul milestone that
+     * falls on the {@link Stat#HEALTH} slot in the reward cycle contributes
+     * {@code 3} Health.</p>
+     *
+     * @param playerId the player
+     * @return the total Health bonus, {@code 0.0} if no souls found
+     */
+    public double getHealthBonus(UUID playerId) {
+        return getStatBonuses(playerId).getOrDefault(Stat.HEALTH, 0.0);
+    }
+
+    /**
      * Clears all fairy soul data for the given player (e.g. on quit or profile reset).
      *
      * @param playerId the player
