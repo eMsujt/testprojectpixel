@@ -41,7 +41,6 @@ import com.skyblock.core.menu.MinionMenu;
 import com.skyblock.core.menu.ProfileMenu;
 import com.skyblock.core.menu.ForgeMenu;
 import com.skyblock.core.menu.SkyBlockMenu;
-import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.StatsMenu;
 import com.skyblock.core.menu.CrimsonIsleMenu;
 import com.skyblock.core.menu.DojoMenu;
@@ -63,7 +62,6 @@ import com.skyblock.core.manager.MinionManager;
 import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.party.PartyCommand;
 import com.skyblock.core.manager.PartyManager;
-import com.skyblock.core.command.PetCommand;
 import com.skyblock.core.ability.AbilityCommand;
 import com.skyblock.core.manager.ItemAbilityManager;
 import com.skyblock.core.manager.PetManager;
@@ -103,7 +101,6 @@ import com.skyblock.core.manager.ChocolateFactoryManager;
 import com.skyblock.core.command.ChocolateFactoryCommand;
 import com.skyblock.core.menu.MiningCommissionMenu;
 import com.skyblock.core.menu.BazaarMenu;
-import com.skyblock.core.menu.ForagingMenu;
 import com.skyblock.core.menu.JacobsContestMenu;
 import com.skyblock.core.manager.JacobsContestManager;
 import com.skyblock.core.vault.VaultCommand;
@@ -116,7 +113,6 @@ import com.skyblock.core.friend.FriendCommand;
 import com.skyblock.core.friend.FriendManager;
 import com.skyblock.core.manager.ForgeManager;
 import com.skyblock.core.manager.RepairManager;
-import com.skyblock.core.foraging.ForagingCommand;
 import com.skyblock.core.foraging.ForagingManager;
 import com.skyblock.core.manager.DungeonsManager;
 import com.skyblock.core.manager.MiningManager;
@@ -153,7 +149,6 @@ import com.skyblock.core.manager.NetworthManager;
 import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.manager.WarpManager;
-import com.skyblock.core.alchemy.AlchemyCommand;
 import com.skyblock.core.manager.AlchemyManager;
 import com.skyblock.core.manager.WardrobeManager;
 import com.skyblock.core.manager.AccessoryBagManager;
@@ -667,20 +662,19 @@ public final class SkyBlockCore extends JavaPlugin {
         PartyCommand partyCommand = new PartyCommand(partyManager);
         getCommand("party").setExecutor(partyCommand);
         getCommand("party").setTabCompleter(partyCommand);
-        PetCommand petCommand = new PetCommand(petManager);
-        getCommand("pet").setExecutor(petCommand);
-        getCommand("pet").setTabCompleter(petCommand);
+        Commands.PetCmd petCmd = new Commands.PetCmd();
+        getCommand("pet").setExecutor(petCmd);
+        getCommand("pet").setTabCompleter(petCmd);
         AbilityCommand abilityCommand = new AbilityCommand(ItemAbilityManager.getInstance());
         if (getCommand("ability") != null) {
             getCommand("ability").setExecutor(abilityCommand);
             getCommand("ability").setTabCompleter(abilityCommand);
         }
-        MenuCommand petsCommand = new MenuCommand(p -> new PetMenu(p).open(p));
         if (getCommand("pets") != null) {
-            getCommand("pets").setExecutor(petsCommand);
+            getCommand("pets").setExecutor(petCmd);
         }
         if (getCommand("petsmenu") != null) {
-            getCommand("petsmenu").setExecutor(petsCommand);
+            getCommand("petsmenu").setExecutor(petCmd);
         }
         Commands.GardenCmd gardenCmd = new Commands.GardenCmd();
         if (getCommand("garden") != null) {
@@ -822,9 +816,9 @@ public final class SkyBlockCore extends JavaPlugin {
         EventCommand eventCommand = new EventCommand(eventManager);
         getCommand("event").setExecutor(eventCommand);
         getCommand("event").setTabCompleter(eventCommand);
-        ForagingCommand foragingCommand = new ForagingCommand(foragingManager);
-        getCommand("foraging").setExecutor(foragingCommand);
-        getCommand("foraging").setTabCompleter(foragingCommand);
+        Commands.ForagingCmd foragingCmd = new Commands.ForagingCmd();
+        getCommand("foraging").setExecutor(foragingCmd);
+        getCommand("foraging").setTabCompleter(foragingCmd);
         if (getCommand("miningzone") != null) {
             MiningZoneCommand miningZoneCommand =
                     new MiningZoneCommand(MiningZoneManager.getInstance(), miningManager);
@@ -930,10 +924,9 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("bazaarmenu").setExecutor(bazaarMenuCommand);
             getCommand("bazaarmenu").setTabCompleter(bazaarMenuCommand);
         }
-        MenuCommand foragingMenuCommand = new MenuCommand(p -> new ForagingMenu(p.getUniqueId()).open(p));
         if (getCommand("foragingmenu") != null) {
-            getCommand("foragingmenu").setExecutor(foragingMenuCommand);
-            getCommand("foragingmenu").setTabCompleter(foragingMenuCommand);
+            getCommand("foragingmenu").setExecutor(foragingCmd);
+            getCommand("foragingmenu").setTabCompleter(foragingCmd);
         }
         MenuCommand jacobsContestCommand = new MenuCommand(p -> new JacobsContestMenu(p.getUniqueId()).open(p));
         if (getCommand("jacobscontest") != null) {
@@ -988,9 +981,9 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("run").setExecutor(runCommand);
             getCommand("run").setTabCompleter(runCommand);
         }
-        AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
-        getCommand("alchemy").setExecutor(alchemyCommand);
-        getCommand("alchemy").setTabCompleter(alchemyCommand);
+        Commands.AlchemyCmd alchemyCmd = new Commands.AlchemyCmd();
+        getCommand("alchemy").setExecutor(alchemyCmd);
+        getCommand("alchemy").setTabCompleter(alchemyCmd);
         Commands.WardrobeCommand wardrobeCommand = new Commands.WardrobeCommand(wardrobeManager);
         getCommand("wardrobe").setExecutor(wardrobeCommand);
         getCommand("wardrobe").setTabCompleter(wardrobeCommand);
