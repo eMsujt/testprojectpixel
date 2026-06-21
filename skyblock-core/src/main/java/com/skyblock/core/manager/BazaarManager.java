@@ -15,91 +15,95 @@ import java.util.UUID;
 
 public final class BazaarManager {
 
+    public enum BazaarCategory {
+        FARMING, MINING, COMBAT, FORAGING, FISHING, MISC
+    }
+
     public enum BazaarProduct {
         // FARMING
-        RAW_PORKCHOP("Raw Porkchop", "FARMING"),
-        RAW_CHICKEN("Raw Chicken", "FARMING"),
-        RAW_BEEF("Raw Beef", "FARMING"),
-        RAW_RABBIT("Raw Rabbit", "FARMING"),
-        RAW_MUTTON("Raw Mutton", "FARMING"),
-        WHEAT("Wheat", "FARMING"),
-        CARROT("Carrot", "FARMING"),
-        POTATO("Potato", "FARMING"),
-        SUGAR_CANE("Sugar Cane", "FARMING"),
-        PUMPKIN("Pumpkin", "FARMING"),
-        MELON("Melon Slice", "FARMING"),
-        COCOA_BEANS("Cocoa Beans", "FARMING"),
-        NETHER_WART("Nether Wart", "FARMING"),
-        RED_MUSHROOM("Red Mushroom", "FARMING"),
-        BROWN_MUSHROOM("Brown Mushroom", "FARMING"),
-        CACTUS("Cactus", "FARMING"),
-        SUGAR("Sugar", "FARMING"),
-        ENCHANTED_BREAD("Enchanted Bread", "FARMING"),
+        RAW_PORKCHOP("Raw Porkchop", BazaarCategory.FARMING),
+        RAW_CHICKEN("Raw Chicken", BazaarCategory.FARMING),
+        RAW_BEEF("Raw Beef", BazaarCategory.FARMING),
+        RAW_RABBIT("Raw Rabbit", BazaarCategory.FARMING),
+        RAW_MUTTON("Raw Mutton", BazaarCategory.FARMING),
+        WHEAT("Wheat", BazaarCategory.FARMING),
+        CARROT("Carrot", BazaarCategory.FARMING),
+        POTATO("Potato", BazaarCategory.FARMING),
+        SUGAR_CANE("Sugar Cane", BazaarCategory.FARMING),
+        PUMPKIN("Pumpkin", BazaarCategory.FARMING),
+        MELON("Melon Slice", BazaarCategory.FARMING),
+        COCOA_BEANS("Cocoa Beans", BazaarCategory.FARMING),
+        NETHER_WART("Nether Wart", BazaarCategory.FARMING),
+        RED_MUSHROOM("Red Mushroom", BazaarCategory.FARMING),
+        BROWN_MUSHROOM("Brown Mushroom", BazaarCategory.FARMING),
+        CACTUS("Cactus", BazaarCategory.FARMING),
+        SUGAR("Sugar", BazaarCategory.FARMING),
+        ENCHANTED_BREAD("Enchanted Bread", BazaarCategory.FARMING),
         // MINING
-        COBBLESTONE("Cobblestone", "MINING"),
-        COAL("Coal", "MINING"),
-        IRON_INGOT("Iron Ingot", "MINING"),
-        GOLD_INGOT("Gold Ingot", "MINING"),
-        DIAMOND("Diamond", "MINING"),
-        LAPIS_LAZULI("Lapis Lazuli", "MINING"),
-        EMERALD("Emerald", "MINING"),
-        REDSTONE("Redstone", "MINING"),
-        QUARTZ("Nether Quartz", "MINING"),
-        OBSIDIAN("Obsidian", "MINING"),
-        GLOWSTONE_DUST("Glowstone Dust", "MINING"),
-        GRAVEL("Gravel", "MINING"),
-        FLINT("Flint", "MINING"),
-        ICE("Ice", "MINING"),
-        NETHERRACK("Netherrack", "MINING"),
-        END_STONE("End Stone", "MINING"),
-        MITHRIL_ORE("Mithril Ore", "MINING"),
+        COBBLESTONE("Cobblestone", BazaarCategory.MINING),
+        COAL("Coal", BazaarCategory.MINING),
+        IRON_INGOT("Iron Ingot", BazaarCategory.MINING),
+        GOLD_INGOT("Gold Ingot", BazaarCategory.MINING),
+        DIAMOND("Diamond", BazaarCategory.MINING),
+        LAPIS_LAZULI("Lapis Lazuli", BazaarCategory.MINING),
+        EMERALD("Emerald", BazaarCategory.MINING),
+        REDSTONE("Redstone", BazaarCategory.MINING),
+        QUARTZ("Nether Quartz", BazaarCategory.MINING),
+        OBSIDIAN("Obsidian", BazaarCategory.MINING),
+        GLOWSTONE_DUST("Glowstone Dust", BazaarCategory.MINING),
+        GRAVEL("Gravel", BazaarCategory.MINING),
+        FLINT("Flint", BazaarCategory.MINING),
+        ICE("Ice", BazaarCategory.MINING),
+        NETHERRACK("Netherrack", BazaarCategory.MINING),
+        END_STONE("End Stone", BazaarCategory.MINING),
+        MITHRIL_ORE("Mithril Ore", BazaarCategory.MINING),
         // COMBAT
-        ROTTEN_FLESH("Rotten Flesh", "COMBAT"),
-        BONE("Bone", "COMBAT"),
-        STRING("String", "COMBAT"),
-        SPIDER_EYE("Spider Eye", "COMBAT"),
-        GUNPOWDER("Gunpowder", "COMBAT"),
-        BLAZE_ROD("Blaze Rod", "COMBAT"),
-        GHAST_TEAR("Ghast Tear", "COMBAT"),
-        MAGMA_CREAM("Magma Cream", "COMBAT"),
-        SLIME_BALL("Slimeball", "COMBAT"),
-        ENDER_PEARL("Ender Pearl", "COMBAT"),
-        ENDER_EYE("Eye of Ender", "COMBAT"),
+        ROTTEN_FLESH("Rotten Flesh", BazaarCategory.COMBAT),
+        BONE("Bone", BazaarCategory.COMBAT),
+        STRING("String", BazaarCategory.COMBAT),
+        SPIDER_EYE("Spider Eye", BazaarCategory.COMBAT),
+        GUNPOWDER("Gunpowder", BazaarCategory.COMBAT),
+        BLAZE_ROD("Blaze Rod", BazaarCategory.COMBAT),
+        GHAST_TEAR("Ghast Tear", BazaarCategory.COMBAT),
+        MAGMA_CREAM("Magma Cream", BazaarCategory.COMBAT),
+        SLIME_BALL("Slimeball", BazaarCategory.COMBAT),
+        ENDER_PEARL("Ender Pearl", BazaarCategory.COMBAT),
+        ENDER_EYE("Eye of Ender", BazaarCategory.COMBAT),
         // FORAGING
-        OAK_LOG("Oak Wood", "FORAGING"),
-        BIRCH_LOG("Birch Wood", "FORAGING"),
-        SPRUCE_LOG("Spruce Wood", "FORAGING"),
-        DARK_OAK_LOG("Dark Oak Wood", "FORAGING"),
-        ACACIA_LOG("Acacia Wood", "FORAGING"),
-        JUNGLE_LOG("Jungle Wood", "FORAGING"),
-        MANGROVE_LOG("Mangrove Wood", "FORAGING"),
+        OAK_LOG("Oak Wood", BazaarCategory.FORAGING),
+        BIRCH_LOG("Birch Wood", BazaarCategory.FORAGING),
+        SPRUCE_LOG("Spruce Wood", BazaarCategory.FORAGING),
+        DARK_OAK_LOG("Dark Oak Wood", BazaarCategory.FORAGING),
+        ACACIA_LOG("Acacia Wood", BazaarCategory.FORAGING),
+        JUNGLE_LOG("Jungle Wood", BazaarCategory.FORAGING),
+        MANGROVE_LOG("Mangrove Wood", BazaarCategory.FORAGING),
         // FISHING
-        COD("Raw Fish", "FISHING"),
-        SALMON("Raw Salmon", "FISHING"),
-        PUFFERFISH("Pufferfish", "FISHING"),
-        TROPICAL_FISH("Tropical Fish", "FISHING"),
-        PRISMARINE_SHARD("Prismarine Shard", "FISHING"),
-        PRISMARINE_CRYSTALS("Prismarine Crystals", "FISHING"),
-        INK_SAC("Ink Sac", "FISHING"),
+        COD("Raw Fish", BazaarCategory.FISHING),
+        SALMON("Raw Salmon", BazaarCategory.FISHING),
+        PUFFERFISH("Pufferfish", BazaarCategory.FISHING),
+        TROPICAL_FISH("Tropical Fish", BazaarCategory.FISHING),
+        PRISMARINE_SHARD("Prismarine Shard", BazaarCategory.FISHING),
+        PRISMARINE_CRYSTALS("Prismarine Crystals", BazaarCategory.FISHING),
+        INK_SAC("Ink Sac", BazaarCategory.FISHING),
         // MISC
-        PAPER("Paper", "MISC"),
-        GLASS("Glass", "MISC"),
-        SAND("Sand", "MISC"),
-        SOUL_SAND("Soul Sand", "MISC"),
-        LEATHER("Leather", "MISC"),
-        FEATHER("Feather", "MISC");
+        PAPER("Paper", BazaarCategory.MISC),
+        GLASS("Glass", BazaarCategory.MISC),
+        SAND("Sand", BazaarCategory.MISC),
+        SOUL_SAND("Soul Sand", BazaarCategory.MISC),
+        LEATHER("Leather", BazaarCategory.MISC),
+        FEATHER("Feather", BazaarCategory.MISC);
 
-        private final String displayName;
-        private final String category;
+        private final String          displayName;
+        private final BazaarCategory  category;
 
-        BazaarProduct(String displayName, String category) {
+        BazaarProduct(String displayName, BazaarCategory category) {
             this.displayName = displayName;
-            this.category = category;
+            this.category    = category;
         }
 
-        public String getDisplayName() { return displayName; }
-        public String getCategory()    { return category; }
-        public String getItemId()      { return name(); }
+        public String         getDisplayName() { return displayName; }
+        public BazaarCategory getCategory()    { return category; }
+        public String         getItemId()      { return name(); }
     }
 
     public enum FeeTier {
