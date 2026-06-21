@@ -24,7 +24,7 @@ public final class PlayerListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         double maxHealth = statsManager.get(player.getUniqueId(), Stat.HEALTH);
-        org.bukkit.attribute.AttributeInstance attr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        org.bukkit.attribute.AttributeInstance attr = player.getAttribute(Attribute.MAX_HEALTH);
         if (attr != null) {
             attr.setBaseValue(maxHealth);
         }

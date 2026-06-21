@@ -47,7 +47,7 @@ public class CollectionCategoryMenu extends Menu {
                         .build(),
                 event -> {
                     event.setCancelled(true);
-                    new CollectionsMenu(playerId).open((Player) event.getWhoClicked());
+                    new CollectionsMenu((Player) event.getWhoClicked()).open((Player) event.getWhoClicked());
                 });
 
         CollectionManager manager = CollectionManager.getInstance();

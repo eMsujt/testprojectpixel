@@ -2840,7 +2840,7 @@ public final class Commands {
 
         @Override
         protected void openMenu(Player player) {
-            new CollectionsMenu(player.getUniqueId()).open(player);
+            new CollectionsMenu(player).open(player);
         }
 
         @Override
@@ -3315,7 +3315,7 @@ public final class Commands {
 
         @Override
         protected void openMenu(Player player) {
-            new CollectionsMenu(player.getUniqueId()).open(player);
+            new CollectionsMenu(player).open(player);
         }
 
         @Override
@@ -3614,7 +3614,7 @@ public final class Commands {
 
         @Override
         protected void openMenu(Player player) {
-            new CollectionsMenu(player.getUniqueId()).open(player);
+            new CollectionsMenu(player).open(player);
         }
 
         @Override
