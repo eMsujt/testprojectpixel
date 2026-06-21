@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 6-row chest GUI titled '§dPets'. Shows the player's active pet summary at
+ * 6-row chest GUI titled '§aPets'. Shows the player's active pet summary at
  * slot 4 and one tile per owned {@link PetData} across the interior rows.
  */
 public final class PetsMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE        = "§dPets";
+    private static final String TITLE        = "§aPets";
     private static final int    SUMMARY_SLOT = 4;
 
     private static final int[] PET_SLOTS = {
