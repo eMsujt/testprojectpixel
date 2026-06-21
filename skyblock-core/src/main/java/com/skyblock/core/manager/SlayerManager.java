@@ -28,7 +28,7 @@ public final class SlayerManager {
     static {
         Map<String, int[]> m = new LinkedHashMap<>();
         m.put("Zombie",   new int[]{500,       20_000,    400_000,   3_000_000,  10_000_000});
-        m.put("Spider",   new int[]{500,        10_000,     80_000,   1_000_000,   5_000_000});
+        m.put("Spider",   new int[]{10_000,      10_000,     80_000,   1_000_000,   5_000_000});
         m.put("Wolf",     new int[]{2_000,      40_000,    750_000,   2_000_000,   4_000_000});
         m.put("Enderman", new int[]{10_000,    100_000,  2_000_000,  10_000_000,  30_000_000});
         m.put("Blaze",    new int[]{3_000_000, 8_000_000, 20_000_000, 100_000_000, 250_000_000});
