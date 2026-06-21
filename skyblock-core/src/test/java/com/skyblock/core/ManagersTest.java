@@ -68,6 +68,7 @@ import com.skyblock.core.manager.SackManager.CapacityTier;
 import com.skyblock.core.manager.SackManager.SackType;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.SkillsManager;
+import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.TrophyFishManager.TrophyTier;
 import com.skyblock.core.manager.WardrobeManager;
@@ -83,6 +84,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -5341,6 +5343,112 @@ class ManagersTest {
         void getOutfit_returnsArmorArrayOfLengthFour() {
             manager.saveOutfit(playerId, "set", emptyArmor());
             assertEquals(4, manager.getOutfit(playerId, "set").length);
+        }
+
+        private static Map<Stat, Double> stats(Stat a, double va, Stat b, double vb) {
+            Map<Stat, Double> map = new EnumMap<>(Stat.class);
+            map.put(a, va);
+            map.put(b, vb);
+            return map;
+        }
+
+        @Test
+        void saveOutfitWithStats_exposesThemViaGetOutfitStats() {
+            assertTrue(manager.saveOutfit(playerId, "diamond", emptyArmor(),
+                    stats(Stat.DEFENSE, 60.0, Stat.HEALTH, 40.0)));
+            Map<Stat, Double> read = manager.getOutfitStats(playerId, "diamond");
+            assertEquals(60.0, read.get(Stat.DEFENSE));
+            assertEquals(40.0, read.get(Stat.HEALTH));
+        }
+
+        @Test
+        void getOutfitStats_emptyWhenNoStatsStored() {
+            manager.saveOutfit(playerId, "plain", emptyArmor());
+            assertTrue(manager.getOutfitStats(playerId, "plain").isEmpty());
+            assertTrue(manager.getOutfitStats(playerId, "missing").isEmpty());
+        }
+
+        @Test
+        void getOutfitStats_returnsUnmodifiableCopy() {
+            manager.saveOutfit(playerId, "set", emptyArmor(), stats(Stat.STRENGTH, 10.0, Stat.SPEED, 5.0));
+            Map<Stat, Double> read = manager.getOutfitStats(playerId, "set");
+            assertThrows(UnsupportedOperationException.class, () -> read.put(Stat.HEALTH, 1.0));
+        }
+
+        @Test
+        void equip_appliesOutfitStatsAsBonuses() {
+            StatManager statManager = StatManager.getInstance();
+            manager.saveOutfit(playerId, "diamond", emptyArmor(), stats(Stat.DEFENSE, 60.0, Stat.HEALTH, 40.0));
+
+            ItemStack[] armor = manager.equip(playerId, "diamond");
+            assertNotNull(armor);
+            assertEquals(4, armor.length);
+            assertEquals("diamond", manager.getActiveArmorSet(playerId));
+            assertEquals(60.0, statManager.getBonus(playerId, Stat.DEFENSE));
+            assertEquals(40.0, statManager.getBonus(playerId, Stat.HEALTH));
+        }
+
+        @Test
+        void equip_swappingOutfitsDoesNotAccumulateBonuses() {
+            StatManager statManager = StatManager.getInstance();
+            manager.saveOutfit(playerId, "diamond", emptyArmor(), stats(Stat.DEFENSE, 60.0, Stat.HEALTH, 40.0));
+            manager.saveOutfit(playerId, "strong", emptyArmor(), stats(Stat.STRENGTH, 75.0, Stat.CRIT_DAMAGE, 25.0));
+
+            manager.equip(playerId, "diamond");
+            manager.equip(playerId, "strong");
+
+            // Previous outfit's bonuses are fully reversed.
+            assertEquals(0.0, statManager.getBonus(playerId, Stat.DEFENSE));
+            assertEquals(0.0, statManager.getBonus(playerId, Stat.HEALTH));
+            // Newly equipped outfit's bonuses are applied exactly once.
+            assertEquals(75.0, statManager.getBonus(playerId, Stat.STRENGTH));
+            assertEquals(25.0, statManager.getBonus(playerId, Stat.CRIT_DAMAGE));
+        }
+
+        @Test
+        void unequip_removesAppliedBonusesAndClearsActiveSet() {
+            StatManager statManager = StatManager.getInstance();
+            manager.saveOutfit(playerId, "diamond", emptyArmor(), stats(Stat.DEFENSE, 60.0, Stat.HEALTH, 40.0));
+            manager.equip(playerId, "diamond");
+
+            assertTrue(manager.unequip(playerId));
+            assertNull(manager.getActiveArmorSet(playerId));
+            assertEquals(0.0, statManager.getBonus(playerId, Stat.DEFENSE));
+            assertEquals(0.0, statManager.getBonus(playerId, Stat.HEALTH));
+        }
+
+        @Test
+        void equip_unknownOutfitReturnsNullAndAppliesNothing() {
+            assertNull(manager.equip(playerId, "ghost"));
+            assertNull(manager.getActiveArmorSet(playerId));
+        }
+
+        @Test
+        void lockedSlot_gatesSaveAndEquip() {
+            // Slots within the default count are unlocked; later ones are not.
+            assertTrue(manager.isSlotUnlocked(playerId, WardrobeSlot.SLOT_1));
+            assertFalse(manager.isSlotUnlocked(playerId, WardrobeSlot.SLOT_5));
+
+            // Saving/equipping a locked slot is rejected.
+            assertFalse(manager.saveOutfit(playerId, WardrobeSlot.SLOT_5, emptyArmor()));
+            assertNull(manager.equip(playerId, WardrobeSlot.SLOT_5));
+
+            // After unlocking, the slot behaves normally.
+            assertTrue(manager.unlockSlot(playerId, WardrobeSlot.SLOT_5));
+            assertFalse(manager.unlockSlot(playerId, WardrobeSlot.SLOT_5)); // already unlocked
+            assertTrue(manager.isSlotUnlocked(playerId, WardrobeSlot.SLOT_5));
+            assertTrue(manager.saveOutfit(playerId, WardrobeSlot.SLOT_5, emptyArmor()));
+            assertNotNull(manager.equip(playerId, WardrobeSlot.SLOT_5));
+        }
+
+        @Test
+        void equip_bySlotAppliesStats() {
+            StatManager statManager = StatManager.getInstance();
+            manager.saveOutfit(playerId, WardrobeSlot.SLOT_1, emptyArmor(), stats(Stat.SPEED, 20.0, Stat.INTELLIGENCE, 50.0));
+
+            assertNotNull(manager.equip(playerId, WardrobeSlot.SLOT_1));
+            assertEquals(20.0, statManager.getBonus(playerId, Stat.SPEED));
+            assertEquals(50.0, statManager.getBonus(playerId, Stat.INTELLIGENCE));
         }
     }
 
