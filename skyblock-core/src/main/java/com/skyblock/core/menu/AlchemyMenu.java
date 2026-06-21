@@ -13,31 +13,27 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Canonical "Alchemy" menu. A 54-slot (6-row) chest GUI framed by a
- * {@code GRAY_STAINED_GLASS_PANE} border with a brewing stand at slot 4
- * summarising the viewing player's alchemy level, XP and active brew status
- * (from {@link AlchemyManager}), and one POTION tile per {@link PotionType}.
+ * 5-row chest GUI titled '§5Alchemy Table'. Shows the player's alchemy level,
+ * XP and active brew status at slot 4, and one tile per {@link PotionType}
+ * across the interior rows.
  */
-public final class AlchemyMenu extends Menu {
+public final class AlchemyMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE = "§dAlchemy";
-    private static final int SUMMARY_SLOT = 4;
+    private static final String TITLE       = "§5Alchemy Table";
+    private static final int    SUMMARY_SLOT = 4;
 
-    /** Recipe tiles laid out across the third and fourth interior rows. */
     private static final int[] RECIPE_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34
     };
 
-    private final Player player;
-
     public AlchemyMenu(Player player) {
-        super(TITLE, 6);
-        this.player = player;
+        super(player, TITLE, 5);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
         fillBorder();
 
         UUID id = player.getUniqueId();
@@ -53,8 +49,8 @@ public final class AlchemyMenu extends Menu {
         } else if (job.isComplete(System.currentTimeMillis())) {
             summaryLore.add("§aReady: §f" + job.getRecipe().getDisplayName());
         } else {
-            long elapsed = (System.currentTimeMillis() - job.getStartTimeMillis()) / 1000L;
-            long remaining = Math.max(0, job.getRecipe().getDurationSeconds() - elapsed);
+            long elapsed    = (System.currentTimeMillis() - job.getStartTimeMillis()) / 1000L;
+            long remaining  = Math.max(0, job.getRecipe().getDurationSeconds() - elapsed);
             summaryLore.add("§7Brewing: §f" + job.getRecipe().getDisplayName());
             summaryLore.add("§7Remaining: §e" + remaining + "s");
         }
@@ -81,9 +77,9 @@ public final class AlchemyMenu extends Menu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 54; slot++) {
+        for (int slot = 0; slot < 45; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 36 || col == 0 || col == 8) {
                 setItem(slot, pane);
             }
         }
