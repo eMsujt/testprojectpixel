@@ -28,7 +28,7 @@ public final class CombatMenu extends AbstractSkyBlockMenu {
     };
 
     public CombatMenu(Player player) {
-        super(player, "§cCombat Stats", 6);
+        super(player, "§cCombat", 6);
     }
 
     @Override
