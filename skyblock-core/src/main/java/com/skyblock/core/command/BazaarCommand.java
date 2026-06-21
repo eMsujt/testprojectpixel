@@ -90,7 +90,7 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Quantity and price must be positive.");
             return;
         }
-        bazaarManager.addBuyBazaarOrder(player.getUniqueId(), item, qty, price);
+        bazaarManager.addBuyOrder(player.getUniqueId(), item, qty, price);
         player.sendMessage("Buy order placed for " + qty + "x " + item + " at " + price + " each.");
     }
 
@@ -113,7 +113,7 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Quantity and price must be positive.");
             return;
         }
-        bazaarManager.addSellBazaarOrder(player.getUniqueId(), item, qty, price);
+        bazaarManager.addSellOrder(player.getUniqueId(), item, qty, price);
         player.sendMessage("Sell order placed for " + qty + "x " + item + " at " + price + " each.");
     }
 
@@ -123,8 +123,8 @@ public final class BazaarCommand extends PlayerCommand {
             return;
         }
         String item = args[1];
-        List<BazaarOrder> buys = bazaarManager.getBuyBazaarOrders(item);
-        List<BazaarOrder> sells = bazaarManager.getSellBazaarOrders(item);
+        List<BazaarOrder> buys = bazaarManager.getBuyOrders(item);
+        List<BazaarOrder> sells = bazaarManager.getSellOrders(item);
 
         player.sendMessage("=== Bazaar: " + item + " ===");
         player.sendMessage("Lowest ask: " + formatPrice(bazaarManager.getLowestAsk(item)));
@@ -160,7 +160,7 @@ public final class BazaarCommand extends PlayerCommand {
             player.sendMessage("Invalid order ID.");
             return;
         }
-        if (bazaarManager.cancelBazaarOrder(player.getUniqueId(), isBuy, orderId)) {
+        if (bazaarManager.cancelOrder(player.getUniqueId(), isBuy, orderId)) {
             player.sendMessage("BazaarOrder " + args[2] + " cancelled.");
         } else {
             player.sendMessage("No " + args[1].toLowerCase() + " order with that ID found.");
