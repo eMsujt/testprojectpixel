@@ -1,6 +1,8 @@
 package com.skyblock.core.ability;
 
 import com.skyblock.core.SkyBlockCore;
+import com.skyblock.core.manager.StatManager;
+import com.skyblock.core.model.Stat;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -49,15 +51,15 @@ public final class AbilityEffects {
             case "ether transmission" ->
                     teleport(player, etherTarget(player, ability.magnitude > 0 ? ability.magnitude : 57),
                             false);
-            case "dragon rage" -> dragonRage(player, parseDamage(ability));
-            case "giant's slam" -> giantsSlam(player, parseDamage(ability));
+            case "dragon rage" -> dragonRage(player, abilityDamage(player, parseDamage(ability)));
+            case "giant's slam" -> giantsSlam(player, abilityDamage(player, parseDamage(ability)));
             case "weird transmission" ->
                     teleport(player, clipForward(player, ability.magnitude > 0 ? ability.magnitude : 3),
                             false);
             case "instant heal" -> instantHeal(player, ability);
-            case "implosion" -> implosion(player, parseDamage(ability));
-            case "leap" -> leap(player, parseDamage(ability));
-            case "showtime" -> showtime(player, parseDamage(ability));
+            case "implosion" -> implosion(player, abilityDamage(player, parseDamage(ability)));
+            case "leap" -> leap(player, abilityDamage(player, parseDamage(ability)));
+            case "showtime" -> showtime(player, abilityDamage(player, parseDamage(ability)));
             default -> { }
         }
     }
@@ -141,6 +143,17 @@ public final class AbilityEffects {
     // "...take 12,000 \n damage" (number and word split across lines) or "100,000 damage ...".
     private static final Pattern TAKE_DAMAGE = Pattern.compile("take\\s+([0-9,]+(?:\\.[0-9]+)?)");
     private static final Pattern N_DAMAGE = Pattern.compile("([0-9,]+(?:\\.[0-9]+)?)\\s+damage");
+
+    /**
+     * Scales an ability's base (lore) damage by the player's stats: Intelligence (the lore value is
+     * the damage at 100 Intelligence) and the Ability Damage stat.
+     */
+    private static double abilityDamage(Player player, double baseDamage) {
+        StatManager stats = StatManager.getInstance();
+        double intelligence = stats.getStat(player.getUniqueId(), Stat.INTELLIGENCE);
+        double abilityDamage = stats.getStat(player.getUniqueId(), Stat.ABILITY_DAMAGE);
+        return baseDamage * (intelligence / 100.0) * (1.0 + abilityDamage / 100.0);
+    }
 
     /** Pulls the ability's damage value from its description; 1000 if none is stated. */
     private static double parseDamage(LoreAbility ability) {
