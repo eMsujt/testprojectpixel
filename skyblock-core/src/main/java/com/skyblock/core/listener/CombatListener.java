@@ -8,6 +8,7 @@ import com.skyblock.core.model.Stat;
 import com.skyblock.core.stats.CombatStatsManager;
 import com.skyblock.core.talisman.manager.TalismanManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -22,10 +23,13 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Applies the full SkyBlock damage formula to melee combat and records combat
@@ -80,7 +84,8 @@ public final class CombatListener implements Listener {
             double critChance = stats.getStat(attacker.getUniqueId(), Stat.CRIT_CHANCE);
             double critDamage = stats.getStat(attacker.getUniqueId(), Stat.CRIT_DAMAGE);
             isCrit = CombatEngine.rollCrit(critChance);
-            double damage = CombatEngine.applyStrength(event.getDamage(), strength);
+            double base = weaponBaseDamage(attacker, event.getDamage());
+            double damage = CombatEngine.applyStrength(base, strength);
             if (isCrit) {
                 damage = CombatEngine.applyCrit(damage, critDamage);
             }
@@ -104,6 +109,30 @@ public final class CombatListener implements Listener {
         }
 
         spawnDamageIndicator(event.getEntity().getLocation(), finalDamage, isCrit);
+    }
+
+    private static final Pattern WEAPON_DAMAGE = Pattern.compile("^Damage:\\s*\\+?([0-9,]+)");
+
+    /**
+     * Base melee damage from the player's held weapon: {@code 5 + weapon Damage stat} read from the
+     * item's lore (1:1 SkyBlock base), falling back to the vanilla damage for non-SkyBlock items.
+     */
+    private static double weaponBaseDamage(Player attacker, double vanillaDamage) {
+        ItemStack weapon = attacker.getInventory().getItemInMainHand();
+        ItemMeta meta = weapon.getItemMeta();
+        if (meta == null || meta.getLore() == null) {
+            return vanillaDamage;
+        }
+        for (String line : meta.getLore()) {
+            Matcher m = WEAPON_DAMAGE.matcher(ChatColor.stripColor(line).trim());
+            if (m.find()) {
+                try {
+                    return 5.0 + Double.parseDouble(m.group(1).replace(",", ""));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return vanillaDamage;
     }
 
     private void spawnDamageIndicator(Location location, double damage, boolean isCrit) {
