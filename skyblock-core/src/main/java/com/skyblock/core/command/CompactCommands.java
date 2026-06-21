@@ -27,6 +27,7 @@ import com.skyblock.core.menu.BestiaryMenu;
 import com.skyblock.core.menu.CalendarMenu;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.DungeonsMenu;
+import com.skyblock.core.menu.EnchantingMenu;
 import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.FairySoulMenu;
 import com.skyblock.core.menu.ForgeMenu;
@@ -3335,6 +3336,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new ForgeMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /enchanting (simple menu opener)
+    // =========================================================================
+
+    public static final class EnchantingCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new EnchantingMenu(player).open(player);
         }
 
         @Override
