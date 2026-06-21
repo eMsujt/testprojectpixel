@@ -171,7 +171,23 @@ public final class IslandManager implements Listener {
 
     private static final IslandManager INSTANCE = new IslandManager();
 
-    /** XP required per island level: level = floor(sqrt(islandXp / XP_PER_LEVEL)). */
+    /** Maximum island level. */
+    public static final int MAX_ISLAND_LEVEL = 25;
+
+    /**
+     * Cumulative XP thresholds to reach each island level (index 0 = level 1, index 24 = level 25).
+     * Matches Hypixel SkyBlock's island XP progression table.
+     */
+    public static final long[] ISLAND_XP_TABLE = {
+              100L,       250L,       500L,      1_000L,      2_000L,
+            3_000L,     5_000L,    10_000L,     20_000L,     35_000L,
+           60_000L,   100_000L,   150_000L,    250_000L,    400_000L,
+          600_000L, 1_000_000L, 1_500_000L,  2_000_000L,  3_000_000L,
+        4_500_000L, 6_000_000L, 8_000_000L, 10_000_000L, 15_000_000L,
+    };
+
+    /** @deprecated retained for source compatibility; use {@link #ISLAND_XP_TABLE} instead. */
+    @Deprecated
     public static final long XP_PER_LEVEL = 100L;
 
     /** Per-player IslandData records. */
@@ -482,15 +498,36 @@ public final class IslandManager implements Listener {
     }
 
     /**
-     * Computes the island level for a given XP total using the SkyBlock formula
-     * {@code level = floor(sqrt(xp / XP_PER_LEVEL))}.
+     * Computes the island level for a given cumulative XP total using Hypixel's
+     * island XP table ({@link #ISLAND_XP_TABLE}).
      *
      * @param xp the cumulative island XP (must be >= 0)
-     * @return the derived island level
+     * @return the derived island level in [0, {@value #MAX_ISLAND_LEVEL}]
      */
     public static int levelFromXp(long xp) {
         if (xp < 0) throw new IllegalArgumentException("xp must be >= 0, got " + xp);
-        return (int) Math.floor(Math.sqrt((double) xp / XP_PER_LEVEL));
+        int level = 0;
+        for (int i = 0; i < ISLAND_XP_TABLE.length; i++) {
+            if (xp >= ISLAND_XP_TABLE[i]) {
+                level = i + 1;
+            } else {
+                break;
+            }
+        }
+        return level;
+    }
+
+    /**
+     * Returns the cumulative XP required to reach {@code level}, clamped to
+     * [1, {@value #MAX_ISLAND_LEVEL}]. Returns {@code 0} for level <= 0.
+     *
+     * @param level the target island level
+     * @return cumulative XP threshold
+     */
+    public static long xpForLevel(int level) {
+        if (level <= 0) return 0L;
+        int idx = Math.min(level, MAX_ISLAND_LEVEL) - 1;
+        return ISLAND_XP_TABLE[idx];
     }
 
     /**

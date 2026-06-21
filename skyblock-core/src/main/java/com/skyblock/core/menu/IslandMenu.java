@@ -38,7 +38,7 @@ public final class IslandMenu extends AbstractSkyBlockMenu {
         IslandManager manager = IslandManager.getInstance();
         long xp = manager.getIslandXp(owner);
         int level = IslandManager.levelFromXp(xp);
-        long nextLevelXp = (long) (level + 1) * (level + 1) * IslandManager.XP_PER_LEVEL;
+        long nextLevelXp = IslandManager.xpForLevel(level + 1);
         long xpToNext = nextLevelXp - xp;
 
         setItem(OVERVIEW_SLOT, new ItemBuilder(Material.GRASS_BLOCK)
