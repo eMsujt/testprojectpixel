@@ -1,7 +1,7 @@
 package com.skyblock.core.command;
 
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.core.manager.BazaarManager.BazaarBazaarOrder;
+import com.skyblock.core.manager.BazaarManager.BazaarOrder;
 import com.skyblock.core.menu.BazaarMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
