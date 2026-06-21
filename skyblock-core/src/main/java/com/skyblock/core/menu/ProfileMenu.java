@@ -18,7 +18,7 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
     private static final int SUMMARY_SLOT = 40;
 
     public ProfileMenu(Player player) {
-        super(player, "§bYour SkyBlock Profiles", 5);
+        super(player, "§bProfile", 6);
     }
 
     @Override
@@ -28,7 +28,7 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
 
         ItemStack greenPane = new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, greenPane);
-        for (int slot = 36; slot < 45; slot++) setItem(slot, greenPane);
+        for (int slot = 45; slot < 54; slot++) setItem(slot, greenPane);
 
         ProfileManager.SkyBlockProfile active = manager.getActiveProfile(playerId);
         String activeName = active != null ? active.name() : "None";
