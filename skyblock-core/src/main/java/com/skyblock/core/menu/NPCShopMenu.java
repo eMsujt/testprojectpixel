@@ -3,6 +3,7 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.manager.ShopManager.ShopEntry;
+import com.skyblock.core.util.HeadTextures;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -56,7 +57,7 @@ public final class NPCShopMenu extends Menu {
         int count = Math.min(entries.size(), ITEM_SLOTS.length);
         for (int i = 0; i < count; i++) {
             ShopEntry entry = entries.get(i);
-            Material mat = parseMaterial(entry.itemId());
+            Material mat = HeadTextures.itemMaterial(entry.itemId());
             List<String> lore = new ArrayList<>();
             lore.add("§7Buy: §6" + entry.buyPrice() + " coins");
             if (entry.sellPrice() > 0) {
@@ -65,7 +66,7 @@ public final class NPCShopMenu extends Menu {
             } else {
                 lore.add("§eLeft-click to buy!");
             }
-            ItemStack icon = new ItemBuilder(mat)
+            ItemStack icon = ItemBuilder.forItem(entry.itemId())
                     .displayName("§f" + formatName(entry.itemId()))
                     .lore(lore.toArray(new String[0]))
                     .build();
@@ -100,14 +101,6 @@ public final class NPCShopMenu extends Menu {
             }
             who.getInventory().addItem(new ItemStack(mat));
             who.sendMessage("§aPurchased §6" + formatName(entry.itemId()) + " §afor §6" + entry.buyPrice() + " coins§a!");
-        }
-    }
-
-    private static Material parseMaterial(String itemId) {
-        try {
-            return Material.valueOf(itemId.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            return Material.PAPER;
         }
     }
 
