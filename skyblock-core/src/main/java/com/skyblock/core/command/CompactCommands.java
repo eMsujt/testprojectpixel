@@ -26,6 +26,7 @@ import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.BestiaryMenu;
 import com.skyblock.core.menu.CalendarMenu;
+import com.skyblock.core.menu.CollectionMenu;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.DungeonsMenu;
 import com.skyblock.core.menu.EnchantingMenu;
@@ -3522,6 +3523,29 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new GardenMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /collection (simple menu opener — uses CollectionMenu)
+    // =========================================================================
+
+    public static final class CollectionCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new CollectionMenu(player.getUniqueId()).open(player);
         }
 
         @Override
