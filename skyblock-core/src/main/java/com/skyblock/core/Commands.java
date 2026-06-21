@@ -39,6 +39,7 @@ import com.skyblock.core.menu.ForgeMenu;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.HotmMenu;
 import com.skyblock.core.menu.IslandMenu;
+import com.skyblock.core.menu.MayorMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
 import com.skyblock.core.menu.PetMenu;
@@ -288,13 +289,13 @@ public final class Commands {
 
         @Override
         protected void openMenu(Player player) {
-            showStatus(player);
+            new MayorMenu(player).open(player);
         }
 
         @Override
         protected boolean execute(Player player, Command command, String label, String[] args) {
             if (args.length == 0) {
-                showStatus(player);
+                openMenu(player);
                 return true;
             }
             switch (args[0].toLowerCase()) {
@@ -450,7 +451,7 @@ public final class Commands {
                 return true;
             }
             if (args.length == 0) {
-                handleStatus(player);
+                new MiningMenu(player).open(player);
                 return true;
             }
             switch (args[0].toLowerCase()) {
@@ -1411,7 +1412,7 @@ public final class Commands {
                 return true;
             }
             if (args.length == 0) {
-                player.sendMessage("Usage: /enchanting <list|info|apply|remove|view|type>");
+                new EnchantingMenu(player).open(player);
                 return true;
             }
             switch (args[0].toLowerCase()) {
@@ -2537,7 +2538,7 @@ public final class Commands {
                 return true;
             }
             if (args.length == 0) {
-                player.sendMessage("Usage: /garden <info|plot|visitors|crop|plots|tier|harvest|history|reset>");
+                new GardenMenu(player).open(player);
                 return true;
             }
             switch (args[0].toLowerCase()) {
