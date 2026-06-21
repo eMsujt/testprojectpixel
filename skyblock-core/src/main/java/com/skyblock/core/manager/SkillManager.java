@@ -55,6 +55,12 @@ public final class SkillManager {
      */
     public static final Map<String, long[]> SKILL_CUMULATIVE_XP_TABLE;
 
+    /**
+     * Per-level XP deltas indexed by {@link Skill#ordinal()}.
+     * {@code XP_TABLES[skill.ordinal()][i]} is the XP needed to advance from level {@code i} to {@code i+1}.
+     */
+    public static final long[][] XP_TABLES;
+
     static {
         Map<String, long[]> m = new LinkedHashMap<>();
         m.put("farming",       STANDARD_CURVE.clone());
@@ -85,6 +91,14 @@ public final class SkillManager {
         cum.put("runecrafting",  SkyBlockXP.TWENTY_FIVE_LEVEL_CUMULATIVE.clone());
         cum.put("social",        SkyBlockXP.TWENTY_FIVE_LEVEL_CUMULATIVE.clone());
         SKILL_CUMULATIVE_XP_TABLE = Collections.unmodifiableMap(cum);
+
+        Skill[] skillValues = Skill.values();
+        long[][] tables = new long[skillValues.length][];
+        for (int i = 0; i < skillValues.length; i++) {
+            long[] t = m.get(skillValues[i].key());
+            tables[i] = t != null ? t.clone() : new long[0];
+        }
+        XP_TABLES = tables;
     }
 
     // -------------------------------------------------------------------------
