@@ -89,7 +89,9 @@ public final class IslandManager implements Listener {
         COOP_SLOTS(4,   "Co-op Slots"),
         REDSTONE_LIMIT(5, "Redstone Limit"),
         CROP_GROWTH(5,  "Crop Growth"),
-        MOB_SPAWN_RATE(5, "Mob Spawn Rate");
+        MOB_SPAWN_RATE(5, "Mob Spawn Rate"),
+        BANK_SIZE(5,    "Bank Size"),
+        STORAGE(4,      "Storage");
 
         private final int maxLevel;
         private final String displayName;
