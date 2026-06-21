@@ -22,16 +22,16 @@ public final class SlayerManager {
 
     public static final int MAX_LEVEL = 9;
 
-    /** Boss HP per tier (T1, T2, T3, T4), keyed by slayer type name. */
+    /** Boss HP per tier (T1–T5), keyed by slayer type name. */
     public static final Map<String, int[]> BOSS_HEALTH;
 
     static {
         Map<String, int[]> m = new LinkedHashMap<>();
-        m.put("Zombie",   new int[]{500,    20_000,    400_000,  1_000_000});
-        m.put("Spider",   new int[]{1_000,  30_000,    120_000,  1_000_000});
-        m.put("Wolf",     new int[]{2_000,  40_000,    750_000,  2_000_000});
-        m.put("Enderman", new int[]{10_000, 100_000, 2_000_000, 10_000_000});
-        m.put("Blaze",    new int[]{3_000_000, 8_000_000, 20_000_000, 100_000_000});
+        m.put("Zombie",   new int[]{500,       20_000,    400_000,   3_000_000,  10_000_000});
+        m.put("Spider",   new int[]{500,        10_000,     80_000,   1_000_000,   5_000_000});
+        m.put("Wolf",     new int[]{2_000,      40_000,    750_000,   2_000_000,   4_000_000});
+        m.put("Enderman", new int[]{10_000,    100_000,  2_000_000,  10_000_000,  30_000_000});
+        m.put("Blaze",    new int[]{3_000_000, 8_000_000, 20_000_000, 100_000_000, 250_000_000});
         BOSS_HEALTH = Collections.unmodifiableMap(m);
     }
 
@@ -133,7 +133,7 @@ public final class SlayerManager {
     }
 
     public enum QuestTier {
-        TIER_1, TIER_2, TIER_3, TIER_4
+        TIER_1, TIER_2, TIER_3, TIER_4, TIER_5
     }
 
     /** Mob kills required before the slayer boss can be summoned, per quest tier. */
@@ -145,20 +145,21 @@ public final class SlayerManager {
         m.put(QuestTier.TIER_2, 20);
         m.put(QuestTier.TIER_3, 30);
         m.put(QuestTier.TIER_4, 40);
+        m.put(QuestTier.TIER_5, 50);
         KILLS_TO_SPAWN_BOSS = Collections.unmodifiableMap(m);
     }
 
-    /** Coins required to summon a slayer boss, per quest tier (T1, T2, T3, T4), keyed by slayer type. */
+    /** Coins required to summon a slayer boss, per quest tier (T1–T5), keyed by slayer type. */
     public static final Map<SlayerType, int[]> SPAWN_COST;
 
     static {
         Map<SlayerType, int[]> m = new EnumMap<>(SlayerType.class);
-        m.put(SlayerType.ZOMBIE,   new int[]{100,     2_000,    10_000,     50_000});
-        m.put(SlayerType.SPIDER,   new int[]{2_000,   10_000,   50_000,     100_000});
-        m.put(SlayerType.WOLF,     new int[]{10_000,  50_000,   100_000,    400_000});
-        m.put(SlayerType.ENDERMAN, new int[]{50_000,  100_000,  400_000,    1_000_000});
-        m.put(SlayerType.BLAZE,    new int[]{500_000, 2_000_000, 5_000_000, 10_000_000});
-        m.put(SlayerType.VAMPIRE,  new int[]{0,       0,        0,          0});
+        m.put(SlayerType.ZOMBIE,   new int[]{100,       2_000,     10_000,    50_000,    500_000});
+        m.put(SlayerType.SPIDER,   new int[]{2_000,    10_000,     50_000,   100_000,    500_000});
+        m.put(SlayerType.WOLF,     new int[]{10_000,   50_000,    100_000,   400_000,  1_000_000});
+        m.put(SlayerType.ENDERMAN, new int[]{50_000,  100_000,    400_000, 1_000_000,  4_000_000});
+        m.put(SlayerType.BLAZE,    new int[]{500_000, 2_000_000, 5_000_000, 10_000_000, 25_000_000});
+        m.put(SlayerType.VAMPIRE,  new int[]{0,        0,          0,         0,          0});
         SPAWN_COST = Collections.unmodifiableMap(m);
     }
 
