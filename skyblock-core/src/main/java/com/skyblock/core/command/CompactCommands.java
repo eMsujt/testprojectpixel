@@ -26,7 +26,6 @@ import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.BestiaryMenu;
 import com.skyblock.core.menu.CalendarMenu;
-import com.skyblock.core.menu.CollectionMenu;
 import com.skyblock.core.menu.CollectionsMenu;
 import com.skyblock.core.menu.DungeonsMenu;
 import com.skyblock.core.menu.EnchantingMenu;
@@ -2058,12 +2057,13 @@ public final class CompactCommands {
                 player.sendMessage("Minion not found: " + args[1]);
                 return;
             }
+            String ownerName = Bukkit.getOfflinePlayer(data.owner).getName();
             player.sendMessage("=== Minion Info ===");
             player.sendMessage("Type : " + data.type.getDisplayName());
             player.sendMessage("Tier : " + (data.getTier().ordinal() + 1)
                     + " / " + MinionManager.MinionTier.values().length);
-            player.sendMessage("Owner: " + data.owner);
-            player.sendMessage("ID   : " + data.id);
+            player.sendMessage("Owner: " + (ownerName != null ? ownerName : data.owner.toString()));
+            player.sendMessage("ID   : " + data.id.toString().substring(0, 8));
         }
 
         private UUID resolveId(Player player, String input) {
@@ -3546,7 +3546,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new CollectionMenu(player.getUniqueId()).open(player);
+            new CollectionsMenu(player.getUniqueId()).open(player);
         }
 
         @Override
