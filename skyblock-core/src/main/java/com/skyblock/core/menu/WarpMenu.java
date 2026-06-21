@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Optional;
 
 /**
- * 6-row chest GUI titled '§bWarps'. Places each {@link WarpLocation} as a
+ * 6-row chest GUI titled '§bFast Travel'. Places each {@link WarpLocation} as a
  * themed icon starting at slot 9 (below a cyan-pane border row). Clicking
  * teleports the player if the warp is registered, otherwise sends an error.
  */
