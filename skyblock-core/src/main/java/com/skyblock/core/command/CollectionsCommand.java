@@ -39,7 +39,7 @@ public final class CollectionsCommand extends PlayerCommand {
 
     @Override
     protected void openMenu(Player p) {
-        new CollectionsMenu(p.getUniqueId()).open(p);
+        new CollectionsMenu(p).open(p);
     }
 
     @Override

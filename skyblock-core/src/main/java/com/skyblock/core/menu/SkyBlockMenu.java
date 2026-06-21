@@ -29,7 +29,7 @@ public final class SkyBlockMenu extends Menu {
 
         setItem(11, new ItemBuilder(Material.WRITABLE_BOOK).displayName("§aCollections")
                 .lore("§7Track your collection progress.").build(),
-                e -> { e.setCancelled(true); new CollectionsMenu(player.getUniqueId()).open(player); });
+                e -> { e.setCancelled(true); new CollectionsMenu(player).open(player); });
 
         setItem(12, new ItemBuilder(Material.CAT_SPAWN_EGG).displayName("§aPets")
                 .lore("§7Manage your pets.").build(),

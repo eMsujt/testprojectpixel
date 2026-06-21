@@ -59,7 +59,7 @@ public final class SkyBlockMainMenu extends Menu {
                 .build(),
                 e -> {
                     e.setCancelled(true);
-                    new CollectionsMenu(player.getUniqueId()).open(player);
+                    new CollectionsMenu(player).open(player);
                 });
 
         setItem(12, new ItemBuilder(Material.CRAFTING_TABLE)

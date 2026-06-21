@@ -9,5 +9,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-      - name: Build the reactor (compile + package)
-        run: mvn -B -ntp -DskipTests package
+      - name: Build the plugin (compile + package)
+        run: mvn -B -ntp -Dmaven.test.skip=true package
+      - name: Upload plugin jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: skyblock-plugin-jar
+          path: skyblock-core/target/skyblock-core-*.jar
+          if-no-files-found: error

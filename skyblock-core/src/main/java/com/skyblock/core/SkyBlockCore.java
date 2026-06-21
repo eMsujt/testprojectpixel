@@ -707,7 +707,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("mining").setExecutor(miningCommand);
             getCommand("mining").setTabCompleter(miningCommand);
         }
-        MenuCommand collectionsMenuCommand = new MenuCommand(p -> new CollectionsMenu(p.getUniqueId()).open(p));
+        MenuCommand collectionsMenuCommand = new MenuCommand(p -> new CollectionsMenu(p).open(p));
         if (getCommand("collectionsmenu") != null) {
             getCommand("collectionsmenu").setExecutor(collectionsMenuCommand);
         }

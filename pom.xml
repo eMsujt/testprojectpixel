@@ -14,6 +14,7 @@
 
     <modules>
         <module>api</module>
+        <module>items</module>
         <module>enchantments</module>
         <module>dungeons</module>
         <module>farming</module>
@@ -25,7 +26,6 @@
         <module>combat-extras</module>
         <module>world</module>
 
-        <module>plugin</module>
         <module>skyblock-core</module>
     </modules>
 
