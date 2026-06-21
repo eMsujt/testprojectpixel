@@ -121,6 +121,53 @@ public final class MiningManager {
         public int getPowderReward()  { return powderReward; }
     }
 
+    /**
+     * All 22 passive Heart-of-the-Mountain perks, ordered as they appear in the HOTM tree.
+     * Each entry stores the perk's display name, maximum upgrade level, and the flat bonus
+     * value granted per level (0 for toggle/ability-style perks with no numeric scaling).
+     */
+    public enum HotmPerk {
+        MINING_SPEED         ("Mining Speed",           50,  20),
+        MINING_FORTUNE       ("Mining Fortune",         50,   5),
+        DAILY_POWDER         ("Daily Powder",          100,   1),
+        EFFICIENT_MINER      ("Efficient Miner",       100,   1),
+        QUICK_FORGE          ("Quick Forge",            20,   5),
+        TITANIUM_INSANITY    ("Titanium Insanity",      50,   2),
+        LUCK_OF_THE_CAVE     ("Luck of the Cave",       45,   1),
+        POWDER_BUFF          ("Powder Buff",            50,   1),
+        MINING_MADNESS       ("Mining Madness",          1,   0),
+        SKY_MALL             ("Sky Mall",                1,   0),
+        GOBLIN_KILLER        ("Goblin Killer",           1,   0),
+        STAR_POWDER          ("Star Powder",             1,   0),
+        MOLE                 ("Mole",                  200,   1),
+        PROFESSIONAL         ("Professional",           140,   4),
+        LONESOME_MINER       ("Lonesome Miner",         45,   5),
+        GREAT_EXPLORER       ("Great Explorer",         20,   3),
+        FORTUNATE            ("Fortunate",              20,   4),
+        MINING_EXPERIENCE_BOOST("Mining Experience Boost", 100, 1),
+        SEASONED_MINEMAN     ("Seasoned Mineman",      100,   1),
+        ANOMALOUS_DESIRE     ("Anomalous Desire",       20,   2),
+        MANIACAL_MINER       ("Maniacal Miner",          1,   0),
+        VEIN_SEEKER          ("Vein Seeker",             1,   0);
+
+        private final String displayName;
+        public final int maxLevel;
+        private final int bonusPerLevel;
+
+        HotmPerk(String displayName, int maxLevel, int bonusPerLevel) {
+            this.displayName = displayName;
+            this.maxLevel = maxLevel;
+            this.bonusPerLevel = bonusPerLevel;
+        }
+
+        public String getDisplayName()  { return displayName; }
+        public int getMaxLevel()        { return maxLevel; }
+        public int getBonusPerLevel()   { return bonusPerLevel; }
+        public int getTotalBonus(int level) {
+            return bonusPerLevel * Math.min(level, maxLevel);
+        }
+    }
+
     /** Lookup from {@link Material} to {@link OreType} for fast block-break dispatch. */
     public static final Map<Material, OreType> MATERIAL_TO_ORE;
 
