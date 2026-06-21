@@ -311,6 +311,11 @@ commands:
     description: Open the Pet Menu GUI.
     usage: /pets
     permission: skyblock.pets
+  petsmenu:
+    description: Open the Pets collection GUI showing all your collected pets.
+    usage: /petsmenu
+    aliases: [pm]
+    permission: skyblock.pets
   profile:
     description: View your SkyBlock profile.
     usage: /profile [player]
