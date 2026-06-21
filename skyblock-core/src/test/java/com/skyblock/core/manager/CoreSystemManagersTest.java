@@ -9,13 +9,30 @@ import com.skyblock.core.manager.BazaarManager.BazaarOrder;
 import com.skyblock.core.manager.BazaarManager.BazaarProduct;
 import com.skyblock.core.manager.BazaarManager.FeeTier;
 import com.skyblock.core.manager.BazaarManager.FillResult;
+import com.skyblock.core.manager.EssenceManager.EssenceItem;
+import com.skyblock.core.manager.EssenceManager.EssenceShopPerk;
+import com.skyblock.core.manager.EssenceManager.EssenceType;
+import com.skyblock.core.manager.FishingManager.SeaCreature;
+import com.skyblock.core.manager.FishingManager.WaterType;
+import com.skyblock.core.manager.MinionManager.MinionData;
+import com.skyblock.core.manager.MinionManager.MinionFuel;
+import com.skyblock.core.manager.MinionManager.MinionTier;
+import com.skyblock.core.manager.MinionManager.MinionType;
+import com.skyblock.core.manager.MinionManager.MinionUpgrade;
+import com.skyblock.core.manager.PetManager.Pet;
+import com.skyblock.core.manager.PetManager.PetItem;
+import com.skyblock.core.manager.PetManager.PetType;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
+import com.skyblock.core.model.Rarity;
 import com.skyblock.core.model.Skill;
+import com.skyblock.core.model.Stat;
 import org.bukkit.inventory.ItemStack;
 import org.junit.jupiter.api.Test;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -659,5 +676,792 @@ class CoreSystemManagersTest {
         mgr.addXP(id, Skill.FARMING, 125L);
         assertEquals(175L, mgr.getXP(id, Skill.FARMING));
         assertEquals(2, mgr.getLevel(id, Skill.FARMING));
+    }
+
+    // =========================================================================
+    // SkillManager
+    // =========================================================================
+
+    @Test
+    void skillManager_getInstance_ReturnsSameInstance() {
+        assertSame(SkillManager.getInstance(), SkillManager.getInstance());
+    }
+
+    @Test
+    void skillManager_getInstance_ReturnsNonNull() {
+        assertNotNull(SkillManager.getInstance());
+    }
+
+    @Test
+    void skillManager_skillXpTable_IsNonEmpty() {
+        assertFalse(SkillManager.SKILL_XP_TABLE.isEmpty());
+    }
+
+    @Test
+    void skillManager_skillXpTable_StoresPerLevelDeltas_NotCumulative() {
+        long[] farming = SkillManager.SKILL_XP_TABLE.get("farming");
+        assertNotNull(farming, "farming skill must be present in SKILL_XP_TABLE");
+        assertEquals(50L, farming[0], "farming level-1 delta should be 50");
+        assertEquals(125L, farming[1], "farming level-2 delta should be 125 (not 175 cumulative)");
+    }
+
+    @Test
+    void skillManager_levelForXp_ZeroXpIsLevelZero() {
+        assertEquals(0, SkillManager.levelForXp("farming", 0L));
+    }
+
+    @Test
+    void skillManager_levelForXp_ExactThresholdReachesNextLevel() {
+        assertEquals(1, SkillManager.levelForXp("farming", 50L));
+        assertEquals(1, SkillManager.levelForXp("farming", 174L));
+        assertEquals(2, SkillManager.levelForXp("farming", 175L));
+    }
+
+    @Test
+    void skillManager_levelForXp_IsCaseInsensitive() {
+        assertEquals(1, SkillManager.levelForXp("FARMING", 50L));
+    }
+
+    @Test
+    void skillManager_levelForXp_UnknownSkillIsZero() {
+        assertEquals(0, SkillManager.levelForXp("notaskill", 1_000_000L));
+        assertEquals(0, SkillManager.levelForXp(null, 1_000_000L));
+    }
+
+    @Test
+    void skillManager_levelForXp_HugeXpClampsToMaxLevel() {
+        assertEquals(60, SkillManager.levelForXp("combat", Long.MAX_VALUE));
+        assertEquals(50, SkillManager.levelForXp("carpentry", Long.MAX_VALUE));
+        assertEquals(25, SkillManager.levelForXp("runecrafting", Long.MAX_VALUE));
+    }
+
+    @Test
+    void skillManager_maxLevel_MatchesCurveLengths() {
+        assertEquals(60, SkillManager.maxLevel("farming"));
+        assertEquals(50, SkillManager.maxLevel("dungeoneering"));
+        assertEquals(25, SkillManager.maxLevel("social"));
+        assertEquals(0, SkillManager.maxLevel("notaskill"));
+    }
+
+    @Test
+    void skillManager_addSkillXp_AccumulatesAndResolvesLevel() {
+        UUID id = UUID.randomUUID();
+        SkillManager mgr = SkillManager.getInstance();
+        mgr.addSkillXP(id, "farming", 50L);
+        mgr.addSkillXP(id, "farming", 125L);
+        assertEquals(175L, mgr.getSkillXP(id, "farming"));
+        assertEquals(2, mgr.getSkillLevel(id, "farming"));
+    }
+
+    @Test
+    void skillManager_addXP_TypedApi_AccumulatesAndResolvesLevel() {
+        UUID id = UUID.randomUUID();
+        SkillManager mgr = SkillManager.getInstance();
+        mgr.addXP(id, Skill.FARMING, 50L);
+        assertEquals(1, mgr.getLevel(id, Skill.FARMING));
+        mgr.addXP(id, Skill.FARMING, 125L);
+        assertEquals(175L, mgr.getXP(id, Skill.FARMING));
+        assertEquals(2, mgr.getLevel(id, Skill.FARMING));
+    }
+
+    @Test
+    void skillManager_grantLevelUpRewards_FarmingLevel0To1_GrantsTwoHealth() {
+        UUID id = UUID.randomUUID();
+        SkillManager mgr = SkillManager.getInstance();
+        mgr.grantLevelUpRewards(id, Skill.FARMING, 0, 1);
+        assertEquals(2.0, StatManager.getInstance().getBonus(id, Stat.HEALTH), 0.001);
+    }
+
+    @Test
+    void skillManager_grantLevelUpRewards_CombatLevel0To2_GrantsOneCritChance() {
+        UUID id = UUID.randomUUID();
+        SkillManager mgr = SkillManager.getInstance();
+        mgr.grantLevelUpRewards(id, Skill.COMBAT, 0, 2);
+        assertEquals(1.0, StatManager.getInstance().getBonus(id, Stat.CRIT_CHANCE), 0.001);
+    }
+
+    // =========================================================================
+    // EssenceManager
+    // =========================================================================
+
+    @Test
+    void essence_getInstance_ReturnsSameInstance() {
+        assertSame(EssenceManager.getInstance(), EssenceManager.getInstance());
+    }
+
+    @Test
+    void essence_allEightCurrencies_ArePresent() {
+        assertEquals(8, EssenceType.values().length);
+        for (String name : new String[]{"WITHER", "SPIDER", "UNDEAD", "DRAGON",
+                "GOLD", "DIAMOND", "ICE", "CRIMSON"}) {
+            assertDoesNotThrow(() -> EssenceType.valueOf(name));
+        }
+    }
+
+    @Test
+    void essence_balance_DefaultsToZero() {
+        UUID player = UUID.randomUUID();
+        assertEquals(0, EssenceManager.getInstance().getBalance(player, EssenceType.WITHER));
+    }
+
+    @Test
+    void essence_addEssence_IsTrackedPerType() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        assertEquals(500, manager.addEssence(player, EssenceType.WITHER, 500));
+        assertEquals(800, manager.addEssence(player, EssenceType.WITHER, 300));
+        assertEquals(800, manager.getBalance(player, EssenceType.WITHER));
+        assertEquals(0, manager.getBalance(player, EssenceType.DRAGON));
+    }
+
+    @Test
+    void essence_addEssence_RejectsNonPositiveAmount() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        assertThrows(IllegalArgumentException.class,
+                () -> manager.addEssence(player, EssenceType.GOLD, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> manager.addEssence(player, EssenceType.GOLD, -5));
+    }
+
+    @Test
+    void essence_removeEssence_SucceedsWhenSufficient_FailsWhenNot() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        manager.addEssence(player, EssenceType.SPIDER, 100);
+        assertFalse(manager.removeEssence(player, EssenceType.SPIDER, 200));
+        assertEquals(100, manager.getBalance(player, EssenceType.SPIDER));
+        assertTrue(manager.removeEssence(player, EssenceType.SPIDER, 60));
+        assertEquals(40, manager.getBalance(player, EssenceType.SPIDER));
+    }
+
+    @Test
+    void essence_purchasePerk_DeductsCost_AndIncrementsLevel() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        EssenceShopPerk perk = EssenceShopPerk.HEALTH;
+        assertFalse(manager.purchasePerk(player, perk));
+        assertEquals(0, manager.getPerkLevel(player, perk));
+        manager.addEssence(player, perk.getEssenceType(), perk.getUpgradeCost(0));
+        assertTrue(manager.purchasePerk(player, perk));
+        assertEquals(1, manager.getPerkLevel(player, perk));
+        assertEquals(0, manager.getBalance(player, perk.getEssenceType()));
+    }
+
+    @Test
+    void essence_purchasePerk_CannotExceedMaxLevel() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        EssenceShopPerk perk = EssenceShopPerk.CRIT_DAMAGE;
+        manager.addEssence(player, perk.getEssenceType(), 1_000_000);
+        for (int i = 0; i < perk.getMaxLevel(); i++) {
+            assertTrue(manager.purchasePerk(player, perk));
+        }
+        assertEquals(perk.getMaxLevel(), manager.getPerkLevel(player, perk));
+        assertFalse(manager.purchasePerk(player, perk));
+    }
+
+    @Test
+    void essence_accrual_IsTrackedIndependentlyPerType() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        manager.addEssence(player, EssenceType.WITHER, 700);
+        manager.addEssence(player, EssenceType.DRAGON, 250);
+        manager.addEssence(player, EssenceType.CRIMSON, 90);
+        assertEquals(700, manager.getBalance(player, EssenceType.WITHER));
+        assertEquals(250, manager.getBalance(player, EssenceType.DRAGON));
+        assertEquals(90,  manager.getBalance(player, EssenceType.CRIMSON));
+        assertEquals(0,   manager.getBalance(player, EssenceType.ICE));
+    }
+
+    @Test
+    void essence_purchasePerk_DeductsEscalatingCostPerLevel() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        EssenceShopPerk perk = EssenceShopPerk.HEALTH;
+        manager.addEssence(player, perk.getEssenceType(), 300);
+        assertTrue(manager.purchasePerk(player, perk));
+        assertEquals(200, manager.getBalance(player, perk.getEssenceType()));
+        assertTrue(manager.purchasePerk(player, perk));
+        assertEquals(0, manager.getBalance(player, perk.getEssenceType()));
+        assertEquals(2, manager.getPerkLevel(player, perk));
+        assertFalse(manager.purchasePerk(player, perk));
+        assertEquals(2, manager.getPerkLevel(player, perk));
+    }
+
+    @Test
+    void essence_canUnlock_GatesItemBehindEssenceBalance() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        EssenceItem item = EssenceItem.HYPERION;
+        assertFalse(manager.canUnlock(player, item));
+        manager.addEssence(player, item.getEssenceType(), item.getRequiredEssence());
+        assertTrue(manager.canUnlock(player, item));
+    }
+
+    @Test
+    void essence_remove_ClearsAllPlayerData() {
+        UUID player = UUID.randomUUID();
+        EssenceManager manager = EssenceManager.getInstance();
+        manager.addEssence(player, EssenceType.ICE, 50);
+        assertTrue(manager.remove(player));
+        assertEquals(0, manager.getBalance(player, EssenceType.ICE));
+        assertFalse(manager.remove(player));
+    }
+
+    // =========================================================================
+    // FishingManager
+    // =========================================================================
+
+    @Test
+    void fishing_getInstance_ReturnsSameInstance() {
+        assertSame(FishingManager.getInstance(), FishingManager.getInstance());
+    }
+
+    @Test
+    void fishing_getLevel_FollowsExponentialXpCurve() {
+        FishingManager mgr = FishingManager.getInstance();
+        UUID id = UUID.randomUUID();
+        assertEquals(1, mgr.getLevel(id));
+        mgr.addXp(id, 199.0);
+        assertEquals(1, mgr.getLevel(id));
+        mgr.addXp(id, 1.0);
+        assertEquals(2, mgr.getLevel(id));
+        mgr.addXp(id, 250.0);
+        assertEquals(3, mgr.getLevel(id));
+    }
+
+    @Test
+    void fishing_addXp_AccumulatesAndReturnsTotal() {
+        FishingManager mgr = FishingManager.getInstance();
+        UUID id = UUID.randomUUID();
+        assertEquals(10.0, mgr.addXp(id, 10.0));
+        assertEquals(25.0, mgr.addXp(id, 15.0));
+        assertEquals(25.0, mgr.getXp(id));
+    }
+
+    @Test
+    void fishing_getLevel_HugeXpClampsToMaxLevel() {
+        FishingManager mgr = FishingManager.getInstance();
+        UUID id = UUID.randomUUID();
+        mgr.addXp(id, Double.MAX_VALUE);
+        assertEquals(50, mgr.getLevel(id));
+    }
+
+    @Test
+    void fishing_addXp_RejectsNegativeAmount() {
+        FishingManager mgr = FishingManager.getInstance();
+        UUID id = UUID.randomUUID();
+        assertThrows(IllegalArgumentException.class, () -> mgr.addXp(id, -1.0));
+    }
+
+    @Test
+    void fishing_rollSeaCreature_ReturnsNullWhenNoCreatureUnlocked() {
+        FishingManager mgr = FishingManager.getInstance();
+        assertNull(mgr.rollSeaCreature(0, WaterType.WATER, 100.0));
+    }
+
+    @Test
+    void fishing_rollSeaCreature_OnlyReturnsCreaturesUnlockedAtLevel() {
+        FishingManager mgr = FishingManager.getInstance();
+        for (int i = 0; i < 50; i++) {
+            assertEquals(SeaCreature.SEA_WALKER, mgr.rollSeaCreature(1, WaterType.WATER, 100.0));
+        }
+    }
+
+    @Test
+    void fishing_rollSeaCreature_RespectsWaterType() {
+        FishingManager mgr = FishingManager.getInstance();
+        for (int i = 0; i < 50; i++) {
+            SeaCreature creature = mgr.rollSeaCreature(50, WaterType.LAVA, 100.0);
+            assertNotNull(creature);
+            assertEquals(WaterType.LAVA, creature.waterType);
+        }
+    }
+
+    @Test
+    void fishing_rollSeaCreature_RejectsNegativeLuck() {
+        FishingManager mgr = FishingManager.getInstance();
+        assertThrows(IllegalArgumentException.class,
+                () -> mgr.rollSeaCreature(20, WaterType.WATER, -0.5));
+    }
+
+    @Test
+    void fishing_rollSeaCreature_AppliesRodSeaCreatureChanceStat() {
+        FishingManager mgr = FishingManager.getInstance();
+        Map<Stat, Double> rodStats = new EnumMap<>(Stat.class);
+        rodStats.put(Stat.SEA_CREATURE_CHANCE, 10000.0);
+        for (int i = 0; i < 50; i++) {
+            assertEquals(SeaCreature.SEA_WALKER, mgr.rollSeaCreature(1, WaterType.WATER, rodStats));
+        }
+    }
+
+    @Test
+    void fishing_rollSeaCreature_NullRodStatsContributesNoLuck() {
+        FishingManager mgr = FishingManager.getInstance();
+        assertNull(mgr.rollSeaCreature(0, WaterType.WATER, (Map<Stat, Double>) null));
+    }
+
+    @Test
+    void fishing_rollSeaCreature_RejectsNullWaterType() {
+        FishingManager mgr = FishingManager.getInstance();
+        assertThrows(NullPointerException.class,
+                () -> mgr.rollSeaCreature(20, null, 0.0));
+    }
+
+    // =========================================================================
+    // PetManager
+    // =========================================================================
+
+    @Test
+    void petManager_getInstance_ReturnsSameInstance() {
+        assertSame(PetManager.getInstance(), PetManager.getInstance());
+    }
+
+    @Test
+    void petManager_getInstance_ReturnsNonNull() {
+        assertNotNull(PetManager.getInstance());
+    }
+
+    @Test
+    void petManager_petRarity_LegendaryDisplayName() {
+        assertEquals("Legendary", Rarity.LEGENDARY.getDisplayName());
+    }
+
+    @Test
+    void petManager_registry_PetTypeCarriesDefaultRarityAndDisplayName() {
+        assertEquals(Rarity.LEGENDARY, PetType.ENDER_DRAGON.defaultRarity);
+        assertEquals("Ender Dragon", PetType.ENDER_DRAGON.getDisplayName());
+        assertEquals(Rarity.COMMON, PetType.CHICKEN.defaultRarity);
+    }
+
+    @Test
+    void petManager_addPet_StoresPetInPlayerCollection() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        Pet pet = mgr.addPet(player, PetType.TIGER, Rarity.EPIC);
+        assertNotNull(pet.id);
+        assertEquals(PetType.TIGER, pet.type);
+        assertEquals(Rarity.EPIC, pet.rarity);
+        assertTrue(mgr.getPets(player).stream().anyMatch(p -> p.id.equals(pet.id)));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_xp_NewPetTypeIsLevelOne() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        assertEquals(0L, mgr.getExperience(player, PetType.BEE));
+        assertEquals(1, mgr.getLevel(player, PetType.BEE));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_xp_AddingExperienceRaisesLevelAndAccumulates() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        long total = mgr.addExperience(player, PetType.CHICKEN, 100L);
+        assertEquals(100L, total);
+        assertEquals(2, mgr.getLevel(player, PetType.CHICKEN));
+        assertEquals(150L, mgr.addExperience(player, PetType.CHICKEN, 50L));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_xp_NegativeExperienceRejected() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        assertThrows(IllegalArgumentException.class,
+                () -> mgr.addExperience(player, PetType.CHICKEN, -1L));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_xp_LevelCapsAtMaxLevel() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        mgr.addExperience(player, PetType.CHICKEN, Long.MAX_VALUE);
+        assertEquals(PetManager.MAX_LEVEL, mgr.getLevel(player, PetType.CHICKEN));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_heldItem_SetGetAndClear() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        Pet pet = mgr.addPet(player, PetType.TIGER, Rarity.EPIC);
+        assertEquals(PetItem.NONE, mgr.getHeldItem(player, pet.id));
+        assertTrue(mgr.setHeldItem(player, pet.id, PetItem.SHARPENED_CLAWS));
+        assertEquals(PetItem.SHARPENED_CLAWS, mgr.getHeldItem(player, pet.id));
+        int[] bonus = mgr.getHeldItemBonus(player, pet.id);
+        assertEquals(PetItem.SHARPENED_CLAWS.strengthBonus, bonus[1]);
+        assertTrue(mgr.setHeldItem(player, pet.id, PetItem.NONE));
+        assertEquals(PetItem.NONE, mgr.getHeldItem(player, pet.id));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_heldItem_RejectsUnknownPet() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        assertFalse(mgr.setHeldItem(player, UUID.randomUUID(), PetItem.IRON_CLAWS));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_activePet_EquipUnequipAndRemoval() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        Pet pet = mgr.addPet(player, PetType.WOLF, Rarity.LEGENDARY);
+        assertNull(mgr.getActivePet(player));
+        assertTrue(mgr.equipPet(player, pet.id));
+        assertEquals(pet.id, mgr.getActivePetId(player));
+        assertSame(pet.type, mgr.getActivePet(player).type);
+        assertTrue(mgr.removePet(player, pet.id));
+        assertNull(mgr.getActivePet(player));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_activePet_EquipRejectsUnownedPet() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        assertFalse(mgr.equipPet(player, UUID.randomUUID()));
+        assertFalse(mgr.unequipPet(player));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_thresholds_CommonLevelBoundariesAreExact() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        mgr.addExperience(player, PetType.CHICKEN, 99L);
+        assertEquals(1, mgr.getLevel(player, PetType.CHICKEN));
+        mgr.addExperience(player, PetType.CHICKEN, 1L);
+        assertEquals(2, mgr.getLevel(player, PetType.CHICKEN));
+        mgr.addExperience(player, PetType.CHICKEN, 109L);
+        assertEquals(2, mgr.getLevel(player, PetType.CHICKEN));
+        mgr.addExperience(player, PetType.CHICKEN, 1L);
+        assertEquals(3, mgr.getLevel(player, PetType.CHICKEN));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_thresholds_TableMatchesComputedLevel() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        long firstThreshold = PetManager.PET_XP_TABLE.get("COMMON")[0];
+        mgr.addExperience(player, PetType.CHICKEN, firstThreshold - 1);
+        assertEquals(1, mgr.getLevel(player, PetType.CHICKEN));
+        mgr.addExperience(player, PetType.CHICKEN, 1L);
+        assertEquals(2, mgr.getLevel(player, PetType.CHICKEN));
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_rarityProgression_HigherRarityRequiresMoreXpPerLevel() {
+        long[] common    = PetManager.PET_XP_TABLE.get("COMMON");
+        long[] uncommon  = PetManager.PET_XP_TABLE.get("UNCOMMON");
+        long[] rare      = PetManager.PET_XP_TABLE.get("RARE");
+        long[] epic      = PetManager.PET_XP_TABLE.get("EPIC");
+        long[] legendary = PetManager.PET_XP_TABLE.get("LEGENDARY");
+        assertTrue(common[0] < uncommon[0]);
+        assertTrue(uncommon[0] < rare[0]);
+        assertTrue(rare[0] < epic[0]);
+        assertTrue(epic[0] < legendary[0]);
+    }
+
+    @Test
+    void petManager_heldItemBonus_AddedToActivePetStats() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        Pet pet = mgr.addPet(player, PetType.TIGER, Rarity.EPIC);
+        mgr.equipPet(player, pet.id);
+        int[] before = mgr.getActivePetStats(player);
+        assertTrue(mgr.setHeldItem(player, pet.id, PetItem.QUICK_CLAW));
+        int[] after = mgr.getActivePetStats(player);
+        assertEquals(before[0] + PetItem.QUICK_CLAW.speedBonus, after[0]);
+        assertEquals(before[1], after[1]);
+        mgr.reset(player);
+    }
+
+    @Test
+    void petManager_heldItemBonus_StrengthItemRaisesActivePetStrength() {
+        PetManager mgr = PetManager.getInstance();
+        UUID player = UUID.randomUUID();
+        Pet pet = mgr.addPet(player, PetType.TIGER, Rarity.EPIC);
+        mgr.equipPet(player, pet.id);
+        int[] before = mgr.getActivePetStats(player);
+        assertTrue(mgr.setHeldItem(player, pet.id, PetItem.SHARPENED_CLAWS));
+        int[] after = mgr.getActivePetStats(player);
+        assertEquals(before[1] + PetItem.SHARPENED_CLAWS.strengthBonus, after[1]);
+        assertTrue(mgr.setHeldItem(player, pet.id, PetItem.NONE));
+        assertEquals(before[1], mgr.getActivePetStats(player)[1]);
+        mgr.reset(player);
+    }
+
+    // =========================================================================
+    // MinionManager
+    // =========================================================================
+
+    @Test
+    void minion_getInstance_ReturnsSameInstance() {
+        assertSame(MinionManager.getInstance(), MinionManager.getInstance());
+    }
+
+    @Test
+    void minion_getInstance_ReturnsNonNull() {
+        assertNotNull(MinionManager.getInstance());
+    }
+
+    @Test
+    void minion_tier1IsFirstTier() {
+        assertEquals(MinionTier.TIER_1, MinionTier.values()[0]);
+    }
+
+    @Test
+    void minion_tick_ProducesOneResourceAtBaseInterval() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+        int produced = 0;
+        for (int i = 0; i < MinionManager.BASE_PRODUCTION_TICKS - 1; i++) {
+            produced += mgr.tick(minion);
+        }
+        assertEquals(0, produced);
+        assertEquals(0, minion.getStoredResources());
+        assertEquals(1, mgr.tick(minion));
+        assertEquals(1, minion.getStoredResources());
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_getProductionIntervalTicks_FasterWithFuel() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COAL, MinionTier.TIER_1);
+        int baseInterval = mgr.getProductionIntervalTicks(minion);
+        assertEquals(MinionManager.BASE_PRODUCTION_TICKS, baseInterval);
+        assertTrue(mgr.addFuel(minion.id, MinionFuel.ENCHANTED_LAVA_BUCKET));
+        int boosted = mgr.getProductionIntervalTicks(minion);
+        assertTrue(boosted < baseInterval);
+        assertEquals((int) Math.round(baseInterval / MinionFuel.ENCHANTED_LAVA_BUCKET.getSpeedMultiplier()), boosted);
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_tick_ConsumesFuelEachTickAndRevertsToNoneWhenExhausted() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COAL, MinionTier.TIER_1);
+        assertTrue(mgr.addFuel(minion.id, MinionFuel.COAL));
+        int duration = MinionFuel.COAL.getDurationTicks();
+        assertEquals(duration, minion.getFuelTicksRemaining());
+        mgr.tick(minion);
+        assertEquals(duration - 1, minion.getFuelTicksRemaining());
+        assertEquals(MinionFuel.COAL, minion.getFuel());
+        for (int i = 1; i < duration; i++) {
+            mgr.tick(minion);
+        }
+        assertEquals(0, minion.getFuelTicksRemaining());
+        assertEquals(MinionFuel.NONE, minion.getFuel());
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_addFuel_RejectsNoneAndUnknownMinion() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COAL, MinionTier.TIER_1);
+        assertFalse(mgr.addFuel(minion.id, MinionFuel.NONE));
+        assertFalse(mgr.addFuel(UUID.randomUUID(), MinionFuel.COAL));
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_tick_StopsProducingWhenStorageFull() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+        int capacity = mgr.getStorageCapacity(MinionTier.TIER_1);
+        int produced = 0;
+        for (int i = 0; i < (capacity + 5) * MinionManager.BASE_PRODUCTION_TICKS; i++) {
+            produced += mgr.tick(minion);
+        }
+        assertEquals(capacity, produced);
+        assertEquals(capacity, minion.getStoredResources());
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_collectResources_EmptiesStorageAndReturnsAmount() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+        for (int i = 0; i < MinionManager.BASE_PRODUCTION_TICKS; i++) {
+            mgr.tick(minion);
+        }
+        assertEquals(1, minion.getStoredResources());
+        assertEquals(1, mgr.collectResources(minion.id));
+        assertEquals(0, minion.getStoredResources());
+        assertEquals(0, mgr.collectResources(minion.id));
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_setUpgrade_InstallsUpgradeInSlot() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+        assertEquals(MinionUpgrade.NONE, minion.getUpgrade(0));
+        assertTrue(mgr.setUpgrade(minion.id, 0, MinionUpgrade.SUPER_COMPACTOR_3000));
+        assertEquals(MinionUpgrade.SUPER_COMPACTOR_3000, minion.getUpgrade(0));
+        assertEquals(MinionUpgrade.NONE, minion.getUpgrade(1));
+        assertFalse(mgr.setUpgrade(UUID.randomUUID(), 0, MinionUpgrade.COMPACTOR));
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_getHopperSellRate_ReturnsBestInstalledHopper() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+        assertEquals(0.0, mgr.getHopperSellRate(minion));
+        mgr.setUpgrade(minion.id, 0, MinionUpgrade.BUDGET_HOPPER);
+        assertEquals(0.50, mgr.getHopperSellRate(minion));
+        mgr.setUpgrade(minion.id, 1, MinionUpgrade.ENCHANTED_HOPPER);
+        assertEquals(0.90, mgr.getHopperSellRate(minion));
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_autoSell_SellsStoredResourcesViaHopperAndEmptiesStorage() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+        for (int i = 0; i < MinionManager.BASE_PRODUCTION_TICKS * 4; i++) {
+            mgr.tick(minion);
+        }
+        int stored = minion.getStoredResources();
+        assertEquals(4, stored);
+        mgr.setUpgrade(minion.id, 0, MinionUpgrade.ENCHANTED_HOPPER);
+        long coins = mgr.autoSell(minion.id, 10);
+        assertEquals((long) Math.floor(stored * 10 * 0.90), coins);
+        assertEquals(0, minion.getStoredResources());
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_autoSell_ReturnsZeroWithoutHopper() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_1);
+        for (int i = 0; i < MinionManager.BASE_PRODUCTION_TICKS; i++) {
+            mgr.tick(minion);
+        }
+        assertEquals(1, minion.getStoredResources());
+        assertEquals(0L, mgr.autoSell(minion.id, 10));
+        assertEquals(1, minion.getStoredResources());
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_upgradeMinion_AdvancesTierByOne() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.WHEAT, MinionTier.TIER_1);
+        assertTrue(mgr.upgradeMinion(minion.id));
+        assertEquals(MinionTier.TIER_2, minion.getTier());
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_setMaxSlots_ExpandsPerPlayerSlotCap() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        assertEquals(MinionManager.BASE_SLOTS, mgr.getMaxSlots(owner));
+        mgr.setMaxSlots(owner, 15);
+        assertEquals(15, mgr.getMaxSlots(owner));
+    }
+
+    @Test
+    void minion_upgradeMinion_ReturnsFalseAtMaxTier() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.WHEAT, MinionTier.TIER_12);
+        assertFalse(mgr.upgradeMinion(minion.id));
+        assertEquals(MinionTier.TIER_12, minion.getTier());
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_getProductionIntervalTicks_DecreasesByTierOrdinal() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_5);
+        int expected = MinionManager.BASE_PRODUCTION_TICKS - MinionTier.TIER_5.ordinal();
+        assertEquals(expected, mgr.getProductionIntervalTicks(minion));
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_getSlotCount_returnsBaseSlots_forFreshPlayer() {
+        UUID owner = UUID.randomUUID();
+        assertEquals(MinionManager.BASE_SLOTS, MinionManager.getInstance().getSlotCount(owner));
+    }
+
+    @Test
+    void minion_getSlotCount_incrementsWithUniqueMilestones() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        assertEquals(MinionManager.BASE_SLOTS, mgr.getSlotCount(owner));
+        mgr.registerUniqueMinion(owner, MinionType.WHEAT, MinionTier.TIER_1);
+        assertEquals(MinionManager.BASE_SLOTS + 1, mgr.getSlotCount(owner));
+    }
+
+    @Test
+    void minion_getUniqueMinionsCount_tracksDistinctTypeTierCombos() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        assertEquals(0, mgr.getUniqueMinionsCount(owner));
+        mgr.registerUniqueMinion(owner, MinionType.WHEAT, MinionTier.TIER_1);
+        assertEquals(1, mgr.getUniqueMinionsCount(owner));
+        mgr.registerUniqueMinion(owner, MinionType.WHEAT, MinionTier.TIER_1);
+        assertEquals(1, mgr.getUniqueMinionsCount(owner));
+        mgr.registerUniqueMinion(owner, MinionType.WHEAT, MinionTier.TIER_2);
+        assertEquals(2, mgr.getUniqueMinionsCount(owner));
+    }
+
+    @Test
+    void minion_placeMinion_autoRegistersUniqueMinion() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        assertEquals(0, mgr.getUniqueMinionsCount(owner));
+        MinionData minion = mgr.placeMinion(owner, MinionType.COAL, MinionTier.TIER_1);
+        assertEquals(1, mgr.getUniqueMinionsCount(owner));
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_upgradeMinion_autoRegistersNewTier() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        MinionData minion = mgr.placeMinion(owner, MinionType.COAL, MinionTier.TIER_1);
+        assertEquals(1, mgr.getUniqueMinionsCount(owner));
+        mgr.upgradeMinion(minion.id);
+        assertEquals(2, mgr.getUniqueMinionsCount(owner));
+        mgr.removeMinion(minion.id);
+    }
+
+    @Test
+    void minion_clearMinions_resetsUniqueMinions() {
+        MinionManager mgr = MinionManager.getInstance();
+        UUID owner = UUID.randomUUID();
+        mgr.placeMinion(owner, MinionType.WHEAT, MinionTier.TIER_1);
+        assertTrue(mgr.getUniqueMinionsCount(owner) > 0);
+        mgr.clearMinions(owner);
+        assertEquals(0, mgr.getUniqueMinionsCount(owner));
+        assertEquals(MinionManager.BASE_SLOTS, mgr.getMaxSlots(owner));
+    }
+
+    @Test
+    void minion_tick_ProducesResourceAtTierFiveInterval() {
+        MinionManager mgr = MinionManager.getInstance();
+        MinionData minion = mgr.placeMinion(UUID.randomUUID(), MinionType.COBBLESTONE, MinionTier.TIER_5);
+        int interval = mgr.getProductionIntervalTicks(minion);
+        int produced = 0;
+        for (int i = 0; i < interval - 1; i++) {
+            produced += mgr.tick(minion);
+        }
+        assertEquals(0, produced);
+        assertEquals(1, mgr.tick(minion));
+        mgr.removeMinion(minion.id);
     }
 }
