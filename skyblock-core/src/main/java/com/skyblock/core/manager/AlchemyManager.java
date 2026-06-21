@@ -51,6 +51,58 @@ public final class AlchemyManager {
         }
     }
 
+    /** All SkyBlock potions, with display name and maximum tier. */
+    public enum SkyblockPotion {
+        SPEED("Speed", 5),
+        STRENGTH("Strength", 8),
+        CRIT_CHANCE("Critical Chance", 5),
+        CRIT_DAMAGE("Critical Damage", 5),
+        HASTE("Haste", 3),
+        INTELLIGENCE("Intelligence", 6),
+        RESISTANCE("Resistance", 4),
+        REGENERATION("Regeneration", 10),
+        HEALING("Healing", 6),
+        FIRE_RESISTANCE("Fire Resistance", 1),
+        WATER_BREATHING("Water Breathing", 3),
+        NIGHT_VISION("Night Vision", 1),
+        INVISIBILITY("Invisibility", 1),
+        POISON("Poison", 4),
+        SLOWNESS("Slowness", 4),
+        WEAKNESS("Weakness", 2),
+        BLINDNESS("Blindness", 1),
+        JUMP_BOOST("Jump Boost", 6),
+        ABSORPTION("Absorption", 4),
+        TRUE_RESISTANCE("True Resistance", 5),
+        ARCHERY("Archery", 6),
+        EXPERIENCE("Experience", 3),
+        FISHING("Fishing", 5),
+        FARMING("Farming", 5),
+        MINING("Mining", 5),
+        COMBAT("Combat", 5),
+        WOLF("Wolf", 4),
+        SPIRIT("Spirit", 4),
+        RABBIT("Rabbit", 5),
+        ADRENALINE("Adrenaline", 4),
+        LEGENDARY("Legendary", 5),
+        GRAVITY("Gravity", 4),
+        ICHOR("Ichor", 5),
+        REVIVE("Revive", 3),
+        WITHER("Wither", 5),
+        SPOOKY("Spooky", 5),
+        FLEECE("Fleece", 4);
+
+        public final String displayName;
+        public final int maxLevel;
+
+        SkyblockPotion(String displayName, int maxLevel) {
+            this.displayName = displayName;
+            this.maxLevel = maxLevel;
+        }
+
+        public String getDisplayName() { return displayName; }
+        public int getMaxLevel() { return maxLevel; }
+    }
+
     /** A potion recipe that can be brewed at the Brewing Stand. */
     public static final class PotionRecipe {
         private final String id;
