@@ -1,7 +1,6 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Stat;
-import com.skyblock.core.stats.PlayerStatsCalculator;
 import com.skyblock.core.stats.StatsManager;
 
 import java.util.Objects;
@@ -10,14 +9,14 @@ import java.util.UUID;
 /**
  * Singleton facade providing a single entry point for reading and modifying
  * per-player SkyBlock stats. Delegates storage to {@link StatManager} and
- * snapshot calculation to {@link PlayerStatsCalculator}.
+ * snapshot calculation to {@link StatsManager}.
  */
 public final class PlayerStatManager {
 
     private static final PlayerStatManager INSTANCE = new PlayerStatManager();
 
     private final StatManager statManager = StatManager.getInstance();
-    private final PlayerStatsCalculator calculator = PlayerStatsCalculator.getInstance();
+    private final StatsManager statsManager = StatsManager.getInstance();
 
     private PlayerStatManager() {}
 
@@ -32,7 +31,7 @@ public final class PlayerStatManager {
     public double getStat(UUID playerId, Stat stat) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(stat, "stat");
-        return calculator.calculate(playerId).getStat(stat);
+        return statsManager.getStats(playerId).getStat(stat);
     }
 
     /**
@@ -58,6 +57,6 @@ public final class PlayerStatManager {
     /** Returns a full calculated snapshot for the given player. */
     public StatsManager.PlayerStats getSnapshot(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        return calculator.calculate(playerId);
+        return statsManager.getStats(playerId);
     }
 }

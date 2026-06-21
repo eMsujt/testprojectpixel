@@ -112,4 +112,19 @@ public final class StatsManager {
         Objects.requireNonNull(playerId, "playerId");
         return cache.remove(playerId) != null;
     }
+
+    /**
+     * Returns the player's effective maximum health after applying the
+     * Hypixel SkyBlock defence-to-HP formula:
+     * {@code effectiveHp = health × (1 + defense / 100)}.
+     *
+     * @param playerId the player's UUID
+     * @return the player's effective HP
+     */
+    public double getEffectiveHealth(UUID playerId) {
+        PlayerStats snap = getCachedStats(playerId);
+        double health = snap.getStat(Stat.HEALTH);
+        double defense = snap.getStat(Stat.DEFENSE);
+        return health * (1.0 + defense / 100.0);
+    }
 }
