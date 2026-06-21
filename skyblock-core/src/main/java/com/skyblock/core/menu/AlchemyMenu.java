@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * 5-row chest GUI titled '§5Alchemy Table'. Shows the player's alchemy level,
+ * 6-row chest GUI titled '§dAlchemy'. Shows the player's alchemy level,
  * XP and active brew status at slot 4, and one tile per {@link PotionType}
  * across the interior rows.
  */
 public final class AlchemyMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE       = "§5Alchemy Table";
+    private static final String TITLE       = "§dAlchemy";
     private static final int    SUMMARY_SLOT = 4;
 
     private static final int[] RECIPE_SLOTS = {
@@ -29,7 +29,7 @@ public final class AlchemyMenu extends AbstractSkyBlockMenu {
     };
 
     public AlchemyMenu(Player player) {
-        super(player, TITLE, 5);
+        super(player, TITLE, 6);
     }
 
     @Override
@@ -77,9 +77,9 @@ public final class AlchemyMenu extends AbstractSkyBlockMenu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
-        for (int slot = 0; slot < 45; slot++) {
+        for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
-            if (slot < 9 || slot >= 36 || col == 0 || col == 8) {
+            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
                 setItem(slot, pane);
             }
         }
