@@ -803,7 +803,7 @@ public final class CompactCommands {
                 return true;
             }
             if (args.length == 0) {
-                new ReforgeMenu().open(player);
+                new ReforgeMenu(player).open(player);
                 return true;
             }
             switch (args[0].toLowerCase()) {
@@ -3036,7 +3036,7 @@ public final class CompactCommands {
 
         @Override
         protected void openMenu(Player player) {
-            new ReforgeMenu().open(player);
+            new ReforgeMenu(player).open(player);
         }
 
         @Override

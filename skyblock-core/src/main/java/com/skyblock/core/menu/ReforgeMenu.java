@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
  * clicks the anvil at slot 13 to apply a random reforge, and collects
  * the result from slot 15.
  */
-public final class ReforgeMenu extends Menu {
+public final class ReforgeMenu extends AbstractSkyBlockMenu {
 
     static final int ITEM_SLOT   = 11;
     static final int REFORGE_SLOT = 13;
@@ -27,12 +27,12 @@ public final class ReforgeMenu extends Menu {
         System.arraycopy(all, 1, REFORGE_TYPES, 0, REFORGE_TYPES.length);
     }
 
-    public ReforgeMenu() {
-        super("§9Reforge Item", 6);
+    public ReforgeMenu(Player player) {
+        super(player, "§5Reforge Anvil", 6);
     }
 
     @Override
-    protected void build() {
+    protected void populate() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 54; slot++) {
             if (slot != ITEM_SLOT && slot != REFORGE_SLOT && slot != RESULT_SLOT) {
