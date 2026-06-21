@@ -23,8 +23,8 @@ import java.util.UUID;
 public final class FishingMenu extends AbstractSkyBlockMenu {
 
     private static final String TITLE = "§9Fishing Log";
-    private static final int ROWS = 5;
-    private static final int CLOSE_SLOT = 44;
+    private static final int ROWS = 6;
+    private static final int CLOSE_SLOT = 49;
     private static final int STATS_SLOT = 4;
 
     private static final int[] TREASURE_SLOTS = {10, 12, 14, 16, 21, 23};
