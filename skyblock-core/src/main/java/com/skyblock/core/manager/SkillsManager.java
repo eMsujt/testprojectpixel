@@ -3,6 +3,7 @@ package com.skyblock.core.manager;
 import com.skyblock.core.data.SkyBlockXP;
 import com.skyblock.core.model.Skill;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -23,6 +24,36 @@ public final class SkillsManager {
      * Entry {@code i} is the total XP needed to reach level {@code i+1}.
      */
     public static final long[] XP_THRESHOLDS_CUMULATIVE = SkyBlockXP.STANDARD_CUMULATIVE.clone();
+
+    /** Per-level XP deltas for Carpentry (50-level curve). */
+    public static final long[] XP_THRESHOLDS_CARPENTRY = SkyBlockXP.FIFTY_LEVEL.clone();
+
+    /** Cumulative XP to reach each Carpentry level. */
+    public static final long[] XP_THRESHOLDS_CARPENTRY_CUMULATIVE = SkyBlockXP.FIFTY_LEVEL_CUMULATIVE.clone();
+
+    /** Per-level XP deltas for Dungeoneering (Catacombs, 50-level curve). */
+    public static final long[] XP_THRESHOLDS_DUNGEONEERING = SkyBlockXP.DUNGEONEERING.clone();
+
+    /** Cumulative XP to reach each Dungeoneering level. */
+    public static final long[] XP_THRESHOLDS_DUNGEONEERING_CUMULATIVE = SkyBlockXP.DUNGEONEERING_CUMULATIVE.clone();
+
+    /** Per-level XP deltas for Runecrafting and Social (25-level curve). */
+    public static final long[] XP_THRESHOLDS_RUNECRAFTING = SkyBlockXP.TWENTY_FIVE_LEVEL.clone();
+
+    /** Cumulative XP to reach each Runecrafting / Social level. */
+    public static final long[] XP_THRESHOLDS_RUNECRAFTING_CUMULATIVE = SkyBlockXP.TWENTY_FIVE_LEVEL_CUMULATIVE.clone();
+
+    /**
+     * Per-level XP deltas for every skill, keyed by lowercase skill name.
+     * Delegates to {@link SkillManager#SKILL_XP_TABLE}.
+     */
+    public static final Map<String, long[]> SKILL_XP_TABLES = SkillManager.SKILL_XP_TABLE;
+
+    /**
+     * Cumulative XP to reach each level for every skill, keyed by lowercase skill name.
+     * Delegates to {@link SkillManager#SKILL_CUMULATIVE_XP_TABLE}.
+     */
+    public static final Map<String, long[]> SKILL_CUMULATIVE_XP_TABLES = SkillManager.SKILL_CUMULATIVE_XP_TABLE;
 
     private static final SkillsManager INSTANCE = new SkillsManager();
 
