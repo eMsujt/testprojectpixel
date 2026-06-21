@@ -128,34 +128,53 @@ public final class MiningManager {
     }
 
     /**
-     * All 22 passive Heart-of-the-Mountain perks, ordered as they appear in the HOTM tree.
+     * All passive Heart-of-the-Mountain perks, ordered as they appear in the HOTM tree
+     * followed by Peak-of-the-Mountain (PoTM) token perks.
      * Each entry stores the perk's display name, maximum upgrade level, and the flat bonus
      * value granted per level (0 for toggle/ability-style perks with no numeric scaling).
      */
     public enum HotmPerk {
-        MINING_SPEED_BOOST   ("Mining Speed Boost",      1,   0),
-        MINING_FORTUNE       ("Mining Fortune",          50,   5),
-        DAILY_POWDER         ("Daily Powder",          100,   1),
-        EFFICIENT_MINER      ("Efficient Miner",       100,   1),
-        QUICK_FORGE          ("Quick Forge",            20,   5),
-        TITANIUM_INSANITY    ("Titanium Insanity",      50,   2),
-        LUCK_OF_THE_CAVE     ("Luck of the Cave",       45,   1),
-        POWDER_BUFF          ("Powder Buff",            50,   1),
-        MINING_MADNESS       ("Mining Madness",          1,   0),
-        SKY_MALL             ("Sky Mall",                1,   0),
-        GOBLIN_KILLER        ("Goblin Killer",           1,   0),
-        STAR_POWDER          ("Star Powder",             1,   0),
-        MOLE                 ("Mole",                  200,   1),
-        PROFESSIONAL         ("Professional",           140,   4),
-        LONESOME_MINER       ("Lonesome Miner",         45,   5),
-        GREAT_EXPLORER       ("Great Explorer",         20,   3),
-        FORTUNATE            ("Fortunate",              20,   4),
-        MINING_EXPERIENCE_BOOST("Mining Experience Boost", 100, 1),
-        SEASONED_MINEMAN     ("Seasoned Mineman",      100,   1),
-        ANOMALOUS_DESIRE     ("Anomalous Desire",       20,   2),
-        MANIACAL_MINER       ("Maniacal Miner",          1,   0),
-        PICKOBULUS           ("Pickobulus",              1,   0),
-        VEIN_SEEKER          ("Vein Seeker",             1,   0);
+        // HotM tier 1
+        MINING_SPEED_BOOST      ("Mining Speed Boost",       1,   0),
+        PICKOBULUS              ("Pickobulus",               1,   0),
+        // HotM tier 2
+        MINING_FORTUNE          ("Mining Fortune",          50,   5),
+        // HotM tier 3
+        QUICK_FORGE             ("Quick Forge",             20,   5),
+        TITANIUM_INSANITY       ("Titanium Insanity",       50,   2),
+        LUCK_OF_THE_CAVE        ("Luck of the Cave",        45,   1),
+        // HotM tier 4
+        DAILY_POWDER            ("Daily Powder",           100,   1),
+        ORBITING_CRYSTALS       ("Orbiting Crystals",       30,   1),
+        EFFICIENT_MINER         ("Efficient Miner",        100,   1),
+        // HotM tier 5
+        MINING_MADNESS          ("Mining Madness",           1,   0),
+        SKY_MALL                ("Sky Mall",                 1,   0),
+        POWDER_BUFF             ("Powder Buff",             50,   1),
+        // HotM tier 6
+        GOBLIN_KILLER           ("Goblin Killer",            1,   0),
+        STAR_POWDER             ("Star Powder",              1,   0),
+        MOLE                    ("Mole",                   200,   1),
+        // HotM tier 7
+        PROFESSIONAL            ("Professional",           140,   4),
+        LONESOME_MINER          ("Lonesome Miner",          45,   5),
+        GREAT_EXPLORER          ("Great Explorer",          20,   3),
+        // HotM tier 8
+        FORTUNATE               ("Fortunate",               20,   4),
+        MINING_EXPERIENCE_BOOST ("Mining Experience Boost", 100,   1),
+        SEASONED_MINEMAN        ("Seasoned Mineman",        100,   1),
+        // HotM tier 9
+        ANOMALOUS_DESIRE        ("Anomalous Desire",        20,   2),
+        MANIACAL_MINER          ("Maniacal Miner",           1,   0),
+        VEIN_SEEKER             ("Vein Seeker",              1,   0),
+        // Peak of the Mountain (PoTM token perks)
+        MINING_SPEED_II         ("Mining Speed II",         50,   5),
+        MINING_FORTUNE_II       ("Mining Fortune II",       50,   5),
+        CRYSTALLIZED            ("Crystallized",             1,   0),
+        CRYSTAL_HOLLOWS_BARTER  ("Crystal Hollows Barter",  1,   0),
+        MORE_POWDER             ("More Powder",              1,   0),
+        FRONT_LOADED            ("Front Loaded",             1,   0),
+        PRECISION_MINING        ("Precision Mining",         1,   0);
 
         private final String displayName;
         public final int maxLevel;
