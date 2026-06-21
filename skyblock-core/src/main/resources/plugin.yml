@@ -59,6 +59,11 @@ commands:
     description: Open the Bazaar trading post.
     usage: /bazaar [product]
     aliases: [bz, bazar]
+  sbitem:
+    description: Spawn any SkyBlock item by its internal id (1:1 texture, name and lore).
+    usage: /sbitem [<id> [amount]]
+    aliases: [sbgive]
+    permission: skyblock.admin
   bazaarmenu:
     description: Open the Bazaar GUI.
     usage: /bazaarmenu
@@ -474,6 +479,9 @@ commands:
     aliases: [warps]
 
 permissions:
+  skyblock.admin:
+    description: Administrative commands such as /sbitem (spawn any item).
+    default: op
   skyblock.ban:
     description: Use the /ban command to ban players from the server.
     default: op

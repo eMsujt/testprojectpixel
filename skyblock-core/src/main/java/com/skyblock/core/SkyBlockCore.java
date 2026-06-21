@@ -623,6 +623,11 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("bz").setExecutor(bazaarCommand);
             getCommand("bz").setTabCompleter(bazaarCommand);
         }
+        com.skyblock.core.command.SbItemCommand sbItemCommand = new com.skyblock.core.command.SbItemCommand();
+        if (getCommand("sbitem") != null) {
+            getCommand("sbitem").setExecutor(sbItemCommand);
+            getCommand("sbitem").setTabCompleter(sbItemCommand);
+        }
         MuseumCommand museumCommand = new MuseumCommand(museumManager);
         if (getCommand("museum") != null) {
             getCommand("museum").setExecutor(museumCommand);
