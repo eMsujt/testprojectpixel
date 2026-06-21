@@ -1,5 +1,0 @@
-# Enchanting XP multiplier, read from the jar by EnchantingSkillListener.
-# The Enchanting XP awarded for an enchant is the event's experience level cost
-# multiplied by `multiplier`. If this file is missing the listener falls back to
-# its built-in default.
-multiplier: 6
