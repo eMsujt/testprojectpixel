@@ -1040,6 +1040,7 @@ public final class SkyBlockCore extends JavaPlugin {
         scoreboardManager.start(this);
         com.skyblock.core.manager.TabListManager.getInstance().start(this);
         manaManager.start(this);
+        com.skyblock.core.manager.HealthRegenManager.getInstance().start(this);
         skyBlockEventManager.start(this);
         jacobsContestManager.start(this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.JacobsContestListener.getInstance(), this);
