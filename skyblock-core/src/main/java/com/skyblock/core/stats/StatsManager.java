@@ -127,4 +127,27 @@ public final class StatsManager {
         double defense = snap.getStat(Stat.DEFENSE);
         return health * (1.0 + defense / 100.0);
     }
+
+    /**
+     * Applies the Hypixel SkyBlock defence-to-HP formula to raw inputs:
+     * {@code effectiveHp = baseHP × (1 + defense / 100)}.
+     *
+     * @param defense the player's defence stat
+     * @param baseHP  the player's base maximum health
+     * @return the effective HP
+     */
+    public static double getEffectiveHealth(double defense, double baseHP) {
+        return baseHP * (1.0 + defense / 100.0);
+    }
+
+    /**
+     * Returns the magic find contributed by a player's luck stat, derived as
+     * {@code luckStat / 2}.
+     *
+     * @param luckStat the player's luck stat
+     * @return the magic find from luck
+     */
+    public static double getMagicFind(double luckStat) {
+        return luckStat / 2.0;
+    }
 }
