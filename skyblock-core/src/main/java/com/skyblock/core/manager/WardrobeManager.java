@@ -1,6 +1,7 @@
 package com.skyblock.core.manager;
 
 import com.skyblock.core.model.Stat;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
@@ -69,6 +70,27 @@ public final class WardrobeManager {
         /** Returns the set number within its page (1–3). */
         public int getSet() {
             return set;
+        }
+    }
+
+    /**
+     * Immutable description of a named armor set using {@link Material} types.
+     * Use this when you need to describe what materials make up a set (e.g. for
+     * display purposes or crafting recipes) rather than storing live {@link ItemStack}s.
+     *
+     * @param name        display name of the set, must not be null
+     * @param helmet      material used for the helmet slot, or {@link Material#AIR} for none
+     * @param chestplate  material used for the chestplate slot, or {@link Material#AIR} for none
+     * @param leggings    material used for the leggings slot, or {@link Material#AIR} for none
+     * @param boots       material used for the boots slot, or {@link Material#AIR} for none
+     */
+    public record ArmorSet(String name, Material helmet, Material chestplate, Material leggings, Material boots) {
+        public ArmorSet {
+            Objects.requireNonNull(name, "name");
+            Objects.requireNonNull(helmet, "helmet");
+            Objects.requireNonNull(chestplate, "chestplate");
+            Objects.requireNonNull(leggings, "leggings");
+            Objects.requireNonNull(boots, "boots");
         }
     }
 
