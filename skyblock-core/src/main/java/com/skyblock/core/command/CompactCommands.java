@@ -30,6 +30,7 @@ import com.skyblock.core.menu.DungeonsMenu;
 import com.skyblock.core.menu.EnchantingMenu;
 import com.skyblock.core.menu.EssenceMenu;
 import com.skyblock.core.menu.FairySoulMenu;
+import com.skyblock.core.menu.FishingMenu;
 import com.skyblock.core.menu.ForgeMenu;
 import com.skyblock.core.menu.GardenMenu;
 import com.skyblock.core.menu.IslandMenu;
@@ -3405,6 +3406,98 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new com.skyblock.core.menu.DungeonMenu(SkyBlockCore.getInstance(), player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /warp (simple menu opener)
+    // =========================================================================
+
+    public static final class WarpCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new WarpMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /mining (simple menu opener)
+    // =========================================================================
+
+    public static final class MiningCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new MiningMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /fishing (simple menu opener)
+    // =========================================================================
+
+    public static final class FishingCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new FishingMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /farming (simple menu opener)
+    // =========================================================================
+
+    public static final class FarmingCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new GardenMenu(player).open(player);
         }
 
         @Override
