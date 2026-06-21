@@ -89,23 +89,23 @@ public final class FishingManager {
 
     /** Sea creatures that can be summoned while fishing, grouped by the {@link WaterType} they spawn in. */
     public enum SeaCreature {
-        // --- Water (all 16 Hypixel sea creatures) ---
-        SEA_WALKER(1,  0.30, WaterType.WATER),
-        NIGHT_SQUID(5,  0.25, WaterType.WATER),
+        // --- Water (all 16 Hypixel sea creatures, ascending minLevel) ---
+        SEA_WALKER(1,   0.30,  WaterType.WATER),
+        SQUID(1,        0.28,  WaterType.WATER),
+        ZOMBIE_MERMAN(1, 0.26, WaterType.WATER),
+        THE_FISH(1,     0.22,  WaterType.WATER),
+        NIGHT_SQUID(5,  0.25,  WaterType.WATER),
         SEA_GUARDIAN(15, 0.14, WaterType.WATER),
-        SEA_WITCH(20, 0.10, WaterType.WATER),
-        SEA_ARCHER(25, 0.08, WaterType.WATER),
+        SEA_WITCH(20,   0.10,  WaterType.WATER),
+        SEA_ARCHER(25,  0.08,  WaterType.WATER),
         MONSTER_OF_THE_DEEP(30, 0.06, WaterType.WATER),
-        CATFISH(35, 0.04, WaterType.WATER),
-        CARROT_KING(40, 0.03, WaterType.WATER),
-        DEEP_SEA_PROTECTOR(45, 0.02, WaterType.WATER),
-        SQUID(1,  0.28, WaterType.WATER),
-        SEA_EMPEROR(50, 0.01, WaterType.WATER),
-        ZOMBIE_MERMAN(1,  0.26, WaterType.WATER),
-        PHANTOM_FISHERMAN(45, 0.015, WaterType.WATER),
+        WATER_HYDRA(30, 0.05,  WaterType.WATER),
+        CATFISH(35,     0.04,  WaterType.WATER),
+        CARROT_KING(40, 0.03,  WaterType.WATER),
         GREAT_WHITE_SHARK(40, 0.02, WaterType.WATER),
-        WATER_HYDRA(30, 0.05, WaterType.WATER),
-        THE_FISH(1,  0.22, WaterType.WATER),
+        DEEP_SEA_PROTECTOR(45, 0.02, WaterType.WATER),
+        PHANTOM_FISHERMAN(45, 0.015, WaterType.WATER),
+        SEA_EMPEROR(50, 0.01,  WaterType.WATER),
 
         // --- Lava ---
         FLAMING_WORM(1,  0.30, WaterType.LAVA),
@@ -117,7 +117,7 @@ public final class FishingManager {
         // --- Oasis ---
         OASIS_RABBIT(1,  0.35, WaterType.OASIS),
         OASIS_SHEEP(15, 0.18, WaterType.OASIS),
-        WATER_HYDRA(35, 0.05, WaterType.OASIS),
+        OASIS_HYDRA(35, 0.05, WaterType.OASIS),
 
         // --- Winter ---
         FROZEN_STEVE(1,  0.30, WaterType.WINTER),
