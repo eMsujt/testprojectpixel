@@ -28,12 +28,15 @@ public final class LoreAbility {
     public final int manaCost;
     /** A numeric magnitude pulled from the description (e.g. teleport blocks); 0 if none. */
     public final int magnitude;
+    /** The ability's description lines (color stripped), so effects can read their own params. */
+    public final List<String> lines;
 
-    public LoreAbility(String name, Trigger trigger, int manaCost, int magnitude) {
+    public LoreAbility(String name, Trigger trigger, int manaCost, int magnitude, List<String> lines) {
         this.name = name;
         this.trigger = trigger;
         this.manaCost = manaCost;
         this.magnitude = magnitude;
+        this.lines = lines;
     }
 
     /** Parses every right-click ability declared in an item's lore, in order. */
@@ -45,6 +48,7 @@ public final class LoreAbility {
         Trigger trigger = null;
         int mana = 0;
         int magnitude = 0;
+        List<String> lines = new ArrayList<>();
 
         for (String raw : lore) {
             if (raw == null) continue;
@@ -52,15 +56,17 @@ public final class LoreAbility {
 
             Matcher a = ABILITY.matcher(line);
             if (a.matches()) {
-                if (name != null) out.add(new LoreAbility(name, trigger, mana, magnitude));
+                if (name != null) out.add(new LoreAbility(name, trigger, mana, magnitude, lines));
                 name = a.group(1).trim();
                 trigger = a.group(2).equals("SNEAK RIGHT CLICK")
                         ? Trigger.SNEAK_RIGHT_CLICK : Trigger.RIGHT_CLICK;
                 mana = 0;
                 magnitude = 0;
+                lines = new ArrayList<>();
                 continue;
             }
             if (name == null) continue;
+            lines.add(line);
 
             Matcher mc = MANA.matcher(line);
             if (mc.find()) {
@@ -77,7 +83,7 @@ public final class LoreAbility {
                 }
             }
         }
-        if (name != null) out.add(new LoreAbility(name, trigger, mana, magnitude));
+        if (name != null) out.add(new LoreAbility(name, trigger, mana, magnitude, lines));
         return out;
     }
 }

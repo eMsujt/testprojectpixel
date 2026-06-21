@@ -1,9 +1,12 @@
 package com.skyblock.core.ability;
 
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -11,6 +14,8 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Real effects for lore-driven item abilities. Only abilities listed here actually fire; others
@@ -24,7 +29,7 @@ public final class AbilityEffects {
     public static boolean isImplemented(String abilityName) {
         if (abilityName == null) return false;
         return switch (abilityName.toLowerCase(Locale.ROOT)) {
-            case "instant transmission", "ether transmission" -> true;
+            case "instant transmission", "ether transmission", "dragon rage" -> true;
             default -> false;
         };
     }
@@ -38,8 +43,50 @@ public final class AbilityEffects {
             case "ether transmission" ->
                     teleport(player, etherTarget(player, ability.magnitude > 0 ? ability.magnitude : 57),
                             false);
+            case "dragon rage" -> dragonRage(player, parseDamage(ability));
             default -> { }
         }
+    }
+
+    private static final Pattern TAKE_DAMAGE = Pattern.compile("take\\s+([0-9,]+)");
+
+    /** Pulls the "...take <N> damage" value from an ability's description; 1000 if absent. */
+    private static double parseDamage(LoreAbility ability) {
+        for (String line : ability.lines) {
+            Matcher m = TAKE_DAMAGE.matcher(line);
+            if (m.find()) {
+                try {
+                    return Double.parseDouble(m.group(1).replace(",", ""));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return 1000;
+    }
+
+    /** AoE: damage and knock back all monsters in a cone in front of the player. */
+    private static void dragonRage(Player player, double damage) {
+        Location eye = player.getEyeLocation();
+        Vector look = eye.getDirection().normalize();
+        double range = 5.0;
+        for (Entity entity : player.getNearbyEntities(range, range, range)) {
+            if (!(entity instanceof Monster monster)) {
+                continue;
+            }
+            Vector toward = monster.getLocation().add(0, monster.getHeight() / 2, 0)
+                    .toVector().subtract(eye.toVector());
+            if (toward.lengthSquared() < 1.0e-6) {
+                continue;
+            }
+            if (look.dot(toward.normalize()) < 0.4) {
+                continue; // outside the forward cone
+            }
+            monster.damage(damage, player);
+            monster.setVelocity(monster.getVelocity().add(look.clone().multiply(1.4).setY(0.35)));
+        }
+        player.getWorld().playSound(eye, Sound.ENTITY_ENDER_DRAGON_GROWL, 1f, 1f);
+        player.getWorld().spawnParticle(Particle.FLAME,
+                eye.clone().add(look.clone().multiply(2)), 30, 1, 1, 1, 0.01);
     }
 
     /** Teleports the player, preserving their facing, with the ender-teleport sound. */
