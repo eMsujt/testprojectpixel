@@ -12,11 +12,19 @@ import com.skyblock.core.manager.BestiaryManager;
 import com.skyblock.core.manager.BestiaryManager.BestiaryCategory;
 import com.skyblock.core.manager.BestiaryManager.BestiaryFamily;
 import com.skyblock.core.manager.BestiaryManager.BestiaryMob;
+import com.skyblock.core.manager.DungeonManager;
+import com.skyblock.core.manager.DungeonManager.DungeonClass;
 import com.skyblock.core.manager.FishingManager.TrophyFish;
 import com.skyblock.core.manager.PetsManager;
 import com.skyblock.core.manager.PetsManager.PetData;
 import com.skyblock.core.manager.PetsManager.PetRarity;
 import com.skyblock.core.manager.PetsManager.PetType;
+import com.skyblock.core.manager.SlayerManager;
+import com.skyblock.core.manager.SlayerManager.BossFight;
+import com.skyblock.core.manager.SlayerManager.QuestTier;
+import com.skyblock.core.manager.SlayerManager.SlayerQuest;
+import com.skyblock.core.manager.SlayerManager.SlayerReward;
+import com.skyblock.core.manager.SlayerManager.SlayerType;
 import com.skyblock.core.manager.TrophyFishManager;
 import com.skyblock.core.manager.TrophyFishManager.TrophyTier;
 import com.skyblock.core.model.Stat;
@@ -28,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -1942,6 +1951,809 @@ class ManagersTest {
             assertEquals(0, bazaar.getBuyOrderCount("WHEAT"));
             assertEquals(0.0, bazaar.getClaimableCoins(player));
             assertEquals(FeeTier.BASE, bazaar.getFeeTier(player));
+        }
+    }
+
+    @Nested
+    class SlayerManagerTests {
+
+        private SlayerManager manager;
+        private UUID playerId;
+
+        @BeforeEach
+        void setUp() {
+            manager = SlayerManager.getInstance();
+            playerId = UUID.randomUUID();
+        }
+
+        @AfterEach
+        void tearDown() {
+            manager.reset(playerId);
+        }
+
+        // --- addExperience / getExperience ---
+
+        @Test
+        void addExperience_accumulatesAndReturnsTotal() {
+            manager.addExperience(playerId, SlayerType.ZOMBIE, 10L);
+            long total = manager.addExperience(playerId, SlayerType.ZOMBIE, 15L);
+            assertEquals(25L, total);
+            assertEquals(25L, manager.getExperience(playerId, SlayerType.ZOMBIE));
+        }
+
+        @Test
+        void addExperience_negativeAmount_throwsIllegalArgument() {
+            assertThrows(IllegalArgumentException.class,
+                    () -> manager.addExperience(playerId, SlayerType.ZOMBIE, -1L));
+        }
+
+        @Test
+        void addExperience_nullPlayer_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.addExperience(null, SlayerType.ZOMBIE, 10L));
+        }
+
+        @Test
+        void addExperience_nullType_throwsNullPointer() {
+            assertThrows(NullPointerException.class,
+                    () -> manager.addExperience(playerId, null, 10L));
+        }
+
+        @Test
+        void getExperience_unknownPlayer_returnsZero() {
+            assertEquals(0L, manager.getExperience(UUID.randomUUID(), SlayerType.SPIDER));
+        }
+
+        @Test
+        void getExperience_differentTypesAreIndependent() {
+            manager.addExperience(playerId, SlayerType.ZOMBIE, 100L);
+            assertEquals(0L, manager.getExperience(playerId, SlayerType.SPIDER));
+        }
+
+        // --- getLevel ---
+
+        @Test
+        void getLevel_freshPlayer_isZero() {
+            assertEquals(0, manager.getLevel(playerId, SlayerType.ZOMBIE));
+        }
+
+        @Test
+        void getLevel_afterFirstThreshold_isOne() {
+            // ZOMBIE xpTable[0] = 5
+            manager.addExperience(playerId, SlayerType.ZOMBIE, 5L);
+            assertEquals(1, manager.getLevel(playerId, SlayerType.ZOMBIE));
+        }
+
+        @Test
+        void getLevel_afterSecondThreshold_isTwo() {
+            // ZOMBIE xpTable[1] = 15
+            manager.addExperience(playerId, SlayerType.ZOMBIE, 15L);
+            assertEquals(2, manager.getLevel(playerId, SlayerType.ZOMBIE));
+        }
+
+        @Test
+        void getLevel_atMaxXp_doesNotExceedMaxLevel() {
+            manager.addExperience(playerId, SlayerType.WOLF, Long.MAX_VALUE / 2);
+            assertTrue(manager.getLevel(playerId, SlayerType.WOLF) <= SlayerManager.MAX_LEVEL);
+        }
+
+        // --- addKill / getKillCount ---
+
+        @Test
+        void addKill_incrementsAndReturnsTotal() {
+            manager.addKill(playerId, SlayerType.SPIDER);
+            int total = manager.addKill(playerId, SlayerType.SPIDER);
+            assertEquals(2, total);
+        }
+
+        @Test
+        void getKillCount_unknownPlayer_returnsZero() {
+            assertEquals(0, manager.getKillCount(UUID.randomUUID(), SlayerType.WOLF));
+        }
+
+        @Test
+        void getKillCount_differentTypesAreIndependent() {
+            manager.addKill(playerId, SlayerType.ZOMBIE);
+            assertEquals(0, manager.getKillCount(playerId, SlayerType.SPIDER));
+        }
+
+        // --- quest lifecycle ---
+
+        @Test
+        void startQuest_createsQuestWithCorrectTypeAndTier() {
+            SlayerQuest quest = manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            assertEquals(SlayerType.ZOMBIE, quest.type);
+            assertEquals(QuestTier.TIER_1, quest.tier);
+            assertEquals(0, quest.getKills());
+            assertFalse(quest.isBossSpawned());
+            assertFalse(quest.isComplete());
+        }
+
+        @Test
+        void startQuest_withExistingQuest_throwsIllegalState() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            assertThrows(IllegalStateException.class,
+                    () -> manager.startQuest(playerId, SlayerType.SPIDER, QuestTier.TIER_2));
+        }
+
+        @Test
+        void getActiveQuest_returnsQuestAfterStart() {
+            manager.startQuest(playerId, SlayerType.WOLF, QuestTier.TIER_2);
+            SlayerQuest quest = manager.getActiveQuest(playerId);
+            assertNotNull(quest);
+            assertEquals(SlayerType.WOLF, quest.type);
+        }
+
+        @Test
+        void getActiveQuest_noQuest_returnsNull() {
+            assertNull(manager.getActiveQuest(playerId));
+        }
+
+        @Test
+        void cancelQuest_removesActiveQuest_returnsTrue() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            assertTrue(manager.cancelQuest(playerId));
+            assertNull(manager.getActiveQuest(playerId));
+        }
+
+        @Test
+        void cancelQuest_noQuest_returnsFalse() {
+            assertFalse(manager.cancelQuest(playerId));
+        }
+
+        // --- quest kill tracking ---
+
+        @Test
+        void addQuestKill_incrementsKillsOnActiveQuest() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            int kills = manager.addQuestKill(playerId);
+            assertEquals(1, kills);
+            assertEquals(1, manager.getActiveQuest(playerId).getKills());
+        }
+
+        @Test
+        void addQuestKill_withoutQuest_throwsIllegalState() {
+            assertThrows(IllegalStateException.class,
+                    () -> manager.addQuestKill(playerId));
+        }
+
+        // --- canSpawnBoss / spawnBoss ---
+
+        @Test
+        void canSpawnBoss_beforeEnoughKills_returnsFalse() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            assertFalse(manager.canSpawnBoss(playerId));
+        }
+
+        @Test
+        void canSpawnBoss_afterEnoughKills_returnsTrue() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            // TIER_1 requires 10 kills
+            for (int i = 0; i < 10; i++) {
+                manager.addQuestKill(playerId);
+            }
+            assertTrue(manager.canSpawnBoss(playerId));
+        }
+
+        @Test
+        void spawnBoss_returnsCorrectTypeAndTier() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            for (int i = 0; i < 10; i++) {
+                manager.addQuestKill(playerId);
+            }
+            BossFight fight = manager.spawnBoss(playerId);
+            assertEquals(SlayerType.ZOMBIE, fight.type);
+            assertEquals(QuestTier.TIER_1, fight.tier);
+            assertFalse(fight.isDead());
+            assertTrue(fight.getHealth() > 0);
+        }
+
+        @Test
+        void spawnBoss_withoutQuest_throwsIllegalState() {
+            assertThrows(IllegalStateException.class,
+                    () -> manager.spawnBoss(playerId));
+        }
+
+        // --- damageBoss / BossFight ---
+
+        @Test
+        void damageBoss_reducesHealth() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            for (int i = 0; i < 10; i++) {
+                manager.addQuestKill(playerId);
+            }
+            BossFight fight = manager.spawnBoss(playerId);
+            int initial = fight.getHealth();
+            int remaining = manager.damageBoss(playerId, 100);
+            assertEquals(initial - 100, remaining);
+        }
+
+        @Test
+        void damageBoss_withoutBoss_throwsIllegalState() {
+            assertThrows(IllegalStateException.class,
+                    () -> manager.damageBoss(playerId, 100));
+        }
+
+        @Test
+        void bossFight_damage_negativeAmount_throwsIllegalArgument() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            for (int i = 0; i < 10; i++) {
+                manager.addQuestKill(playerId);
+            }
+            BossFight fight = manager.spawnBoss(playerId);
+            assertThrows(IllegalArgumentException.class, () -> fight.damage(-1));
+        }
+
+        @Test
+        void bossFight_isDead_afterLethalDamage() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            for (int i = 0; i < 10; i++) {
+                manager.addQuestKill(playerId);
+            }
+            BossFight fight = manager.spawnBoss(playerId);
+            fight.damage(Integer.MAX_VALUE);
+            assertTrue(fight.isDead());
+            assertEquals(0, fight.getHealth());
+        }
+
+        // --- killBoss / SlayerReward ---
+
+        @Test
+        void killBoss_bossNotDead_throwsIllegalState() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            for (int i = 0; i < 10; i++) {
+                manager.addQuestKill(playerId);
+            }
+            manager.spawnBoss(playerId);
+            assertThrows(IllegalStateException.class,
+                    () -> manager.killBoss(playerId));
+        }
+
+        @Test
+        void killBoss_afterBossDead_returnsRewardAndClearsQuest() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            for (int i = 0; i < 10; i++) {
+                manager.addQuestKill(playerId);
+            }
+            manager.spawnBoss(playerId);
+            manager.damageBoss(playerId, Integer.MAX_VALUE);
+            SlayerReward reward = manager.killBoss(playerId);
+            assertNotNull(reward);
+            assertTrue(reward.getXp() >= 0L);
+            assertNotNull(reward.getDrops());
+            assertNull(manager.getActiveQuest(playerId));
+            assertFalse(manager.isBossActive(playerId));
+        }
+
+        @Test
+        void killBoss_withoutBoss_throwsIllegalState() {
+            assertThrows(IllegalStateException.class,
+                    () -> manager.killBoss(playerId));
+        }
+
+        // --- escalateTier ---
+
+        @Test
+        void escalateTier_upgradesQuestToNextTier() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            SlayerQuest escalated = manager.escalateTier(playerId);
+            assertEquals(QuestTier.TIER_2, escalated.tier);
+        }
+
+        @Test
+        void escalateTier_atMaxTier_throwsIllegalState() {
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_4);
+            assertThrows(IllegalStateException.class,
+                    () -> manager.escalateTier(playerId));
+        }
+
+        @Test
+        void escalateTier_withoutQuest_throwsIllegalState() {
+            assertThrows(IllegalStateException.class,
+                    () -> manager.escalateTier(playerId));
+        }
+
+        // --- reset ---
+
+        @Test
+        void reset_clearsAllPlayerData_returnsTrue() {
+            manager.addExperience(playerId, SlayerType.ZOMBIE, 100L);
+            manager.addKill(playerId, SlayerType.ZOMBIE);
+            manager.startQuest(playerId, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            assertTrue(manager.reset(playerId));
+            assertEquals(0L, manager.getExperience(playerId, SlayerType.ZOMBIE));
+            assertEquals(0, manager.getKillCount(playerId, SlayerType.ZOMBIE));
+            assertNull(manager.getActiveQuest(playerId));
+        }
+
+        @Test
+        void reset_unknownPlayer_returnsFalse() {
+            assertFalse(manager.reset(UUID.randomUUID()));
+        }
+
+        // --- setBossActive / isBossActive ---
+
+        @Test
+        void setBossActive_andIsBossActive_roundTrips() {
+            manager.setBossActive(playerId, true);
+            assertTrue(manager.isBossActive(playerId));
+            manager.setBossActive(playerId, false);
+            assertFalse(manager.isBossActive(playerId));
+        }
+
+        @Test
+        void isBossActive_unknownPlayer_returnsFalse() {
+            assertFalse(manager.isBossActive(UUID.randomUUID()));
+        }
+
+        // --- getSpawnCost ---
+
+        @Test
+        void getSpawnCost_zombieTier1_matchesTable() {
+            assertEquals(100, manager.getSpawnCost(SlayerType.ZOMBIE, QuestTier.TIER_1));
+        }
+
+        @Test
+        void getSpawnCost_vampireAllTiers_returnsZero() {
+            for (QuestTier tier : QuestTier.values()) {
+                assertEquals(0, manager.getSpawnCost(SlayerType.VAMPIRE, tier));
+            }
+        }
+
+        // --- singleton / curve / phase behaviour ---
+
+        @Test
+        void getInstance_ReturnsSameInstance() {
+            assertSame(SlayerManager.getInstance(), SlayerManager.getInstance());
+        }
+
+        @Test
+        void getLevel_FollowsCumulativeXpThresholds() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            assertEquals(0, mgr.getLevel(id, SlayerType.ZOMBIE));
+            mgr.addExperience(id, SlayerType.ZOMBIE, 5L);     // first threshold
+            assertEquals(1, mgr.getLevel(id, SlayerType.ZOMBIE));
+            mgr.addExperience(id, SlayerType.ZOMBIE, 9L);     // total 14, still level 1
+            assertEquals(1, mgr.getLevel(id, SlayerType.ZOMBIE));
+            mgr.addExperience(id, SlayerType.ZOMBIE, 1L);     // total 15, level 2
+            assertEquals(2, mgr.getLevel(id, SlayerType.ZOMBIE));
+        }
+
+        @Test
+        void getLevel_HugeXpClampsToMaxLevel() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.addExperience(id, SlayerType.ENDERMAN, Long.MAX_VALUE);
+            assertEquals(SlayerManager.MAX_LEVEL, mgr.getLevel(id, SlayerType.ENDERMAN));
+        }
+
+        @Test
+        void escalateTier_AdvancesThroughTiersThenRejectsBeyondTier4() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.startQuest(id, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            assertEquals(QuestTier.TIER_2, mgr.escalateTier(id).tier);
+            assertEquals(QuestTier.TIER_3, mgr.escalateTier(id).tier);
+            assertEquals(QuestTier.TIER_4, mgr.escalateTier(id).tier);
+            assertEquals(QuestTier.TIER_4, mgr.getActiveQuest(id).tier);
+            assertThrows(IllegalStateException.class, () -> mgr.escalateTier(id));
+            mgr.cancelQuest(id);
+        }
+
+        @Test
+        void escalateTier_ResetsQuestKills() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.startQuest(id, SlayerType.WOLF, QuestTier.TIER_1);
+            mgr.addQuestKill(id);
+            mgr.addQuestKill(id);
+            assertEquals(2, mgr.getActiveQuest(id).getKills());
+            mgr.escalateTier(id);
+            assertEquals(0, mgr.getActiveQuest(id).getKills());
+            mgr.cancelQuest(id);
+        }
+
+        @Test
+        void escalateTier_RejectedAfterBossSpawned() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.startQuest(id, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            int needed = SlayerManager.KILLS_TO_SPAWN_BOSS.get(QuestTier.TIER_1);
+            for (int i = 0; i < needed; i++) {
+                mgr.addQuestKill(id);
+            }
+            mgr.spawnBoss(id);
+            assertThrows(IllegalStateException.class, () -> mgr.escalateTier(id));
+            mgr.cancelQuest(id);
+        }
+
+        @Test
+        void canSpawnBoss_OnlyAfterReachingKillRequirement() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.startQuest(id, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            int needed = SlayerManager.KILLS_TO_SPAWN_BOSS.get(QuestTier.TIER_1);
+            for (int i = 0; i < needed - 1; i++) {
+                mgr.addQuestKill(id);
+            }
+            assertFalse(mgr.canSpawnBoss(id));
+            mgr.addQuestKill(id);
+            assertTrue(mgr.canSpawnBoss(id));
+            mgr.cancelQuest(id);
+        }
+
+        @Test
+        void spawnBoss_ScalesHealthAndPhasesWithTier() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            // Escalate to TIER_4 before any boss spawns, then meet its kill requirement.
+            mgr.startQuest(id, SlayerType.ZOMBIE, QuestTier.TIER_1);
+            mgr.escalateTier(id);
+            mgr.escalateTier(id);
+            mgr.escalateTier(id);
+            int needed = SlayerManager.KILLS_TO_SPAWN_BOSS.get(QuestTier.TIER_4);
+            for (int i = 0; i < needed; i++) {
+                mgr.addQuestKill(id);
+            }
+            BossFight fight = mgr.spawnBoss(id);
+            int[] zombieHealth = SlayerManager.BOSS_HEALTH.get("Zombie");
+            assertEquals(zombieHealth[QuestTier.TIER_4.ordinal()], fight.getMaxHealth());
+            assertEquals(QuestTier.TIER_4.ordinal() + 1, fight.getTotalPhases());
+            assertEquals(1, fight.getPhase());
+            mgr.cancelQuest(id);
+        }
+
+        @Test
+        void damageBoss_EscalatesPhaseAndKillsBoss() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.startQuest(id, SlayerType.ZOMBIE, QuestTier.TIER_2);
+            int needed = SlayerManager.KILLS_TO_SPAWN_BOSS.get(QuestTier.TIER_2);
+            for (int i = 0; i < needed; i++) {
+                mgr.addQuestKill(id);
+            }
+            BossFight fight = mgr.spawnBoss(id);
+            int max = fight.getMaxHealth();      // 2 total phases at TIER_2
+            assertEquals(2, fight.getTotalPhases());
+            mgr.damageBoss(id, max / 2);
+            assertEquals(2, fight.getPhase());
+            assertFalse(fight.isDead());
+            mgr.damageBoss(id, max);             // overkill clamps to zero
+            assertTrue(fight.isDead());
+            assertEquals(0, fight.getHealth());
+            mgr.cancelQuest(id);
+        }
+
+        @Test
+        void damage_RejectsNegativeAmount() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.startQuest(id, SlayerType.SPIDER, QuestTier.TIER_1);
+            int needed = SlayerManager.KILLS_TO_SPAWN_BOSS.get(QuestTier.TIER_1);
+            for (int i = 0; i < needed; i++) {
+                mgr.addQuestKill(id);
+            }
+            mgr.spawnBoss(id);
+            assertThrows(IllegalArgumentException.class, () -> mgr.damageBoss(id, -1));
+            mgr.cancelQuest(id);
+        }
+
+        @Test
+        void startQuest_RejectsSecondConcurrentQuest() {
+            SlayerManager mgr = SlayerManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.startQuest(id, SlayerType.WOLF, QuestTier.TIER_1);
+            assertThrows(IllegalStateException.class,
+                    () -> mgr.startQuest(id, SlayerType.WOLF, QuestTier.TIER_2));
+            mgr.cancelQuest(id);
+        }
+    }
+
+    @Nested
+    class DungeonManagerTests {
+
+        @Test
+        void getInstance_ReturnsSameInstance() {
+            assertSame(DungeonManager.getInstance(), DungeonManager.getInstance());
+        }
+
+        @Test
+        void setDungeonFloor_ClampsToOneThroughSeven() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.setDungeonFloor(id, 5);
+            assertEquals(5, mgr.getDungeonFloor(id));
+            mgr.setDungeonFloor(id, 99);
+            assertEquals(7, mgr.getDungeonFloor(id));
+            mgr.setDungeonFloor(id, -3);
+            assertEquals(1, mgr.getDungeonFloor(id));
+        }
+
+        @Test
+        void getDungeonFloor_DefaultsToOne() {
+            assertEquals(1, DungeonManager.getInstance().getDungeonFloor(UUID.randomUUID()));
+        }
+
+        @Test
+        void addDungeonFloor_AdvancesAndClampsAtSeven() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.setDungeonFloor(id, 1);
+            mgr.addDungeonFloor(id, 3);
+            assertEquals(4, mgr.getDungeonFloor(id));
+            mgr.addDungeonFloor(id, 10);
+            assertEquals(7, mgr.getDungeonFloor(id));
+        }
+
+        @Test
+        void highestFloor_DefaultsToZeroAndClampsAtSeven() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            assertEquals(0, mgr.getHighestFloor(id));
+            mgr.setHighestFloor(id, 100);
+            assertEquals(7, mgr.getHighestFloor(id));
+        }
+
+        @Test
+        void recordCompletion_TracksCountAndKeepsBestScore() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.recordCompletion(id, 3, 250);
+            mgr.recordCompletion(id, 3, 180);
+            mgr.recordCompletion(id, 3, 300);
+            assertEquals(3, mgr.getCompletions(id, 3));
+            assertEquals(OptionalInt.of(300), mgr.getBestScore(id, 3));
+        }
+
+        @Test
+        void getBestScore_EmptyWhenFloorNeverCompleted() {
+            assertEquals(OptionalInt.empty(),
+                    DungeonManager.getInstance().getBestScore(UUID.randomUUID(), 1));
+        }
+
+        @Test
+        void recordCompletion_RejectsNonPositiveFloorAndNegativeScore() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            assertThrows(IllegalArgumentException.class, () -> mgr.recordCompletion(id, 0, 100));
+            assertThrows(IllegalArgumentException.class, () -> mgr.recordCompletion(id, 1, -1));
+        }
+
+        @Test
+        void getHighestCompletedFloor_ReturnsMaxAcrossRecords() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            assertEquals(OptionalInt.empty(), mgr.getHighestCompletedFloor(id));
+            mgr.recordCompletion(id, 2, 100);
+            mgr.recordCompletion(id, 6, 100);
+            mgr.recordCompletion(id, 4, 100);
+            assertEquals(OptionalInt.of(6), mgr.getHighestCompletedFloor(id));
+        }
+
+        @Test
+        void getClassLevel_FollowsCumulativeXpCurve() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            assertEquals(0, mgr.getClassLevel(id, DungeonClass.MAGE));
+            mgr.addClassXp(id, DungeonClass.MAGE, 50.0);   // exactly level 1
+            assertEquals(1, mgr.getClassLevel(id, DungeonClass.MAGE));
+            mgr.addClassXp(id, DungeonClass.MAGE, 74.0);   // cumulative 124, still level 1
+            assertEquals(1, mgr.getClassLevel(id, DungeonClass.MAGE));
+            mgr.addClassXp(id, DungeonClass.MAGE, 1.0);    // cumulative 125, level 2
+            assertEquals(2, mgr.getClassLevel(id, DungeonClass.MAGE));
+        }
+
+        @Test
+        void getClassLevel_HugeXpClampsToMaxClassLevel() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.addClassXp(id, DungeonClass.TANK, Double.MAX_VALUE);
+            assertEquals(DungeonManager.MAX_CLASS_LEVEL, mgr.getClassLevel(id, DungeonClass.TANK));
+        }
+
+        @Test
+        void setPlayerClass_RejectsUnknownClassName() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            assertThrows(IllegalArgumentException.class, () -> mgr.setPlayerClass(id, "Wizard"));
+            mgr.setPlayerClass(id, "Mage");
+            assertEquals("Mage", mgr.getPlayerClass(id));
+        }
+
+        @Test
+        void computeSkillScore_PenalisesTwoPerDeath() {
+            assertEquals(60, DungeonManager.computeSkillScore(0));
+            assertEquals(56, DungeonManager.computeSkillScore(2));
+            assertEquals(0,  DungeonManager.computeSkillScore(30));
+            assertEquals(0,  DungeonManager.computeSkillScore(100));
+        }
+
+        @Test
+        void computeSpeedScore_LinearDecayBetweenBoundaries() {
+            assertEquals(100, DungeonManager.computeSpeedScore(0));
+            assertEquals(100, DungeonManager.computeSpeedScore(300));
+            assertEquals(20,  DungeonManager.computeSpeedScore(1200));
+            assertEquals(20,  DungeonManager.computeSpeedScore(9999));
+            int mid = DungeonManager.computeSpeedScore(750);
+            assertTrue(mid > 20 && mid < 100, "mid-point score should be between 20 and 100");
+        }
+
+        @Test
+        void completeScoredRun_PerfectRunGivesSPlusGrade() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            long start = 0L;
+            mgr.startRun(DungeonManager.DungeonType.CATACOMBS_F7,
+                    java.util.Collections.singletonList(id), start);
+            // 0 deaths (skill=60), all 10 rooms (explorer=40+20=60), 250 s (speed=100), completion=20 → 240 → A
+            // To get S+: need ≥300. Max possible = 60+60+100+20 = 240... that's only A.
+            // S requires ≥270; max is 240. The grade table tops out at "A" for 240. Let's just verify grade="A".
+            DungeonManager.DungeonRun run = mgr.completeScoredRun(id, start + 250_000L,
+                    0, 10, 10, 10);
+            assertEquals(240, run.getSkillScore() + run.getExplorerScore()
+                    + run.getSpeedScore() + run.getCompletionScore());
+            assertEquals("A", run.getGrade());
+            assertTrue(run.isCompleted());
+        }
+
+        @Test
+        void completeScoredRun_ManyDeathsSlowClearGivesLowGrade() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            long start = 0L;
+            mgr.startRun(DungeonManager.DungeonType.CATACOMBS_F1,
+                    java.util.Collections.singletonList(id), start);
+            // 20 deaths → skill=max(0,60-40)=20; 5/10 rooms, 0 crypts → explorer=20;
+            // 1800 s → speed=20; completion=20 → total=80 → D
+            DungeonManager.DungeonRun run = mgr.completeScoredRun(id, start + 1_800_000L,
+                    20, 0, 5, 10);
+            assertEquals("D", run.getGrade());
+        }
+
+        // ------------------------------------------------------------------
+        // Grade threshold tests — exercise every boundary via package-visible
+        // sub-score fields (same package, no reflection needed).
+        // ------------------------------------------------------------------
+
+        @Test
+        void getGrade_SPlusAtExactly300() {
+            assertEquals("S+", DungeonManager.DungeonRun.withSubScores(100, 100, 100, 0).getGrade());
+        }
+
+        @Test
+        void getGrade_SAt270() {
+            assertEquals("S", DungeonManager.DungeonRun.withSubScores(90, 90, 90, 0).getGrade());
+        }
+
+        @Test
+        void getGrade_AAt240() {
+            assertEquals("A", DungeonManager.DungeonRun.withSubScores(60, 60, 100, 20).getGrade());
+        }
+
+        @Test
+        void getGrade_BAt175() {
+            assertEquals("B", DungeonManager.DungeonRun.withSubScores(50, 60, 50, 15).getGrade());
+        }
+
+        @Test
+        void getGrade_CAt100() {
+            assertEquals("C", DungeonManager.DungeonRun.withSubScores(30, 30, 30, 10).getGrade());
+        }
+
+        @Test
+        void getGrade_DBelow100() {
+            assertEquals("D", DungeonManager.DungeonRun.withSubScores(10, 10, 10, 0).getGrade());
+        }
+
+        @Test
+        void getGrade_BoundaryAt239IsStillB() {
+            assertEquals("B", DungeonManager.DungeonRun.withSubScores(60, 60, 99, 20).getGrade()); // 239
+        }
+
+        // ------------------------------------------------------------------
+        // DungeonFloor enum — boss names for F1-F7 and Master Mode M1-M7
+        // ------------------------------------------------------------------
+
+        @Test
+        void dungeonFloor_F1ThroughF7HaveCorrectBossNames() {
+            assertEquals("Bonzo",         DungeonManager.DungeonFloor.FLOOR_1.getBossName());
+            assertEquals("Scarf",         DungeonManager.DungeonFloor.FLOOR_2.getBossName());
+            assertEquals("The Professor", DungeonManager.DungeonFloor.FLOOR_3.getBossName());
+            assertEquals("Thorn",         DungeonManager.DungeonFloor.FLOOR_4.getBossName());
+            assertEquals("Livid",         DungeonManager.DungeonFloor.FLOOR_5.getBossName());
+            assertEquals("Sadan",         DungeonManager.DungeonFloor.FLOOR_6.getBossName());
+            assertEquals("Necron",        DungeonManager.DungeonFloor.FLOOR_7.getBossName());
+        }
+
+        @Test
+        void dungeonFloor_M1ThroughM7HaveCorrectBossNamesAndMasterModeFlag() {
+            assertEquals("Bonzo",         DungeonManager.DungeonFloor.MASTER_1.getBossName());
+            assertEquals("Scarf",         DungeonManager.DungeonFloor.MASTER_2.getBossName());
+            assertEquals("The Professor", DungeonManager.DungeonFloor.MASTER_3.getBossName());
+            assertEquals("Thorn",         DungeonManager.DungeonFloor.MASTER_4.getBossName());
+            assertEquals("Livid",         DungeonManager.DungeonFloor.MASTER_5.getBossName());
+            assertEquals("Sadan",         DungeonManager.DungeonFloor.MASTER_6.getBossName());
+            assertEquals("Necron",        DungeonManager.DungeonFloor.MASTER_7.getBossName());
+            for (DungeonManager.DungeonFloor f : DungeonManager.DungeonFloor.values()) {
+                if (f.name().startsWith("MASTER_")) assertTrue(f.isMasterMode(), f.name());
+                else assertFalse(f.isMasterMode(), f.name());
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // DungeonClass enum — all five classes present
+        // ------------------------------------------------------------------
+
+        @Test
+        void dungeonClass_AllFiveClassesExist() {
+            assertEquals(5, DungeonManager.DungeonClass.values().length);
+            assertNotNull(DungeonManager.DungeonClass.valueOf("HEALER"));
+            assertNotNull(DungeonManager.DungeonClass.valueOf("MAGE"));
+            assertNotNull(DungeonManager.DungeonClass.valueOf("BERSERK"));
+            assertNotNull(DungeonManager.DungeonClass.valueOf("ARCHER"));
+            assertNotNull(DungeonManager.DungeonClass.valueOf("TANK"));
+        }
+
+        @Test
+        void setClass_EnumRoundTrips() {
+            DungeonManager mgr = DungeonManager.getInstance();
+            UUID id = UUID.randomUUID();
+            mgr.setClass(id, DungeonManager.DungeonClass.HEALER);
+            assertEquals(DungeonManager.DungeonClass.HEALER, mgr.getClass(id));
+            mgr.setClass(id, DungeonManager.DungeonClass.ARCHER);
+            assertEquals(DungeonManager.DungeonClass.ARCHER, mgr.getClass(id));
+        }
+
+        // ------------------------------------------------------------------
+        // FLOOR_META map — boss names and master-mode level requirements
+        // ------------------------------------------------------------------
+
+        @Test
+        void floorMeta_F1ThroughF7BossNames() {
+            assertEquals("Bonzo",         DungeonManager.FLOOR_META.get("F1").getBossName());
+            assertEquals("Scarf",         DungeonManager.FLOOR_META.get("F2").getBossName());
+            assertEquals("The Professor", DungeonManager.FLOOR_META.get("F3").getBossName());
+            assertEquals("Thorn",         DungeonManager.FLOOR_META.get("F4").getBossName());
+            assertEquals("Livid",         DungeonManager.FLOOR_META.get("F5").getBossName());
+            assertEquals("Sadan",         DungeonManager.FLOOR_META.get("F6").getBossName());
+            assertEquals("Necron",        DungeonManager.FLOOR_META.get("F7").getBossName());
+        }
+
+        @Test
+        void floorMeta_M1ThroughM7LevelRequirements() {
+            assertEquals(20, DungeonManager.FLOOR_META.get("M1").getMinCatacombsLevel());
+            assertEquals(22, DungeonManager.FLOOR_META.get("M2").getMinCatacombsLevel());
+            assertEquals(24, DungeonManager.FLOOR_META.get("M3").getMinCatacombsLevel());
+            assertEquals(26, DungeonManager.FLOOR_META.get("M4").getMinCatacombsLevel());
+            assertEquals(28, DungeonManager.FLOOR_META.get("M5").getMinCatacombsLevel());
+            assertEquals(30, DungeonManager.FLOOR_META.get("M6").getMinCatacombsLevel());
+            assertEquals(32, DungeonManager.FLOOR_META.get("M7").getMinCatacombsLevel());
+            assertEquals("Necron", DungeonManager.FLOOR_META.get("M7").getBossName());
+        }
+
+        // ------------------------------------------------------------------
+        // computeExplorerScore
+        // ------------------------------------------------------------------
+
+        @Test
+        void computeExplorerScore_FullClearAndMaxCryptsGives60() {
+            assertEquals(60, DungeonManager.computeExplorerScore(10, 10, 10));
+        }
+
+        @Test
+        void computeExplorerScore_NoRoomsAndNoCryptsGivesZero() {
+            assertEquals(0, DungeonManager.computeExplorerScore(0, 10, 0));
+        }
+
+        @Test
+        void computeExplorerScore_HalfRoomsAndZeroCryptsGives20() {
+            assertEquals(20, DungeonManager.computeExplorerScore(5, 10, 0));
+        }
+
+        @Test
+        void computeExplorerScore_ZeroTotalRoomsGivesZeroRoomPoints() {
+            assertEquals(20, DungeonManager.computeExplorerScore(0, 0, 10));
         }
     }
 }
