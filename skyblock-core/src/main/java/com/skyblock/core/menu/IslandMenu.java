@@ -30,7 +30,7 @@ public final class IslandMenu extends Menu {
     private Player viewer;
 
     public IslandMenu(UUID owner) {
-        super("§aYour Island", 6);
+        super("§a§lYour Island", 6);
         this.owner = owner;
     }
 
