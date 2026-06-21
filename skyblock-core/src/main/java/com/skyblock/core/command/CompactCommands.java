@@ -32,6 +32,7 @@ import com.skyblock.core.menu.IslandMenu;
 import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
 import com.skyblock.core.menu.PetMenu;
+import com.skyblock.core.menu.SacksMenu;
 import com.skyblock.core.menu.SkillsMenu;
 import com.skyblock.core.menu.SlayerMenu;
 import com.skyblock.core.menu.WardrobeMenu;
@@ -3076,6 +3077,52 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new SkillsMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /wardrobe (simple menu opener)
+    // =========================================================================
+
+    public static final class WardrobeCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new WardrobeMenu(player.getUniqueId()).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    // =========================================================================
+    // /sacks (simple menu opener)
+    // =========================================================================
+
+    public static final class SacksCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new SacksMenu(player).open(player);
         }
 
         @Override
