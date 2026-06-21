@@ -4,7 +4,7 @@
 
 [![Build](https://github.com/eMsujt/testprojectpixel/actions/workflows/build.yml/badge.svg)](https://github.com/eMsujt/testprojectpixel/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://adoptium.net/)
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
 [![Paper](https://img.shields.io/badge/Paper-1.21%2B-brightgreen.svg)](https://papermc.io/)
 
 A Hypixel-SkyBlock-style Minecraft plugin built on Paper. Implemented as a Maven multi-module project targeting Paper 1.21+, it recreates the full SkyBlock progression loop — from private islands and skills to dungeons, the economy, and end-game zones — as a self-contained server-side plugin.
@@ -105,7 +105,7 @@ See the [Feature Managers](#feature-managers) table for the authoritative manage
 
 | Requirement | Version |
 |-------------|---------|
-| Java | 25+ |
+| Java | 21+ |
 | Paper server | 1.21+ |
 | Maven | 3.8+ |
 
@@ -377,7 +377,7 @@ mvn test -pl skyblock-core -am
 mvn package -pl skyblock-core -am -DskipTests
 ```
 
-The project targets **Java 25** (`maven.compiler.release=25`). All modules inherit from the parent POM; dependency versions are managed there. The Paper API is declared `<scope>provided</scope>` and must be supplied by the server at runtime.
+The project targets **Java 21** (`maven.compiler.release=21`). All modules inherit from the parent POM; dependency versions are managed there. The Paper API is declared `<scope>provided</scope>` and must be supplied by the server at runtime.
 
 ---
 
