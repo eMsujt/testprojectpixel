@@ -156,55 +156,85 @@ public final class ReforgeManager {
 
     /** A reforge stone item that applies a specific reforge when used. */
     public enum ReforgeStone {
-        PERFECT("Perfect Gemstone", "Perfect"),
-        FIERCE("Fierce Reforge Stone", "Fierce"),
-        LUCKY("Lucky Clover", "Lucky"),
-        LEGENDARY("Legendary Reforge Stone", "Legendary"),
-        ANCIENT("Ancient Reforge Stone", "Ancient"),
-        SUPERIOR("Superior Reforge Stone", "Superior"),
-        STRONG("Strong Reforge Stone", "Strong"),
-        CLEAN("Clean Reforge Stone", "Clean"),
-        GENTLE("Gentle Reforge Stone", "Gentle"),
-        SHARP("Sharp Reforge Stone", "Sharp"),
-        HEROIC("Heroic Reforge Stone", "Heroic"),
-        PURE("Pure Reforge Stone", "Pure"),
-        ODD("Odd Reforge Stone", "Odd"),
-        FAST("Fast Reforge Stone", "Fast"),
-        FAIR("Fair Reforge Stone", "Fair"),
-        EPIC("Epic Reforge Stone", "Epic"),
-        STORMY("Stormy Reforge Stone", "Stormy"),
-        ITCHY("Itchy Reforge Stone", "Itchy"),
-        UNPLEASANT("Unpleasant Reforge Stone", "Unpleasant"),
-        FORCEFUL("Forceful Reforge Stone", "Forceful"),
-        WEIRD("Weird Reforge Stone", "Weird"),
-        SPIKED("Lapis Crystal", "Spiked"),
-        MOIL("Jasper Crystal", "Moil"),
-        TOIL("Topaz Crystal", "Toil"),
-        FRUITFUL("Amber Crystal", "Fruitful"),
-        HONORED("Amethyst Crystal", "Honored"),
-        BEJEWELED("Ruby Crystal", "Bejeweled"),
-        RENOWNED("Onyx Crystal", "Renowned"),
-        FESTIVE("Sapphire Crystal", "Festive"),
-        BIZARRE("Jaderald", "Bizarre"),
-        BLOODY("Bloody Reforge Stone", "Bloody"),
-        WARPED("Warped Reforge Stone", "Warped"),
-        WITHERED("Withered Reforge Stone", "Withered"),
-        NECROTIC("Necromancer's Brooch", "Necrotic"),
-        SPIRITUAL("Spiritual Artifact", "Spiritual"),
-        SILKY("Silky Reforge Stone", "Silky"),
-        TREACHEROUS("Treacherous Reforge Stone", "Treacherous"),
-        TITANIC("Titanic Reforge Stone", "Titanic");
+        // entries: (displayName, reforge, strengthBase, critDamageBase, critChanceBase)
+        PERFECT("Perfect Gemstone",            "Perfect",     40, 25, 25),
+        FIERCE("Fierce Reforge Stone",          "Fierce",      20,  0,  5),
+        LUCKY("Lucky Clover",                   "Lucky",        0,  0, 10),
+        LEGENDARY("Legendary Reforge Stone",    "Legendary",   25, 10, 10),
+        ANCIENT("Ancient Reforge Stone",        "Ancient",     30, 15, 15),
+        SUPERIOR("Superior Reforge Stone",      "Superior",    35, 20, 20),
+        STRONG("Strong Reforge Stone",          "Strong",      15,  5,  0),
+        CLEAN("Clean Reforge Stone",            "Clean",        0,  5,  0),
+        GENTLE("Gentle Reforge Stone",          "Gentle",       0, 10,  0),
+        SHARP("Sharp Reforge Stone",            "Sharp",       10,  0,  0),
+        HEROIC("Heroic Reforge Stone",          "Heroic",      20, 15,  5),
+        PURE("Pure Reforge Stone",              "Pure",        15, 15, 15),
+        ODD("Odd Reforge Stone",                "Odd",          5,  0, 10),
+        FAST("Fast Reforge Stone",              "Fast",         0,  0, 25),
+        FAIR("Fair Reforge Stone",              "Fair",        10, 10, 10),
+        EPIC("Epic Reforge Stone",              "Epic",        30, 20, 15),
+        STORMY("Stormy Reforge Stone",          "Stormy",       0,  0,  0),
+        ITCHY("Itchy Reforge Stone",            "Itchy",        5,  0,  0),
+        UNPLEASANT("Unpleasant Reforge Stone",  "Unpleasant",   0,  0,  5),
+        FORCEFUL("Forceful Reforge Stone",      "Forceful",     5,  0, 20),
+        WEIRD("Weird Reforge Stone",            "Weird",        5,  5,  5),
+        SPIKED("Lapis Crystal",                 "Spiked",       0, 25,  5),
+        MOIL("Jasper Crystal",                  "Moil",        15,  0,  0),
+        TOIL("Topaz Crystal",                   "Toil",        20,  0,  0),
+        FRUITFUL("Amber Crystal",               "Fruitful",     0, 10, 20),
+        HONORED("Amethyst Crystal",             "Honored",     10, 15,  0),
+        BEJEWELED("Ruby Crystal",               "Bejeweled",   15, 15,  0),
+        RENOWNED("Onyx Crystal",                "Renowned",    30, 10, 10),
+        FESTIVE("Sapphire Crystal",             "Festive",     10, 10, 10),
+        BIZARRE("Jaderald",                     "Bizarre",     25,  0, 10),
+        BLOODY("Bloody Reforge Stone",          "Bloody",      10,  0,  5),
+        WARPED("Warped Reforge Stone",          "Warped",      20,  5,  0),
+        WITHERED("Withered Reforge Stone",      "Withered",    25, 15,  0),
+        NECROTIC("Necromancer's Brooch",        "Necrotic",     0, 20,  0),
+        SPIRITUAL("Spiritual Artifact",         "Spiritual",    0,  0, 15),
+        SILKY("Silky Reforge Stone",            "Silky",        5,  5, 15),
+        TREACHEROUS("Treacherous Reforge Stone","Treacherous", 15, 10,  5),
+        TITANIC("Titanic Reforge Stone",        "Titanic",      0, 30,  0);
 
         private final String displayName;
         private final String reforge;
+        private final int strengthBase;
+        private final int critDamageBase;
+        private final int critChanceBase;
 
-        ReforgeStone(String displayName, String reforge) {
+        private static final double[] RARITY_MULT = {
+            0.5,  // COMMON
+            0.7,  // UNCOMMON
+            1.0,  // RARE
+            1.3,  // EPIC
+            1.6,  // LEGENDARY
+            2.0,  // MYTHIC
+            2.4,  // DIVINE
+            2.4   // SPECIAL
+        };
+
+        ReforgeStone(String displayName, String reforge,
+                     int strengthBase, int critDamageBase, int critChanceBase) {
             this.displayName = displayName;
             this.reforge = reforge;
+            this.strengthBase = strengthBase;
+            this.critDamageBase = critDamageBase;
+            this.critChanceBase = critChanceBase;
         }
 
         public String getDisplayName() { return displayName; }
         public String getReforge() { return reforge; }
+
+        public int getStrength(Rarity rarity) { return stoneScale(strengthBase, rarity); }
+        public int getCritDamage(Rarity rarity) { return stoneScale(critDamageBase, rarity); }
+        public int getCritChance(Rarity rarity) { return stoneScale(critChanceBase, rarity); }
+
+        private static int stoneScale(int base, Rarity rarity) {
+            Objects.requireNonNull(rarity, "rarity");
+            int i = rarity.ordinal();
+            double m = i < RARITY_MULT.length ? RARITY_MULT[i] : RARITY_MULT[RARITY_MULT.length - 1];
+            return (int) Math.round(base * m);
+        }
 
         public static ReforgeStone fromName(String name) {
             for (ReforgeStone s : values()) {
