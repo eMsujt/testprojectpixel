@@ -347,6 +347,10 @@ commands:
     description: View your SkyBlock profile.
     usage: /profile [player]
     permission: skyblock.command.profile
+  profilemenu:
+    description: Open the Profile GUI.
+    usage: /profilemenu
+    permission: skyblock.command.profile
   purse:
     description: View your current coin purse balance.
     usage: /purse
