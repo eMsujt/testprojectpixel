@@ -38,7 +38,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     }
 
     public SlayerMenu(Player player) {
-        super(player, "§cSlayer", 6);
+        super(player, "§4Slayer Quests", 6);
     }
 
     @Override
