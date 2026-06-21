@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.TreeSet;
 
 /**
  * Real Hypixel item tooltips (display name + lore), loaded from {@code /item_tooltips.properties}
@@ -21,8 +22,15 @@ public final class ItemData {
     /** Delimiter between the name and each lore line in the resource (control char U+0001). */
     private static final String SEP = String.valueOf((char) 1);
     private static final Properties DATA = load("/item_tooltips.properties");
+    private static final List<String> IDS =
+            Collections.unmodifiableList(new ArrayList<>(new TreeSet<>(DATA.stringPropertyNames())));
 
     private ItemData() {}
+
+    /** Every registered item id, sorted. */
+    public static List<String> ids() {
+        return IDS;
+    }
 
     private static Properties load(String path) {
         Properties p = new Properties();
