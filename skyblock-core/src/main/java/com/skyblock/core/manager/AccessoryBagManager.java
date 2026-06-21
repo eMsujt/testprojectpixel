@@ -146,6 +146,24 @@ public final class AccessoryBagManager {
         }
     }
 
+    /**
+     * A single slot in a player's accessory bag, identified by item ID and rarity.
+     */
+    public static final class AccessorySlot {
+        public final String itemId;
+        public final String rarity;
+
+        public AccessorySlot(String itemId, String rarity) {
+            this.itemId = Objects.requireNonNull(itemId, "itemId");
+            this.rarity = Objects.requireNonNull(rarity, "rarity");
+        }
+
+        @Override
+        public String toString() {
+            return "AccessorySlot{itemId='" + itemId + "', rarity='" + rarity + "'}";
+        }
+    }
+
     /** Maximum number of accessories a player can hold in the bag. */
     public static final int MAX_SLOTS = 45;
 
