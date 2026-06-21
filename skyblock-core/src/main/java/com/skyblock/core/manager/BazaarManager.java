@@ -178,6 +178,14 @@ public final class BazaarManager {
 
     public void save(java.io.File dataFolder) {}
 
+    public void clear() {
+        sellOrders.clear();
+        buyOrders.clear();
+        claimableCoins.clear();
+        claimableItems.clear();
+        playerFeeTiers.clear();
+    }
+
     // ---- Order book accessors ----
 
     public int getSellOrderCount(String item) {
