@@ -7,6 +7,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.inventory.ItemStack;
 
 public class SkillsMenu extends AbstractSkyBlockMenu {
@@ -29,8 +30,8 @@ public class SkillsMenu extends AbstractSkyBlockMenu {
 
     private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25};
 
-    public SkillsMenu(Player player) {
-        super(player, "§2Skills", 6);
+    public SkillsMenu(JavaPlugin plugin, Player player) {
+        super(player, "§aSkills", 6);
     }
 
     @Override
