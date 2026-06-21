@@ -14,7 +14,6 @@ import com.skyblock.core.command.KuudraCommand;
 import com.skyblock.core.manager.BankManager;
 import com.skyblock.core.command.BazaarCommand;
 import com.skyblock.core.manager.BazaarManager;
-import com.skyblock.core.command.CompactCommands;
 import com.skyblock.core.manager.CalendarManager;
 import com.skyblock.core.command.MuseumCommand;
 import com.skyblock.core.manager.MuseumManager;
@@ -592,17 +591,17 @@ public final class SkyBlockCore extends JavaPlugin {
     public void onEnable() {
         instance = this;
         initManagers();
-        CompactCommands.BankCommand bankCommand = new CompactCommands.BankCommand(bankManager);
+        Commands.BankCommand bankCommand = new Commands.BankCommand(bankManager);
         getCommand("bank").setExecutor(bankCommand);
         getCommand("bank").setTabCompleter(bankCommand);
         getCommand("banking").setExecutor(bankCommand);
         getCommand("banking").setTabCompleter(bankCommand);
-        CompactCommands.NetWorthCommand netWorthCommand = new CompactCommands.NetWorthCommand(bankManager);
+        Commands.NetWorthCommand netWorthCommand = new Commands.NetWorthCommand(bankManager);
         if (getCommand("networth") != null) {
             getCommand("networth").setExecutor(netWorthCommand);
             getCommand("networth").setTabCompleter(netWorthCommand);
         }
-        CompactCommands.MayorCommand mayorCommand = new CompactCommands.MayorCommand(mayorManager);
+        Commands.MayorCommand mayorCommand = new Commands.MayorCommand(mayorManager);
         getCommand("mayor").setExecutor(mayorCommand);
         getCommand("mayor").setTabCompleter(mayorCommand);
         AuctionHouseCommand auctionHouseCommand = new AuctionHouseCommand(auctionHouseManager);
@@ -651,7 +650,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("npcshop").setExecutor(npcShopCommand);
             getCommand("npcshop").setTabCompleter(npcShopCommand);
         }
-        CompactCommands.DungeonCommand dungeonCommand = new CompactCommands.DungeonCommand(dungeonManager);
+        Commands.DungeonCommand dungeonCommand = new Commands.DungeonCommand(dungeonManager);
         getCommand("dungeon").setExecutor(dungeonCommand);
         getCommand("dungeon").setTabCompleter(dungeonCommand);
         DungeonClassCommand dungeonClassCommand = new DungeonClassCommand(dungeonClassManager);
@@ -677,7 +676,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("pets") != null) {
             getCommand("pets").setExecutor(petsCommand);
         }
-        CompactCommands.GardenCommand gardenCommand = new CompactCommands.GardenCommand(GardenManager.getInstance());
+        Commands.GardenCommand gardenCommand = new Commands.GardenCommand(GardenManager.getInstance());
         if (getCommand("garden") != null) {
             getCommand("garden").setExecutor(gardenCommand);
             getCommand("garden").setTabCompleter(gardenCommand);
@@ -709,7 +708,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("minionsmenu") != null) {
             getCommand("minionsmenu").setExecutor(minionMenuCommand);
         }
-        CompactCommands.SlayerCommand slayerCommand = new CompactCommands.SlayerCommand(slayerManager);
+        Commands.SlayerCommand slayerCommand = new Commands.SlayerCommand(slayerManager);
         getCommand("slay").setExecutor(slayerCommand);
         getCommand("slay").setTabCompleter(slayerCommand);
         if (getCommand("slayer") != null) {
@@ -762,10 +761,10 @@ public final class SkyBlockCore extends JavaPlugin {
         KuudraCommand kuudraCommand = new KuudraCommand(kuudraManager);
         getCommand("kuudra").setExecutor(kuudraCommand);
         getCommand("kuudra").setTabCompleter(kuudraCommand);
-        CompactCommands.EnchantingCommand enchantingCommand = new CompactCommands.EnchantingCommand(enchantingManager);
+        Commands.EnchantingCommand enchantingCommand = new Commands.EnchantingCommand(enchantingManager);
         getCommand("enchanting").setExecutor(enchantingCommand);
         getCommand("enchanting").setTabCompleter(enchantingCommand);
-        CompactCommands.ReforgeCommand reforgeCommand = new CompactCommands.ReforgeCommand(reforgeManager);
+        Commands.ReforgeCommand reforgeCommand = new Commands.ReforgeCommand(reforgeManager);
         getCommand("reforge").setExecutor(reforgeCommand);
         getCommand("reforge").setTabCompleter(reforgeCommand);
         SkillsCommand skillsCommand = new SkillsCommand(skillsManager);
@@ -774,12 +773,12 @@ public final class SkyBlockCore extends JavaPlugin {
         ProfileCommand profileCommand = new ProfileCommand(profileManager);
         getCommand("profile").setExecutor(profileCommand);
         getCommand("profile").setTabCompleter(profileCommand);
-        CompactCommands.IslandCommand islandCommand = new CompactCommands.IslandCommand();
+        Commands.IslandCommand islandCommand = new Commands.IslandCommand();
         if (getCommand("island") != null) {
             getCommand("island").setExecutor(islandCommand);
             getCommand("island").setTabCompleter(islandCommand);
         }
-        CompactCommands.MinionCommand minionCommand = new CompactCommands.MinionCommand(minionManager);
+        Commands.MinionCommand minionCommand = new Commands.MinionCommand(minionManager);
         getCommand("minion").setExecutor(minionCommand);
         getCommand("minion").setTabCompleter(minionCommand);
         if (getCommand("minions") != null) {
@@ -869,7 +868,7 @@ public final class SkyBlockCore extends JavaPlugin {
         if (getCommand("runecrafting") != null) {
             getCommand("runecrafting").setExecutor(runecraftingCommand);
         }
-        CompactCommands.CalendarCommand calendarCommand = new CompactCommands.CalendarCommand();
+        Commands.CalendarCommand calendarCommand = new Commands.CalendarCommand();
         if (getCommand("calendar") != null) {
             getCommand("calendar").setExecutor(calendarCommand);
             getCommand("calendar").setTabCompleter(calendarCommand);
@@ -932,7 +931,7 @@ public final class SkyBlockCore extends JavaPlugin {
         MailboxCommand mailboxCommand = new MailboxCommand(mailboxManager);
         getCommand("mailbox").setExecutor(mailboxCommand);
         getCommand("mailbox").setTabCompleter(mailboxCommand);
-        CompactCommands.WarpCommand warpCommand = new CompactCommands.WarpCommand(warpManager);
+        Commands.WarpCommand warpCommand = new Commands.WarpCommand(warpManager);
         getCommand("warp").setExecutor(warpCommand);
         getCommand("warp").setTabCompleter(warpCommand);
         getCommand("hub").setExecutor(warpCommand);
@@ -971,10 +970,10 @@ public final class SkyBlockCore extends JavaPlugin {
         AlchemyCommand alchemyCommand = new AlchemyCommand(alchemyManager);
         getCommand("alchemy").setExecutor(alchemyCommand);
         getCommand("alchemy").setTabCompleter(alchemyCommand);
-        CompactCommands.WardrobeCommand wardrobeCommand = new CompactCommands.WardrobeCommand(wardrobeManager);
+        Commands.WardrobeCommand wardrobeCommand = new Commands.WardrobeCommand(wardrobeManager);
         getCommand("wardrobe").setExecutor(wardrobeCommand);
         getCommand("wardrobe").setTabCompleter(wardrobeCommand);
-        CompactCommands.AccessoryBagCommand accessoryBagCommand = new CompactCommands.AccessoryBagCommand(accessoryBagManager);
+        Commands.AccessoryBagCommand accessoryBagCommand = new Commands.AccessoryBagCommand(accessoryBagManager);
         getCommand("accessories").setExecutor(accessoryBagCommand);
         getCommand("accessories").setTabCompleter(accessoryBagCommand);
         if (getCommand("accessorybag") != null) {
@@ -1020,12 +1019,12 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("dailyreward").setExecutor(dailyRewardCommand);
             getCommand("dailyreward").setTabCompleter(dailyRewardCommand);
         }
-        CompactCommands.SeasonCommand seasonCommand = new CompactCommands.SeasonCommand(com.skyblock.core.season.SeasonManager.getInstance());
+        Commands.SeasonCommand seasonCommand = new Commands.SeasonCommand(com.skyblock.core.season.SeasonManager.getInstance());
         if (getCommand("season") != null) {
             getCommand("season").setExecutor(seasonCommand);
             getCommand("season").setTabCompleter(seasonCommand);
         }
-        CompactCommands.RepairCommand repairCommand = new CompactCommands.RepairCommand(RepairManager.getInstance());
+        Commands.RepairCommand repairCommand = new Commands.RepairCommand(RepairManager.getInstance());
         if (getCommand("repair") != null) {
             getCommand("repair").setExecutor(repairCommand);
             getCommand("repair").setTabCompleter(repairCommand);
