@@ -275,8 +275,11 @@ commands:
   minion:
     description: Manage your placed minions.
     usage: /minion <list|place|upgrade|remove|info>
-    aliases: [minions]
     permission: skyblock.command.minion
+  minions:
+    description: Manage your minions.
+    usage: /minions
+    permission: skyblock.minions
   minionsmenu:
     description: Open the Minions GUI.
     usage: /minionsmenu
@@ -609,6 +612,9 @@ permissions:
     default: true
   skyblock.collectionsmenu:
     description: Use the /collectionsmenu command to open the Collections GUI.
+    default: true
+  skyblock.minions:
+    description: Use the /minions command to manage your minions.
     default: true
   skyblock.minionsmenu:
     description: Use the /minionsmenu command to open the Minions GUI.
