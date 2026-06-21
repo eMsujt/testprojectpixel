@@ -41,6 +41,10 @@ commands:
     description: Create and manage personal item backpacks.
     usage: /backpack <create <name>|delete <name>|list>
     permission: skyblock.backpack
+  ban:
+    description: Ban a player from the server.
+    usage: /ban <player> [reason]
+    permission: skyblock.ban
   bank:
     description: Open the SkyBlock bank GUI or manage balance/deposits/withdrawals.
     usage: /bank [balance|deposit|withdraw|tier|type|history|interest|coop]
@@ -448,6 +452,9 @@ commands:
     aliases: [spawn]
 
 permissions:
+  skyblock.ban:
+    description: Use the /ban command to ban players from the server.
+    default: op
   skyblock.use:
     description: Access the SkyBlock plugin and its core features.
     default: true
