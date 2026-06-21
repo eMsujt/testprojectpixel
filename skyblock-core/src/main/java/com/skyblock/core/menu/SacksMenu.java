@@ -1,7 +1,7 @@
 package com.skyblock.core.menu;
 
-import com.skyblock.core.manager.SacksManager;
-import com.skyblock.core.manager.SacksManager.SackType;
+import com.skyblock.core.manager.SackManager;
+import com.skyblock.core.manager.SackManager.SackType;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -27,7 +27,7 @@ public final class SacksMenu extends AbstractSkyBlockMenu {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
 
-        SacksManager manager = SacksManager.getInstance();
+        SackManager manager = SackManager.getInstance();
         SackType[] types = SackType.values();
         for (int i = 0; i < types.length && i < CONTENT_SLOTS.length; i++) {
             SackType type = types[i];
