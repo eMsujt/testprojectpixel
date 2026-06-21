@@ -148,6 +148,10 @@ commands:
     usage: /dungeons
     aliases: [catacombs]
     permission: skyblock.dungeons
+  dungeonmenu:
+    description: Open the Dungeon GUI.
+    usage: /dungeonmenu
+    permission: skyblock.dungeons
   enchant:
     description: Open the enchanting table GUI.
     usage: /enchant
@@ -202,6 +206,10 @@ commands:
     description: View and manage your Garden plot, visitors, and crop upgrades.
     usage: /garden <info|plot [set|add <level>]|visitors [set|add <amount>]|crop [set|add <crop> <level>]|reset>
     permission: skyblock.garden
+  gardenmenu:
+    description: Open the Garden GUI.
+    usage: /gardenmenu
+    permission: skyblock.garden
   compost:
     description: View and manage your Garden Composter organic matter, fuel, and compost.
     usage: /compost <info|matter <amount>|fuel <amount>|process|collect>
@@ -230,6 +238,10 @@ commands:
     description: Open your SkyBlock island menu.
     usage: /island
     aliases: [is, home]
+    permission: skyblock.island
+  islandmenu:
+    description: Open the Island GUI.
+    usage: /islandmenu
     permission: skyblock.island
   jacobscontest:
     description: Open the Jacob's Farming Contest menu.
