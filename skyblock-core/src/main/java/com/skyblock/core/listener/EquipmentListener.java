@@ -82,6 +82,20 @@ public final class EquipmentListener implements Listener {
         sm.setEquipmentBonuses(player.getUniqueId(), totals);
         applyMaxHealth(player, sm);
         applyWalkSpeed(player, sm);
+        applyAttackSpeed(player, sm);
+    }
+
+    /**
+     * SkyBlock uses 1.8-style combat (no attack cooldown). Sets a high attack-speed base so swings
+     * recharge near-instantly, scaled further by the Bonus Attack Speed stat.
+     */
+    private void applyAttackSpeed(Player player, StatManager sm) {
+        AttributeInstance attr = player.getAttribute(Attribute.ATTACK_SPEED);
+        if (attr == null) {
+            return;
+        }
+        double bonus = sm.getStat(player.getUniqueId(), Stat.ATTACK_SPEED);
+        attr.setBaseValue(16.0 * (1.0 + bonus / 100.0));
     }
 
     /** Sets the player's walk speed from their Speed stat (100 Speed = vanilla 0.2). */
