@@ -97,6 +97,28 @@ public final class AuctionHouseManager {
         }
     }
 
+    /** The rarity tiers an auctioned item may carry, ordered from lowest to highest. */
+    public enum ItemRarity {
+        COMMON("Common"),
+        UNCOMMON("Uncommon"),
+        RARE("Rare"),
+        EPIC("Epic"),
+        LEGENDARY("Legendary"),
+        MYTHIC("Mythic"),
+        DIVINE("Divine"),
+        SPECIAL("Special");
+
+        private final String displayName;
+
+        ItemRarity(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+
     /** Maps each auction category name to its metadata: {maxListings, taxPercent}. */
     public static final Map<String, int[]> AUCTION_CATEGORY_DATA;
 
