@@ -61,6 +61,21 @@ root `pom.xml`). The canonical managers live under
 `com.skyblock.core.manager`; see the **Core Managers** section of the
 [README](README.md) before adding new functionality.
 
+## Branch naming
+
+Branch off `main` using a `type/short-description` prefix so the intent is clear at a glance:
+
+| Prefix | Use for |
+|--------|---------|
+| `feat/` | A new feature or system (`feat/trophy-fishing`) |
+| `fix/` | A bug fix (`fix/bazaar-order-rounding`) |
+| `refactor/` | Code restructuring with no behavior change (`refactor/menu-base-class`) |
+| `docs/` | Documentation-only changes (`docs/contributing-guide`) |
+| `test/` | Adding or fixing tests (`test/slayer-manager`) |
+| `chore/` | Build, CI, or tooling changes (`chore/bump-paper-api`) |
+
+Use lowercase, hyphen-separated descriptions; keep them short and specific.
+
 ## Pull requests
 
 - Keep changes focused — one logical change per pull request.
