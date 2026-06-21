@@ -41,6 +41,7 @@ import com.skyblock.core.menu.MiningMenu;
 import com.skyblock.core.menu.ReforgeMenu;
 import com.skyblock.core.menu.PetMenu;
 import com.skyblock.core.menu.PetsMenu;
+import com.skyblock.core.menu.RunecraftingMenu;
 import com.skyblock.core.menu.SacksMenu;
 import com.skyblock.core.menu.SkillsMenu;
 import com.skyblock.core.menu.StorageMenu;
@@ -2901,6 +2902,25 @@ public final class CompactCommands {
         @Override
         protected void openMenu(Player player) {
             new PetsMenu(player).open(player);
+        }
+
+        @Override
+        protected boolean execute(Player player, Command command, String label, String[] args) {
+            openMenu(player);
+            return true;
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            return List.of();
+        }
+    }
+
+    public static final class RunecraftingCmd extends PlayerCommand {
+
+        @Override
+        protected void openMenu(Player player) {
+            new RunecraftingMenu(player).open(player);
         }
 
         @Override
