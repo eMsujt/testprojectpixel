@@ -71,14 +71,18 @@ public final class MinionMenu extends AbstractSkyBlockMenu {
         for (int i = 0; i < MINION_SLOTS.length; i++) {
             int slot = MINION_SLOTS[i];
             if (i < minionIds.size()) {
-                MinionData data = manager.getMinion(minionIds.get(i));
+                UUID minionId = minionIds.get(i);
+                MinionData data = manager.getMinion(minionId);
                 if (data != null) {
                     Material mat = TERRACOTTA_COLORS[data.type.ordinal() % TERRACOTTA_COLORS.length];
                     setItem(slot, SkyblockUtils.buildItem(mat,
                             "§a" + data.type.getDisplayName(),
                             "§7Tier: §e" + (data.getTier().ordinal() + 1),
                             "§7Stored: §f" + data.getStoredResources(),
-                            "§7Fuel: §f" + data.getFuel().name().replace('_', ' ')));
+                            "§7Fuel: §f" + data.getFuel().name().replace('_', ' '),
+                            "",
+                            "§eClick to collect!"),
+                            e -> collect(manager, minionId, data.type));
                 }
             } else if (i < maxSlots) {
                 setItem(slot, SkyblockUtils.buildItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE,
@@ -94,5 +98,26 @@ public final class MinionMenu extends AbstractSkyBlockMenu {
         setItem(53, SkyblockUtils.buildItem(Material.PAPER,
                 "§fMinion Slots",
                 "§7Used: §e" + minionIds.size() + " §7/ §e" + maxSlots));
+    }
+
+    /** Empties a minion's storage into the player's inventory as its real resource. */
+    private void collect(MinionManager manager, UUID minionId, MinionManager.MinionType type) {
+        int amount = manager.collectResources(minionId);
+        if (amount <= 0) {
+            player.sendMessage("§7That minion has nothing to collect yet.");
+            return;
+        }
+        Material resource = MinionManager.resourceOf(type);
+        int remaining = amount;
+        while (remaining > 0) {
+            int stack = Math.min(remaining, resource.getMaxStackSize());
+            for (ItemStack leftover : player.getInventory().addItem(new ItemStack(resource, stack)).values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+            }
+            remaining -= stack;
+        }
+        player.sendMessage("§aCollected §e" + amount + "x §a"
+                + type.getDisplayName().replace(" Minion", "") + "§a!");
+        open(player);
     }
 }

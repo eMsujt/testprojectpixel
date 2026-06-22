@@ -1,5 +1,6 @@
 package com.skyblock.core.manager;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -566,6 +567,51 @@ public final class MinionManager {
         long coins = (long) Math.floor((long) data.storedResources * pricePerResource * rate);
         data.storedResources = 0;
         return coins;
+    }
+
+    /** The vanilla item a minion type produces (used when collecting its storage). */
+    public static Material resourceOf(MinionType type) {
+        return switch (type) {
+            case SNOW -> Material.SNOWBALL;
+            case CLAY -> Material.CLAY_BALL;
+            case FISHING -> Material.COD;
+            case LOG, OAK -> Material.OAK_LOG;
+            case BIRCH -> Material.BIRCH_LOG;
+            case SPRUCE -> Material.SPRUCE_LOG;
+            case DARK_OAK -> Material.DARK_OAK_LOG;
+            case JUNGLE -> Material.JUNGLE_LOG;
+            case ACACIA -> Material.ACACIA_LOG;
+            case IRON -> Material.IRON_INGOT;
+            case GOLD -> Material.GOLD_INGOT;
+            case LAPIS -> Material.LAPIS_LAZULI;
+            case MELON -> Material.MELON_SLICE;
+            case MUSHROOM -> Material.RED_MUSHROOM;
+            case FLOWER -> Material.DANDELION;
+            case GLOWSTONE -> Material.GLOWSTONE_DUST;
+            case COW -> Material.BEEF;
+            case PIG -> Material.PORKCHOP;
+            case SHEEP -> Material.WHITE_WOOL;
+            case RABBIT -> Material.RABBIT;
+            case ZOMBIE -> Material.ROTTEN_FLESH;
+            case SKELETON -> Material.BONE;
+            case SPIDER, TARANTULA -> Material.STRING;
+            case CREEPER -> Material.GUNPOWDER;
+            case BLAZE -> Material.BLAZE_ROD;
+            case MAGMA_CUBE -> Material.MAGMA_CREAM;
+            case ENDERMAN -> Material.ENDER_PEARL;
+            case GHAST -> Material.GHAST_TEAR;
+            case SLIME -> Material.SLIME_BALL;
+            case MITHRIL -> Material.PRISMARINE_CRYSTALS;
+            case HARD_STONE -> Material.STONE;
+            case GEMSTONE -> Material.AMETHYST_SHARD;
+            default -> {
+                try {
+                    yield Material.valueOf(type.name());
+                } catch (IllegalArgumentException e) {
+                    yield Material.COBBLESTONE;
+                }
+            }
+        };
     }
 
     /**
