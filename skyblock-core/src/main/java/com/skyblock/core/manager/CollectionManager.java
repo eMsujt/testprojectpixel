@@ -3,8 +3,11 @@ package com.skyblock.core.manager;
 import com.skyblock.core.model.Collection;
 import com.skyblock.core.model.CollectionCategory;
 import com.skyblock.core.model.CollectionTier;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,8 +78,35 @@ public final class CollectionManager {
         int tierAfter = getTier(playerId, collection);
         if (tierAfter > tierBefore) {
             recordCollectionEvent(playerId, "Reached tier " + tierAfter + " in " + collection.getDisplayName());
+            notifyTierUp(playerId, collection, tierAfter);
         }
         return total;
+    }
+
+    /** Shows the player a Hypixel-style collection level-up title, message and sound. */
+    private static void notifyTierUp(UUID playerId, Collection collection, int tier) {
+        Player player = Bukkit.getPlayer(playerId);
+        if (player == null) {
+            return;
+        }
+        String label = collection.getDisplayName() + " " + toRoman(tier);
+        player.sendTitle("§6§lCOLLECTION", "§e" + label, 5, 50, 10);
+        player.sendMessage("§6§l COLLECTION LEVEL UP §e" + label);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f);
+    }
+
+    private static String toRoman(int n) {
+        if (n <= 0) return String.valueOf(n);
+        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] numerals = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            while (n >= values[i]) {
+                sb.append(numerals[i]);
+                n -= values[i];
+            }
+        }
+        return sb.toString();
     }
 
     /** Adds items by name string (enum constant or item key); returns {@code -1} if the name is unknown. */
