@@ -139,7 +139,7 @@ public final class CraftingCommand implements TabExecutor {
 
     private void handleEnchanted(Player player) {
         player.sendMessage("=== SkyBlock Enchanted Recipes ===");
-        for (CraftingManager.SkyblockRecipe recipe : CraftingManager.SkyblockRecipe.values()) {
+        for (CraftingManager.SkyblockRecipeEntry recipe : CraftingManager.SkyblockRecipeEntry.values()) {
             player.sendMessage(String.format("[%s] %s (requires %d)",
                     recipe.name(), recipe.getDisplayName(), recipe.getRequiredAmount()));
         }

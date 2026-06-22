@@ -108,7 +108,7 @@ public final class CraftingManager {
     }
 
     /** Typed SkyBlock-specific enchanted crafting recipes. */
-    public enum SkyblockRecipe {
+    public enum SkyblockRecipeEntry {
         // Farming
         ENCHANTED_WHEAT("Enchanted Bread", 160),
         ENCHANTED_SUGAR_CANE("Enchanted Sugar Cane", 160),
@@ -157,7 +157,7 @@ public final class CraftingManager {
         private final String displayName;
         private final int requiredAmount;
 
-        SkyblockRecipe(String displayName, int requiredAmount) {
+        SkyblockRecipeEntry(String displayName, int requiredAmount) {
             this.displayName = displayName;
             this.requiredAmount = requiredAmount;
         }
