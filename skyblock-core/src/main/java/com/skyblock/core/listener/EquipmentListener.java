@@ -17,6 +17,8 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -83,6 +85,20 @@ public final class EquipmentListener implements Listener {
         applyMaxHealth(player, sm);
         applyWalkSpeed(player, sm);
         applyAttackSpeed(player, sm);
+        applyMiningSpeed(player, sm);
+    }
+
+    /**
+     * Approximates the Mining Speed stat with a hidden Haste effect (~1 level per 100 Mining
+     * Speed, capped), so faster mining gear breaks blocks quicker.
+     */
+    private void applyMiningSpeed(Player player, StatManager sm) {
+        int level = (int) Math.min(10.0, sm.getStat(player.getUniqueId(), Stat.MINING_SPEED) / 100.0);
+        player.removePotionEffect(PotionEffectType.HASTE);
+        if (level > 0) {
+            player.addPotionEffect(new PotionEffect(
+                    PotionEffectType.HASTE, Integer.MAX_VALUE, level - 1, true, false, false));
+        }
     }
 
     /**
