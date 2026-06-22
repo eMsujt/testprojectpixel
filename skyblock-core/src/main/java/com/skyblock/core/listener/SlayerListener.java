@@ -58,6 +58,7 @@ public final class SlayerListener implements Listener {
                 ChatUtil.send(killer, "§c§lSlayer Boss slain! §r§7(+" + reward.getXp() + " XP)");
                 if (!reward.getDrops().isEmpty()) {
                     ChatUtil.send(killer, "§6Drops: §e" + String.join("§7, §e", reward.getDrops()));
+                    giveDrops(killer, event.getEntity().getLocation(), reward.getDrops());
                 }
             }
             return;
@@ -73,6 +74,20 @@ public final class SlayerListener implements Listener {
 
         if (slayerManager.canSpawnBoss(uuid)) {
             ChatUtil.send(killer, "§c§lYou can now summon the Slayer Boss! §r§7Use /slayer to open the menu.");
+        }
+    }
+
+    /** Gives the slain boss's drops as real items (by internal name); unknown names are skipped. */
+    private static void giveDrops(Player player, org.bukkit.Location loc, java.util.List<String> dropNames) {
+        for (String name : dropNames) {
+            String id = name.toUpperCase(java.util.Locale.ROOT).replace(' ', '_');
+            org.bukkit.inventory.ItemStack item = com.skyblock.core.item.SkyblockItems.build(id, 1);
+            if (item == null) {
+                continue;
+            }
+            for (org.bukkit.inventory.ItemStack leftover : player.getInventory().addItem(item).values()) {
+                player.getWorld().dropItemNaturally(loc, leftover);
+            }
         }
     }
 }
