@@ -272,9 +272,40 @@ public final class IslandManager implements Listener {
                 .generator(new IslandGenerator())
                 .createWorld();
         islandWorlds.put(owner, world);
+        if (world != null) {
+            buildStarterIsland(world);
+        }
 
         recordIslandEvent(owner, "Island created");
         return island;
+    }
+
+    /** Builds the starter island in an otherwise-void world: a grass platform, a tree, and a chest. */
+    private void buildStarterIsland(World world) {
+        final int y = 100;
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                world.getBlockAt(dx, y - 1, dz).setType(org.bukkit.Material.DIRT);
+                world.getBlockAt(dx, y, dz).setType(org.bukkit.Material.GRASS_BLOCK);
+            }
+        }
+        // Oak tree near a corner.
+        int tx = 2;
+        int tz = 2;
+        for (int i = 1; i <= 4; i++) {
+            world.getBlockAt(tx, y + i, tz).setType(org.bukkit.Material.OAK_LOG);
+        }
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                world.getBlockAt(tx + dx, y + 4, tz + dz).setType(org.bukkit.Material.OAK_LEAVES);
+                world.getBlockAt(tx + dx, y + 5, tz + dz).setType(org.bukkit.Material.OAK_LEAVES);
+            }
+        }
+        world.getBlockAt(tx, y + 6, tz).setType(org.bukkit.Material.OAK_LEAVES);
+        world.getBlockAt(tx, y + 5, tz).setType(org.bukkit.Material.OAK_LOG);
+        // Starter chest.
+        world.getBlockAt(-2, y + 1, -2).setType(org.bukkit.Material.CHEST);
+        world.setSpawnLocation(0, y + 1, 0);
     }
 
     /**
