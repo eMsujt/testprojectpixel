@@ -220,6 +220,11 @@ public final class BestiaryManager {
     /** Bestiary milestone stat bonuses currently applied, for exact removal on re-apply. */
     private final Map<UUID, Map<Stat, Double>> appliedMilestoneStats = new HashMap<>();
 
+    /** Forgets the tracked applied bonus without touching StatManager (e.g. on quit when it resets). */
+    public void clearAppliedMilestoneStats(UUID playerId) {
+        appliedMilestoneStats.remove(playerId);
+    }
+
     /** Re-applies the player's bestiary milestone stats to {@link StatManager} (balanced). */
     public void reapplyMilestoneStats(UUID playerId) {
         if (playerId == null) {

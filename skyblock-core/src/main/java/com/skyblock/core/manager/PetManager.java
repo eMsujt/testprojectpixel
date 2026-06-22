@@ -558,6 +558,11 @@ public final class PetManager {
         refreshPetBonus(playerId);
     }
 
+    /** Forgets the tracked applied bonus without touching StatManager (e.g. on quit when it resets). */
+    public void clearAppliedBonus(UUID playerId) {
+        appliedPetBonuses.remove(playerId);
+    }
+
     /** Re-applies the active pet's level-scaled stat bonus, removing any previously applied one. */
     private void refreshPetBonus(UUID playerId) {
         AppliedPetBonus previous = appliedPetBonuses.remove(playerId);

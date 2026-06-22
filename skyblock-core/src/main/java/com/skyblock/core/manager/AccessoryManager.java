@@ -260,6 +260,11 @@ public final class AccessoryManager {
     /** Bonuses currently applied from tuning, for exact removal on re-allocation. */
     private final Map<UUID, Map<Stat, Double>> appliedTuning = new HashMap<>();
 
+    /** Forgets the tracked applied tuning without touching StatManager (e.g. on quit when it resets). */
+    public void clearAppliedTuning(UUID playerId) {
+        appliedTuning.remove(playerId);
+    }
+
     /**
      * Re-applies the player's tuning-point bonuses to {@link StatManager} (1 stat per point),
      * removing any previously applied amounts so re-allocating stays balanced.
