@@ -169,6 +169,7 @@ public final class CompactListeners implements Listener {
         StatsManager.getInstance().getAll(player.getUniqueId());
         // Persisted pets are loaded directly (bypassing equipPet), so re-apply the bonus on join.
         petManager.reapplyActivePetBonus(player.getUniqueId());
+        com.skyblock.core.manager.BestiaryManager.getInstance().reapplyMilestoneStats(player.getUniqueId());
         ScoreboardManager.getInstance().initPlayer(player);
     }
 

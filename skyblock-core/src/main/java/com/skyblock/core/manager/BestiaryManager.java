@@ -214,6 +214,35 @@ public final class BestiaryManager {
         String key = mobType.toLowerCase();
         kills.computeIfAbsent(playerId, k -> new HashMap<>())
              .merge(key, 1, Integer::sum);
+        reapplyMilestoneStats(playerId);
+    }
+
+    /** Bestiary milestone stat bonuses currently applied, for exact removal on re-apply. */
+    private final Map<UUID, Map<Stat, Double>> appliedMilestoneStats = new HashMap<>();
+
+    /** Re-applies the player's bestiary milestone stats to {@link StatManager} (balanced). */
+    public void reapplyMilestoneStats(UUID playerId) {
+        if (playerId == null) {
+            return;
+        }
+        StatManager stats = StatManager.getInstance();
+        Map<Stat, Double> previous = appliedMilestoneStats.remove(playerId);
+        if (previous != null) {
+            for (Map.Entry<Stat, Double> entry : previous.entrySet()) {
+                stats.addBonus(playerId, entry.getKey(), -entry.getValue());
+            }
+        }
+        Map<Stat, Double> applied = new EnumMap<>(Stat.class);
+        for (Map.Entry<Stat, Double> entry : getMilestoneStats(playerId).entrySet()) {
+            if (entry.getValue() == null || entry.getValue() == 0.0) {
+                continue;
+            }
+            stats.addBonus(playerId, entry.getKey(), entry.getValue());
+            applied.put(entry.getKey(), entry.getValue());
+        }
+        if (!applied.isEmpty()) {
+            appliedMilestoneStats.put(playerId, applied);
+        }
     }
 
     /**
