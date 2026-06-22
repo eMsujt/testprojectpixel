@@ -176,7 +176,13 @@ public final class CompactListeners implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        StatsManager.getInstance().remove(player.getUniqueId());
+        java.util.UUID id = player.getUniqueId();
+        // StatsManager.remove resets StatManager, so drop the balanced-bonus tracking too,
+        // otherwise the on-join re-apply would subtract a phantom bonus and zero these stats.
+        petManager.clearAppliedBonus(id);
+        com.skyblock.core.manager.AccessoryManager.getInstance().clearAppliedTuning(id);
+        com.skyblock.core.manager.BestiaryManager.getInstance().clearAppliedMilestoneStats(id);
+        StatsManager.getInstance().remove(id);
         ScoreboardManager.getInstance().stopForPlayer(player);
     }
 
