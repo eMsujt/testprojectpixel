@@ -88,6 +88,7 @@ public final class ForgeCommand implements TabExecutor {
             } else {
                 job = forgeManager.collectForge(player.getUniqueId(), System.currentTimeMillis());
             }
+            ForgeManager.giveOutput(player, job);
             player.sendMessage("Collected " + job.getRecipe().getOutputAmount() + "x "
                     + job.getRecipe().getOutputItem() + " from forging "
                     + job.getRecipe().getDisplayName() + "!");

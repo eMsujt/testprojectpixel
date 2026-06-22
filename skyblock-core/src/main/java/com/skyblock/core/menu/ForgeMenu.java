@@ -75,6 +75,7 @@ public final class ForgeMenu extends AbstractSkyBlockMenu {
                             try {
                                 ForgeManager.getInstance().collectForge(
                                         player.getUniqueId(), slotIdx, System.currentTimeMillis());
+                                ForgeManager.giveOutput(player, job);
                                 player.sendMessage("Collected " + job.getRecipe().getOutputAmount()
                                         + "x " + job.getRecipe().getOutputItem()
                                         + " from forging " + job.getRecipe().getDisplayName() + "!");

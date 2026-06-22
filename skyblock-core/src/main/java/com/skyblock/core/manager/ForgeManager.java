@@ -452,6 +452,30 @@ public final class ForgeManager {
         return job;
     }
 
+    /** Gives a completed forge job's output to the player as real items (overflow dropped). */
+    public static void giveOutput(org.bukkit.entity.Player player, ForgeJob job) {
+        ForgeRecipe recipe = job.getRecipe();
+        org.bukkit.inventory.ItemStack proto =
+                com.skyblock.core.item.SkyblockItems.build(recipe.getOutputItem(), 1);
+        if (proto == null) {
+            try {
+                proto = new org.bukkit.inventory.ItemStack(org.bukkit.Material.valueOf(recipe.getOutputItem()));
+            } catch (IllegalArgumentException e) {
+                return;
+            }
+        }
+        int remaining = recipe.getOutputAmount();
+        while (remaining > 0) {
+            int n = Math.min(remaining, proto.getMaxStackSize());
+            org.bukkit.inventory.ItemStack stack = proto.clone();
+            stack.setAmount(n);
+            for (org.bukkit.inventory.ItemStack leftover : player.getInventory().addItem(stack).values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+            }
+            remaining -= n;
+        }
+    }
+
     /**
      * Collects the player's lowest-slot completed forge job.
      *
