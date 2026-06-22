@@ -3,11 +3,17 @@ package com.skyblock.core.listener;
 import com.skyblock.core.manager.FishingManager;
 import com.skyblock.core.manager.FishingManager.SeaCreature;
 import com.skyblock.core.manager.SkillManager;
+import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Skill;
+import com.skyblock.core.model.Stat;
 import com.skyblock.core.util.ChatUtil;
 import com.skyblock.core.manager.FishingManager.WaterType;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FishHook;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,13 +56,45 @@ public final class FishingListener implements Listener {
                 + "§f! §7(+" + (int) xp + " XP)");
 
         WaterType waterType = detectWaterType(event.getHook());
-        SeaCreature creature = fishingManager.rollSeaCreature(level, waterType, 0.0);
+        // Sea Creature Chance above the base 20 acts as the spawn-chance bonus.
+        double scc = StatManager.getInstance().getStat(uuid, Stat.SEA_CREATURE_CHANCE);
+        double luck = Math.max(0.0, (scc - 20.0) / 100.0);
+        SeaCreature creature = fishingManager.rollSeaCreature(level, waterType, luck);
         if (creature != null) {
+            spawnSeaCreature(creature, waterType, event.getHook().getLocation(), player);
             ChatUtil.send(player, "§3[Sea Creature] §fA §b" + creature.name().replace('_', ' ')
                     + " §fhas spawned from the " + waterType.name().toLowerCase() + "!");
             fishingManager.recordCatchEvent(uuid, "Sea creature: " + creature.name()
                     + " [" + waterType.name() + "]");
         }
+    }
+
+    /** Spawns a hostile mob for a rolled sea creature at the hook, set to attack the angler. */
+    private static void spawnSeaCreature(SeaCreature creature, WaterType waterType,
+                                         Location loc, Player player) {
+        LivingEntity mob = (LivingEntity) player.getWorld().spawnEntity(loc, mobFor(creature, waterType));
+        mob.setCustomName("§3" + creature.name().replace('_', ' '));
+        mob.setCustomNameVisible(true);
+        mob.setRemoveWhenFarAway(true);
+        if (mob instanceof Mob hostile) {
+            hostile.setTarget(player);
+        }
+    }
+
+    private static EntityType mobFor(SeaCreature creature, WaterType waterType) {
+        String name = creature.name();
+        if (name.contains("SQUID")) return EntityType.SQUID;
+        if (name.contains("GUARDIAN") || name.contains("PROTECTOR")) return EntityType.GUARDIAN;
+        if (name.contains("WITCH")) return EntityType.WITCH;
+        if (name.contains("ARCHER") || name.contains("SKELETON") || name.contains("PHANTOM")) return EntityType.STRAY;
+        if (name.contains("BLAZE") || name.contains("FLAMING")) return EntityType.BLAZE;
+        if (name.contains("MAGMA")) return EntityType.MAGMA_CUBE;
+        if (name.contains("PIGMAN") || name.contains("PIGLIN")) return EntityType.ZOMBIFIED_PIGLIN;
+        if (name.contains("RABBIT")) return EntityType.RABBIT;
+        if (name.contains("SHEEP")) return EntityType.SHEEP;
+        if (waterType == WaterType.LAVA) return EntityType.MAGMA_CUBE;
+        if (waterType == WaterType.OASIS) return EntityType.RABBIT;
+        return EntityType.DROWNED;
     }
 
     private static WaterType detectWaterType(FishHook hook) {
