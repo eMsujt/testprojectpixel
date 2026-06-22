@@ -37,6 +37,10 @@ public final class FishingListener implements Listener {
 
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {
+        if (event.getState() == PlayerFishEvent.State.FISHING) {
+            applyFishingSpeed(event.getHook(), event.getPlayer());
+            return;
+        }
         if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
@@ -79,6 +83,19 @@ public final class FishingListener implements Listener {
         if (mob instanceof Mob hostile) {
             hostile.setTarget(player);
         }
+    }
+
+    /** Shortens the bite wait by the player's Fishing Speed (0 = no change). */
+    private static void applyFishingSpeed(FishHook hook, Player player) {
+        double speed = StatManager.getInstance().getStat(player.getUniqueId(), Stat.FISHING_SPEED);
+        if (speed <= 0.0) {
+            return;
+        }
+        double factor = 100.0 / (100.0 + speed);
+        int min = Math.max(20, (int) (hook.getMinWaitTime() * factor));
+        int max = Math.max(min + 20, (int) (hook.getMaxWaitTime() * factor));
+        hook.setMinWaitTime(min);
+        hook.setMaxWaitTime(max);
     }
 
     private static EntityType mobFor(SeaCreature creature, WaterType waterType) {
