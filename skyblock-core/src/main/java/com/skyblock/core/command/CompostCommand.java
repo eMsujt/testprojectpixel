@@ -1,11 +1,14 @@
 package com.skyblock.core.command;
 
+import com.skyblock.core.item.SkyblockItems;
 import com.skyblock.core.manager.GardenManager;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -105,10 +108,30 @@ public final class CompostCommand implements TabExecutor {
 
     private void handleCollect(Player player) {
         long collected = gardenManager.collectComposterCompost(player.getUniqueId());
-        if (collected > 0) {
-            player.sendMessage("Collected " + collected + " compost.");
-        } else {
+        if (collected <= 0) {
             player.sendMessage("No compost to collect.");
+            return;
+        }
+        giveCompost(player, collected);
+        player.sendMessage("Collected " + collected + " compost.");
+    }
+
+    /** Gives the player the collected compost as real items (overflow dropped). */
+    private static void giveCompost(Player player, long amount) {
+        ItemStack proto = SkyblockItems.build("COMPOST", 1);
+        if (proto == null) {
+            proto = new ItemStack(Material.BONE_MEAL);
+        }
+        long remaining = amount;
+        int max = proto.getMaxStackSize();
+        while (remaining > 0) {
+            int n = (int) Math.min(remaining, max);
+            ItemStack stack = proto.clone();
+            stack.setAmount(n);
+            for (ItemStack leftover : player.getInventory().addItem(stack).values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+            }
+            remaining -= n;
         }
     }
 
