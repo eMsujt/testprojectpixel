@@ -37,7 +37,8 @@ public final class AbilityEffects {
         if (abilityName == null) return false;
         return switch (abilityName.toLowerCase(Locale.ROOT)) {
             case "instant transmission", "ether transmission", "dragon rage", "giant's slam",
-                 "weird transmission", "instant heal", "implosion", "leap", "showtime" -> true;
+                 "weird transmission", "instant heal", "implosion", "leap", "showtime",
+                 "speed boost" -> true;
             default -> false;
         };
     }
@@ -60,8 +61,21 @@ public final class AbilityEffects {
             case "implosion" -> implosion(player, abilityDamage(player, parseDamage(ability)));
             case "leap" -> leap(player, abilityDamage(player, parseDamage(ability)));
             case "showtime" -> showtime(player, abilityDamage(player, parseDamage(ability)));
+            case "speed boost" -> speedBoost(player, ability);
             default -> { }
         }
+    }
+
+    private static final Pattern SPEED_VALUE = Pattern.compile("([0-9]+)\\D*Speed");
+    private static final Pattern FOR_SECONDS = Pattern.compile("for ([0-9]+)");
+
+    /** Self-buff: grants a Speed effect for the lore-stated duration (e.g. Rogue Sword). */
+    private static void speedBoost(Player player, LoreAbility ability) {
+        int value = (int) firstNumber(ability.lines, SPEED_VALUE, 100);
+        int seconds = (int) firstNumber(ability.lines, FOR_SECONDS, 10);
+        int amplifier = (int) Math.max(0, Math.min(4, value / 50.0 - 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, seconds * 20, amplifier, true, false));
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 2f);
     }
 
     /** Shared key tagging an ability projectile with the damage it deals on impact. */
