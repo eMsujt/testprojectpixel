@@ -8,11 +8,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
- * Drives the player tab list header and footer.
+ * Drives the player tab list header and footer to match Hypixel's banner.
  *
- * <p>A single repeating task runs every {@link #UPDATE_INTERVAL_TICKS} ticks and
- * refreshes the header/footer of every online player with the Hypixel-style
- * server banner, online count and the player's purse.</p>
+ * <p>A custom multi-column tab body (the Info/Skills/Players widgets) needs
+ * player-list packets, which this plugin does not ship; this reproduces the
+ * 1:1 header ("You are playing on MC.HYPIXEL.NET") and footer (the store line)
+ * that frame the list.</p>
  */
 public final class TabListManager {
 
@@ -21,8 +22,11 @@ public final class TabListManager {
     /** Interval between tab list refreshes, in server ticks (2 seconds). */
     private static final long UPDATE_INTERVAL_TICKS = 40L;
 
-    private static final String HEADER = ChatColor.GOLD + "" + ChatColor.BOLD + "SKYBLOCK"
-            + ChatColor.RESET + "\n" + ChatColor.GRAY + "skyblock.example.net";
+    private static final String HEADER = "\n" + ChatColor.GREEN + "You are playing on" + "\n"
+            + ChatColor.YELLOW + ChatColor.BOLD + "MC.HYPIXEL.NET" + ChatColor.RESET + "\n";
+
+    private static final String FOOTER = "\n" + ChatColor.YELLOW + "Ranks, Boosters & MORE! "
+            + ChatColor.GOLD + ChatColor.BOLD + "STORE.HYPIXEL.NET" + ChatColor.RESET + "\n";
 
     private BukkitTask task;
     private Plugin plugin;
@@ -54,19 +58,6 @@ public final class TabListManager {
     }
 
     public void update(Player player) {
-        double coins = EconomyManager.getInstance().getBalance(player.getUniqueId());
-        String footer = ChatColor.YELLOW + "Players: " + ChatColor.WHITE + Bukkit.getOnlinePlayers().size()
-                + ChatColor.RESET + "\n" + ChatColor.YELLOW + "Purse: " + ChatColor.WHITE + formatCoins(coins);
-        player.setPlayerListHeaderFooter(HEADER, footer);
-    }
-
-    private static String formatCoins(double coins) {
-        if (coins >= 1_000_000) {
-            return String.format("%.1fM", coins / 1_000_000);
-        }
-        if (coins >= 1_000) {
-            return String.format("%.1fK", coins / 1_000);
-        }
-        return String.format("%.0f", coins);
+        player.setPlayerListHeaderFooter(HEADER, FOOTER);
     }
 }
