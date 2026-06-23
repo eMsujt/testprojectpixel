@@ -102,7 +102,8 @@ public final class ScoreboardManager {
             ChatColor.GRAY + " ⏣ " + ChatColor.GREEN + locationOf(world),
             "  ",
             ChatColor.WHITE + "Purse: " + ChatColor.GOLD + formatCoins(coins),
-            ChatColor.WHITE + "Bits: " + ChatColor.AQUA + "0",
+            ChatColor.WHITE + "Bits: " + ChatColor.AQUA
+                    + String.format("%,d", EconomyManager.getInstance().getBits(player.getUniqueId())),
             "   ",
             ChatColor.YELLOW + "www.hypixel.net"
         );
