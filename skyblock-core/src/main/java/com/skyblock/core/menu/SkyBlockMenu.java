@@ -1,7 +1,9 @@
 package com.skyblock.core.menu;
 
 import com.skyblock.core.booster.BoosterManager;
+import com.skyblock.core.model.Stat;
 import com.skyblock.core.quest.gui.QuestsMenu;
+import com.skyblock.core.stats.StatsManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,10 +25,22 @@ public final class SkyBlockMenu extends Menu {
         ItemStack bg = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 54; slot++) setItem(slot, bg);
 
-        // Profile head (centre of row 2).
+        // Profile head (centre of row 2) — shows the player's core stat block, like Hypixel.
+        StatsManager.PlayerStats stats = StatsManager.getInstance().getStats(player.getUniqueId());
         setItem(13, new ItemBuilder(Material.PLAYER_HEAD).skullOwner(player)
                 .displayName("§aYour SkyBlock Profile")
-                .lore("§7Name: §a" + player.getName(), "", "§7View your stats, skills", "§7and overall progress.", "", "§eClick to view!").build(),
+                .lore(
+                        "§7" + player.getName() + "'s Profile",
+                        "",
+                        "§c❤ Health §a" + trim(stats.getStat(Stat.HEALTH)),
+                        "§a❈ Defense §a" + trim(stats.getStat(Stat.DEFENSE)),
+                        "§f✦ Speed §a" + trim(stats.getStat(Stat.SPEED)),
+                        "§c❁ Strength §a" + trim(stats.getStat(Stat.STRENGTH)),
+                        "§b✎ Intelligence §a" + trim(stats.getStat(Stat.INTELLIGENCE)),
+                        "§9☣ Crit Chance §a" + trim(stats.getStat(Stat.CRIT_CHANCE)) + "%",
+                        "§9☠ Crit Damage §a" + trim(stats.getStat(Stat.CRIT_DAMAGE)) + "%",
+                        "",
+                        "§eClick to view your stats!").build(),
                 e -> { e.setCancelled(true); new StatsMenu(player).open(player); });
 
         // Row: Skills & learning (slots 19-25).
