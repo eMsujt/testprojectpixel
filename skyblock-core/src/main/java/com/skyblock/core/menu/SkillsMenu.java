@@ -3,54 +3,104 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.SkillsManager;
 import com.skyblock.core.model.Skill;
 import com.skyblock.core.util.ItemBuilder;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * The "Your Skills" menu, opened from the SkyBlock Menu. Laid out 1:1 with Hypixel:
+ * the Skill Average summary (Diamond Sword) at slot 4, the twelve skills across rows
+ * 3–4 at their documented slots and vanilla icons, and a Go Back arrow at slot 48.
+ */
 public class SkillsMenu extends AbstractSkyBlockMenu {
 
-    private static final Skill[] SKILLS = {
+    /** The eight skills that count toward Skill Average. */
+    private static final Skill[] MAIN = {
         Skill.FARMING, Skill.MINING, Skill.COMBAT, Skill.FORAGING,
         Skill.FISHING, Skill.ENCHANTING, Skill.ALCHEMY, Skill.TAMING
     };
 
-    private static final Color[] COLORS = {
-        Color.fromRGB(0,   200, 0),    // Farming    — green
-        Color.fromRGB(128, 128, 128),  // Mining     — gray
-        Color.fromRGB(200, 0,   0),    // Combat     — red
-        Color.fromRGB(100, 60,  0),    // Foraging   — brown
-        Color.fromRGB(0,   150, 200),  // Fishing    — aqua
-        Color.fromRGB(150, 0,   200),  // Enchanting — purple
-        Color.fromRGB(255, 200, 0),    // Alchemy    — yellow
-        Color.fromRGB(200, 100, 0),    // Taming     — orange
+    /** Hypixel slot + vanilla icon for each skill in the "Your Skills" menu. */
+    private static final Object[][] LAYOUT = {
+        {19, Skill.COMBAT,        Material.STONE_SWORD},
+        {20, Skill.FARMING,       Material.GOLDEN_HOE},
+        {21, Skill.FISHING,       Material.FISHING_ROD},
+        {22, Skill.MINING,        Material.STONE_PICKAXE},
+        {23, Skill.FORAGING,      Material.JUNGLE_SAPLING},
+        {24, Skill.ENCHANTING,    Material.ENCHANTING_TABLE},
+        {25, Skill.ALCHEMY,       Material.BREWING_STAND},
+        {28, Skill.CARPENTRY,     Material.CRAFTING_TABLE},
+        {29, Skill.RUNECRAFTING,  Material.MAGMA_CREAM},
+        {30, Skill.TAMING,        Material.WOLF_SPAWN_EGG},
+        {32, Skill.SOCIAL,        Material.EMERALD},
+        {34, Skill.DUNGEONEERING, Material.SKELETON_SKULL},
     };
 
-    private static final int[] SLOTS = {10, 12, 14, 16, 19, 21, 23, 25};
-
     public SkillsMenu(JavaPlugin plugin, Player player) {
-        super(player, "§aSkills", 6);
+        super(player, "§aYour Skills", 6);
     }
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.LIME_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
-
         SkillsManager skills = SkillsManager.getInstance();
-        for (int i = 0; i < SKILLS.length; i++) {
-            Skill skill = SKILLS[i];
-            long xp = skills.getSkillXP(player.getUniqueId(), skill.key());
+        UUID id = player.getUniqueId();
+
+        double sum = 0;
+        for (Skill s : MAIN) sum += SkillsManager.levelForXp(s.key(), skills.getSkillXP(id, s.key()));
+        setItem(4, new ItemBuilder(Material.DIAMOND_SWORD)
+                .displayName("§aYour Skills")
+                .lore(
+                        "§7Skill Average: §e" + String.format("%.1f", sum / MAIN.length),
+                        "",
+                        "§7View your Skill progression",
+                        "§7and rewards.")
+                .build(), e -> e.setCancelled(true));
+
+        for (Object[] entry : LAYOUT) {
+            int slot = (int) entry[0];
+            Skill skill = (Skill) entry[1];
+            Material icon = (Material) entry[2];
+            long xp = skills.getSkillXP(id, skill.key());
             int level = SkillsManager.levelForXp(skill.key(), xp);
-            setItem(SLOTS[i], new ItemBuilder(Material.LEATHER_CHESTPLATE)
-                    .leatherColor(COLORS[i])
-                    .displayName("§a" + skill.displayName)
-                    .lore("§7Level: §e" + level, "§7Total XP: §e" + xp)
-                    .flags(ItemFlag.HIDE_ATTRIBUTES)
-                    .build(),
-                    e -> e.setCancelled(true));
+            setItem(slot, new ItemBuilder(icon)
+                    .displayName("§a" + skill.displayName + " §7" + level)
+                    .lore(skillLore(skill, xp, level))
+                    .build(), e -> e.setCancelled(true));
         }
+
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
+    }
+
+    private static List<String> skillLore(Skill skill, long xp, int level) {
+        List<String> lore = new ArrayList<>();
+        lore.add("§7Total XP: §e" + String.format("%,d", xp));
+        lore.add("");
+
+        long curLevelXp = SkillsManager.xpForLevel(skill.key(), level);
+        long nextLevelXp = SkillsManager.xpForLevel(skill.key(), level + 1);
+        if (nextLevelXp < 0) {
+            // No higher threshold: either maxed, or a skill with no XP curve (e.g. Dungeoneering).
+            lore.add(level > 0 ? "§6§lMAX LEVEL!" : "§7Progress is tracked in-game.");
+        } else {
+            long into = xp - Math.max(0, curLevelXp);
+            long need = nextLevelXp - Math.max(0, curLevelXp);
+            double pct = need > 0 ? Math.min(100.0, into * 100.0 / need) : 100.0;
+            int filled = (int) Math.round(pct / 100.0 * 20);
+            lore.add("§7Progress to Level " + (level + 1) + ": §e" + String.format("%.1f", pct) + "%");
+            lore.add("§a" + "━".repeat(filled) + "§7" + "━".repeat(20 - filled)
+                    + " §e" + String.format("%,d", into) + "§6/§e" + String.format("%,d", need));
+        }
+
+        lore.add("");
+        lore.add("§eClick to view!");
+        return lore;
     }
 }
