@@ -20,6 +20,7 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
     public static final int[] RARITY_SLOTS = {9, 10, 11, 12, 13, 14, 15, 16};
 
     private static final int[] ACCESSORY_SLOTS = {
+            10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34,
             37, 38, 39, 40, 41, 42, 43
@@ -45,16 +46,6 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
                 .lore("§7Accessories: §e" + size + "§7/§e" + unlocked,
                       "§7Magic Power: §d" + power)
                 .build());
-
-        AccessoryRarity[] rarities = AccessoryRarity.values();
-        for (int i = 0; i < RARITY_SLOTS.length && i < rarities.length; i++) {
-            AccessoryRarity rarity = rarities[i];
-            int count = mgr.getContentsByRarity(id, rarity).size();
-            setItem(RARITY_SLOTS[i], new ItemBuilder(Material.PAPER)
-                    .displayName("§f" + rarity.getDisplayName())
-                    .lore("§7Accessories: §e" + count)
-                    .build());
-        }
 
         List<TalismanManager.TalismanType> contents = new ArrayList<>(mgr.getContents(id));
         for (int i = 0; i < ACCESSORY_SLOTS.length && i < contents.size(); i++) {
