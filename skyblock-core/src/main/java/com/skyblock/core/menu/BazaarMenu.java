@@ -15,17 +15,19 @@ import java.util.List;
 
 public final class BazaarMenu extends AbstractSkyBlockMenu {
 
-    private static final String[]   CATEGORIES     = {"ALL", "FARMING", "MINING", "COMBAT", "FORAGING", "FISHING", "MISC"};
-    private static final String[]   CATEGORY_LABELS = {"§fAll Products", "§aFarming", "§9Mining", "§cCombat", "§6Woodcutting", "§bFishing", "§7Misc"};
-    private static final Material[] TAB_MATERIALS   = {
-            Material.NETHER_STAR,
+    private static final String[]   CATEGORIES      = {"FARMING", "MINING", "COMBAT", "FORAGING", "FISHING", "MISC"};
+    private static final String[]   CATEGORY_LABELS = {"§aFarming", "§9Mining", "§cCombat", "§6Foraging", "§bFishing", "§7Oddities"};
+    private static final Material[] TAB_MATERIALS    = {
             Material.WHEAT,
-            Material.IRON_ORE,
+            Material.STONE_PICKAXE,
             Material.IRON_SWORD,
             Material.OAK_LOG,
-            Material.COD,
-            Material.SLIME_BALL
+            Material.FISHING_ROD,
+            Material.ENCHANTING_TABLE
     };
+
+    /** Category tabs run down the left column (Hypixel layout). */
+    private static final int[] CATEGORY_SLOTS = {0, 9, 18, 27, 36, 45};
 
     static final int[] ORDER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -43,17 +45,13 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = CATEGORIES.length; slot < 9; slot++) setItem(slot, pane);
-        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
-
         for (int i = 0; i < CATEGORIES.length; i++) {
             boolean selected = i == selectedTab;
             ItemBuilder b = new ItemBuilder(TAB_MATERIALS[i])
                     .displayName(CATEGORY_LABELS[i])
                     .lore(selected ? "§aSelected" : "§7Click to filter");
             if (selected) b.enchant(Enchantment.UNBREAKING, 1).flags(ItemFlag.HIDE_ENCHANTS);
-            setItem(i, b.build());
+            setItem(CATEGORY_SLOTS[i], b.build());
         }
 
         List<BazaarProduct> products = getFilteredProducts();
@@ -87,10 +85,13 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
     public void handleClick(InventoryClickEvent event) {
         event.setCancelled(true);
         int slot = event.getRawSlot();
-        if (slot >= 0 && slot < CATEGORIES.length && slot != selectedTab) {
-            selectedTab = slot;
-            if (event.getWhoClicked() instanceof Player clicker) {
-                open(clicker);
+        for (int i = 0; i < CATEGORY_SLOTS.length; i++) {
+            if (CATEGORY_SLOTS[i] == slot) {
+                if (i != selectedTab && event.getWhoClicked() instanceof Player clicker) {
+                    selectedTab = i;
+                    open(clicker);
+                }
+                return;
             }
         }
     }
@@ -99,7 +100,7 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
         List<BazaarProduct> result = new ArrayList<>();
         String cat = CATEGORIES[selectedTab];
         for (BazaarProduct p : BazaarProduct.values()) {
-            if ("ALL".equals(cat) || cat.equals(p.getCategory().name())) {
+            if (cat.equals(p.getCategory().name())) {
                 result.add(p);
             }
         }
