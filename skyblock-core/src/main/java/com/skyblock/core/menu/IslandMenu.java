@@ -17,7 +17,8 @@ public final class IslandMenu extends AbstractSkyBlockMenu {
     static final int VISIT_SLOT      = 20;
     static final int MANAGE_SLOT     = 22;
     static final int SETTINGS_SLOT   = 24;
-    static final int[] UPGRADE_SLOTS = {28, 29, 30, 31, 32, 33, 34, 35};
+    // All 10 upgrades, centered across rows 3-4 (cols 2-6) — none on a border slot.
+    static final int[] UPGRADE_SLOTS = {29, 30, 31, 32, 33, 38, 39, 40, 41, 42};
 
     private static final IslandUpgrade[] DISPLAYED_UPGRADES = IslandUpgrade.values();
 
