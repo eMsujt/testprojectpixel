@@ -40,8 +40,8 @@ public final class SkyBlockMenu extends Menu {
                         "§9☣ Crit Chance §a" + trim(stats.getStat(Stat.CRIT_CHANCE)) + "%",
                         "§9☠ Crit Damage §a" + trim(stats.getStat(Stat.CRIT_DAMAGE)) + "%",
                         "",
-                        "§eClick to view your stats!").build(),
-                e -> { e.setCancelled(true); new StatsMenu(player).open(player); });
+                        "§eClick to view your equipment and stats!").build(),
+                e -> { e.setCancelled(true); new EquipmentMenu(player).open(player); });
 
         // Row: Skills & learning (slots 19-25).
         setItem(19, new ItemBuilder(Material.DIAMOND_SWORD).displayName("§aYour Skills")
