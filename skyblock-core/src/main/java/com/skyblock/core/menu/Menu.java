@@ -80,10 +80,30 @@ public abstract class Menu implements InventoryHolder {
         return Math.max(0, (rows - 2) * 7);
     }
 
+    /**
+     * Fills any still-empty border slots (top &amp; bottom rows, left &amp; right columns) with a
+     * blank gray pane so every menu looks framed. Runs after {@link #build()}, so it never
+     * overwrites content or buttons a menu placed on the border.
+     */
+    private void frameEmptyBorder() {
+        if (rows < 2) {
+            return;
+        }
+        int size = rows * 9;
+        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 9; slot++) items.putIfAbsent(slot, pane);
+        for (int slot = size - 9; slot < size; slot++) items.putIfAbsent(slot, pane);
+        for (int row = 1; row < rows - 1; row++) {
+            items.putIfAbsent(row * 9, pane);
+            items.putIfAbsent(row * 9 + 8, pane);
+        }
+    }
+
     public void open(Player player) {
         items.clear();
         handlers.clear();
         build();
+        frameEmptyBorder();
         inventory = Bukkit.createInventory(this, rows * 9, title);
         for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
             inventory.setItem(entry.getKey(), entry.getValue());
@@ -102,6 +122,7 @@ public abstract class Menu implements InventoryHolder {
             items.clear();
             handlers.clear();
             build();
+            frameEmptyBorder();
             inventory = Bukkit.createInventory(this, rows * 9, title);
             for (Map.Entry<Integer, ItemStack> entry : items.entrySet()) {
                 inventory.setItem(entry.getKey(), entry.getValue());
