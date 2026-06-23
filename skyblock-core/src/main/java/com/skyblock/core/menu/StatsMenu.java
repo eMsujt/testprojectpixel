@@ -39,8 +39,7 @@ public final class StatsMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+        drawBorder();
 
         PlayerStats stats = StatsManager.getInstance().getStats(playerId);
 
@@ -56,7 +55,8 @@ public final class StatsMenu extends Menu {
 
         int index = 0;
         for (Stat stat : Stat.values()) {
-            setItem(FIRST_STAT_SLOT + index, new ItemBuilder(Material.PAPER)
+            if (index >= contentCapacity()) break;
+            setItem(contentSlot(index), new ItemBuilder(Material.PAPER)
                     .displayName("§a" + stat.getDisplayName() + " " + stat.getSymbol())
                     .lore("§7Value: §e" + format(stats.getStat(stat)) + " §6" + stat.getSymbol())
                     .build());

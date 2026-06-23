@@ -38,15 +38,14 @@ public final class PetMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.PINK_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+        drawBorder(Material.PINK_STAINED_GLASS_PANE);
 
         PetManager manager = PetManager.getInstance();
         UUID playerId = player.getUniqueId();
         List<Pet> pets = manager.getPets(playerId);
         UUID activePetId = manager.getActivePetId(playerId);
 
-        for (int i = 0; i < pets.size() && i < 36; i++) {
+        for (int i = 0; i < pets.size() && i < contentCapacity(); i++) {
             Pet pet = pets.get(i);
             boolean isActive = pet.id.equals(activePetId);
             int level = manager.getPetData(playerId, pet.type).getLevel();
@@ -56,7 +55,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                     ? new ItemBuilder(Material.PLAYER_HEAD).skullTexture(petTex)
                     : new ItemBuilder(RARITY_WOOL.getOrDefault(pet.rarity, Material.WHITE_WOOL));
             String activeTag = isActive ? " §a§l[ACTIVE]" : "";
-            setItem(i + 9, petIcon
+            setItem(contentSlot(i), petIcon
                     .displayName(color + pet.type.getDisplayName() + activeTag)
                     .lore("§7Level: §e" + level,
                           "§7Rarity: " + color + pet.rarity.getDisplayName(),

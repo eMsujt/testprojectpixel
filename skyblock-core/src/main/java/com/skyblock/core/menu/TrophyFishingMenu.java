@@ -51,12 +51,12 @@ public final class TrophyFishingMenu extends AbstractSkyBlockMenu {
                         "§7Types caught: §a" + caught + "§7/§a" + fishes.length)
                 .build());
 
-        for (int i = 0; i < fishes.length; i++) {
+        for (int i = 0; i < fishes.length && i < contentCapacity(); i++) {
             FishingManager.TrophyFish fish = fishes[i];
             String color = SkyblockUtils.rarityColor(fish.rarity).toString();
             int count = manager.getCatchCount(playerId, fish);
             TrophyTier tier = manager.getTier(playerId, fish);
-            setItem(FIRST_SLOT + i, new ItemBuilder(Material.PUFFERFISH)
+            setItem(contentSlot(i), new ItemBuilder(Material.PUFFERFISH)
                     .displayName(color + fish.displayName)
                     .lore(
                             "§7Rarity: " + color + fish.rarity.getDisplayName(),
