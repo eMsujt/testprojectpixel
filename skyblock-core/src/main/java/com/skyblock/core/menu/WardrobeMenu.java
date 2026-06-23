@@ -35,6 +35,12 @@ public final class WardrobeMenu extends AbstractSkyBlockMenu {
 
         buildHeader();
         buildSlots();
+
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
     }
 
     private void buildHeader() {
@@ -95,10 +101,19 @@ public final class WardrobeMenu extends AbstractSkyBlockMenu {
             }
 
             Material icon = (armor != null) ? Material.IRON_CHESTPLATE : Material.GRAY_STAINED_GLASS_PANE;
+            boolean equippable = armor != null && !isActive;
             setItem(guiPos, new ItemBuilder(icon)
                     .displayName((isActive ? "§a" : "§6") + wardrobeSlot.getDisplayName())
                     .lore(lore.toArray(new String[0]))
-                    .build());
+                    .build(),
+                    e -> {
+                        e.setCancelled(true);
+                        if (equippable) {
+                            mgr.equip(player.getUniqueId(), wardrobeSlot);
+                            player.sendMessage("§aEquipped §6" + wardrobeSlot.getDisplayName() + "§a.");
+                            open(player);
+                        }
+                    });
         }
     }
 

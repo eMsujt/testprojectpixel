@@ -18,7 +18,7 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
     private static final int SUMMARY_SLOT = 40;
 
     public ProfileMenu(Player player) {
-        super(player, "§bProfile", 6);
+        super(player, "§bProfile Management", 6);
     }
 
     @Override
@@ -81,5 +81,11 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
                         "§7Fairy Souls: §e" + souls,
                         "§7SkyBlock XP: §e" + sbXp)
                 .build());
+
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
     }
 }
