@@ -5,50 +5,35 @@ import com.skyblock.core.manager.CommissionManager.Commission;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Canonical "King's Commissions" menu. A 54-slot (6-row) chest GUI framed by a
- * {@code GRAY_STAINED_GLASS_PANE} border with a clipboard at slot 4 summarising the
- * viewing player's total completed commissions (from {@link CommissionManager}),
- * and one tile per currently assigned commission showing its progress toward the
- * target and whether it can be claimed.
+ * The "Commissions" menu (Emissary/King). A 4-row chest laid out 1:1 with
+ * Hypixel: the active commission tiles on row 2 (slots 11, 12, 14, 15), with
+ * Commission Milestones (Map, 30), Close (Barrier, 31) and Switch Type (Paper,
+ * 32) on the bottom row. The auto-framed border fills the rest.
  */
 public final class MiningCommissionMenu extends Menu {
 
-    private static final String TITLE = "§6King's Commissions";
-    private static final int SUMMARY_SLOT = 4;
+    private static final String TITLE = "Commissions";
 
-    /** Commission tiles laid out across the third interior row. */
-    private static final int[] COMMISSION_SLOTS = {
-            20, 22, 24
-    };
+    /** Commission tiles (row 2, cols 3-4 and 6-7). */
+    private static final int[] COMMISSION_SLOTS = {11, 12, 14, 15};
 
     private final Player player;
 
     public MiningCommissionMenu(Player player) {
-        super(TITLE, 6);
+        super(TITLE, 4);
         this.player = player;
     }
 
     @Override
     protected void build() {
-        fillBorder();
-
         UUID id = player.getUniqueId();
         CommissionManager commissions = CommissionManager.getInstance();
-
-        List<String> summaryLore = new ArrayList<>();
-        summaryLore.add("§7Completed: §e" + String.format("%,d", commissions.getCompletedCount(id)));
-        setItem(SUMMARY_SLOT, new ItemBuilder(Material.WRITABLE_BOOK)
-                .displayName("§6" + player.getName() + "'s Commissions")
-                .lore(summaryLore)
-                .build(),
-                e -> e.setCancelled(true));
 
         List<Commission> active = commissions.getActiveCommissions(id);
         for (int i = 0; i < active.size() && i < COMMISSION_SLOTS.length; i++) {
@@ -58,23 +43,26 @@ public final class MiningCommissionMenu extends Menu {
             lore.add("§7Area: §e" + commission.getType().getLocation().getDisplayName());
             lore.add("§7Progress: §e" + commission.getProgress() + "§7/§e" + target);
             lore.add(commission.isComplete() ? "§aComplete!" : "§7In progress");
-            setItem(COMMISSION_SLOTS[i], new ItemBuilder(Material.PAPER)
+            setItem(COMMISSION_SLOTS[i], new ItemBuilder(Material.WRITABLE_BOOK)
                     .displayName("§e" + commission.getType().getDisplayName())
                     .lore(lore)
                     .build(),
                     e -> e.setCancelled(true));
         }
-    }
 
-    private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                .displayName("§r")
-                .build();
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) {
-                setItem(slot, pane);
-            }
-        }
+        setItem(30, new ItemBuilder(Material.MAP)
+                .displayName("§aCommission Milestones")
+                .lore("§7View your commission milestones.")
+                .build(), e -> e.setCancelled(true));
+
+        setItem(31, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(),
+                e -> { e.setCancelled(true); player.closeInventory(); });
+
+        setItem(32, new ItemBuilder(Material.PAPER)
+                .displayName("§aSwitch Type")
+                .lore("§7Switch commission type.")
+                .build(), e -> e.setCancelled(true));
     }
 }

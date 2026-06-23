@@ -40,7 +40,7 @@ public final class MuseumMenu extends Menu {
     private final UUID playerId;
 
     public MuseumMenu(UUID playerId) {
-        super("§6Museum", 6);
+        super("§6Your Museum", 6);
         this.playerId = playerId;
     }
 
