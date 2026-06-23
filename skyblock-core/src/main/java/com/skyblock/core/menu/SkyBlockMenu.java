@@ -1,5 +1,6 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.booster.BoosterManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -74,8 +75,48 @@ public final class SkyBlockMenu extends Menu {
                 e -> { e.setCancelled(true); e.getWhoClicked().closeInventory(); });
         setItem(50, new ItemBuilder(Material.COMPARATOR).displayName("§aSettings")
                 .lore("§7Adjust your SkyBlock settings.").build());
-        setItem(51, new ItemBuilder(Material.COOKIE).displayName("§6Booster Cookie")
-                .lore("§7Consume for buffs and perks.").build());
+
+        // Booster Cookie — live buff status from the BoosterManager.
+        BoosterManager booster = BoosterManager.getInstance();
+        long now = System.currentTimeMillis();
+        boolean cookieActive = booster.hasBooster(player.getUniqueId())
+                && booster.getExpiry(player.getUniqueId()) > now;
+        ItemBuilder cookie = new ItemBuilder(Material.COOKIE).displayName("§6Booster Cookie");
+        if (cookieActive) {
+            cookie.lore("§7Boosts your gains while active.", "",
+                    "§aActive!",
+                    "§7Multiplier: §6" + trim(booster.getMultiplier(player.getUniqueId())) + "x",
+                    "§7Time left: §e" + formatDuration(booster.getExpiry(player.getUniqueId()) - now));
+        } else {
+            cookie.lore("§7Boosts your gains while active.", "",
+                    "§cYou have no active Booster Cookie.");
+        }
+        setItem(51, cookie.build(), e -> {
+            e.setCancelled(true);
+            if (cookieActive) {
+                player.sendMessage("§6Booster Cookie: §aactive §7("
+                        + formatDuration(booster.getExpiry(player.getUniqueId()) - System.currentTimeMillis())
+                        + " left, §6" + trim(booster.getMultiplier(player.getUniqueId())) + "x§7)");
+            } else {
+                player.sendMessage("§6Booster Cookie: §cnot active.");
+            }
+        });
+    }
+
+    /** Formats a stat multiplier, dropping the decimal for whole numbers (e.g. {@code 2}, {@code 1.5}). */
+    private static String trim(double value) {
+        return value == Math.floor(value) ? Long.toString((long) value) : Double.toString(value);
+    }
+
+    /** Formats a millisecond duration as a coarse {@code 3d 5h} / {@code 5h 10m} / {@code 10m} string. */
+    private static String formatDuration(long ms) {
+        long totalSec = Math.max(0, ms / 1000);
+        long days = totalSec / 86400;
+        long hours = (totalSec % 86400) / 3600;
+        long mins = (totalSec % 3600) / 60;
+        if (days > 0) return days + "d " + hours + "h";
+        if (hours > 0) return hours + "h " + mins + "m";
+        return mins + "m";
     }
 
     @Override
