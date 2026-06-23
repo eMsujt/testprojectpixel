@@ -19,7 +19,7 @@ public final class EnchantingMenu extends AbstractSkyBlockMenu {
     };
 
     public EnchantingMenu(Player player) {
-        super(player, "§5§lEnchanting Table", 6);
+        super(player, "Enchant Item", 6);
     }
 
     @Override
