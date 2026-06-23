@@ -9,6 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -62,6 +66,32 @@ public final class MenuItemListener implements Listener {
         }
         event.setCancelled(true);
         new SkyBlockMenu(event.getPlayer()).open(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (isMenuItem(event.getCurrentItem()) || isMenuItem(event.getCursor())) {
+            event.setCancelled(true);
+            return;
+        }
+        if (event.getClick() == ClickType.NUMBER_KEY
+                && isMenuItem(event.getView().getBottomInventory().getItem(event.getHotbarButton()))) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (isMenuItem(event.getOldCursor())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onDropItem(PlayerDropItemEvent event) {
+        if (isMenuItem(event.getItemDrop().getItemStack())) {
+            event.setCancelled(true);
+        }
     }
 
     private static ItemStack menuItem() {
