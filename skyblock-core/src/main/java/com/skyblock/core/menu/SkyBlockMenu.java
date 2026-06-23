@@ -1,6 +1,7 @@
 package com.skyblock.core.menu;
 
 import com.skyblock.core.booster.BoosterManager;
+import com.skyblock.core.quest.gui.QuestsMenu;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,11 +40,14 @@ public final class SkyBlockMenu extends Menu {
                 .lore("§7Browse every SkyBlock item", "§7and its recipe.", "", "§eClick to view!").build(),
                 e -> { e.setCancelled(true); new ItemsMenu(player).open(player); });
         setItem(22, new ItemBuilder(Material.EXPERIENCE_BOTTLE).displayName("§aSkyBlock Leveling")
-                .lore("§7Track your SkyBlock level.").build());
+                .lore("§7Track your SkyBlock level.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new SkyblockLevelMenu(player).open(player); });
         setItem(23, new ItemBuilder(Material.WRITABLE_BOOK).displayName("§aQuests & Chapters")
-                .lore("§7Track your quest progress.").build());
+                .lore("§7Track your quest progress.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new QuestsMenu(player).open(player); });
         setItem(24, new ItemBuilder(Material.CLOCK).displayName("§aCalendar and Events")
-                .lore("§7See upcoming SkyBlock events.").build());
+                .lore("§7See upcoming SkyBlock events.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new CalendarMenu().open(player); });
         setItem(25, new ItemBuilder(Material.ENDER_CHEST).displayName("§aStorage")
                 .lore("§7Access your personal storage.", "", "§eClick to view!").build(),
                 e -> { e.setCancelled(true); new StorageMenu(player).open(player); });
@@ -67,7 +71,8 @@ public final class SkyBlockMenu extends Menu {
 
         // Bottom navigation (slots 47-51).
         setItem(47, new ItemBuilder(Material.COMPASS).displayName("§aFast Travel")
-                .lore("§7Warp around the world.").build());
+                .lore("§7Warp around the world.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new WarpMenu(player).open(player); });
         setItem(48, new ItemBuilder(Material.NAME_TAG).displayName("§aProfile Management")
                 .lore("§7Manage your profiles.", "", "§eClick to view!").build(),
                 e -> { e.setCancelled(true); new ProfileMenu(player).open(player); });
