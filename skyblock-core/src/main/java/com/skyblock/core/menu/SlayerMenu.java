@@ -22,8 +22,8 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
             SlayerBoss.TARANTULA_BROODFATHER,
             SlayerBoss.SVEN_PACKMASTER,
             SlayerBoss.VOIDGLOOM_SERAPH,
-            SlayerBoss.INFERNO_DEMONLORD,
-            SlayerBoss.RIFTSTALKER_BLOODFIEND
+            SlayerBoss.RIFTSTALKER_BLOODFIEND,
+            SlayerBoss.INFERNO_DEMONLORD
     };
 
     private static final Map<SlayerType, Material> HEAD_ICONS = new EnumMap<>(SlayerType.class);
