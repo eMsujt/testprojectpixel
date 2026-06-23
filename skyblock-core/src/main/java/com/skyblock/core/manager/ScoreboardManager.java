@@ -88,33 +88,51 @@ public final class ScoreboardManager {
 
         CalendarManager cal = CalendarManager.getInstance();
         int dom = cal.getCurrentDayOfMonth();
-        String dateLine = ChatColor.AQUA + cal.getCurrentMonth().getDisplayName()
-                + " " + dom + ordinal(dom);
-
-        StatsManager.PlayerStats stats =
-                StatsManager.getInstance().getCachedStats(player.getUniqueId());
-        int maxHealth = (int) stats.getStat(Stat.HEALTH);
-        int currentHealth = maxHealth > 0
-                ? (int) Math.ceil(player.getHealth() / player.getMaxHealth() * maxHealth)
-                : (int) player.getHealth();
-        int defense = (int) stats.getStat(Stat.DEFENSE);
-
+        org.bukkit.World world = player.getWorld();
         double coins = EconomyManager.getInstance().getBalance(player.getUniqueId());
 
+        // 1:1 with the Hypixel SkyBlock sidebar: IRL date + server id, SkyBlock date, time,
+        // location, then purse/bits. Health & Defense live on the action bar, not here.
         List<String> lines = Arrays.asList(
             " ",
-            dateLine,
-            ChatColor.GRAY + "⏣ " + ChatColor.WHITE + player.getWorld().getName(),
+            ChatColor.GRAY + irlDate() + " " + ChatColor.DARK_GRAY + serverId(world),
+            ChatColor.WHITE + cal.getCurrentMonth().getDisplayName() + " " + dom + ordinal(dom),
+            ChatColor.GRAY + " " + skyblockTime(world.getTime())
+                    + (world.isDayTime() ? " " + ChatColor.YELLOW + "☀" : " " + ChatColor.AQUA + "☽"),
+            ChatColor.GRAY + " ⏣ " + ChatColor.GREEN + locationOf(world),
             "  ",
-            ChatColor.RED + "❤ " + ChatColor.GREEN + "Health "
-                    + ChatColor.GREEN + currentHealth + ChatColor.RED + "/" + maxHealth,
-            ChatColor.GREEN + "❈ Defense " + ChatColor.GREEN + defense,
+            ChatColor.WHITE + "Purse: " + ChatColor.GOLD + formatCoins(coins),
+            ChatColor.WHITE + "Bits: " + ChatColor.AQUA + "0",
             "   ",
-            ChatColor.GOLD + "Purse: " + ChatColor.WHITE + formatCoins(coins),
-            "     ",
-            ChatColor.GRAY + "www.hypixel.net"
+            ChatColor.YELLOW + "www.hypixel.net"
         );
         board.updateLines(lines);
+    }
+
+    private static String irlDate() {
+        return java.time.format.DateTimeFormatter.ofPattern("MM/dd/yy").format(java.time.LocalDate.now());
+    }
+
+    private static String serverId(org.bukkit.World world) {
+        return "m" + Integer.toString(Math.abs(world.getName().hashCode()) % 1000, 36).toUpperCase();
+    }
+
+    /** Converts the world's tick time to a 12-hour SkyBlock clock string (e.g. {@code 5:40am}). */
+    private static String skyblockTime(long ticks) {
+        int totalMin = (int) (((ticks / 1000.0 + 6) % 24) * 60);
+        int hour = totalMin / 60;
+        int min = (totalMin % 60) / 10 * 10;
+        String ampm = hour < 12 ? "am" : "pm";
+        int h12 = hour % 12;
+        if (h12 == 0) h12 = 12;
+        return String.format("%d:%02d%s", h12, min, ampm);
+    }
+
+    private static String locationOf(org.bukkit.World world) {
+        String name = world.getName();
+        if (name.startsWith("island_")) return "Your Island";
+        if (name.equalsIgnoreCase("world") || name.toLowerCase().contains("hub")) return "Hub";
+        return name;
     }
 
     private static String formatCoins(double coins) {
