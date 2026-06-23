@@ -44,24 +44,18 @@ public final class WarpMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.CYAN_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) {
-            setItem(slot, pane);
-        }
-        for (int slot = 45; slot < 53; slot++) {
-            setItem(slot, pane);
-        }
+        drawBorder(Material.CYAN_STAINED_GLASS_PANE);
 
         WarpManager manager = WarpManager.getInstance();
         WarpLocation[] locations = WarpLocation.values();
 
-        for (int i = 0; i < locations.length; i++) {
+        for (int i = 0; i < locations.length && i < contentCapacity(); i++) {
             WarpLocation location = locations[i];
             Optional<Warp> warp = manager.getWarp(location);
             boolean registered = warp.isPresent();
             Material icon = i < WARP_ICONS.length ? WARP_ICONS[i] : Material.ENDER_PEARL;
 
-            setItem(9 + i, new ItemBuilder(icon)
+            setItem(contentSlot(i), new ItemBuilder(icon)
                     .displayName("§b" + location.getDisplayName())
                     .lore(
                             "§7Warp to §b" + location.getDisplayName() + "§7.",

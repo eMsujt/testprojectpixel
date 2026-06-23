@@ -29,10 +29,10 @@ public final class TalismanBagMenu extends AbstractMenu {
                 "§5Talisman Bag",
                 "§7Talismans: §a" + contents.size() + " §7/ §a" + TalismanBagManager.DEFAULT_CAPACITY));
 
-        int slot = 9;
+        int i = 0;
         for (TalismanManager.TalismanType type : contents) {
-            if (slot >= 45) break;
-            setItem(slot++, SkyblockUtils.buildItem(Material.GOLD_NUGGET,
+            if (i >= contentCapacity()) break;
+            setItem(contentSlot(i++), SkyblockUtils.buildItem(Material.GOLD_NUGGET,
                     "§6" + type.name(),
                     "§7Rarity: " + type.rarity.getDisplayName(),
                     "§7+" + type.bonus + " " + type.stat.name()));

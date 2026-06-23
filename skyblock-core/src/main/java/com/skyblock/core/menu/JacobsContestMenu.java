@@ -36,9 +36,9 @@ public final class JacobsContestMenu extends Menu {
                 .build());
 
         GardenCrop[] crops = GardenCrop.values();
-        for (int i = 0; i < crops.length && i < 36; i++) {
+        for (int i = 0; i < crops.length && i < contentCapacity(); i++) {
             GardenCrop crop = crops[i];
-            setItem(9 + i, new ItemBuilder(materialFor(crop))
+            setItem(contentSlot(i), new ItemBuilder(materialFor(crop))
                     .displayName("§6" + crop.getDisplayName())
                     .lore("§7Best collection: §e" + manager.getBestCollection(playerId, crop))
                     .build());

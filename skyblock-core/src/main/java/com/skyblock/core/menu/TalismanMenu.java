@@ -26,14 +26,13 @@ public final class TalismanMenu extends AbstractSkyBlockMenu {
         Set<TalismanType> equipped = mgr.getEquipped(player.getUniqueId());
         TalismanType[] all = TalismanType.values();
 
-        int slot = 9;
-        for (int i = 0; i < all.length && slot < 45; i++, slot++) {
+        for (int i = 0; i < all.length && i < contentCapacity(); i++) {
             TalismanType type = all[i];
             boolean isEquipped = equipped.contains(type);
             String statLine = "§7" + type.stat.name() + ": §e+" + type.bonus;
             String rarityLine = "§7Rarity: " + colorFor(type.rarity) + type.rarity.getDisplayName();
             String actionLine = isEquipped ? "§a§lEQUIPPED §7(click to unequip)" : "§7Click to equip";
-            setItem(slot, new ItemBuilder(materialFor(type.rarity))
+            setItem(contentSlot(i), new ItemBuilder(materialFor(type.rarity))
                     .displayName(colorFor(type.rarity) + formatName(type))
                     .lore(rarityLine, statLine, actionLine)
                     .build(),
