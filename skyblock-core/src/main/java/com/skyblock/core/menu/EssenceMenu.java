@@ -35,7 +35,7 @@ public final class EssenceMenu extends AbstractSkyBlockMenu {
         EssenceManager essence = EssenceManager.getInstance();
         UUID playerId = player.getUniqueId();
 
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         List<Integer> inner = new ArrayList<>();
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;

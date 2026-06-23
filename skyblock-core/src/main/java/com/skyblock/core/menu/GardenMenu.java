@@ -78,7 +78,7 @@ public final class GardenMenu extends AbstractSkyBlockMenu {
         UUID playerId = player.getUniqueId();
         GardenManager manager = GardenManager.getInstance();
 
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < ROWS * 9; slot++) {
             setItem(slot, pane);
         }

@@ -50,7 +50,7 @@ public abstract class Menu implements InventoryHolder {
 
     /** Fills the full border (top &amp; bottom rows, left &amp; right columns) with a blank gray pane. */
     protected void drawBorder() {
-        drawBorder(Material.GRAY_STAINED_GLASS_PANE);
+        drawBorder(Material.BLACK_STAINED_GLASS_PANE);
     }
 
     /** Fills the full border with a blank pane of the given material (for themed menus). */
@@ -90,7 +90,7 @@ public abstract class Menu implements InventoryHolder {
             return;
         }
         int size = rows * 9;
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) items.putIfAbsent(slot, pane);
         for (int slot = size - 9; slot < size; slot++) items.putIfAbsent(slot, pane);
         for (int row = 1; row < rows - 1; row++) {

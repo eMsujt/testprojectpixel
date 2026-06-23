@@ -49,7 +49,7 @@ public final class DungeonClassMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int s = 0; s < 36; s++) setItem(s, pane);
 
         DungeonManager dungeons = DungeonManager.getInstance();

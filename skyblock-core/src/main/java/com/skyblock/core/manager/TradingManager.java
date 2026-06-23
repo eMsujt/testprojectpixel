@@ -52,7 +52,7 @@ public final class TradingManager {
     static final int CANCEL_SLOT  = 45;
     static final int CONFIRM_SLOT = 53;
 
-    private static final ItemStack SEPARATOR = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+    private static final ItemStack SEPARATOR = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
             .displayName("§r").build();
     private static final ItemStack CONFIRM_ITEM = new ItemBuilder(Material.LIME_STAINED_GLASS_PANE)
             .displayName("§aConfirm Trade").build();

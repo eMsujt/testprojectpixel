@@ -39,7 +39,7 @@ public final class FishingMenu extends AbstractSkyBlockMenu {
         FishingManager fm = FishingManager.getInstance();
 
         for (int slot = 0; slot < ROWS * 9; slot++) {
-            setItem(slot, SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r"));
+            setItem(slot, SkyblockUtils.buildItem(Material.BLACK_STAINED_GLASS_PANE, "§r"));
         }
 
         int level = fm.getLevel(owner);

@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * Canonical "SkyBlock Calendar" menu. A 54-slot (6-row) chest GUI framed by a
- * {@code GRAY_STAINED_GLASS_PANE} border with a clock at slot 4 summarising the
+ * {@code BLACK_STAINED_GLASS_PANE} border with a clock at slot 4 summarising the
  * current date, season and today's events (from {@link CalendarManager}), and
  * one tile per {@link SkyBlockMonth} showing that season's recurring events.
  */
@@ -117,7 +117,7 @@ public final class CalendarMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {

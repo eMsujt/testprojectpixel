@@ -22,6 +22,6 @@ public abstract class BaseMenu extends AbstractSkyBlockMenu implements Listener 
     }
 
     protected ItemStack fillerPane() {
-        return new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        return new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
     }
 }

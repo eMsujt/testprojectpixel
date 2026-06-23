@@ -100,7 +100,7 @@ public final class WardrobeMenu extends AbstractSkyBlockMenu {
                 lore.add("§7No outfit saved.");
             }
 
-            Material icon = (armor != null) ? Material.IRON_CHESTPLATE : Material.GRAY_STAINED_GLASS_PANE;
+            Material icon = (armor != null) ? Material.IRON_CHESTPLATE : Material.BLACK_STAINED_GLASS_PANE;
             boolean equippable = armor != null && !isActive;
             setItem(guiPos, new ItemBuilder(icon)
                     .displayName((isActive ? "§a" : "§6") + wardrobeSlot.getDisplayName())

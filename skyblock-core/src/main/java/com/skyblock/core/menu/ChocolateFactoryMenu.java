@@ -13,7 +13,7 @@ import java.util.UUID;
 
 /**
  * Canonical "Chocolate Factory" menu. A 54-slot (6-row) chest GUI framed by a
- * {@code GRAY_STAINED_GLASS_PANE} border with a cookie at slot 4 summarising the
+ * {@code BLACK_STAINED_GLASS_PANE} border with a cookie at slot 4 summarising the
  * viewing player's chocolate balance and chocolate-per-second production rate
  * (from {@link ChocolateFactoryManager}), and one rabbit tile per rarity showing
  * how many rabbits of that rarity the player owns and the chocolate each produces.
@@ -68,7 +68,7 @@ public final class ChocolateFactoryMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
