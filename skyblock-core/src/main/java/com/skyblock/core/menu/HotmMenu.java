@@ -15,10 +15,11 @@ public final class HotmMenu extends AbstractSkyBlockMenu {
 
     private static final String TITLE = "§bHeart of the Mountain";
 
-    private static final int HEADER_SLOT   = 4;
-    private static final int POWDER_SLOT   = 2;
-    private static final int GEMSTONE_SLOT = 6;
-    private static final int CLOSE_SLOT    = 49;
+    // Hypixel anchors the info/powder bar along the bottom row.
+    private static final int HEADER_SLOT   = 48;
+    private static final int POWDER_SLOT   = 45;
+    private static final int GEMSTONE_SLOT = 46;
+    private static final int CLOSE_SLOT    = 53;
 
     private static final int[] NODE_SLOTS = {
         10, 11, 12, 13, 14, 15, 16,
@@ -63,6 +64,21 @@ public final class HotmMenu extends AbstractSkyBlockMenu {
         setItem(GEMSTONE_SLOT, new ItemBuilder(Material.AMETHYST_SHARD)
                 .displayName("§dGemstone Powder")
                 .lore("§7Amount: §d" + String.format("%,d", manager.getGemstonePowder(uuid)))
+                .build());
+
+        setItem(50, new ItemBuilder(Material.AMETHYST_CLUSTER)
+                .displayName("§dCrystal Hollows Crystals")
+                .lore("§7Track the crystals you've", "§7placed in the Crystal Nucleus.")
+                .build());
+
+        setItem(51, new ItemBuilder(Material.PAINTING)
+                .displayName("§dCrystal Nucleus RNG Meter")
+                .lore("§7Track your progress toward", "§7a guaranteed crystal reward.")
+                .build());
+
+        setItem(52, new ItemBuilder(Material.REDSTONE)
+                .displayName("§cReset Heart of the Mountain")
+                .lore("§7Reset all your perks and", "§7refund your spent powder.")
                 .build());
 
         HotMNode[] nodes = HotMNode.values();
