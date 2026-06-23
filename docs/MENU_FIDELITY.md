@@ -35,8 +35,8 @@ SkyBlock Menu, Your Skills, Collection, Pets, Your Equipment and Stats, Profile
 Management, Personal Bank, SkyBlock Leveling, Calendar and Events, Wardrobe,
 Accessory Bag, Slayer, Heart of the Mountain, Bazaar, Auctions Browser, Island
 Management, Dungeon Classes, Select Tier (Kuudra), The Forge, Sack of Sacks, Your
-Museum, Commissions, Catacombs Gate, Enchant Item (title). Plus the **scoreboard
-sidebar** and the **tab banner**.
+Museum, Commissions, Catacombs Gate, Enchant Item (title), Chocolate Factory.
+Plus the **scoreboard sidebar** and the **tab banner**.
 
 ### Acceptable as-is (wiki documents no fixed slot layout → UNVERIFIABLE)
 Bestiary, Trophy Fishing, Stats, Fairy Souls, Dungeons, Dungeon Stats, Crimson
@@ -50,12 +50,7 @@ have no documented slots to match precisely.
 These are real model/feature reworks (touch managers or need new systems), not
 pure menu edits — do them deliberately, one PR each, build-verified.
 
-1. **Chocolate Factory** — rebuild from per-rarity rabbit tiles to Hypixel's model:
-   7 named employees (Bro/Cousin/Sis/Daddy/Granny/Uncle/Dog), a central
-   click-for-chocolate Dropper, 4 upgrade nodes (Hand-Baked Chocolate, Time Tower,
-   Rabbit Shrine, Coach Jackrabbit) and the bottom nav (Shop, Hoppity's Collection,
-   Milestones, Ranking, Rabbit Barn). Needs `ChocolateFactoryManager` changes.
-2. **Storage hub** — currently shows one backpack's contents under the title
+1. **Storage hub** — currently shows one backpack's contents under the title
    "Storage". Real hub = Ender Chest section + 18 backpack-tier slots + page nav +
    section spacers. Either rebuild as the hub or rename to "Backpack".
 3. **Runic Pedestal** — currently a rune catalog; real menu is an apply/fuse station
