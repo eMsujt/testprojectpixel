@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * NPC directory hub. A 54-slot (6-row) chest titled {@code §eNPCs} showing one
  * player-head icon per registered {@link NpcDefinition}, framed by a
- * {@code GRAY_STAINED_GLASS_PANE} border. Clicking an NPC opens that NPC's
+ * {@code BLACK_STAINED_GLASS_PANE} border. Clicking an NPC opens that NPC's
  * shop via {@link NPCShopMenu}.
  */
 public final class NPCMenu extends AbstractSkyBlockMenu {
@@ -47,7 +47,7 @@ public final class NPCMenu extends AbstractSkyBlockMenu {
     }
 
     private void fillBorder() {
-        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.BLACK_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
         for (int slot : new int[]{9, 17, 18, 26, 27, 35, 36, 44}) setItem(slot, pane);

@@ -74,7 +74,7 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
                             player.sendMessage("§aSwitched to profile \"" + profile.name() + "\".");
                         });
             } else {
-                setItem(PROFILE_SLOTS[i], new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                setItem(PROFILE_SLOTS[i], new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                         .displayName("§7Empty Slot")
                         .lore("§7No profile in this slot.")
                         .build());

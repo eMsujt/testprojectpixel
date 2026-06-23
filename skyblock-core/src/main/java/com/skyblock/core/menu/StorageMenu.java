@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 public final class StorageMenu extends AbstractSkyBlockMenu {
 
-    private static final ItemStack PANE = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+    private static final ItemStack PANE = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
             .displayName("§r").build();
 
     private final int slots;

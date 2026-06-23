@@ -33,14 +33,14 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 54; slot++) {
             if (slot != ITEM_SLOT && slot != REFORGE_SLOT && slot != RESULT_SLOT) {
                 setItem(slot, pane);
             }
         }
 
-        setItem(ITEM_SLOT, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        setItem(ITEM_SLOT, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                 .displayName("§7Item to Reforge")
                 .lore("§7Drag your item here.")
                 .build());
@@ -50,7 +50,7 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
                 .lore("§7Click to apply a random reforge", "§7to the item in the left slot.")
                 .build());
 
-        setItem(RESULT_SLOT, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        setItem(RESULT_SLOT, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                 .displayName("§7Result")
                 .lore("§7The reforged item appears here.")
                 .build());
@@ -67,7 +67,7 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
         if (slot == REFORGE_SLOT && event.getWhoClicked() instanceof Player player) {
             ItemStack item = getInventory().getItem(ITEM_SLOT);
             if (item == null || item.getType() == Material.AIR
-                    || item.getType() == Material.GRAY_STAINED_GLASS_PANE) {
+                    || item.getType() == Material.BLACK_STAINED_GLASS_PANE) {
                 player.sendMessage("§cPlace an item in the left slot first.");
                 return;
             }

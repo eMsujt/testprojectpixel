@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
  * <p>A 27-slot (3-row) menu titled with the minion's name and tier, e.g.
  * {@code §aCobblestone Minion XI}, opened when a player right-clicks their
  * minion's storage. The interior holds the resources the minion has gathered;
- * the layout is framed by a {@code GRAY_STAINED_GLASS_PANE} border with a close
+ * the layout is framed by a {@code BLACK_STAINED_GLASS_PANE} border with a close
  * button on the bottom row.</p>
  */
 public class MinionInventoryMenu extends Menu {
@@ -30,7 +30,7 @@ public class MinionInventoryMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 27; slot++) {
             int column = slot % 9;
             if (slot < 9 || slot >= 18 || column == 0 || column == 8) {

@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * The canonical Quests &amp; Objectives menu. A 54-slot (6-row) chest GUI titled
  * {@code §eQuests &amp; Objectives} showing all {@link QuestType} entries across
- * inner slots, framed by a {@code GRAY_STAINED_GLASS_PANE} border. Clicking a
+ * inner slots, framed by a {@code BLACK_STAINED_GLASS_PANE} border. Clicking a
  * NOT_STARTED quest starts it; a close button sits at slot 49.
  */
 public final class QuestsMenu extends Menu {
@@ -33,7 +33,7 @@ public final class QuestsMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 54; slot++) {
             int col = slot % 9;
             if (slot < 9 || slot >= 45 || col == 0 || col == 8) {

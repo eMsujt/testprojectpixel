@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Canonical management GUI for a single placed minion.
  *
- * <p>A 27-slot (3-row) chest framed by a {@code GRAY_STAINED_GLASS_PANE} border.
+ * <p>A 27-slot (3-row) chest framed by a {@code BLACK_STAINED_GLASS_PANE} border.
  * Slot 13 shows the minion's type and tier; slot 15 upgrades the minion to the
  * next tier; slot 22 closes the inventory.</p>
  *
@@ -76,7 +76,7 @@ public class MinionMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 27; slot++) {

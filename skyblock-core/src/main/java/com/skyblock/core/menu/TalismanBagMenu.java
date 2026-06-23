@@ -19,7 +19,7 @@ public final class TalismanBagMenu extends AbstractMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.BLACK_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 45; slot++) setItem(slot, pane);
 
         TalismanBagManager manager = TalismanBagManager.getInstance();

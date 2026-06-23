@@ -90,7 +90,7 @@ public final class BestiaryMenu extends Menu {
         handlers.clear();
         inventory = Bukkit.createInventory(this, 54, getTitle());
 
-        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.BLACK_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 9; slot++) inventory.setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) inventory.setItem(slot, pane);
 

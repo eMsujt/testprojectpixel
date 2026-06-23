@@ -39,7 +39,7 @@ public final class NpcShopMenu extends AbstractMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = SkyblockUtils.buildItem(Material.GRAY_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.BLACK_STAINED_GLASS_PANE, "§r");
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         List<ShopEntry> entries = ShopManager.getInstance()

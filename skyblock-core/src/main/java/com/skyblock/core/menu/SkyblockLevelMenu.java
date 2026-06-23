@@ -12,7 +12,7 @@ import java.util.UUID;
 
 /**
  * Canonical "SkyBlock Level" menu. A 54-slot (6-row) chest GUI framed by a
- * {@code GRAY_STAINED_GLASS_PANE} border with the viewing player's head at
+ * {@code BLACK_STAINED_GLASS_PANE} border with the viewing player's head at
  * slot 13 summarising their level, total XP and XP to the next level
  * (from {@link SkyblockLevelManager}), and one tile per XP
  * {@link Category source} showing the per-category breakdown.
@@ -92,7 +92,7 @@ public final class SkyblockLevelMenu extends Menu {
     }
 
     private void fillBorder() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                 .displayName("§r")
                 .build();
         for (int slot = 0; slot < 54; slot++) {
