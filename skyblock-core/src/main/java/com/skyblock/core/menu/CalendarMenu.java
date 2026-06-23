@@ -19,7 +19,7 @@ import java.util.List;
  */
 public final class CalendarMenu extends Menu {
 
-    private static final String TITLE = "§aSkyBlock Calendar";
+    private static final String TITLE = "§aCalendar and Events";
     private static final int SUMMARY_SLOT = 4;
 
     public CalendarMenu() {
@@ -91,6 +91,16 @@ public final class CalendarMenu extends Menu {
                     .build(),
                     e -> e.setCancelled(true));
         }
+
+        setItem(49, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    org.bukkit.entity.Player p = (org.bukkit.entity.Player) e.getWhoClicked();
+                    new SkyBlockMenu(p).open(p);
+                });
     }
 
     /** Collects the distinct recurring events scheduled anywhere in the given month, in date order. */
