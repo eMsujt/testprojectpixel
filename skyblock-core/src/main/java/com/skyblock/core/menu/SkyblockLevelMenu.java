@@ -19,7 +19,7 @@ import java.util.UUID;
  */
 public final class SkyblockLevelMenu extends Menu {
 
-    private static final String TITLE = "§aSkyBlock Level";
+    private static final String TITLE = "§aSkyBlock Leveling";
     private static final int HEAD_SLOT = 13;
 
     /** One breakdown tile per category, laid out across the third row. */
@@ -51,21 +51,16 @@ public final class SkyblockLevelMenu extends Menu {
         long totalXP = levels.getXP(id);
         long toNext = levels.xpToNextLevel(id);
 
-        ItemStack skull = new ItemBuilder(Material.PLAYER_HEAD)
-                .displayName("§a" + player.getName())
+        // Hypixel shows the level summary as a Painting at slot 4.
+        setItem(4, new ItemBuilder(Material.PAINTING)
+                .displayName("§aYour SkyBlock Level")
                 .lore(
                         "§7Level: §e" + level + " §7/ §e" + SkyblockLevelManager.MAX_LEVEL,
                         "§7Total XP: §e" + String.format("%,d", totalXP),
                         level < SkyblockLevelManager.MAX_LEVEL
-                                ? "§7XP to next: §e" + String.format("%,d", toNext)
+                                ? "§7Progress to next: §e" + String.format("%,d", toNext) + " §7XP"
                                 : "§6Maximum level reached!")
-                .build();
-
-        if (skull.getItemMeta() instanceof SkullMeta meta) {
-            meta.setOwningPlayer(player);
-            skull.setItemMeta(meta);
-        }
-        setItem(HEAD_SLOT, skull, e -> e.setCancelled(true));
+                .build(), e -> e.setCancelled(true));
 
         Category[] categories = Category.values();
         for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
@@ -77,6 +72,17 @@ public final class SkyblockLevelMenu extends Menu {
                     .build(),
                     e -> e.setCancelled(true));
         }
+
+        setItem(34, new ItemBuilder(Material.CHEST)
+                .displayName("§aLeveling Rewards")
+                .lore("§7View the rewards you unlock", "§7by leveling up your SkyBlock Level.")
+                .build(), e -> e.setCancelled(true));
+
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
     }
 
     /** Title-cases an enum constant name, e.g. {@code SKILL} -> {@code Skill}. */

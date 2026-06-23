@@ -64,11 +64,18 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
                     .lore("§7+" + type.bonus + " " + type.stat.getDisplayName())
                     .build());
         }
+
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
     }
 
     @Override
     public void handleClick(InventoryClickEvent event) {
         event.setCancelled(true);
+        super.handleClick(event);
     }
 
     private static String formatName(String enumName) {
