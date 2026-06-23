@@ -19,7 +19,7 @@ public final class SacksMenu extends AbstractSkyBlockMenu {
     };
 
     public SacksMenu(Player player) {
-        super(player, "§6Sacks of Holding", 6);
+        super(player, "§6Sack of Sacks", 6);
     }
 
     @Override
@@ -46,5 +46,10 @@ public final class SacksMenu extends AbstractSkyBlockMenu {
                     .lore("§7No sack types available.")
                     .build());
         }
+
+        setItem(49, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(),
+                e -> { e.setCancelled(true); player.closeInventory(); });
     }
 }

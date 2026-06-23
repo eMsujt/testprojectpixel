@@ -22,9 +22,7 @@ import java.util.UUID;
 public final class KuudraMenu extends Menu {
 
     /** Inventory slots for the five Kuudra tiers (Basic → Infernal). */
-    static final int[] TIER_SLOTS = {20, 21, 22, 23, 24};
-
-    private static final int SUMMARY_SLOT = 49;
+    static final int[] TIER_SLOTS = {11, 12, 13, 14, 15};
 
     /** Display-name color per tier, escalating with difficulty. */
     private static final Map<KuudraTier, String> COLORS = new EnumMap<>(KuudraTier.class);
@@ -44,16 +42,12 @@ public final class KuudraMenu extends Menu {
     }
 
     public KuudraMenu(UUID playerId) {
-        super("§cKuudra", 6);
+        super("Select Tier", 4);
         this.playerId = playerId;
     }
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
-        for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
-
         KuudraManager manager = KuudraManager.getInstance();
 
         int index = 0;
@@ -77,13 +71,6 @@ public final class KuudraMenu extends Menu {
                     .build());
             index++;
         }
-
-        setItem(SUMMARY_SLOT, new ItemBuilder(Material.COMPASS)
-                .displayName("§cKuudra Overview")
-                .lore(
-                        "§7Defeat Kuudra in the Crimson Isle",
-                        "§7to earn essence and tokens.")
-                .build());
     }
 
     @Override

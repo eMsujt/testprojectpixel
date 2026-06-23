@@ -24,16 +24,16 @@ import java.util.UUID;
 public final class DungeonClassMenu extends Menu {
 
     /** Inventory slots for the five class icons in the middle row. */
-    private static final int[] CLASS_SLOTS = {10, 11, 12, 13, 14};
+    private static final int[] CLASS_SLOTS = {11, 12, 13, 14, 15};
 
     public static final Map<DungeonClass, Material> CLASS_ICONS = new EnumMap<>(DungeonClass.class);
 
     static {
-        CLASS_ICONS.put(DungeonClass.HEALER,  Material.GOLDEN_APPLE);
-        CLASS_ICONS.put(DungeonClass.MAGE,    Material.BLAZE_POWDER);
+        CLASS_ICONS.put(DungeonClass.HEALER,  Material.SPLASH_POTION);
+        CLASS_ICONS.put(DungeonClass.MAGE,    Material.BLAZE_ROD);
         CLASS_ICONS.put(DungeonClass.BERSERK, Material.IRON_SWORD);
         CLASS_ICONS.put(DungeonClass.ARCHER,  Material.BOW);
-        CLASS_ICONS.put(DungeonClass.TANK,    Material.SHIELD);
+        CLASS_ICONS.put(DungeonClass.TANK,    Material.LEATHER_CHESTPLATE);
     }
 
     private final UUID playerId;
@@ -43,16 +43,14 @@ public final class DungeonClassMenu extends Menu {
     }
 
     public DungeonClassMenu(UUID playerId) {
-        super("§3Dungeon Classes", 3);
+        super("Dungeon Classes", 4);
         this.playerId = playerId;
     }
 
     @Override
     protected void build() {
         ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int s = 0; s < 9; s++)  setItem(s, pane);
-        for (int s = 9; s < 18; s++) setItem(s, pane);
-        for (int s = 18; s < 27; s++) setItem(s, pane);
+        for (int s = 0; s < 36; s++) setItem(s, pane);
 
         DungeonManager dungeons = DungeonManager.getInstance();
         DungeonClassManager classManager = DungeonClassManager.getInstance();

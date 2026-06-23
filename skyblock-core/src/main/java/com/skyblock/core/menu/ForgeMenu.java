@@ -29,7 +29,7 @@ public final class ForgeMenu extends AbstractSkyBlockMenu {
     };
 
     public ForgeMenu(Player player) {
-        super(player, "§6Forge", 6);
+        super(player, "§6The Forge", 6);
     }
 
     @Override
