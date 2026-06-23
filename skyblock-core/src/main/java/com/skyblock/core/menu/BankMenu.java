@@ -12,8 +12,8 @@ import java.util.UUID;
 
 /**
  * The "Personal Bank" menu, opened from the SkyBlock Menu. Laid out 1:1 with
- * Hypixel: a 4-row chest with Deposit Coins (Chest, slot 12), Withdraw Coins
- * (Dropper, 14), Recent transactions (Map, 16), a Go Back arrow (30), Close
+ * Hypixel: a 4-row chest with Deposit Coins (Chest, slot 11), Withdraw Coins
+ * (Dropper, 13), Recent transactions (Map, 15), a Go Back arrow (30), Close
  * (31), Information (Redstone Torch, 32) and Bank Upgrades (Block of Gold, 35).
  * Deposit/withdraw move the player's whole purse/balance.
  */
@@ -39,7 +39,7 @@ public final class BankMenu extends AbstractSkyBlockMenu {
         BankTier tier = bank.getTier(uuid);
         String bal = String.format("%,.0f", balance);
 
-        setItem(12, new ItemBuilder(Material.CHEST)
+        setItem(11, new ItemBuilder(Material.CHEST)
                 .displayName("§aDeposit Coins")
                 .lore(
                         "§7Current balance: §6" + bal,
@@ -63,7 +63,7 @@ public final class BankMenu extends AbstractSkyBlockMenu {
                     open(player);
                 });
 
-        setItem(14, new ItemBuilder(Material.DROPPER)
+        setItem(13, new ItemBuilder(Material.DROPPER)
                 .displayName("§aWithdraw Coins")
                 .lore(
                         "§7Current balance: §6" + bal,
@@ -86,7 +86,7 @@ public final class BankMenu extends AbstractSkyBlockMenu {
                     open(player);
                 });
 
-        setItem(16, new ItemBuilder(Material.MAP)
+        setItem(15, new ItemBuilder(Material.MAP)
                 .displayName("§aRecent transactions")
                 .lore("§7Your most recent bank", "§7deposits and withdrawals.")
                 .build(), e -> e.setCancelled(true));

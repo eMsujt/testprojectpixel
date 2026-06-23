@@ -36,7 +36,7 @@ public final class EquipmentMenu extends AbstractSkyBlockMenu {
         StatsManager.PlayerStats stats = StatsManager.getInstance().getStats(id);
 
         // Equipment column (no equipment system yet → empty placeholder slots).
-        emptySlot(18, "Hand");
+        emptySlot(2, "Hand");
         emptySlot(10, "Necklace");
         emptySlot(19, "Cloak");
         emptySlot(28, "Belt");

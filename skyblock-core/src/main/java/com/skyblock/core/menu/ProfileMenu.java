@@ -11,14 +11,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * "Profile Management", opened from the SkyBlock Menu. Laid out 1:1 with Hypixel:
+ * a 4-row chest with the profile tiles along row 2 (slots 11–15), a player-head
+ * summary at slot 4, and Go Back (30) / Close (31) on the bottom row.
+ */
 public final class ProfileMenu extends AbstractSkyBlockMenu {
 
     static final int PLAYER_SLOT = 4;
-    static final int[] PROFILE_SLOTS = {19, 20, 21, 22, 23};
-    private static final int SUMMARY_SLOT = 40;
+    static final int[] PROFILE_SLOTS = {11, 12, 13, 14, 15};
 
     public ProfileMenu(Player player) {
-        super(player, "§bProfile Management", 6);
+        super(player, "§bProfile Management", 4);
     }
 
     @Override
@@ -28,32 +32,40 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
 
         ItemStack greenPane = new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, greenPane);
-        for (int slot = 45; slot < 54; slot++) setItem(slot, greenPane);
+        for (int slot = 27; slot < 36; slot++) setItem(slot, greenPane);
 
         ProfileManager.SkyBlockProfile active = manager.getActiveProfile(playerId);
         String activeName = active != null ? active.name() : "None";
         String activeMode = active != null ? active.gameMode().getDisplayName() : "N/A";
         int souls = manager.getFairySouls(playerId);
         long sbXp = manager.getSkyBlockXp(playerId);
+        List<ProfileManager.SkyBlockProfile> profiles = manager.getProfilesForOwner(playerId);
+        ProfileManager.ProfileData data = manager.getPlayerData(playerId);
+        String created = data != null
+                ? new SimpleDateFormat("yyyy-MM-dd").format(new Date(data.createdAt()))
+                : "N/A";
 
-        setItem(PLAYER_SLOT, new ItemBuilder(Material.PLAYER_HEAD)
+        setItem(PLAYER_SLOT, new ItemBuilder(Material.PLAYER_HEAD).skullOwner(player)
                 .displayName("§a" + player.getName())
                 .lore("§7Active Profile: §e" + activeName,
                         "§7Mode: §e" + activeMode,
+                        "",
+                        "§7Profiles: §e" + profiles.size() + "§7/§e" + ProfileManager.MAX_PROFILES,
+                        "§7Member since: §e" + created,
                         "§7Fairy Souls: §e" + souls,
                         "§7SkyBlock XP: §e" + sbXp)
                 .build());
 
-        List<ProfileManager.SkyBlockProfile> profiles = manager.getProfilesForOwner(playerId);
         for (int i = 0; i < PROFILE_SLOTS.length; i++) {
             if (i < profiles.size()) {
                 ProfileManager.SkyBlockProfile profile = profiles.get(i);
                 boolean isActive = active != null && active.profileId().equals(profile.profileId());
                 int index = i + 1;
-                setItem(PROFILE_SLOTS[i], new ItemBuilder(Material.PAPER)
+                setItem(PROFILE_SLOTS[i], new ItemBuilder(isActive ? Material.EMERALD_BLOCK : Material.PAPER)
                         .displayName((isActive ? "§a§l" : "§e") + profile.name())
                         .lore("§7Mode: §f" + profile.gameMode().getDisplayName(),
-                                isActive ? "§a(Currently Active)" : "§7Click to switch")
+                                "",
+                                isActive ? "§a(Currently Active)" : "§eClick to switch")
                         .build(),
                         e -> {
                             e.setCancelled(true);
@@ -69,23 +81,15 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
             }
         }
 
-        ProfileManager.ProfileData data = manager.getPlayerData(playerId);
-        String created = data != null
-                ? new SimpleDateFormat("yyyy-MM-dd").format(new Date(data.createdAt()))
-                : "N/A";
-
-        setItem(SUMMARY_SLOT, new ItemBuilder(Material.NETHER_STAR)
-                .displayName("§aProfile Overview")
-                .lore("§7Profiles: §e" + profiles.size() + "§7/§e" + ProfileManager.MAX_PROFILES,
-                        "§7Member since: §e" + created,
-                        "§7Fairy Souls: §e" + souls,
-                        "§7SkyBlock XP: §e" + sbXp)
-                .build());
-
-        setItem(48, new ItemBuilder(Material.ARROW)
+        setItem(30, new ItemBuilder(Material.ARROW)
                 .displayName("§aGo Back")
                 .lore("§7To SkyBlock Menu")
                 .build(),
                 e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
+
+        setItem(31, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(),
+                e -> { e.setCancelled(true); player.closeInventory(); });
     }
 }
