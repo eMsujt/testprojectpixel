@@ -79,7 +79,8 @@ public final class SkyBlockMenu extends Menu {
         setItem(49, new ItemBuilder(Material.BARRIER).displayName("§cClose").build(),
                 e -> { e.setCancelled(true); e.getWhoClicked().closeInventory(); });
         setItem(50, new ItemBuilder(Material.COMPARATOR).displayName("§aSettings")
-                .lore("§7Adjust your SkyBlock settings.").build());
+                .lore("§7Adjust your SkyBlock settings.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new SettingsMenu(player).open(player); });
 
         // Booster Cookie — live buff status from the BoosterManager.
         BoosterManager booster = BoosterManager.getInstance();

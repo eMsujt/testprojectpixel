@@ -25,6 +25,7 @@ public final class ScoreboardManager {
 
     private final Map<UUID, SkyBlockScoreboard> boards = new HashMap<>();
     private final Map<UUID, BukkitTask> tasks = new HashMap<>();
+    private final java.util.Set<UUID> sidebarDisabled = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private Plugin plugin;
 
     private ScoreboardManager() {}
@@ -53,6 +54,9 @@ public final class ScoreboardManager {
 
     public void initPlayer(Player player) {
         stopForPlayer(player);
+        if (sidebarDisabled.contains(player.getUniqueId())) {
+            return; // player has hidden their sidebar in Settings
+        }
         SkyBlockScoreboard board = new SkyBlockScoreboard(player, TITLE);
         boards.put(player.getUniqueId(), board);
         BukkitTask task = new BukkitRunnable() {
@@ -77,6 +81,22 @@ public final class ScoreboardManager {
         SkyBlockScoreboard board = boards.remove(player.getUniqueId());
         if (board != null) {
             board.delete();
+        }
+    }
+
+    /** Whether the player currently has the SkyBlock sidebar shown (default true). */
+    public boolean isSidebarVisible(UUID playerId) {
+        return !sidebarDisabled.contains(playerId);
+    }
+
+    /** Shows or hides the sidebar for a player, taking effect immediately. */
+    public void setSidebarVisible(Player player, boolean visible) {
+        if (visible) {
+            sidebarDisabled.remove(player.getUniqueId());
+            initPlayer(player);
+        } else {
+            sidebarDisabled.add(player.getUniqueId());
+            stopForPlayer(player);
         }
     }
 
