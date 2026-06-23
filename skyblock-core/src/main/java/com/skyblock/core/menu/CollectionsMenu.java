@@ -13,7 +13,7 @@ import java.util.UUID;
 
 /**
  * The "Collections" menu, opened from the SkyBlock Menu. Laid out 1:1 with Hypixel:
- * a Collection summary (Painting) at slot 13, the Farming/Mining/Combat/Foraging/
+ * a Collection summary (Painting) at slot 4, the Farming/Mining/Combat/Foraging/
  * Fishing categories at slots 20–24 with their vanilla icons, the Boss and Rift
  * categories at 31–32, and a Go Back arrow at slot 48. Clicking a category opens
  * its {@link CollectionCategoryMenu}.
@@ -34,7 +34,7 @@ public final class CollectionsMenu extends AbstractSkyBlockMenu {
         CollectionManager manager = CollectionManager.getInstance();
         UUID uuid = player.getUniqueId();
 
-        // Summary (Painting) at slot 13.
+        // Summary (Painting) at slot 4 (wiki 1,5).
         int unlocked = 0;
         int totalColls = 0;
         for (CollectionCategory cat : CollectionCategory.values()) {
@@ -44,7 +44,7 @@ public final class CollectionsMenu extends AbstractSkyBlockMenu {
             }
         }
         int pct = totalColls > 0 ? unlocked * 100 / totalColls : 0;
-        setItem(13, new ItemBuilder(Material.PAINTING)
+        setItem(4, new ItemBuilder(Material.PAINTING)
                 .displayName("§aCollection")
                 .lore(
                         "§7View all of the items you have",
