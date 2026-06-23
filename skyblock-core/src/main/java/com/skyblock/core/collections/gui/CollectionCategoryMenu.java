@@ -52,7 +52,7 @@ public class CollectionCategoryMenu extends Menu {
 
         CollectionManager manager = CollectionManager.getInstance();
         Collection[] collections = category.getCollections();
-        for (int i = 0; i < collections.length && i + 9 < 45; i++) {
+        for (int i = 0; i < collections.length && i < contentCapacity(); i++) {
             Collection c = collections[i];
             Material mat = resolveMaterial(c);
             long count = manager.getItems(playerId, c);
@@ -68,7 +68,7 @@ public class CollectionCategoryMenu extends Menu {
                 lore.add("§aMaxed!");
             }
 
-            setItem(9 + i, new ItemBuilder(mat)
+            setItem(contentSlot(i), new ItemBuilder(mat)
                     .displayName("§a" + c.getDisplayName())
                     .lore(lore)
                     .build());
