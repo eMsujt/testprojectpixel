@@ -15,26 +15,37 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Canonical Museum hub menu opened by {@code /museum}. A 54-slot (6-row) chest
- * titled {@code §6Museum} rendering one tile per {@link MuseumCategory}
- * (Weapons/Armor/Rarities/Special) showing the player's donation grid — donated
- * count, completion, and the list of donated items — alongside a milestone
- * summary tile tracking reward progress toward the next {@link DonationMilestone}.
+ * The "Your Museum" hub, opened by {@code /museum}. Laid out 1:1 with Hypixel:
+ * an overview head at slot 4, the eight donation categories at their documented
+ * slots (Combat 20, Farming 21, Mining 22, Fishing 23, Foraging 24,
+ * Dungeoneering 30, Hunting 31, Special Items 32), and Museum Milestones (48),
+ * Search (50) and Appraisal Service (51) on the bottom row.
  */
 public final class MuseumMenu extends Menu {
 
     private static final int SUMMARY_SLOT = 4;
 
-    private static final int[] CATEGORY_SLOTS = {20, 21, 23, 24};
-
-    private static final Map<MuseumCategory, Material> CATEGORY_ICONS =
-            new EnumMap<>(MuseumCategory.class);
+    private static final Map<MuseumCategory, Integer> CATEGORY_SLOTS = new EnumMap<>(MuseumCategory.class);
+    private static final Map<MuseumCategory, Material> CATEGORY_ICONS = new EnumMap<>(MuseumCategory.class);
 
     static {
-        CATEGORY_ICONS.put(MuseumCategory.WEAPONS,  Material.DIAMOND_SWORD);
-        CATEGORY_ICONS.put(MuseumCategory.ARMOR,    Material.DIAMOND_CHESTPLATE);
-        CATEGORY_ICONS.put(MuseumCategory.RARITIES, Material.NETHER_STAR);
-        CATEGORY_ICONS.put(MuseumCategory.SPECIAL,  Material.DRAGON_EGG);
+        CATEGORY_SLOTS.put(MuseumCategory.COMBAT, 20);
+        CATEGORY_SLOTS.put(MuseumCategory.FARMING, 21);
+        CATEGORY_SLOTS.put(MuseumCategory.MINING, 22);
+        CATEGORY_SLOTS.put(MuseumCategory.FISHING, 23);
+        CATEGORY_SLOTS.put(MuseumCategory.FORAGING, 24);
+        CATEGORY_SLOTS.put(MuseumCategory.DUNGEONEERING, 30);
+        CATEGORY_SLOTS.put(MuseumCategory.HUNTING, 31);
+        CATEGORY_SLOTS.put(MuseumCategory.SPECIAL, 32);
+
+        CATEGORY_ICONS.put(MuseumCategory.COMBAT, Material.STONE_SWORD);
+        CATEGORY_ICONS.put(MuseumCategory.FARMING, Material.GOLDEN_HOE);
+        CATEGORY_ICONS.put(MuseumCategory.MINING, Material.STONE_PICKAXE);
+        CATEGORY_ICONS.put(MuseumCategory.FISHING, Material.FISHING_ROD);
+        CATEGORY_ICONS.put(MuseumCategory.FORAGING, Material.JUNGLE_SAPLING);
+        CATEGORY_ICONS.put(MuseumCategory.DUNGEONEERING, Material.SKELETON_SKULL);
+        CATEGORY_ICONS.put(MuseumCategory.HUNTING, Material.LEAD);
+        CATEGORY_ICONS.put(MuseumCategory.SPECIAL, Material.CAKE);
     }
 
     private final UUID playerId;
@@ -49,42 +60,49 @@ public final class MuseumMenu extends Menu {
         fillBorder();
 
         MuseumManager manager = MuseumManager.getInstance();
-        setItem(SUMMARY_SLOT, buildSummary(manager), event -> event.setCancelled(true));
-
-        MuseumCategory[] categories = MuseumCategory.values();
-        for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
-            MuseumCategory category = categories[i];
-            setItem(CATEGORY_SLOTS[i],
-                    buildCategoryTile(manager, category),
-                    event -> event.setCancelled(true));
-        }
-    }
-
-    private ItemStack buildSummary(MuseumManager manager) {
         int total = manager.getTotalDonations(playerId);
+
+        setItem(SUMMARY_SLOT, new ItemBuilder(Material.PLAYER_HEAD)
+                .displayName("§aYour Museum")
+                .lore(
+                        "§7Items donated: §e" + total,
+                        "§7Museum value: §6" + manager.getMuseumValue(playerId))
+                .build(), e -> e.setCancelled(true));
+
+        for (MuseumCategory category : MuseumCategory.values()) {
+            Integer slot = CATEGORY_SLOTS.get(category);
+            if (slot == null) continue;
+            setItem(slot, buildCategoryTile(manager, category), e -> e.setCancelled(true));
+        }
+
         DonationMilestone current = manager.getMilestone(playerId);
         DonationMilestone next = nextMilestone(current);
-
-        List<String> lore = new ArrayList<>();
-        lore.add("§7Items donated: §e" + total);
-        lore.add("§7Museum value: §6" + manager.getMuseumValue(playerId));
-        lore.add("§7Milestone: §b" + current.name());
+        List<String> mLore = new ArrayList<>();
+        mLore.add("§7Milestone: §b" + current.name());
         if (next == null) {
-            lore.add("§aAll milestones unlocked!");
+            mLore.add("§aAll milestones unlocked!");
         } else {
-            lore.add("§7Next: §b" + next.name() + " §7(§e" + total + "§7/§e"
-                    + next.getThreshold() + "§7)");
+            mLore.add("§7Next: §b" + next.name() + " §7(§e" + total + "§7/§e" + next.getThreshold() + "§7)");
         }
-        return new ItemBuilder(Material.WRITTEN_BOOK)
+        setItem(48, new ItemBuilder(Material.GOLD_BLOCK)
                 .displayName("§aMuseum Milestones")
-                .lore(lore)
-                .build();
+                .lore(mLore)
+                .build(), e -> e.setCancelled(true));
+
+        setItem(50, new ItemBuilder(Material.OAK_SIGN)
+                .displayName("§aMuseum Search")
+                .lore("§7Search for a museum item.")
+                .build(), e -> e.setCancelled(true));
+        setItem(51, new ItemBuilder(Material.DIAMOND)
+                .displayName("§aMuseum Appraisal Service")
+                .lore("§7Appraise your museum.")
+                .build(), e -> e.setCancelled(true));
     }
 
     private ItemStack buildCategoryTile(MuseumManager manager, MuseumCategory category) {
         Set<String> donated = manager.getDonations(playerId, category);
         int size = manager.getCategorySize(category);
-        int completion = (int) Math.round(manager.getCategoryCompletion(playerId, category) * 100);
+        int completion = size > 0 ? (int) Math.round((double) donated.size() / size * 100) : 0;
 
         List<String> lore = new ArrayList<>();
         lore.add("§7Donated: §e" + donated.size() + "§7/§e" + size);

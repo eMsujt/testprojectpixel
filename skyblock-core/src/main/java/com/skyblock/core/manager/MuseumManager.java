@@ -24,9 +24,13 @@ public final class MuseumManager {
 
     /** Category tiers for items donated to the Museum, each with a display name. */
     public enum MuseumCategory {
-        WEAPONS("Weapons"),
-        ARMOR("Armor"),
-        RARITIES("Rarities"),
+        COMBAT("Combat"),
+        FARMING("Farming"),
+        MINING("Mining"),
+        FISHING("Fishing"),
+        FORAGING("Foraging"),
+        DUNGEONEERING("Dungeoneering"),
+        HUNTING("Hunting"),
         SPECIAL("Special");
 
         /** Human-readable display name shown to players. */
