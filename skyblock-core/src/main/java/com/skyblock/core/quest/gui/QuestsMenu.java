@@ -73,6 +73,15 @@ public final class QuestsMenu extends Menu {
             });
         }
 
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    new com.skyblock.core.menu.SkyBlockMenu(player).open(player);
+                });
+
         setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
                 .build(),
