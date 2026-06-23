@@ -43,7 +43,7 @@ public final class CatacombsMenu extends Menu {
             Floor floor = floors[i];
             boolean master = floor.name().startsWith("M");
 
-            setItem(FIRST_FLOOR_SLOT + i, new ItemBuilder(
+            setItem(contentSlot(i), new ItemBuilder(
                     master ? Material.NETHER_STAR : Material.WITHER_SKELETON_SKULL)
                     .displayName((master ? "§5" : "§f") + floor.getDisplayName())
                     .lore("§7Click to view floor details.")

@@ -69,8 +69,8 @@ public final class MayorMenu extends Menu {
                 .build());
 
         List<String> perks = mayor.getPerks();
-        for (int i = 0; i < perks.size() && i < 9; i++) {
-            setItem(FIRST_PERK_SLOT + i, new ItemBuilder(Material.PAPER)
+        for (int i = 0; i < perks.size() && i < contentCapacity(); i++) {
+            setItem(contentSlot(i), new ItemBuilder(Material.PAPER)
                     .displayName("§e" + perks.get(i))
                     .lore("§7Active Perk")
                     .build());

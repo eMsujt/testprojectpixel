@@ -1,6 +1,8 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -44,6 +46,38 @@ public abstract class Menu implements InventoryHolder {
 
     protected void setItem(int slot, ItemStack item) {
         setItem(slot, item, null);
+    }
+
+    /** Fills the full border (top &amp; bottom rows, left &amp; right columns) with a blank gray pane. */
+    protected void drawBorder() {
+        drawBorder(Material.GRAY_STAINED_GLASS_PANE);
+    }
+
+    /** Fills the full border with a blank pane of the given material (for themed menus). */
+    protected void drawBorder(Material paneMaterial) {
+        ItemStack pane = new ItemBuilder(paneMaterial).displayName("§r").build();
+        int size = rows * 9;
+        for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
+        for (int slot = size - 9; slot < size; slot++) setItem(slot, pane);
+        for (int row = 1; row < rows - 1; row++) {
+            setItem(row * 9, pane);
+            setItem(row * 9 + 8, pane);
+        }
+    }
+
+    /**
+     * Maps a 0-based content index to a slot in the inner 7-wide grid (skipping the 1-wide border),
+     * filling left-to-right, top-to-bottom — so items form a clean centered grid instead of running
+     * across the border columns.
+     */
+    protected int contentSlot(int index) {
+        int cols = 7;
+        return (index / cols + 1) * 9 + (index % cols + 1);
+    }
+
+    /** Number of inner content slots available for {@link #contentSlot(int)} in this menu. */
+    protected int contentCapacity() {
+        return Math.max(0, (rows - 2) * 7);
     }
 
     public void open(Player player) {
