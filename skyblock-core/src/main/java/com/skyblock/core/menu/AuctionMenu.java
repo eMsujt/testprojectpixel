@@ -15,7 +15,8 @@ import java.util.List;
  */
 public final class AuctionMenu extends AbstractSkyBlockMenu {
 
-    private static final int PAGE_SIZE = 45;
+    // 4 inner rows (rows 2–5) of 7 = 28 listings per page; the bottom row holds paging.
+    private static final int PAGE_SIZE = 28;
 
     private final int page;
 
@@ -37,7 +38,7 @@ public final class AuctionMenu extends AbstractSkyBlockMenu {
 
         for (int i = start; i < end; i++) {
             Listing listing = listings.get(i);
-            int slot = i - start;
+            int slot = contentSlot(i - start);
             ItemStack icon = new ItemBuilder(listing.item())
                     .displayName("§e" + listing.itemName())
                     .lore(
