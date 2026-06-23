@@ -17,85 +17,65 @@ public final class SkyBlockMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 54; slot++) {
-            int col = slot % 9;
-            if (slot < 9 || slot >= 45 || col == 0 || col == 8) setItem(slot, pane);
-        }
+        // Hypixel's SkyBlock Menu sits on a solid black-pane background.
+        ItemStack bg = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 54; slot++) setItem(slot, bg);
 
-        // "Your SkyBlock Profile" — the player's own head, like Hypixel (top-centre, slot 4).
-        setItem(4, new ItemBuilder(Material.PLAYER_HEAD).skullOwner(player)
+        // Profile head (centre of row 2).
+        setItem(13, new ItemBuilder(Material.PLAYER_HEAD).skullOwner(player)
                 .displayName("§aYour SkyBlock Profile")
-                .lore("§7Name: §a" + player.getName(), "", "§7View your stats, skills and", "§7overall progress.", "", "§eClick to view!").build(),
+                .lore("§7Name: §a" + player.getName(), "", "§7View your stats, skills", "§7and overall progress.", "", "§eClick to view!").build(),
                 e -> { e.setCancelled(true); new StatsMenu(player).open(player); });
 
-        setItem(10, new ItemBuilder(Material.DIAMOND_SWORD).displayName("§aSkills")
-                .lore("§7View your skill levels and XP.").build(),
+        // Row: Skills & learning (slots 19-25).
+        setItem(19, new ItemBuilder(Material.DIAMOND_SWORD).displayName("§aYour Skills")
+                .lore("§7View your skill levels and XP.", "", "§eClick to view!").build(),
                 e -> { e.setCancelled(true); new SkillsMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
-
-        setItem(11, new ItemBuilder(Material.WRITABLE_BOOK).displayName("§aCollections")
-                .lore("§7Track your collection progress.").build(),
+        setItem(20, new ItemBuilder(Material.PAINTING).displayName("§aCollections")
+                .lore("§7Track your collection progress.", "", "§eClick to view!").build(),
                 e -> { e.setCancelled(true); new CollectionsMenu(player).open(player); });
-
-        setItem(12, new ItemBuilder(Material.CAT_SPAWN_EGG).displayName("§aPets")
-                .lore("§7Manage your pets.").build(),
-                e -> { e.setCancelled(true); new PetMenu(player).open(player); });
-
-        setItem(13, new ItemBuilder(Material.PISTON).displayName("§aMinions")
-                .lore("§7Manage your minions.").build(),
-                e -> { e.setCancelled(true); new com.skyblock.core.minion.gui.MinionsMenu(player).open(player); });
-
-        setItem(14, new ItemBuilder(Material.BONE).displayName("§aBestiary")
-                .lore("§7Track the mobs you've slain.").build(),
-                e -> { e.setCancelled(true); new BestiaryMenu(player).open(player); });
-
-        setItem(15, new ItemBuilder(Material.NETHER_STAR).displayName("§aSlayer")
-                .lore("§7View your slayer quests.").build(),
-                e -> { e.setCancelled(true); new SlayerMenu(player).open(player); });
-
-        setItem(16, new ItemBuilder(Material.END_PORTAL_FRAME).displayName("§5Dungeons")
-                .lore("§7Explore the Catacombs.").build(),
-                e -> { e.setCancelled(true); new DungeonsMenu(player).open(player); });
-
-        setItem(19, new ItemBuilder(Material.GOLD_NUGGET).displayName("§6Auction House")
-                .lore("§7Buy and sell items.").build(),
-                e -> { e.setCancelled(true); new AuctionHouseMenu(player).open(player); });
-
-        setItem(20, new ItemBuilder(Material.GOLD_INGOT).displayName("§6Bazaar")
-                .lore("§7Trade commodities instantly.").build(),
-                e -> { e.setCancelled(true); new BazaarMenu(player).open(player); });
-
-        setItem(21, new ItemBuilder(Material.GOLD_BLOCK).displayName("§6Bank")
-                .lore("§7Deposit and withdraw coins.").build(),
-                e -> { e.setCancelled(true); new BankMenu(player).open(player); });
-
-        setItem(22, new ItemBuilder(Material.LEATHER_CHESTPLATE).displayName("§aWardrobe")
-                .lore("§7Manage your armor sets.").build(),
-                e -> { e.setCancelled(true); new WardrobeMenu(player).open(player); });
-
-        setItem(23, new ItemBuilder(Material.ENDER_CHEST).displayName("§5Accessory Bag")
-                .lore("§7Manage your accessories.").build(),
-                e -> { e.setCancelled(true); new AccessoryBagMenu(player).open(player); });
-
-        setItem(24, new ItemBuilder(Material.CHEST).displayName("§aStorage")
-                .lore("§7Access your personal storage.").build(),
+        setItem(21, new ItemBuilder(Material.KNOWLEDGE_BOOK).displayName("§aRecipe Book")
+                .lore("§7Browse every SkyBlock item", "§7and its recipe.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new ItemsMenu(player).open(player); });
+        setItem(22, new ItemBuilder(Material.EXPERIENCE_BOTTLE).displayName("§aSkyBlock Leveling")
+                .lore("§7Track your SkyBlock level.").build());
+        setItem(23, new ItemBuilder(Material.WRITABLE_BOOK).displayName("§aQuests & Chapters")
+                .lore("§7Track your quest progress.").build());
+        setItem(24, new ItemBuilder(Material.CLOCK).displayName("§aCalendar and Events")
+                .lore("§7See upcoming SkyBlock events.").build());
+        setItem(25, new ItemBuilder(Material.ENDER_CHEST).displayName("§aStorage")
+                .lore("§7Access your personal storage.", "", "§eClick to view!").build(),
                 e -> { e.setCancelled(true); new StorageMenu(player).open(player); });
 
-        setItem(25, new ItemBuilder(Material.DIAMOND).displayName("§aStats")
-                .lore("§7View your SkyBlock stats.").build(),
-                e -> { e.setCancelled(true); new StatsMenu(player).open(player); });
+        // Row: inventory & customization (slots 29-33).
+        setItem(29, new ItemBuilder(Material.BUNDLE).displayName("§aYour Bags")
+                .lore("§7Your accessory bag, sacks", "§7and more.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new AccessoryBagMenu(player).open(player); });
+        setItem(30, new ItemBuilder(Material.BONE).displayName("§aPets")
+                .lore("§7Manage your pets.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new PetMenu(player).open(player); });
+        setItem(31, new ItemBuilder(Material.CRAFTING_TABLE).displayName("§aCrafting Table")
+                .lore("§7Craft items.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new CraftingMenu(com.skyblock.core.SkyBlockCore.getInstance(), player).open(player); });
+        setItem(32, new ItemBuilder(Material.LEATHER_CHESTPLATE).displayName("§aWardrobe")
+                .lore("§7Manage your armor sets.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new WardrobeMenu(player).open(player); });
+        setItem(33, new ItemBuilder(Material.GOLD_INGOT).displayName("§aPersonal Bank")
+                .lore("§7Deposit and withdraw coins.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new BankMenu(player).open(player); });
 
-        setItem(28, new ItemBuilder(Material.ENCHANTING_TABLE).displayName("§5Enchanting")
-                .lore("§7Enchant your items.").build(),
-                e -> { e.setCancelled(true); new EnchantingMenu(player).open(player); });
-
-        setItem(29, new ItemBuilder(Material.FISHING_ROD).displayName("§9Fishing")
-                .lore("§7Cast your line and fish.").build(),
-                e -> { e.setCancelled(true); new FishingMenu(player).open(player); });
-
-        setItem(30, new ItemBuilder(Material.CRAFTING_TABLE).displayName("§6Items")
-                .lore("§7Browse every SkyBlock item with", "§7its real in-game texture.").build(),
-                e -> { e.setCancelled(true); new ItemsMenu(player).open(player); });
+        // Bottom navigation (slots 47-51).
+        setItem(47, new ItemBuilder(Material.COMPASS).displayName("§aFast Travel")
+                .lore("§7Warp around the world.").build());
+        setItem(48, new ItemBuilder(Material.NAME_TAG).displayName("§aProfile Management")
+                .lore("§7Manage your profiles.", "", "§eClick to view!").build(),
+                e -> { e.setCancelled(true); new ProfileMenu(player).open(player); });
+        setItem(49, new ItemBuilder(Material.BARRIER).displayName("§cClose").build(),
+                e -> { e.setCancelled(true); e.getWhoClicked().closeInventory(); });
+        setItem(50, new ItemBuilder(Material.COMPARATOR).displayName("§aSettings")
+                .lore("§7Adjust your SkyBlock settings.").build());
+        setItem(51, new ItemBuilder(Material.COOKIE).displayName("§6Booster Cookie")
+                .lore("§7Consume for buffs and perks.").build());
     }
 
     @Override
