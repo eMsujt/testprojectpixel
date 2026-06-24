@@ -1,6 +1,9 @@
 package com.skyblock.core.listener;
 
 import com.skyblock.core.SkyBlockCore;
+import com.skyblock.core.armor.ArmorSetBonus;
+import com.skyblock.core.armor.ArmorSetManager;
+import com.skyblock.core.armor.ArmorSetManager.ArmorSet;
 import com.skyblock.core.manager.ItemStatManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
@@ -80,6 +83,18 @@ public final class EquipmentListener implements Listener {
             accumulate(totals, ism, piece);
         }
         accumulate(totals, ism, heldItem);
+
+        // Full-set armor bonus (e.g. Superior, Necron) — apply its flat stats so wearing a
+        // complete set actually grants its bonus, not just the per-piece lore stats.
+        ArmorSet activeSet = ArmorSetManager.getInstance().refresh(player);
+        if (activeSet != null) {
+            ArmorSetBonus bonus = activeSet.getBonus();
+            totals.merge(Stat.DEFENSE,  (double) bonus.getDefenseBonus(),  Double::sum);
+            totals.merge(Stat.HEALTH,   (double) bonus.getHealthBonus(),   Double::sum);
+            totals.merge(Stat.STRENGTH, (double) bonus.getStrengthBonus(), Double::sum);
+            totals.merge(Stat.SPEED,    (double) bonus.getSpeedBonus(),    Double::sum);
+        }
+
         StatManager sm = StatManager.getInstance();
         sm.setEquipmentBonuses(player.getUniqueId(), totals);
         applyMaxHealth(player, sm);
