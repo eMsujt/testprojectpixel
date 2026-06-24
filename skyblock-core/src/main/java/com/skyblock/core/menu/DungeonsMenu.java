@@ -24,11 +24,11 @@ public final class DungeonsMenu extends AbstractSkyBlockMenu {
     static final Map<DungeonClass, Material> CLASS_ICONS = new EnumMap<>(DungeonClass.class);
 
     static {
-        CLASS_ICONS.put(DungeonClass.HEALER,  Material.GOLDEN_APPLE);
-        CLASS_ICONS.put(DungeonClass.MAGE,    Material.BLAZE_POWDER);
+        CLASS_ICONS.put(DungeonClass.HEALER,  Material.SPLASH_POTION);
+        CLASS_ICONS.put(DungeonClass.MAGE,    Material.BLAZE_ROD);
         CLASS_ICONS.put(DungeonClass.BERSERK, Material.IRON_SWORD);
         CLASS_ICONS.put(DungeonClass.ARCHER,  Material.BOW);
-        CLASS_ICONS.put(DungeonClass.TANK,    Material.SHIELD);
+        CLASS_ICONS.put(DungeonClass.TANK,    Material.LEATHER_CHESTPLATE);
     }
 
     public DungeonsMenu(Player player) {
