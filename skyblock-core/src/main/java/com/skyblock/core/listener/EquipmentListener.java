@@ -4,9 +4,11 @@ import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.armor.ArmorSetBonus;
 import com.skyblock.core.armor.ArmorSetManager;
 import com.skyblock.core.armor.ArmorSetManager.ArmorSet;
+import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.manager.ItemStatManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
+import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
@@ -24,6 +26,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class EquipmentListener implements Listener {
@@ -95,6 +98,19 @@ public final class EquipmentListener implements Listener {
             totals.merge(Stat.SPEED,    (double) bonus.getSpeedBonus(),    Double::sum);
         }
 
+        // Accessory (talisman) stats — only the highest tier per family counts, like Hypixel.
+        Map<String, TalismanType> bestPerFamily = new HashMap<>();
+        for (TalismanType acc : AccessoryBagManager.getInstance().getContents(player.getUniqueId())) {
+            String family = accessoryFamily(acc);
+            TalismanType best = bestPerFamily.get(family);
+            if (best == null || acc.bonus > best.bonus) {
+                bestPerFamily.put(family, acc);
+            }
+        }
+        for (TalismanType acc : bestPerFamily.values()) {
+            totals.merge(acc.stat, acc.bonus, Double::sum);
+        }
+
         StatManager sm = StatManager.getInstance();
         sm.setEquipmentBonuses(player.getUniqueId(), totals);
         applyMaxHealth(player, sm);
@@ -134,6 +150,17 @@ public final class EquipmentListener implements Listener {
         double speed = sm.getStat(player.getUniqueId(), Stat.SPEED);
         float walk = (float) Math.max(0.05, Math.min(1.0, 0.2 * (speed / 100.0)));
         player.setWalkSpeed(walk);
+    }
+
+    /** Strips the tier suffix (_TALISMAN/_RING/_ARTIFACT) to get a talisman's family key for de-dup. */
+    private static String accessoryFamily(TalismanType type) {
+        String name = type.name();
+        for (String tier : new String[]{"_ARTIFACT", "_RING", "_TALISMAN"}) {
+            if (name.endsWith(tier)) {
+                return name.substring(0, name.length() - tier.length());
+            }
+        }
+        return name;
     }
 
     private static void accumulate(Map<Stat, Double> totals, ItemStatManager ism, ItemStack item) {

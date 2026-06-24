@@ -25,10 +25,11 @@ Three recurring root causes:
 `EquipmentListener` feeds the combat stat store **only** by regex-scraping stat
 lines from worn armor + held item lore. So **enchants, reforges, and accessories
 are catalogued but never affect combat** — they live in side maps nothing reads
-back. Only **pet bonuses**, **accessory tuning points**, and now **armor set
-bonuses** (wired into `recompute`) reach combat. Remaining: have `recompute` also
-pull reforge stats and accessory MP→stats (with Hypixel's
-`floor(29.97·(ln(0.0019·MP+1))^1.2)` curve).
+back. Reaching combat now: **pet bonuses**, **accessory tuning points**, **armor
+set bonuses**, and **per-accessory stats** (highest-tier-per-family de-dup) — all
+via `recompute`. Remaining: **reforge stats** (need binding to the item via PDC +
+lore rather than the fragile per-slot map) and **enchant effects** (listeners
+unregistered).
 
 ## Status by system
 
@@ -45,7 +46,7 @@ pull reforge stats and accessory MP→stats (with Hypixel's
 | **Fishing** | PARTIAL | sea creatures = wrong vanilla mobs, no HP/drops; trophy fishing faked; treasure/collection unlinked |
 | **Enchantments** | STUB | ~52 names, **<5% have effects**, listeners unregistered, stored per-player not on item |
 | **Reforges + stones** | STUB | **stats never reach combat**; stones are names-only (no items/recipes/drops) |
-| **Accessories / MP / Maxwell** | STUB on combat | only tuning applies; MP→stat curve absent; ~50 accessories vs 600+ |
+| **Accessories / MP / Maxwell** | PARTIAL | per-accessory stats **now apply** (highest-tier-per-family de-dup) + tuning; MP→stat curve absent; ~50 accessories vs 600+ |
 | **Pets** | PARTIAL | 68/~70 roster + real XP; **0 abilities fire**; pet items unequippable |
 | **Armor set bonuses** | PARTIAL | flat set bonuses **now applied** to combat; dynamic/conditional perks (Superior +5% all, dungeon-only, etc.) still flavor |
 | **Bazaar** | PARTIAL | solid order-book engine, but **GUI display-only + no coin/inventory wiring**; ~62/150+ products |
