@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,7 +19,7 @@ import java.util.UUID;
  * left column (Weapons 0, Armor 9, Accessories 18, Consumables 27, Blocks 36,
  * Misc 45 — Misc also shows Minions), active listings fill the inner grid
  * (10–43), and the bottom row holds paging plus the Search/Sort/Rarity/BIN
- * control bar.
+ * control bar. Sort and BIN-only are functional; Search and Rarity are display.
  */
 public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
 
@@ -41,21 +43,45 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
             Material.COOKED_BEEF, Material.GRASS_BLOCK, Material.CHEST
     };
 
+    /** Sort order for the listing grid. */
+    private enum Sort {
+        LOWEST("Lowest Price"),
+        HIGHEST("Highest Price");
+
+        final String label;
+
+        Sort(String label) {
+            this.label = label;
+        }
+
+        Sort next() {
+            return this == LOWEST ? HIGHEST : LOWEST;
+        }
+    }
+
     private final int page;
     private final AuctionCategory category; // null = all categories
+    private final Sort sort;
+    private final boolean binOnly;
 
     public AuctionHouseMenu(Player player) {
-        this(player, 0, null);
+        this(player, 0, null, Sort.LOWEST, false);
     }
 
     public AuctionHouseMenu(Player player, int page) {
-        this(player, page, null);
+        this(player, page, null, Sort.LOWEST, false);
     }
 
     public AuctionHouseMenu(Player player, int page, AuctionCategory category) {
+        this(player, page, category, Sort.LOWEST, false);
+    }
+
+    private AuctionHouseMenu(Player player, int page, AuctionCategory category, Sort sort, boolean binOnly) {
         super(player, "§6Auctions Browser", 6);
         this.page = Math.max(0, page);
         this.category = category;
+        this.sort = sort;
+        this.binOnly = binOnly;
     }
 
     @Override
@@ -70,7 +96,7 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                     .displayName((selected ? "§a" : "§e") + cat.getDisplayName())
                     .lore(selected ? "§aShowing this category" : "§7Click to view!")
                     .build(),
-                    e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, selected ? null : cat).open(player); });
+                    e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, selected ? null : cat, sort, binOnly).open(player); });
         }
 
         // Resolve the listing set for the active filter.
@@ -87,6 +113,15 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
             }
         }
 
+        // BIN-only filter + price sort.
+        if (binOnly) {
+            listings.removeIf(l -> !l.binListing());
+        }
+        listings.sort(Comparator.comparingDouble(AuctionListing::startingBid));
+        if (sort == Sort.HIGHEST) {
+            Collections.reverse(listings);
+        }
+
         int start = page * PAGE_SIZE;
         int end = Math.min(start + PAGE_SIZE, listings.size());
         for (int i = start; i < end; i++) {
@@ -95,7 +130,8 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
             ItemStack icon = new ItemBuilder(listing.item())
                     .displayName("§e" + listing.itemName())
                     .lore(
-                            "§7Starting Bid: §6" + (long) listing.startingBid() + " coins",
+                            "§7" + (listing.binListing() ? "Buy it now: " : "Starting bid: ") + "§6"
+                                    + (long) listing.startingBid() + " coins",
                             "§7Category: §f" + listing.category().getDisplayName(),
                             "§7Type: §f" + listing.type().getDisplayName(),
                             "§eClick to purchase!")
@@ -116,33 +152,35 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                     .build());
         }
 
-        // Bottom control bar (Search/Sort/Rarity/BIN are display-only for now).
+        // Bottom control bar.
         setItem(48, new ItemBuilder(Material.OAK_SIGN)
                 .displayName("§aSearch Auctions")
                 .lore("§7Search for a specific item.").build());
         setItem(50, new ItemBuilder(Material.HOPPER)
-                .displayName("§aSort")
-                .lore("§7Change the listing order.").build());
+                .displayName("§aSort: §f" + sort.label)
+                .lore("§7Click to change the order.").build(),
+                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort.next(), binOnly).open(player); });
         setItem(51, new ItemBuilder(Material.ENDER_EYE)
                 .displayName("§aRarity Filter")
                 .lore("§7Filter by item rarity.").build());
         setItem(52, new ItemBuilder(Material.POWERED_RAIL)
-                .displayName("§aBIN Only")
-                .lore("§7Show Buy-It-Now listings only.").build());
+                .displayName("§aBIN Only: " + (binOnly ? "§aON" : "§cOFF"))
+                .lore("§7Show Buy-It-Now listings only.").build(),
+                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly).open(player); });
 
         if (page > 0) {
             setItem(46, new ItemBuilder(Material.ARROW)
                     .displayName("§ePrevious Page")
                     .lore("§7Page " + page)
                     .build(),
-                    event -> { event.setCancelled(true); new AuctionHouseMenu(player, page - 1, category).open(player); });
+                    event -> { event.setCancelled(true); new AuctionHouseMenu(player, page - 1, category, sort, binOnly).open(player); });
         }
         if (end < listings.size()) {
             setItem(53, new ItemBuilder(Material.ARROW)
                     .displayName("§eNext Page")
                     .lore("§7Page " + (page + 2))
                     .build(),
-                    event -> { event.setCancelled(true); new AuctionHouseMenu(player, page + 1, category).open(player); });
+                    event -> { event.setCancelled(true); new AuctionHouseMenu(player, page + 1, category, sort, binOnly).open(player); });
         }
     }
 }

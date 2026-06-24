@@ -63,8 +63,9 @@ pure menu edits — do them deliberately, one PR each, build-verified.
 4. **Enchant Item paradigm** — the live menu is an enchant catalog; Hypixel is a
    place-item-and-enchant screen (functional input slot). `EnchantingTableMenu` is
    dead code and should be removed in this rework.
-5. **Auction House controls** — Search/Sort/Rarity/BIN buttons are display-only;
-   wire real behavior.
+5. **Auction House controls** — **Sort** (price asc/desc) and **BIN-only** are now
+   functional. **Search** still needs a chat-input flow; **Rarity** needs a rarity
+   field on `AuctionListing` (currently none) — both remain display.
 6. **Tab columns** — the Info/Skills/Players widget columns need a player-list
    **packet layer** (ProtocolLib or NMS); only the header/footer banner is done.
 
