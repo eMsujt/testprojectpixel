@@ -54,15 +54,20 @@ public final class CustomMobListener implements Listener {
             return;
         }
 
+        // Reward feedback goes to the action bar (Hypixel-style), not chat spam per kill.
+        StringBuilder feedback = new StringBuilder();
         if (def.getCoinReward() > 0) {
             com.skyblock.core.manager.EconomyManager.getInstance()
                     .deposit(killer.getUniqueId(), def.getCoinReward());
-            killer.sendMessage("§6+" + def.getCoinReward() + " coins");
+            feedback.append("§6+").append(def.getCoinReward()).append(" coins");
         }
-
         if (def.getXpReward() > 0) {
             killer.giveExp(def.getXpReward());
-            killer.sendMessage("§a+" + def.getXpReward() + " XP");
+            if (feedback.length() > 0) feedback.append("  ");
+            feedback.append("§3+").append(def.getXpReward()).append(" Combat XP");
+        }
+        if (feedback.length() > 0) {
+            com.skyblock.core.manager.ActionBarManager.getInstance().flash(killer, feedback.toString());
         }
     }
 

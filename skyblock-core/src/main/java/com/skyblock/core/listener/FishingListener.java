@@ -56,8 +56,8 @@ public final class FishingListener implements Listener {
 
         player.getWorld().dropItemNaturally(event.getHook().getLocation(), loot);
         fishingManager.recordCatchEvent(uuid, "Caught " + loot.getType().name());
-        ChatUtil.send(player, "§9[Fishing] §fYou caught §e" + loot.getType().name().replace('_', ' ')
-                + "§f! §7(+" + (int) xp + " XP)");
+        com.skyblock.core.manager.ActionBarManager.getInstance()
+                .flash(player, "§9+" + (int) xp + " Fishing XP");
 
         WaterType waterType = detectWaterType(event.getHook());
         // Sea Creature Chance above the base 20 acts as the spawn-chance bonus.
