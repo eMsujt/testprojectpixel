@@ -419,6 +419,8 @@ public final class SkyBlockCore extends JavaPlugin {
         bankManager.load(getDataFolder());
         auctionHouseManager = AuctionHouseManager.getInstance();
         auctionHouseManager.load(getDataFolder());
+        // Settle expired auctions every 60s (refund outbid bidders, return unsold items).
+        auctionHouseManager.startExpiryTask(this, 1200L);
         auctionManager = AuctionManager.getInstance();
         bazaarManager = BazaarManager.getInstance();
         bazaarManager.load(getDataFolder());
