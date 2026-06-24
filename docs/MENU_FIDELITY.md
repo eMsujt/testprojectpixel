@@ -35,8 +35,8 @@ SkyBlock Menu, Your Skills, Collection, Pets, Your Equipment and Stats, Profile
 Management, Personal Bank, SkyBlock Leveling, Calendar and Events, Wardrobe,
 Accessory Bag, Slayer, Heart of the Mountain, Bazaar, Auctions Browser, Island
 Management, Dungeon Classes, Select Tier (Kuudra), The Forge, Sack of Sacks, Your
-Museum, Commissions, Catacombs Gate, Enchant Item (title), Chocolate Factory.
-Plus the **scoreboard sidebar** and the **tab banner**.
+Museum, Commissions, Catacombs Gate, Enchant Item (title), Chocolate Factory,
+Storage (hub). Plus the **scoreboard sidebar** and the **tab banner**.
 
 ### Acceptable as-is (wiki documents no fixed slot layout → UNVERIFIABLE)
 Bestiary, Trophy Fishing, Stats, Fairy Souls, Dungeons, Dungeon Stats, Crimson
@@ -50,25 +50,23 @@ have no documented slots to match precisely.
 These are real model/feature reworks (touch managers or need new systems), not
 pure menu edits — do them deliberately, one PR each, build-verified.
 
-1. **Storage hub** — currently shows one backpack's contents under the title
-   "Storage". Real hub = Ender Chest section + 18 backpack-tier slots + page nav +
-   section spacers. Either rebuild as the hub or rename to "Backpack".
-3. **Runic Pedestal** — currently a rune catalog; real menu is an apply/fuse station
+1. **Runic Pedestal** — currently a rune catalog; real menu is an apply/fuse station
    (item input @19, sacrifice input @25, Apply @31, Rune Removal @44 sub-menu).
    Needs functional item-handling slots.
-4. **Mayor** — Hypixel has no standalone Mayor GUI; the mayor lives inside Calendar
-   and Events. De-dup `MayorMenu` into `CalendarMenu`.
-5. **Foraging** — the area/zone selector is part of a *consistent* set with
+2. **Mayor** — Hypixel has no standalone Mayor GUI; the mayor lives inside Calendar
+   and Events. Low priority: `/mayor` is a separate command, not a main-menu
+   duplicate — optionally surface the current mayor inside `CalendarMenu`.
+3. **Foraging** — the area/zone selector is part of a *consistent* set with
    Farming/Mining/Fishing/Combat; a skill-progression rebuild would break that set.
    Decide whether to rebuild all five as skill pages or leave the set as-is.
-6. **Enchant Item paradigm** — the live menu is an enchant catalog; Hypixel is a
+4. **Enchant Item paradigm** — the live menu is an enchant catalog; Hypixel is a
    place-item-and-enchant screen (functional input slot). `EnchantingTableMenu` is
    dead code and should be removed in this rework.
-7. **Auction House controls** — Search/Sort/Rarity/BIN buttons are display-only;
+5. **Auction House controls** — Search/Sort/Rarity/BIN buttons are display-only;
    wire real behavior.
-8. **Tab columns** — the Info/Skills/Players widget columns need a player-list
+6. **Tab columns** — the Info/Skills/Players widget columns need a player-list
    **packet layer** (ProtocolLib or NMS); only the header/footer banner is done.
-9. **Border-color convergence** — migrate the remaining themed borders
+7. **Border-color convergence** — migrate the remaining themed borders
    (red/purple/lime/orange/green/blue/etc.) to black per the convention above.
 
 ## How a menu fix lands

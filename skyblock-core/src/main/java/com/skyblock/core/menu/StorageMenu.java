@@ -5,53 +5,59 @@ import com.skyblock.core.manager.StorageManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
 /**
- * 6-row chest GUI titled '§6Backpack §7(tier)' that exposes the item slots a
- * player's {@link BackpackTier} provides, drawing the stored {@link ItemStack}s
- * from page 0 of {@link StorageManager} and bordering the unused rows.
+ * The "Storage" hub, opened from the SkyBlock Menu. Routes to the player's two
+ * storage areas — the Ender Chest ({@link EnderChestMenu}) and the Backpack
+ * ({@link BackpackMenu}) — instead of showing one page's contents directly.
  */
 public final class StorageMenu extends AbstractSkyBlockMenu {
 
-    private static final ItemStack PANE = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-            .displayName("§r").build();
-
-    private final int slots;
-
     public StorageMenu(Player player) {
-        super(player, "§8Storage", 6);
-        this.slots = tierOf(player).getSlots();
-    }
-
-    private static BackpackTier tierOf(Player player) {
-        return StorageManager.getInstance().getBackpackTier(player.getUniqueId());
+        super(player, "Storage", 6);
     }
 
     @Override
     protected void populate() {
-        UUID playerId = player.getUniqueId();
-        ItemStack[] contents = StorageManager.getInstance().getPage(playerId, 0);
+        UUID id = player.getUniqueId();
+        ItemStack bg = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 54; slot++) setItem(slot, bg);
 
-        for (int slot = 0; slot < slots; slot++) {
-            ItemStack item = (slot < contents.length) ? contents[slot] : null;
-            if (item != null && item.getType() != Material.AIR) {
-                setItem(slot, item);
-            }
-        }
+        StorageManager storage = StorageManager.getInstance();
 
-        for (int slot = slots; slot < 54; slot++) {
-            setItem(slot, PANE);
-        }
-    }
+        setItem(20, new ItemBuilder(Material.ENDER_CHEST)
+                .displayName("§aEnder Chest")
+                .lore(
+                        "§7Pages unlocked: §e" + storage.getUnlockedPages(id)
+                                + "§7/§e" + StorageManager.PAGE_COUNT,
+                        "",
+                        "§eClick to open!")
+                .build(),
+                e -> { e.setCancelled(true); new EnderChestMenu(id).open(player); });
 
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        if (event.getRawSlot() >= slots) {
-            event.setCancelled(true);
-        }
+        BackpackTier tier = storage.getBackpackTier(id);
+        setItem(24, new ItemBuilder(Material.CHEST)
+                .displayName("§aBackpack")
+                .lore(
+                        "§7Tier: §a" + tier.name(),
+                        "§7Slots: §e" + tier.getSlots(),
+                        "",
+                        "§eClick to open!")
+                .build(),
+                e -> { e.setCancelled(true); new BackpackMenu(id).open(player); });
+
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
+
+        setItem(49, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(),
+                e -> { e.setCancelled(true); player.closeInventory(); });
     }
 }
