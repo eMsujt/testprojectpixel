@@ -35,7 +35,7 @@ public final class TrophyFishMenu extends AbstractSkyBlockMenu {
         UUID owner = player.getUniqueId();
         TrophyFishManager manager = TrophyFishManager.getInstance();
 
-        ItemStack pane = SkyblockUtils.buildItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.BLACK_STAINED_GLASS_PANE, "§r");
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
 

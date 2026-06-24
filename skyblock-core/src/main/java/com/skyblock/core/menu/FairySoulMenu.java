@@ -29,7 +29,7 @@ public final class FairySoulMenu extends AbstractSkyBlockMenu {
         int totalFound = manager.getFoundCount(playerId);
 
         // Row 0: pink pane border with overview header at slot 4
-        ItemStack pinkPane = new ItemBuilder(Material.PINK_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pinkPane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) {
             if (slot != HEADER_SLOT) setItem(slot, pinkPane);
         }
@@ -40,7 +40,7 @@ public final class FairySoulMenu extends AbstractSkyBlockMenu {
                 .build());
 
         // Row 1: purple pane separator
-        ItemStack purplePane = new ItemBuilder(Material.PURPLE_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack purplePane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 9; slot <= 17; slot++) {
             setItem(slot, purplePane);
         }

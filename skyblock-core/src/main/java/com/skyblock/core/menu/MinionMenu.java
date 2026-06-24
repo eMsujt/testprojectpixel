@@ -52,7 +52,7 @@ public final class MinionMenu extends AbstractSkyBlockMenu {
     @Override
     protected void populate() {
         UUID owner = player.getUniqueId();
-        ItemStack pane = SkyblockUtils.buildItem(Material.ORANGE_STAINED_GLASS_PANE, "§r");
+        ItemStack pane = SkyblockUtils.buildItem(Material.BLACK_STAINED_GLASS_PANE, "§r");
 
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
         setItem(9, pane);

@@ -12,9 +12,10 @@ before touching a menu so new work stays consistent with what's already shipped.
   whole background black and overlay content.
   - *Exception (intentional):* `LIGHT_GRAY_STAINED_GLASS_PANE` for "Empty X Slot"
     placeholders (e.g. the Equipment menu) — this matches Hypixel and stays.
-  - *Tracked:* a handful of menus still use themed borders (red/purple/lime/etc.).
-    Hypixel uses themed borders only on a few screens; converging the rest to black
-    is a low-priority follow-up (see Obstacles).
+  - All neutral **and** themed border/background fills now use black. The only
+    non-black panes left are **semantic**: green/red confirm-and-cancel buttons,
+    and placed/locked status indicators (e.g. Crystal Nucleus, Netherwart). Keep
+    those colored.
 - **Slot math:** wiki `(row, col)` is 1-based → 0-based slot `= (row-1)*9 + (col-1)`.
   Inner content uses `contentSlot(i)` / `contentCapacity()` from `Menu`; never place
   looped content on a border column (`slot%9 == 0 || == 8`) or the top/bottom row.
@@ -66,8 +67,6 @@ pure menu edits — do them deliberately, one PR each, build-verified.
    wire real behavior.
 6. **Tab columns** — the Info/Skills/Players widget columns need a player-list
    **packet layer** (ProtocolLib or NMS); only the header/footer banner is done.
-7. **Border-color convergence** — migrate the remaining themed borders
-   (red/purple/lime/orange/green/blue/etc.) to black per the convention above.
 
 ## How a menu fix lands
 Branch → edit → `mvn -pl skyblock-core -am package` (green) → PR to `main` →

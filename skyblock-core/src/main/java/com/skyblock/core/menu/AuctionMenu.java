@@ -61,7 +61,7 @@ public final class AuctionMenu extends AbstractSkyBlockMenu {
                     .build());
         }
 
-        ItemStack pane = new ItemBuilder(Material.YELLOW_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 45; slot < 54; slot++) {
             setItem(slot, pane);
         }

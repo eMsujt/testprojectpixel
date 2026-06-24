@@ -30,7 +30,7 @@ public final class ProfileMenu extends AbstractSkyBlockMenu {
         UUID playerId = player.getUniqueId();
         ProfileManager manager = ProfileManager.getInstance();
 
-        ItemStack greenPane = new ItemBuilder(Material.GREEN_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack greenPane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, greenPane);
         for (int slot = 27; slot < 36; slot++) setItem(slot, greenPane);
 

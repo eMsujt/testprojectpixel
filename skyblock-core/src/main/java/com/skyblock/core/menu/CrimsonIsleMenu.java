@@ -26,7 +26,7 @@ public final class CrimsonIsleMenu extends Menu {
 
     @Override
     protected void build() {
-        ItemStack pane = new ItemBuilder(Material.RED_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         SkyblockUtils.fillBorder(getRows(), this::setItem, pane);
 
         CrimsonIsleManager cim = CrimsonIsleManager.getInstance();
