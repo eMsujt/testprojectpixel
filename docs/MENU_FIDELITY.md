@@ -54,9 +54,9 @@ pure menu edits — do them deliberately, one PR each, build-verified.
 1. **Runic Pedestal** — currently a rune catalog; real menu is an apply/fuse station
    (item input @19, sacrifice input @25, Apply @31, Rune Removal @44 sub-menu).
    Needs functional item-handling slots.
-2. **Mayor** — Hypixel has no standalone Mayor GUI; the mayor lives inside Calendar
-   and Events. Low priority: `/mayor` is a separate command, not a main-menu
-   duplicate — optionally surface the current mayor inside `CalendarMenu`.
+2. **Mayor** — the current mayor + perks now show inside `CalendarMenu` (slot 16),
+   matching Hypixel. The standalone `/mayor` command/menu is kept as a convenience;
+   fully removing it is optional and low priority.
 3. **Foraging** — the area/zone selector is part of a *consistent* set with
    Farming/Mining/Fishing/Combat; a skill-progression rebuild would break that set.
    Decide whether to rebuild all five as skill pages or leave the set as-is.
@@ -67,7 +67,10 @@ pure menu edits — do them deliberately, one PR each, build-verified.
    functional. **Search** still needs a chat-input flow; **Rarity** needs a rarity
    field on `AuctionListing` (currently none) — both remain display.
 6. **Tab columns** — the Info/Skills/Players widget columns need a player-list
-   **packet layer** (ProtocolLib or NMS); only the header/footer banner is done.
+   **packet layer**. BLOCKED by the environment: this targets `paper-api 26.x`,
+   for which no ProtocolLib/packet library ships support, and raw NMS against that
+   build is too fragile to add blind. Only the header/footer banner is feasible
+   here (done). Revisit if the project moves to a Paper version a packet lib supports.
 
 ## How a menu fix lands
 Branch → edit → `mvn -pl skyblock-core -am package` (green) → PR to `main` →
