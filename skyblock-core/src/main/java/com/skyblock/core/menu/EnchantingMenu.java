@@ -24,7 +24,7 @@ public final class EnchantingMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        SkyblockUtils.fillBorder(getRows(), this::setItem, Material.PURPLE_STAINED_GLASS_PANE);
+        SkyblockUtils.fillBorder(getRows(), this::setItem, Material.BLACK_STAINED_GLASS_PANE);
 
         EnchantingManager mgr = EnchantingManager.getInstance();
         SkyBlockEnchantment[] enchants = SkyBlockEnchantment.values();

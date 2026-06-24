@@ -45,7 +45,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     protected void populate() {
         UUID playerId = player.getUniqueId();
 
-        SkyblockUtils.fillBorder(getRows(), this::setItem, Material.RED_STAINED_GLASS_PANE);
+        SkyblockUtils.fillBorder(getRows(), this::setItem, Material.BLACK_STAINED_GLASS_PANE);
 
         SlayerManager manager = SlayerManager.getInstance();
 

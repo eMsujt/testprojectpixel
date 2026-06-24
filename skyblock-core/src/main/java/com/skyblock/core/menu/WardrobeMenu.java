@@ -30,7 +30,7 @@ public final class WardrobeMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.ORANGE_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++) setItem(slot, pane);
 
         buildHeader();

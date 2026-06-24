@@ -44,7 +44,7 @@ public final class WarpMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        drawBorder(Material.CYAN_STAINED_GLASS_PANE);
+        drawBorder(Material.BLACK_STAINED_GLASS_PANE);
 
         WarpManager manager = WarpManager.getInstance();
         WarpLocation[] locations = WarpLocation.values();

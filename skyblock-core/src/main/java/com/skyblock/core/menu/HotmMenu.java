@@ -34,7 +34,7 @@ public final class HotmMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.BLUE_STAINED_GLASS_PANE).displayName("§r").build();
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 9; slot++)  setItem(slot, pane);
         for (int slot = 45; slot < 54; slot++) setItem(slot, pane);
         setItem(9, pane);  setItem(17, pane);
