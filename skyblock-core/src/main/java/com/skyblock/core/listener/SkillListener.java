@@ -202,7 +202,8 @@ public final class SkillListener implements Listener {
             }
             if (tree != null) {
                 foragingManager.recordChop(uuid, tree, 1);
-                ChatUtil.send(player, "§2[Foraging] §fYou gained §e+" + tree.getBaseXp() + " Foraging XP§f!");
+                com.skyblock.core.manager.ActionBarManager.getInstance()
+                        .flash(player, "§2+" + tree.getBaseXp() + " Foraging XP");
             }
         }
     }
