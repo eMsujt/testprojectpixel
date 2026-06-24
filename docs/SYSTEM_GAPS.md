@@ -23,12 +23,12 @@ Three recurring root causes:
 
 ## The single biggest combat gap
 `EquipmentListener` feeds the combat stat store **only** by regex-scraping stat
-lines from worn armor + held item lore. So **enchants, reforges, accessories, and
-armor set bonuses are catalogued but never affect combat** — they live in side maps
-nothing reads back. Only **pet bonuses** and **accessory tuning points** reach
-combat (one `addBonus` each). Fixing combat fidelity starts here: have `recompute`
-also pull reforge stats, accessory MP→stats (with Hypixel's `floor(29.97·(ln(0.0019·MP+1))^1.2)`
-curve), and `ArmorSetManager.getBonus`.
+lines from worn armor + held item lore. So **enchants, reforges, and accessories
+are catalogued but never affect combat** — they live in side maps nothing reads
+back. Only **pet bonuses**, **accessory tuning points**, and now **armor set
+bonuses** (wired into `recompute`) reach combat. Remaining: have `recompute` also
+pull reforge stats and accessory MP→stats (with Hypixel's
+`floor(29.97·(ln(0.0019·MP+1))^1.2)` curve).
 
 ## Status by system
 
@@ -47,7 +47,7 @@ curve), and `ArmorSetManager.getBonus`.
 | **Reforges + stones** | STUB | **stats never reach combat**; stones are names-only (no items/recipes/drops) |
 | **Accessories / MP / Maxwell** | STUB on combat | only tuning applies; MP→stat curve absent; ~50 accessories vs 600+ |
 | **Pets** | PARTIAL | 68/~70 roster + real XP; **0 abilities fire**; pet items unequippable |
-| **Armor set bonuses** | STUB | 20 sets tracked, **bonuses never applied**; dynamic perks are flavor text |
+| **Armor set bonuses** | PARTIAL | flat set bonuses **now applied** to combat; dynamic/conditional perks (Superior +5% all, dungeon-only, etc.) still flavor |
 | **Bazaar** | PARTIAL | solid order-book engine, but **GUI display-only + no coin/inventory wiring**; ~62/150+ products |
 | **Auction House** | PARTIAL | good model; **no coin/inventory wiring**; expiry task now started (this PR) |
 | **Bank** | PARTIAL (best economy) | interest only on `/bank interest`, no auto-timer; tiers approximate |
