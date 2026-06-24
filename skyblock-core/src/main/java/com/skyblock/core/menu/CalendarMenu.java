@@ -3,6 +3,8 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.CalendarManager;
 import com.skyblock.core.manager.CalendarManager.SkyBlockMonth;
 import com.skyblock.core.manager.GardenManager.GardenCrop;
+import com.skyblock.core.manager.MayorManager;
+import com.skyblock.core.manager.MayorManager.MayorCandidate;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -64,6 +66,23 @@ public final class CalendarMenu extends Menu {
                 .lore(summaryLore)
                 .build(),
                 e -> e.setCancelled(true));
+
+        // Current SkyBlock Mayor — Hypixel shows this inside Calendar and Events.
+        MayorCandidate mayor = MayorManager.getInstance().getCurrentMayor();
+        if (mayor != null) {
+            List<String> mayorLore = new ArrayList<>();
+            mayorLore.add("§7The current SkyBlock Mayor.");
+            mayorLore.add("");
+            mayorLore.add("§ePerks:");
+            for (String perk : mayor.getPerks()) {
+                mayorLore.add("§8 • §7" + perk);
+            }
+            setItem(16, new ItemBuilder(Material.PLAYER_HEAD)
+                    .displayName("§6Mayor " + mayor.getDisplayName())
+                    .lore(mayorLore)
+                    .build(),
+                    e -> e.setCancelled(true));
+        }
 
         SkyBlockMonth[] months = SkyBlockMonth.values();
         for (int i = 0; i < months.length && i < MONTH_SLOTS.length; i++) {
