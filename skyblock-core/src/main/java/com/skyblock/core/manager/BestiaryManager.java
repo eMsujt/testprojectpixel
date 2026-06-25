@@ -105,23 +105,26 @@ public final class BestiaryManager {
         }
     }
 
-    /** Broad categories that group mob families together. */
+    /** Bestiary categories, organized by island/location like Hypixel (not abstract groupings). */
     public enum BestiaryCategory {
-        COMBAT("Combat",  new BestiaryFamily[]{BestiaryFamily.ZOMBIE, BestiaryFamily.SKELETON,
+        PRIVATE_ISLAND("Private Island", new BestiaryFamily[]{BestiaryFamily.ZOMBIE, BestiaryFamily.SKELETON,
                                                BestiaryFamily.SPIDER, BestiaryFamily.CREEPER,
-                                               BestiaryFamily.SILVERFISH}),
-        SLAYER("Slayer",  new BestiaryFamily[]{BestiaryFamily.ENDERMAN, BestiaryFamily.BLAZE,
-                                               BestiaryFamily.WITCH, BestiaryFamily.TARANTULA,
-                                               BestiaryFamily.PIGLIN}),
-        BOSS  ("Boss",    new BestiaryFamily[]{BestiaryFamily.GHAST, BestiaryFamily.SLIME,
-                                               BestiaryFamily.GOLEM, BestiaryFamily.WITHER,
-                                               BestiaryFamily.GUARDIAN}),
-        NETHER("Nether",  new BestiaryFamily[]{BestiaryFamily.HOGLIN, BestiaryFamily.STRIDER,
-                                               BestiaryFamily.VINDICATOR}),
-        OCEAN ("Ocean",   new BestiaryFamily[]{BestiaryFamily.SEA_WALKER, BestiaryFamily.SEA_GUARDIAN,
-                                               BestiaryFamily.PHANTOM}),
-        MINING("Mining",  new BestiaryFamily[]{BestiaryFamily.GOBLIN, BestiaryFamily.AUTOMATON,
-                                               BestiaryFamily.SHULKER});
+                                               BestiaryFamily.SLIME, BestiaryFamily.WITCH, BestiaryFamily.BAT}),
+        HUB("Hub",        new BestiaryFamily[]{BestiaryFamily.CRYPT_GHOUL, BestiaryFamily.WOLF}),
+        SPIDERS_DEN("Spider's Den", new BestiaryFamily[]{BestiaryFamily.TARANTULA, BestiaryFamily.SILVERFISH}),
+        THE_END("The End", new BestiaryFamily[]{BestiaryFamily.ENDERMAN, BestiaryFamily.ENDER_DRAGON,
+                                               BestiaryFamily.SHULKER}),
+        CRIMSON_ISLE("Crimson Isle", new BestiaryFamily[]{BestiaryFamily.BLAZE, BestiaryFamily.GHAST,
+                                               BestiaryFamily.PIGLIN, BestiaryFamily.HOGLIN,
+                                               BestiaryFamily.STRIDER, BestiaryFamily.ZOMBIE_PIGMAN,
+                                               BestiaryFamily.WITHER}),
+        DWARVEN_MINES("Dwarven Mines", new BestiaryFamily[]{BestiaryFamily.GOBLIN}),
+        CRYSTAL_HOLLOWS("Crystal Hollows", new BestiaryFamily[]{BestiaryFamily.AUTOMATON}),
+        CATACOMBS("The Catacombs", new BestiaryFamily[]{BestiaryFamily.CRYPT_UNDEAD, BestiaryFamily.GOLEM,
+                                               BestiaryFamily.REVENANT, BestiaryFamily.SVEN}),
+        THE_OCEAN("The Ocean", new BestiaryFamily[]{BestiaryFamily.SEA_WALKER, BestiaryFamily.SEA_GUARDIAN,
+                                               BestiaryFamily.GUARDIAN, BestiaryFamily.SQUID,
+                                               BestiaryFamily.PHANTOM, BestiaryFamily.VINDICATOR});
 
         public final String displayName;
         /** Mob families that belong to this category. */
