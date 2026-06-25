@@ -53,7 +53,7 @@ Looting…), First Strike, and armor stat-enchants (Growth/Protection → `recom
 | **Pets** | PARTIAL | 68/~70 roster + real XP; **0 abilities fire**; pet items unequippable |
 | **Armor set bonuses** | PARTIAL | flat set bonuses **now applied** to combat; dynamic/conditional perks (Superior +5% all, dungeon-only, etc.) still flavor |
 | **Bazaar** | PARTIAL | **instant buy/sell now functional** (coins + inventory via `BazaarProductMenu`; base-price fallback when the book is empty); limit-order placement + bigger roster (~62/150+) still TODO |
-| **Auction House** | PARTIAL | good model; **no coin/inventory wiring**; expiry task now started (this PR) |
+| **Auction House** | PARTIAL | **BIN buy now functional** (buyer debit + item delivery + seller pay; listing now escrows the item — no more dupe; fixed the two-manager click mismatch); live bidding + claim menu still TODO |
 | **Bank** | PARTIAL (best economy) | interest only on `/bank interest`, no auto-timer; tiers approximate |
 | **Minions** | PARTIAL | real production loop; ~52/60+ types; generic per-tier tables; no crafting-to-obtain |
 | **NPC shops** | PARTIAL (best-wired) | real coin deduction + item delivery; ~10/25+ shops, tiny catalogs |
