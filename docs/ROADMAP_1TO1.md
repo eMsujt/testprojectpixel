@@ -34,7 +34,9 @@ The chokepoint is `EquipmentListener.recompute`; everything must feed it.
 - [x] Skill level-up perks → real stats — `SkillManager.getStatBonuses` wired into
       `recompute`; applies on join/gear-change (skill-up mid-session reflects on the
       next gear change — add a skill-up recompute hook to make it instant)
-- [ ] Collection tier rewards (recipe/sack/minion-slot unlocks) actually granted
+- [~] Collection tier rewards — **coin reward now granted on tier-up** (the dead
+      `grantTierUpRewards` is wired into `addItems`); recipe/sack/minion-slot
+      unlocks still inert
 - [ ] SkyBlock Leveling: wire all XP sources (bestiary, quests, minions, slayer…)
 - [ ] Fishing/Foraging XP feed the canonical SkillManager (not siloed managers)
 
