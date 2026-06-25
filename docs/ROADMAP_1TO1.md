@@ -32,8 +32,10 @@ The chokepoint is `EquipmentListener.recompute`; everything must feed it.
 ## Phase 2 — Progression loops (activity → reward → power)
 - [ ] De-dup double-XP (Mining/Fishing/Combat accrue to two managers)
 - [x] Skill level-up perks → real stats — `SkillManager.getStatBonuses` wired into
-      `recompute`; applies on join/gear-change (skill-up mid-session reflects on the
-      next gear change — add a skill-up recompute hook to make it instant)
+      `recompute`; refreshes on join, gear change, **and any inventory click**, so a
+      mid-session skill-up reflects on the next inventory interaction (responsive)
+- [x] Fairy-soul stat rewards → real stats — `FairySoulManager.getStatBonuses` wired
+      into `recompute` (same refresh triggers)
 - [~] Collection tier rewards — **coin reward now granted on tier-up** (the dead
       `grantTierUpRewards` is wired into `addItems`); recipe/sack/minion-slot
       unlocks still inert

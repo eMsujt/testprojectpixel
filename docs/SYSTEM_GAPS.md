@@ -38,7 +38,7 @@ map) and **enchant effects** (listeners unregistered).
 | **Item identity** (texture/name/lore/rarity/PDC) | **1:1** | ~8,355 real NEU items; nothing to fix |
 | **Stat system + base melee formula** | **1:1 core** | full damage stack missing the enchant/ability multiplier buckets, True Defense + effective-HP unapplied |
 | **Skills** | PARTIAL | XP curves exact; perks placeholder + **never applied**; XP double-counted |
-| **Collections** | PARTIAL | thresholds right; **tier rewards inert**; ~52/70+; fishing never increments |
+| **Collections** | PARTIAL | thresholds right; **tier-up coins now paid** (recipe/sack unlocks still inert); ~52/70+; fishing *does* increment via `CollectionListener.onFish` (by vanilla caught item) |
 | **Slayers** | STUB | **boss never spawns**; no abilities/RNG meter; menu non-interactive; drops wrong |
 | **Dungeons/Catacombs** | STUB | **no instance/bosses/abilities/puzzles**; score is a typed arg; class XP math is the only real part |
 | **Mining (HOTM/powder/CH)** | PARTIAL | perks inert; **powder never earned**; tier cap 7≠10; Crystal Hollows fake; no gemstone slots |
