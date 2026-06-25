@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public final class HotmMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE = "§bHeart of the Mountain";
+    private static final String TITLE = "Heart of the Mountain";
 
     // Hypixel anchors the info/powder bar along the bottom row.
     private static final int HEADER_SLOT   = 48;
