@@ -17,8 +17,10 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
 - [~] Per-menu pixel-perfect for UNVERIFIABLE menus — pending user's concrete
       examples (wiki documents no slots for them)
 
-## Phase 1 — Combat fidelity (gear actually affects stats)  ← ACTIVE
-The chokepoint is `EquipmentListener.recompute`; everything must feed it.
+## Phase 1 — Combat fidelity (gear actually affects stats)  ✅ (core complete)
+The chokepoint is `EquipmentListener.recompute`; everything must feed it. All major
+gear/progression stat sources + the damage-enchant bucket now feed combat; the
+remaining items below are polish/refinements.
 - [x] Armor full-set bonuses → stats
 - [x] Accessory stats → stats (highest-tier-per-family de-dup)
 - [x] **Reforges → stats** — the Reforge Anvil now stamps the reforge on the item
@@ -50,8 +52,11 @@ The chokepoint is `EquipmentListener.recompute`; everything must feed it.
 - [ ] SkyBlock Leveling: wire all XP sources (bestiary, quests, minions, slayer…)
 - [ ] Fishing/Foraging XP feed the canonical SkillManager (not siloed managers)
 
-## Phase 3 — Economy wiring (trading touches coins + inventory)
-- [ ] Bazaar GUI: buy/sell + order placement; debit/credit coins; move items
+## Phase 3 — Economy wiring (trading touches coins + inventory)  ← ACTIVE
+- [~] Bazaar — **instant buy/sell now functional**: a per-product view (`BazaarProductMenu`)
+      charges/credits coins (`EconomyManager`) and moves real items in/out of the
+      inventory, priced from the live order book with a base-price fallback so it
+      works without liquidity. Limit-order placement (buy/sell offers) still TODO.
 - [ ] Auction House: debit coins on bid/BIN, charge fees, remove/return items
 - [ ] Bank interest auto-timer (currently only on `/bank interest`)
 - [ ] Coins-on-death tuned toward Hypixel (currently 5%)

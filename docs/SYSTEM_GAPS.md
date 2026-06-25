@@ -52,7 +52,7 @@ Looting…), First Strike, and armor stat-enchants (Growth/Protection → `recom
 | **Accessories / MP / Maxwell** | PARTIAL | per-accessory stats **now apply** (highest-tier-per-family de-dup) + tuning; MP→stat curve absent; ~50 accessories vs 600+ |
 | **Pets** | PARTIAL | 68/~70 roster + real XP; **0 abilities fire**; pet items unequippable |
 | **Armor set bonuses** | PARTIAL | flat set bonuses **now applied** to combat; dynamic/conditional perks (Superior +5% all, dungeon-only, etc.) still flavor |
-| **Bazaar** | PARTIAL | solid order-book engine, but **GUI display-only + no coin/inventory wiring**; ~62/150+ products |
+| **Bazaar** | PARTIAL | **instant buy/sell now functional** (coins + inventory via `BazaarProductMenu`; base-price fallback when the book is empty); limit-order placement + bigger roster (~62/150+) still TODO |
 | **Auction House** | PARTIAL | good model; **no coin/inventory wiring**; expiry task now started (this PR) |
 | **Bank** | PARTIAL (best economy) | interest only on `/bank interest`, no auto-timer; tiers approximate |
 | **Minions** | PARTIAL | real production loop; ~52/60+ types; generic per-tier tables; no crafting-to-obtain |
