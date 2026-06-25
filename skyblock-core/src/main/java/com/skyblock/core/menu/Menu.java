@@ -110,6 +110,23 @@ public abstract class Menu implements InventoryHolder {
         if (handler != null) handler.accept(event);
     }
 
+    /**
+     * Opt-in: slots the viewer may freely place items into / take items out of
+     * (e.g. a crafting grid). Default is {@code false} for every slot, so menus
+     * stay fully click-locked unless they override this. {@link MenuListener}
+     * un-cancels only simple left/right place/pickup clicks on these slots.
+     */
+    public boolean isInteractiveSlot(int slot) {
+        return false;
+    }
+
+    /**
+     * Called when this menu's inventory is closed, so menus with interactive
+     * slots can return any leftover items to the player. Default is a no-op.
+     */
+    public void onClose(Player player) {
+    }
+
     @Override
     public Inventory getInventory() {
         if (inventory == null) {
