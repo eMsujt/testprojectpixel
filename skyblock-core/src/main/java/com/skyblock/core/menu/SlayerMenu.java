@@ -11,26 +11,58 @@ import com.skyblock.core.util.SkyblockUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public final class SlayerMenu extends AbstractSkyBlockMenu {
 
-    // six consecutive slots across the centre row (one per slayer boss)
-    static final int[] BOSS_SLOTS = {19, 20, 21, 22, 23, 24};
+    // six boss slots across row 2, matching Hypixel's Slayer GUI.
+    static final int[] BOSS_SLOTS = {10, 11, 12, 13, 14, 15};
     // five tier slots for the per-boss tier selector
     private static final int[] TIER_SLOTS = {20, 21, 22, 23, 24};
 
-    // Canonical order: the five core slayers, then the Rift slayer (Riftstalker) last.
+    // Wiki order (slots 10-15): the four core slayers, the Rift slayer, then Blaze last.
     private static final SlayerBoss[] DISPLAYED_BOSSES = {
             SlayerBoss.REVENANT_HORROR,
             SlayerBoss.TARANTULA_BROODFATHER,
             SlayerBoss.SVEN_PACKMASTER,
             SlayerBoss.VOIDGLOOM_SERAPH,
-            SlayerBoss.INFERNO_DEMONLORD,
-            SlayerBoss.RIFTSTALKER_BLOODFIEND
+            SlayerBoss.RIFTSTALKER_BLOODFIEND,
+            SlayerBoss.INFERNO_DEMONLORD
     };
+
+    /** Verbatim wiki display name (skull glyph + boss-name colour) per slayer type. */
+    private static final Map<SlayerType, String> BOSS_TITLES = new EnumMap<>(SlayerType.class);
+    /** Verbatim wiki flavour description per slayer type. */
+    private static final Map<SlayerType, String[]> BOSS_DESC = new EnumMap<>(SlayerType.class);
+
+    static {
+        BOSS_TITLES.put(SlayerType.ZOMBIE,   "§c☠ §eRevenant Horror");
+        BOSS_TITLES.put(SlayerType.SPIDER,   "§c☠ §cTarantula Broodfather");
+        BOSS_TITLES.put(SlayerType.WOLF,     "§c☠ §cSven Packmaster");
+        BOSS_TITLES.put(SlayerType.ENDERMAN, "§c☠ §cVoidgloom Seraph");
+        BOSS_TITLES.put(SlayerType.VAMPIRE,  "§c☠ §cRiftstalker Bloodfiend");
+        BOSS_TITLES.put(SlayerType.BLAZE,    "§c☠ §cInferno Demonlord");
+
+        BOSS_DESC.put(SlayerType.ZOMBIE, new String[]{
+                "§7Abhorrent Zombie stuck", "§7between life and death for", "§7an eternity."});
+        BOSS_DESC.put(SlayerType.SPIDER, new String[]{
+                "§7Monstrous Spider who poisons", "§7and devours its victims."});
+        BOSS_DESC.put(SlayerType.WOLF, new String[]{
+                "§7Rabid Wolf genetically", "§7modified by a famous mad", "§7scientist. Eats bones and", "§7flesh."});
+        BOSS_DESC.put(SlayerType.ENDERMAN, new String[]{
+                "§7If Necron is the right-hand", "§7of the Wither King, this",
+                "§7dark demigod is the", "§7left-hand."});
+        BOSS_DESC.put(SlayerType.VAMPIRE, new String[]{
+                "§7A half-vampire, half-thrall,", "§7immortal golem creation",
+                "§7representing the multiverse", "§7coven in combat."});
+        BOSS_DESC.put(SlayerType.BLAZE, new String[]{
+                "§7Even demons fear this", "§7incarnation of pure evil,",
+                "§7constantly feeding on its", "§7burning desire for", "§7destruction."});
+    }
 
     private static final QuestTier[] TIERS = {
             QuestTier.TIER_1, QuestTier.TIER_2, QuestTier.TIER_3, QuestTier.TIER_4, QuestTier.TIER_5
@@ -42,8 +74,8 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
 
     static {
         HEAD_ICONS.put(SlayerType.ZOMBIE,   Material.ROTTEN_FLESH);
-        HEAD_ICONS.put(SlayerType.SPIDER,   Material.SPIDER_EYE);
-        HEAD_ICONS.put(SlayerType.WOLF,     Material.BONE);
+        HEAD_ICONS.put(SlayerType.SPIDER,   Material.COBWEB);
+        HEAD_ICONS.put(SlayerType.WOLF,     Material.MUTTON);
         HEAD_ICONS.put(SlayerType.ENDERMAN, Material.ENDER_PEARL);
         HEAD_ICONS.put(SlayerType.BLAZE,    Material.BLAZE_POWDER);
         HEAD_ICONS.put(SlayerType.VAMPIRE,  Material.REDSTONE);
@@ -57,7 +89,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     }
 
     private SlayerMenu(Player player, SlayerType selected) {
-        super(player, selected == null ? "§4Slayer" : "§4Slayer §8» §7" + bossName(selected), 6);
+        super(player, selected == null ? "Slayer" : bossName(selected), 6);
         this.selected = selected;
     }
 
@@ -102,20 +134,18 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
             SlayerBoss boss = DISPLAYED_BOSSES[i];
             SlayerType type = boss.type;
             int level = manager.getLevel(playerId, type);
-            long xp = manager.getExperience(playerId, type);
             int kills = manager.getKillCount(playerId, type);
-            int[] data = SlayerManager.SLAYER_BOSS_DATA.get(type.name());
-            int maxLevel = data != null ? data[0] : SlayerManager.MAX_LEVEL;
+
+            List<String> lore = new ArrayList<>();
+            for (String line : BOSS_DESC.getOrDefault(type, new String[0])) lore.add(line);
+            lore.add("");
+            lore.add("§7Slayer Level: §e" + level + "  §7Kills: §e" + kills);
+            lore.add("");
+            lore.add(active == null ? "§eClick to view boss!" : "§cFinish your active quest first.");
 
             setItem(BOSS_SLOTS[i], new ItemBuilder(HEAD_ICONS.get(type))
-                    .displayName("§c" + boss.getDisplayName())
-                    .lore("§7Type: §e" + type.getDisplayName(),
-                            "§7Level: §e" + level + "§7/§e" + maxLevel,
-                            "§7XP: §e" + xp,
-                            "§7Bosses slain: §e" + kills,
-                            "",
-                            active == null ? "§eClick to start a quest!"
-                                    : "§cFinish your active quest first.")
+                    .displayName(BOSS_TITLES.getOrDefault(type, "§c" + boss.getDisplayName()))
+                    .lore(lore.toArray(new String[0]))
                     .build(),
                     e -> {
                         e.setCancelled(true);
@@ -126,6 +156,65 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
                         new SlayerMenu(player, type).open(player);
                     });
         }
+
+        // Info buttons along row 4, matching Hypixel's Slayer GUI.
+        setItem(28, new ItemBuilder(Material.GRAY_DYE)
+                .displayName("§bAuto-Slayer")
+                .lore("§7Upon defeating a boss,",
+                      "§aautomatically §7completes the",
+                      "§7quest and starts another of the",
+                      "§7same type if you have enough",
+                      "§6coins §7in your purse or bank.")
+                .build(), e -> e.setCancelled(true));
+
+        setItem(29, new ItemBuilder(Material.EXPERIENCE_BOTTLE)
+                .displayName("§bSlayer Leaderboards")
+                .lore("§8Ultimate bragging rights",
+                      "",
+                      "§7Revenant Horror: §8N/A",
+                      "§7Tarantula Broodfather: §8N/A",
+                      "§7Sven Packmaster: §8N/A",
+                      "§7Voidgloom Seraph: §8N/A",
+                      "§7Riftstalker Bloodfiend: §8N/A",
+                      "§7Inferno Demonlord: §8N/A")
+                .build(), e -> e.setCancelled(true));
+
+        setItem(32, new ItemBuilder(Material.WHEAT)
+                .displayName("§aGlobal Combat Wisdom §7Buff")
+                .lore("§8Slayer Bonus",
+                      "",
+                      "§7Earn extra Combat EXP based on",
+                      "§7your unique slayer boss kills.",
+                      "",
+                      "§7Tier I, II, III grant §3+1 ☯ Combat Wisdom§7.",
+                      "§7Tier IV grants §3+2 ☯ Combat Wisdom§7.")
+                .build(), e -> e.setCancelled(true));
+
+        setItem(33, new ItemBuilder(Material.POWERED_RAIL)
+                .displayName("§aSlayer Bonus Rewards")
+                .lore("§7Unlock bonuses by reaching a",
+                      "§7LVL on the first 3 bosses.",
+                      "",
+                      "§c✖ LVL 6",
+                      "§7Earn §a+3 §7of any boss's main",
+                      "§7token drop when slaying its",
+                      "§7mini-bosses.",
+                      "",
+                      "§c✖ LVL 7",
+                      "§7Slayers are §64% cheaper§7.")
+                .build(), e -> e.setCancelled(true));
+
+        setItem(35, new ItemBuilder(Material.PAINTING)
+                .displayName("§dRNG Meter")
+                .lore("§7Your §dRNG Meter §7fills with",
+                      "§dSlayer XP §7every time you",
+                      "§7defeat a §aTier III §7or higher!",
+                      "",
+                      "§7When your meter is full, your",
+                      "§7selected drop will be guaranteed",
+                      "§7to drop the next time you defeat",
+                      "§7the boss!")
+                .build(), e -> e.setCancelled(true));
 
         setItem(49, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
