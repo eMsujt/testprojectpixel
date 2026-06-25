@@ -74,8 +74,8 @@ public final class CatacombsMenu extends Menu {
                 .lore("§7Find players to dungeon with.")
                 .build(), e -> e.setCancelled(true));
         setItem(50, new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
-                .displayName("§aAuto Ready Up")
-                .lore("§7Automatically ready up.")
+                .displayName("§aSearch Settings")
+                .lore("§7Configure your party-finder search.")
                 .build(), e -> e.setCancelled(true));
         setItem(52, new ItemBuilder(Material.OAK_SIGN)
                 .displayName("§aCatacombs Profile")

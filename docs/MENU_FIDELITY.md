@@ -138,6 +138,45 @@ the official wiki + Fandom 403 automated fetches):
 The nether star and `/skyblock` open the correct `SkyBlockMenu`; `/menu` now does
 too. The old twin is retired.
 
+## Complete menu sweep (2026-06-25) — all 79 real menus verified vs the wiki
+
+Every menu was read and checked against the wiki mirror. Categorized status:
+
+**Wiki-verified 1:1 or fixed** — SkyBlock Menu hub, Skills, Collections, Equipment,
+Wardrobe, Pets, Slayer, HOTM, Garden, Bestiary, Accessory Bag, Bazaar (+product),
+Auction House (+confirm/claim), Bank, SkyBlock Level, Calendar, **Forge** (slots
+5→7), **Kuudra** (dropped invented "contribution for loot"), **Catacombs** ("Auto
+Ready Up"→"Search Settings"), **Dojo** ("Tenacity"→"Control", added S+ grade).
+
+**Dead duplicates** (never opened in production — the live sibling is wired instead;
+safe to ignore/remove): `SkyBlockMainMenu`, `NetherwartIslandMenu`, `TalismanBagMenu`,
+`TalismanMenu`, `TrophyFishMenu`, `JacobMenu`, `JacobFarmingMenu`, `DungeonMenu`,
+`DungeonsMenu`, `EnchantingTableMenu`, `PetsMenu`, `AuctionMenu`, `BankingMenu`,
+`CollectionMenu`, `EssenceMenu`, `ShopMenu`, `NPCMenu`, `RecipeMenu`.
+
+**Invented — no Hypixel GUI equivalent** (skills/locations, not menus; left as
+original convenience UI): `MiningMenu`, `FarmingMenu`, `FishingMenu`, `CombatMenu`,
+`ForagingMenu`, `StatsMenu` (stats live in Equipment), `AlchemyMenu`.
+
+**No wiki GUI documented → unverifiable** (slots can't be checked; not changed):
+Reforge, Enchant, Rune/Runecrafting, Sack(s), Essence Shop, Mayor, Crystal Hollows,
+Crimson Isle, Rift, Island, Dungeon Stats/Classes, Museum/Harp/Trophy-Fishing/
+Minion/Commission/Profile/Settings/Jacob's-Contest inner slots.
+
+**Bigger structural reworks the wiki backs (flagged, not yet done):**
+- **Crafting Table** → real 3×3 "Craft Item" grid (wiki: input @10-12/19-21/28-30,
+  result @23, go-back @49) — needs functional item-input.
+- **Storage** → one screen (Ender Chest on top + 18 backpack slots), not a 2-button
+  router; **Ender Chest** → 10 pages/405 slots; **Backpack** → live container.
+- **Settings** → the 8 real setting categories (currently one toggle).
+- **Profile Management** → rank-gated slots + TNT-delete / Diamond co-op / Start /
+  Create buttons.
+- **Museum** → Weapons/Armor/Rarities top-level grouping.
+- **Jacob's Contest** → show upcoming contests + 5 medal tiers (the dead `JacobMenu`
+  already does this — port it into the wired `JacobsContestMenu`).
+- **Chocolate Factory** → linear +1..+7 employee CpS; move Rabbit Barn to upgrades.
+- **Runic Pedestal** → the apply/fuse/remove station doesn't exist as a menu yet.
+
 ## How a menu fix lands
 Branch → edit → `mvn -pl skyblock-core -am package` (green) → PR to `main` →
 poll the `compile` check → merge → rebuild `SkyBlock-plugin.jar`.
