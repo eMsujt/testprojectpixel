@@ -63,9 +63,18 @@ public final class PetMenu extends AbstractSkyBlockMenu {
     }
 
     private PetMenu(Player player, int page, SortMode sort) {
-        super(player, "§9Pets", 6);
+        super(player, title(player, page), 6);
         this.page = page;
         this.sort = sort;
+    }
+
+    /** Hypixel's Pets window title carries the page indicator, e.g. {@code (1/2) Pets}. */
+    private static String title(Player player, int page) {
+        int count = PetManager.getInstance().getPets(player.getUniqueId()).size();
+        int capacity = 28; // (6 rows - 2) * 7
+        int total = Math.max(1, (count + capacity - 1) / capacity);
+        int p = Math.max(0, Math.min(page, total - 1));
+        return "(" + (p + 1) + "/" + total + ") Pets";
     }
 
     @Override
@@ -84,8 +93,8 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         int pageClamped = Math.max(0, Math.min(page, totalPages - 1));
         int start = pageClamped * capacity;
 
-        // Summary info head at slot 4.
-        String activeName = "§7None";
+        // Summary info head (verbatim wiki lore).
+        String activeName = "§cNone";
         if (activePetId != null) {
             for (Pet p : pets) {
                 if (p.id.equals(activePetId)) {
@@ -97,11 +106,11 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         setItem(0, new ItemBuilder(Material.BONE)
                 .displayName("§aPets")
                 .lore(
-                        "§7Selected Pet: " + activeName,
-                        "§7Total Pets: §e" + pets.size(),
-                        "§7Page: §e" + (pageClamped + 1) + "§7/§e" + totalPages,
+                        "§7View and manage all of your Pets.",
+                        "§7Level up your pets faster by gaining",
+                        "§7XP in their favorite skill!",
                         "",
-                        "§7View and manage your pets.")
+                        "§7Selected pet: " + activeName)
                 .build(), e -> e.setCancelled(true));
 
         for (int i = start; i < pets.size() && i < start + capacity; i++) {
@@ -124,7 +133,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
             lore.add(isActive ? "§aCurrently active — §eclick to unequip" : "§eClick to equip!");
 
             setItem(PET_SLOTS[i - start], petIcon
-                    .displayName(color + "[Lvl " + level + "] " + pet.type.getDisplayName())
+                    .displayName("§7[Lvl " + level + "] " + color + pet.type.getDisplayName())
                     .lore(lore)
                     .build(),
                     e -> {
@@ -144,6 +153,33 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                     .lore("§7You have no pets yet.")
                     .build(), e -> e.setCancelled(true));
         }
+
+        // Exp Sharing — splits pet XP with a second pet (cosmetic placeholder for now).
+        setItem(48, new ItemBuilder(Material.GLOWSTONE_DUST)
+                .displayName("§6Exp Sharing")
+                .lore("§7Share a portion of the XP gained",
+                      "§7with one of your selected pets!",
+                      "",
+                      "§7Selected pet: §cNone",
+                      "",
+                      "§eClick to manage!")
+                .build(), e -> e.setCancelled(true));
+
+        // Close.
+        setItem(49, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(), e -> { e.setCancelled(true); player.closeInventory(); });
+
+        // Pet visibility toggle (cosmetic placeholder).
+        setItem(50, new ItemBuilder(Material.ENDER_EYE)
+                .displayName("§aPet visibility")
+                .lore("§7Toggles the visibility of your",
+                      "§7currently selected pet.",
+                      "",
+                      "§7Currently: §aShown",
+                      "",
+                      "§eClick to toggle!")
+                .build(), e -> e.setCancelled(true));
 
         // Sort button (cycles order), like Hypixel's Pets menu.
         setItem(51, new ItemBuilder(Material.HOPPER)
@@ -208,7 +244,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         int filled = (int) Math.round(pct / 100.0 * 20);
         return List.of(
                 "§7Progress to Level " + (level + 1) + ": §e" + String.format("%.1f", pct) + "%",
-                "§a" + "━".repeat(filled) + "§7" + "━".repeat(20 - filled)
+                "§2" + "-".repeat(filled) + "§f" + "-".repeat(20 - filled)
                         + " §e" + String.format("%,d", Math.max(0, into)) + "§6/§e" + String.format("%,d", need));
     }
 }

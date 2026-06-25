@@ -18,8 +18,8 @@ import java.util.UUID;
  * Laid out 1:1 with Hypixel's Equipment menu (Equipment_Menu/UI): the equipment
  * column (Necklace 10, Cloak 19, Belt 28, Gloves 37) and armor column (Helmet 11,
  * Chestplate 20, Leggings 29, Boots 38, Pet 47) on the left, and the six stat
- * category items on the right (Combat 15, Gathering 16, Wisdom 24, Misc 25,
- * Fishing 33, Active Effects 34), with a Go Back arrow (48) and Achievements (50).
+ * category items on the right (Combat 16, Gathering 17, Wisdom 25, Misc 26,
+ * Fishing 34, Active Effects 35), with a Go Back arrow (48) and Achievements (50).
  */
 public final class EquipmentMenu extends AbstractSkyBlockMenu {
 
@@ -61,29 +61,29 @@ public final class EquipmentMenu extends AbstractSkyBlockMenu {
             emptySlot(47, "Pet");
         }
 
-        // Stat category items (right side).
-        setItem(15, statCategory(Material.DIAMOND_SWORD, "§cCombat Stats", stats,
+        // Stat category items: two columns (col 8 + col 9) over three rows, matching the wiki.
+        setItem(16, statCategory(Material.DIAMOND_SWORD, "§cCombat Stats", stats,
                 Stat.HEALTH, Stat.DEFENSE, Stat.STRENGTH, Stat.CRIT_CHANCE, Stat.CRIT_DAMAGE,
                 Stat.ATTACK_SPEED, Stat.ABILITY_DAMAGE, Stat.TRUE_DEFENSE, Stat.FEROCITY,
                 Stat.HEALTH_REGEN, Stat.VITALITY, Stat.SWING_RANGE));
-        setItem(16, statCategory(Material.IRON_PICKAXE, "§6Gathering Stats", stats,
+        setItem(17, statCategory(Material.IRON_PICKAXE, "§eGathering Stats", stats,
                 Stat.MINING_SPEED, Stat.MINING_FORTUNE, Stat.FARMING_FORTUNE,
                 Stat.FORAGING_FORTUNE, Stat.PRISTINE));
-        setItem(24, statCategory(Material.BOOK, "§bWisdom Stats", stats,
+        setItem(25, statCategory(Material.BOOK, "§3Wisdom Stats", stats,
                 Stat.COMBAT_WISDOM, Stat.MINING_WISDOM, Stat.FARMING_WISDOM));
-        setItem(25, statCategory(Material.CLOCK, "§aMisc Stats", stats,
+        setItem(26, statCategory(Material.CLOCK, "§dMisc Stats", stats,
                 Stat.SPEED, Stat.MAGIC_FIND, Stat.PET_LUCK, Stat.INTELLIGENCE));
-        setItem(33, statCategory(Material.FISHING_ROD, "§9Fishing Stats", stats,
+        setItem(34, statCategory(Material.FISHING_ROD, "§bFishing Stats", stats,
                 Stat.SEA_CREATURE_CHANCE, Stat.FISHING_SPEED));
 
-        // Active effects.
+        // Active effects (Water Bottle icon, slot 35).
         List<String> fx = new ArrayList<>();
         for (PotionEffect effect : player.getActivePotionEffects()) {
             fx.add("§8• §7" + prettyEffect(effect.getType().getKey().getKey()) + " §a" + (effect.getAmplifier() + 1));
         }
         if (fx.isEmpty()) fx.add("§7No active effects.");
-        setItem(34, new ItemBuilder(Material.POTION)
-                .displayName("§dActive Effects §7(" + player.getActivePotionEffects().size() + ")")
+        setItem(35, new ItemBuilder(Material.POTION)
+                .displayName("§aActive Effects §7(" + player.getActivePotionEffects().size() + ")")
                 .lore(fx).build());
 
         setItem(48, new ItemBuilder(Material.ARROW)
