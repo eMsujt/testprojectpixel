@@ -39,8 +39,25 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         RARITY_WOOL = Collections.unmodifiableMap(m);
     }
 
+    /** Pet list sort orders, cycled by the Sort button (mirrors Hypixel's Pets menu). */
+    private enum SortMode {
+        LEVEL("Highest Level"), RARITY("Highest Rarity"), NAME("Name");
+        final String label;
+        SortMode(String label) { this.label = label; }
+        SortMode next() { return values()[(ordinal() + 1) % values().length]; }
+    }
+
+    private final int page;
+    private final SortMode sort;
+
     public PetMenu(Player player) {
+        this(player, 0, SortMode.LEVEL);
+    }
+
+    private PetMenu(Player player, int page, SortMode sort) {
         super(player, "§9Pets", 6);
+        this.page = page;
+        this.sort = sort;
     }
 
     @Override
@@ -49,8 +66,16 @@ public final class PetMenu extends AbstractSkyBlockMenu {
 
         PetManager manager = PetManager.getInstance();
         UUID playerId = player.getUniqueId();
-        List<Pet> pets = manager.getPets(playerId);
         UUID activePetId = manager.getActivePetId(playerId);
+
+        // Sort a copy of the pet list by the active sort order.
+        List<Pet> pets = new ArrayList<>(manager.getPets(playerId));
+        sortPets(pets, manager, playerId);
+
+        int capacity = contentCapacity();
+        int totalPages = Math.max(1, (pets.size() + capacity - 1) / capacity);
+        int pageClamped = Math.max(0, Math.min(page, totalPages - 1));
+        int start = pageClamped * capacity;
 
         // Summary info head at slot 4.
         String activeName = "§7None";
@@ -67,11 +92,12 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                 .lore(
                         "§7Selected Pet: " + activeName,
                         "§7Total Pets: §e" + pets.size(),
+                        "§7Page: §e" + (pageClamped + 1) + "§7/§e" + totalPages,
                         "",
                         "§7View and manage your pets.")
                 .build(), e -> e.setCancelled(true));
 
-        for (int i = 0; i < pets.size() && i < contentCapacity(); i++) {
+        for (int i = start; i < pets.size() && i < start + capacity; i++) {
             Pet pet = pets.get(i);
             boolean isActive = pet.id.equals(activePetId);
             long xp = manager.getExperience(playerId, pet.type);
@@ -90,7 +116,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
             lore.add("");
             lore.add(isActive ? "§aCurrently active — §eclick to unequip" : "§eClick to equip!");
 
-            setItem(contentSlot(i), petIcon
+            setItem(contentSlot(i - start), petIcon
                     .displayName("§7[Lvl " + level + "] " + color + pet.type.getDisplayName())
                     .lore(lore)
                     .build(),
@@ -101,7 +127,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                         } else {
                             manager.equipPet(playerId, pet.id);
                         }
-                        open(player);
+                        new PetMenu(player, pageClamped, sort).open(player);
                     });
         }
 
@@ -112,11 +138,49 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                     .build(), e -> e.setCancelled(true));
         }
 
+        // Sort button (cycles order), like Hypixel's Pets menu.
+        setItem(45, new ItemBuilder(Material.HOPPER)
+                .displayName("§aSort: §e" + sort.label)
+                .lore("§7Click to change the sort order.")
+                .build(),
+                e -> { e.setCancelled(true); new PetMenu(player, 0, sort.next()).open(player); });
+
+        if (pageClamped > 0) {
+            setItem(47, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Page " + pageClamped + "§7/§e" + totalPages)
+                    .build(),
+                    e -> { e.setCancelled(true); new PetMenu(player, pageClamped - 1, sort).open(player); });
+        }
+        if (pageClamped < totalPages - 1) {
+            setItem(51, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Page " + (pageClamped + 2) + "§7/§e" + totalPages)
+                    .build(),
+                    e -> { e.setCancelled(true); new PetMenu(player, pageClamped + 1, sort).open(player); });
+        }
+
         setItem(48, new ItemBuilder(Material.ARROW)
                 .displayName("§aGo Back")
                 .lore("§7To SkyBlock Menu")
                 .build(),
                 e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
+    }
+
+    /** Sorts the pet list in place by the active {@link SortMode}. */
+    private void sortPets(List<Pet> pets, PetManager manager, UUID playerId) {
+        switch (sort) {
+            case LEVEL:
+                pets.sort((a, b) -> Integer.compare(
+                        manager.getLevel(playerId, b.type), manager.getLevel(playerId, a.type)));
+                break;
+            case RARITY:
+                pets.sort((a, b) -> b.rarity.compareTo(a.rarity));
+                break;
+            case NAME:
+                pets.sort((a, b) -> a.type.getDisplayName().compareToIgnoreCase(b.type.getDisplayName()));
+                break;
+        }
     }
 
     /** A "Progress to Level N" line + XP bar, or a single MAX LEVEL line, matching computeLevel(). */
