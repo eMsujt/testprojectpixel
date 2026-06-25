@@ -100,7 +100,18 @@ public final class WardrobeMenu extends AbstractSkyBlockMenu {
                 lore.add("§7No outfit saved.");
             }
 
-            Material icon = (armor != null) ? Material.IRON_CHESTPLATE : Material.BLACK_STAINED_GLASS_PANE;
+            // Show the set's real chestplate (or any saved piece) as the icon, like Hypixel,
+            // instead of a generic iron chestplate for every slot.
+            Material icon = Material.BLACK_STAINED_GLASS_PANE;
+            if (armor != null) {
+                icon = Material.IRON_CHESTPLATE;
+                for (int p : new int[]{1, 0, 2, 3}) { // prefer chestplate, then helmet/legs/boots
+                    if (armor[p] != null && armor[p].getType() != Material.AIR) {
+                        icon = armor[p].getType();
+                        break;
+                    }
+                }
+            }
             boolean equippable = armor != null && !isActive;
             setItem(guiPos, new ItemBuilder(icon)
                     .displayName((isActive ? "§a" : "§6") + wardrobeSlot.getDisplayName())
