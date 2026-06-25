@@ -12,7 +12,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -96,7 +98,8 @@ public final class CombatListener implements Listener {
             // (by mob family), each +5% per level, read from the held weapon's lore (item-based,
             // values from the bundled 1:1 data). One additive bucket, multiplied once.
             double enchantPercent = enchantDamagePercent(
-                    attacker.getInventory().getItemInMainHand(), event.getEntity().getType());
+                    attacker.getInventory().getItemInMainHand(), event.getEntity(),
+                    stats.getStat(attacker.getUniqueId(), Stat.HEALTH));
             if (enchantPercent > 0.0) {
                 damage *= 1.0 + enchantPercent / 100.0;
             }
@@ -170,22 +173,56 @@ public final class CombatListener implements Listener {
             "sharpness", "SHARPNESS",
             "smite", "SMITE",
             "bane of arthropods", "BANE_OF_ARTHROPODS",
-            "ender slayer", "ENDER_SLAYER");
+            "ender slayer", "ENDER_SLAYER",
+            "execute", "EXECUTE",
+            "prosecute", "PROSECUTE",
+            "giant killer", "GIANT_KILLER");
+
+    // Per-level rates from the bundled 1:1 data (item_tooltips.properties), index = level-1.
+    /** Execute: +rate% damage per 1% of the target's MISSING health. */
+    private static final double[] EXECUTE_RATE   = {0.2, 0.4, 0.6, 0.8, 1.0, 1.25};
+    /** Prosecute: +rate% damage per 1% of the target's CURRENT health. */
+    private static final double[] PROSECUTE_RATE = {0.1, 0.2, 0.3, 0.4, 0.7, 1.0};
+    /** Giant Killer: +rate% per 1% the target's max health exceeds yours, capped. */
+    private static final double[] GIANT_KILLER_RATE = {0.1, 0.2, 0.3, 0.4, 0.6, 0.9, 1.2};
+    private static final double[] GIANT_KILLER_CAP  = {5,   10,  15,  20,  30,  45,  65};
 
     /**
-     * Total damage-% from the held weapon's enchants against the given target: Sharpness applies to
-     * every mob; Smite/Bane of Arthropods/Ender Slayer apply only to their mob family. Each is +5%
-     * per level (the value in the bundled 1:1 item data), summed into one additive bucket.
+     * Total damage-% from the held weapon's enchants against the given target. Sharpness applies to
+     * every mob; Smite/Bane of Arthropods/Ender Slayer apply only to their mob family (each +5%/level).
+     * Execute/Prosecute/Giant Killer scale with the target's health relative to the attacker. All
+     * values come from the bundled 1:1 item data; summed into one additive bucket.
      */
-    private static double enchantDamagePercent(ItemStack weapon, EntityType target) {
+    private static double enchantDamagePercent(ItemStack weapon, Entity target, double attackerMaxHp) {
         Map<String, Integer> ench = parseWeaponEnchants(weapon);
         if (ench.isEmpty()) {
             return 0.0;
         }
+        EntityType type = target.getType();
         double pct = 5.0 * ench.getOrDefault("SHARPNESS", 0);
-        if (UNDEAD.contains(target))     pct += 5.0 * ench.getOrDefault("SMITE", 0);
-        if (ARTHROPODS.contains(target)) pct += 5.0 * ench.getOrDefault("BANE_OF_ARTHROPODS", 0);
-        if (ENDER.contains(target))      pct += 5.0 * ench.getOrDefault("ENDER_SLAYER", 0);
+        if (UNDEAD.contains(type))     pct += 5.0 * ench.getOrDefault("SMITE", 0);
+        if (ARTHROPODS.contains(type)) pct += 5.0 * ench.getOrDefault("BANE_OF_ARTHROPODS", 0);
+        if (ENDER.contains(type))      pct += 5.0 * ench.getOrDefault("ENDER_SLAYER", 0);
+
+        if (target instanceof LivingEntity living) {
+            double maxHp = living.getMaxHealth();
+            double hpFraction = maxHp > 0 ? living.getHealth() / maxHp : 0.0;
+
+            int execute = ench.getOrDefault("EXECUTE", 0);
+            if (execute > 0) {
+                pct += EXECUTE_RATE[Math.min(execute, EXECUTE_RATE.length) - 1] * (1.0 - hpFraction) * 100.0;
+            }
+            int prosecute = ench.getOrDefault("PROSECUTE", 0);
+            if (prosecute > 0) {
+                pct += PROSECUTE_RATE[Math.min(prosecute, PROSECUTE_RATE.length) - 1] * hpFraction * 100.0;
+            }
+            int gk = ench.getOrDefault("GIANT_KILLER", 0);
+            if (gk > 0 && attackerMaxHp > 0) {
+                double extraPct = Math.max(0.0, (maxHp - attackerMaxHp) / attackerMaxHp * 100.0);
+                int i = Math.min(gk, GIANT_KILLER_RATE.length) - 1;
+                pct += Math.min(GIANT_KILLER_CAP[i], GIANT_KILLER_RATE[i] * extraPct);
+            }
+        }
         return pct;
     }
 
