@@ -93,14 +93,27 @@ public class SkillsMenu extends AbstractSkyBlockMenu {
             long into = xp - Math.max(0, curLevelXp);
             long need = nextLevelXp - Math.max(0, curLevelXp);
             double pct = need > 0 ? Math.min(100.0, into * 100.0 / need) : 100.0;
+            // Hypixel-style dashed bar: filled portion dark-green, remainder white.
             int filled = (int) Math.round(pct / 100.0 * 20);
-            lore.add("§7Progress to Level " + (level + 1) + ": §e" + String.format("%.1f", pct) + "%");
-            lore.add("§a" + "━".repeat(filled) + "§7" + "━".repeat(20 - filled)
+            lore.add("§7Progress to Level " + roman(level + 1) + ": §e" + String.format("%.1f", pct) + "%");
+            lore.add("§2" + "-".repeat(filled) + "§f" + "-".repeat(20 - filled)
                     + " §e" + String.format("%,d", into) + "§6/§e" + String.format("%,d", need));
         }
 
         lore.add("");
         lore.add("§eClick to view!");
         return lore;
+    }
+
+    /** Renders 1..120 as a Roman numeral (Hypixel shows skill levels in Roman numerals). */
+    static String roman(int n) {
+        if (n <= 0) return Integer.toString(n);
+        int[] values = {100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] symbols = {"C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.length && n > 0; i++) {
+            while (n >= values[i]) { sb.append(symbols[i]); n -= values[i]; }
+        }
+        return sb.toString();
     }
 }
