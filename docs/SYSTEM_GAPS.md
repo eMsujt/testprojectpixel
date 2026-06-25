@@ -30,9 +30,9 @@ bonuses**, **per-accessory stats** (highest-tier-per-family de-dup), **skill-lev
 bonuses**, **fairy-soul bonuses**, and **reforge stats** (stamped on the item via
 PDC at the anvil, read per gear piece) — all via `recompute`. **Damage enchants**
 (Sharpness + Smite/Bane/Ender Slayer) now apply too — item-based, read from the
-weapon's lore in `CombatListener`. Remaining: on-hit/effect enchants (Thunderlord,
-Life Steal, Looting…), First Strike / Giant Killer / Execute, and armor
-stat-enchants (Growth/Protection → `recompute`).
+weapon's lore in `CombatListener` — incl. the conditional Execute/Prosecute and
+the capped Giant Killer. Remaining: on-hit/effect enchants (Thunderlord, Life Steal,
+Looting…), First Strike, and armor stat-enchants (Growth/Protection → `recompute`).
 
 ## Status by system
 
@@ -47,7 +47,7 @@ stat-enchants (Growth/Protection → `recompute`).
 | **Mining (HOTM/powder/CH)** | PARTIAL | perks inert; **powder never earned**; tier cap 7≠10; Crystal Hollows fake; no gemstone slots |
 | **Farming (Garden/Jacob)** | PARTIAL | no Garden island; 9 plots≠24; pests/visitors never spawn; **Farming Fortune disconnected** |
 | **Fishing** | PARTIAL | sea creatures = wrong vanilla mobs, no HP/drops; trophy fishing faked; treasure/collection unlinked |
-| **Enchantments** | PARTIAL | **damage enchants now apply** item-based (Sharpness/Smite/Bane/Ender Slayer, weapon-lore-read in `CombatListener`); on-hit/effect enchants + First Strike/Giant Killer/Execute + armor stat-enchants still TODO |
+| **Enchantments** | PARTIAL | **damage enchants now apply** item-based (Sharpness/Smite/Bane/Ender Slayer + Execute/Prosecute + Giant Killer, weapon-lore-read in `CombatListener`); on-hit/effect enchants + First Strike + armor stat-enchants still TODO |
 | **Reforges + stones** | PARTIAL | reforge stats **now reach combat** (PDC-stamped on the item, read in `recompute`); stones/item-type pools/rarity-scaling still TODO |
 | **Accessories / MP / Maxwell** | PARTIAL | per-accessory stats **now apply** (highest-tier-per-family de-dup) + tuning; MP→stat curve absent; ~50 accessories vs 600+ |
 | **Pets** | PARTIAL | 68/~70 roster + real XP; **0 abilities fire**; pet items unequippable |
