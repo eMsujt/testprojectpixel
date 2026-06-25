@@ -98,6 +98,31 @@ public final class GardenMenu extends AbstractSkyBlockMenu {
         buildVisitorQueue();
         buildCropPlots(manager, playerId);
         buildCropProgress(manager, playerId);
+        buildStations(manager, playerId);
+    }
+
+    /** Bottom-row Garden stations (Composter, Jacob's Contest) + Close, like Hypixel's Garden desk. */
+    private void buildStations(GardenManager manager, UUID playerId) {
+        setItem(45, new ItemBuilder(Material.COMPOSTER)
+                .displayName("§eComposter")
+                .lore(
+                        "§7Turn organic matter and fuel",
+                        "§7into compost for Garden upgrades.",
+                        "",
+                        "§7Organic Matter: §a" + String.format("%,d", manager.getComposterOrganicMatter(playerId)),
+                        "§7Fuel: §c" + String.format("%,d", manager.getComposterFuel(playerId)),
+                        "§7Compost ready: §6" + String.format("%,d", manager.getComposterCompost(playerId)))
+                .build(), e -> e.setCancelled(true));
+
+        setItem(49, new ItemBuilder(Material.GOLDEN_HOE)
+                .displayName("§6Jacob's Farming Contests")
+                .lore("§7Compete in the farming contests", "§7for medals and rewards.", "", "§eClick to view!")
+                .build(),
+                e -> { e.setCancelled(true); new JacobsContestMenu(playerId).open(player); });
+
+        setItem(53, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(), e -> { e.setCancelled(true); player.closeInventory(); });
     }
 
     private void buildVisitorQueue() {
@@ -182,5 +207,6 @@ public final class GardenMenu extends AbstractSkyBlockMenu {
     @Override
     public void handleClick(InventoryClickEvent event) {
         event.setCancelled(true);
+        super.handleClick(event);
     }
 }
