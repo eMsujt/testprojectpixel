@@ -31,7 +31,9 @@ The chokepoint is `EquipmentListener.recompute`; everything must feed it.
 
 ## Phase 2 — Progression loops (activity → reward → power)
 - [ ] De-dup double-XP (Mining/Fishing/Combat accrue to two managers)
-- [ ] Skill level-up perks → real stats (replace the placeholder HEALTH-for-all)
+- [x] Skill level-up perks → real stats — `SkillManager.getStatBonuses` wired into
+      `recompute`; applies on join/gear-change (skill-up mid-session reflects on the
+      next gear change — add a skill-up recompute hook to make it instant)
 - [ ] Collection tier rewards (recipe/sack/minion-slot unlocks) actually granted
 - [ ] SkyBlock Leveling: wire all XP sources (bestiary, quests, minions, slayer…)
 - [ ] Fishing/Foraging XP feed the canonical SkillManager (not siloed managers)
