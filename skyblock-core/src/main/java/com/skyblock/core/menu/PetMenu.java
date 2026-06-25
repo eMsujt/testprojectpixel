@@ -47,6 +47,14 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         SortMode next() { return values()[(ordinal() + 1) % values().length]; }
     }
 
+    /** Left-aligned 7-wide pet grid (cols 0-6, rows 1-4), matching the wiki layout. */
+    private static final int[] PET_SLOTS = {
+            9, 10, 11, 12, 13, 14, 15,
+            18, 19, 20, 21, 22, 23, 24,
+            27, 28, 29, 30, 31, 32, 33,
+            36, 37, 38, 39, 40, 41, 42
+    };
+
     private final int page;
     private final SortMode sort;
 
@@ -62,8 +70,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        drawBorder(Material.BLACK_STAINED_GLASS_PANE);
-
+        // No side border: the wiki's Pets grid is left-aligned (the base fills empty slots).
         PetManager manager = PetManager.getInstance();
         UUID playerId = player.getUniqueId();
         UUID activePetId = manager.getActivePetId(playerId);
@@ -87,7 +94,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                 }
             }
         }
-        setItem(4, new ItemBuilder(Material.BONE)
+        setItem(0, new ItemBuilder(Material.BONE)
                 .displayName("§aPets")
                 .lore(
                         "§7Selected Pet: " + activeName,
@@ -116,7 +123,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
             lore.add("");
             lore.add(isActive ? "§aCurrently active — §eclick to unequip" : "§eClick to equip!");
 
-            setItem(contentSlot(i - start), petIcon
+            setItem(PET_SLOTS[i - start], petIcon
                     .displayName(color + "[Lvl " + level + "] " + pet.type.getDisplayName())
                     .lore(lore)
                     .build(),
@@ -139,7 +146,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         }
 
         // Sort button (cycles order), like Hypixel's Pets menu.
-        setItem(45, new ItemBuilder(Material.HOPPER)
+        setItem(51, new ItemBuilder(Material.HOPPER)
                 .displayName("§aSort: §e" + sort.label)
                 .lore("§7Click to change the sort order.")
                 .build(),
@@ -153,14 +160,14 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                     e -> { e.setCancelled(true); new PetMenu(player, pageClamped - 1, sort).open(player); });
         }
         if (pageClamped < totalPages - 1) {
-            setItem(51, new ItemBuilder(Material.ARROW)
+            setItem(52, new ItemBuilder(Material.ARROW)
                     .displayName("§eNext Page")
                     .lore("§7Page " + (pageClamped + 2) + "§7/§e" + totalPages)
                     .build(),
                     e -> { e.setCancelled(true); new PetMenu(player, pageClamped + 1, sort).open(player); });
         }
 
-        setItem(48, new ItemBuilder(Material.ARROW)
+        setItem(45, new ItemBuilder(Material.ARROW)
                 .displayName("§aGo Back")
                 .lore("§7To SkyBlock Menu")
                 .build(),
