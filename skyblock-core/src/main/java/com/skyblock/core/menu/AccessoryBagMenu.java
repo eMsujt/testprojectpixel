@@ -26,8 +26,15 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
             37, 38, 39, 40, 41, 42, 43
     };
 
+    private final int page;
+
     public AccessoryBagMenu(Player player) {
+        this(player, 0);
+    }
+
+    private AccessoryBagMenu(Player player, int page) {
         super(player, "§5Accessory Bag", 6);
+        this.page = page;
     }
 
     @Override
@@ -50,10 +57,15 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
                 .build());
 
         List<TalismanManager.TalismanType> contents = new ArrayList<>(mgr.getContents(id));
-        for (int i = 0; i < ACCESSORY_SLOTS.length && i < contents.size(); i++) {
+        int pageSize = ACCESSORY_SLOTS.length;
+        int totalPages = Math.max(1, (contents.size() + pageSize - 1) / pageSize);
+        int pageClamped = Math.max(0, Math.min(page, totalPages - 1));
+        int start = pageClamped * pageSize;
+
+        for (int i = start; i < contents.size() && i < start + pageSize; i++) {
             TalismanManager.TalismanType type = contents.get(i);
             String rarityColor = rarityColor(type.rarity);
-            setItem(ACCESSORY_SLOTS[i], new ItemBuilder(Material.EMERALD)
+            setItem(ACCESSORY_SLOTS[i - start], new ItemBuilder(Material.EMERALD)
                     // Hypixel colours the accessory name by its rarity and ends the lore
                     // with the bold rarity line in the same colour.
                     .displayName(rarityColor + formatName(type.name()))
@@ -61,6 +73,21 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
                           "",
                           rarityColor + "§l" + type.rarity.getDisplayName().toUpperCase(Locale.ROOT) + " ACCESSORY")
                     .build());
+        }
+
+        if (pageClamped > 0) {
+            setItem(45, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Page " + pageClamped + "§7/§e" + totalPages)
+                    .build(),
+                    e -> { e.setCancelled(true); new AccessoryBagMenu(player, pageClamped - 1).open(player); });
+        }
+        if (pageClamped < totalPages - 1) {
+            setItem(53, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Page " + (pageClamped + 2) + "§7/§e" + totalPages)
+                    .build(),
+                    e -> { e.setCancelled(true); new AccessoryBagMenu(player, pageClamped + 1).open(player); });
         }
 
         setItem(48, new ItemBuilder(Material.ARROW)
