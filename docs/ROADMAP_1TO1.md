@@ -57,7 +57,12 @@ remaining items below are polish/refinements.
       charges/credits coins (`EconomyManager`) and moves real items in/out of the
       inventory, priced from the live order book with a base-price fallback so it
       works without liquidity. Limit-order placement (buy/sell offers) still TODO.
-- [ ] Auction House: debit coins on bid/BIN, charge fees, remove/return items
+- [~] Auction House — **BIN purchases now functional**: fixed the manager-mismatch
+      that made listing clicks bounce (menu listed from `AuctionHouseManager` but
+      bought through `AuctionManager`); the buyer is now debited, the item delivered,
+      and the seller paid (GUI + `/auctionhouse`). Listing now **escrows** the item
+      (was duplicating it). Live bidding + a claim menu (auction refunds/winnings)
+      still TODO.
 - [ ] Bank interest auto-timer (currently only on `/bank interest`)
 - [ ] Coins-on-death tuned toward Hypixel (currently 5%)
 - [ ] Drain claim escrow back to players (Bazaar/AH claim flow)

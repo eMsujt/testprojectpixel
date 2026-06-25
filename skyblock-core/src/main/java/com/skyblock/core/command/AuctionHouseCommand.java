@@ -2,6 +2,7 @@ package com.skyblock.core.command;
 
 import com.skyblock.core.menu.AuctionHouseMenu;
 import com.skyblock.core.manager.AuctionHouseManager;
+import com.skyblock.core.manager.EconomyManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -156,6 +157,8 @@ public final class AuctionHouseCommand implements TabExecutor {
                 : held.getType().name();
         UUID listingId = manager.createListing(player.getUniqueId(), held.clone(), itemName,
                 category, price, type);
+        // Escrow the listed item: remove it from the seller so listing doesn't duplicate it.
+        player.getInventory().setItemInMainHand(null);
         player.sendMessage(String.format(
                 "Listed '%s' [%s] for %.1f coins as a %s listing. ID: %s",
                 itemName, category.getDisplayName(), price, type.getDisplayName(),
@@ -169,23 +172,45 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
         UUID listingId = resolveId(player, args[1]);
         if (listingId == null) return;
-        double amount;
+        // (the amount arg is kept for compatibility; BIN purchases pay the listed price)
         try {
-            amount = Double.parseDouble(args[2]);
+            Double.parseDouble(args[2]);
         } catch (NumberFormatException e) {
             player.sendMessage("Invalid amount: " + args[2]);
             return;
         }
-        try {
-            boolean purchased = manager.placeBid(listingId, player.getUniqueId(), amount);
-            if (purchased) {
-                player.sendMessage("You purchased the item for " + amount + " coins!");
-            } else {
-                player.sendMessage("Your bid of " + amount + " coins has been placed.");
-            }
-        } catch (IllegalArgumentException e) {
-            player.sendMessage("Could not place bid: " + e.getMessage());
+        AuctionHouseManager.AuctionListing listing = manager.getListing(listingId);
+        if (listing.type() != AuctionHouseManager.AuctionType.BIN) {
+            player.sendMessage("Live bidding isn't available yet — only Buy-It-Now listings can be bought.");
+            return;
         }
+        if (player.getUniqueId().equals(listing.seller())) {
+            player.sendMessage("You can't buy your own listing.");
+            return;
+        }
+        double price = listing.startingBid();
+        EconomyManager economy = EconomyManager.getInstance();
+        if (!economy.withdraw(player.getUniqueId(), price)) {
+            player.sendMessage("You can't afford that (" + (long) price + " coins).");
+            return;
+        }
+        try {
+            manager.placeBid(listingId, player.getUniqueId(), price); // BIN: settles the sale
+        } catch (IllegalArgumentException e) {
+            economy.addCoins(player.getUniqueId(), price); // refund on failure
+            player.sendMessage("Could not purchase: " + e.getMessage());
+            return;
+        }
+        for (ItemStack item : manager.claimItems(player.getUniqueId())) {
+            for (ItemStack leftover : player.getInventory().addItem(item).values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+            }
+        }
+        double proceeds = manager.claimCoins(listing.seller());
+        if (proceeds > 0) {
+            economy.addCoins(listing.seller(), proceeds);
+        }
+        player.sendMessage("You purchased " + listing.itemName() + " for " + (long) price + " coins!");
     }
 
     private void handleView(Player player, String[] args) {
