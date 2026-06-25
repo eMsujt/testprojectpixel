@@ -56,16 +56,20 @@ public final class CollectionsMenu extends AbstractSkyBlockMenu {
 
         // Real categories at their Hypixel slots, each opening its category menu.
         for (CollectionCategory cat : CollectionCategory.values()) {
-            long total = manager.getTotalForCategory(uuid, cat);
-            int tiers = 0;
-            for (Collection c : cat.getCollections()) tiers += manager.getTier(uuid, c);
+            int catTotal = 0;
+            int catUnlocked = 0;
+            for (Collection c : cat.getCollections()) {
+                catTotal++;
+                if (manager.getTier(uuid, c) > 0) catUnlocked++;
+            }
+            int catPct = catTotal > 0 ? catUnlocked * 100 / catTotal : 0;
             setItem(slotFor(cat), new ItemBuilder(iconFor(cat))
                     .displayName("§a" + cat.getDisplayName() + " Collections")
                     .lore(
                             "§7View your " + cat.getDisplayName() + " Collections!",
                             "",
-                            "§7Total collected: §e" + String.format("%,d", total),
-                            "§7Tiers unlocked: §e" + tiers,
+                            "§7Collections Unlocked: §e" + catPct + "§6%",
+                            bar(catPct) + " §e" + catUnlocked + "§6/§e" + catTotal,
                             "",
                             "§eClick to view!")
                     .build(),
@@ -90,8 +94,9 @@ public final class CollectionsMenu extends AbstractSkyBlockMenu {
     }
 
     private static String bar(int pct) {
+        // Hypixel-style dashed bar: filled portion green, remainder white.
         int filled = Math.round(pct / 100f * 20);
-        return "§a" + "━".repeat(filled) + "§7" + "━".repeat(20 - filled);
+        return "§a" + "-".repeat(filled) + "§f" + "-".repeat(20 - filled);
     }
 
     private static int slotFor(CollectionCategory cat) {
