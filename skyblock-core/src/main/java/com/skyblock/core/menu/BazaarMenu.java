@@ -15,21 +15,25 @@ import java.util.List;
 
 public final class BazaarMenu extends AbstractSkyBlockMenu {
 
-    private static final String[]   CATEGORIES      = {"FARMING", "MINING", "COMBAT", "FORAGING", "FISHING", "MISC"};
-    private static final String[]   CATEGORY_LABELS = {"§aFarming", "§9Mining", "§cCombat", "§6Foraging", "§bFishing", "§7Oddities"};
+    // The Bazaar's 5 wiki categories; "Woods & Fishes" merges the FORAGING + FISHING products.
+    private static final String[][] TAB_CATEGORIES = {
+            {"FARMING"}, {"MINING"}, {"COMBAT"}, {"FORAGING", "FISHING"}, {"MISC"}
+    };
+    private static final String[]   CATEGORY_LABELS = {"§aFarming", "§9Mining", "§cCombat", "§3Woods & Fishes", "§7Oddities"};
     /** Plain category names for the window title (Hypixel: "Bazaar ➜ Farming"). */
-    private static final String[]   TITLE_LABELS    = {"Farming", "Mining", "Combat", "Foraging", "Fishing", "Oddities"};
+    private static final String[]   TITLE_LABELS    = {"Farming", "Mining", "Combat", "Woods & Fishes", "Oddities"};
+    // Wiki tab icons: Farming=Golden Hoe, Mining=Diamond Pickaxe, Combat=Iron Sword,
+    // Woods & Fishes=Fishing Rod, Oddities=Enchantment Table.
     private static final Material[] TAB_MATERIALS    = {
-            Material.WHEAT,
-            Material.STONE_PICKAXE,
+            Material.GOLDEN_HOE,
+            Material.DIAMOND_PICKAXE,
             Material.IRON_SWORD,
-            Material.OAK_LOG,
             Material.FISHING_ROD,
             Material.ENCHANTING_TABLE
     };
 
-    /** Category tabs run down the left column (Hypixel layout). */
-    private static final int[] CATEGORY_SLOTS = {0, 9, 18, 27, 36, 45};
+    /** The 5 category tabs run down the left column (Hypixel layout). */
+    private static final int[] CATEGORY_SLOTS = {0, 9, 18, 27, 36};
 
     static final int[] ORDER_SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -51,7 +55,7 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        for (int i = 0; i < CATEGORIES.length; i++) {
+        for (int i = 0; i < CATEGORY_SLOTS.length; i++) {
             boolean selected = i == selectedTab;
             ItemBuilder b = new ItemBuilder(TAB_MATERIALS[i])
                     .displayName(CATEGORY_LABELS[i])
@@ -60,7 +64,20 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
             setItem(CATEGORY_SLOTS[i], b.build());
         }
 
+        // Bottom control bar (wiki layout). Close is functional; the rest are display for now.
+        setItem(45, new ItemBuilder(Material.NAME_TAG).displayName("§aSearch")
+                .lore("§7Search for a specific product.").build());
+        setItem(47, new ItemBuilder(Material.CHEST).displayName("§aSell Inventory")
+                .lore("§7Sell sellable items straight", "§7from your inventory.").build());
+        setItem(48, new ItemBuilder(Material.BUNDLE).displayName("§aSell Sacks")
+                .lore("§7Sell the contents of your sacks.").build());
         setItem(49, new ItemBuilder(Material.BARRIER).displayName("§cClose").build());
+        setItem(50, new ItemBuilder(Material.BOOK).displayName("§aManage Orders")
+                .lore("§7View and manage your", "§7buy and sell orders.").build());
+        setItem(51, new ItemBuilder(Material.MAP).displayName("§aBazaar History")
+                .lore("§7View your recent trades.").build());
+        setItem(52, new ItemBuilder(Material.REDSTONE_TORCH).displayName("§aSettings")
+                .lore("§7Adjust your Bazaar settings.").build());
 
         List<BazaarProduct> products = getFilteredProducts();
         BazaarManager manager = BazaarManager.getInstance();
@@ -117,10 +134,14 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
 
     private List<BazaarProduct> getFilteredProducts() {
         List<BazaarProduct> result = new ArrayList<>();
-        String cat = CATEGORIES[selectedTab];
+        String[] cats = TAB_CATEGORIES[selectedTab];
         for (BazaarProduct p : BazaarProduct.values()) {
-            if (cat.equals(p.getCategory().name())) {
-                result.add(p);
+            String pc = p.getCategory().name();
+            for (String cat : cats) {
+                if (cat.equals(pc)) {
+                    result.add(p);
+                    break;
+                }
             }
         }
         return result;

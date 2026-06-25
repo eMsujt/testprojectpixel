@@ -38,9 +38,11 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
             AuctionCategory.CONSUMABLES, AuctionCategory.BLOCKS, AuctionCategory.MISC
     };
     private static final int[] CATEGORY_SLOTS = {0, 9, 18, 27, 36, 45};
+    // Icons per the wiki: Weapons=Golden Sword, Armor=Diamond Chestplate, Accessories=Emerald,
+    // Consumables=Apple, Blocks=Grass Block, Misc=Stick.
     private static final Material[] CATEGORY_ICONS = {
-            Material.DIAMOND_SWORD, Material.DIAMOND_CHESTPLATE, Material.NETHER_STAR,
-            Material.COOKED_BEEF, Material.GRASS_BLOCK, Material.CHEST
+            Material.GOLDEN_SWORD, Material.DIAMOND_CHESTPLATE, Material.EMERALD,
+            Material.APPLE, Material.GRASS_BLOCK, Material.STICK
     };
 
     /** Sort order for the listing grid. */
@@ -161,14 +163,15 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                 .lore("§7Click to change the order.").build(),
                 e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort.next(), binOnly).open(player); });
         setItem(51, new ItemBuilder(Material.ENDER_EYE)
-                .displayName("§aRarity Filter")
+                .displayName("§aItem Tier")
                 .lore("§7Filter by item rarity.").build());
         setItem(52, new ItemBuilder(Material.POWERED_RAIL)
                 .displayName("§aBIN Only: " + (binOnly ? "§aON" : "§cOFF"))
                 .lore("§7Show Buy-It-Now listings only.").build(),
                 e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly).open(player); });
 
-        setItem(45, new ItemBuilder(Material.GOLD_BLOCK)
+        // Slot 49 (free): the Misc category tab sits at slot 45, so don't collide with it.
+        setItem(49, new ItemBuilder(Material.GOLD_BLOCK)
                 .displayName("§eYour Auctions & Claims")
                 .lore("§7Collect coins/items and manage", "§7your own listings.").build(),
                 e -> { e.setCancelled(true); new AuctionClaimMenu(player).open(player); });
