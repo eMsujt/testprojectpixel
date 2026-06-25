@@ -980,7 +980,9 @@ public final class SkyBlockCore extends JavaPlugin {
         SkyblockLevelCommand skyblockLevelCommand = new SkyblockLevelCommand(skyblockLevelManager);
         getCommand("skyblock-level").setExecutor(skyblockLevelCommand);
         getCommand("skyblock-level").setTabCompleter(skyblockLevelCommand);
-        MenuCommand menuCommand = new MenuCommand(p -> MenuManager.getInstance().openMenu(p, new SkyBlockMainMenu(p)));
+        // /menu opens the same wiki-accurate hub as /skyblock and the nether star
+        // (the old SkyBlockMainMenu layout was a different, non-1:1 hub).
+        MenuCommand menuCommand = new MenuCommand(p -> new SkyBlockMenu(p).open(p));
         if (getCommand("menu") != null) {
             getCommand("menu").setExecutor(menuCommand);
             getCommand("menu").setTabCompleter(menuCommand);
