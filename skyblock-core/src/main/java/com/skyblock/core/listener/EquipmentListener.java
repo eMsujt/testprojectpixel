@@ -5,6 +5,7 @@ import com.skyblock.core.armor.ArmorSetBonus;
 import com.skyblock.core.armor.ArmorSetManager;
 import com.skyblock.core.armor.ArmorSetManager.ArmorSet;
 import com.skyblock.core.manager.AccessoryBagManager;
+import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.ItemStatManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.StatManager;
@@ -119,6 +120,11 @@ public final class EquipmentListener implements Listener {
             } catch (IllegalArgumentException ignored) {
                 // unknown stat name — skip
             }
+        }
+
+        // Permanent stat bonuses earned from found fairy souls.
+        for (Map.Entry<Stat, Double> e : FairySoulManager.getInstance().getStatBonuses(player.getUniqueId()).entrySet()) {
+            totals.merge(e.getKey(), e.getValue(), Double::sum);
         }
 
         StatManager sm = StatManager.getInstance();
