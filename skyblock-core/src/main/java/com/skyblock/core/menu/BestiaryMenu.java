@@ -105,6 +105,12 @@ public final class BestiaryMenu extends Menu {
                 "§7Close the bestiary."));
         handlers.put(CLOSE_SLOT, e -> player.closeInventory());
 
+        // This menu manages its own inventory, so it must fill the empty interior slots
+        // itself (the base Menu does this for every other menu) — otherwise the middle is holey.
+        for (int slot = 0; slot < 54; slot++) {
+            if (inventory.getItem(slot) == null) inventory.setItem(slot, pane);
+        }
+
         player.openInventory(inventory);
     }
 

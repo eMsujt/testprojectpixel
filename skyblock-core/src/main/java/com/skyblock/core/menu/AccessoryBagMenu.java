@@ -41,10 +41,12 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
         int power = mgr.getTotalMagicPower(id);
         int size = mgr.getSize(id);
         int unlocked = mgr.getUnlockedSlots(id);
+        // Hypixel: the stat is "Magical Power", and 10 Magical Power = 1 Tuning Point.
         setItem(SUMMARY_SLOT, new ItemBuilder(Material.NETHER_STAR)
                 .displayName("§6Accessory Bag")
                 .lore("§7Accessories: §e" + size + "§7/§e" + unlocked,
-                      "§7Magic Power: §d" + power)
+                      "§7Magical Power: §d" + power,
+                      "§7Tuning Points: §d" + (power / 10))
                 .build());
 
         List<TalismanManager.TalismanType> contents = new ArrayList<>(mgr.getContents(id));
