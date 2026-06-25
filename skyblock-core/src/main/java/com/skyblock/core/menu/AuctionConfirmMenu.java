@@ -56,10 +56,18 @@ public final class AuctionConfirmMenu extends AbstractSkyBlockMenu {
                     .build(),
                     event -> { event.setCancelled(true); purchase(manager, listing, price); });
         } else {
-            setItem(CONFIRM_SLOT, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                    .displayName("§7Auction listing")
-                    .lore("§7Live bidding isn't available yet.", "§7Only Buy-It-Now listings can be bought.")
-                    .build(), event -> event.setCancelled(true));
+            double minBid = manager.getMinimumBid(listingId);
+            double topBid = manager.getHighestBid(listingId);
+            setItem(CONFIRM_SLOT, new ItemBuilder(Material.LIME_STAINED_GLASS_PANE)
+                    .displayName("§aPlace Bid")
+                    .lore(
+                            "§7Current bid: §6" + (long) topBid + " coins",
+                            "§7Your bid: §6" + (long) minBid + " coins",
+                            "",
+                            "§7Outbid refunds and winnings",
+                            "§7appear in §eYour Claims§7.")
+                    .build(),
+                    event -> { event.setCancelled(true); placeBid(manager, listing, minBid); });
         }
 
         setItem(CANCEL_SLOT, new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
@@ -114,4 +122,36 @@ public final class AuctionConfirmMenu extends AbstractSkyBlockMenu {
                 + " §afor §6" + (long) price + " coins§a!");
         new AuctionHouseMenu(player).open(player);
     }
+
+    private void placeBid(AuctionHouseManager manager, AuctionListing listing, double amount) {
+        UUID bidder = player.getUniqueId();
+        EconomyManager economy = EconomyManager.getInstance();
+
+        if (!manager.isActive(listingId)) {
+            player.sendMessage("§cThat listing is no longer available.");
+            new AuctionHouseMenu(player).open(player);
+            return;
+        }
+        if (bidder.equals(listing.seller())) {
+            player.sendMessage("§cYou can't bid on your own listing.");
+            return;
+        }
+        if (!economy.withdraw(bidder, amount)) {
+            player.sendMessage("§cYou can't afford that bid (§6" + (long) amount + " coins§c).");
+            return;
+        }
+        try {
+            // Escrows this bid; refunds the previous leader into their claim queue.
+            manager.placeBid(listingId, bidder, amount);
+        } catch (IllegalArgumentException ex) {
+            economy.addCoins(bidder, amount); // refund on failure
+            player.sendMessage("§cUnable to bid: " + ex.getMessage());
+            new AuctionHouseMenu(player).open(player);
+            return;
+        }
+        player.sendMessage("§aBid §6" + (long) amount + " coins §aon §e" + listing.itemName()
+                + "§a! If you're outbid or win, check §eYour Claims§a.");
+        new AuctionHouseMenu(player).open(player);
+    }
 }
+

@@ -168,6 +168,11 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                 .lore("§7Show Buy-It-Now listings only.").build(),
                 e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly).open(player); });
 
+        setItem(45, new ItemBuilder(Material.GOLD_BLOCK)
+                .displayName("§eYour Auctions & Claims")
+                .lore("§7Collect coins/items and manage", "§7your own listings.").build(),
+                e -> { e.setCancelled(true); new AuctionClaimMenu(player).open(player); });
+
         if (page > 0) {
             setItem(46, new ItemBuilder(Material.ARROW)
                     .displayName("§ePrevious Page")
