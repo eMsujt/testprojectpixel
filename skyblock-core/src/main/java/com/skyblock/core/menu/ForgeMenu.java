@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public final class ForgeMenu extends AbstractSkyBlockMenu {
 
-    /** Row-1 display slots for active forge jobs (5 visible forge slots). */
-    private static final int[] FORGE_SLOTS = {10, 11, 12, 13, 14};
+    /** Row-1 display slots for active forge jobs (up to 7, unlocked via Heart of the Mountain). */
+    private static final int[] FORGE_SLOTS = {10, 11, 12, 13, 14, 15, 16};
 
     /** Body slots used to list the available recipes. */
     private static final int[] RECIPE_SLOTS = {

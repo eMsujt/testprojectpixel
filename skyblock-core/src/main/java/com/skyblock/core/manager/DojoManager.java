@@ -23,7 +23,7 @@ public final class DojoManager {
         MASTERY("Mastery", 1000),
         DISCIPLINE("Discipline", 1000),
         SWIFTNESS("Swiftness", 1000),
-        TENACITY("Tenacity", 1000);
+        CONTROL("Control", 1000);
 
         private final String displayName;
         private final int max;
@@ -128,6 +128,7 @@ public final class DojoManager {
             return "F";
         }
         double ratio = (double) score / maxScore;
+        if (ratio >= 1.0)  return "S+";
         if (ratio >= 0.90) return "S";
         if (ratio >= 0.75) return "A";
         if (ratio >= 0.60) return "B";

@@ -61,7 +61,6 @@ public final class KuudraMenu extends Menu {
                     .displayName(COLORS.getOrDefault(tier, "§f") + "Kuudra " + tier.getDisplayName())
                     .lore(
                             "§7Tier: §e" + tier.getTier() + "§7/§e5",
-                            "§7Contribution for loot: §a" + tier.getContributionThreshold(),
                             "",
                             "§7Essence cost: §d" + essenceCost,
                             "§7Token reward: §6" + tokenReward,
