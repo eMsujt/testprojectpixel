@@ -52,9 +52,14 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
         List<TalismanManager.TalismanType> contents = new ArrayList<>(mgr.getContents(id));
         for (int i = 0; i < ACCESSORY_SLOTS.length && i < contents.size(); i++) {
             TalismanManager.TalismanType type = contents.get(i);
+            String rarityColor = rarityColor(type.rarity);
             setItem(ACCESSORY_SLOTS[i], new ItemBuilder(Material.EMERALD)
-                    .displayName("§6" + formatName(type.name()))
-                    .lore("§7+" + type.bonus + " " + type.stat.getDisplayName())
+                    // Hypixel colours the accessory name by its rarity and ends the lore
+                    // with the bold rarity line in the same colour.
+                    .displayName(rarityColor + formatName(type.name()))
+                    .lore("§7Grants §a+" + trimStat(type.bonus) + " " + type.stat.getDisplayName() + "§7.",
+                          "",
+                          rarityColor + "§l" + type.rarity.getDisplayName().toUpperCase(Locale.ROOT) + " ACCESSORY")
                     .build());
         }
 
@@ -80,5 +85,24 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
             sb.append(part.substring(1).toLowerCase(Locale.ROOT));
         }
         return sb.toString();
+    }
+
+    /** Hypixel's rarity colour scheme for accessory names + the bottom rarity line. */
+    private static String rarityColor(AccessoryRarity rarity) {
+        switch (rarity) {
+            case UNCOMMON:     return "§a";
+            case RARE:         return "§9";
+            case EPIC:         return "§5";
+            case LEGENDARY:    return "§6";
+            case MYTHIC:       return "§d";
+            case SPECIAL:
+            case VERY_SPECIAL: return "§c";
+            case COMMON:
+            default:           return "§f";
+        }
+    }
+
+    private static String trimStat(double v) {
+        return v == Math.floor(v) ? Long.toString((long) v) : String.format("%.1f", v);
     }
 }
