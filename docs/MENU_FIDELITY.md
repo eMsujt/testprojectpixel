@@ -72,6 +72,46 @@ pure menu edits — do them deliberately, one PR each, build-verified.
    build is too fragile to add blind. Only the header/footer banner is feasible
    here (done). Revisit if the project moves to a Paper version a packet lib supports.
 
+## Deep-dive audit (2026-06-25) — 4-agent sweep of the 26 live menus
+
+Fixed in this pass (safe, high-confidence):
+- **BestiaryMenu** — it manages its own inventory and only filled rows 0 & 5, so
+  the whole interior rendered as **air (holey)**. Now fills every empty slot with
+  the black background pane like every other menu. *(This is likely a big part of
+  the "menus look off" complaint.)*
+- **EquipmentMenu** — removed the non-authentic **"Hand" slot** (Hypixel's
+  Equipment menu has only Necklace/Cloak/Belt/Gloves).
+- **SkyblockLevelMenu** — title **"SkyBlock Leveling" → "SkyBlock Level"**; removed
+  the dead `HEAD_SLOT` constant + corrected the stale javadoc (summary is a Painting
+  at slot 4, not a head at 13).
+- **AccessoryBagMenu** — **"Magic Power" → "Magical Power"** + added the missing
+  **Tuning Points** line (10 Magical Power = 1 point).
+
+Backlog the audit surfaced (bigger — manager/data or gated-functionality work):
+- **SkyBlock Level cap** — `SkyblockLevelManager` caps at **50** with a hardcoded
+  skill-curve XP table; real SkyBlock Level is a flat **100 XP/level, ~uncapped**.
+  Needs a manager curve rewrite (display shows `/50` today).
+- **Wardrobe** — models only **9** outfits in a 3×3 of generic iron-chestplate
+  icons; Hypixel is **18 across 2 pages**, each set a column of its 4 real pieces.
+  Needs `WardrobeManager` (MAX_OUTFITS/enum) + paging.
+- **Pets** — missing **Sort/Filter** controls and **paging** (>28 pets dropped).
+- **Accessory Bag** — accessories all render as plain EMERALD; need real
+  icons/rarity colours + paging (>28 dropped).
+- **Crafting Table** — it's a read-only recipe catalog, not a 3×3 craft grid;
+  either build the grid or rename to "Recipe Book".
+- **HOTM** — perks are a flat ordered list with 3 generic icons; Hypixel is a fixed
+  spatial **perk tree** with per-perk icons + a central core. Reset button (slot 52)
+  also has **no click handler** (dead).
+- **Slayer** — boss tiles have **no click handler**, so no tier-select / quest-start;
+  Vampire mis-ordered; should use mob-head icons.
+- **Garden** — missing **Composter, SkyMart, Crop Upgrades, Jacob's Contest** entries.
+- **Bestiary categories** — invented mob-family buckets, not Hypixel's island tabs.
+- **Bazaar / AH / Reforge / Enchant** — the missing buy-sell page, Create-Auction,
+  reforge-stone slot, and enchant item-input are the **same gated functional
+  reworks** already tracked in `ROADMAP_1TO1.md` (Phases 1 & 3); not blind layout fixes.
+- **Invented hubs** — Mining/Farming/Fishing/Combat have **no Hypixel equivalent**
+  (no `/mining` etc. GUI); left as original convenience UI, not "fixed" to a fiction.
+
 ## How a menu fix lands
 Branch → edit → `mvn -pl skyblock-core -am package` (green) → PR to `main` →
 poll the `compile` check → merge → rebuild `SkyBlock-plugin.jar`.

@@ -12,15 +12,14 @@ import java.util.UUID;
 
 /**
  * Canonical "SkyBlock Level" menu. A 54-slot (6-row) chest GUI framed by a
- * {@code BLACK_STAINED_GLASS_PANE} border with the viewing player's head at
- * slot 13 summarising their level, total XP and XP to the next level
- * (from {@link SkyblockLevelManager}), and one tile per XP
- * {@link Category source} showing the per-category breakdown.
+ * {@code BLACK_STAINED_GLASS_PANE} border with a Painting summary tile at slot 4
+ * showing the player's level, total XP and XP to the next level (from
+ * {@link SkyblockLevelManager}), and one tile per XP {@link Category source}
+ * showing the per-category breakdown.
  */
 public final class SkyblockLevelMenu extends Menu {
 
-    private static final String TITLE = "§aSkyBlock Leveling";
-    private static final int HEAD_SLOT = 13;
+    private static final String TITLE = "§aSkyBlock Level";
 
     /** One breakdown tile per category, laid out across the third row. */
     private static final int[] CATEGORY_SLOTS = {19, 21, 23, 25, 29, 31};

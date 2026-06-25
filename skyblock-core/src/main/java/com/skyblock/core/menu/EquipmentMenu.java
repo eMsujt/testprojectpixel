@@ -36,7 +36,7 @@ public final class EquipmentMenu extends AbstractSkyBlockMenu {
         StatsManager.PlayerStats stats = StatsManager.getInstance().getStats(id);
 
         // Equipment column (no equipment system yet → empty placeholder slots).
-        emptySlot(2, "Hand");
+        // Hypixel's Equipment menu has only Necklace/Cloak/Belt/Gloves — no "Hand" slot.
         emptySlot(10, "Necklace");
         emptySlot(19, "Cloak");
         emptySlot(28, "Belt");
