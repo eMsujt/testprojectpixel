@@ -117,6 +117,27 @@ Still open (need verified data, deeper system work, or are gated):
 - **Invented hubs** — Mining/Farming/Fishing/Combat have **no Hypixel equivalent**
   (no `/mining` etc. GUI); left as original convenience UI, not "fixed" to a fiction.
 
+## Real-source verification (2026-06-25)
+
+Verified key menus against the **Hypixel SkyBlock wiki mirror**
+(`hypixelskyblock.minecraft.wiki`, which returns documented slot positions where
+the official wiki + Fandom 403 automated fetches):
+- **SkyBlock Menu hub** — the wiki documents each button as `(col; row)` with
+  bottom-left `(1,1)`. Converted to slots (`(6-row)*9 + (col-1)`), it matches
+  `SkyBlockMenu.java` **exactly**: Profile@13, Skills 19→Bank 25 row, Bags 29→33
+  row, nav 47–51. **1:1 confirmed.**
+- **Your Skills** — wiki icons (Combat=Stone Sword, Farming=Golden Hoe, Mining=Stone
+  Pickaxe, Foraging=Jungle Sapling, Fishing=Fishing Rod, Enchanting=Ench. Table,
+  Alchemy=Brewing Stand, Carpentry=Crafting Table, Runecrafting=Magma Cream,
+  Taming=Spawn Egg, Social=Emerald, Dungeoneering=skull) **match** `SkillsMenu`.
+- **Collections** — 7 categories with wiki icons (Boss=Wither Skeleton Skull,
+  Rift=Enchanted Mycelium) **match** `CollectionsMenu`.
+
+**Bug found + fixed:** `/menu` opened a **different, non-1:1 hub** (`SkyBlockMainMenu`
+— Profile@4, wrong icons, invented Fishing Bag/Quiver/Potion Bag, dead buttons).
+The nether star and `/skyblock` open the correct `SkyBlockMenu`; `/menu` now does
+too. The old twin is retired.
+
 ## How a menu fix lands
 Branch → edit → `mvn -pl skyblock-core -am package` (green) → PR to `main` →
 poll the `compile` check → merge → rebuild `SkyBlock-plugin.jar`.
