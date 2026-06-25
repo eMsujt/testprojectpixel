@@ -21,8 +21,10 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
 The chokepoint is `EquipmentListener.recompute`; everything must feed it.
 - [x] Armor full-set bonuses → stats
 - [x] Accessory stats → stats (highest-tier-per-family de-dup)
-- [ ] **Reforges → stats** — stamp reforge on the item (PDC) + write its stats to
-      lore so the lore-scraper picks them up (replaces the fragile per-slot map)
+- [x] **Reforges → stats** — the Reforge Anvil now stamps the reforge on the item
+      via PDC (and renames it, e.g. `Fierce Hyperion`); `recompute` reads each gear
+      piece's reforge and adds its Strength/Defense/Speed. Replaced the fragile
+      per-slot map. Refinements: reforge-stone slot, item-type pools, rarity scaling.
 - [ ] **Enchants** — register the effect listeners, store enchants on the item,
       implement the missing effect math
 - [ ] Full damage stack — additive enchant-multiplier bucket, True Defense,

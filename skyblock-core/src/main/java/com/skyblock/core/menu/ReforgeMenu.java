@@ -74,10 +74,15 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
             ReforgeManager mgr = ReforgeManager.getInstance();
             ReforgeManager.ReforgeType chosen =
                     REFORGE_TYPES[(int) (Math.random() * REFORGE_TYPES.length)];
-            mgr.setReforge(player.getUniqueId(), chosen);
-            getInventory().setItem(RESULT_SLOT, item.clone());
+            // Stamp the reforge onto the item itself (PDC + renamed), so its stats follow the item
+            // and reach combat via EquipmentListener.recompute once it's equipped/held.
+            ItemStack reforged = item.clone();
+            mgr.applyReforge(reforged, chosen);
+            getInventory().setItem(RESULT_SLOT, reforged);
             getInventory().setItem(ITEM_SLOT, null);
-            player.sendMessage("§aYour item was reforged to §6" + chosen.getDisplayName() + "§a!");
+            player.sendMessage("§aYour item was reforged to §6" + chosen.getDisplayName()
+                    + "§a! §7(+" + chosen.getStrengthBonus() + "❁ +" + chosen.getDefenseBonus()
+                    + "❈ +" + chosen.getSpeedBonus() + "✦)");
         }
     }
 }

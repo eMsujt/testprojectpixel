@@ -7,6 +7,7 @@ import com.skyblock.core.armor.ArmorSetManager.ArmorSet;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.manager.FairySoulManager;
 import com.skyblock.core.manager.ItemStatManager;
+import com.skyblock.core.manager.ReforgeManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
@@ -127,6 +128,13 @@ public final class EquipmentListener implements Listener {
             totals.merge(e.getKey(), e.getValue(), Double::sum);
         }
 
+        // Per-item reforge stats (stamped on each piece at the Reforge Anvil).
+        ReforgeManager reforgeMgr = ReforgeManager.getInstance();
+        for (ItemStack piece : player.getInventory().getArmorContents()) {
+            addReforge(totals, reforgeMgr, piece);
+        }
+        addReforge(totals, reforgeMgr, heldItem);
+
         StatManager sm = StatManager.getInstance();
         sm.setEquipmentBonuses(player.getUniqueId(), totals);
         applyMaxHealth(player, sm);
@@ -186,6 +194,17 @@ public final class EquipmentListener implements Listener {
         for (Map.Entry<Stat, Integer> entry : ism.getStats(item).entrySet()) {
             totals.merge(entry.getKey(), (double) entry.getValue(), Double::sum);
         }
+    }
+
+    /** Adds the Strength/Defense/Speed granted by an item's stamped reforge, if any. */
+    private static void addReforge(Map<Stat, Double> totals, ReforgeManager mgr, ItemStack item) {
+        ReforgeManager.ReforgeType r = mgr.getItemReforge(item);
+        if (r == ReforgeManager.ReforgeType.NONE) {
+            return;
+        }
+        totals.merge(Stat.STRENGTH, (double) r.getStrengthBonus(), Double::sum);
+        totals.merge(Stat.DEFENSE,  (double) r.getDefenseBonus(),  Double::sum);
+        totals.merge(Stat.SPEED,    (double) r.getSpeedBonus(),    Double::sum);
     }
 
     /**
