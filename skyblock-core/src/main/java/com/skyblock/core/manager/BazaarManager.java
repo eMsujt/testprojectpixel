@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -285,10 +286,74 @@ public final class BazaarManager {
         return false;
     }
 
-    // ---- Menu display prices ----
+    // ---- Base (NPC reference) prices + menu display prices ----
 
-    public double getDisplayBuyPrice(BazaarProduct product)  { return getLowestAsk(product.getItemId()); }
-    public double getDisplaySellPrice(BazaarProduct product) { return getHighestBid(product.getItemId()); }
+    /** Instant-sell is this fraction of the buy price when there's no live order book (the spread). */
+    private static final double SELL_SPREAD = 0.9;
+
+    /** Reference buy price (coins each) per product, used when the live order book has no liquidity. */
+    private static final Map<BazaarProduct, Double> BASE_PRICE = new EnumMap<>(BazaarProduct.class);
+
+    static {
+        // FARMING
+        BASE_PRICE.put(BazaarProduct.RAW_PORKCHOP, 6.0);   BASE_PRICE.put(BazaarProduct.RAW_CHICKEN, 6.0);
+        BASE_PRICE.put(BazaarProduct.RAW_BEEF, 7.0);       BASE_PRICE.put(BazaarProduct.RAW_RABBIT, 8.0);
+        BASE_PRICE.put(BazaarProduct.RAW_MUTTON, 7.0);     BASE_PRICE.put(BazaarProduct.WHEAT, 6.0);
+        BASE_PRICE.put(BazaarProduct.CARROT, 3.0);         BASE_PRICE.put(BazaarProduct.POTATO, 3.0);
+        BASE_PRICE.put(BazaarProduct.SUGAR_CANE, 4.0);     BASE_PRICE.put(BazaarProduct.PUMPKIN, 8.0);
+        BASE_PRICE.put(BazaarProduct.MELON, 2.0);          BASE_PRICE.put(BazaarProduct.COCOA_BEANS, 4.0);
+        BASE_PRICE.put(BazaarProduct.NETHER_WART, 5.0);    BASE_PRICE.put(BazaarProduct.RED_MUSHROOM, 5.0);
+        BASE_PRICE.put(BazaarProduct.BROWN_MUSHROOM, 5.0); BASE_PRICE.put(BazaarProduct.CACTUS, 4.0);
+        BASE_PRICE.put(BazaarProduct.SUGAR, 5.0);          BASE_PRICE.put(BazaarProduct.ENCHANTED_BREAD, 960.0);
+        // MINING
+        BASE_PRICE.put(BazaarProduct.COBBLESTONE, 3.0);    BASE_PRICE.put(BazaarProduct.COAL, 4.0);
+        BASE_PRICE.put(BazaarProduct.IRON_INGOT, 6.0);     BASE_PRICE.put(BazaarProduct.GOLD_INGOT, 6.0);
+        BASE_PRICE.put(BazaarProduct.DIAMOND, 10.0);       BASE_PRICE.put(BazaarProduct.LAPIS_LAZULI, 8.0);
+        BASE_PRICE.put(BazaarProduct.EMERALD, 8.0);        BASE_PRICE.put(BazaarProduct.REDSTONE, 3.0);
+        BASE_PRICE.put(BazaarProduct.QUARTZ, 5.0);         BASE_PRICE.put(BazaarProduct.OBSIDIAN, 10.0);
+        BASE_PRICE.put(BazaarProduct.GLOWSTONE_DUST, 4.0); BASE_PRICE.put(BazaarProduct.GRAVEL, 3.0);
+        BASE_PRICE.put(BazaarProduct.FLINT, 4.0);          BASE_PRICE.put(BazaarProduct.ICE, 2.0);
+        BASE_PRICE.put(BazaarProduct.NETHERRACK, 1.0);     BASE_PRICE.put(BazaarProduct.END_STONE, 3.0);
+        BASE_PRICE.put(BazaarProduct.MITHRIL_ORE, 35.0);
+        // COMBAT
+        BASE_PRICE.put(BazaarProduct.ROTTEN_FLESH, 3.0);   BASE_PRICE.put(BazaarProduct.BONE, 5.0);
+        BASE_PRICE.put(BazaarProduct.STRING, 4.0);         BASE_PRICE.put(BazaarProduct.SPIDER_EYE, 4.0);
+        BASE_PRICE.put(BazaarProduct.GUNPOWDER, 6.0);      BASE_PRICE.put(BazaarProduct.BLAZE_ROD, 16.0);
+        BASE_PRICE.put(BazaarProduct.GHAST_TEAR, 25.0);    BASE_PRICE.put(BazaarProduct.MAGMA_CREAM, 12.0);
+        BASE_PRICE.put(BazaarProduct.SLIME_BALL, 6.0);     BASE_PRICE.put(BazaarProduct.ENDER_PEARL, 12.0);
+        BASE_PRICE.put(BazaarProduct.ENDER_EYE, 18.0);
+        // FORAGING
+        BASE_PRICE.put(BazaarProduct.OAK_LOG, 5.0);        BASE_PRICE.put(BazaarProduct.BIRCH_LOG, 5.0);
+        BASE_PRICE.put(BazaarProduct.SPRUCE_LOG, 5.0);     BASE_PRICE.put(BazaarProduct.DARK_OAK_LOG, 6.0);
+        BASE_PRICE.put(BazaarProduct.ACACIA_LOG, 6.0);     BASE_PRICE.put(BazaarProduct.JUNGLE_LOG, 6.0);
+        BASE_PRICE.put(BazaarProduct.MANGROVE_LOG, 6.0);
+        // FISHING
+        BASE_PRICE.put(BazaarProduct.COD, 12.0);           BASE_PRICE.put(BazaarProduct.SALMON, 14.0);
+        BASE_PRICE.put(BazaarProduct.PUFFERFISH, 16.0);    BASE_PRICE.put(BazaarProduct.TROPICAL_FISH, 20.0);
+        BASE_PRICE.put(BazaarProduct.PRISMARINE_SHARD, 8.0); BASE_PRICE.put(BazaarProduct.PRISMARINE_CRYSTALS, 10.0);
+        BASE_PRICE.put(BazaarProduct.INK_SAC, 4.0);
+        // MISC
+        BASE_PRICE.put(BazaarProduct.PAPER, 2.0);          BASE_PRICE.put(BazaarProduct.GLASS, 3.0);
+        BASE_PRICE.put(BazaarProduct.SAND, 2.0);           BASE_PRICE.put(BazaarProduct.SOUL_SAND, 6.0);
+        BASE_PRICE.put(BazaarProduct.LEATHER, 6.0);        BASE_PRICE.put(BazaarProduct.FEATHER, 4.0);
+    }
+
+    /** The reference buy price (coins) for a product when there's no live order book. */
+    public double getBasePrice(BazaarProduct product) {
+        return BASE_PRICE.getOrDefault(product, 1.0);
+    }
+
+    /** Instant-buy price: the lowest live ask, or the base price if the book has no sellers. */
+    public double getDisplayBuyPrice(BazaarProduct product) {
+        double ask = getLowestAsk(product.getItemId());
+        return ask >= Double.MAX_VALUE / 2 ? getBasePrice(product) : ask;
+    }
+
+    /** Instant-sell price: the highest live bid, or base × spread if the book has no buyers. */
+    public double getDisplaySellPrice(BazaarProduct product) {
+        double bid = getHighestBid(product.getItemId());
+        return bid > 0.0 ? bid : getBasePrice(product) * SELL_SPREAD;
+    }
 
     // ---- Fee management ----
 

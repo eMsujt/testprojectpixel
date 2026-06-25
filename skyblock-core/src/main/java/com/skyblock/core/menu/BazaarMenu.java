@@ -94,6 +94,14 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
                 return;
             }
         }
+        // Clicking a product opens its instant buy/sell view.
+        List<BazaarProduct> products = getFilteredProducts();
+        for (int i = 0; i < ORDER_SLOTS.length && i < products.size(); i++) {
+            if (ORDER_SLOTS[i] == slot && event.getWhoClicked() instanceof Player clicker) {
+                new BazaarProductMenu(clicker, products.get(i)).open(clicker);
+                return;
+            }
+        }
     }
 
     private List<BazaarProduct> getFilteredProducts() {
