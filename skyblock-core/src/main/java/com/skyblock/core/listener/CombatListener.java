@@ -25,8 +25,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,6 +92,14 @@ public final class CombatListener implements Listener {
             if (isCrit) {
                 damage = CombatEngine.applyCrit(damage, critDamage);
             }
+            // Enchant damage bucket: Sharpness (all mobs) + Smite/Bane of Arthropods/Ender Slayer
+            // (by mob family), each +5% per level, read from the held weapon's lore (item-based,
+            // values from the bundled 1:1 data). One additive bucket, multiplied once.
+            double enchantPercent = enchantDamagePercent(
+                    attacker.getInventory().getItemInMainHand(), event.getEntity().getType());
+            if (enchantPercent > 0.0) {
+                damage *= 1.0 + enchantPercent / 100.0;
+            }
             // Ferocity: every 100 grants a guaranteed extra hit, the remainder a chance for one more.
             // Combined into one event (same total damage) to avoid re-triggering this handler.
             double ferocity = stats.getStat(attacker.getUniqueId(), Stat.FEROCITY);
@@ -141,6 +152,92 @@ public final class CombatListener implements Listener {
             }
         }
         return vanillaDamage;
+    }
+
+    /** Mob families targeted by the type-specific damage enchants. */
+    private static final Set<EntityType> UNDEAD = EnumSet.of(
+            EntityType.ZOMBIE, EntityType.ZOMBIE_VILLAGER, EntityType.HUSK, EntityType.DROWNED,
+            EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON, EntityType.ZOMBIFIED_PIGLIN,
+            EntityType.ZOGLIN, EntityType.PHANTOM, EntityType.WITHER, EntityType.SKELETON_HORSE,
+            EntityType.ZOMBIE_HORSE);
+    private static final Set<EntityType> ARTHROPODS = EnumSet.of(
+            EntityType.SPIDER, EntityType.CAVE_SPIDER, EntityType.SILVERFISH, EntityType.BEE);
+    private static final Set<EntityType> ENDER = EnumSet.of(
+            EntityType.ENDERMAN, EntityType.ENDERMITE, EntityType.ENDER_DRAGON, EntityType.SHULKER);
+
+    /** Lower-case enchant display name → enum key, for the damage enchants we apply. */
+    private static final Map<String, String> DAMAGE_ENCHANTS = Map.of(
+            "sharpness", "SHARPNESS",
+            "smite", "SMITE",
+            "bane of arthropods", "BANE_OF_ARTHROPODS",
+            "ender slayer", "ENDER_SLAYER");
+
+    /**
+     * Total damage-% from the held weapon's enchants against the given target: Sharpness applies to
+     * every mob; Smite/Bane of Arthropods/Ender Slayer apply only to their mob family. Each is +5%
+     * per level (the value in the bundled 1:1 item data), summed into one additive bucket.
+     */
+    private static double enchantDamagePercent(ItemStack weapon, EntityType target) {
+        Map<String, Integer> ench = parseWeaponEnchants(weapon);
+        if (ench.isEmpty()) {
+            return 0.0;
+        }
+        double pct = 5.0 * ench.getOrDefault("SHARPNESS", 0);
+        if (UNDEAD.contains(target))     pct += 5.0 * ench.getOrDefault("SMITE", 0);
+        if (ARTHROPODS.contains(target)) pct += 5.0 * ench.getOrDefault("BANE_OF_ARTHROPODS", 0);
+        if (ENDER.contains(target))      pct += 5.0 * ench.getOrDefault("ENDER_SLAYER", 0);
+        return pct;
+    }
+
+    /** Parses {@code §9<Enchant> <Roman>} lore lines (incl. comma-joined) into enchant-key → level. */
+    private static Map<String, Integer> parseWeaponEnchants(ItemStack weapon) {
+        Map<String, Integer> result = new HashMap<>();
+        if (weapon == null) {
+            return result;
+        }
+        ItemMeta meta = weapon.getItemMeta();
+        if (meta == null || meta.getLore() == null) {
+            return result;
+        }
+        for (String raw : meta.getLore()) {
+            String line = ChatColor.stripColor(raw).trim();
+            for (String part : line.split(",")) {
+                part = part.trim();
+                int sp = part.lastIndexOf(' ');
+                if (sp <= 0) {
+                    continue;
+                }
+                int level = romanToInt(part.substring(sp + 1).trim());
+                if (level <= 0) {
+                    continue;
+                }
+                String key = DAMAGE_ENCHANTS.get(part.substring(0, sp).trim().toLowerCase(Locale.ROOT));
+                if (key != null) {
+                    result.merge(key, level, Math::max);
+                }
+            }
+        }
+        return result;
+    }
+
+    /** Parses a small Roman numeral (I–X range); returns 0 if not a clean numeral. */
+    private static int romanToInt(String s) {
+        if (s.isEmpty()) {
+            return 0;
+        }
+        int total = 0;
+        int prev = 0;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            int v;
+            switch (Character.toUpperCase(s.charAt(i))) {
+                case 'I': v = 1; break;
+                case 'V': v = 5; break;
+                case 'X': v = 10; break;
+                default: return 0;
+            }
+            if (v < prev) total -= v; else { total += v; prev = v; }
+        }
+        return total;
     }
 
     private void spawnDamageIndicator(Location location, double damage, boolean isCrit) {
