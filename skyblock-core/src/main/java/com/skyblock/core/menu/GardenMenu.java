@@ -92,8 +92,11 @@ public final class GardenMenu extends AbstractSkyBlockMenu {
                         "§7Visitors Served: §e" + manager.getCompletedOffers(playerId),
                         "",
                         "§7Unlock and upgrade crop plots to",
-                        "§7gain farming fortune.")
-                .build());
+                        "§7gain farming fortune.",
+                        "",
+                        "§eClick to view Garden Levels!")
+                .build(),
+                e -> { e.setCancelled(true); new GardenLevelsMenu(player).open(player); });
 
         buildVisitorQueue();
         buildCropPlots(manager, playerId);
