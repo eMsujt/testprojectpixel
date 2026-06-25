@@ -21,15 +21,16 @@ public final class SkyblockLevelMenu extends Menu {
 
     private static final String TITLE = "§aSkyBlock Level";
 
-    /** One breakdown tile per category, laid out across the third row. */
-    private static final int[] CATEGORY_SLOTS = {19, 21, 23, 25, 29, 31};
+    /** One breakdown tile per category (Core/Skill/Dungeon/Event/Slaying/Essence Shop/Misc). */
+    private static final int[] CATEGORY_SLOTS = {19, 20, 21, 22, 23, 24, 25};
 
     private static final Material[] CATEGORY_ICONS = {
+            Material.NETHER_STAR,     // CORE
             Material.DIAMOND_SWORD,   // SKILL
-            Material.GOLDEN_SWORD,    // SLAYER
             Material.OAK_DOOR,        // DUNGEON
             Material.CAKE,            // EVENT
-            Material.GOLD_BLOCK,      // MUSEUM
+            Material.GOLDEN_SWORD,    // SLAYING
+            Material.EMERALD,         // ESSENCE_SHOP
             Material.PAPER,           // MISC
     };
 
@@ -84,10 +85,14 @@ public final class SkyblockLevelMenu extends Menu {
                 e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
     }
 
-    /** Title-cases an enum constant name, e.g. {@code SKILL} -> {@code Skill}. */
+    /** Title-cases an enum constant, e.g. {@code ESSENCE_SHOP} -> {@code Essence Shop}. */
     private static String displayName(Category category) {
-        String name = category.name();
-        return name.charAt(0) + name.substring(1).toLowerCase();
+        StringBuilder sb = new StringBuilder();
+        for (String part : category.name().split("_")) {
+            if (sb.length() > 0) sb.append(' ');
+            sb.append(part.charAt(0)).append(part.substring(1).toLowerCase());
+        }
+        return sb.toString();
     }
 
     private void fillBorder() {

@@ -37,8 +37,8 @@ public final class BestiaryMenu extends Menu {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    /** Slots for the six category tiles on the overview. */
-    private static final int[] CATEGORY_SLOTS = {11, 13, 15, 29, 31, 33};
+    /** Slots for the island category tiles on the overview (3×3 grid). */
+    private static final int[] CATEGORY_SLOTS = {11, 13, 15, 20, 22, 24, 29, 31, 33};
 
     private static final int SUMMARY_SLOT = 4;
     private static final int CLOSE_SLOT   = 49;
@@ -53,12 +53,15 @@ public final class BestiaryMenu extends Menu {
         for (BestiaryMob mob : BestiaryMob.values()) {
             MOB_NAMES.put(mob.mobKey, mob.displayName);
         }
-        CATEGORY_ICONS.put(BestiaryCategory.COMBAT, Material.IRON_SWORD);
-        CATEGORY_ICONS.put(BestiaryCategory.SLAYER, Material.DIAMOND_SWORD);
-        CATEGORY_ICONS.put(BestiaryCategory.BOSS,   Material.NETHER_STAR);
-        CATEGORY_ICONS.put(BestiaryCategory.NETHER, Material.NETHERRACK);
-        CATEGORY_ICONS.put(BestiaryCategory.OCEAN,  Material.PRISMARINE_SHARD);
-        CATEGORY_ICONS.put(BestiaryCategory.MINING, Material.IRON_PICKAXE);
+        CATEGORY_ICONS.put(BestiaryCategory.PRIVATE_ISLAND,  Material.GRASS_BLOCK);
+        CATEGORY_ICONS.put(BestiaryCategory.HUB,             Material.POPPY);
+        CATEGORY_ICONS.put(BestiaryCategory.SPIDERS_DEN,     Material.COBWEB);
+        CATEGORY_ICONS.put(BestiaryCategory.THE_END,         Material.END_STONE);
+        CATEGORY_ICONS.put(BestiaryCategory.CRIMSON_ISLE,    Material.NETHERRACK);
+        CATEGORY_ICONS.put(BestiaryCategory.DWARVEN_MINES,   Material.IRON_INGOT);
+        CATEGORY_ICONS.put(BestiaryCategory.CRYSTAL_HOLLOWS, Material.AMETHYST_CLUSTER);
+        CATEGORY_ICONS.put(BestiaryCategory.CATACOMBS,       Material.WITHER_SKELETON_SKULL);
+        CATEGORY_ICONS.put(BestiaryCategory.THE_OCEAN,       Material.PRISMARINE);
     }
 
     private final UUID playerId;

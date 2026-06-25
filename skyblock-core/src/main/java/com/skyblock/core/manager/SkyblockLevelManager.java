@@ -32,9 +32,9 @@ public final class SkyblockLevelManager {
     /** SkyBlock XP required per level (flat). */
     private static final long XP_PER_LEVEL = 100L;
 
-    /** Sources of SkyBlock XP, tracked per player for breakdown displays. */
+    /** SkyBlock Level task categories, matching Hypixel's breakdown. */
     public enum Category {
-        SKILL, SLAYER, DUNGEON, EVENT, MUSEUM, MISC
+        CORE, SKILL, DUNGEON, EVENT, SLAYING, ESSENCE_SHOP, MISC
     }
 
     /** Rewards granted for reaching a single SkyBlock level. */
