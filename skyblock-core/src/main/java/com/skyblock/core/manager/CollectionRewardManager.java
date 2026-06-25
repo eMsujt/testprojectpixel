@@ -40,22 +40,21 @@ public final class CollectionRewardManager {
      * @param fromTier   the tier before the gather
      * @param toTier     the tier after the gather
      */
-    public void grantTierUpRewards(Player player, Material collection, int fromTier, int toTier) {
-        if (player == null || collection == null || toTier <= fromTier) {
+    public void grantTierUpRewards(Player player, String collectionName, int fromTier, int toTier) {
+        if (player == null || collectionName == null || toTier <= fromTier) {
             return;
         }
         UUID uuid = player.getUniqueId();
         for (int tier = fromTier + 1; tier <= toTier; tier++) {
             long coins = COINS_PER_TIER * tier;
             coinManager.addPurse(uuid, coins);
-            sendRewardMessage(player, collection, tier, coins);
+            sendRewardMessage(player, collectionName, tier, coins);
         }
     }
 
-    private void sendRewardMessage(Player player, Material collection, int tier, long coins) {
-        String name = collection.name().toLowerCase().replace('_', ' ');
+    private void sendRewardMessage(Player player, String collectionName, int tier, long coins) {
         player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "COLLECTION REWARD "
-                + ChatColor.GRAY + name + " Tier " + tier
+                + ChatColor.GRAY + collectionName + " Tier " + tier
                 + ChatColor.GRAY + "  +" + coins + " coins");
     }
 }

@@ -79,6 +79,11 @@ public final class CollectionManager {
         if (tierAfter > tierBefore) {
             recordCollectionEvent(playerId, "Reached tier " + tierAfter + " in " + collection.getDisplayName());
             notifyTierUp(playerId, collection, tierAfter);
+            Player rewardPlayer = Bukkit.getPlayer(playerId);
+            if (rewardPlayer != null) {
+                CollectionRewardManager.getInstance().grantTierUpRewards(
+                        rewardPlayer, collection.getDisplayName(), tierBefore, tierAfter);
+            }
         }
         return total;
     }
