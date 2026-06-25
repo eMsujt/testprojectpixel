@@ -78,7 +78,7 @@ public final class BestiaryMenu extends Menu {
     }
 
     private BestiaryMenu(UUID playerId, BestiaryCategory category) {
-        super(category == null ? "§cBestiary" : "§cBestiary §8» §7" + category.displayName, 6);
+        super(category == null ? "Bestiary" : "Bestiary ➜ " + category.displayName, 6);
         this.playerId = playerId;
         this.category = category;
     }
@@ -120,14 +120,22 @@ public final class BestiaryMenu extends Menu {
     private void buildOverview() {
         BestiaryManager manager = BestiaryManager.getInstance();
 
-        inventory.setItem(SUMMARY_SLOT, SkyblockUtils.buildItem(Material.WRITTEN_BOOK,
-                "§aBestiary Milestones",
+        int totalFamilies = BestiaryFamily.values().length;
+        int completed = manager.getCompletedFamilyCount(playerId);
+        int completedPct = totalFamilies > 0 ? completed * 100 / totalFamilies : 0;
+        inventory.setItem(SUMMARY_SLOT, SkyblockUtils.buildItem(Material.WRITABLE_BOOK,
+                "§3Bestiary",
+                "§7The Bestiary is a compendium of",
+                "§7mobs in SkyBlock. It contains",
+                "§7detailed information on loot",
+                "§7drops, your mob stats, and more!",
+                "",
+                "§7Kill mobs within §aFamilies §7to",
+                "§7progress and earn §arewards§7.",
+                "",
                 "§7Milestone level: §e" + manager.getMilestoneLevel(playerId),
-                "§7Families completed: §e" + manager.getCompletedFamilyCount(playerId)
-                        + "§7/§e" + BestiaryFamily.values().length,
-                "§7Bonus Health: §a+" + String.format("%,.0f",
-                        manager.getMilestoneStats(playerId).getOrDefault(
-                                com.skyblock.core.model.Stat.HEALTH, 0.0)) + " §c❤"));
+                "§7Families Completed: §e" + completedPct + "%",
+                bestiaryBar(completedPct) + " §b" + completed + "§3/§b" + totalFamilies));
 
         BestiaryCategory[] categories = BestiaryCategory.values();
         for (int i = 0; i < categories.length && i < CATEGORY_SLOTS.length; i++) {
@@ -196,5 +204,11 @@ public final class BestiaryMenu extends Menu {
     @Override
     public Inventory getInventory() {
         return inventory;
+    }
+
+    /** Hypixel-style dashed progress bar: filled portion aqua, remainder white. */
+    private static String bestiaryBar(int pct) {
+        int filled = Math.round(pct / 100f * 20);
+        return "§b" + "-".repeat(filled) + "§f" + "-".repeat(20 - filled);
     }
 }

@@ -111,6 +111,44 @@ public final class CalendarMenu extends Menu {
                     e -> e.setCancelled(true));
         }
 
+        // Bottom-row buttons matching Hypixel's Calendar and Events GUI.
+        setItem(36, new ItemBuilder(Material.GOLD_BLOCK)
+                .displayName("§aEvent Rewards")
+                .lore("§7View and claim rewards obtained",
+                      "§7through participating in Events!",
+                      "",
+                      "§8§oYou have no rewards! Place",
+                      "§8§oatop Event Leaderboards to",
+                      "§8§oobtain cool rewards!",
+                      "",
+                      "§eClick to view!")
+                .build(), e -> e.setCancelled(true));
+
+        setItem(41, new ItemBuilder(Material.CLOCK)
+                .displayName("§aCalendar")
+                .lore("§7Opens the full SkyBlock Calendar.",
+                      "",
+                      "§eClick to view!")
+                .build(), e -> e.setCancelled(true));
+
+        setItem(42, new ItemBuilder(Material.COCOA_BEANS)
+                .displayName("§6Chocolate Factory")
+                .lore("§7§aHoppity the Rabbit §7needs help finding",
+                      "§7all of his chocolate friends during",
+                      "§7the §aSpring §7season.",
+                      "",
+                      "§7Meanwhile, he has granted you",
+                      "§7access to his §6Chocolate Factory §7all",
+                      "§7year round!",
+                      "",
+                      "§eClick to open!")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    org.bukkit.entity.Player p = (org.bukkit.entity.Player) e.getWhoClicked();
+                    new ChocolateFactoryMenu(p).open(p);
+                });
+
         setItem(49, new ItemBuilder(Material.ARROW)
                 .displayName("§aGo Back")
                 .lore("§7To SkyBlock Menu")
