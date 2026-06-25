@@ -28,19 +28,28 @@ import java.util.UUID;
 public final class WardrobeManager {
 
     /**
-     * 9 wardrobe slots arranged as 3 pages × 3 armor sets per page.
-     * Page 1 = slots 1-3, page 2 = slots 4-6, page 3 = slots 7-9.
+     * 18 wardrobe slots arranged as 2 pages × 9 armor sets per page, matching
+     * Hypixel. Page 1 = slots 1-9, page 2 = slots 10-18.
      */
     public enum WardrobeSlot {
         SLOT_1(1, "Slot 1", 1, 1),
         SLOT_2(2, "Slot 2", 1, 2),
         SLOT_3(3, "Slot 3", 1, 3),
-        SLOT_4(4, "Slot 4", 2, 1),
-        SLOT_5(5, "Slot 5", 2, 2),
-        SLOT_6(6, "Slot 6", 2, 3),
-        SLOT_7(7, "Slot 7", 3, 1),
-        SLOT_8(8, "Slot 8", 3, 2),
-        SLOT_9(9, "Slot 9", 3, 3);
+        SLOT_4(4, "Slot 4", 1, 4),
+        SLOT_5(5, "Slot 5", 1, 5),
+        SLOT_6(6, "Slot 6", 1, 6),
+        SLOT_7(7, "Slot 7", 1, 7),
+        SLOT_8(8, "Slot 8", 1, 8),
+        SLOT_9(9, "Slot 9", 1, 9),
+        SLOT_10(10, "Slot 10", 2, 1),
+        SLOT_11(11, "Slot 11", 2, 2),
+        SLOT_12(12, "Slot 12", 2, 3),
+        SLOT_13(13, "Slot 13", 2, 4),
+        SLOT_14(14, "Slot 14", 2, 5),
+        SLOT_15(15, "Slot 15", 2, 6),
+        SLOT_16(16, "Slot 16", 2, 7),
+        SLOT_17(17, "Slot 17", 2, 8),
+        SLOT_18(18, "Slot 18", 2, 9);
 
         private final int slotNumber;
         private final String displayName;
@@ -94,14 +103,15 @@ public final class WardrobeManager {
         }
     }
 
-    /** Maximum named outfits a player may store. */
-    public static final int MAX_OUTFITS = 9;
+    /** Maximum named outfits a player may store (Hypixel: 18 across 2 pages). */
+    public static final int MAX_OUTFITS = 18;
 
     /**
-     * Number of wardrobe slots unlocked by default (the first two sets).
-     * Slots with a number above this are locked until explicitly unlocked.
+     * Number of wardrobe slots unlocked by default. All 18 are available since the
+     * slot-unlock cost mechanic isn't wired to any progression yet, so players can
+     * actually use their whole wardrobe.
      */
-    public static final int DEFAULT_UNLOCKED_SLOTS = 2;
+    public static final int DEFAULT_UNLOCKED_SLOTS = 18;
 
     private static final WardrobeManager INSTANCE = new WardrobeManager();
 
