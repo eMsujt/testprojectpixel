@@ -26,7 +26,11 @@ import java.util.UUID;
  */
 public final class SkyblockLevelManager {
 
-    public static final int MAX_LEVEL = 50;
+    /** Hypixel's SkyBlock Level: 1 level per 100 SkyBlock XP, with rewards documented to Level 500. */
+    public static final int MAX_LEVEL = 500;
+
+    /** SkyBlock XP required per level (flat). */
+    private static final long XP_PER_LEVEL = 100L;
 
     /** Sources of SkyBlock XP, tracked per player for breakdown displays. */
     public enum Category {
@@ -35,23 +39,6 @@ public final class SkyblockLevelManager {
 
     /** Rewards granted for reaching a single SkyBlock level. */
     public record LevelReward(int level, long coins, double healthBonus) {}
-
-    /**
-     * Cumulative XP thresholds for levels 1–50 (matches the Hypixel SkyBlock skill curve).
-     * Index {@code i} = total XP required to reach level {@code i+1}.
-     */
-    private static final long[] XP_TABLE = {
-               0L,        50L,       175L,       375L,       675L,
-            1175L,      1925L,      2925L,      4425L,      6425L,
-            9925L,     14925L,     22425L,     32425L,     47425L,
-           67425L,     97425L,    147425L,    222425L,    322425L,
-          522425L,    822425L,   1222425L,   1722425L,   2322425L,
-         3022425L,   3822425L,   4722425L,   5722425L,   6822425L,
-         8022425L,   9322425L,  10722425L,  12222425L,  13822425L,
-        15522425L,  17322425L,  19222425L,  21222425L,  23322425L,
-        25522425L,  27822425L,  30222425L,  32722425L,  35322425L,
-        38072425L,  40972425L,  44072425L,  47472425L,  51172425L,
-    };
 
     private static final SkyblockLevelManager INSTANCE = new SkyblockLevelManager();
 
@@ -184,12 +171,10 @@ public final class SkyblockLevelManager {
      * @return level in range [1, {@value #MAX_LEVEL}]
      */
     public int levelForXP(long totalXP) {
-        for (int i = MAX_LEVEL - 1; i >= 0; i--) {
-            if (totalXP >= XP_TABLE[i]) {
-                return i + 1;
-            }
+        if (totalXP < 0) {
+            return 0;
         }
-        return 1;
+        return (int) Math.min(MAX_LEVEL, totalXP / XP_PER_LEVEL);
     }
 
     /**
@@ -199,8 +184,8 @@ public final class SkyblockLevelManager {
      * @return cumulative XP threshold
      */
     public long xpForLevel(int level) {
-        int clamped = Math.max(1, Math.min(level, MAX_LEVEL));
-        return XP_TABLE[clamped - 1];
+        int clamped = Math.max(0, Math.min(level, MAX_LEVEL));
+        return clamped * XP_PER_LEVEL;
     }
 
     /**
@@ -216,7 +201,7 @@ public final class SkyblockLevelManager {
         if (level >= MAX_LEVEL) {
             return 0L;
         }
-        return XP_TABLE[level] - totalXP;
+        return (long) (level + 1) * XP_PER_LEVEL - totalXP;
     }
 
     /**
