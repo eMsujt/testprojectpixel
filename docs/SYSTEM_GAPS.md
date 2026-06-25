@@ -25,11 +25,11 @@ Three recurring root causes:
 `EquipmentListener` feeds the combat stat store **only** by regex-scraping stat
 lines from worn armor + held item lore. So **enchants, reforges, and accessories
 are catalogued but never affect combat** — they live in side maps nothing reads
-back. Reaching combat now: **pet bonuses**, **accessory tuning points**, **armor
-set bonuses**, and **per-accessory stats** (highest-tier-per-family de-dup) — all
-via `recompute`. Remaining: **reforge stats** (need binding to the item via PDC +
-lore rather than the fragile per-slot map) and **enchant effects** (listeners
-unregistered).
+back. Reaching combat now: **pet bonuses**, **accessory tuning**, **armor set
+bonuses**, **per-accessory stats** (highest-tier-per-family de-dup), **skill-level
+bonuses**, and **fairy-soul bonuses** — all via `recompute`. Remaining: **reforge
+stats** (need binding to the item via PDC + lore rather than the fragile per-slot
+map) and **enchant effects** (listeners unregistered).
 
 ## Status by system
 
