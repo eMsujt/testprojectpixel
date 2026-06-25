@@ -82,7 +82,7 @@ public final class EquipmentMenu extends AbstractSkyBlockMenu {
             fx.add("§8• §7" + prettyEffect(effect.getType().getKey().getKey()) + " §a" + (effect.getAmplifier() + 1));
         }
         if (fx.isEmpty()) fx.add("§7No active effects.");
-        setItem(34, new ItemBuilder(Material.BREWING_STAND)
+        setItem(34, new ItemBuilder(Material.POTION)
                 .displayName("§dActive Effects §7(" + player.getActivePotionEffects().size() + ")")
                 .lore(fx).build());
 

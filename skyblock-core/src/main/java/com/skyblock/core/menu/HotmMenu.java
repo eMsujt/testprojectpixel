@@ -103,11 +103,6 @@ public final class HotmMenu extends AbstractSkyBlockMenu {
                 .lore("§7Track the crystals you've", "§7placed in the Crystal Nucleus.")
                 .build());
 
-        setItem(51, new ItemBuilder(Material.PAINTING)
-                .displayName("§dCrystal Nucleus RNG Meter")
-                .lore("§7Track your progress toward", "§7a guaranteed crystal reward.")
-                .build());
-
         setItem(52, new ItemBuilder(Material.REDSTONE)
                 .displayName("§cReset Heart of the Mountain")
                 .lore("§7Reset all your perks and", "§7refund your spent powder.",

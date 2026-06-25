@@ -39,7 +39,7 @@ public final class HOTMManager {
         MINING_EXPERIENCE_BOOST(100, "Mining Experience Boost"),
         SEASONED_MINEMAN(100, "Seasoned Mineman"),
         ANOMALOUS_DESIRE(20, "Anomalous Desire"),
-        MANIACAL_MINER(1, "Maniacal Miner"),
+        MANIACAL_MINER(1, "Maniac Miner"),
         VEIN_SEEKER(1, "Vein Seeker");
 
         public final int maxLevel;
@@ -55,9 +55,11 @@ public final class HOTMManager {
         }
     }
 
-    public static final int MAX_TIER = 7;
+    // Hypixel's Heart of the Mountain goes to Tier 10 ("Peak of the Mountain").
+    public static final int MAX_TIER = 10;
 
-    private static final long[] TIER_XP_THRESHOLDS = {0L, 3000L, 9000L, 25000L, 60000L, 100000L, 150000L};
+    private static final long[] TIER_XP_THRESHOLDS = {
+            0L, 3000L, 9000L, 25000L, 60000L, 100000L, 150000L, 210000L, 290000L, 400000L};
 
     public static final Map<String, int[]> NODE_POWDER_COSTS;
 
