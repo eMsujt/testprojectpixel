@@ -87,28 +87,33 @@ Fixed in this pass (safe, high-confidence):
 - **AccessoryBagMenu** — **"Magic Power" → "Magical Power"** + added the missing
   **Tuning Points** line (10 Magical Power = 1 point).
 
-Backlog the audit surfaced (bigger — manager/data or gated-functionality work):
-- **SkyBlock Level cap** — `SkyblockLevelManager` caps at **50** with a hardcoded
-  skill-curve XP table; real SkyBlock Level is a flat **100 XP/level, ~uncapped**.
-  Needs a manager curve rewrite (display shows `/50` today).
-- **Wardrobe** — models only **9** outfits in a 3×3 of generic iron-chestplate
-  icons; Hypixel is **18 across 2 pages**, each set a column of its 4 real pieces.
-  Needs `WardrobeManager` (MAX_OUTFITS/enum) + paging.
-- **Pets** — missing **Sort/Filter** controls and **paging** (>28 pets dropped).
-- **Accessory Bag** — accessories all render as plain EMERALD; need real
-  icons/rarity colours + paging (>28 dropped).
-- **Crafting Table** — it's a read-only recipe catalog, not a 3×3 craft grid;
-  either build the grid or rename to "Recipe Book".
-- **HOTM** — perks are a flat ordered list with 3 generic icons; Hypixel is a fixed
-  spatial **perk tree** with per-perk icons + a central core. Reset button (slot 52)
-  also has **no click handler** (dead).
-- **Slayer** — boss tiles have **no click handler**, so no tier-select / quest-start;
-  Vampire mis-ordered; should use mob-head icons.
-- **Garden** — missing **Composter, SkyMart, Crop Upgrades, Jacob's Contest** entries.
-- **Bestiary categories** — invented mob-family buckets, not Hypixel's island tabs.
-- **Bazaar / AH / Reforge / Enchant** — the missing buy-sell page, Create-Auction,
-  reforge-stone slot, and enchant item-input are the **same gated functional
-  reworks** already tracked in `ROADMAP_1TO1.md` (Phases 1 & 3); not blind layout fixes.
+Backlog the audit surfaced — now mostly cleared:
+- [x] **Wardrobe** — rebuilt to **18 outfits across 2 pages**, each set a column of
+  its 4 real armor pieces (PR: wardrobe-18-slots).
+- [x] **Pets** — paging + a Sort button (Highest Level / Rarity / Name) (PR: menu-paging).
+- [x] **Accessory Bag** — rarity-coloured names + rarity line + paging (PRs: menu-real-icons, menu-paging).
+- [x] **HOTM** — distinct per-perk icons + LOCKED/UNLOCKED/MAXED state lines; the
+  dead Reset button is now wired (right-click confirm) (PR: hotm-icons-reset).
+- [x] **Slayer** — boss → Tier I–V selector → start-quest (charges spawn cost),
+  active-quest panel + cancel, boss order fixed (PR: slayer-tier-select).
+- [x] **Garden** — Composter (real reserves) + Jacob's Contest stations + Close;
+  clicks now dispatch (PR: garden-stations).
+
+Still open (need verified data, deeper system work, or are gated):
+- **SkyBlock Level cap** — `SkyblockLevelManager` caps at **50** on a skill-curve
+  table; real is flat **100 XP/level, ~uncapped**. Lower priority: **no XP is
+  credited to it anywhere** (`addXP` has no gameplay callers), so this is part of
+  the larger "wire SkyBlock-XP sources" effort in `ROADMAP_1TO1.md` Phase 2.
+- **HOTM perk-tree topology** — still a grid, not Hypixel's connected spatial tree;
+  needs a verified per-perk slot map.
+- **Crafting Table** — still a read-only recipe catalog, not a functional 3×3 grid;
+  the craft grid needs item-input handling (gated like Enchant/Reforge — playtest).
+- **Bestiary categories** — invented mob-family buckets, not Hypixel's island tabs;
+  needs `BestiaryCategory` redefined around islands + every mob remapped.
+- **Garden SkyMart + Crop-Upgrades sub-menu** — need backing shop / upgrade flows.
+- **Bazaar / AH / Reforge / Enchant** — missing buy-sell page, Create-Auction,
+  reforge-stone slot, enchant item-input = the **same gated functional reworks**
+  tracked in `ROADMAP_1TO1.md` (Phases 1 & 3); not blind layout fixes.
 - **Invented hubs** — Mining/Farming/Fishing/Combat have **no Hypixel equivalent**
   (no `/mining` etc. GUI); left as original convenience UI, not "fixed" to a fiction.
 
