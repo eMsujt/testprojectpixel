@@ -13,16 +13,25 @@ import java.util.UUID;
 /**
  * The "Personal Bank Account" menu, opened from the SkyBlock Menu. Laid out and
  * worded 1:1 with Hypixel's Bank GUI (verbatim tooltip lore from the wiki's
- * Bank/UI page): Deposit Coins (Chest, slot 11), Withdraw Coins (Dropper, 13),
- * Recent transactions (Map, 15), Information (Redstone Torch, 32) and Bank
- * Upgrades (Block of Gold, 35), plus Go Back (30) and Close (31).
+ * Bank/UI page). The main view has Deposit Coins (Chest, slot 11), Withdraw
+ * Coins (Dropper, 13), Recent transactions (Map, 15), Information (Redstone
+ * Torch, 32) and Bank Upgrades (Block of Gold, 35); Deposit/Withdraw open
+ * sub-views offering all / half (and a custom-amount placeholder), like Hypixel.
  */
 public final class BankMenu extends AbstractSkyBlockMenu {
 
     private static final String TITLE = "§6Personal Bank Account";
 
+    /** null = main account view; "deposit" / "withdraw" = the amount sub-views. */
+    private final String view;
+
     public BankMenu(Player player) {
+        this(player, null);
+    }
+
+    private BankMenu(Player player, String view) {
         super(player, TITLE, 4);
+        this.view = view;
     }
 
     @Override
@@ -30,9 +39,18 @@ public final class BankMenu extends AbstractSkyBlockMenu {
         ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
         for (int slot = 0; slot < 36; slot++) setItem(slot, pane);
 
+        if ("deposit".equals(view)) {
+            buildDeposit();
+        } else if ("withdraw".equals(view)) {
+            buildWithdraw();
+        } else {
+            buildMain();
+        }
+    }
+
+    private void buildMain() {
         UUID uuid = player.getUniqueId();
         BankManager bank = BankManager.getInstance();
-        EconomyManager econ = EconomyManager.getInstance();
 
         double balance = bank.getBalance(uuid);
         BankTier tier = bank.getTier(uuid);
@@ -55,18 +73,7 @@ public final class BankMenu extends AbstractSkyBlockMenu {
                         "",
                         "§eClick to make a deposit!")
                 .build(),
-                e -> {
-                    e.setCancelled(true);
-                    long p = econ.getPurse(uuid);
-                    if (p > 0) {
-                        econ.withdraw(uuid, p);
-                        bank.deposit(uuid, p);
-                        player.sendMessage("§aDeposited §6" + String.format("%,d", p) + " §acoins into your bank.");
-                    } else {
-                        player.sendMessage("§cYour purse is empty.");
-                    }
-                    open(player);
-                });
+                e -> { e.setCancelled(true); new BankMenu(player, "deposit").open(player); });
 
         setItem(13, new ItemBuilder(Material.DROPPER)
                 .displayName("§aWithdraw Coins")
@@ -78,18 +85,7 @@ public final class BankMenu extends AbstractSkyBlockMenu {
                         "",
                         "§eClick to withdraw coins!")
                 .build(),
-                e -> {
-                    e.setCancelled(true);
-                    double b = bank.getBalance(uuid);
-                    if (b > 0) {
-                        bank.withdraw(uuid, b);
-                        econ.addPurse(uuid, (long) b);
-                        player.sendMessage("§aWithdrew §6" + String.format("%,.0f", b) + " §acoins from your bank.");
-                    } else {
-                        player.sendMessage("§cYour bank is empty.");
-                    }
-                    open(player);
-                });
+                e -> { e.setCancelled(true); new BankMenu(player, "withdraw").open(player); });
 
         setItem(15, new ItemBuilder(Material.MAP)
                 .displayName("§aRecent transactions")
@@ -102,10 +98,7 @@ public final class BankMenu extends AbstractSkyBlockMenu {
                 .build(),
                 e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
 
-        setItem(31, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .build(),
-                e -> { e.setCancelled(true); player.closeInventory(); });
+        setItem(31, closeButton(), e -> { e.setCancelled(true); player.closeInventory(); });
 
         setItem(32, new ItemBuilder(Material.REDSTONE_TORCH)
                 .displayName("§aInformation")
@@ -134,6 +127,87 @@ public final class BankMenu extends AbstractSkyBlockMenu {
                         "",
                         "§eClick to view upgrades!")
                 .build(), e -> e.setCancelled(true));
+    }
+
+    private void buildDeposit() {
+        long purse = EconomyManager.getInstance().getPurse(player.getUniqueId());
+
+        setItem(11, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName("§aDeposit all coins")
+                .lore("§7Purse: §6" + String.format("%,d", purse), "", "§eClick to deposit everything!")
+                .build(), e -> { e.setCancelled(true); deposit(purse); });
+
+        setItem(13, new ItemBuilder(Material.GOLD_NUGGET)
+                .displayName("§aDeposit half")
+                .lore("§7Deposit: §6" + String.format("%,d", purse / 2), "", "§eClick to deposit half!")
+                .build(), e -> { e.setCancelled(true); deposit(purse / 2); });
+
+        setItem(15, new ItemBuilder(Material.OAK_SIGN)
+                .displayName("§aCustom amount")
+                .lore("§7Deposit a specific amount.", "", "§cComing soon.")
+                .build(), e -> e.setCancelled(true));
+
+        backToMainButtons();
+    }
+
+    private void buildWithdraw() {
+        long bal = (long) BankManager.getInstance().getBalance(player.getUniqueId());
+
+        setItem(11, new ItemBuilder(Material.GOLD_INGOT)
+                .displayName("§aWithdraw all coins")
+                .lore("§7Bank: §6" + String.format("%,d", bal), "", "§eClick to withdraw everything!")
+                .build(), e -> { e.setCancelled(true); withdraw(bal); });
+
+        setItem(13, new ItemBuilder(Material.GOLD_NUGGET)
+                .displayName("§aWithdraw half")
+                .lore("§7Withdraw: §6" + String.format("%,d", bal / 2), "", "§eClick to withdraw half!")
+                .build(), e -> { e.setCancelled(true); withdraw(bal / 2); });
+
+        setItem(15, new ItemBuilder(Material.OAK_SIGN)
+                .displayName("§aCustom amount")
+                .lore("§7Withdraw a specific amount.", "", "§cComing soon.")
+                .build(), e -> e.setCancelled(true));
+
+        backToMainButtons();
+    }
+
+    private void deposit(long amount) {
+        UUID uuid = player.getUniqueId();
+        EconomyManager econ = EconomyManager.getInstance();
+        if (amount <= 0) {
+            player.sendMessage("§cYour purse is empty.");
+            return;
+        }
+        econ.withdraw(uuid, amount);
+        BankManager.getInstance().deposit(uuid, amount);
+        player.sendMessage("§aDeposited §6" + String.format("%,d", amount) + " §acoins into your bank.");
+        new BankMenu(player, null).open(player);
+    }
+
+    private void withdraw(long amount) {
+        UUID uuid = player.getUniqueId();
+        if (amount <= 0) {
+            player.sendMessage("§cYour bank is empty.");
+            return;
+        }
+        BankManager.getInstance().withdraw(uuid, amount);
+        EconomyManager.getInstance().addPurse(uuid, amount);
+        player.sendMessage("§aWithdrew §6" + String.format("%,d", amount) + " §acoins from your bank.");
+        new BankMenu(player, null).open(player);
+    }
+
+    /** Go Back (to the main account view) + Close, for the deposit / withdraw sub-views. */
+    private void backToMainButtons() {
+        setItem(30, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To Personal Bank Account")
+                .build(),
+                e -> { e.setCancelled(true); new BankMenu(player, null).open(player); });
+        setItem(31, closeButton(), e -> { e.setCancelled(true); player.closeInventory(); });
+    }
+
+    private static ItemStack closeButton() {
+        return new ItemBuilder(Material.BARRIER).displayName("§cClose").build();
     }
 
     private static String trimRate(double v) {
