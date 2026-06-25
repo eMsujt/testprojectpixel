@@ -25,10 +25,15 @@ The chokepoint is `EquipmentListener.recompute`; everything must feed it.
       via PDC (and renames it, e.g. `Fierce Hyperion`); `recompute` reads each gear
       piece's reforge and adds its Strength/Defense/Speed. Replaced the fragile
       per-slot map. Refinements: reforge-stone slot, item-type pools, rarity scaling.
-- [ ] **Enchants** — register the effect listeners, store enchants on the item,
-      implement the missing effect math
-- [ ] Full damage stack — additive enchant-multiplier bucket, True Defense,
-      effective-HP, the +15% melee bonus
+- [~] **Enchants** — damage enchants now apply **item-based**: `CombatListener` reads
+      the held weapon's lore (Sharpness all-mobs + Smite/Bane/Ender Slayer by mob
+      family, +5%/level from the bundled 1:1 data) and multiplies via one additive
+      bucket. Refinements: First Strike, Giant Killer (capped), Execute/Prosecute,
+      on-hit effects (Thunderlord/Life Steal/Looting…), and armor stat-enchants
+      (Growth/Protection → `recompute`).
+- [~] Full damage stack — the **additive enchant-multiplier bucket is now applied**
+      (in `CombatListener`); True Defense, effective-HP, and the +15% melee bonus
+      still TODO
 - [ ] Pet abilities (held/active) actually fire
 
 ## Phase 2 — Progression loops (activity → reward → power)
