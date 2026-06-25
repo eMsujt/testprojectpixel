@@ -32,7 +32,7 @@ public final class WardrobeMenu extends AbstractSkyBlockMenu {
     }
 
     private WardrobeMenu(Player player, int page) {
-        super(player, "§6Wardrobe", 6);
+        super(player, "Wardrobe", 6);
         this.page = page;
     }
 
