@@ -57,7 +57,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     }
 
     private SlayerMenu(Player player, SlayerType selected) {
-        super(player, selected == null ? "§4Slayer" : "§4Slayer §8» §7" + selected.getDisplayName(), 6);
+        super(player, selected == null ? "§4Slayer" : "§4Slayer §8» §7" + bossName(selected), 6);
         this.selected = selected;
     }
 
@@ -80,7 +80,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
         if (active != null) {
             int target = SlayerManager.KILLS_TO_SPAWN_BOSS.getOrDefault(active.tier, 0);
             setItem(4, new ItemBuilder(Material.DIAMOND_SWORD)
-                    .displayName("§aActive Quest: §c" + active.type.getDisplayName()
+                    .displayName("§aActive Quest: §c" + bossName(active.type)
                             + " §7Tier " + tierRoman(active.tier))
                     .lore(active.isBossSpawned()
                                     ? "§7Boss spawned — §cslay it!"
@@ -135,10 +135,8 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
     private void buildTierSelector() {
         UUID playerId = player.getUniqueId();
         SlayerManager manager = SlayerManager.getInstance();
-        SlayerBoss boss = SlayerBoss.forType(selected);
-
         setItem(4, new ItemBuilder(HEAD_ICONS.get(selected))
-                .displayName("§c" + (boss != null ? boss.getDisplayName() : selected.getDisplayName()))
+                .displayName("§c" + bossName(selected))
                 .lore("§7Choose a tier to begin.",
                       "§7Higher tiers cost more and drop better loot.")
                 .build(), e -> e.setCancelled(true));
@@ -148,7 +146,7 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
             int cost = manager.getSpawnCost(selected, tier);
             int target = SlayerManager.KILLS_TO_SPAWN_BOSS.getOrDefault(tier, 0);
             setItem(TIER_SLOTS[i], new ItemBuilder(Material.RED_DYE)
-                    .displayName("§c" + selected.getDisplayName() + " §7- Tier " + ROMAN[i])
+                    .displayName("§c" + bossName(selected) + " §7- Tier " + ROMAN[i])
                     .lore("§7Combat XP to spawn boss: §e" + target,
                             "§7Cost: §6" + String.format("%,d", cost) + " coins",
                             "",
@@ -178,12 +176,18 @@ public final class SlayerMenu extends AbstractSkyBlockMenu {
             return;
         }
         manager.startQuest(playerId, selected, tier);
-        player.sendMessage("§aStarted a §c" + selected.getDisplayName() + " §7Tier " + tierRoman(tier)
+        player.sendMessage("§aStarted a §c" + bossName(selected) + " §7Tier " + tierRoman(tier)
                 + " §aslayer quest! Kill " + selected.getDisplayName() + " mobs to spawn the boss.");
         new SlayerMenu(player).open(player);
     }
 
     private static String tierRoman(QuestTier tier) {
         return ROMAN[tier.ordinal()];
+    }
+
+    /** The boss's display name (e.g. "Revenant Horror") for a slayer type, else the type name. */
+    private static String bossName(SlayerType type) {
+        SlayerBoss boss = SlayerBoss.forType(type);
+        return boss != null ? boss.getDisplayName() : type.getDisplayName();
     }
 }

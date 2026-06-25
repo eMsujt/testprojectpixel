@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 6-row chest GUI titled '§2Garden' extending AbstractSkyBlockMenu.
+ * 6-row chest GUI titled '§aGarden' extending AbstractSkyBlockMenu.
  *
  * <p>Layout (rows 0-5, 9 columns):
  * <ul>

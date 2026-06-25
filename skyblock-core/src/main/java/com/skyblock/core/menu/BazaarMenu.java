@@ -17,6 +17,8 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
 
     private static final String[]   CATEGORIES      = {"FARMING", "MINING", "COMBAT", "FORAGING", "FISHING", "MISC"};
     private static final String[]   CATEGORY_LABELS = {"§aFarming", "§9Mining", "§cCombat", "§6Foraging", "§bFishing", "§7Oddities"};
+    /** Plain category names for the window title (Hypixel: "Bazaar ➜ Farming"). */
+    private static final String[]   TITLE_LABELS    = {"Farming", "Mining", "Combat", "Foraging", "Fishing", "Oddities"};
     private static final Material[] TAB_MATERIALS    = {
             Material.WHEAT,
             Material.STONE_PICKAXE,
@@ -36,11 +38,15 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
             37, 38, 39, 40, 41, 42, 43
     };
 
-    private int selectedTab;
+    private final int selectedTab;
 
     public BazaarMenu(Player player) {
-        super(player, "§6Bazaar", 6);
-        this.selectedTab = 0;
+        this(player, 0);
+    }
+
+    private BazaarMenu(Player player, int tab) {
+        super(player, "§6Bazaar ➜ §f" + TITLE_LABELS[tab], 6);
+        this.selectedTab = tab;
     }
 
     @Override
@@ -53,6 +59,8 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
             if (selected) b.enchant(Enchantment.UNBREAKING, 1).flags(ItemFlag.HIDE_ENCHANTS);
             setItem(CATEGORY_SLOTS[i], b.build());
         }
+
+        setItem(49, new ItemBuilder(Material.BARRIER).displayName("§cClose").build());
 
         List<BazaarProduct> products = getFilteredProducts();
         BazaarManager manager = BazaarManager.getInstance();
@@ -88,11 +96,14 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
         for (int i = 0; i < CATEGORY_SLOTS.length; i++) {
             if (CATEGORY_SLOTS[i] == slot) {
                 if (i != selectedTab && event.getWhoClicked() instanceof Player clicker) {
-                    selectedTab = i;
-                    open(clicker);
+                    new BazaarMenu(clicker, i).open(clicker);
                 }
                 return;
             }
+        }
+        if (slot == 49 && event.getWhoClicked() instanceof Player clicker) {
+            clicker.closeInventory();
+            return;
         }
         // Clicking a product opens its instant buy/sell view.
         List<BazaarProduct> products = getFilteredProducts();

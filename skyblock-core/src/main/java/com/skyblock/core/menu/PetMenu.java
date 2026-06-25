@@ -117,7 +117,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
             lore.add(isActive ? "§aCurrently active — §eclick to unequip" : "§eClick to equip!");
 
             setItem(contentSlot(i - start), petIcon
-                    .displayName("§7[Lvl " + level + "] " + color + pet.type.getDisplayName())
+                    .displayName(color + "[Lvl " + level + "] " + pet.type.getDisplayName())
                     .lore(lore)
                     .build(),
                     e -> {
