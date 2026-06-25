@@ -40,20 +40,45 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
             }
         }
 
-        setItem(ITEM_SLOT, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                .displayName("§7Item to Reforge")
-                .lore("§7Drag your item here.")
+        // ITEM_SLOT (place) and RESULT_SLOT (collect) are interactive — left empty
+        // after open() so the player can drop an item in and take the reforged result.
+        setItem(REFORGE_SLOT, new ItemBuilder(Material.ANVIL)
+                .displayName("§6Reforge Item")
+                .lore("§7Place an item in the left slot,",
+                      "§7then click here to apply a",
+                      "§7random reforge to it.",
+                      "",
+                      "§7Collect the result from the",
+                      "§7right slot!")
                 .build());
+    }
 
-        setItem(REFORGE_SLOT, new ItemBuilder(Material.BARRIER)
-                .displayName("§6Reforge")
-                .lore("§7Click to apply a random reforge", "§7to the item in the left slot.")
-                .build());
+    @Override
+    public void open(Player player) {
+        super.open(player);
+        getInventory().setItem(ITEM_SLOT, null);
+        getInventory().setItem(RESULT_SLOT, null);
+    }
 
-        setItem(RESULT_SLOT, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
-                .displayName("§7Result")
-                .lore("§7The reforged item appears here.")
-                .build());
+    @Override
+    public boolean isInteractiveSlot(int slot) {
+        return slot == ITEM_SLOT || slot == RESULT_SLOT;
+    }
+
+    @Override
+    public void onClose(Player player) {
+        returnItem(player, ITEM_SLOT);
+        returnItem(player, RESULT_SLOT);
+    }
+
+    private void returnItem(Player player, int slot) {
+        ItemStack item = getInventory().getItem(slot);
+        if (item != null && item.getType() != Material.AIR) {
+            for (ItemStack overflow : player.getInventory().addItem(item).values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), overflow);
+            }
+            getInventory().setItem(slot, null);
+        }
     }
 
     @Override
@@ -69,6 +94,11 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
             if (item == null || item.getType() == Material.AIR
                     || item.getType() == Material.BLACK_STAINED_GLASS_PANE) {
                 player.sendMessage("§cPlace an item in the left slot first.");
+                return;
+            }
+            ItemStack pending = getInventory().getItem(RESULT_SLOT);
+            if (pending != null && pending.getType() != Material.AIR) {
+                player.sendMessage("§cTake your reforged item first.");
                 return;
             }
             ReforgeManager mgr = ReforgeManager.getInstance();
