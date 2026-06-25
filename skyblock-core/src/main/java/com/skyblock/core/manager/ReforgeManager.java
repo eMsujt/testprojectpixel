@@ -1,8 +1,14 @@
 package com.skyblock.core.manager;
 
+import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.model.Rarity;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.io.IOException;
@@ -403,6 +409,99 @@ public final class ReforgeManager {
     public void clearSlotReforges(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         slotReforges.remove(playerId);
+    }
+
+    // --- Item-bound reforges (the source of truth that reaches combat) -------------------
+
+    private static NamespacedKey reforgeKey() {
+        return new NamespacedKey(SkyBlockCore.getInstance(), "reforge");
+    }
+
+    /**
+     * Stamps a reforge onto the item itself (persistent data) and prefixes its display name with
+     * the reforge word (e.g. {@code §dHyperion} → {@code §dFierce Hyperion}), replacing any previous
+     * reforge. The stamped reforge is what {@code EquipmentListener.recompute} reads to grant stats.
+     *
+     * @param item the item to reforge; ignored if null or has no meta
+     * @param type the reforge to apply; {@link ReforgeType#NONE} clears the reforge
+     */
+    public void applyReforge(ItemStack item, ReforgeType type) {
+        if (item == null || type == null) {
+            return;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return;
+        }
+        ReforgeType old = readReforge(meta);
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        if (type == ReforgeType.NONE) {
+            pdc.remove(reforgeKey());
+        } else {
+            pdc.set(reforgeKey(), PersistentDataType.STRING, type.name());
+        }
+        if (meta.hasDisplayName()) {
+            String name = meta.getDisplayName();
+            if (old != ReforgeType.NONE) {
+                name = removeWordAfterCodes(name, old.getDisplayName());
+            }
+            if (type != ReforgeType.NONE) {
+                name = insertWordAfterCodes(name, type.getDisplayName());
+            }
+            meta.setDisplayName(name);
+        }
+        item.setItemMeta(meta);
+    }
+
+    /**
+     * Returns the reforge stamped on the item, or {@link ReforgeType#NONE} if none.
+     *
+     * @param item the item to inspect; null yields {@link ReforgeType#NONE}
+     * @return the item's reforge
+     */
+    public ReforgeType getItemReforge(ItemStack item) {
+        if (item == null) {
+            return ReforgeType.NONE;
+        }
+        ItemMeta meta = item.getItemMeta();
+        return meta == null ? ReforgeType.NONE : readReforge(meta);
+    }
+
+    private static ReforgeType readReforge(ItemMeta meta) {
+        String name = meta.getPersistentDataContainer().get(reforgeKey(), PersistentDataType.STRING);
+        if (name == null) {
+            return ReforgeType.NONE;
+        }
+        try {
+            return ReforgeType.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            return ReforgeType.NONE;
+        }
+    }
+
+    /** Index just past any leading legacy colour/format codes (§x) in a display name. */
+    private static int leadingCodesEnd(String s) {
+        int i = 0;
+        while (i + 1 < s.length() && s.charAt(i) == '§') {
+            i += 2;
+        }
+        return i;
+    }
+
+    /** Inserts {@code word} (plus a space) right after the leading colour codes. */
+    private static String insertWordAfterCodes(String name, String word) {
+        int i = leadingCodesEnd(name);
+        return name.substring(0, i) + word + " " + name.substring(i);
+    }
+
+    /** Removes a leading reforge {@code word} (plus a space) that sits right after the colour codes. */
+    private static String removeWordAfterCodes(String name, String word) {
+        int i = leadingCodesEnd(name);
+        String rest = name.substring(i);
+        if (rest.regionMatches(true, 0, word + " ", 0, word.length() + 1)) {
+            rest = rest.substring(word.length() + 1);
+        }
+        return name.substring(0, i) + rest;
     }
 
     public void load(File dataFolder) {

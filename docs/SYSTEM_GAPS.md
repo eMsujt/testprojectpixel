@@ -27,9 +27,9 @@ lines from worn armor + held item lore. So **enchants, reforges, and accessories
 are catalogued but never affect combat** — they live in side maps nothing reads
 back. Reaching combat now: **pet bonuses**, **accessory tuning**, **armor set
 bonuses**, **per-accessory stats** (highest-tier-per-family de-dup), **skill-level
-bonuses**, and **fairy-soul bonuses** — all via `recompute`. Remaining: **reforge
-stats** (need binding to the item via PDC + lore rather than the fragile per-slot
-map) and **enchant effects** (listeners unregistered).
+bonuses**, **fairy-soul bonuses**, and **reforge stats** (stamped on the item via
+PDC at the anvil, read per gear piece) — all via `recompute`. Remaining: **enchant
+effects** (listeners unregistered, stored per-player not on the item).
 
 ## Status by system
 
@@ -45,7 +45,7 @@ map) and **enchant effects** (listeners unregistered).
 | **Farming (Garden/Jacob)** | PARTIAL | no Garden island; 9 plots≠24; pests/visitors never spawn; **Farming Fortune disconnected** |
 | **Fishing** | PARTIAL | sea creatures = wrong vanilla mobs, no HP/drops; trophy fishing faked; treasure/collection unlinked |
 | **Enchantments** | STUB | ~52 names, **<5% have effects**, listeners unregistered, stored per-player not on item |
-| **Reforges + stones** | STUB | **stats never reach combat**; stones are names-only (no items/recipes/drops) |
+| **Reforges + stones** | PARTIAL | reforge stats **now reach combat** (PDC-stamped on the item, read in `recompute`); stones/item-type pools/rarity-scaling still TODO |
 | **Accessories / MP / Maxwell** | PARTIAL | per-accessory stats **now apply** (highest-tier-per-family de-dup) + tuning; MP→stat curve absent; ~50 accessories vs 600+ |
 | **Pets** | PARTIAL | 68/~70 roster + real XP; **0 abilities fire**; pet items unequippable |
 | **Armor set bonuses** | PARTIAL | flat set bonuses **now applied** to combat; dynamic/conditional perks (Superior +5% all, dungeon-only, etc.) still flavor |
