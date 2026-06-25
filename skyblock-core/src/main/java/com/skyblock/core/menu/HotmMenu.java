@@ -8,7 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public final class HotmMenu extends AbstractSkyBlockMenu {
@@ -27,6 +29,36 @@ public final class HotmMenu extends AbstractSkyBlockMenu {
         28, 29, 30, 31, 32, 33, 34,
         37, 38, 39
     };
+
+    /** A distinct, thematic icon per perk (Hypixel uses a unique item per node, not 3 generic blocks). */
+    private static final Map<HotMNode, Material> NODE_ICONS = new EnumMap<>(HotMNode.class);
+
+    static {
+        NODE_ICONS.put(HotMNode.MINING_SPEED,            Material.GOLDEN_PICKAXE);
+        NODE_ICONS.put(HotMNode.MINING_SPEED_BOOST,      Material.SUGAR);
+        NODE_ICONS.put(HotMNode.PICKOBULUS,              Material.SNOWBALL);
+        NODE_ICONS.put(HotMNode.MINING_FORTUNE,          Material.GOLD_INGOT);
+        NODE_ICONS.put(HotMNode.DAILY_POWDER,            Material.CLOCK);
+        NODE_ICONS.put(HotMNode.EFFICIENT_MINER,         Material.IRON_PICKAXE);
+        NODE_ICONS.put(HotMNode.QUICK_FORGE,             Material.BLAST_FURNACE);
+        NODE_ICONS.put(HotMNode.TITANIUM_INSANITY,       Material.IRON_BLOCK);
+        NODE_ICONS.put(HotMNode.LUCK_OF_THE_CAVE,        Material.RABBIT_FOOT);
+        NODE_ICONS.put(HotMNode.POWDER_BUFF,             Material.GUNPOWDER);
+        NODE_ICONS.put(HotMNode.MINING_MADNESS,          Material.REDSTONE);
+        NODE_ICONS.put(HotMNode.SKY_MALL,                Material.EMERALD);
+        NODE_ICONS.put(HotMNode.GOBLIN_KILLER,           Material.IRON_SWORD);
+        NODE_ICONS.put(HotMNode.STAR_POWDER,             Material.NETHER_STAR);
+        NODE_ICONS.put(HotMNode.MOLE,                    Material.BROWN_MUSHROOM);
+        NODE_ICONS.put(HotMNode.PROFESSIONAL,            Material.DIAMOND_PICKAXE);
+        NODE_ICONS.put(HotMNode.LONESOME_MINER,          Material.SKELETON_SKULL);
+        NODE_ICONS.put(HotMNode.GREAT_EXPLORER,          Material.MAP);
+        NODE_ICONS.put(HotMNode.FORTUNATE,               Material.GOLD_NUGGET);
+        NODE_ICONS.put(HotMNode.MINING_EXPERIENCE_BOOST, Material.EXPERIENCE_BOTTLE);
+        NODE_ICONS.put(HotMNode.SEASONED_MINEMAN,        Material.BOOK);
+        NODE_ICONS.put(HotMNode.ANOMALOUS_DESIRE,        Material.AMETHYST_SHARD);
+        NODE_ICONS.put(HotMNode.MANIACAL_MINER,          Material.TNT);
+        NODE_ICONS.put(HotMNode.VEIN_SEEKER,             Material.PRISMARINE_CRYSTALS);
+    }
 
     public HotmMenu(Player player) {
         super(player, TITLE, 6);
@@ -78,8 +110,17 @@ public final class HotmMenu extends AbstractSkyBlockMenu {
 
         setItem(52, new ItemBuilder(Material.REDSTONE)
                 .displayName("§cReset Heart of the Mountain")
-                .lore("§7Reset all your perks and", "§7refund your spent powder.")
-                .build());
+                .lore("§7Reset all your perks and", "§7refund your spent powder.",
+                        "", "§eRight-click to confirm.")
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    if (e.isRightClick()) {
+                        manager.reset(uuid);
+                        player.sendMessage("§cYour Heart of the Mountain has been reset.");
+                        open(player);
+                    }
+                });
 
         HotMNode[] nodes = HotMNode.values();
         for (int i = 0; i < NODE_SLOTS.length && i < nodes.length; i++) {
@@ -88,11 +129,10 @@ public final class HotmMenu extends AbstractSkyBlockMenu {
             boolean maxed = level >= node.maxLevel;
             int cost = manager.getUpgradeCost(node, level);
 
-            Material mat = maxed ? Material.GOLD_BLOCK
-                    : level > 0 ? Material.EMERALD
-                    : Material.COAL_BLOCK;
+            Material mat = NODE_ICONS.getOrDefault(node, Material.COAL_BLOCK);
 
             List<String> lore = new ArrayList<>();
+            lore.add(maxed ? "§6§lMAXED" : level > 0 ? "§a§lUNLOCKED" : "§7§lLOCKED");
             lore.add("§7Level: §e" + level + "§7/§e" + node.maxLevel);
             if (maxed) {
                 lore.add("§aMaxed out!");
