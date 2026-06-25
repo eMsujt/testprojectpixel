@@ -6,6 +6,7 @@ import com.skyblock.core.armor.ArmorSetManager;
 import com.skyblock.core.armor.ArmorSetManager.ArmorSet;
 import com.skyblock.core.manager.AccessoryBagManager;
 import com.skyblock.core.manager.ItemStatManager;
+import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.StatManager;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
@@ -109,6 +110,15 @@ public final class EquipmentListener implements Listener {
         }
         for (TalismanType acc : bestPerFamily.values()) {
             totals.merge(acc.stat, acc.bonus, Double::sum);
+        }
+
+        // Passive stat bonuses earned from skill levels (Mining→Defense, Combat→Crit, etc.).
+        for (Map.Entry<String, Double> e : SkillManager.getInstance().getStatBonuses(player.getUniqueId()).entrySet()) {
+            try {
+                totals.merge(Stat.valueOf(e.getKey()), e.getValue(), Double::sum);
+            } catch (IllegalArgumentException ignored) {
+                // unknown stat name — skip
+            }
         }
 
         StatManager sm = StatManager.getInstance();
