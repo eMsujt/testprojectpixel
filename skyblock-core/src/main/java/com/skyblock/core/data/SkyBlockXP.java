@@ -104,6 +104,23 @@ public final class SkyBlockXP {
            32350, 37850, 43850, 50350, 57350
     };
 
+    /** Social skill (max level 25) per-level XP — its own steeper curve, distinct from the 25-level table. */
+    public static final long[] SOCIAL = {
+              50,   100,   150,   250,   500,
+             750,  1000,  1250,  1500,  2000,
+            2500,  3000,  3750,  4500,  6000,
+            8000, 10000, 12500, 15000, 20000,
+           25000, 30000, 35000, 40000, 50000
+    };
+
+    public static final long[] SOCIAL_CUMULATIVE = {
+              50,   150,   300,   550,  1050,
+            1800,  2800,  4050,  5550,  7550,
+           10050, 13050, 16800, 21300, 27300,
+           35300, 45300, 57800, 72800, 92800,
+          117800,147800,182800,222800,272800
+    };
+
     /**
      * Returns the cumulative XP table for the given lowercase skill name,
      * or {@code null} if the skill is unknown.
