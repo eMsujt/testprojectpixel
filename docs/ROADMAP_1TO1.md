@@ -61,8 +61,10 @@ remaining items below are polish/refinements.
       buyer, delivers the item, pays the seller; listing **escrows** the item (no
       dupe). **Live bidding** escrows each bid and refunds the outbid leader; expiry
       (`processExpired`) settles auctions. **`AuctionClaimMenu`** ("Your Auctions &
-      Claims") collects coins/items and cancels your listings. Remaining polish:
-      bid-amount entry (currently min-bid), search/rarity filters.
+      Claims") collects coins/items and cancels your listings. **Custom bid-amount
+      entry** now works via the reusable chat-input system (`ChatInputManager`):
+      a "Custom Bid" button prompts in chat, parses k/m/b, and re-validates against
+      the live minimum before placing. Remaining polish: search/rarity filters.
 - [ ] Bank interest auto-timer (currently only on `/bank interest`)
 - [ ] Coins-on-death tuned toward Hypixel (currently 5%)
 - [ ] Drain claim escrow back to players (Bazaar/AH claim flow)

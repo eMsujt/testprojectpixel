@@ -50,4 +50,26 @@ public final class ChatInputManager {
         callback.accept(input);
         return true;
     }
+
+    /**
+     * Parses a coin amount typed in chat — "10000", "1,000", "10k", "2.5m", "1b" —
+     * into a whole number of coins, or {@code -1} if it isn't a valid positive amount.
+     */
+    public static long parseAmount(String raw) {
+        String s = raw.trim().toLowerCase().replace(",", "");
+        if (s.isEmpty()) {
+            return -1;
+        }
+        double mult = 1;
+        char last = s.charAt(s.length() - 1);
+        if (last == 'k') { mult = 1_000D; s = s.substring(0, s.length() - 1); }
+        else if (last == 'm') { mult = 1_000_000D; s = s.substring(0, s.length() - 1); }
+        else if (last == 'b') { mult = 1_000_000_000D; s = s.substring(0, s.length() - 1); }
+        try {
+            double value = Double.parseDouble(s) * mult;
+            return value <= 0 ? -1 : (long) value;
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
 }

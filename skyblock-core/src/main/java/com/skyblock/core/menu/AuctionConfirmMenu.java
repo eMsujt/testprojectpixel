@@ -2,6 +2,7 @@ package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionListing;
+import com.skyblock.core.manager.ChatInputManager;
 import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
@@ -22,7 +23,8 @@ public final class AuctionConfirmMenu extends AbstractSkyBlockMenu {
 
     static final int ITEM_SLOT = 13;
     static final int CONFIRM_SLOT = 11;
-    static final int CANCEL_SLOT = 15;
+    static final int CUSTOM_BID_SLOT = 15;
+    static final int CANCEL_SLOT = 22;
 
     private final UUID listingId;
 
@@ -59,7 +61,7 @@ public final class AuctionConfirmMenu extends AbstractSkyBlockMenu {
             double minBid = manager.getMinimumBid(listingId);
             double topBid = manager.getHighestBid(listingId);
             setItem(CONFIRM_SLOT, new ItemBuilder(Material.LIME_STAINED_GLASS_PANE)
-                    .displayName("§aPlace Bid")
+                    .displayName("§aPlace Minimum Bid")
                     .lore(
                             "§7Current bid: §6" + (long) topBid + " coins",
                             "§7Your bid: §6" + (long) minBid + " coins",
@@ -68,6 +70,16 @@ public final class AuctionConfirmMenu extends AbstractSkyBlockMenu {
                             "§7appear in §eYour Claims§7.")
                     .build(),
                     event -> { event.setCancelled(true); placeBid(manager, listing, minBid); });
+
+            setItem(CUSTOM_BID_SLOT, new ItemBuilder(Material.OAK_SIGN)
+                    .displayName("§aCustom Bid")
+                    .lore(
+                            "§7Bid a specific amount",
+                            "§7(at least §6" + (long) minBid + " coins§7).",
+                            "",
+                            "§eClick to type an amount!")
+                    .build(),
+                    event -> { event.setCancelled(true); promptCustomBid(minBid); });
         }
 
         setItem(CANCEL_SLOT, new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
@@ -152,6 +164,39 @@ public final class AuctionConfirmMenu extends AbstractSkyBlockMenu {
         player.sendMessage("§aBid §6" + (long) amount + " coins §aon §e" + listing.itemName()
                 + "§a! If you're outbid or win, check §eYour Claims§a.");
         new AuctionHouseMenu(player).open(player);
+    }
+
+    /** Prompts for a custom bid amount in chat, then places it (re-validated against the live minimum). */
+    private void promptCustomBid(double minBidAtPrompt) {
+        player.closeInventory();
+        player.sendMessage("§eType your bid amount in chat §7(min §6" + (long) minBidAtPrompt
+                + " coins§7, e.g. §f1.5m§7), or §ccancel§7.");
+        ChatInputManager.getInstance().request(player.getUniqueId(), input -> {
+            if (input.equalsIgnoreCase("cancel")) {
+                player.sendMessage("§cCancelled.");
+                new AuctionHouseMenu(player).open(player);
+                return;
+            }
+            AuctionHouseManager manager = AuctionHouseManager.getInstance();
+            if (!manager.isActive(listingId)) {
+                player.sendMessage("§cThat listing is no longer available.");
+                new AuctionHouseMenu(player).open(player);
+                return;
+            }
+            long amount = ChatInputManager.parseAmount(input);
+            if (amount <= 0) {
+                player.sendMessage("§c'" + input + "' is not a valid amount.");
+                new AuctionConfirmMenu(player, listingId).open(player);
+                return;
+            }
+            long minBid = (long) manager.getMinimumBid(listingId);
+            if (amount < minBid) {
+                player.sendMessage("§cYour bid must be at least §6" + minBid + " coins§c.");
+                new AuctionConfirmMenu(player, listingId).open(player);
+                return;
+            }
+            placeBid(manager, manager.getListing(listingId), amount);
+        });
     }
 }
 
