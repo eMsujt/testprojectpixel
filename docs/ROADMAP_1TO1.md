@@ -83,7 +83,8 @@ remaining items below are polish/refinements.
 - [ ] Collections → 70+ (Mithril, Gemstone, Hard Stone, Glacite, …)
 - [ ] Minions → 60+ types, real per-type tier tables, crafting-to-obtain
 - [ ] Bazaar products → 150+ (enchanted tiers, essences, gemstones, …)
-- [ ] NPC shops → 25+ with real catalogs
+- [~] NPC shops → 25+ with real catalogs — **10 shops** now (added Farm Merchant,
+      Builder, Weaponsmith, Armorsmith, Alchemist); all reachable via `/npcshop <id>`
 - [ ] Enchantments → full Hypixel set incl. ultimates
 - [ ] Reforge stones → real items + recipes/drops
 
