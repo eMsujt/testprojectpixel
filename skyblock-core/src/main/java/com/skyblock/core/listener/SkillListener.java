@@ -197,7 +197,12 @@ public final class SkillListener implements Listener {
         TreeType tree = TREE_MAP.get(type);
         if (logXp != null || tree != null) {
             if (logXp != null) {
+                int before = skillManager.getLevel(uuid, Skill.FORAGING);
                 skillManager.addXP(uuid, Skill.FORAGING, logXp);
+                int after = skillManager.getLevel(uuid, Skill.FORAGING);
+                if (after > before) {
+                    player.sendTitle("§aSkill Level Up!", "§eForaging §a→ §eLVL " + after, 10, 60, 20);
+                }
                 collectionManager.addCollection(uuid, type, 1);
             }
             if (tree != null) {
