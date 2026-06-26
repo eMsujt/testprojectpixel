@@ -68,7 +68,8 @@ remaining items below are polish/refinements.
       a "Custom Bid" button prompts in chat, parses k/m/b, and re-validates against
       the live minimum before placing. Remaining polish: search/rarity filters.
 - [ ] Bank interest auto-timer (currently only on `/bank interest`)
-- [ ] Coins-on-death tuned toward Hypixel (currently 5%)
+- [x] Coins-on-death tuned to Hypixel — **half the purse, combat deaths only** (matches
+      the Bank Information tooltip); environmental deaths (fall/lava/drown) keep the purse
 - [ ] Drain claim escrow back to players (Bazaar/AH claim flow)
 
 ## Phase 4 — Content rosters (grow toward Hypixel sizes)

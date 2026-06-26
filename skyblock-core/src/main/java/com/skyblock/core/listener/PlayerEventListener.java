@@ -6,6 +6,7 @@ import com.skyblock.core.util.ChatUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -70,12 +71,38 @@ public final class PlayerEventListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        // Hypixel only takes purse coins on combat deaths, and takes half — matching
+        // the Bank's Information tooltip: "You lose half the coins in your purse when
+        // dying in combat." Non-combat deaths (fall, lava, drowning…) keep your purse.
+        if (!isCombatDeath(player)) {
+            return;
+        }
         UUID uuid = player.getUniqueId();
         long purse = bankManager.getPurseBalance(uuid);
-        long penalty = (long) (purse * 0.05);
+        long penalty = purse / 2;
         if (penalty > 0) {
             bankManager.removeFromPurse(uuid, penalty);
-            ChatUtil.sendError(player, "You lost §6" + penalty + " coins §cfrom your purse on death.");
+            ChatUtil.sendError(player, "You lost §6" + String.format("%,d", penalty)
+                    + " coins §cfrom your purse on death.");
+        }
+    }
+
+    /** Whether the player's last damage was combat (a mob/player attack), not an environmental cause. */
+    private static boolean isCombatDeath(Player player) {
+        EntityDamageEvent last = player.getLastDamageCause();
+        if (last == null) {
+            return false;
+        }
+        switch (last.getCause()) {
+            case ENTITY_ATTACK:
+            case ENTITY_SWEEP_ATTACK:
+            case PROJECTILE:
+            case ENTITY_EXPLOSION:
+            case MAGIC:
+            case THORNS:
+                return true;
+            default:
+                return false;
         }
     }
 }
