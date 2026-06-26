@@ -52,7 +52,12 @@ public final class FishingListener implements Listener {
         double xp = isTreasure ? FishingManager.XP_TREASURE : FishingManager.XP_PER_CATCH;
         fishingManager.addXp(uuid, xp);
         fishingManager.addFishCaught(uuid);
+        int beforeLevel = skillManager.getLevel(uuid, Skill.FISHING);
         skillManager.addXP(uuid, Skill.FISHING, (long) xp);
+        int afterLevel = skillManager.getLevel(uuid, Skill.FISHING);
+        if (afterLevel > beforeLevel) {
+            player.sendTitle("§aSkill Level Up!", "§eFishing §a→ §eLVL " + afterLevel, 10, 60, 20);
+        }
 
         player.getWorld().dropItemNaturally(event.getHook().getLocation(), loot);
         fishingManager.recordCatchEvent(uuid, "Caught " + loot.getType().name());

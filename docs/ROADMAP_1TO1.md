@@ -42,7 +42,11 @@ remaining items below are polish/refinements.
 - [ ] Pet abilities (held/active) actually fire
 
 ## Phase 2 — Progression loops (activity → reward → power)
-- [ ] De-dup double-XP (Mining/Fishing/Combat accrue to two managers)
+- [~] De-dup double-XP — **Fishing fixed**: `FishingListener` and `CompactListeners`
+      both granted Fishing skill XP on the same catch; removed the `CompactListeners`
+      duplicate (kept its level-up title on `FishingListener`). Farming/Foraging are
+      also double-granted (SkillListener + CompactListeners) but their block-sets
+      differ, so de-dup there needs a block-coverage pass before removing either.
 - [x] Skill level-up perks → real stats — `SkillManager.getStatBonuses` wired into
       `recompute`; refreshes on join, gear change, **and any inventory click**, so a
       mid-session skill-up reflects on the next inventory interaction (responsive)
