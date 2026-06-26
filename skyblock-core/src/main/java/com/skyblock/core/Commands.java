@@ -1084,7 +1084,7 @@ public final class Commands {
                 bankManager.setTier(player.getUniqueId(), tier);
                 player.sendMessage("Bank tier set to: " + tier.getDisplayName());
             } catch (IllegalArgumentException e) {
-                player.sendMessage("Unknown tier. Valid tiers: STARTER, GOLD, DELUXE, SUPER_DELUXE, PREMIER, PREMIER_PLUS");
+                player.sendMessage("Unknown tier. Valid tiers: STARTER, GOLD, DELUXE, SUPER_DELUXE, PREMIER, LUXURIOUS, PALATIAL");
             }
         }
 

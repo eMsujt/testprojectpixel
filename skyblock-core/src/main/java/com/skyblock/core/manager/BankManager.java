@@ -46,19 +46,20 @@ public final class BankManager {
      * Each tier carries a higher interest rate and a larger balance cap.
      */
     public enum BankTier {
-        STARTER("Starter",            50_000_000.0,    2.0,  1_000_000.0),
-        GOLD("Gold",                  100_000_000.0,   2.5,  2_000_000.0),
-        DELUXE("Deluxe",              250_000_000.0,   3.0,  3_000_000.0),
-        SUPER_DELUXE("Super Deluxe",  500_000_000.0,   3.5,  4_000_000.0),
-        PREMIER("Premier",            1_000_000_000.0, 4.0,  5_000_000.0),
-        PREMIER_PLUS("Premier+",      Double.MAX_VALUE, 4.5, 10_000_000.0);
+        STARTER("Starter",            50_000_000.0,    2.0,    250_000.0),
+        GOLD("Gold",                  100_000_000.0,   2.0,    300_000.0),
+        DELUXE("Deluxe",              250_000_000.0,   2.0,    350_000.0),
+        SUPER_DELUXE("Super Deluxe",  500_000_000.0,   2.0,    390_000.0),
+        PREMIER("Premier",            1_000_000_000.0, 2.0,    500_000.0),
+        LUXURIOUS("Luxurious",        6_000_000_000.0, 2.0,  1_000_000.0),
+        PALATIAL("Palatial",          60_000_000_000.0, 2.0, 1_500_000.0);
 
         private final String displayName;
-        /** Maximum balance this tier can hold before the next tier is required. */
+        /** Maximum balance this tier can hold (Hypixel's per-tier storage cap). */
         private final double maxBalance;
-        /** Annual interest rate as a percentage (e.g. 1.5 means 1.5%). */
+        /** Headline interest rate shown in the menu — the first bracket (2% on the first 10M). */
         private final double interestRate;
-        /** Maximum coins that can be paid out in a single interest accrual. */
+        /** Maximum coins paid out in a single season's interest accrual (per-tier cap). */
         private final double interestCap;
 
         BankTier(String displayName, double maxBalance, double interestRate, double interestCap) {
@@ -91,9 +92,24 @@ public final class BankManager {
                     return tier;
                 }
             }
-            return PREMIER_PLUS;
+            return PALATIAL;
         }
     }
+
+    /**
+     * Hypixel's bracketed bank-interest schedule: {upper bound, rate} pairs. Interest
+     * is paid on each slice of the balance at that slice's rate, then clamped to the
+     * tier's interest cap. (2% on the first 10M, 1% on the next 10M, etc.)
+     */
+    private static final double[][] INTEREST_BRACKETS = {
+            {10_000_000.0,     0.02},
+            {20_000_000.0,     0.01},
+            {30_000_000.0,     0.005},
+            {50_000_000.0,     0.002},
+            {160_000_000.0,    0.001},
+            {5_100_000_000.0,  0.0001},
+            {55_000_000_000.0, 0.00001},
+    };
 
     private static final BankManager INSTANCE = new BankManager();
 
@@ -214,11 +230,24 @@ public final class BankManager {
     public double applyInterest(UUID playerId) {
         BankAccount old = getOrCreate(playerId);
         BankTier tier = getTier(playerId);
-        double rate = tier.getInterestRate() / 100.0;
-        double interest = Math.min(old.balance() * rate, tier.getInterestCap());
+        double interest = Math.min(bracketedInterest(old.balance()), tier.getInterestCap());
         if (interest > 0) {
             old.transactionHistory().add("INTEREST +" + interest);
             accounts.put(playerId, new BankAccount(old.balance() + interest, old.transactionHistory()));
+        }
+        return interest;
+    }
+
+    /** Sums Hypixel's bracketed interest across the balance (before the per-tier cap). */
+    private static double bracketedInterest(double balance) {
+        double interest = 0.0;
+        double lower = 0.0;
+        for (double[] bracket : INTEREST_BRACKETS) {
+            double upper = bracket[0];
+            if (balance <= lower) break;
+            double slice = Math.min(balance, upper) - lower;
+            interest += slice * bracket[1];
+            lower = upper;
         }
         return interest;
     }
