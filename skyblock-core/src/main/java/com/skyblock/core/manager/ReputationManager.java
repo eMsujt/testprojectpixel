@@ -42,16 +42,11 @@ public final class ReputationManager {
      * is the inclusive lower bound of reputation that maps to the tier.
      */
     public enum ReputationTier {
-        HATED("Hated", -12000),
-        HOSTILE("Hostile", -6000),
-        DISTASTEFUL("Distasteful", -3000),
-        COLD("Cold", -1000),
         NEUTRAL("Neutral", 0),
-        CORDIAL("Cordial", 1000),
-        FRIENDLY("Friendly", 3000),
-        HONORED("Honored", 6000),
-        TRUSTED("Trusted", 9000),
-        RESPECTED("Respected", 12000);
+        FRIENDLY("Friendly", 1000),
+        TRUSTED("Trusted", 3000),
+        HONORED("Honored", 7000),
+        HERO("Hero", 12000);
 
         private final String displayName;
         private final int minReputation;
@@ -71,7 +66,7 @@ public final class ReputationManager {
     }
 
     public static final int MAX_REPUTATION = 12000;
-    public static final int MIN_REPUTATION = -12000;
+    public static final int MIN_REPUTATION = 0;
 
     private static final ReputationManager INSTANCE = new ReputationManager();
 
@@ -154,7 +149,7 @@ public final class ReputationManager {
      */
     public ReputationTier getReputationTier(UUID playerId, Faction faction) {
         int rep = getReputation(playerId, faction);
-        ReputationTier result = ReputationTier.HATED;
+        ReputationTier result = ReputationTier.NEUTRAL;
         for (ReputationTier tier : ReputationTier.values()) {
             if (rep >= tier.getMinReputation()) {
                 result = tier;
