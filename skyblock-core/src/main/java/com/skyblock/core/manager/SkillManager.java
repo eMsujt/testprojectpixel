@@ -74,7 +74,7 @@ public final class SkillManager {
         m.put("carpentry",     FIFTY_LEVEL_CURVE.clone());
         m.put("dungeoneering", DUNGEONEERING_CURVE.clone());
         m.put("runecrafting",  TWENTY_FIVE_LEVEL_CURVE.clone());
-        m.put("social",        TWENTY_FIVE_LEVEL_CURVE.clone());
+        m.put("social",        SkyBlockXP.SOCIAL.clone());
         SKILL_XP_TABLE = Collections.unmodifiableMap(m);
 
         Map<String, long[]> cum = new LinkedHashMap<>();
@@ -89,7 +89,7 @@ public final class SkillManager {
         cum.put("carpentry",     SkyBlockXP.FIFTY_LEVEL_CUMULATIVE.clone());
         cum.put("dungeoneering", SkyBlockXP.DUNGEONEERING_CUMULATIVE.clone());
         cum.put("runecrafting",  SkyBlockXP.TWENTY_FIVE_LEVEL_CUMULATIVE.clone());
-        cum.put("social",        SkyBlockXP.TWENTY_FIVE_LEVEL_CUMULATIVE.clone());
+        cum.put("social",        SkyBlockXP.SOCIAL_CUMULATIVE.clone());
         SKILL_CUMULATIVE_XP_TABLE = Collections.unmodifiableMap(cum);
 
         Skill[] skillValues = Skill.values();
