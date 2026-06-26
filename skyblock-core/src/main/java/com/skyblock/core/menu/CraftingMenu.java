@@ -21,7 +21,7 @@ import java.util.Optional;
  * the player on close.
  *
  * <p>The grid slots are the only interactive slots ({@link #isInteractiveSlot}),
- * and only plain place/pickup is allowed — the {@link com.skyblock.core.menu.listener.MenuListener}
+ * and only plain place/pickup is allowed — {@link com.skyblock.core.listener.PlayerEventListener}
  * blocks shift-click / drag / number-key so items can't be duped or lost.</p>
  */
 public final class CraftingMenu extends AbstractMenu {

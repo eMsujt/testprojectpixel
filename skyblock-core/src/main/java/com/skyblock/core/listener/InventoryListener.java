@@ -10,9 +10,9 @@ import org.bukkit.inventory.InventoryHolder;
 
 /**
  * Handles general {@link InventoryClickEvent} cases not covered by
- * {@link com.skyblock.core.menu.listener.MenuListener}: prevents players from
- * moving items out of non-player, non-crafting inventories that are not SkyBlock
- * {@link Menu} instances (e.g. raw chest/hopper views).
+ * {@link PlayerEventListener} (the SkyBlock {@link Menu} dispatcher): prevents
+ * players from moving items out of non-player, non-crafting inventories that are
+ * not SkyBlock {@link Menu} instances (e.g. raw chest/hopper views).
  */
 public final class InventoryListener implements Listener {
 
