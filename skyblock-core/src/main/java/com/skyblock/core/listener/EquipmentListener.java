@@ -10,6 +10,7 @@ import com.skyblock.core.manager.ItemStatManager;
 import com.skyblock.core.manager.ReforgeManager;
 import com.skyblock.core.manager.SkillManager;
 import com.skyblock.core.manager.StatManager;
+import com.skyblock.core.model.Rarity;
 import com.skyblock.core.model.Stat;
 import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
@@ -266,9 +267,30 @@ public final class EquipmentListener implements Listener {
         if (r == ReforgeManager.ReforgeType.NONE) {
             return;
         }
-        totals.merge(Stat.STRENGTH, (double) r.getStrengthBonus(), Double::sum);
-        totals.merge(Stat.DEFENSE,  (double) r.getDefenseBonus(),  Double::sum);
-        totals.merge(Stat.SPEED,    (double) r.getSpeedBonus(),    Double::sum);
+        // Apply the reforge's full stat set for the item's rarity (Strength/Crit/Int/etc.).
+        for (Map.Entry<Stat, Double> e : r.getStats(rarityOf(item)).entrySet()) {
+            totals.merge(e.getKey(), e.getValue(), Double::sum);
+        }
+    }
+
+    /** Best-effort read of an item's rarity from its lore (defaults to Legendary for endgame gear). */
+    private static Rarity rarityOf(ItemStack item) {
+        if (item == null) {
+            return Rarity.LEGENDARY;
+        }
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null && meta.getLore() != null) {
+            java.util.List<String> lore = meta.getLore();
+            for (int i = lore.size() - 1; i >= 0; i--) {
+                String[] words = ChatColor.stripColor(lore.get(i)).trim().split("\\s+");
+                if (words.length == 0) continue;
+                String first = words[0].toUpperCase(Locale.ROOT);
+                for (Rarity r : Rarity.values()) {
+                    if (r.name().equals(first)) return r;
+                }
+            }
+        }
+        return Rarity.LEGENDARY;
     }
 
     /**
