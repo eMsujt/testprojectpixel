@@ -67,9 +67,9 @@ public final class SkillManager {
         m.put("mining",        STANDARD_CURVE.clone());
         m.put("combat",        STANDARD_CURVE.clone());
         m.put("foraging",      STANDARD_CURVE.clone());
-        m.put("fishing",       STANDARD_CURVE.clone());
+        m.put("fishing",       FIFTY_LEVEL_CURVE.clone());
         m.put("enchanting",    STANDARD_CURVE.clone());
-        m.put("alchemy",       STANDARD_CURVE.clone());
+        m.put("alchemy",       FIFTY_LEVEL_CURVE.clone());
         m.put("taming",        STANDARD_CURVE.clone());
         m.put("carpentry",     FIFTY_LEVEL_CURVE.clone());
         m.put("dungeoneering", DUNGEONEERING_CURVE.clone());
@@ -82,9 +82,9 @@ public final class SkillManager {
         cum.put("mining",        SkyBlockXP.STANDARD_CUMULATIVE.clone());
         cum.put("combat",        SkyBlockXP.STANDARD_CUMULATIVE.clone());
         cum.put("foraging",      SkyBlockXP.STANDARD_CUMULATIVE.clone());
-        cum.put("fishing",       SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("fishing",       SkyBlockXP.FIFTY_LEVEL_CUMULATIVE.clone());
         cum.put("enchanting",    SkyBlockXP.STANDARD_CUMULATIVE.clone());
-        cum.put("alchemy",       SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("alchemy",       SkyBlockXP.FIFTY_LEVEL_CUMULATIVE.clone());
         cum.put("taming",        SkyBlockXP.STANDARD_CUMULATIVE.clone());
         cum.put("carpentry",     SkyBlockXP.FIFTY_LEVEL_CUMULATIVE.clone());
         cum.put("dungeoneering", SkyBlockXP.DUNGEONEERING_CUMULATIVE.clone());
@@ -117,7 +117,7 @@ public final class SkillManager {
         stat.put("combat",       Stat.CRIT_CHANCE);
         stat.put("enchanting",   Stat.INTELLIGENCE);
         stat.put("alchemy",      Stat.INTELLIGENCE);
-        stat.put("taming",       Stat.MAGIC_FIND);
+        stat.put("taming",       Stat.PET_LUCK);
         stat.put("carpentry",    Stat.HEALTH);
         stat.put("runecrafting", Stat.INTELLIGENCE);
         stat.put("social",       Stat.SPEED);
@@ -138,10 +138,18 @@ public final class SkillManager {
     }
 
     private static double rewardForLevel(String skill, int level) {
+        // Combat: +0.5 Crit Chance every level. Taming: flat +1 Pet Luck every level.
         if ("combat".equals(skill)) return 0.5;
+        if ("taming".equals(skill)) return 1.0;
+        // Mining (Defense) and Foraging (Strength) are two-tier: +1 to L14, +2 from L15.
+        if ("mining".equals(skill) || "foraging".equals(skill)) {
+            return level <= 14 ? 1.0 : 2.0;
+        }
+        // Health skills (Farming/Fishing/Carpentry/Dungeoneering): 2/3/4/5 banded
+        // (band boundaries 14 / 20 / 25 per the wiki Leveling Rewards).
         boolean health = "farming".equals(skill) || "fishing".equals(skill)
                 || "dungeoneering".equals(skill) || "carpentry".equals(skill);
-        int tier = level <= 14 ? 0 : level <= 19 ? 1 : level <= 25 ? 2 : 3;
+        int tier = level <= 14 ? 0 : level <= 20 ? 1 : level <= 25 ? 2 : 3;
         return (health ? 2 : 1) + tier;
     }
 
