@@ -217,7 +217,7 @@ public final class BankMenu extends AbstractSkyBlockMenu {
                 new BankMenu(player, null).open(player);
                 return;
             }
-            long amount = parseAmount(input);
+            long amount = com.skyblock.core.manager.ChatInputManager.parseAmount(input);
             if (amount <= 0) {
                 player.sendMessage("§c'" + input + "' is not a valid amount.");
                 new BankMenu(player, isDeposit ? "deposit" : "withdraw").open(player);
@@ -229,23 +229,6 @@ public final class BankMenu extends AbstractSkyBlockMenu {
                 withdraw(amount);
             }
         });
-    }
-
-    /** Parses "10000", "1,000", "10k", "2.5m", "1b" into a coin amount; -1 if invalid. */
-    private static long parseAmount(String raw) {
-        String s = raw.trim().toLowerCase().replace(",", "");
-        if (s.isEmpty()) return -1;
-        double mult = 1;
-        char last = s.charAt(s.length() - 1);
-        if (last == 'k') { mult = 1_000D; s = s.substring(0, s.length() - 1); }
-        else if (last == 'm') { mult = 1_000_000D; s = s.substring(0, s.length() - 1); }
-        else if (last == 'b') { mult = 1_000_000_000D; s = s.substring(0, s.length() - 1); }
-        try {
-            double value = Double.parseDouble(s) * mult;
-            return value <= 0 ? -1 : (long) value;
-        } catch (NumberFormatException e) {
-            return -1;
-        }
     }
 
     /** Go Back (to the main account view) + Close, for the deposit / withdraw sub-views. */
