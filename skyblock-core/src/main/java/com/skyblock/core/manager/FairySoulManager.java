@@ -29,8 +29,12 @@ import java.util.UUID;
  */
 public final class FairySoulManager {
 
-    /** Hard cap matching Hypixel SkyBlock's total fairy soul count. */
-    public static final int MAX_SOULS = 227;
+    /**
+     * Hypixel SkyBlock's total fairy soul count (the wiki states 273). The
+     * {@link FairyIsland} enum below maps the currently-placed subset; the
+     * remaining souls live on zones not yet generated in-world.
+     */
+    public static final int MAX_SOULS = 273;
 
     /** SkyBlock islands that contain fairy souls, each with a display name and total soul count. */
     public enum FairyIsland {
