@@ -144,8 +144,8 @@ public final class BankMenu extends AbstractSkyBlockMenu {
 
         setItem(15, new ItemBuilder(Material.OAK_SIGN)
                 .displayName("§aCustom amount")
-                .lore("§7Deposit a specific amount.", "", "§cComing soon.")
-                .build(), e -> e.setCancelled(true));
+                .lore("§7Deposit a specific amount.", "", "§eClick to type an amount!")
+                .build(), e -> { e.setCancelled(true); promptCustom(true); });
 
         backToMainButtons();
     }
@@ -165,8 +165,8 @@ public final class BankMenu extends AbstractSkyBlockMenu {
 
         setItem(15, new ItemBuilder(Material.OAK_SIGN)
                 .displayName("§aCustom amount")
-                .lore("§7Withdraw a specific amount.", "", "§cComing soon.")
-                .build(), e -> e.setCancelled(true));
+                .lore("§7Withdraw a specific amount.", "", "§eClick to type an amount!")
+                .build(), e -> { e.setCancelled(true); promptCustom(false); });
 
         backToMainButtons();
     }
@@ -174,8 +174,13 @@ public final class BankMenu extends AbstractSkyBlockMenu {
     private void deposit(long amount) {
         UUID uuid = player.getUniqueId();
         EconomyManager econ = EconomyManager.getInstance();
-        if (amount <= 0) {
+        long purse = econ.getPurse(uuid);
+        if (amount <= 0 || purse <= 0) {
             player.sendMessage("§cYour purse is empty.");
+            return;
+        }
+        if (amount > purse) {
+            player.sendMessage("§cYou don't have that many coins in your purse.");
             return;
         }
         econ.withdraw(uuid, amount);
@@ -186,14 +191,61 @@ public final class BankMenu extends AbstractSkyBlockMenu {
 
     private void withdraw(long amount) {
         UUID uuid = player.getUniqueId();
-        if (amount <= 0) {
+        long balance = (long) BankManager.getInstance().getBalance(uuid);
+        if (amount <= 0 || balance <= 0) {
             player.sendMessage("§cYour bank is empty.");
+            return;
+        }
+        if (amount > balance) {
+            player.sendMessage("§cYou don't have that many coins in your bank.");
             return;
         }
         BankManager.getInstance().withdraw(uuid, amount);
         EconomyManager.getInstance().addPurse(uuid, amount);
         player.sendMessage("§aWithdrew §6" + String.format("%,d", amount) + " §acoins from your bank.");
         new BankMenu(player, null).open(player);
+    }
+
+    /** Prompts for a custom amount in chat, then runs the deposit/withdraw action. */
+    private void promptCustom(boolean isDeposit) {
+        player.closeInventory();
+        player.sendMessage("§eType the amount to " + (isDeposit ? "deposit" : "withdraw")
+                + " in chat §7(e.g. §f10000§7, §f2.5m§7), or type §ccancel§7.");
+        com.skyblock.core.manager.ChatInputManager.getInstance().request(player.getUniqueId(), input -> {
+            if (input.equalsIgnoreCase("cancel")) {
+                player.sendMessage("§cCancelled.");
+                new BankMenu(player, null).open(player);
+                return;
+            }
+            long amount = parseAmount(input);
+            if (amount <= 0) {
+                player.sendMessage("§c'" + input + "' is not a valid amount.");
+                new BankMenu(player, isDeposit ? "deposit" : "withdraw").open(player);
+                return;
+            }
+            if (isDeposit) {
+                deposit(amount);
+            } else {
+                withdraw(amount);
+            }
+        });
+    }
+
+    /** Parses "10000", "1,000", "10k", "2.5m", "1b" into a coin amount; -1 if invalid. */
+    private static long parseAmount(String raw) {
+        String s = raw.trim().toLowerCase().replace(",", "");
+        if (s.isEmpty()) return -1;
+        double mult = 1;
+        char last = s.charAt(s.length() - 1);
+        if (last == 'k') { mult = 1_000D; s = s.substring(0, s.length() - 1); }
+        else if (last == 'm') { mult = 1_000_000D; s = s.substring(0, s.length() - 1); }
+        else if (last == 'b') { mult = 1_000_000_000D; s = s.substring(0, s.length() - 1); }
+        try {
+            double value = Double.parseDouble(s) * mult;
+            return value <= 0 ? -1 : (long) value;
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     /** Go Back (to the main account view) + Close, for the deposit / withdraw sub-views. */
