@@ -66,7 +66,7 @@ public final class SkillManager {
         m.put("farming",       STANDARD_CURVE.clone());
         m.put("mining",        STANDARD_CURVE.clone());
         m.put("combat",        STANDARD_CURVE.clone());
-        m.put("foraging",      STANDARD_CURVE.clone());
+        m.put("foraging",      Arrays.copyOf(STANDARD_CURVE, 54)); // Foraging caps at level 54
         m.put("fishing",       FIFTY_LEVEL_CURVE.clone());
         m.put("enchanting",    STANDARD_CURVE.clone());
         m.put("alchemy",       FIFTY_LEVEL_CURVE.clone());
@@ -81,7 +81,7 @@ public final class SkillManager {
         cum.put("farming",       SkyBlockXP.STANDARD_CUMULATIVE.clone());
         cum.put("mining",        SkyBlockXP.STANDARD_CUMULATIVE.clone());
         cum.put("combat",        SkyBlockXP.STANDARD_CUMULATIVE.clone());
-        cum.put("foraging",      SkyBlockXP.STANDARD_CUMULATIVE.clone());
+        cum.put("foraging",      Arrays.copyOf(SkyBlockXP.STANDARD_CUMULATIVE, 54));
         cum.put("fishing",       SkyBlockXP.FIFTY_LEVEL_CUMULATIVE.clone());
         cum.put("enchanting",    SkyBlockXP.STANDARD_CUMULATIVE.clone());
         cum.put("alchemy",       SkyBlockXP.FIFTY_LEVEL_CUMULATIVE.clone());
