@@ -30,16 +30,16 @@ public final class EnchantingManager {
         CRITICAL(         "Critical",           7),
         SMITE(            "Smite",              7),
         BANE_OF_ARTHROPODS("Bane of Arthropods", 7),
-        FIRST_STRIKE(     "First Strike",       4),
+        FIRST_STRIKE(     "First Strike",       5),
         GIANT_KILLER(     "Giant Killer",       7),
         ENDER_SLAYER(     "Ender Slayer",       7),
         DRAGON_HUNTER(    "Dragon Hunter",      5),
         THUNDERLORD(      "Thunderlord",        7),
-        EXECUTE(          "Execute",            5),
+        EXECUTE(          "Execute",            7),
         // Utility / Special
         TELEKINESIS(      "Telekinesis",        1),
-        LOOTING(          "Looting",            4),
-        POWER(            "Power",              5),
+        LOOTING(          "Looting",            5),
+        POWER(            "Power",              7),
         SMELTING_TOUCH(   "Smelting Touch",     1),
         MAGNET(           "Magnet",             1),
         LIFE_STEAL(       "Life Steal",         5),
@@ -60,7 +60,7 @@ public final class EnchantingManager {
         PROTECTION(       "Protection",         7),
         THORNS(           "Thorns",             3),
         GROWTH(           "Growth",             7),
-        FEATHER_FALLING(  "Feather Falling",    7),
+        FEATHER_FALLING(  "Feather Falling",    10),
         REJUVENATE(       "Rejuvenate",         5);
 
         private final String displayName;
@@ -109,7 +109,7 @@ public final class EnchantingManager {
         CRITICAL("Critical", 7),
         SMITE("Smite", 7),
         BANE_OF_ARTHROPODS("Bane of Arthropods", 7),
-        FIRST_STRIKE("First Strike", 4),
+        FIRST_STRIKE("First Strike", 5),
         GIANT_KILLER("Giant Killer", 7),
         ENDER_SLAYER("Ender Slayer", 7),
         CUBISM("Cubism", 6),
@@ -118,12 +118,12 @@ public final class EnchantingManager {
         VAMPIRISM("Vampirism", 6),
         LIFE_STEAL("Life Steal", 5),
         LETHALITY("Lethality", 6),
-        EXECUTE("Execute", 5),
-        PROSECUTE("Prosecute", 5),
+        EXECUTE("Execute", 7),
+        PROSECUTE("Prosecute", 7),
         OVERLOAD("Overload", 5),
         // Utility / Special
         TELEKINESIS("Telekinesis", 1),
-        LOOTING("Looting", 4),
+        LOOTING("Looting", 5),
         SMELTING_TOUCH("Smelting Touch", 1),
         MAGNET("Magnet", 1),
         SILK_TOUCH("Silk Touch", 1),
@@ -132,7 +132,7 @@ public final class EnchantingManager {
         PUNCH("Punch", 2),
         FLAME("Flame", 1),
         // Bow
-        POWER("Power", 5),
+        POWER("Power", 7),
         // Fishing
         LUCK_OF_THE_SEA("Luck of the Sea", 7),
         ANGLER("Angler", 6),
@@ -161,7 +161,7 @@ public final class EnchantingManager {
         PROTECTION("Protection", 7),
         THORNS("Thorns", 3),
         GROWTH("Growth", 7),
-        FEATHER_FALLING("Feather Falling", 7),
+        FEATHER_FALLING("Feather Falling", 10),
         SUGAR_RUSH("Sugar Rush", 3),
         REJUVENATE("Rejuvenate", 5),
         // Misc
@@ -170,7 +170,7 @@ public final class EnchantingManager {
         ULTIMATE_WISE("Ultimate Wise", 5),
         // Dungeon / Extra
         SHREDDER("Shredder", 5),
-        SCAVENGER("Scavenger", 4),
+        SCAVENGER("Scavenger", 6),
         SOUL_EATER("Soul Eater", 5),
         VENOMOUS("Venomous", 5),
         VICIOUS("Vicious", 5);
@@ -219,16 +219,16 @@ public final class EnchantingManager {
         m.put("CRITICAL",           new int[]{7, 12});
         m.put("SMITE",              new int[]{7, 10});
         m.put("BANE_OF_ARTHROPODS", new int[]{7, 10});
-        m.put("FIRST_STRIKE",       new int[]{4,  8});
+        m.put("FIRST_STRIKE",       new int[]{5,  8});
         m.put("GIANT_KILLER",       new int[]{7, 12});
         m.put("ENDER_SLAYER",       new int[]{7, 15});
         m.put("DRAGON_HUNTER",      new int[]{5, 15});
         m.put("THUNDERLORD",        new int[]{7, 12});
-        m.put("EXECUTE",            new int[]{5, 10});
+        m.put("EXECUTE",            new int[]{7, 10});
         // Utility / Special
         m.put("TELEKINESIS",        new int[]{1,  5});
-        m.put("LOOTING",            new int[]{4,  8});
-        m.put("POWER",              new int[]{5, 10});
+        m.put("LOOTING",            new int[]{5,  8});
+        m.put("POWER",              new int[]{7, 10});
         m.put("SMELTING_TOUCH",     new int[]{1,  8});
         m.put("MAGNET",             new int[]{1,  5});
         m.put("LIFE_STEAL",         new int[]{5, 10});
@@ -249,7 +249,7 @@ public final class EnchantingManager {
         m.put("PROTECTION",         new int[]{7, 15});
         m.put("THORNS",             new int[]{3,  8});
         m.put("GROWTH",             new int[]{7, 12});
-        m.put("FEATHER_FALLING",    new int[]{7, 10});
+        m.put("FEATHER_FALLING",    new int[]{10, 10});
         m.put("REJUVENATE",         new int[]{5, 12});
         ENCHANT_DATA = Collections.unmodifiableMap(m);
     }

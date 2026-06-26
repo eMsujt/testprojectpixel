@@ -33,11 +33,8 @@ public final class BestiaryManager {
     /** The highest tier a bestiary entry can reach. */
     public static final int MAX_TIER = 10;
 
-    /** Health granted per milestone level (one level per mob tier unlocked). */
-    private static final double HEALTH_PER_MILESTONE = 2.0;
-
-    /** Bonus health granted each time a whole mob family is completed. */
-    private static final double HEALTH_PER_FAMILY = 5.0;
+    /** Health granted per bestiary milestone (Hypixel grants +1 HP per milestone). */
+    private static final double HEALTH_PER_MILESTONE = 1.0;
 
     /** Individual mob types tracked in the bestiary. */
     public enum BestiaryMob {
@@ -464,16 +461,14 @@ public final class BestiaryManager {
 
     /**
      * Returns the permanent stat bonuses the player has earned from bestiary
-     * progress. Every unlocked mob tier grants {@code HEALTH_PER_MILESTONE}
-     * health, and every fully completed family grants {@code HEALTH_PER_FAMILY}
-     * additional health.
+     * progress: every milestone reached grants {@code HEALTH_PER_MILESTONE}
+     * health (Hypixel grants no separate per-family Health bonus).
      *
      * @param playerId the player's UUID
      * @return map of stat to bonus value; empty if the player has no progress
      */
     public Map<Stat, Double> getMilestoneStats(UUID playerId) {
-        double health = getMilestoneLevel(playerId) * HEALTH_PER_MILESTONE
-                      + getCompletedFamilyCount(playerId) * HEALTH_PER_FAMILY;
+        double health = getMilestoneLevel(playerId) * HEALTH_PER_MILESTONE;
         if (health <= 0.0) {
             return Collections.emptyMap();
         }
