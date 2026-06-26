@@ -9,13 +9,11 @@ import com.skyblock.core.model.Stat;
 import com.skyblock.core.manager.StatsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
@@ -33,33 +31,7 @@ public final class CompactListeners implements Listener {
 
     private static final long TAMING_KILL_XP     = 10L;
     private static final long CARPENTRY_XP_PLANK =  1L;
-    private static final long FARMING_CROP_XP    =  3L;
-    private static final long FORAGING_LOG_XP    =  6L;
     private static final long PET_XP_PER_KILL    =  5L;
-
-    // All farmable materials; Ageable ones require max age to award XP.
-    private static final Set<Material> CROP_MATERIALS = EnumSet.of(
-            Material.WHEAT,
-            Material.CARROTS,
-            Material.POTATOES,
-            Material.BEETROOTS,
-            Material.NETHER_WART,
-            Material.COCOA,
-            Material.MELON,
-            Material.PUMPKIN,
-            Material.SUGAR_CANE
-    );
-
-    private static final Set<Material> LOGS = EnumSet.of(
-            Material.OAK_LOG,         Material.STRIPPED_OAK_LOG,
-            Material.BIRCH_LOG,       Material.STRIPPED_BIRCH_LOG,
-            Material.SPRUCE_LOG,      Material.STRIPPED_SPRUCE_LOG,
-            Material.JUNGLE_LOG,      Material.STRIPPED_JUNGLE_LOG,
-            Material.ACACIA_LOG,      Material.STRIPPED_ACACIA_LOG,
-            Material.DARK_OAK_LOG,    Material.STRIPPED_DARK_OAK_LOG,
-            Material.MANGROVE_LOG,    Material.STRIPPED_MANGROVE_LOG,
-            Material.CHERRY_LOG,      Material.STRIPPED_CHERRY_LOG
-    );
 
     private static final Set<Material> PLANKS = EnumSet.of(
             Material.OAK_PLANKS,
@@ -89,23 +61,6 @@ public final class CompactListeners implements Listener {
         double strength = statsManager.get(player.getUniqueId(), Stat.STRENGTH);
         long xp = Math.max(1L, (long) (event.getDamage() * (1.0 + strength / 100.0)));
         grantXP(player, Skill.COMBAT, xp);
-    }
-
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled()) return;
-        Player player = event.getPlayer();
-        Material type = event.getBlock().getType();
-
-        if (CROP_MATERIALS.contains(type)) {
-            org.bukkit.block.data.BlockData bd = event.getBlock().getBlockData();
-            if (bd instanceof Ageable ageable && ageable.getAge() != ageable.getMaximumAge()) return;
-            grantXP(player, Skill.FARMING, FARMING_CROP_XP);
-            return;
-        }
-        if (LOGS.contains(type)) {
-            grantXP(player, Skill.FORAGING, FORAGING_LOG_XP);
-        }
     }
 
     @EventHandler
