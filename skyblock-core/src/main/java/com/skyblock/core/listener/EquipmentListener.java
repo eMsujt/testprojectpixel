@@ -14,6 +14,7 @@ import com.skyblock.core.model.Stat;
 import com.skyblock.core.talisman.manager.TalismanManager.TalismanType;
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -25,11 +26,13 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public final class EquipmentListener implements Listener {
@@ -135,12 +138,73 @@ public final class EquipmentListener implements Listener {
         }
         addReforge(totals, reforgeMgr, heldItem);
 
+        // Armor stat-enchants: Growth → Health, Protection → Defense (read from each piece's lore).
+        for (ItemStack piece : player.getInventory().getArmorContents()) {
+            addArmorEnchantStats(totals, piece);
+        }
+
         StatManager sm = StatManager.getInstance();
         sm.setEquipmentBonuses(player.getUniqueId(), totals);
         applyMaxHealth(player, sm);
         applyWalkSpeed(player, sm);
         applyAttackSpeed(player, sm);
         applyMiningSpeed(player, sm);
+    }
+
+    /**
+     * Adds the stat bonuses from a piece's armor enchants, read from its lore:
+     * Growth grants +15 Health per level, Protection grants +4 Defense per level
+     * for I–V and +5 per level for VI–VII (exact Hypixel values).
+     */
+    private static void addArmorEnchantStats(Map<Stat, Double> totals, ItemStack piece) {
+        if (piece == null) {
+            return;
+        }
+        ItemMeta meta = piece.getItemMeta();
+        if (meta == null || meta.getLore() == null) {
+            return;
+        }
+        for (String raw : meta.getLore()) {
+            String line = ChatColor.stripColor(raw).trim();
+            for (String part : line.split(",")) {
+                part = part.trim();
+                int sp = part.lastIndexOf(' ');
+                if (sp <= 0) {
+                    continue;
+                }
+                int level = romanToInt(part.substring(sp + 1).trim());
+                if (level <= 0) {
+                    continue;
+                }
+                String name = part.substring(0, sp).trim().toLowerCase(Locale.ROOT);
+                if (name.equals("growth")) {
+                    totals.merge(Stat.HEALTH, 15.0 * level, Double::sum);
+                } else if (name.equals("protection")) {
+                    double defense = level <= 5 ? 4.0 * level : 20.0 + 5.0 * (level - 5);
+                    totals.merge(Stat.DEFENSE, defense, Double::sum);
+                }
+            }
+        }
+    }
+
+    /** Parses a small Roman numeral (I–X range); returns 0 if not a clean numeral. */
+    private static int romanToInt(String s) {
+        if (s.isEmpty()) {
+            return 0;
+        }
+        int total = 0;
+        int prev = 0;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            int v;
+            switch (Character.toUpperCase(s.charAt(i))) {
+                case 'I': v = 1; break;
+                case 'V': v = 5; break;
+                case 'X': v = 10; break;
+                default: return 0;
+            }
+            if (v < prev) total -= v; else { total += v; prev = v; }
+        }
+        return total;
     }
 
     /**
