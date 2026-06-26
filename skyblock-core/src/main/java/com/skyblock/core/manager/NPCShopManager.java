@@ -74,6 +74,59 @@ public final class NPCShopManager {
                 new ShopManager.ShopEntry("PUFFERFISH",       8,   3),
                 new ShopManager.ShopEntry("INK_SAC",          4,   1),
                 new ShopManager.ShopEntry("LILY_PAD",         3,   1)));
+
+        add(sm, "farm_merchant", "§eFarm Merchant", List.of(
+                new ShopManager.ShopEntry("WHEAT_SEEDS",      1,   0),
+                new ShopManager.ShopEntry("WHEAT",            3,   1),
+                new ShopManager.ShopEntry("CARROT",           3,   1),
+                new ShopManager.ShopEntry("POTATO",           3,   1),
+                new ShopManager.ShopEntry("PUMPKIN_SEEDS",    2,   0),
+                new ShopManager.ShopEntry("MELON_SEEDS",      2,   0),
+                new ShopManager.ShopEntry("SUGAR_CANE",       4,   2),
+                new ShopManager.ShopEntry("COCOA_BEANS",      3,   1),
+                new ShopManager.ShopEntry("RED_MUSHROOM",    10,   4),
+                new ShopManager.ShopEntry("BROWN_MUSHROOM",  10,   4),
+                new ShopManager.ShopEntry("NETHER_WART",     12,   4)));
+
+        add(sm, "builder", "§eBuilder", List.of(
+                new ShopManager.ShopEntry("WHITE_WOOL",       3,   0),
+                new ShopManager.ShopEntry("OAK_PLANKS",       3,   0),
+                new ShopManager.ShopEntry("STONE",            3,   0),
+                new ShopManager.ShopEntry("STONE_BRICKS",     5,   0),
+                new ShopManager.ShopEntry("SMOOTH_STONE",     4,   0),
+                new ShopManager.ShopEntry("GLASS",            6,   0),
+                new ShopManager.ShopEntry("BRICKS",          10,   0),
+                new ShopManager.ShopEntry("GLOWSTONE",       10,   0)));
+
+        add(sm, "weaponsmith", "§cWeaponsmith", List.of(
+                new ShopManager.ShopEntry("WOODEN_SWORD",    10,   0),
+                new ShopManager.ShopEntry("STONE_SWORD",     50,   0),
+                new ShopManager.ShopEntry("IRON_SWORD",     100,   0),
+                new ShopManager.ShopEntry("GOLDEN_SWORD",    75,   0),
+                new ShopManager.ShopEntry("BOW",             60,   0),
+                new ShopManager.ShopEntry("ARROW",            1,   0)));
+
+        add(sm, "armorsmith", "§cArmorsmith", List.of(
+                new ShopManager.ShopEntry("LEATHER_HELMET",      30,   0),
+                new ShopManager.ShopEntry("LEATHER_CHESTPLATE",  40,   0),
+                new ShopManager.ShopEntry("LEATHER_LEGGINGS",    35,   0),
+                new ShopManager.ShopEntry("LEATHER_BOOTS",       25,   0),
+                new ShopManager.ShopEntry("IRON_HELMET",        100,   0),
+                new ShopManager.ShopEntry("IRON_CHESTPLATE",    150,   0),
+                new ShopManager.ShopEntry("IRON_LEGGINGS",      125,   0),
+                new ShopManager.ShopEntry("IRON_BOOTS",          80,   0)));
+
+        add(sm, "alchemist", "§dAlchemist", List.of(
+                new ShopManager.ShopEntry("GLASS_BOTTLE",          4,   0),
+                new ShopManager.ShopEntry("BREWING_STAND",       150,   0),
+                new ShopManager.ShopEntry("NETHER_WART",          12,   4),
+                new ShopManager.ShopEntry("BLAZE_POWDER",         20,   8),
+                new ShopManager.ShopEntry("MAGMA_CREAM",          15,   6),
+                new ShopManager.ShopEntry("FERMENTED_SPIDER_EYE", 10,   0),
+                new ShopManager.ShopEntry("GLOWSTONE_DUST",        4,   1),
+                new ShopManager.ShopEntry("SUGAR",                 3,   1),
+                new ShopManager.ShopEntry("RABBIT_FOOT",          50,  20),
+                new ShopManager.ShopEntry("GHAST_TEAR",          500,   0)));
     }
 
     /** Returns an unmodifiable view of the registered shop IDs, in registration order. */
