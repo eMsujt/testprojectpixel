@@ -2,6 +2,7 @@ package com.skyblock.core.manager;
 
 import com.skyblock.core.SkyBlockCore;
 import com.skyblock.core.model.Rarity;
+import com.skyblock.core.model.Stat;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,6 +14,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,96 +30,107 @@ import java.util.UUID;
  */
 public final class ReforgeManager {
 
-    /** A reforge type with display name and primary stat bonus. */
+    /**
+     * A reforge type. Each carries a per-rarity stat table (columns Common..Mythic)
+     * taken from the wiki Reforging pages; {@link #getStats(Rarity)} returns the bonuses
+     * for an item of a given rarity. Legacy reforges that Hypixel removed (folded into
+     * Accessory Powers) keep their prior flat Strength/Defense/Speed values.
+     */
     public enum ReforgeType {
-        NONE("None", 0, 0, 0),
-        SHARP("Sharp", 10, 0, 0),
-        FIERCE("Fierce", 20, 0, 5),
-        GENTLE("Gentle", 0, 10, 0),
-        STRONG("Strong", 15, 5, 0),
-        SUPERIOR("Superior", 35, 20, 20),
-        LEGENDARY("Legendary", 25, 10, 10),
-        ANCIENT("Ancient", 30, 15, 15),
-        FORCEFUL("Forceful", 5, 0, 20),
-        UNPLEASANT("Unpleasant", 0, 0, 5),
-        PERFECT("Perfect", 40, 25, 25),
-        LUCKY("Lucky", 0, 0, 10),
-        CLEAN("Clean", 0, 5, 0),
-        WEIRD("Weird", 5, 5, 5),
-        BIZARRE("Bizarre", 25, 0, 10),
-        SPIKED("Spiked", 0, 25, 5),
-        MOIL("Moil", 15, 0, 0),
-        TOIL("Toil", 20, 0, 0),
-        FRUITFUL("Fruitful", 0, 10, 20),
-        HONORED("Honored", 10, 15, 0),
-        BEJEWELED("Bejeweled", 15, 15, 0),
-        RENOWNED("Renowned", 30, 10, 10),
-        FESTIVE("Festive", 10, 10, 10),
-        HEROIC("Heroic", 20, 15, 5),
-        PURE("Pure", 15, 15, 15),
-        ODD("Odd", 5, 0, 10),
-        FAST("Fast", 0, 0, 25),
-        FAIR("Fair", 10, 10, 10),
-        EPIC("Epic", 30, 20, 15),
-        STORMY("Stormy", 0, 0, 0),
-        SPICY("Spicy", 10, 0, 0),
-        GODLY("Godly", 15, 0, 10),
-        ITCHY("Itchy", 5, 0, 0),
-        BLOODY("Bloody", 10, 0, 5),
-        WARPED("Warped", 20, 5, 0),
-        WITHERED("Withered", 25, 15, 0),
-        NECROTIC("Necrotic", 0, 20, 0),
-        SPIRITUAL("Spiritual", 0, 0, 15),
-        SILKY("Silky", 5, 5, 15),
-        TREACHEROUS("Treacherous", 15, 10, 5),
-        TITANIC("Titanic", 0, 30, 0);
+        NONE("None"), SHARP("Sharp"), FIERCE("Fierce"), GENTLE("Gentle"), STRONG("Strong"),
+        SUPERIOR("Superior"), LEGENDARY("Legendary"), ANCIENT("Ancient"), FORCEFUL("Forceful"),
+        UNPLEASANT("Unpleasant"), PERFECT("Perfect"), LUCKY("Lucky"), CLEAN("Clean"), WEIRD("Weird"),
+        BIZARRE("Bizarre"), SPIKED("Spiked"), MOIL("Moil"), TOIL("Toil"), FRUITFUL("Fruitful"),
+        HONORED("Honored"), BEJEWELED("Bejeweled"), RENOWNED("Renowned"), FESTIVE("Festive"),
+        HEROIC("Heroic"), PURE("Pure"), ODD("Odd"), FAST("Fast"), FAIR("Fair"), EPIC("Epic"),
+        STORMY("Stormy"), SPICY("Spicy"), GODLY("Godly"), ITCHY("Itchy"), BLOODY("Bloody"),
+        WARPED("Warped"), WITHERED("Withered"), NECROTIC("Necrotic"), SPIRITUAL("Spiritual"),
+        SILKY("Silky"), TREACHEROUS("Treacherous"), TITANIC("Titanic");
 
         private final String displayName;
-        private final int strengthBonus;
-        private final int defenseBonus;
-        private final int speedBonus;
 
-        ReforgeType(String displayName, int strengthBonus, int defenseBonus, int speedBonus) {
+        ReforgeType(String displayName) {
             this.displayName = displayName;
-            this.strengthBonus = strengthBonus;
-            this.defenseBonus = defenseBonus;
-            this.speedBonus = speedBonus;
         }
 
         public String getDisplayName() { return displayName; }
-        public int getStrengthBonus() { return strengthBonus; }
-        public int getDefenseBonus() { return defenseBonus; }
-        public int getSpeedBonus() { return speedBonus; }
 
-        /** Returns this reforge's strength bonus scaled for the given item rarity. */
-        public int getStrengthBonus(Rarity rarity) { return scaled(strengthBonus, rarity); }
-        /** Returns this reforge's defense bonus scaled for the given item rarity. */
-        public int getDefenseBonus(Rarity rarity) { return scaled(defenseBonus, rarity); }
-        /** Returns this reforge's speed bonus scaled for the given item rarity. */
-        public int getSpeedBonus(Rarity rarity) { return scaled(speedBonus, rarity); }
+        /** Per-reforge stat table: Stat -&gt; [Common, Uncommon, Rare, Epic, Legendary, Mythic]. */
+        private static final Map<ReforgeType, Map<Stat, double[]>> STATS = new EnumMap<>(ReforgeType.class);
 
-        /**
-         * Per-rarity stat multiplier table, indexed by {@link Rarity#ordinal()}.
-         * Higher-rarity items gain a proportionally larger bonus from the same reforge.
-         */
-        private static final double[] RARITY_MULTIPLIER = {
-            0.5,  // COMMON
-            0.7,  // UNCOMMON
-            1.0,  // RARE
-            1.3,  // EPIC
-            1.6,  // LEGENDARY
-            2.0,  // MYTHIC
-            2.4,  // DIVINE
-            2.4   // SPECIAL
-        };
+        static {
+            // --- Reforges with current wiki per-rarity tables (verbatim values) ---
+            s(SHARP,     e(Stat.CRIT_CHANCE, 10,12,14,17,20,25), e(Stat.CRIT_DAMAGE, 20,30,40,55,75,90));
+            s(FIERCE,    e(Stat.STRENGTH, 2,4,6,8,10,12), e(Stat.CRIT_CHANCE, 2,3,4,5,6,8), e(Stat.CRIT_DAMAGE, 4,7,10,14,18,24));
+            s(GENTLE,    e(Stat.STRENGTH, 3,5,7,10,15,20), e(Stat.ATTACK_SPEED, 8,10,15,20,25,30));
+            s(ODD,       e(Stat.CRIT_CHANCE, 12,15,15,20,25,30), e(Stat.CRIT_DAMAGE, 10,15,15,22,30,40), e(Stat.INTELLIGENCE, -5,-10,-18,-32,-50,-75));
+            s(FAST,      e(Stat.ATTACK_SPEED, 10,20,30,40,50,60));
+            s(FAIR,      e(Stat.STRENGTH, 2,3,4,7,10,12), e(Stat.CRIT_CHANCE, 2,3,4,7,10,12), e(Stat.CRIT_DAMAGE, 2,3,4,7,10,12), e(Stat.INTELLIGENCE, 2,3,4,7,10,12), e(Stat.ATTACK_SPEED, 2,3,4,7,10,12));
+            s(EPIC,      e(Stat.STRENGTH, 15,20,25,32,40,50), e(Stat.CRIT_DAMAGE, 10,15,20,27,35,45), e(Stat.ATTACK_SPEED, 1,2,4,7,10,15));
+            s(HEROIC,    e(Stat.STRENGTH, 15,20,25,32,40,50), e(Stat.INTELLIGENCE, 40,50,65,80,100,125), e(Stat.ATTACK_SPEED, 1,2,2,3,5,7));
+            s(SPICY,     e(Stat.STRENGTH, 2,3,4,7,10,12), e(Stat.CRIT_CHANCE, 1,1,1,1,1,1), e(Stat.CRIT_DAMAGE, 25,35,45,60,80,100), e(Stat.ATTACK_SPEED, 1,2,4,7,10,15));
+            s(LEGENDARY, e(Stat.STRENGTH, 3,7,12,18,25,32), e(Stat.CRIT_CHANCE, 5,7,9,12,15,18), e(Stat.CRIT_DAMAGE, 5,10,15,22,28,36), e(Stat.INTELLIGENCE, 5,8,12,18,25,35), e(Stat.ATTACK_SPEED, 2,3,5,7,10,15));
+            s(WITHERED,  e(Stat.STRENGTH, 60,75,90,110,135,170));
+            s(WARPED,    e(Stat.STRENGTH, 0,0,0,165,165,165), e(Stat.INTELLIGENCE, 0,0,0,65,100,150));
+            s(SPIRITUAL, e(Stat.STRENGTH, 4,8,14,20,28,38), e(Stat.CRIT_CHANCE, 7,8,9,10,12,14), e(Stat.CRIT_DAMAGE, 10,15,23,37,55,75));
+            s(CLEAN,     e(Stat.HEALTH, 5,7,10,15,20,25), e(Stat.DEFENSE, 5,7,10,15,20,25), e(Stat.CRIT_CHANCE, 2,4,6,8,10,12));
+            s(PURE,      e(Stat.HEALTH, 2,3,4,6,8,10), e(Stat.DEFENSE, 2,3,4,6,8,10), e(Stat.STRENGTH, 2,3,4,6,8,10), e(Stat.SPEED, 1,1,1,1,1,1), e(Stat.CRIT_CHANCE, 2,4,6,8,10,12), e(Stat.CRIT_DAMAGE, 2,3,4,6,8,8), e(Stat.ATTACK_SPEED, 1,1,2,3,4,5), e(Stat.INTELLIGENCE, 2,3,4,6,8,10));
+            s(TITANIC,   e(Stat.HEALTH, 10,15,20,25,35,50), e(Stat.DEFENSE, 10,15,20,25,35,50));
+            s(PERFECT,   e(Stat.DEFENSE, 25,35,50,65,80,110));
+            s(NECROTIC,  e(Stat.INTELLIGENCE, 30,60,90,120,150,200));
+            s(ANCIENT,   e(Stat.HEALTH, 7,7,7,7,7,7), e(Stat.DEFENSE, 7,7,7,7,7,7), e(Stat.STRENGTH, 4,8,12,18,25,35), e(Stat.CRIT_CHANCE, 3,5,7,9,12,15), e(Stat.INTELLIGENCE, 6,9,12,16,20,25));
+            s(SPIKED,    e(Stat.HEALTH, 2,3,4,6,8,10), e(Stat.DEFENSE, 2,3,4,6,8,10), e(Stat.STRENGTH, 3,4,6,8,10,12), e(Stat.SPEED, 1,1,1,1,1,1), e(Stat.CRIT_CHANCE, 2,4,6,8,10,12), e(Stat.CRIT_DAMAGE, 3,4,6,8,10,12), e(Stat.ATTACK_SPEED, 1,1,2,3,4,5), e(Stat.INTELLIGENCE, 3,4,6,8,10,12));
+            s(RENOWNED,  e(Stat.HEALTH, 2,3,4,6,8,10), e(Stat.DEFENSE, 2,3,4,6,8,10), e(Stat.STRENGTH, 3,4,6,8,10,12), e(Stat.SPEED, 1,1,1,1,1,1), e(Stat.CRIT_CHANCE, 2,4,6,8,10,12), e(Stat.CRIT_DAMAGE, 3,4,6,8,10,12), e(Stat.ATTACK_SPEED, 1,1,2,3,4,5), e(Stat.INTELLIGENCE, 3,4,6,8,10,12));
+            s(FESTIVE,   e(Stat.SEA_CREATURE_CHANCE, 0.05,0.05,0.1,0.15,0.2,0.25), e(Stat.INTELLIGENCE, 5,10,15,20,25,30), e(Stat.FISHING_SPEED, 2,3,4,6,8,10));
 
-        private static int scaled(int base, Rarity rarity) {
-            Objects.requireNonNull(rarity, "rarity");
-            int i = rarity.ordinal();
-            double mult = i < RARITY_MULTIPLIER.length
-                    ? RARITY_MULTIPLIER[i]
-                    : RARITY_MULTIPLIER[RARITY_MULTIPLIER.length - 1];
-            return (int) Math.round(base * mult);
+            // --- Legacy reforges Hypixel removed (no current table): keep prior flat Str/Def/Speed ---
+            flat(STRONG, 15, 5, 0);     flat(SUPERIOR, 35, 20, 20); flat(FORCEFUL, 5, 0, 20);
+            flat(UNPLEASANT, 0, 0, 5);  flat(WEIRD, 5, 5, 5);       flat(BIZARRE, 25, 0, 10);
+            flat(STORMY, 0, 0, 0);      flat(GODLY, 15, 0, 10);     flat(ITCHY, 5, 0, 0);
+            flat(BLOODY, 10, 0, 5);     flat(MOIL, 15, 0, 0);       flat(TOIL, 20, 0, 0);
+            flat(FRUITFUL, 0, 10, 20);  flat(HONORED, 10, 15, 0);   flat(BEJEWELED, 15, 15, 0);
+            flat(SILKY, 5, 5, 15);      flat(LUCKY, 0, 0, 10);      flat(TREACHEROUS, 15, 10, 5);
+        }
+
+        private static Map.Entry<Stat, double[]> e(Stat stat, double... vals) {
+            return Map.entry(stat, vals);
+        }
+
+        @SafeVarargs
+        private static void s(ReforgeType type, Map.Entry<Stat, double[]>... entries) {
+            Map<Stat, double[]> table = new EnumMap<>(Stat.class);
+            for (Map.Entry<Stat, double[]> en : entries) table.put(en.getKey(), en.getValue());
+            STATS.put(type, table);
+        }
+
+        private static void flat(ReforgeType type, double str, double def, double spd) {
+            s(type, e(Stat.STRENGTH, str, str, str, str, str, str),
+                    e(Stat.DEFENSE, def, def, def, def, def, def),
+                    e(Stat.SPEED, spd, spd, spd, spd, spd, spd));
+        }
+
+        /** The stat bonuses this reforge grants on an item of the given rarity (zeros omitted). */
+        public Map<Stat, Double> getStats(Rarity rarity) {
+            Map<Stat, double[]> table = STATS.get(this);
+            if (table == null) return Collections.emptyMap();
+            int idx = Math.min(rarity.ordinal(), 5); // clamp Divine/Special to the Mythic column
+            Map<Stat, Double> out = new EnumMap<>(Stat.class);
+            for (Map.Entry<Stat, double[]> en : table.entrySet()) {
+                double v = en.getValue()[idx];
+                if (v != 0) out.put(en.getKey(), v);
+            }
+            return out;
+        }
+
+        // Backward-compatible accessors (Legendary-tier value) for the reforge menu + admin commands.
+        public int getStrengthBonus() { return legendary(Stat.STRENGTH); }
+        public int getDefenseBonus()  { return legendary(Stat.DEFENSE); }
+        public int getSpeedBonus()    { return legendary(Stat.SPEED); }
+
+        private int legendary(Stat stat) {
+            Map<Stat, double[]> table = STATS.get(this);
+            if (table == null || !table.containsKey(stat)) return 0;
+            return (int) Math.round(table.get(stat)[4]);
         }
 
         public static ReforgeType fromName(String name) {
