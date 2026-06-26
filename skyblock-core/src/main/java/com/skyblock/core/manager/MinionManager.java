@@ -114,8 +114,11 @@ public final class MinionManager {
         /** Number of item-stack slots available in the minion's storage. */
         private final int storageSlots;
 
-        MinionTier(int actionIntervalTicks, int storageSlots) {
-            this.actionIntervalTicks = actionIntervalTicks;
+        // The enum values above are Hypixel's "time between actions" in SECONDS
+        // (T1 = 14s … T12 = 6s-ish); convert to server ticks here. Previously these
+        // seconds were used directly as ticks, so minions produced ~20x too fast.
+        MinionTier(int secondsBetweenActions, int storageSlots) {
+            this.actionIntervalTicks = secondsBetweenActions * 20;
             this.storageSlots = storageSlots;
         }
 
