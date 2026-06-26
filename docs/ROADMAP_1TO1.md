@@ -32,8 +32,10 @@ remaining items below are polish/refinements.
       (all mobs) + Smite/Bane/Ender Slayer (by mob family) at +5%/level, plus the
       conditional **Execute/Prosecute** (scale with target HP) and **Giant Killer**
       (capped), all with exact values from the bundled 1:1 data. Refinements: First
-      Strike (first-hit state), on-hit effects (Thunderlord/Life Steal/Looting…),
-      and armor stat-enchants (Growth/Protection → `recompute`).
+      Strike (first-hit state) and on-hit effects (Thunderlord/Life Steal/Looting…).
+      **Armor stat-enchants now feed `recompute`**: each armor piece's lore is parsed
+      for Growth (+15 ❤ Health/level) and Protection (+4 ❈ Defense/level I–V, +5 VI–VII,
+      exact Hypixel values) and added to the stat totals.
 - [~] Full damage stack — the **additive enchant-multiplier bucket is now applied**
       (in `CombatListener`); True Defense, effective-HP, and the +15% melee bonus
       still TODO
