@@ -35,7 +35,8 @@ public final class AccessoryBagManager {
         EPIC("Epic", 12),
         LEGENDARY("Legendary", 16),
         MYTHIC("Mythic", 22),
-        SPECIAL("Special", 3);
+        SPECIAL("Special", 3),
+        VERY_SPECIAL("Very Special", 5);
 
         private final String displayName;
         /** Magic power contributed when this tier of accessory is equipped in the bag. */
