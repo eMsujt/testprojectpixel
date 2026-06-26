@@ -23,7 +23,7 @@ public final class EnchantmentManager {
         CRITICAL(7),
         SMITE(7),
         BANE_OF_ARTHROPODS(7),
-        FIRST_STRIKE(4),
+        FIRST_STRIKE(5),
         GIANT_KILLER(7),
         ENDER_SLAYER(7),
         DRAGON_HUNTER(5),
@@ -31,12 +31,12 @@ public final class EnchantmentManager {
         VAMPIRISM(6),
         LIFE_STEAL(5),
         LETHALITY(6),
-        EXECUTE(5),
-        PROSECUTE(5),
+        EXECUTE(7),
+        PROSECUTE(7),
         OVERLOAD(5),
         // Utility / Special
         TELEKINESIS(1),
-        LOOTING(4),
+        LOOTING(5),
         SMELTING_TOUCH(1),
         MAGNET(1),
         SILK_TOUCH(1),
@@ -68,7 +68,7 @@ public final class EnchantmentManager {
         PROTECTION(7),
         THORNS(3),
         GROWTH(7),
-        FEATHER_FALLING(7),
+        FEATHER_FALLING(10),
         SUGAR_RUSH(3),
         REJUVENATE(5),
         // Misc
@@ -77,7 +77,7 @@ public final class EnchantmentManager {
         ULTIMATE_WISE(5),
         // Dungeon / Extra
         SHREDDER(5),
-        SCAVENGER(4),
+        SCAVENGER(6),
         SOUL_EATER(5),
         VENOMOUS(5),
         VICIOUS(5);

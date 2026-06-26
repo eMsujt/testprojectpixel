@@ -58,8 +58,10 @@ public final class HOTMManager {
     // Hypixel's Heart of the Mountain goes to Tier 10 ("Peak of the Mountain").
     public static final int MAX_TIER = 10;
 
+    // Cumulative Mining XP to reach each HOTM tier (the wiki lists per-tier costs;
+    // these are their running totals, since computeTier compares against total XP).
     private static final long[] TIER_XP_THRESHOLDS = {
-            0L, 3000L, 9000L, 25000L, 60000L, 100000L, 150000L, 210000L, 290000L, 400000L};
+            0L, 3000L, 12000L, 37000L, 97000L, 197000L, 347000L, 557000L, 847000L, 1247000L};
 
     public static final Map<String, int[]> NODE_POWDER_COSTS;
 
