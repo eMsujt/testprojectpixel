@@ -67,7 +67,8 @@ remaining items below are polish/refinements.
       entry** now works via the reusable chat-input system (`ChatInputManager`):
       a "Custom Bid" button prompts in chat, parses k/m/b, and re-validates against
       the live minimum before placing. Remaining polish: search/rarity filters.
-- [ ] Bank interest auto-timer (currently only on `/bank interest`)
+- [x] Bank interest auto-timer — every bank account earns interest automatically on
+      each SkyBlock **season rollover** (driven by the new calendar day-timer below)
 - [x] Coins-on-death tuned to Hypixel — **half the purse, combat deaths only** (matches
       the Bank Information tooltip); environmental deaths (fall/lava/drown) keep the purse
 - [ ] Drain claim escrow back to players (Bazaar/AH claim flow)
@@ -94,7 +95,8 @@ remaining items below are polish/refinements.
 - [ ] Gemstone slots in gear
 
 ## Phase 7 — Events / timers
-- [ ] Calendar advances on a real ~20-min-day timer
+- [x] Calendar advances on a real ~20-min-day timer (24000-tick repeating task in
+      `onEnable`); season rollover triggers bank interest
 - [ ] Add missing events (Dark Auction, Mining/Fishing Festival, Mythological Ritual)
 - [ ] Mayor election on the real cycle, tied to the calendar
 - [x] Current mayor shown in Calendar and Events

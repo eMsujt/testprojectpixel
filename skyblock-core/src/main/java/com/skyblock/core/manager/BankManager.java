@@ -223,6 +223,20 @@ public final class BankManager {
         return interest;
     }
 
+    /**
+     * Applies a season's interest to every bank account at once (used by the
+     * calendar's season-rollover timer). Returns the number of accounts paid.
+     */
+    public int applyInterestToAll() {
+        int paid = 0;
+        for (UUID id : new java.util.ArrayList<>(accounts.keySet())) {
+            if (applyInterest(id) > 0) {
+                paid++;
+            }
+        }
+        return paid;
+    }
+
     public double getCoopBalance(String coopName) {
         Objects.requireNonNull(coopName, "coopName");
         return coopBalances.getOrDefault(coopName, 0.0);

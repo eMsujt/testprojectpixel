@@ -866,6 +866,21 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.MenuItemListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.InventoryListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.mob.MobLootListener(com.skyblock.core.mob.MobLootManager.getInstance()), this);
+
+        // Advance the SkyBlock calendar one day every ~20 real minutes (Hypixel's day length),
+        // paying every bank account its interest whenever a new season (month) begins.
+        getServer().getScheduler().runTaskTimer(this, () -> {
+            com.skyblock.core.manager.CalendarManager cal = com.skyblock.core.manager.CalendarManager.getInstance();
+            com.skyblock.core.manager.CalendarManager.SkyBlockMonth before = cal.getCurrentMonth();
+            cal.advanceDay();
+            if (cal.getCurrentMonth() != before
+                    && com.skyblock.core.manager.BankManager.getInstance().applyInterestToAll() > 0) {
+                for (org.bukkit.entity.Player online : getServer().getOnlinePlayers()) {
+                    online.sendMessage("§6§lBANK §r§7A new season has begun — your bank balance earned interest!");
+                }
+            }
+        }, 24000L, 24000L);
+
         ChatCommand chatCommand = new ChatCommand(chatManager);
         getCommand("chat").setExecutor(chatCommand);
         getCommand("chat").setTabCompleter(chatCommand);
