@@ -54,11 +54,11 @@ public final class SlayerManager {
 
     static {
         Map<String, int[]> m = new LinkedHashMap<>();
-        m.put("ZOMBIE",   new int[]{9,  100});
+        m.put("ZOMBIE",   new int[]{9,  2_000});
         m.put("SPIDER",   new int[]{9,  2_000});
-        m.put("WOLF",     new int[]{9,  10_000});
-        m.put("ENDERMAN", new int[]{9,  50_000});
-        m.put("BLAZE",    new int[]{9,  100_000});
+        m.put("WOLF",     new int[]{9,  2_000});
+        m.put("ENDERMAN", new int[]{9,  2_000});
+        m.put("BLAZE",    new int[]{9,  10_000});
         m.put("VAMPIRE",  new int[]{5,  0});
         SLAYER_BOSS_DATA = Collections.unmodifiableMap(m);
     }
@@ -153,12 +153,16 @@ public final class SlayerManager {
     public static final Map<SlayerType, int[]> SPAWN_COST;
 
     static {
+        // Hypixel uses a uniform tier start-cost ladder for the four standard slayers
+        // (2k/7.5k/20k/50k, +100k T5 for Revenant only); Blaze has its own higher scale.
+        // T5 for Spider/Wolf/Enderman/Blaze is undocumented (max tier IV) — kept as a
+        // non-zero sentinel rather than invented.
         Map<SlayerType, int[]> m = new EnumMap<>(SlayerType.class);
-        m.put(SlayerType.ZOMBIE,   new int[]{100,       2_000,     10_000,    50_000,    500_000});
-        m.put(SlayerType.SPIDER,   new int[]{2_000,    10_000,     50_000,   100_000,    500_000});
-        m.put(SlayerType.WOLF,     new int[]{10_000,   50_000,    100_000,   400_000,  1_000_000});
-        m.put(SlayerType.ENDERMAN, new int[]{50_000,  100_000,    400_000, 1_000_000,  4_000_000});
-        m.put(SlayerType.BLAZE,    new int[]{500_000, 2_000_000, 5_000_000, 10_000_000, 25_000_000});
+        m.put(SlayerType.ZOMBIE,   new int[]{2_000,   7_500,    20_000,    50_000,   100_000});
+        m.put(SlayerType.SPIDER,   new int[]{2_000,   7_500,    20_000,    50_000,   500_000});
+        m.put(SlayerType.WOLF,     new int[]{2_000,   7_500,    20_000,    50_000, 1_000_000});
+        m.put(SlayerType.ENDERMAN, new int[]{2_000,   7_500,    20_000,    50_000, 4_000_000});
+        m.put(SlayerType.BLAZE,    new int[]{10_000, 25_000,    60_000,   150_000, 25_000_000});
         m.put(SlayerType.VAMPIRE,  new int[]{0,        0,          0,         0,          0});
         SPAWN_COST = Collections.unmodifiableMap(m);
     }
