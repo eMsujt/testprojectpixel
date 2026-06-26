@@ -19,7 +19,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +31,6 @@ public final class CompactListeners implements Listener {
 
     private static final CompactListeners INSTANCE = new CompactListeners();
 
-    private static final long FISHING_SKILL_XP  = 50L;
     private static final long TAMING_KILL_XP     = 10L;
     private static final long CARPENTRY_XP_PLANK =  1L;
     private static final long FARMING_CROP_XP    =  3L;
@@ -107,19 +105,6 @@ public final class CompactListeners implements Listener {
         }
         if (LOGS.contains(type)) {
             grantXP(player, Skill.FORAGING, FORAGING_LOG_XP);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerFish(PlayerFishEvent event) {
-        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        int before = skillManager.getLevel(uuid, Skill.FISHING);
-        skillManager.addXP(uuid, Skill.FISHING, FISHING_SKILL_XP);
-        int after = skillManager.getLevel(uuid, Skill.FISHING);
-        if (after > before) {
-            player.sendTitle("§aSkill Level Up!", "§eFishing §a→ §eLVL " + after, 10, 60, 20);
         }
     }
 
