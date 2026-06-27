@@ -161,7 +161,6 @@ import com.skyblock.core.storage.StorageManager;
 import com.skyblock.core.command.StorageCommand;
 import com.skyblock.core.npc.NpcManager;
 import com.skyblock.core.npc.NpcCommand;
-import com.skyblock.core.npc.NPCListener;
 import com.skyblock.core.manager.ManaManager;
 import com.skyblock.core.manager.PlayerDataManager;
 import com.skyblock.core.manager.ScoreboardManager;
@@ -1071,8 +1070,6 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("npc").setExecutor(npcCommand);
             getCommand("npc").setTabCompleter(npcCommand);
         }
-        getServer().getPluginManager().registerEvents(new NPCListener(this, npcManager), this);
-
         // Functional NPCs: /setnpclocation <npc> places a feature NPC (Banker, Auction
         // Master, Bazaar, Museum, Blacksmith, ...) that opens its menu when right-clicked.
         com.skyblock.core.npc.FunctionalNpcManager.getInstance().load(getDataFolder());

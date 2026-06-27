@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
  *   <li>{@code /npc shops}                        — list all registered NPC shops</li>
  *   <li>{@code /npc shop <npc>}                   — view an NPC's shop items</li>
  *   <li>{@code /npc buy <npc> <item>}             — purchase one item from an NPC</li>
- *   <li>{@code /npc type}                         — list all NPC role types</li>
  * </ul>
  * </p>
  */
@@ -68,7 +67,6 @@ public final class NpcCommand implements TabExecutor {
                     handleBuy(player, args[1], String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
                 }
             }
-            case "type" -> listTypes(player);
             default -> sendUsage(player);
         }
         return true;
@@ -78,7 +76,7 @@ public final class NpcCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String lower = args[0].toLowerCase();
-            return List.of("list", "shops", "shop", "buy", "type").stream()
+            return List.of("list", "shops", "shop", "buy").stream()
                     .filter(s -> s.startsWith(lower))
                     .collect(Collectors.toList());
         }
@@ -178,14 +176,7 @@ public final class NpcCommand implements TabExecutor {
         return sb.toString().trim();
     }
 
-    private void listTypes(Player player) {
-        player.sendMessage("=== NPC Types ===");
-        for (NpcManager.NpcType type : NpcManager.NpcType.values()) {
-            player.sendMessage("- " + type.name() + " (" + type.getDisplayName() + ")");
-        }
-    }
-
     private void sendUsage(Player player) {
-        player.sendMessage("Usage: /npc <list|shops|shop <npc>|buy <npc> <item>|type>");
+        player.sendMessage("Usage: /npc <list|shops|shop <npc>|buy <npc> <item>>");
     }
 }
