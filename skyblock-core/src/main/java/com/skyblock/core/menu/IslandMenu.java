@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public final class IslandMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE = "§aIsland Management";
+    private static final String TITLE = "Island Management";
 
     static final int OVERVIEW_SLOT   = 13;
     static final int VISIT_SLOT      = 20;
