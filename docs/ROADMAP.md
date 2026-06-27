@@ -1,5 +1,12 @@
 # SkyBlock Plugin — Feature Roadmap
 
+> ⚠️ **Not the live tracker.** The authoritative, up-to-date plan is
+> [`ROADMAP_1TO1.md`](ROADMAP_1TO1.md) — it reflects what has actually shipped
+> (combat/economy wiring, the 22-system 1:1 data audit, functional NPCs, etc.).
+> This document is an older, higher-level feature-build roadmap kept for context;
+> its checkboxes are **not** maintained and several `[ ]` items below are in fact
+> already done. Update `ROADMAP_1TO1.md`, not this file.
+
 Prioritized by player-facing impact and dependency order. Items within a phase can be parallelized; phases themselves are sequential — later phases depend on earlier foundations.
 
 > **Structural note (cut from all phases):** The repo has 2–4 duplicate Manager/Command classes for nearly every system (`core`, `plugin`, `skyblock-core`, and sometimes a standalone module). Before each feature below is "complete", the duplicate variants must be reconciled into a single canonical implementation. See `docs/STATUS.md` for the full inventory.
