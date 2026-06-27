@@ -78,8 +78,10 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
     Collect All, Quick-Upgrade, Pickup), not a 12-minion grid.
   - ✅ **Essence Shop** (done #4429) — rebuilt to a hub (Undead + Wither sub-shops) with the 15 real
     perks. Remaining: perk *effects* (Catacombs stats) aren't wired; exact per-level costs approximate.
-  - **Backpack / Ender Chest** — real container storage at the tier's slot count (incl. Jumbo = 45)
-    with page navigation, not read-only paper-list renderings.
+  - ✅ **Backpack / Ender Chest** (done #4435-#4436) — both are now real persistent containers
+    (place/take items, per-slot ItemStack serialization to enderchests.yml/backpack.yml, load on
+    enable + save on disable). Backpack sized to tier incl. the re-added Jumbo (45). Follow-ups:
+    Ender Chest 9-page layout, multiple backpacks per player, periodic autosave.
   - **Fast Travel** — destination set/order, name colours (mostly green), and footer (Island
     Browser / Go Back / Advanced Mode) differ from the wiki layout.
   - ✅ **Fairy Souls** (done #4431) — per-area counts rebuilt from the wiki Guide; 16 areas summing
