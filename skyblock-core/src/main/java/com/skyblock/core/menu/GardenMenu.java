@@ -1,76 +1,30 @@
 package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.GardenManager;
-import com.skyblock.core.manager.GardenManager.CropType;
-import com.skyblock.core.manager.GardenManager.GardenCrop;
-import com.skyblock.core.manager.GardenManager.PlotTier;
-import com.skyblock.core.manager.GardenManager.VisitorOffer;
-import com.skyblock.core.manager.GardenManager.VisitorType;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
- * 6-row chest GUI titled '§aGarden' extending AbstractSkyBlockMenu.
+ * The Garden "Desk" hub, matching the wiki {@code {{UI|Desk}}} layout: Garden
+ * Level (slot 4), Configure Plots (20), Garden Upgrades (22), SkyMart (24),
+ * Garden Milestones (26), Garden Skins (32), Set Speed per Crop (49), Garden
+ * Time (51) and Farming Toolkit (52).
  *
- * <p>Layout (rows 0-5, 9 columns):
- * <ul>
- *   <li>Row 0: panes with summary item at slot 4.</li>
- *   <li>Row 1: visitor-queue row — one paper offer per queued visitor.</li>
- *   <li>Row 2: crop-plot row — unlock state and {@link PlotTier} per crop.</li>
- *   <li>Row 3: crop-progress row — harvest totals and milestone progress.</li>
- *   <li>Rows 4-5: panes.</li>
- * </ul>
+ * <p>Garden Level opens the real {@link GardenLevelsMenu}; live Garden data is
+ * surfaced in the button lores. Sub-screens that don't exist yet (SkyMart,
+ * Garden Upgrades, plot configuration, etc.) report "coming soon" rather than
+ * inventing UI.</p>
  */
 public final class GardenMenu extends AbstractSkyBlockMenu {
 
     private static final String TITLE = "Desk";
-    private static final int ROWS = 6;
-
-    static final int SUMMARY_SLOT = 4;
-    /** First slot of the visitor-queue row; offers occupy {@code VISITOR_SLOT .. +8}. */
-    static final int VISITOR_SLOT = 9;
-    /** First slot of the crop-plot row; the nine crop plots occupy {@code FIRST_PLOT_SLOT .. +8}. */
-    static final int FIRST_PLOT_SLOT = 18;
-    /** First slot of the crop-progress row; one item per harvestable crop. */
-    static final int PROGRESS_SLOT = 27;
-
-    private static final Map<GardenCrop, Material> ICONS = new EnumMap<>(GardenCrop.class);
-
-    static {
-        ICONS.put(GardenCrop.WHEAT,       Material.WHEAT);
-        ICONS.put(GardenCrop.CARROT,      Material.CARROT);
-        ICONS.put(GardenCrop.POTATO,      Material.POTATO);
-        ICONS.put(GardenCrop.PUMPKIN,     Material.PUMPKIN);
-        ICONS.put(GardenCrop.SUGAR_CANE,  Material.SUGAR_CANE);
-        ICONS.put(GardenCrop.MELON,       Material.MELON_SLICE);
-        ICONS.put(GardenCrop.CACTUS,      Material.CACTUS);
-        ICONS.put(GardenCrop.COCOA_BEANS, Material.COCOA_BEANS);
-        ICONS.put(GardenCrop.MUSHROOM,    Material.RED_MUSHROOM);
-    }
-
-    /**
-     * Representative visitor offers shown in the queue row. The manager tracks
-     * only aggregate visitor stats, so this fixed queue illustrates the kind of
-     * offers a player receives (visitor, requested crops and copper reward).
-     */
-    private static final List<VisitorOffer> VISITOR_QUEUE = List.of(
-            new VisitorOffer(VisitorType.JACOB, Map.of(GardenCrop.WHEAT, 256), 1_000L),
-            new VisitorOffer(VisitorType.BAKER, Map.of(GardenCrop.PUMPKIN, 160), 2_500L),
-            new VisitorOffer(VisitorType.FARMING_MERCHANT, Map.of(GardenCrop.CARROT, 320), 4_000L),
-            new VisitorOffer(VisitorType.ANITA, Map.of(GardenCrop.MELON, 480), 6_500L),
-            new VisitorOffer(VisitorType.GRANDMA_WOLF, Map.of(GardenCrop.SUGAR_CANE, 384), 9_000L));
 
     public GardenMenu(Player player) {
-        super(player, TITLE, ROWS);
+        super(player, TITLE, 6);
     }
 
     @Override
@@ -79,137 +33,82 @@ public final class GardenMenu extends AbstractSkyBlockMenu {
         GardenManager manager = GardenManager.getInstance();
 
         ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < ROWS * 9; slot++) {
+        for (int slot = 0; slot < 54; slot++) {
             setItem(slot, pane);
         }
 
-        setItem(SUMMARY_SLOT, new ItemBuilder(Material.JUKEBOX)
-                .displayName("§2Garden")
+        int level = manager.getGardenLevel(playerId);
+        long copper = manager.getCopper(playerId);
+
+        // 1,5 — Garden Level (Sunflower) -> Garden Levels menu
+        setItem(4, new ItemBuilder(Material.SUNFLOWER)
+                .displayName("§aGarden Level " + toRoman(level))
                 .lore(
-                        "§7Garden Level: §e" + manager.getGardenLevel(playerId)
-                                + "§7/§e" + manager.getMaxGardenLevel(),
-                        "§7Copper: §c" + manager.getCopper(playerId),
-                        "§7Visitors Served: §e" + manager.getCompletedOffers(playerId),
-                        "",
-                        "§7Unlock and upgrade crop plots to",
-                        "§7gain farming fortune.",
+                        "§7Garden Level: §e" + level + "§7/§e" + manager.getMaxGardenLevel(),
+                        "§7Copper: §c" + String.format("%,d", copper),
                         "",
                         "§eClick to view Garden Levels!")
                 .build(),
-                e -> { e.setCancelled(true); new GardenLevelsMenu(player).open(player); });
+                e -> {
+                    e.setCancelled(true);
+                    new GardenLevelsMenu(player).open(player);
+                });
 
-        buildVisitorQueue();
-        buildCropPlots(manager, playerId);
-        buildCropProgress(manager, playerId);
-        buildStations(manager, playerId);
+        // 3,2 — Configure Plots (Grass Block)
+        stub(20, Material.GRASS_BLOCK, "§aConfigure Plots", "Plot configuration is coming soon.",
+                "§7Unlock and manage your", "§7Garden's crop plots.", "", "§eClick to configure!");
+
+        // 3,4 — Garden Upgrades (Glistering Melon Slice)
+        stub(22, Material.GLISTERING_MELON_SLICE, "§aGarden Upgrades", "Garden Upgrades are coming soon.",
+                "§7Spend Copper on permanent", "§7Garden upgrades.", "", "§eClick to view!");
+
+        // 3,6 — SkyMart (Emerald)
+        stub(24, Material.EMERALD, "§aSkyMart", "SkyMart is coming soon.",
+                "§7Spend Copper on tools, seeds", "§7and Garden cosmetics.", "", "§eClick to view!");
+
+        // 3,8 — Garden Milestones (Block of Gold)
+        stub(26, Material.GOLD_BLOCK, "§aGarden Milestones", "The milestones view is coming soon.",
+                "§7Track your crop-collection", "§7milestones for rewards.",
+                "", "§7Visitors Served: §e" + manager.getCompletedOffers(playerId),
+                "", "§eClick to view!");
+
+        // 4,5 — Garden Skins (Beacon)
+        stub(32, Material.BEACON, "§aGarden Skins", "Garden Skins are coming soon.",
+                "§7Customise the look of your", "§7Garden.", "", "§eClick to view!");
+
+        // 6,4 — Set Speed per Crop (Sundial -> Clock)
+        stub(49, Material.CLOCK, "§aSet Speed per Crop", "Speed configuration is coming soon.",
+                "§7Set the expected farming speed", "§7used to estimate visitor offers.",
+                "", "§eClick to configure!");
+
+        // 6,6 — Garden Time (Clock)
+        stub(51, Material.CLOCK, "§aGarden Time", "Garden Time is coming soon.",
+                "§7The Garden runs on its own", "§7time, separate from SkyBlock.",
+                "", "§eClick to view!");
+
+        // 6,7 — Farming Toolkit (Iron Hoe)
+        stub(52, Material.IRON_HOE, "§aFarming Toolkit", "The Farming Toolkit is coming soon.",
+                "§7Equip farming tools for quick", "§7access while in the Garden.",
+                "", "§eClick to view!");
     }
 
-    /** Bottom-row Garden stations (Composter, Jacob's Contest) + Close, like Hypixel's Garden desk. */
-    private void buildStations(GardenManager manager, UUID playerId) {
-        setItem(45, new ItemBuilder(Material.COMPOSTER)
-                .displayName("§eComposter")
-                .lore(
-                        "§7Turn organic matter and fuel",
-                        "§7into compost for Garden upgrades.",
-                        "",
-                        "§7Organic Matter: §a" + String.format("%,d", manager.getComposterOrganicMatter(playerId)),
-                        "§7Fuel: §c" + String.format("%,d", manager.getComposterFuel(playerId)),
-                        "§7Compost ready: §6" + String.format("%,d", manager.getComposterCompost(playerId)))
-                .build(), e -> e.setCancelled(true));
-
-        setItem(49, new ItemBuilder(Material.GOLDEN_HOE)
-                .displayName("§6Jacob's Farming Contests")
-                .lore("§7Compete in the farming contests", "§7for medals and rewards.", "", "§eClick to view!")
-                .build(),
-                e -> { e.setCancelled(true); new JacobsContestMenu(playerId).open(player); });
-
-        setItem(53, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .build(), e -> { e.setCancelled(true); player.closeInventory(); });
+    /** A labelled Desk button that reports {@code comingSoon} on click (sub-screen not built yet). */
+    private void stub(int slot, Material material, String name, String comingSoon, String... lore) {
+        setItem(slot, new ItemBuilder(material).displayName(name).lore(lore).build(),
+                e -> {
+                    e.setCancelled(true);
+                    player.sendMessage("§e" + comingSoon);
+                });
     }
 
-    private void buildVisitorQueue() {
-        int index = 0;
-        for (VisitorOffer offer : VISITOR_QUEUE) {
-            if (index >= 9) {
-                break;
-            }
-            List<String> lore = new ArrayList<>();
-            lore.add("§7Wants:");
-            for (Map.Entry<GardenCrop, Integer> need : offer.getRequiredCrops().entrySet()) {
-                lore.add("§8 - §e" + need.getValue() + "x §a" + need.getKey().getDisplayName());
-            }
-            lore.add("");
-            lore.add("§7Reward: §c" + offer.getCopperReward() + " Copper");
-            setItem(VISITOR_SLOT + index, new ItemBuilder(Material.PAPER)
-                    .displayName("§e" + offer.getVisitor().getDisplayName())
-                    .lore(lore)
-                    .build());
-            index++;
+    private static String toRoman(int n) {
+        if (n <= 0) {
+            return "I";
         }
-    }
-
-    private void buildCropPlots(GardenManager manager, UUID playerId) {
-        int index = 0;
-        for (GardenCrop crop : GardenCrop.values()) {
-            Long unlockCost = GardenManager.CROP_PLOT_UNLOCK_COSTS.get(crop);
-            if (unlockCost == null) {
-                continue;
-            }
-            boolean unlocked = unlockCost <= 0L || manager.getCopper(playerId) >= unlockCost;
-            PlotTier tier = manager.getCropPlotTier(playerId, crop);
-
-            List<String> lore = new ArrayList<>();
-            if (unlocked) {
-                lore.add("§aUnlocked");
-                lore.add("§7Tier: §e" + tier.getDisplayName());
-                lore.add("§7Farming Fortune: §6+" + manager.getCropFarmingFortune(playerId, crop));
-            } else {
-                lore.add("§cLocked");
-                lore.add("§7Unlock cost: §c" + unlockCost + " Copper");
-            }
-
-            Material icon = unlocked ? ICONS.getOrDefault(crop, Material.WHEAT) : Material.GRAY_DYE;
-            setItem(FIRST_PLOT_SLOT + index, new ItemBuilder(icon)
-                    .displayName((unlocked ? "§a" : "§7") + crop.getDisplayName())
-                    .lore(lore)
-                    .build());
-            index++;
-        }
-    }
-
-    private void buildCropProgress(GardenManager manager, UUID playerId) {
-        int index = 0;
-        for (CropType crop : CropType.values()) {
-            if (index >= 9) {
-                break;
-            }
-            long harvested = manager.getHarvestCount(playerId, crop);
-            int milestone = manager.getCropMilestone(playerId, crop);
-            int maxMilestone = manager.getMaxMilestone(crop);
-            long untilNext = manager.getCropsUntilNextMilestone(playerId, crop);
-
-            List<String> lore = new ArrayList<>();
-            lore.add("§7Harvested: §e" + harvested);
-            lore.add("§7Milestone: §e" + milestone + "§7/§e" + maxMilestone);
-            if (untilNext > 0L) {
-                lore.add("§7Next milestone in §e" + untilNext + " §7crops");
-            } else {
-                lore.add("§aMax milestone reached");
-            }
-
-            Material icon = ICONS.getOrDefault(crop.getGardenCrop(), Material.WHEAT);
-            setItem(PROGRESS_SLOT + index, new ItemBuilder(icon)
-                    .displayName("§a" + crop.getGardenCrop().getDisplayName())
-                    .lore(lore)
-                    .build());
-            index++;
-        }
-    }
-
-    @Override
-    public void handleClick(InventoryClickEvent event) {
-        event.setCancelled(true);
-        super.handleClick(event);
+        String[] th = {"", "M", "MM", "MMM"};
+        String[] hu = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+        String[] te = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+        String[] on = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+        return th[(n / 1000) % 4] + hu[(n / 100) % 10] + te[(n / 10) % 10] + on[n % 10];
     }
 }
