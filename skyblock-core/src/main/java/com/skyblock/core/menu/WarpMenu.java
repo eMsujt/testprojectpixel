@@ -11,31 +11,42 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Optional;
 
 /**
- * 6-row chest GUI titled '§bFast Travel'. Places each {@link WarpLocation} as a
- * themed icon starting at slot 9 (below a cyan-pane border row). Clicking
- * teleports the player if the warp is registered, otherwise sends an error.
+ * The Fast Travel menu, matching the wiki {@code {{UI|Fast Travel}}} layout: the
+ * real destinations at their documented slots and colours (Private Island /
+ * SkyBlock Hub in aqua, the rest green, Jerry's Workshop red), with an Island
+ * Browser / Go Back / Advanced Mode footer.
+ *
+ * <p>Each destination teleports if a warp is registered in {@link WarpManager};
+ * destinations whose zones aren't generated in-world yet show "Not available
+ * yet". (Real teleport targets land with worldgen — Phase 6.)</p>
  */
 public final class WarpMenu extends AbstractSkyBlockMenu {
 
     private static final String TITLE = "Fast Travel";
-    private static final int CLOSE_SLOT = 53;
 
-    /** Themed icon for each WarpLocation in declaration order. */
-    private static final Material[] WARP_ICONS = {
-        Material.BEACON,            // HUB
-        Material.HAY_BLOCK,         // FARMING_1 (Barn)
-        Material.BROWN_MUSHROOM,    // FARMING_2 (Mushroom Desert)
-        Material.GOLD_ORE,          // MINING_1 (Gold Mine)
-        Material.DEEPSLATE,         // MINING_2 (Deep Caverns)
-        Material.IRON_PICKAXE,      // MINING_3 (Dwarven Mines)
-        Material.OAK_SAPLING,       // FORAGING_1 (The Park)
-        Material.COBWEB,            // COMBAT_1 (Spider's Den)
-        Material.BLAZE_ROD,         // COMBAT_2 (Blazing Fortress)
-        Material.END_STONE,         // COMBAT_3 (The End)
-        Material.AMETHYST_SHARD,    // CRYSTAL_HOLLOWS
-        Material.NETHERRACK,        // CRIMSON_ISLE
-        Material.CHORUS_FLOWER,     // THE_RIFT
-        Material.BRICK,             // DUNGEON_HUB
+    /** A Fast-Travel destination: slot, name, colour code, icon, and the warp it maps to (nullable). */
+    private record Dest(int slot, String name, String color, Material icon, WarpLocation warp) {
+    }
+
+    private static final Dest[] DESTS = {
+            new Dest(10, "Private Island",   "§b", Material.GRASS_BLOCK,    null),
+            new Dest(11, "SkyBlock Hub",     "§b", Material.BEACON,         WarpLocation.HUB),
+            new Dest(12, "Dungeon Hub",      "§a", Material.OAK_DOOR,       WarpLocation.DUNGEON_HUB),
+            new Dest(13, "The Barn",         "§a", Material.HAY_BLOCK,      WarpLocation.FARMING_1),
+            new Dest(14, "The Park",         "§a", Material.OAK_SAPLING,    WarpLocation.FORAGING_1),
+            new Dest(15, "Galatea",          "§a", Material.AZALEA,         null),
+            new Dest(16, "Gold Mine",        "§a", Material.GOLD_ORE,       WarpLocation.MINING_1),
+            new Dest(19, "Deep Caverns",     "§a", Material.DEEPSLATE,      WarpLocation.MINING_2),
+            new Dest(20, "Dwarven Mines",    "§a", Material.IRON_PICKAXE,   WarpLocation.MINING_3),
+            new Dest(21, "Crystal Hollows",  "§a", Material.AMETHYST_SHARD, WarpLocation.CRYSTAL_HOLLOWS),
+            new Dest(22, "Spider's Den",     "§a", Material.COBWEB,         WarpLocation.COMBAT_1),
+            new Dest(23, "The End",          "§a", Material.END_STONE,      WarpLocation.COMBAT_3),
+            new Dest(24, "Crimson Isle",     "§a", Material.NETHERRACK,     WarpLocation.CRIMSON_ISLE),
+            new Dest(25, "The Garden",       "§a", Material.JUNGLE_SAPLING, null),
+            new Dest(29, "The Rift",         "§a", Material.CHORUS_FLOWER,  WarpLocation.THE_RIFT),
+            new Dest(30, "Backwater Bayou",  "§a", Material.LILY_PAD,       null),
+            new Dest(32, "Lotus Atoll",      "§a", Material.SEA_PICKLE,     null),
+            new Dest(33, "Jerry's Workshop", "§c", Material.SNOW_BLOCK,     null),
     };
 
     public WarpMenu(Player player) {
@@ -44,43 +55,54 @@ public final class WarpMenu extends AbstractSkyBlockMenu {
 
     @Override
     protected void populate() {
-        drawBorder(Material.BLACK_STAINED_GLASS_PANE);
+        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
+        for (int slot = 0; slot < 54; slot++) {
+            setItem(slot, pane);
+        }
 
         WarpManager manager = WarpManager.getInstance();
-        WarpLocation[] locations = WarpLocation.values();
-
-        for (int i = 0; i < locations.length && i < contentCapacity(); i++) {
-            WarpLocation location = locations[i];
-            Optional<Warp> warp = manager.getWarp(location);
-            boolean registered = warp.isPresent();
-            Material icon = i < WARP_ICONS.length ? WARP_ICONS[i] : Material.ENDER_PEARL;
-
-            setItem(contentSlot(i), new ItemBuilder(icon)
-                    .displayName("§b" + location.getDisplayName())
-                    .lore(
-                            "§7Warp to §b" + location.getDisplayName() + "§7.",
+        for (Dest dest : DESTS) {
+            Optional<Warp> warp = dest.warp() == null ? Optional.empty() : manager.getWarp(dest.warp());
+            boolean available = warp.isPresent();
+            setItem(dest.slot(), new ItemBuilder(dest.icon())
+                    .displayName(dest.color() + dest.name())
+                    .lore("§7Warp to " + dest.color() + dest.name() + "§7.",
                             "",
-                            registered ? "§eClick to warp!" : "§cNot available")
+                            available ? "§eClick to warp!" : "§cNot available yet")
                     .build(),
-                    event -> {
-                        event.setCancelled(true);
-                        if (registered) {
+                    e -> {
+                        e.setCancelled(true);
+                        if (available) {
                             player.closeInventory();
                             player.teleport(warp.get().toLocation());
-                            player.sendMessage("§aWarped to §b" + location.getDisplayName() + "§a.");
+                            player.sendMessage("§aWarped to " + dest.color() + dest.name() + "§a.");
                         } else {
-                            player.sendMessage("§cThat warp is not available yet.");
+                            player.sendMessage("§c" + dest.name() + " isn't available yet.");
                         }
                     });
         }
 
-        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
+        // Footer (wiki): Island Browser (45), Go Back (48), Close (49), Advanced Mode (50).
+        setItem(45, new ItemBuilder(Material.BLAZE_POWDER)
+                .displayName("§aIsland Browser")
+                .lore("§7Visit other players' islands.")
+                .build(), e -> e.setCancelled(true));
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(), e -> {
+                    e.setCancelled(true);
+                    new SkyBlockMenu(player).open(player);
+                });
+        setItem(49, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
-                .lore("§7Click to close.")
-                .build(),
-                e -> {
+                .build(), e -> {
                     e.setCancelled(true);
                     player.closeInventory();
                 });
+        setItem(50, new ItemBuilder(Material.LIME_DYE)
+                .displayName("§aAdvanced Mode")
+                .lore("§7Toggle the advanced warp menu.")
+                .build(), e -> e.setCancelled(true));
     }
 }
