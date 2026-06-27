@@ -199,15 +199,15 @@ public final class GardenManager {
     public static final Map<String, int[]> CROP_DATA;
     static {
         Map<String, int[]> m = new HashMap<>();
-        m.put("WHEAT",       new int[]{1, 12, 25});
-        m.put("CARROT",      new int[]{3, 12, 25});
-        m.put("POTATO",      new int[]{3, 12, 25});
-        m.put("MELON",       new int[]{4, 12, 25});
-        m.put("PUMPKIN",     new int[]{1, 12, 25});
-        m.put("SUGAR_CANE",  new int[]{2, 12, 25});
-        m.put("COCOA_BEANS", new int[]{3, 12, 25});
-        m.put("CACTUS",      new int[]{2, 12, 25});
-        m.put("MUSHROOM",    new int[]{1, 12, 25});
+        m.put("WHEAT",       new int[]{1, 12, 46});
+        m.put("CARROT",      new int[]{3, 12, 46});
+        m.put("POTATO",      new int[]{3, 12, 46});
+        m.put("MELON",       new int[]{4, 12, 46});
+        m.put("PUMPKIN",     new int[]{1, 12, 46});
+        m.put("SUGAR_CANE",  new int[]{2, 12, 46});
+        m.put("COCOA_BEANS", new int[]{3, 12, 46});
+        m.put("CACTUS",      new int[]{2, 12, 46});
+        m.put("MUSHROOM",    new int[]{1, 12, 46});
         CROP_DATA = Collections.unmodifiableMap(m);
     }
 
@@ -708,21 +708,36 @@ public final class GardenManager {
     // Crop milestones
     // -------------------------------------------------------------------------
 
-    /** Base factor for the per-milestone cumulative crop requirement. */
-    private static final long MILESTONE_BASE = 100L;
+    /**
+     * Cumulative crops harvested required to reach each milestone tier (1-based),
+     * shared by all crops. Running totals of the wiki Crop Milestones per-tier
+     * amounts (tiers 25-46 each add 800,000).
+     */
+    private static final long[] MILESTONE_THRESHOLDS = {
+                  30L,        80L,       160L,       360L,       710L,
+                1410L,      2910L,      5410L,      8910L,     13910L,
+               20410L,     28410L,     38410L,     58410L,     93410L,
+              143410L,    218410L,    318410L,    493410L,    743410L,
+             1068410L,   1468410L,   1968410L,   2618410L,   3418410L,
+             4218410L,   5018410L,   5818410L,   6618410L,   7418410L,
+             8218410L,   9018410L,   9818410L,  10618410L,  11418410L,
+            12218410L,  13018410L,  13818410L,  14618410L,  15418410L,
+            16218410L,  17018410L,  17818410L,  18618410L,  19418410L,
+            20218410L
+    };
 
     /**
-     * Returns the cumulative number of crops harvested required to reach the
-     * given milestone level.  Requirements scale quadratically.
+     * Returns the cumulative number of crops harvested required to reach the given
+     * milestone tier (1-based), from the wiki's Crop Milestones table.
      *
-     * @param milestone the milestone level (1-based)
+     * @param milestone the milestone tier (1-based)
      * @return the cumulative crops required, {@code 0} for {@code milestone <= 0}
      */
     public long getMilestoneThreshold(int milestone) {
         if (milestone <= 0) {
             return 0L;
         }
-        return MILESTONE_BASE * milestone * milestone;
+        return MILESTONE_THRESHOLDS[Math.min(milestone, MILESTONE_THRESHOLDS.length) - 1];
     }
 
     /**
