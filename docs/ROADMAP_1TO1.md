@@ -43,6 +43,10 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
   (hub of 9 buttons; Garden Level wired to the real `GardenLevelsMenu`), **Island Management**
   (Category / Name / Ranks / Properties / Alex's / Guests hub). Sub-screens that don't exist yet
   are honest "coming soon" stubs rather than invented UI.
+- **Enchant Item GUI (PR #4427)** — rebuilt from a static book grid to the real **item-input**
+  interface: place an item → applicable enchants render as tiles → click applies/upgrades it,
+  written to lore as `§9<Enchant> <Roman>` (the format `CombatListener` reads, so it functions);
+  XP deducted per cost. Dupe-safe per the `ReforgeMenu` pattern. **Needs an item-dupe playtest.**
 
 ---
 
@@ -58,10 +62,12 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
 - [ ] **Secondary-menu structural rewrites (from the 2026-06-27 `{{UI}}` audit)** — these menus
       are functionally different from their Hypixel counterparts and need rebuilding, not
       relabelling (titles already fixed in #4420):
-  - **Enchant Item** — real GUI is an item-input interface (open slot + Gray Dye prompt +
-    Enchantment Table + Bookshelf Power + Enchantments Guide + Hopper sort), not a book-grid browser.
-  - **Runic Pedestal** — rune-fusion station (Item To Upgrade / Rune to Sacrifice / End Portal
-    apply / Barrier centre / Cauldron Rune Removal), not a rune-count grid.
+  - ✅ **Enchant Item** (done #4427) — rebuilt as the real item-input GUI; enchants apply to item
+    lore in the combat-reader format. Applicable-enchant categories are an approximation; bookshelf-
+    power gating + sort are not yet functional. Needs an item-dupe playtest.
+  - ⛔ **Runic Pedestal** — BLOCKED on rune-as-item infrastructure: runes are a side-map keyed by
+    string (`RuneManager.applyRune(itemKey,…)`), with no placeable rune *items* to drop into the
+    sacrifice slot. A fusion station needs rune items (drops/recipes) first; build that, then the GUI.
   - ✅ **Garden "Desk"** (done #4424) — rebuilt to the hub layout; sub-screens (Configure Plots /
     Garden Upgrades / SkyMart / Skins / Garden Time / Set Speed / Farming Toolkit) are stubs to build.
   - ✅ **Island Management** (done #4425) — rebuilt to the Category / Name / Ranks / Properties /
