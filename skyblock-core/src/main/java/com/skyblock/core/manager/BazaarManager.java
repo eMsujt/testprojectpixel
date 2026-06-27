@@ -508,7 +508,11 @@ public final class BazaarManager {
             }
             if (bids.isEmpty()) buyOrders.remove(item);
         }
-        return new FillResult(filled, remaining, matched, coins);
+        // Instant-sell is a Bazaar sale, so the sale tax applies (1.25%, less with
+        // the Bazaar Flipper upgrade). Sell-orders are taxed via creditCoins, but
+        // instant-sell previously escaped the tax entirely.
+        double net = coins - computeFee(coins, getFeeTier(seller));
+        return new FillResult(filled, remaining, matched, net);
     }
 
     // ---- Price-level insertion helpers ----
