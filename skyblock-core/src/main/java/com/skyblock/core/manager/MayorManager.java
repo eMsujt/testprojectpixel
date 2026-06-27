@@ -27,18 +27,17 @@ public final class MayorManager {
 
     /** Skyblock mayors that players can vote for. */
     public enum MayorCandidate {
-        PAUL("Paul", "Marauder", "Goblin Raid", "Supply Drop", "Show Off"),
-        DIANA("Diana", "Great Spook", "Mythological Ritual", "Lucky!"),
-        JERRY("Jerry", "Jerrypocalypse", "Jerry's Gifts", "Gift Hunt"),
-        SCORPIUS("Scorpius", "Bribe", "Scorched", "Plague"),
-        COLE("Cole", "Prospection", "Mining Fiesta", "Molten Forge"),
-        FINNEGAN("Finnegan", "Cultivation", "Shining Armor", "Stead Fast", "Blooming Business"),
-        MARINA("Marina", "Fishing Festival", "Luck of the Sea", "Quiver", "Water Breathing"),
-        FOXY("Foxy", "What the Dog Doin?", "Extra Pets", "Good Doggy"),
-        AATROX("Aatrox", "Slayer XP Buff", "Slayer Quest Limit", "Slayer's Will", "Blood Thirst"),
-        DIAZ("Diaz", "Free Samples", "Barrier Street", "Inflation"),
-        DERPY("Derpy", "TIME = MONEY!", "AAUUTOMATED!", "MOAR SKILLZ!!!"),
-        BARRY("Barry", "Bail Out", "Catch of the Day", "Crime Wave");
+        PAUL("Paul", "Marauder", "EZPZ", "Benediction"),
+        DIANA("Diana", "Mythological Ritual", "Lucky!", "Pet XP Buff", "Sharing is Caring"),
+        JERRY("Jerry", "Perkpocalypse", "Statspocalypse", "Jerrypocalypse"),
+        SCORPIUS("Scorpius", "Bribe", "Darker Auctions"),
+        COLE("Cole", "Prospection", "Mining Fiesta", "Molten Forge", "Mining XP Buff"),
+        FINNEGAN("Finnegan", "Blooming Business", "Pest Eradicator", "GOATed", "Grand Feast"),
+        MARINA("Marina", "Fishing Festival", "Fishing XP Buff", "Luck of the Sea 2.0", "Double Trouble"),
+        FOXY("Foxy", "A Time for Giving", "Extra Event", "Sweet Benevolence", "Chivalrous Carnival"),
+        AATROX("Aatrox", "Pathfinder", "Slashed Pricing", "Slayer XP Buff"),
+        DIAZ("Diaz", "Long Term Investment", "Volume Trading", "Stock Exchange", "Shopping Spree"),
+        DERPY("Derpy", "Quad Taxes", "Turbo Minions", "Double Mobs HP", "Moar Skillz");
 
         /** Human-readable display name shown to players. */
         public final String displayName;
@@ -75,7 +74,6 @@ public final class MayorManager {
         m.put(MayorCandidate.AATROX, statBonus(Stat.STRENGTH, 30.0, Stat.FEROCITY, 10.0));
         m.put(MayorCandidate.DIAZ, statBonus(Stat.INTELLIGENCE, 10.0));
         m.put(MayorCandidate.DERPY, statBonus(Stat.SPEED, 10.0));
-        m.put(MayorCandidate.BARRY, statBonus(Stat.INTELLIGENCE, 25.0));
         MAYOR_STAT_PERKS = Collections.unmodifiableMap(m);
     }
 
@@ -87,8 +85,8 @@ public final class MayorManager {
         return Collections.unmodifiableMap(bonuses);
     }
 
-    /** Length of a full Skyblock election cycle, in days. */
-    public static final int ELECTION_CYCLE_DAYS = 53;
+    /** Length of a full SkyBlock election cycle: one SkyBlock year = 372 SkyBlock days. */
+    public static final int ELECTION_CYCLE_DAYS = 372;
 
     private static final MayorManager INSTANCE = new MayorManager();
 
