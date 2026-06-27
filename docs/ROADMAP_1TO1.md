@@ -59,9 +59,11 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
 - [x] Scoreboard sidebar + tab banner 1:1
 - [~] Per-menu pixel-perfect for UNVERIFIABLE menus — pending user's concrete
       examples (wiki documents no slots for them)
-- [ ] **Secondary-menu structural rewrites (from the 2026-06-27 `{{UI}}` audit)** — these menus
-      are functionally different from their Hypixel counterparts and need rebuilding, not
-      relabelling (titles already fixed in #4420):
+- [~] **Secondary-menu structural rewrites (from the 2026-06-27 `{{UI}}` audit)** — MOSTLY DONE.
+      Every menu rebuildable without worldgen has shipped (Trophy Fishing, Garden Desk, Island
+      Management, Enchant Item, Essence Shop, Runic Pedestal, Fast Travel, Backpack/Ender Chest
+      storage, Fairy Souls). Only **worldgen-blocked** items remain (Minion). Titles already fixed
+      in #4420:
   - ✅ **Enchant Item** (done #4427) — rebuilt as the real item-input GUI; enchants apply to item
     lore in the combat-reader format. Applicable-enchant categories are an approximation; bookshelf-
     power gating + sort are not yet functional. Needs an item-dupe playtest.
@@ -74,16 +76,18 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
   - ✅ **Island Management** (done #4425) — rebuilt to the Category / Name / Ranks / Properties /
     Alex's / Guests hub; the sub-screens are stubs to build.
   - ✅ **Trophy Fishing** (done #4423) — 18-fish grid + Fillet / Rewards / Lost-Rewards buttons.
-  - **Minion** — single-minion window (Ideal Layout, Fuel, Automated Shipping, 15 storage slots,
-    Collect All, Quick-Upgrade, Pickup), not a 12-minion grid.
+  - ⛔ **Minion** — single-minion window (Ideal Layout, Fuel, Automated Shipping, 15 storage slots,
+    Collect All, Quick-Upgrade, Pickup), not a 12-minion grid. BLOCKED on **worldgen**: the real menu
+    opens from a placed minion in-world; without placed minions there's no single minion to show.
   - ✅ **Essence Shop** (done #4429) — rebuilt to a hub (Undead + Wither sub-shops) with the 15 real
     perks. Remaining: perk *effects* (Catacombs stats) aren't wired; exact per-level costs approximate.
   - ✅ **Backpack / Ender Chest** (done #4435-#4436) — both are now real persistent containers
     (place/take items, per-slot ItemStack serialization to enderchests.yml/backpack.yml, load on
     enable + save on disable). Backpack sized to tier incl. the re-added Jumbo (45). Follow-ups:
     Ender Chest 9-page layout, multiple backpacks per player, periodic autosave.
-  - **Fast Travel** — destination set/order, name colours (mostly green), and footer (Island
-    Browser / Go Back / Advanced Mode) differ from the wiki layout.
+  - ✅ **Fast Travel** (done #4438) — rebuilt to the wiki layout: the real 18 destinations at their
+    slots/colours + Island Browser / Go Back / Advanced Mode footer. Teleports where a warp is
+    registered; the 6 destinations whose zones aren't generated show "Not available yet" (worldgen).
   - ✅ **Fairy Souls** (done #4431) — per-area counts rebuilt from the wiki Guide; 16 areas summing
     to exactly 273 (Hub 80 … Miscellaneous 17). Dropped Crystal Hollows/Kuudra (not soul areas);
     added Gold Mine/Galatea/Backwater Bayou/Lotus Atoll/Miscellaneous. Menu title fixed too.
