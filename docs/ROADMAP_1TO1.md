@@ -26,6 +26,12 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
   roll kept (wiki: basic reforges are random). Rarity lore-reader centralised as
   `Rarity.fromItem`. **Menu anti-dupe confirmed a general layered system** (default-cancel +
   `MenuItemListener` marker guard; only Crafting/Reforge interactive — pending dupe playtest).
+- **Mining XP curve (PR #4416)** — `MiningManager` used a fabricated `50·n²` curve (level 50 at
+  ~125k XP); now uses the canonical skill table (`SkyBlockXP.STANDARD_CUMULATIVE`, L50 = 55.17M).
+- **Pet stats per-pet (PR #4417)** — pet stat bonuses were category-blanket (every Combat pet =
+  +0.5 Strength, etc.), wrong for many pets. Now sourced per-pet from NEU `petnums.json` (56 pets,
+  real multi-stat); all of a pet's stats apply. Pet *abilities* still don't fire (see Phase 1).
+  Both Mining + Pet are combat-affecting — **playtest pending**.
 
 ---
 
@@ -63,7 +69,10 @@ remaining items below are polish/refinements.
 - [~] Full damage stack — the **additive enchant-multiplier bucket is now applied**
       (in `CombatListener`); True Defense, effective-HP, and the +15% melee bonus
       still TODO
-- [ ] Pet abilities (held/active) actually fire
+- [~] Pets → stats: the active pet's **base stats now apply per-pet** (real multi-stat from NEU,
+      #4417) via `StatManager.addBonus`, preserved across `recompute`. Still TODO: the bespoke
+      **pet abilities** (held/active, e.g. fall-damage immunity, fortune procs) — 39 are defined
+      as display-only data and none fire yet; and per-instance **rarity** scaling of pet stats.
 
 ## Phase 2 — Progression loops (activity → reward → power)
 - [~] De-dup double-XP — **Fishing + Farming + Foraging fixed**: `CompactListeners`
