@@ -150,13 +150,26 @@ public final class PetManager {
         public PetStatBonus getStatBonus() {
             return statBonus;
         }
+
+        /**
+         * Returns every stat this pet grants per level. Sourced per-pet from NEU
+         * {@code petnums.json} ({@link #PET_STATS}); pets without NEU data fall
+         * back to the single category-derived {@link #statBonus}.
+         */
+        public List<PetStatBonus> getStatBonuses() {
+            List<PetStatBonus> list = PET_STATS.get(this);
+            return list != null ? list : List.of(statBonus);
+        }
     }
 
     /** A pet's primary stat bonus: a {@link Stat} granted at {@code bonusPerLevel} per pet level. */
     public record PetStatBonus(Stat stat, double bonusPerLevel) {
     }
 
-    /** Maps a pet's skill category to the primary stat its level grants. */
+    /**
+     * Fallback used only for pets without per-pet NEU data: maps a pet's skill
+     * category to a single representative stat. Prefer {@link #PET_STATS}.
+     */
     private static PetStatBonus statBonusFor(PetCategory category) {
         return switch (category) {
             case COMBAT -> new PetStatBonus(Stat.STRENGTH, 0.5);
@@ -166,6 +179,83 @@ public final class PetManager {
             case FORAGING -> new PetStatBonus(Stat.FORAGING_FORTUNE, 0.5);
             case ALCHEMY -> new PetStatBonus(Stat.INTELLIGENCE, 1.0);
         };
+    }
+
+    /**
+     * Per-pet stat bonuses granted per pet level, sourced from NotEnoughUpdates'
+     * {@code petnums.json} at each pet's default rarity (per-level = (L100−L1)/99).
+     * Replaces the old category-blanket model, where e.g. every Combat pet wrongly
+     * gave only Strength. Pets absent from NEU keep the {@link #statBonusFor}
+     * category fallback. Stats NEU lists but this server's {@link Stat} enum lacks
+     * (e.g. Swing Range, Vitality) are omitted.
+     */
+    static final Map<PetType, List<PetStatBonus>> PET_STATS = new EnumMap<>(PetType.class);
+
+    private static PetStatBonus e(Stat stat, double perLevel) {
+        return new PetStatBonus(stat, perLevel);
+    }
+
+    private static void put(PetType type, PetStatBonus... bonuses) {
+        PET_STATS.put(type, List.of(bonuses));
+    }
+
+    static {
+        put(PetType.BAT, e(Stat.INTELLIGENCE,1), e(Stat.SPEED,0.05));
+        put(PetType.CHICKEN, e(Stat.FARMING_FORTUNE,0.5), e(Stat.SPEED,0.5));
+        put(PetType.MOSQUITO, e(Stat.SPEED,0.2));
+        put(PetType.PIG, e(Stat.SPEED,0.15));
+        put(PetType.ROCK, e(Stat.DEFENSE,2), e(Stat.TRUE_DEFENSE,0.1));
+        put(PetType.SHEEP, e(Stat.ABILITY_DAMAGE,0.2), e(Stat.INTELLIGENCE,1));
+        put(PetType.SLUG, e(Stat.DEFENSE,0.2), e(Stat.INTELLIGENCE,0.25));
+        put(PetType.SNAIL, e(Stat.DEFENSE,1), e(Stat.INTELLIGENCE,1));
+        put(PetType.HORSE, e(Stat.INTELLIGENCE,0.5), e(Stat.SPEED,1));
+        put(PetType.HOUND, e(Stat.ATTACK_SPEED,0.25), e(Stat.FEROCITY,0.05), e(Stat.SPEED,0.1), e(Stat.STRENGTH,0.4));
+        put(PetType.MOOSHROOM_COW, e(Stat.FARMING_FORTUNE,1), e(Stat.HEALTH,1));
+        put(PetType.PENGUIN, e(Stat.SEA_CREATURE_CHANCE,0.1));
+        put(PetType.RABBIT, e(Stat.HEALTH,1), e(Stat.SPEED,0.2));
+        put(PetType.SILVERFISH, e(Stat.DEFENSE,1), e(Stat.MINING_FORTUNE,0.2));
+        put(PetType.BEE, e(Stat.FARMING_FORTUNE,0.2), e(Stat.FORAGING_FORTUNE,0.2), e(Stat.INTELLIGENCE,0.5), e(Stat.MINING_FORTUNE,0.2), e(Stat.SPEED,0.1), e(Stat.STRENGTH,0.25));
+        put(PetType.DOLPHIN, e(Stat.INTELLIGENCE,1), e(Stat.SEA_CREATURE_CHANCE,0.05));
+        put(PetType.ELEPHANT, e(Stat.HEALTH,1), e(Stat.INTELLIGENCE,0.75));
+        put(PetType.ENDERMITE, e(Stat.INTELLIGENCE,1.5), e(Stat.PET_LUCK,0.1));
+        put(PetType.FLYING_FISH, e(Stat.DEFENSE,0.5), e(Stat.STRENGTH,0.5));
+        put(PetType.GIRAFFE, e(Stat.CRIT_CHANCE,0.05), e(Stat.HEALTH,1));
+        put(PetType.GUARDIAN, e(Stat.DEFENSE,0.5), e(Stat.INTELLIGENCE,1));
+        put(PetType.JELLYFISH, e(Stat.HEALTH,2));
+        put(PetType.LION, e(Stat.FEROCITY,0.05), e(Stat.SPEED,0.25), e(Stat.STRENGTH,0.5));
+        put(PetType.MITHRIL_GOLEM, e(Stat.MINING_FORTUNE,0.25), e(Stat.TRUE_DEFENSE,0.5));
+        put(PetType.MONKEY, e(Stat.INTELLIGENCE,0.5), e(Stat.SPEED,0.2));
+        put(PetType.OCELOT, e(Stat.FEROCITY,0.1), e(Stat.SPEED,0.5));
+        put(PetType.PARROT, e(Stat.CRIT_DAMAGE,0.1), e(Stat.INTELLIGENCE,1));
+        put(PetType.PIGMAN, e(Stat.DEFENSE,0.5), e(Stat.FEROCITY,0.05), e(Stat.STRENGTH,0.5));
+        put(PetType.SKELETON, e(Stat.CRIT_CHANCE,0.15), e(Stat.CRIT_DAMAGE,0.3));
+        put(PetType.SPIDER, e(Stat.CRIT_CHANCE,0.096), e(Stat.STRENGTH,0.504));
+        put(PetType.SQUID, e(Stat.HEALTH,0.5), e(Stat.INTELLIGENCE,0.5));
+        put(PetType.TURTLE, e(Stat.DEFENSE,0.5), e(Stat.HEALTH,0.25), e(Stat.TRUE_DEFENSE,0.15));
+        put(PetType.ZOMBIE, e(Stat.CRIT_DAMAGE,0.3), e(Stat.HEALTH,1));
+        put(PetType.AMMONITE, e(Stat.SEA_CREATURE_CHANCE,0.06));
+        put(PetType.ARMADILLO, e(Stat.DEFENSE,2));
+        put(PetType.BABY_YETI, e(Stat.FISHING_SPEED,0.5), e(Stat.SEA_CREATURE_CHANCE,0.05), e(Stat.STRENGTH,0.75));
+        put(PetType.BLAZE, e(Stat.DEFENSE,0.3), e(Stat.INTELLIGENCE,1));
+        put(PetType.BLUE_WHALE, e(Stat.HEALTH,2));
+        put(PetType.DROPLET_WISP, e(Stat.HEALTH,1));
+        put(PetType.ENDERMAN, e(Stat.CRIT_DAMAGE,0.75));
+        put(PetType.GHOUL, e(Stat.FEROCITY,0.05), e(Stat.HEALTH,1), e(Stat.INTELLIGENCE,0.75));
+        put(PetType.GOLEM, e(Stat.HEALTH,1.5051), e(Stat.STRENGTH,0.5045));
+        put(PetType.HEDGEHOG, e(Stat.SPEED,0.15));
+        put(PetType.MAGMA_CUBE, e(Stat.DEFENSE,0.3333), e(Stat.HEALTH,0.5), e(Stat.STRENGTH,0.2));
+        put(PetType.SNOWMAN, e(Stat.CRIT_DAMAGE,0.25), e(Stat.STRENGTH,0.25));
+        put(PetType.TARANTULA, e(Stat.CRIT_CHANCE,0.1), e(Stat.CRIT_DAMAGE,0.3), e(Stat.STRENGTH,0.1));
+        put(PetType.TIGER, e(Stat.CRIT_CHANCE,0.05), e(Stat.CRIT_DAMAGE,0.5), e(Stat.FEROCITY,0.25), e(Stat.STRENGTH,0.1));
+        put(PetType.WITHER_SKELETON, e(Stat.CRIT_CHANCE,0.05), e(Stat.CRIT_DAMAGE,0.25), e(Stat.DEFENSE,0.25), e(Stat.INTELLIGENCE,0.25), e(Stat.STRENGTH,0.25));
+        put(PetType.WOLF, e(Stat.CRIT_DAMAGE,0.1), e(Stat.HEALTH,0.5), e(Stat.SPEED,0.2), e(Stat.TRUE_DEFENSE,0.1));
+        put(PetType.BLACK_CAT, e(Stat.INTELLIGENCE,1), e(Stat.MAGIC_FIND,0.15), e(Stat.PET_LUCK,0.15), e(Stat.SPEED,1.25));
+        put(PetType.ENDER_DRAGON, e(Stat.CRIT_CHANCE,0.1), e(Stat.CRIT_DAMAGE,0.5), e(Stat.STRENGTH,0.5));
+        put(PetType.GOLDEN_DRAGON, e(Stat.ATTACK_SPEED,0.2525), e(Stat.MAGIC_FIND,0.0505), e(Stat.STRENGTH,0.2525));
+        put(PetType.GRANDMA_WOLF, e(Stat.HEALTH,1), e(Stat.STRENGTH,0.25));
+        put(PetType.GRIFFIN, e(Stat.ATTACK_SPEED,0.25), e(Stat.CRIT_CHANCE,0.1), e(Stat.CRIT_DAMAGE,0.5), e(Stat.STRENGTH,0.5));
+        put(PetType.JERRY, e(Stat.INTELLIGENCE,1));
+        put(PetType.PHOENIX, e(Stat.INTELLIGENCE,1), e(Stat.STRENGTH,0.5));
     }
 
     /** The highest level a pet can reach. */
@@ -531,8 +621,8 @@ public final class PetManager {
         return had;
     }
 
-    /** Tracks the stat bonus currently applied for the player's active pet, for exact removal. */
-    private final Map<UUID, AppliedPetBonus> appliedPetBonuses = new HashMap<>();
+    /** Tracks the stat bonuses currently applied for the player's active pet, for exact removal. */
+    private final Map<UUID, List<AppliedPetBonus>> appliedPetBonuses = new HashMap<>();
 
     private record AppliedPetBonus(Stat stat, double amount) {}
 
@@ -541,28 +631,36 @@ public final class PetManager {
         refreshPetBonus(playerId);
     }
 
-    /** Forgets the tracked applied bonus without touching StatManager (e.g. on quit when it resets). */
+    /** Forgets the tracked applied bonuses without touching StatManager (e.g. on quit when it resets). */
     public void clearAppliedBonus(UUID playerId) {
         appliedPetBonuses.remove(playerId);
     }
 
-    /** Re-applies the active pet's level-scaled stat bonus, removing any previously applied one. */
+    /** Re-applies all of the active pet's level-scaled stat bonuses, removing any previously applied ones. */
     private void refreshPetBonus(UUID playerId) {
-        AppliedPetBonus previous = appliedPetBonuses.remove(playerId);
+        List<AppliedPetBonus> previous = appliedPetBonuses.remove(playerId);
         if (previous != null) {
-            StatManager.getInstance().addBonus(playerId, previous.stat(), -previous.amount());
+            for (AppliedPetBonus prev : previous) {
+                StatManager.getInstance().addBonus(playerId, prev.stat(), -prev.amount());
+            }
         }
         Pet pet = getActivePet(playerId);
         if (pet == null) {
             return;
         }
-        PetStatBonus bonus = pet.type.getStatBonus();
-        double amount = bonus.bonusPerLevel() * getLevel(playerId, pet.type);
-        if (amount == 0.0) {
-            return;
+        int level = getLevel(playerId, pet.type);
+        List<AppliedPetBonus> applied = new ArrayList<>();
+        for (PetStatBonus bonus : pet.type.getStatBonuses()) {
+            double amount = bonus.bonusPerLevel() * level;
+            if (amount == 0.0) {
+                continue;
+            }
+            StatManager.getInstance().addBonus(playerId, bonus.stat(), amount);
+            applied.add(new AppliedPetBonus(bonus.stat(), amount));
         }
-        StatManager.getInstance().addBonus(playerId, bonus.stat(), amount);
-        appliedPetBonuses.put(playerId, new AppliedPetBonus(bonus.stat(), amount));
+        if (!applied.isEmpty()) {
+            appliedPetBonuses.put(playerId, applied);
+        }
     }
 
     /** Returns the UUID of the player's currently equipped pet, or {@code null} if none. */
@@ -794,9 +892,9 @@ public final class PetManager {
     }
 
     /**
-     * Returns the primary stat bonus the player's active pet grants at its current level,
-     * or {@code 0} if the player has no active pet. The bonus is
-     * {@code statBonus.bonusPerLevel() * level} of {@link PetType#statBonus}.
+     * Returns the player's active pet's primary stat bonus at its current level
+     * (the first entry of {@link PetType#getStatBonuses()}), or {@code 0} if the
+     * player has no active pet.
      */
     public double getActivePetStatBonus(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
@@ -805,7 +903,8 @@ public final class PetManager {
             return 0.0;
         }
         int level = computeLevel(getExperience(playerId, pet.type), pet.rarity);
-        return pet.type.statBonus.bonusPerLevel() * level;
+        List<PetStatBonus> bonuses = pet.type.getStatBonuses();
+        return bonuses.isEmpty() ? 0.0 : bonuses.get(0).bonusPerLevel() * level;
     }
 
     public void recordPetEvent(UUID playerId, String summary) {
