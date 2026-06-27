@@ -1,6 +1,8 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.manager.ReforgeManager;
+import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -48,6 +50,7 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
                       "§7then click here to apply a",
                       "§7random reforge to it.",
                       "",
+                      "§7Cost scales with the item's rarity.",
                       "§7Collect the result from the",
                       "§7right slot!")
                 .build());
@@ -101,6 +104,14 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
                 player.sendMessage("§cTake your reforged item first.");
                 return;
             }
+            // Reforging costs coins, scaling with the item's rarity (wiki Reforging/Prices).
+            Rarity rarity = Rarity.fromItem(item, Rarity.COMMON);
+            int cost = ReforgeManager.getReforgeCost(rarity);
+            if (!EconomyManager.getInstance().withdraw(player.getUniqueId(), (long) cost)) {
+                player.sendMessage("§cReforging a " + rarity.getDisplayName() + " item costs §6"
+                        + String.format("%,d", cost) + " coins§c — you can't afford it.");
+                return;
+            }
             ReforgeManager mgr = ReforgeManager.getInstance();
             ReforgeManager.ReforgeType chosen =
                     REFORGE_TYPES[(int) (Math.random() * REFORGE_TYPES.length)];
@@ -110,8 +121,9 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
             mgr.applyReforge(reforged, chosen);
             getInventory().setItem(RESULT_SLOT, reforged);
             getInventory().setItem(ITEM_SLOT, null);
-            player.sendMessage("§aYour item was reforged to §6" + chosen.getDisplayName()
-                    + "§a! §7(+" + chosen.getStrengthBonus() + "❁ +" + chosen.getDefenseBonus()
+            player.sendMessage("§aReforged to §6" + chosen.getDisplayName()
+                    + " §afor §6" + String.format("%,d", cost) + " coins§a! §7(+"
+                    + chosen.getStrengthBonus() + "❁ +" + chosen.getDefenseBonus()
                     + "❈ +" + chosen.getSpeedBonus() + "✦)");
         }
     }

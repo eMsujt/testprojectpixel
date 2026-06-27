@@ -275,22 +275,7 @@ public final class EquipmentListener implements Listener {
 
     /** Best-effort read of an item's rarity from its lore (defaults to Legendary for endgame gear). */
     private static Rarity rarityOf(ItemStack item) {
-        if (item == null) {
-            return Rarity.LEGENDARY;
-        }
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null && meta.getLore() != null) {
-            java.util.List<String> lore = meta.getLore();
-            for (int i = lore.size() - 1; i >= 0; i--) {
-                String[] words = ChatColor.stripColor(lore.get(i)).trim().split("\\s+");
-                if (words.length == 0) continue;
-                String first = words[0].toUpperCase(Locale.ROOT);
-                for (Rarity r : Rarity.values()) {
-                    if (r.name().equals(first)) return r;
-                }
-            }
-        }
-        return Rarity.LEGENDARY;
+        return Rarity.fromItem(item, Rarity.LEGENDARY);
     }
 
     /**
