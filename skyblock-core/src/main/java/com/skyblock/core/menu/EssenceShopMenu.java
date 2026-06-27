@@ -1,6 +1,7 @@
 package com.skyblock.core.menu;
 
 import com.skyblock.core.manager.EssenceManager.EssenceShopPerk;
+import com.skyblock.core.manager.EssenceManager.EssenceType;
 import com.skyblock.core.manager.EssenceShopManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
@@ -11,23 +12,35 @@ import org.bukkit.inventory.ItemStack;
 import java.util.UUID;
 
 /**
- * 6-row GUI listing all {@link EssenceShopPerk} upgrades purchasable through
- * the Essence Shop. Each perk occupies a single slot in the inner area; clicking
- * attempts the purchase via {@link EssenceShopManager}.
+ * A single essence's perk shop (e.g. "Undead Essence Shop"), opened from the
+ * {@link EssenceMenu} hub. Lists the {@link EssenceShopPerk}s for {@link #type}
+ * (or all perks when {@code type} is null); clicking one purchases the next
+ * level via {@link EssenceShopManager}. A Go Back arrow returns to the hub.
  */
 public final class EssenceShopMenu extends Menu {
 
+    private static final int BACK_SLOT = 48;
     private static final int CLOSE_SLOT = 49;
 
     private final UUID playerId;
+    private final EssenceType type;
 
     public EssenceShopMenu(Player player) {
-        this(player.getUniqueId());
+        this(player.getUniqueId(), null);
     }
 
     public EssenceShopMenu(UUID playerId) {
-        super("§5Essence Shop", 6);
+        this(playerId, null);
+    }
+
+    public EssenceShopMenu(Player player, EssenceType type) {
+        this(player.getUniqueId(), type);
+    }
+
+    public EssenceShopMenu(UUID playerId, EssenceType type) {
+        super(type == null ? "Essence Shop" : type.getDisplayName() + " Essence Shop", 6);
         this.playerId = playerId;
+        this.type = type;
     }
 
     @Override
@@ -42,18 +55,27 @@ public final class EssenceShopMenu extends Menu {
         }
 
         EssenceShopManager shop = EssenceShopManager.getInstance();
-        EssenceShopPerk[] perks = shop.getAvailablePerks();
 
-        // Place perks starting at slot 10 (row 1, col 1), left-to-right.
+        // Place this essence's perks starting at slot 10, left-to-right.
         int innerStart = 10;
-        for (int i = 0; i < perks.length; i++) {
-            EssenceShopPerk perk = perks[i];
+        int i = 0;
+        for (EssenceShopPerk perk : shop.getAvailablePerks()) {
+            if (type != null && perk.getEssenceType() != type) {
+                continue;
+            }
             int col = i % 7;
             int row = i / 7;
             int slot = innerStart + row * 9 + col;
             setItem(slot, buildPerkItem(shop, perk), e -> handlePurchase(e, perk));
+            i++;
         }
 
+        if (type != null) {
+            setItem(BACK_SLOT, new ItemBuilder(Material.ARROW)
+                    .displayName("§aGo Back")
+                    .lore("§7To Essence Shop")
+                    .build());
+        }
         setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
                 .lore("§7Close the Essence Shop.")
@@ -65,6 +87,12 @@ public final class EssenceShopMenu extends Menu {
         event.setCancelled(true);
         if (event.getSlot() == CLOSE_SLOT) {
             if (event.getWhoClicked() instanceof Player p) p.closeInventory();
+            return;
+        }
+        if (event.getSlot() == BACK_SLOT && type != null) {
+            if (event.getWhoClicked() instanceof Player p) {
+                new EssenceMenu(p).open(p);
+            }
             return;
         }
         super.handleClick(event);

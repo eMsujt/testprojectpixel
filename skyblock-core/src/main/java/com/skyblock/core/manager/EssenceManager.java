@@ -44,13 +44,31 @@ public final class EssenceManager {
      * <p>Each level costs {@code baseCost * (currentLevel + 1)} essence and a
      * perk cannot be upgraded beyond {@link #getMaxLevel()}.</p>
      */
+    /**
+     * Essence-shop perks, sourced from the wiki (Essence_Shops). Hypixel's two
+     * essence <em>perk</em> shops are Wither and Undead; the other essences are
+     * spent on item upgrades, not a perk shop. {@code baseCost} is the level-1
+     * cost; the per-level progression ({@link #getUpgradeCost}) is the manager's
+     * model, not a Hypixel-exact curve.
+     */
     public enum EssenceShopPerk {
-        HEALTH("Health Boost", EssenceType.WITHER, 100, 50),
-        DEFENSE("Defense Boost", EssenceType.WITHER, 100, 50),
-        SPEED("Speed Boost", EssenceType.UNDEAD, 80, 25),
-        INTELLIGENCE("Intelligence Boost", EssenceType.DRAGON, 120, 25),
-        CRIT_DAMAGE("Crit Damage Boost", EssenceType.SPIDER, 150, 10),
-        TOUGH_SKIN("Tough Skin", EssenceType.CRIMSON, 200, 10);
+        // Wither Essence Shop
+        FORBIDDEN_HEALTH("Forbidden Health", EssenceType.WITHER, 100, 10),
+        FORBIDDEN_DEFENSE("Forbidden Defense", EssenceType.WITHER, 100, 10),
+        FORBIDDEN_SPEED("Forbidden Speed", EssenceType.WITHER, 100, 10),
+        FORBIDDEN_INTELLIGENCE("Forbidden Intelligence", EssenceType.WITHER, 100, 10),
+        FORBIDDEN_STRENGTH("Forbidden Strength", EssenceType.WITHER, 100, 10),
+        FORBIDDEN_BLESSING("Forbidden Blessing", EssenceType.WITHER, 100, 5),
+        ECHOS_OF_THE_LOST("Echos of the Lost", EssenceType.WITHER, 250, 5),
+        // Undead Essence Shop
+        HEALTH_ESSENCE("Health Essence", EssenceType.UNDEAD, 1000, 10),
+        DEFENSE_ESSENCE("Defense Essence", EssenceType.UNDEAD, 1000, 10),
+        STRENGTH_ESSENCE("Strength Essence", EssenceType.UNDEAD, 1000, 10),
+        INTELLIGENCE_ESSENCE("Intelligence Essence", EssenceType.UNDEAD, 1000, 10),
+        CRITICAL_ESSENCE("Critical Essence", EssenceType.UNDEAD, 1000, 10),
+        BOSS_LUCK("Boss Luck", EssenceType.UNDEAD, 100, 5),
+        LOOTING("Looting", EssenceType.UNDEAD, 1000, 5),
+        HELP_OF_THE_FAIRIES("Help of the Fairies", EssenceType.UNDEAD, 200000, 1);
 
         private final String displayName;
         private final EssenceType essenceType;
