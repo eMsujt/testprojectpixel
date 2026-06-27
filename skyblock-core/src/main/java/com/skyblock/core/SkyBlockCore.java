@@ -1085,6 +1085,9 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("setnpclocation").setTabCompleter(setNpcLocationCommand);
         }
         getServer().getPluginManager().registerEvents(new com.skyblock.core.npc.FunctionalNpcListener(), this);
+        // Build the shared Hub world + auto-place the service NPCs (after NPC load so the
+        // auto-place check respects any operator-placed NPCs). Registers the "hub" warp.
+        com.skyblock.core.manager.HubManager.getInstance().setup();
         // Spawn placed NPCs one tick later, once all worlds are fully loaded.
         getServer().getScheduler().runTask(this,
                 () -> com.skyblock.core.npc.FunctionalNpcManager.getInstance().spawnAll());
