@@ -2,52 +2,22 @@ package com.skyblock.core.npc;
 
 import com.skyblock.core.manager.ShopManager;
 import com.skyblock.core.manager.ShopManager.ShopEntry;
-import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * Singleton managing registered NPCs and the shop items they sell.
+ * Singleton registry of shop NPCs and the wares they sell, backing the
+ * {@code /npc list|shop|buy} text commands. Placed, world-interactive NPCs are
+ * handled separately by {@link FunctionalNpc} / {@link FunctionalNpcManager}.
  *
  * <p>Not thread-safe; synchronize externally if accessed from multiple threads.</p>
  */
 public final class NpcManager {
-
-    /** Canonical SkyBlock NPC role types. */
-    public enum NpcType {
-        BANKER("Banker"),
-        AUCTION_MASTER("Auction Master"),
-        BAZAAR_AGENT("Bazaar Agent"),
-        BUILDER("Builder"),
-        BLACKSMITH("Blacksmith"),
-        LIBRARIAN("Librarian"),
-        MERCHANT("Merchant"),
-        GUIDE("Guide"),
-        CRAFTSMAN("Craftsman"),
-        DUNGEON_GUIDE("Dungeon Guide"),
-        ISLAND_MERCHANT("Island Merchant"),
-        COMMUNITY_SHOP_MERCHANT("Community Shop Merchant");
-
-        public final String displayName;
-
-        NpcType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
 
     /**
      * A registered NPC whose shop items live in {@link ShopManager} under
@@ -69,9 +39,6 @@ public final class NpcManager {
 
     /** id (lower-case) → NpcDefinition */
     private final Map<String, NpcDefinition> npcs = new LinkedHashMap<>();
-
-    /** entity UUID → NpcDefinition for spawned ArmorStand NPCs */
-    private final Map<UUID, NpcDefinition> spawnedEntities = new HashMap<>();
 
     private NpcManager() {
         registerDefaults();
@@ -111,48 +78,6 @@ public final class NpcManager {
      */
     public List<NpcDefinition> getAllNpcs() {
         return Collections.unmodifiableList(new ArrayList<>(npcs.values()));
-    }
-
-    /**
-     * Spawns an invisible, gravity-less {@link ArmorStand} at {@code location}
-     * named after {@code npc} and tracks it so {@link NPCListener} can route
-     * player interactions back to the correct {@link NpcDefinition}.
-     *
-     * @param location where to spawn the ArmorStand; must not be null
-     * @param npc      the NPC definition to attach; must not be null
-     * @return the spawned {@link ArmorStand}
-     */
-    public ArmorStand spawnNpc(Location location, NpcDefinition npc) {
-        Objects.requireNonNull(location, "location");
-        Objects.requireNonNull(npc, "npc");
-        ArmorStand stand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
-        stand.setCustomName(npc.name());
-        stand.setCustomNameVisible(true);
-        stand.setGravity(false);
-        stand.setVisible(false);
-        stand.setInvulnerable(true);
-        spawnedEntities.put(stand.getUniqueId(), npc);
-        return stand;
-    }
-
-    /**
-     * Returns the {@link NpcDefinition} associated with a spawned ArmorStand,
-     * or {@code null} if the entity is not a registered NPC.
-     *
-     * @param entityId the {@link UUID} of the entity
-     * @return the definition, or {@code null}
-     */
-    public NpcDefinition findByEntity(UUID entityId) {
-        return spawnedEntities.get(entityId);
-    }
-
-    /**
-     * Removes the tracking entry for a despawned NPC entity.
-     *
-     * @param entityId the {@link UUID} of the entity to forget
-     */
-    public void removeEntity(UUID entityId) {
-        spawnedEntities.remove(entityId);
     }
 
     private void registerDefaults() {
