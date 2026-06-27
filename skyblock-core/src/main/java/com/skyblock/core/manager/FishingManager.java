@@ -203,59 +203,30 @@ public final class FishingManager {
         }
     }
 
-    /** Trophy fish types obtainable through SkyBlock trophy fishing. */
+    /**
+     * The 18 SkyBlock trophy fish (caught while lava/water fishing in the Crimson
+     * Isle). Tiers (Bronze/Silver/Gold/Diamond) are earned by per-fish catch count;
+     * the minLevel/rarity/dropChance below drive this plugin's simplified roll model.
+     */
     public enum TrophyFish {
-        // COMMON — level 1–10
-        SULPHUR_SKITTER(1,   "Sulphur Skitter",        Rarity.COMMON,   0.30),
-        OBFUSCATED_FISH_1(1, "Obfuscated Fish 1",      Rarity.COMMON,   0.25),
-        MAHI_MAHI(1,         "Mahi Mahi",               Rarity.COMMON,   0.28),
-        STEAMING_HOT_FLOUNDER(5, "Steaming-Hot Flounder", Rarity.COMMON, 0.20),
-        GUSHER(5,            "Gusher",                  Rarity.COMMON,   0.18),
-        SLUGFISH(10,         "Slugfish",                Rarity.COMMON,   0.16),
-        PUFFERFISH_TROPHY(1, "Trophy Pufferfish",       Rarity.COMMON,   0.22),
-        INK_BLOB(1,          "Ink Blob",                Rarity.COMMON,   0.24),
-        SEA_LEECH(5,         "Sea Leech",               Rarity.COMMON,   0.19),
-        CORAL_GHOST(5,       "Coral Ghost",             Rarity.COMMON,   0.17),
-        SAND_SKIMMER(10,     "Sand Skimmer",            Rarity.COMMON,   0.15),
-
-        // UNCOMMON — level 5–20
-        OBFUSCATED_FISH_2(10, "Obfuscated Fish 2",     Rarity.UNCOMMON,  0.15),
-        BLOBFISH(10,          "Blobfish",               Rarity.UNCOMMON,  0.12),
-        FLYFISH(15,           "Flyfish",                Rarity.UNCOMMON,  0.10),
-        LAVA_HORSE(20,        "Lava Horse",             Rarity.UNCOMMON,  0.08),
-        CRYSTAL_WORM(10,      "Crystal Worm",           Rarity.UNCOMMON,  0.11),
-        MAGMA_SLUG(15,        "Magma Slug",             Rarity.UNCOMMON,  0.09),
-        THUNDER_EEL(15,       "Thunder Eel",            Rarity.UNCOMMON,  0.09),
-        LAVA_CARP(10,         "Lava Carp",              Rarity.UNCOMMON,  0.13),
-        MOLTEN_BLOWFISH(15,   "Molten Blowfish",        Rarity.UNCOMMON,  0.10),
-        TOXIC_TOADFISH(20,    "Toxic Toadfish",         Rarity.UNCOMMON,  0.07),
-
-        // RARE — level 15–30
-        OBFUSCATED_FISH_3(20, "Obfuscated Fish 3",     Rarity.RARE,      0.08),
-        MANA_RAY(20,          "Mana Ray",               Rarity.RARE,      0.06),
-        VOLCANIC_STONEFISH(25,"Volcanic Stonefish",     Rarity.RARE,      0.05),
-        VANILLE(25,           "Vanille",                Rarity.RARE,      0.04),
-        SKELETON_FISH(30,     "Skeleton Fish",          Rarity.RARE,      0.03),
-        BLAZING_SHARK(20,     "Blazing Shark",          Rarity.RARE,      0.05),
-        SCORCHED_PHANTOM(25,  "Scorched Phantom",       Rarity.RARE,      0.04),
-        VOLCANIC_BASS(15,     "Volcanic Bass",          Rarity.RARE,      0.06),
-        LAVA_SERPENT(25,      "Lava Serpent",           Rarity.RARE,      0.04),
-        PYROCLASTIC_DACE(30,  "Pyroclastic Dace",       Rarity.RARE,      0.03),
-
-        // EPIC — level 25–40
-        CRIMSON_GLOWFISH(30,  "Crimson Glowfish",       Rarity.EPIC,      0.02),
-        PHANTOM_FISHER(30,    "Phantom Fisher",         Rarity.EPIC,      0.02),
-        ABYSSAL_MANTA(35,     "Abyssal Manta",          Rarity.EPIC,      0.015),
-        DEEP_LAVA_EEL(35,     "Deep Lava Eel",          Rarity.EPIC,      0.015),
-        PYROCLASTIC_FLOUNDER(35, "Pyroclastic Flounder",Rarity.EPIC,      0.014),
-        INFERNO_PIKE(40,      "Inferno Pike",           Rarity.EPIC,      0.012),
-        HELLFIRE_BARRACUDA(40,"Hellfire Barracuda",     Rarity.EPIC,      0.010),
-
-        // LEGENDARY — level 35–50
-        HELLFIRE_TUNA(40,     "Hellfire Tuna",          Rarity.LEGENDARY, 0.005),
-        LAVA_LEVIATHAN(45,    "Lava Leviathan",         Rarity.LEGENDARY, 0.004),
-        MAGMATIC_BEHEMOTH(45, "Magmatic Behemoth",      Rarity.LEGENDARY, 0.003),
-        VOLCANIC_BASILISK(50, "Volcanic Basilisk",      Rarity.LEGENDARY, 0.002);
+        SULPHUR_SKITTER(1,        "Sulphur Skitter",        Rarity.COMMON,    0.30),
+        OBFUSCATED_FISH_1(1,      "Obfuscated Fish 1",      Rarity.COMMON,    0.25),
+        STEAMING_HOT_FLOUNDER(1,  "Steaming-Hot Flounder",  Rarity.COMMON,    0.22),
+        GUSHER(1,                 "Gusher",                 Rarity.COMMON,    0.20),
+        BLOBFISH(1,               "Blobfish",               Rarity.COMMON,    0.18),
+        SLUGFISH(5,               "Slugfish",               Rarity.UNCOMMON,  0.16),
+        FLYFISH(5,                "Flyfish",                Rarity.UNCOMMON,  0.14),
+        LAVAHORSE(5,              "Lavahorse",              Rarity.UNCOMMON,  0.13),
+        MANA_RAY(10,              "Mana Ray",               Rarity.UNCOMMON,  0.12),
+        MOLDFIN(10,               "Moldfin",                Rarity.UNCOMMON,  0.11),
+        OBFUSCATED_FISH_2(10,     "Obfuscated Fish 2",      Rarity.RARE,      0.10),
+        VOLCANIC_STONEFISH(15,    "Volcanic Stonefish",     Rarity.RARE,      0.08),
+        VANILLE(15,               "Vanille",                Rarity.RARE,      0.07),
+        SKELETON_FISH(20,         "Skeleton Fish",          Rarity.RARE,      0.06),
+        KARATE_FISH(20,           "Karate Fish",            Rarity.RARE,      0.05),
+        OBFUSCATED_FISH_3(25,     "Obfuscated Fish 3",      Rarity.EPIC,      0.04),
+        SOUL_FISH(25,             "Soul Fish",              Rarity.EPIC,      0.03),
+        GOLDEN_FISH(30,           "Golden Fish",            Rarity.LEGENDARY, 0.01);
 
         /** Minimum fishing level required for this trophy fish to drop. */
         public final int minLevel;
@@ -278,24 +249,26 @@ public final class FishingManager {
         }
     }
 
-    /** Trophy fish obtainable through SkyBlock trophy fishing (ocean and lava zones). */
+    /** The 18 SkyBlock trophy fish (same roster as {@link TrophyFish}). */
     public enum FishingTrophy {
-        SULKY_SHARK(1,   "Sulky Shark"),
-        STEAMING_HOT_FLOUNDER(5,   "Steaming-Hot Flounder"),
-        GUSHER(5,   "Gusher"),
-        BLOBFISH(10,  "Blobfish"),
-        SLUGFISH(10,  "Slugfish"),
-        FLYFISH(15,  "Flyfish"),
-        LAVA_HORSE(20,  "Lava Horse"),
-        MANA_RAY(20,  "Mana Ray"),
-        VOLCANIC_STONEFISH(25,  "Volcanic Stonefish"),
-        VANILLE(25,  "Vanille"),
-        SKELETON_FISH(30,  "Skeleton Fish"),
-        MAHI_MAHI(1,   "Mahi-Mahi"),
         SULPHUR_SKITTER(1,   "Sulphur Skitter"),
-        OBFUSCATED_FISH_1(1,   "Obfuscated Fish 1"),
+        OBFUSCATED_FISH_1(1, "Obfuscated Fish 1"),
+        STEAMING_HOT_FLOUNDER(1, "Steaming-Hot Flounder"),
+        GUSHER(1,   "Gusher"),
+        BLOBFISH(1,  "Blobfish"),
+        SLUGFISH(5,  "Slugfish"),
+        FLYFISH(5,  "Flyfish"),
+        LAVAHORSE(5,  "Lavahorse"),
+        MANA_RAY(10,  "Mana Ray"),
+        MOLDFIN(10,  "Moldfin"),
         OBFUSCATED_FISH_2(10,  "Obfuscated Fish 2"),
-        OBFUSCATED_FISH_3(20,  "Obfuscated Fish 3");
+        VOLCANIC_STONEFISH(15,  "Volcanic Stonefish"),
+        VANILLE(15,  "Vanille"),
+        SKELETON_FISH(20,  "Skeleton Fish"),
+        KARATE_FISH(20,  "Karate Fish"),
+        OBFUSCATED_FISH_3(25,  "Obfuscated Fish 3"),
+        SOUL_FISH(25,  "Soul Fish"),
+        GOLDEN_FISH(30,  "Golden Fish");
 
         /** Minimum fishing level required for this trophy fish to drop. */
         public final int minLevel;
