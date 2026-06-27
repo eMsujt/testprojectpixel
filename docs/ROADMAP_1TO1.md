@@ -177,9 +177,15 @@ remaining items below are polish/refinements.
 - [ ] Garden pests + visitors actually spawn; Farming Fortune → StatManager
 - [ ] HOTM powder earned by mining; Crystal Hollows nucleus loop; gemstone slots
 
-## Phase 6 — Worlds (largest effort)
-- [!] Real generated areas (Hub, Spider's Den, End, Dwarven Mines, Crystal Hollows,
-      Garden, Crimson Isle, Rift, Dungeon Hub) — needs schematic/worldgen pipeline
+## Phase 6 — Worlds (largest effort)  ← STARTED
+- [x] **Private Island** — per-player void world (`island_<uuid>`, `SkyblockUtils.IslandGenerator`)
+      with a starter island (grass platform, tree, chest); `IslandManager.createIsland` teleports in.
+- [~] **Functional Hub (#4440)** — a shared void Hub world (stone platform) with the 8 service NPCs
+      auto-placed (Banker/AH/Bazaar/Museum/Blacksmith/Pets/Wardrobe/Guide); `hub` warp registered so
+      `/hub` + Fast Travel land there. **Functional, not pixel-1:1** — a real Hub layout needs a schematic.
+- [!] **Other generated areas** (Spider's Den, End, Dwarven Mines, Crystal Hollows, Garden, Crimson
+      Isle, Rift, Dungeon Hub) — each needs a real schematic/worldgen pipeline (the 6 "Not available
+      yet" Fast Travel destinations + the Minion menu unblock once these exist).
 - [ ] Fairy souls placed in-world (~240 real coordinates)
 - [ ] Gemstone slots in gear
 
