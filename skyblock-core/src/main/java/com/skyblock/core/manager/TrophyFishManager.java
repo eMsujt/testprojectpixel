@@ -27,8 +27,8 @@ public final class TrophyFishManager {
      */
     public enum TrophyTier {
         BRONZE(1, 1),
-        SILVER(50, 2),
-        GOLD(100, 3),
+        SILVER(20, 2),
+        GOLD(50, 3),
         DIAMOND(150, 4);
 
         /** Minimum catch count required to reach this tier. */

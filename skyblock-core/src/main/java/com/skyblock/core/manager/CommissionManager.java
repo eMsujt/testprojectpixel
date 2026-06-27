@@ -43,11 +43,11 @@ public final class CommissionManager {
      */
     public enum CommissionType {
         // Dwarven Mines
-        MITHRIL_MINER("Mithril Miner", CommissionLocation.DWARVEN_MINES, 500),
+        MITHRIL_MINER("Mithril Miner", CommissionLocation.DWARVEN_MINES, 350),
         TITANIUM_MINER("Titanium Miner", CommissionLocation.DWARVEN_MINES, 15),
         LAVA_SPRINGS_SLAYER("Lava Springs Slayer", CommissionLocation.DWARVEN_MINES, 250),
         CLIFFSIDE_VEINS_SLAYER("Cliffside Veins Slayer", CommissionLocation.DWARVEN_MINES, 250),
-        GOBLIN_SLAYER("Goblin Slayer", CommissionLocation.DWARVEN_MINES, 13),
+        GOBLIN_SLAYER("Goblin Slayer", CommissionLocation.DWARVEN_MINES, 100),
         ICE_WALKER_SLAYER("Ice Walker Slayer", CommissionLocation.DWARVEN_MINES, 50),
         // Crystal Hollows
         RUBY_GEMSTONE_COLLECTOR("Ruby Gemstone Collector", CommissionLocation.CRYSTAL_HOLLOWS, 1000),
@@ -56,9 +56,9 @@ public final class CommissionManager {
         AMBER_GEMSTONE_COLLECTOR("Amber Gemstone Collector", CommissionLocation.CRYSTAL_HOLLOWS, 1000),
         SAPPHIRE_GEMSTONE_COLLECTOR("Sapphire Gemstone Collector", CommissionLocation.CRYSTAL_HOLLOWS, 1000),
         TOPAZ_GEMSTONE_COLLECTOR("Topaz Gemstone Collector", CommissionLocation.CRYSTAL_HOLLOWS, 1000),
-        GOBLIN_RAID_SLAYER("Goblin Raid Slayer", CommissionLocation.CRYSTAL_HOLLOWS, 100),
-        AUTOMATON_SLAYER("Automaton Slayer", CommissionLocation.CRYSTAL_HOLLOWS, 50),
-        TEAM_TREASURITE_MEMBER_SLAYER("Team Treasurite Member Slayer", CommissionLocation.CRYSTAL_HOLLOWS, 50);
+        GOBLIN_RAID_SLAYER("Goblin Raid Slayer", CommissionLocation.DWARVEN_MINES, 20),
+        AUTOMATON_SLAYER("Automaton Slayer", CommissionLocation.CRYSTAL_HOLLOWS, 13),
+        TEAM_TREASURITE_MEMBER_SLAYER("Team Treasurite Member Slayer", CommissionLocation.CRYSTAL_HOLLOWS, 13);
 
         private final String displayName;
         private final CommissionLocation location;
