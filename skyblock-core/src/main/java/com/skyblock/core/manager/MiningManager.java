@@ -511,21 +511,17 @@ public final class MiningManager {
     // ---------------------------------------------------------------------------
 
     /**
-     * Computes the mining level for the given total XP.
-     * Formula: level {@code n} requires {@code 50 * n^2} cumulative XP.
+     * Computes the mining level for the given total XP using the canonical
+     * SkyBlock skill XP table ({@link com.skyblock.core.data.SkyBlockXP#STANDARD_CUMULATIVE},
+     * resolved via {@link SkillManager#levelForXp}), clamped to 1..{@value #MAX_LEVEL}.
+     * The old {@code 50 * n^2} curve reached level 50 at ~125k XP; the real table
+     * requires 55,172,425 XP, matching Hypixel.
      *
      * @param totalXp total accumulated mining XP
      * @return level between 1 and {@value #MAX_LEVEL}
      */
     private static int computeLevel(double totalXp) {
-        int level = 1;
-        while (level < MAX_LEVEL) {
-            double threshold = 50.0 * (level + 1) * (level + 1);
-            if (totalXp < threshold) {
-                break;
-            }
-            level++;
-        }
-        return level;
+        int level = SkillManager.levelForXp("mining", (long) totalXp);
+        return Math.max(1, Math.min(MAX_LEVEL, level));
     }
 }
