@@ -81,8 +81,9 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
     with page navigation, not read-only paper-list renderings.
   - **Fast Travel** — destination set/order, name colours (mostly green), and footer (Island
     Browser / Go Back / Advanced Mode) differ from the wiki layout.
-  - **Fairy Souls** — per-island soul counts are wrong (sourced: Hub 80, Spider's Den 19, Crimson
-    Isle 29, Deep Caverns 21, Park 12, Farming Islands 20, Dwarven Mines 15, Rift 1) — a data fix.
+  - ✅ **Fairy Souls** (done #4431) — per-area counts rebuilt from the wiki Guide; 16 areas summing
+    to exactly 273 (Hub 80 … Miscellaneous 17). Dropped Crystal Hollows/Kuudra (not soul areas);
+    added Gold Mine/Galatea/Backwater Bayou/Lotus Atoll/Miscellaneous. Menu title fixed too.
   - **CombatMenu / StatsMenu** — no standalone Hypixel equivalent (stats live in the profile menu);
     decide keep-as-QoL vs remove.
 
