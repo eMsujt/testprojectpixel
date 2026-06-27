@@ -1072,6 +1072,21 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("npc").setTabCompleter(npcCommand);
         }
         getServer().getPluginManager().registerEvents(new NPCListener(this, npcManager), this);
+
+        // Functional NPCs: /setnpclocation <npc> places a feature NPC (Banker, Auction
+        // Master, Bazaar, Museum, Blacksmith, ...) that opens its menu when right-clicked.
+        com.skyblock.core.npc.FunctionalNpcManager.getInstance().load(getDataFolder());
+        com.skyblock.core.npc.SetNpcLocationCommand setNpcLocationCommand =
+                new com.skyblock.core.npc.SetNpcLocationCommand(this);
+        if (getCommand("setnpclocation") != null) {
+            getCommand("setnpclocation").setExecutor(setNpcLocationCommand);
+            getCommand("setnpclocation").setTabCompleter(setNpcLocationCommand);
+        }
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.npc.FunctionalNpcListener(), this);
+        // Spawn placed NPCs one tick later, once all worlds are fully loaded.
+        getServer().getScheduler().runTask(this,
+                () -> com.skyblock.core.npc.FunctionalNpcManager.getInstance().spawnAll());
+
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.PlayerListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.EntityListener.getInstance(), this);
