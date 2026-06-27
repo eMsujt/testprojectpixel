@@ -1,33 +1,37 @@
 package com.skyblock.core.manager;
 
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Singleton managing per-player backpacks (named item storage bags).
+ * Singleton managing per-player backpacks (real item-storage containers).
  *
- * <p>Each player has a {@link BackpackTier} that determines how many item-name
- * slots are available.  Tier and items are persisted to
- * {@code plugins/SkyblockCore/backpack.yml}.
- * Not thread-safe; synchronize externally if accessed from multiple threads.</p>
+ * <p>Each player has a {@link BackpackTier} that sizes their backpack
+ * {@link Inventory}; items are placed/taken directly. Tier and contents persist
+ * to {@code backpack.yml} (per-slot {@link ItemStack} serialization). One
+ * backpack per player. Not thread-safe.</p>
  */
 public final class BackpackManager {
 
-    /** Backpack sizes available to players. */
+    /** Backpack sizes available to players (wiki: up to Jumbo = 45). */
     public enum BackpackTier {
         SMALL(9),
         MEDIUM(18),
         LARGE(27),
-        GREATER(36);
+        GREATER(36),
+        JUMBO(45);
 
         /** Number of item slots provided by this tier. */
         public final int slots;
@@ -41,111 +45,68 @@ public final class BackpackManager {
         }
     }
 
+    private static final String FILE_NAME = "backpack.yml";
+
     private static final BackpackManager INSTANCE = new BackpackManager();
 
     /** Per-player backpack tier; absent entries default to {@link BackpackTier#SMALL}. */
     private final Map<UUID, BackpackTier> playerTiers = new HashMap<>();
-
-    /** Per-player list of item names stored in the backpack. */
-    private final Map<UUID, List<String>> playerItems = new HashMap<>();
+    /** Per-player backpack container, sized to the player's tier. */
+    private final Map<UUID, Inventory> backpacks = new HashMap<>();
 
     private BackpackManager() {
     }
 
-    /**
-     * Returns the single shared {@code BackpackManager} instance.
-     *
-     * @return the singleton instance
-     */
+    /** Returns the single shared {@code BackpackManager} instance. */
     public static BackpackManager getInstance() {
         return INSTANCE;
     }
 
-    // -------------------------------------------------------------------------
-    // Tier
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns the player's current backpack tier, defaulting to {@link BackpackTier#SMALL}.
-     *
-     * @param playerId the player's UUID, must not be null
-     * @return the player's tier
-     */
+    /** Returns the player's tier, defaulting to {@link BackpackTier#SMALL}. */
     public BackpackTier getTier(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         return playerTiers.getOrDefault(playerId, BackpackTier.SMALL);
     }
 
-    /**
-     * Sets the player's backpack tier.
-     *
-     * @param playerId the player's UUID, must not be null
-     * @param tier     the tier to set, must not be null
-     */
+    /** Sets the player's tier, growing the backpack container (preserving items) if it changed. */
     public void setTier(UUID playerId, BackpackTier tier) {
         Objects.requireNonNull(playerId, "playerId");
         Objects.requireNonNull(tier, "tier");
         playerTiers.put(playerId, tier);
-    }
-
-    // -------------------------------------------------------------------------
-    // Items
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns an unmodifiable view of the item names stored in the player's backpack.
-     *
-     * @param playerId the player's UUID, must not be null
-     * @return unmodifiable list of item names, never {@code null}
-     */
-    public List<String> getItems(UUID playerId) {
-        Objects.requireNonNull(playerId, "playerId");
-        List<String> items = playerItems.get(playerId);
-        return items == null ? Collections.emptyList() : Collections.unmodifiableList(items);
-    }
-
-    /**
-     * Adds an item name to the player's backpack if capacity allows.
-     *
-     * @param playerId the player's UUID, must not be null
-     * @param itemName the item name to add, must not be null
-     * @return {@code true} if added, {@code false} if the backpack is full
-     */
-    public boolean addItem(UUID playerId, String itemName) {
-        Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(itemName, "itemName");
-        List<String> items = playerItems.computeIfAbsent(playerId, id -> new ArrayList<>());
-        int capacity = getTier(playerId).slots;
-        if (items.size() >= capacity) {
-            return false;
+        Inventory existing = backpacks.get(playerId);
+        if (existing != null && existing.getSize() != tier.slots) {
+            Inventory resized = Bukkit.createInventory(null, tier.slots, title(tier));
+            int n = Math.min(existing.getSize(), resized.getSize());
+            for (int i = 0; i < n; i++) {
+                resized.setItem(i, existing.getItem(i));
+            }
+            backpacks.put(playerId, resized);
         }
-        items.add(itemName);
-        return true;
     }
 
-    /**
-     * Removes the first occurrence of the given item name from the player's backpack.
-     *
-     * @param playerId the player's UUID, must not be null
-     * @param itemName the item name to remove, must not be null
-     * @return {@code true} if the item was present and removed
-     */
-    public boolean removeItem(UUID playerId, String itemName) {
+    /** Returns the player's backpack container, creating it at their tier size on first access. */
+    public Inventory getBackpack(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
-        Objects.requireNonNull(itemName, "itemName");
-        List<String> items = playerItems.get(playerId);
-        return items != null && items.remove(itemName);
+        return backpacks.computeIfAbsent(playerId,
+                id -> Bukkit.createInventory(null, getTier(id).slots, title(getTier(id))));
     }
 
-    /**
-     * Removes all item data for the given player (e.g. on quit).
-     *
-     * @param playerId the player to remove
-     */
+    /** Opens the player's real backpack container (place/take items directly). */
+    public void open(Player player) {
+        Objects.requireNonNull(player, "player");
+        player.openInventory(getBackpack(player.getUniqueId()));
+    }
+
+    /** Removes all backpack data for the given player. Save first if it must survive. */
     public void remove(UUID playerId) {
         Objects.requireNonNull(playerId, "playerId");
         playerTiers.remove(playerId);
-        playerItems.remove(playerId);
+        backpacks.remove(playerId);
+    }
+
+    private static String title(BackpackTier tier) {
+        String name = tier.name().charAt(0) + tier.name().substring(1).toLowerCase(Locale.ROOT);
+        return name + " Backpack";
     }
 
     // -------------------------------------------------------------------------
@@ -153,53 +114,71 @@ public final class BackpackManager {
     // -------------------------------------------------------------------------
 
     public void load(File dataFolder) {
-        File file = new File(dataFolder, "backpack.yml");
+        File file = new File(dataFolder, FILE_NAME);
         if (!file.exists()) {
             return;
         }
         YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
         playerTiers.clear();
-        playerItems.clear();
-        if (cfg.isConfigurationSection("players")) {
-            for (String key : cfg.getConfigurationSection("players").getKeys(false)) {
-                try {
-                    UUID uuid = UUID.fromString(key);
-                    String tierName = cfg.getString("players." + key + ".tier");
-                    if (tierName != null) {
-                        // migrate legacy JUMBO → GREATER
-                        if ("JUMBO".equals(tierName)) {
-                            tierName = "GREATER";
-                        }
-                        try {
-                            playerTiers.put(uuid, BackpackTier.valueOf(tierName));
-                        } catch (IllegalArgumentException ignored) {
-                            // skip unknown tier name
-                        }
+        backpacks.clear();
+        ConfigurationSection players = cfg.getConfigurationSection("players");
+        if (players == null) {
+            return;
+        }
+        for (String key : players.getKeys(false)) {
+            UUID uuid;
+            try {
+                uuid = UUID.fromString(key);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+            String tierName = players.getString(key + ".tier", "SMALL");
+            BackpackTier tier;
+            try {
+                tier = BackpackTier.valueOf(tierName);
+            } catch (IllegalArgumentException e) {
+                tier = BackpackTier.SMALL;
+            }
+            playerTiers.put(uuid, tier);
+            Inventory inv = getBackpack(uuid);
+            ConfigurationSection items = players.getConfigurationSection(key + ".items");
+            if (items != null) {
+                for (String slotStr : items.getKeys(false)) {
+                    int slot;
+                    try {
+                        slot = Integer.parseInt(slotStr);
+                    } catch (NumberFormatException e) {
+                        continue;
                     }
-                    List<String> items = cfg.getStringList("players." + key + ".items");
-                    if (!items.isEmpty()) {
-                        playerItems.put(uuid, new ArrayList<>(items));
+                    ItemStack item = items.getItemStack(slotStr);
+                    if (item != null && slot >= 0 && slot < inv.getSize()) {
+                        inv.setItem(slot, item);
                     }
-                } catch (IllegalArgumentException ignored) {
-                    // skip malformed UUID
                 }
             }
         }
     }
 
     public void save(File dataFolder) {
-        File file = new File(dataFolder, "backpack.yml");
         YamlConfiguration cfg = new YamlConfiguration();
         for (Map.Entry<UUID, BackpackTier> entry : playerTiers.entrySet()) {
-            cfg.set("players." + entry.getKey().toString() + ".tier", entry.getValue().name());
+            cfg.set("players." + entry.getKey() + ".tier", entry.getValue().name());
         }
-        for (Map.Entry<UUID, List<String>> entry : playerItems.entrySet()) {
-            cfg.set("players." + entry.getKey().toString() + ".items", entry.getValue());
+        for (Map.Entry<UUID, Inventory> entry : backpacks.entrySet()) {
+            ItemStack[] contents = entry.getValue().getContents();
+            for (int i = 0; i < contents.length; i++) {
+                if (contents[i] != null) {
+                    cfg.set("players." + entry.getKey() + ".items." + i, contents[i]);
+                }
+            }
+        }
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs();
         }
         try {
-            cfg.save(file);
+            cfg.save(new File(dataFolder, FILE_NAME));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save backpack.yml", e);
+            Bukkit.getLogger().warning("[SkyBlock] Failed to save backpacks: " + e.getMessage());
         }
     }
 }

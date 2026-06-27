@@ -14,7 +14,7 @@ import java.util.UUID;
  * Storage GUI (wiki Storage/UI): an Ender Chest banner (slot 4) with a row of
  * Ender Chest page panes (slots 9+, locked panes after), a Backpacks banner
  * (slot 22) and the player's Backpack slots (row starting slot 27). Page and
- * backpack tiles route to the real Ender Chest container / {@link BackpackMenu}.
+ * backpack tiles route to the real Ender Chest container / the real Backpack container.
  */
 public final class StorageMenu extends AbstractSkyBlockMenu {
 
@@ -79,7 +79,7 @@ public final class StorageMenu extends AbstractSkyBlockMenu {
                           "§eLeft-click to open!",
                           "§eRight-click to remove!")
                     .build(),
-                    e -> { e.setCancelled(true); new BackpackMenu(id).open(player); });
+                    e -> { e.setCancelled(true); com.skyblock.core.manager.BackpackManager.getInstance().open(player); });
         } else {
             setItem(27, new ItemBuilder(Material.BROWN_STAINED_GLASS_PANE)
                     .displayName("§eEmpty Backpack Slot 1")
