@@ -65,9 +65,10 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
   - ✅ **Enchant Item** (done #4427) — rebuilt as the real item-input GUI; enchants apply to item
     lore in the combat-reader format. Applicable-enchant categories are an approximation; bookshelf-
     power gating + sort are not yet functional. Needs an item-dupe playtest.
-  - ⛔ **Runic Pedestal** — BLOCKED on rune-as-item infrastructure: runes are a side-map keyed by
-    string (`RuneManager.applyRune(itemKey,…)`), with no placeable rune *items* to drop into the
-    sacrifice slot. A fusion station needs rune items (drops/recipes) first; build that, then the GUI.
+  - ✅ **Runic Pedestal** (done #4433) — built the rune-item infrastructure (`RuneItem`: PDC-stamped
+    rune items + apply/fuse/remove on a target item; `/sbrune` give command) and rebuilt the menu as
+    the real pedestal (target + sacrifice slots, End Portal apply/fuse, Cauldron removal). Remaining:
+    in-game drop sources for runes, and rune *stat* effects (currently cosmetic). Needs a dupe playtest.
   - ✅ **Garden "Desk"** (done #4424) — rebuilt to the hub layout; sub-screens (Configure Plots /
     Garden Upgrades / SkyMart / Skins / Garden Time / Set Speed / Farming Toolkit) are stubs to build.
   - ✅ **Island Management** (done #4425) — rebuilt to the Category / Name / Ranks / Properties /
