@@ -107,13 +107,14 @@ public final class BazaarManager {
         public String         getItemId()      { return name(); }
     }
 
+    /**
+     * Bazaar sale tax: base 1.25%, reduced 0.125% per Bazaar Flipper community-upgrade
+     * level, flooring at 1.0% (Flipper II). The old 6-tier ladder was fabricated.
+     */
     public enum FeeTier {
         BASE(0.0125),
-        TIER_1(0.0110),
-        TIER_2(0.0090),
-        TIER_3(0.0060),
-        TIER_4(0.0030),
-        TIER_5(0.0010);
+        FLIPPER_1(0.01125),
+        FLIPPER_2(0.0100);
 
         private final double rate;
 
