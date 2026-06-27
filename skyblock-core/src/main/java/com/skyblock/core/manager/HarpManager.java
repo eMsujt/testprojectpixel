@@ -36,15 +36,21 @@ public final class HarpManager {
      * first time it is completed.
      */
     public enum Song {
-        FRERE_JACQUES("Frère Jacques", 1, 1),
-        HYMN_OF_JOY("Hymn of Joy", 2, 1),
-        HYMN_OF_HOPE("Hymn of Hope", 3, 1),
-        AMAZING_GRACE("Amazing Grace", 4, 1),
-        BRAHMS("Brahms", 5, 1),
-        JOY_TO_THE_WORLD("Joy to the World", 6, 1),
-        PURE_IMAGINATION("Pure Imagination", 7, 2),
-        VIE_EN_ROSE("La Vie en Rose", 8, 2),
-        FIRE_AND_FLAMES("Through the Fire and Flames", 9, 3);
+        // Easy tier (+1 Intelligence each)
+        HYMN_TO_THE_JOY("Hymn to the Joy", 1, 1),
+        FRERE_JACQUES("Frère Jacques", 2, 1),
+        AMAZING_GRACE("Amazing Grace", 3, 1),
+        // Hard tier (+2)
+        BRAHMS_LULLABY("Brahm's Lullaby", 4, 2),
+        HAPPY_BIRTHDAY("Happy Birthday to You", 5, 2),
+        GREENSLEEVES("Greensleeves", 6, 2),
+        // Expert tier (+3)
+        GEOTHERMY("Geothermy?", 7, 3),
+        MINUET("Minuet", 8, 3),
+        JOY_TO_THE_WORLD("Joy to the World", 9, 3),
+        // Virtuoso tier (+4)
+        GODLY_IMAGINATION("Godly Imagination", 10, 4),
+        LA_VIE_EN_ROSE("La Vie en Rose", 11, 4);
 
         private final String displayName;
         private final int difficulty;
