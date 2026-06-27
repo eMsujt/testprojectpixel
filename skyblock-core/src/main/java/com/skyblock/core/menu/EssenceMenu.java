@@ -27,7 +27,7 @@ public final class EssenceMenu extends AbstractSkyBlockMenu {
     private static final int CLOSE_SLOT = 49;
 
     public EssenceMenu(Player player) {
-        super(player, "§dEssence Shop", 6);
+        super(player, "Essence Shop", 6);
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 public final class WarpMenu extends AbstractSkyBlockMenu {
 
-    private static final String TITLE = "§bFast Travel";
+    private static final String TITLE = "Fast Travel";
     private static final int CLOSE_SLOT = 53;
 
     /** Themed icon for each WarpLocation in declaration order. */

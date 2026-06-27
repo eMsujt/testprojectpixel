@@ -33,7 +33,7 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
     }
 
     private AccessoryBagMenu(Player player, int page) {
-        super(player, "§5Accessory Bag", 6);
+        super(player, "Accessory Bag", 6);
         this.page = page;
     }
 
@@ -92,7 +92,7 @@ public final class AccessoryBagMenu extends AbstractSkyBlockMenu {
 
         setItem(48, new ItemBuilder(Material.ARROW)
                 .displayName("§aGo Back")
-                .lore("§7To SkyBlock Menu")
+                .lore("§7To Your Bags")
                 .build(),
                 e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
     }

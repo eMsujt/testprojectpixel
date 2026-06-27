@@ -22,7 +22,7 @@ public final class RunecraftingMenu extends AbstractSkyBlockMenu {
     };
 
     public RunecraftingMenu(Player player) {
-        super(player, "§5Runecrafting Table", 6);
+        super(player, "Runic Pedestal", 6);
     }
 
     @Override

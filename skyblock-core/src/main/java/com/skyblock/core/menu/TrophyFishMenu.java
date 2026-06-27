@@ -27,7 +27,7 @@ public final class TrophyFishMenu extends AbstractSkyBlockMenu {
     };
 
     public TrophyFishMenu(Player player) {
-        super(player, "§bTrophy Fish", 6);
+        super(player, "Trophy Fishing", 6);
     }
 
     @Override

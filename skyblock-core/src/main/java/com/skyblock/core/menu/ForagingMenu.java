@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public final class ForagingMenu extends Menu {
 
-    private static final String TITLE = "§2Foraging";
+    private static final String TITLE = "Foraging";
 
     private static final int[] AREA_SLOTS = {10, 12, 14, 16, 22};
 
