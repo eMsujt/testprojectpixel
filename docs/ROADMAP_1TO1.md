@@ -7,6 +7,28 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
 
 ---
 
+## Recently landed (2026-06-26/27)
+- **Full 1:1 data audit (PRs #4390–#4409)** — values now wiki-sourced for 22 systems:
+  pet XP (was 20–95× too fast), minion action rate (~20× too fast), per-rarity reforge
+  stat tables, bracketed bank interest, skill XP curves (Fishing/Alchemy→50, Foraging→54),
+  Reputation tiers (5, no negatives), Garden 46-tier milestones, Bazaar instant-sell tax +
+  3-tier fee model, real 18 Trophy Fish, 9 Rift zones, Mayor perk names + 372-day cycle,
+  HOTM/enchant/bestiary values. Wiki re-verification confirmed Museum (skill categories)
+  and Reputation are 1:1. See `SYSTEM_GAPS.md`.
+- **Functional NPC placement (PRs #4410–#4412)** — `/setnpclocation <npc>` (tab-complete,
+  `skyblock.admin`) places a feature NPC that opens its menu on right-click: banker→Bank,
+  auction_master→AH, bazaar→Bazaar, museum→Museum, blacksmith→Reforge, pet_sitter→Pets,
+  wardrobe→Wardrobe, guide→hub. Persisted to `npc_locations.yml`, respawn-on-enable,
+  2-block anti-stacking, block-centre snap. Removed the old dead NPC ArmorStand path +
+  redundant `NpcType` enum (the live `/npc list|shop|buy` registry stays).
+- **Reforge now costs coins (PR #4413)** — the anvil was reforging **free**; it now charges
+  the rarity-scaled cost (250→25k) and rejects if unaffordable. Divine price 25k→15k. Random
+  roll kept (wiki: basic reforges are random). Rarity lore-reader centralised as
+  `Rarity.fromItem`. **Menu anti-dupe confirmed a general layered system** (default-cancel +
+  `MenuItemListener` marker guard; only Crafting/Reforge interactive — pending dupe playtest).
+
+---
+
 ## Phase 0 — UI / Menus  ✅ (complete)
 - [x] SkyBlock Menu + all reachable submenus matched to wiki slots (16 menus)
 - [x] Secondary menus: Catacombs Gate, Museum (8 cats), Kuudra, Forge, Sacks,
@@ -25,8 +47,10 @@ remaining items below are polish/refinements.
 - [x] Accessory stats → stats (highest-tier-per-family de-dup)
 - [x] **Reforges → stats** — the Reforge Anvil now stamps the reforge on the item
       via PDC (and renames it, e.g. `Fierce Hyperion`); `recompute` reads each gear
-      piece's reforge and adds its Strength/Defense/Speed. Replaced the fragile
-      per-slot map. Refinements: reforge-stone slot, item-type pools, rarity scaling.
+      piece's reforge and adds its stats. Replaced the fragile per-slot map.
+      **Rarity scaling done** (#4397: per-rarity stat tables Common→Mythic) and
+      **reforging now charges the rarity-scaled coin cost** (#4413, was free).
+      Refinements remaining: reforge-stone slot + item-type reforge pools.
 - [~] **Enchants** — damage enchants now apply **item-based**: `CombatListener` reads
       the held weapon's lore and multiplies via one additive bucket — Sharpness
       (all mobs) + Smite/Bane/Ender Slayer (by mob family) at +5%/level, plus the
