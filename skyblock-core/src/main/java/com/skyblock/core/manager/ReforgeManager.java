@@ -276,7 +276,7 @@ public final class ReforgeManager {
         2500,  // EPIC
         5000,  // LEGENDARY
         10000, // MYTHIC
-        25000, // DIVINE
+        15000, // DIVINE
         25000  // SPECIAL
     };
 
