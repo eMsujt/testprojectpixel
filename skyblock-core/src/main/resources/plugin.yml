@@ -332,6 +332,10 @@ commands:
     description: Interact with SkyBlock NPCs and their shops.
     usage: /npc <list|shops|shop <npc>|buy <npc> <item>|type>
     permission: skyblock.npc
+  setnpclocation:
+    description: Place a functional NPC (Banker, Auction Master, Bazaar, Museum, ...) where you stand.
+    usage: /setnpclocation <npc>
+    permission: skyblock.admin
   npcshop:
     description: Browse and buy from static Hypixel NPC shops via GUI.
     usage: /npcshop [id]
