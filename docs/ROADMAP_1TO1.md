@@ -38,6 +38,11 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
   Accessory Bag Go-Back→"To Your Bags") (#4420); fixed **Melody's Harp** to the real 11 songs /
   +26 Int (#4421). The audit also found several menus are **structurally** different from Hypixel
   (not just mislabelled) — see the Phase 0 rewrite backlog below.
+- **Structural menu rebuilds (PRs #4423–#4425)** — rebuilt 3 menus to their real wiki layouts:
+  **Trophy Fishing** (18-fish grid + Fillet / Rewards / Lost-Rewards buttons), **Garden "Desk"**
+  (hub of 9 buttons; Garden Level wired to the real `GardenLevelsMenu`), **Island Management**
+  (Category / Name / Ranks / Properties / Alex's / Guests hub). Sub-screens that don't exist yet
+  are honest "coming soon" stubs rather than invented UI.
 
 ---
 
@@ -57,10 +62,11 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
     Enchantment Table + Bookshelf Power + Enchantments Guide + Hopper sort), not a book-grid browser.
   - **Runic Pedestal** — rune-fusion station (Item To Upgrade / Rune to Sacrifice / End Portal
     apply / Barrier centre / Cauldron Rune Removal), not a rune-count grid.
-  - **Garden "Desk"** — Configure Plots / Garden Upgrades / SkyMart / Milestones / Skins / Garden
-    Time / Set Speed per Crop / Farming Toolkit, not the current visitor-queue + crop grid.
-  - **Island Management** — Island Category / Name / Ranks / Properties / Alex's Island / Guests,
-    not an upgrades panel.
+  - ✅ **Garden "Desk"** (done #4424) — rebuilt to the hub layout; sub-screens (Configure Plots /
+    Garden Upgrades / SkyMart / Skins / Garden Time / Set Speed / Farming Toolkit) are stubs to build.
+  - ✅ **Island Management** (done #4425) — rebuilt to the Category / Name / Ranks / Properties /
+    Alex's / Guests hub; the sub-screens are stubs to build.
+  - ✅ **Trophy Fishing** (done #4423) — 18-fish grid + Fillet / Rewards / Lost-Rewards buttons.
   - **Minion** — single-minion window (Ideal Layout, Fuel, Automated Shipping, 15 storage slots,
     Collect All, Quick-Upgrade, Pickup), not a 12-minion grid.
   - **Essence Shop** — hub of per-essence sub-shops with real "Forbidden ___"/essence perks, not a
