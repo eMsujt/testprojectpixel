@@ -32,6 +32,12 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
   +0.5 Strength, etc.), wrong for many pets. Now sourced per-pet from NEU `petnums.json` (56 pets,
   real multi-stat); all of a pet's stats apply. Pet *abilities* still don't fire (see Phase 1).
   Both Mining + Pet are combat-affecting — **playtest pending**.
+- **UI 1:1 audit (PRs #4419–#4421)** — swept ~28 secondary menus against wiki `{{UI}}` pages.
+  Removed **5 dead duplicate menus** (#4419); stripped color codes from **11 window titles** +
+  corrected labels (Runecrafting Table→Runic Pedestal, Garden→Desk, Trophy Fish→Trophy Fishing,
+  Accessory Bag Go-Back→"To Your Bags") (#4420); fixed **Melody's Harp** to the real 11 songs /
+  +26 Int (#4421). The audit also found several menus are **structurally** different from Hypixel
+  (not just mislabelled) — see the Phase 0 rewrite backlog below.
 
 ---
 
@@ -44,6 +50,29 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
 - [x] Scoreboard sidebar + tab banner 1:1
 - [~] Per-menu pixel-perfect for UNVERIFIABLE menus — pending user's concrete
       examples (wiki documents no slots for them)
+- [ ] **Secondary-menu structural rewrites (from the 2026-06-27 `{{UI}}` audit)** — these menus
+      are functionally different from their Hypixel counterparts and need rebuilding, not
+      relabelling (titles already fixed in #4420):
+  - **Enchant Item** — real GUI is an item-input interface (open slot + Gray Dye prompt +
+    Enchantment Table + Bookshelf Power + Enchantments Guide + Hopper sort), not a book-grid browser.
+  - **Runic Pedestal** — rune-fusion station (Item To Upgrade / Rune to Sacrifice / End Portal
+    apply / Barrier centre / Cauldron Rune Removal), not a rune-count grid.
+  - **Garden "Desk"** — Configure Plots / Garden Upgrades / SkyMart / Milestones / Skins / Garden
+    Time / Set Speed per Crop / Farming Toolkit, not the current visitor-queue + crop grid.
+  - **Island Management** — Island Category / Name / Ranks / Properties / Alex's Island / Guests,
+    not an upgrades panel.
+  - **Minion** — single-minion window (Ideal Layout, Fuel, Automated Shipping, 15 storage slots,
+    Collect All, Quick-Upgrade, Pickup), not a 12-minion grid.
+  - **Essence Shop** — hub of per-essence sub-shops with real "Forbidden ___"/essence perks, not a
+    flat balance+perk list.
+  - **Backpack / Ender Chest** — real container storage at the tier's slot count (incl. Jumbo = 45)
+    with page navigation, not read-only paper-list renderings.
+  - **Fast Travel** — destination set/order, name colours (mostly green), and footer (Island
+    Browser / Go Back / Advanced Mode) differ from the wiki layout.
+  - **Fairy Souls** — per-island soul counts are wrong (sourced: Hub 80, Spider's Den 19, Crimson
+    Isle 29, Deep Caverns 21, Park 12, Farming Islands 20, Dwarven Mines 15, Rift 1) — a data fix.
+  - **CombatMenu / StatsMenu** — no standalone Hypixel equivalent (stats live in the profile menu);
+    decide keep-as-QoL vs remove.
 
 ## Phase 1 — Combat fidelity (gear actually affects stats)  ✅ (core complete)
 The chokepoint is `EquipmentListener.recompute`; everything must feed it. All major
