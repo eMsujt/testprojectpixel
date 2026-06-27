@@ -75,8 +75,8 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
   - ✅ **Trophy Fishing** (done #4423) — 18-fish grid + Fillet / Rewards / Lost-Rewards buttons.
   - **Minion** — single-minion window (Ideal Layout, Fuel, Automated Shipping, 15 storage slots,
     Collect All, Quick-Upgrade, Pickup), not a 12-minion grid.
-  - **Essence Shop** — hub of per-essence sub-shops with real "Forbidden ___"/essence perks, not a
-    flat balance+perk list.
+  - ✅ **Essence Shop** (done #4429) — rebuilt to a hub (Undead + Wither sub-shops) with the 15 real
+    perks. Remaining: perk *effects* (Catacombs stats) aren't wired; exact per-level costs approximate.
   - **Backpack / Ender Chest** — real container storage at the tier's slot count (incl. Jumbo = 45)
     with page navigation, not read-only paper-list renderings.
   - **Fast Travel** — destination set/order, name colours (mostly green), and footer (Island
