@@ -19,7 +19,7 @@ public final class FairySoulMenu extends AbstractSkyBlockMenu {
     private static final int SUMMARY_SLOT = 49;
 
     public FairySoulMenu(Player player) {
-        super(player, "§dFairy Souls", 6);
+        super(player, "Fairy Souls Guide", 6);
     }
 
     @Override

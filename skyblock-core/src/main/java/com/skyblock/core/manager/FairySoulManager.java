@@ -38,19 +38,23 @@ public final class FairySoulManager {
 
     /** SkyBlock islands that contain fairy souls, each with a display name and total soul count. */
     public enum FairyIsland {
-        HUB("Hub", 30),
-        FARMING_ISLANDS("Farming Islands", 11),
-        SPIDERS_DEN("Spider's Den", 6),
+        // Per-area counts from the wiki Fairy Souls Guide; they sum to MAX_SOULS (273).
+        HUB("Hub", 80),
+        THE_PARK("The Park", 12),
+        GOLD_MINE("Gold Mine", 12),
+        FARMING_ISLANDS("The Farming Islands", 20),
+        SPIDERS_DEN("Spider's Den", 19),
         THE_END("The End", 12),
-        CRIMSON_ISLE("Crimson Isle", 12),
-        DEEP_CAVERNS("Deep Caverns", 5),
-        THE_PARK("The Park", 8),
-        DUNGEON_HUB("Dungeon Hub", 2),
-        DWARVEN_MINES("Dwarven Mines", 16),
-        CRYSTAL_HOLLOWS("Crystal Hollows", 14),
-        JERRYS_WORKSHOP("Jerry's Workshop", 3),
-        THE_RIFT("The Rift", 98),
-        KUUDRA("Kuudra's Cavern", 10);
+        DEEP_CAVERNS("Deep Caverns", 21),
+        DWARVEN_MINES("Dwarven Mines", 15),
+        CRIMSON_ISLE("Crimson Isle", 29),
+        JERRYS_WORKSHOP("Jerry's Workshop", 5),
+        DUNGEON_HUB("Dungeon Hub", 7),
+        GALATEA("Galatea", 12),
+        BACKWATER_BAYOU("Backwater Bayou", 5),
+        LOTUS_ATOLL("Lotus Atoll", 6),
+        THE_RIFT("The Rift", 1),
+        MISCELLANEOUS("Miscellaneous", 17);
 
         private final String displayName;
         private final int soulCount;
