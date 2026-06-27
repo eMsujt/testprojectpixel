@@ -628,6 +628,11 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("sbitem").setExecutor(sbItemCommand);
             getCommand("sbitem").setTabCompleter(sbItemCommand);
         }
+        com.skyblock.core.command.SbRuneCommand sbRuneCommand = new com.skyblock.core.command.SbRuneCommand();
+        if (getCommand("sbrune") != null) {
+            getCommand("sbrune").setExecutor(sbRuneCommand);
+            getCommand("sbrune").setTabCompleter(sbRuneCommand);
+        }
         com.skyblock.core.command.RecipeCommand recipeCommand = new com.skyblock.core.command.RecipeCommand();
         if (getCommand("recipe") != null) {
             getCommand("recipe").setExecutor(recipeCommand);

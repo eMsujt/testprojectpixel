@@ -64,6 +64,10 @@ commands:
     usage: /sbitem [<id> [amount]]
     aliases: [sbgive]
     permission: skyblock.admin
+  sbrune:
+    description: Get a rune item to apply on the Runic Pedestal.
+    usage: /sbrune <type> [level]
+    permission: skyblock.admin
   recipe:
     description: View the real crafting recipe for any SkyBlock item.
     usage: /recipe <id>
