@@ -498,6 +498,7 @@ public final class SkyBlockCore extends JavaPlugin {
         tradeManager = TradeManager.getInstance();
         backpackManager = BackpackManager.getInstance();
         backpackManager.load(getDataFolder());
+        backpackManager.load(getDataFolder());
         eventManager = EventManager.getInstance();
         foragingManager = ForagingManager.getInstance();
         foragingManager.load(getDataFolder());
