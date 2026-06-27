@@ -23,9 +23,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public final class RiftManager implements Listener {
 
-    /** Named areas inside the Rift dimension. */
+    /** The 9 main locations inside the Rift dimension (wiki Rift Dimension). */
     public enum RiftArea {
-        DREADFARM, STILLGORE_CHATEAU, WYLD_WOODS, LIVING_CAVE, MIRRORVERSE, LAGOON, COLOSSEUM
+        WYLD_WOODS, BLACK_LAGOON, WEST_VILLAGE, DREADFARM, VILLAGE_PLAZA,
+        LIVING_CAVE, COLOSSEUM, STILLGORE_CHATEAU, THE_MOUNTAINTOP
     }
 
     /** Mob types that inhabit the Rift. */

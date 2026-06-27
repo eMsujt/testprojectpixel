@@ -15,7 +15,7 @@ import java.util.UUID;
 public final class RiftMenu extends AbstractSkyBlockMenu {
 
     static final int SUMMARY_SLOT = 4;
-    static final int[] ZONE_SLOTS = {19, 20, 21, 22, 23, 24, 25};
+    static final int[] ZONE_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29};
 
     private final UUID playerId;
 
