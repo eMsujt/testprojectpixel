@@ -17,6 +17,9 @@ import java.util.List;
  */
 public final class SetNpcLocationCommand implements TabExecutor {
 
+    /** Minimum blocks between two functional NPCs, to stop them stacking. */
+    private static final double MIN_SPACING = 2.0;
+
     private final JavaPlugin plugin;
 
     public SetNpcLocationCommand(JavaPlugin plugin) {
@@ -70,7 +73,19 @@ public final class SetNpcLocationCommand implements TabExecutor {
             player.sendMessage("§cUnknown NPC '" + args[0] + "'. Available: §f" + allIds());
             return true;
         }
-        manager.place(npc, player.getLocation(), plugin.getDataFolder());
+        // Snap to the centre of the block the player stands on, facing the player's
+        // direction and standing upright, so NPCs line up cleanly on a grid.
+        Location target = player.getLocation().getBlock().getLocation().add(0.5, 0.0, 0.5);
+        target.setYaw(player.getLocation().getYaw());
+        target.setPitch(0.0f);
+        // Don't let NPCs stack on top of each other.
+        FunctionalNpc clash = manager.nearbyNpc(target, npc, MIN_SPACING);
+        if (clash != null) {
+            player.sendMessage("§cToo close to the " + clash.displayName
+                    + " §cNPC. Move at least " + (int) MIN_SPACING + " blocks away and try again.");
+            return true;
+        }
+        manager.place(npc, target, plugin.getDataFolder());
         player.sendMessage("§aPlaced §r" + npc.displayName + " §ahere. §7Right-click it to open its menu.");
         return true;
     }

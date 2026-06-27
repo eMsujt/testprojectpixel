@@ -73,6 +73,32 @@ public final class FunctionalNpcManager {
         return spawned.get(entityId);
     }
 
+    /**
+     * Returns a different placed NPC within {@code radius} blocks of {@code location}
+     * (same world), or {@code null} if the spot is clear. Used to stop NPCs being
+     * placed on top of each other.
+     *
+     * @param location the candidate location
+     * @param self     the NPC being placed (excluded from the check; may be null)
+     * @param radius   the minimum spacing in blocks
+     */
+    public FunctionalNpc nearbyNpc(Location location, FunctionalNpc self, double radius) {
+        double r2 = radius * radius;
+        for (Map.Entry<FunctionalNpc, Location> entry : placed.entrySet()) {
+            if (entry.getKey() == self) {
+                continue;
+            }
+            Location other = entry.getValue();
+            if (other.getWorld() == null || other.getWorld() != location.getWorld()) {
+                continue;
+            }
+            if (other.distanceSquared(location) <= r2) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
     /** Returns an unmodifiable view of placed NPCs and their locations. */
     public Map<FunctionalNpc, Location> getPlaced() {
         return Collections.unmodifiableMap(placed);
