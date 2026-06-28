@@ -7,6 +7,36 @@ one PR per item, each build-verified. Detail lives in `MENU_FIDELITY.md` (UI) an
 
 ---
 
+## Recently landed (2026-06-28) — menu rebuilds, real functionality, mobs (PR #4447)
+- **Real NPC skins (Citizens)** — functional NPCs now wear the exact Hypixel
+  hub-NPC skins (texture+signature) instead of Steve: Banker, Auction Master,
+  Bazaar, Curator, Blacksmith, Pet Sitter (Kat). They face nearby players
+  (LookClose); `npc_skins.yml` overrides any of them.
+- **Menu rebuilds from the *live* wiki UIs** — Pets control bar (Exp Sharing /
+  Pet Score Rewards / Search / Pet Visibility / Sort with real lore), Reforge →
+  the Blacksmith "Reforge Item" menu (5 rows, input 13 / anvil 22 / close 40),
+  Crafting (3 quick-craft panes), Bazaar (category colours + themed frame +
+  real control bar), Auction House (the real 4-button **hub** + cleaned browser).
+  Wardrobe was rebuilt earlier in the same pass.
+- **Bazaar + AH fully functional** — every button works: Create Buy/Sell Order +
+  **Manage Orders** (with a `cancelOrder` escrow-refund fix), Sell Inventory Now,
+  Sell Sacks Now, Search, Create Auction (lists held item), Auction Stats, and
+  browser Search + Item Tier filters.
+- **Professionalism pass** — text input moved from chat to a native **sign
+  editor** (`SignInput`, Paper `openSign` + `SignChangeEvent`); coins now display
+  with up to **2 decimals** (`Coins.format`, e.g. `11,121.32`) — the economy
+  already stored doubles, the purse just truncated.
+- **Custom Hub mobs 1:1** — the 6 canonical Hub mobs (Graveyard Zombie, Zombie
+  Villager, Crypt Ghoul, Golden Ghoul, Wolf, Old Wolf) with wiki-exact
+  HP/damage/Combat-XP/coins. Real HP tracked in a side pool (45,000 works past the
+  1024 cap), Hypixel-style `[LvN] Name cur/max❤` names, ghoul gear, mob↔player
+  SkyBlock damage both ways, natural Hub Zombie/Wolf spawn-conversion, and
+  `/spawnmob <id> [amount]` for the Crypts/Ruins/night mobs.
+- **Still open:** Bazaar product-*group* sub-views (top level shows products, not
+  groups→products→item-view); AH live bidding (BIN only for now); area-specific
+  natural mob spawning (Crypt Ghoul in Crypts etc.) needs spawn-point config;
+  Shiny Pig (event mob) not added.
+
 ## Recently landed (2026-06-26/27)
 - **Full 1:1 data audit (PRs #4390–#4409)** — values now wiki-sourced for 22 systems:
   pet XP (was 20–95× too fast), minion action rate (~20× too fast), per-rarity reforge
