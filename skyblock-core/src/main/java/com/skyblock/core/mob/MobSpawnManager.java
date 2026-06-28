@@ -148,27 +148,10 @@ public final class MobSpawnManager {
             if (countNear(world, point.loc, point.radius, point.mobId) >= point.amount) {
                 continue;
             }
-            CustomMobManager.getInstance().spawnMob(def, randomSpot(point));
+            // Spawn at the exact marked location — a fixed "stuck" spawn spot.
+            CustomMobManager.getInstance().spawnMob(def, point.loc.clone());
             point.lastSpawnMillis = now;
         }
-    }
-
-    /** A random ground spot within the point's radius, falling back to the centre. */
-    private static Location randomSpot(SpawnPoint point) {
-        World world = point.loc.getWorld();
-        for (int i = 0; i < 8; i++) {
-            double angle = Math.random() * Math.PI * 2.0;
-            double dist = Math.random() * point.radius;
-            double x = point.loc.getX() + Math.cos(angle) * dist;
-            double z = point.loc.getZ() + Math.sin(angle) * dist;
-            Location at = new Location(world, x, point.loc.getY(), z, (float) (Math.random() * 360.0), 0f);
-            if (at.getBlock().isPassable()
-                    && at.clone().add(0, 1, 0).getBlock().isPassable()
-                    && at.clone().subtract(0, 1, 0).getBlock().getType().isSolid()) {
-                return at;
-            }
-        }
-        return point.loc;
     }
 
     private static boolean isNight(World world) {
