@@ -52,7 +52,7 @@ public final class AuctionHouseCommand implements TabExecutor {
         }
 
         if (args.length == 0) {
-            new AuctionHouseMenu(player).open(player);
+            new com.skyblock.core.menu.AuctionHubMenu(player).open(player);
             return true;
         }
 

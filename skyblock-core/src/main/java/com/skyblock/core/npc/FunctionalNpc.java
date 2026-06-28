@@ -1,6 +1,6 @@
 package com.skyblock.core.npc;
 
-import com.skyblock.core.menu.AuctionHouseMenu;
+import com.skyblock.core.menu.AuctionHubMenu;
 import com.skyblock.core.menu.BankMenu;
 import com.skyblock.core.menu.BazaarMenu;
 import com.skyblock.core.menu.MuseumMenu;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 public enum FunctionalNpc {
 
     BANKER("banker", "§aBanker", p -> new BankMenu(p).open(p)),
-    AUCTION_MASTER("auction_master", "§6Auction Master", p -> new AuctionHouseMenu(p).open(p)),
+    AUCTION_MASTER("auction_master", "§6Auction Master", p -> new AuctionHubMenu(p).open(p)),
     BAZAAR("bazaar", "§eBazaar", p -> new BazaarMenu(p).open(p)),
     MUSEUM("museum", "§bMuseum Curator", p -> new MuseumMenu(p.getUniqueId()).open(p)),
     BLACKSMITH("blacksmith", "§cBlacksmith", p -> new ReforgeMenu(p).open(p)),

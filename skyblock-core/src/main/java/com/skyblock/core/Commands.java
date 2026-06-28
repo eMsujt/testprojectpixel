@@ -2970,7 +2970,7 @@ public final class Commands {
 
         @Override
         protected void openMenu(Player player) {
-            new AuctionHouseMenu(player).open(player);
+            new com.skyblock.core.menu.AuctionHubMenu(player).open(player);
         }
 
         @Override
@@ -3062,7 +3062,7 @@ public final class Commands {
 
         @Override
         protected void openMenu(Player player) {
-            new AuctionHouseMenu(player).open(player);
+            new com.skyblock.core.menu.AuctionHubMenu(player).open(player);
         }
 
         @Override

@@ -33,6 +33,12 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
 
     private static final int PAGE_SIZE = LISTING_SLOTS.length;
 
+    /** Border panes framing the listing grid (top row + the columns either side). */
+    private static final int[] BORDER_SLOTS = {
+            1, 2, 3, 4, 5, 6, 7, 8,
+            10, 19, 28, 37, 17, 26, 35, 44, 46, 47
+    };
+
     /** Category tabs down the left column; the MISC tab also lists MINIONS auctions. */
     private static final AuctionCategory[] TAB_CATEGORIES = {
             AuctionCategory.WEAPONS, AuctionCategory.ARMOR, AuctionCategory.ACCESSORIES,
@@ -90,6 +96,12 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
     @Override
     protected void populate() {
         AuctionHouseManager manager = AuctionHouseManager.getInstance();
+
+        // Border panes frame the listing grid.
+        ItemStack border = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName(" ").build();
+        for (int slot : BORDER_SLOTS) {
+            setItem(slot, border);
+        }
 
         // Category tabs (left column).
         for (int i = 0; i < TAB_CATEGORIES.length; i++) {
@@ -155,10 +167,10 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                     .build());
         }
 
-        // Bottom control bar.
+        // Bottom control bar, 1:1 with the wiki Auctions Browser (row 6).
         setItem(48, new ItemBuilder(Material.OAK_SIGN)
-                .displayName("§aSearch Auctions")
-                .lore("§7Search for a specific item.").build());
+                .displayName("§aSearch")
+                .lore("§7Find items by name, type,", "§7lore, or enchants.", "", "§eClick to edit filter!").build());
         setItem(50, new ItemBuilder(Material.HOPPER)
                 .displayName("§aSort: §f" + sort.label)
                 .lore("§7Click to change the order.").build(),
@@ -167,33 +179,35 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                 .displayName("§aItem Tier")
                 .lore("§7Filter by item rarity.").build());
         setItem(52, new ItemBuilder(Material.POWERED_RAIL)
-                .displayName("§aBIN Only: " + (binOnly ? "§aON" : "§cOFF"))
+                .displayName("§aBIN Filter: " + (binOnly ? "§aBIN Only" : "§fShow All"))
                 .lore("§7Show Buy-It-Now listings only.").build(),
                 e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly).open(player); });
 
-        // Your Auctions & Claims at slot 47; the wiki Close slot (6,5 = 49) is now a real Close.
-        setItem(47, new ItemBuilder(Material.GOLD_BLOCK)
-                .displayName("§eYour Auctions & Claims")
-                .lore("§7Collect coins/items and manage", "§7your own listings.").build(),
-                e -> { e.setCancelled(true); new AuctionClaimMenu(player).open(player); });
-        setItem(49, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .build(),
-                e -> { e.setCancelled(true); player.closeInventory(); });
+        // Go Back to the Auction House hub (slot 6,5 = 49; the browser has no Close).
+        setItem(49, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To Auction House").build(),
+                e -> { e.setCancelled(true); new AuctionHubMenu(player).open(player); });
 
-        if (page > 0) {
-            setItem(46, new ItemBuilder(Material.ARROW)
-                    .displayName("§ePrevious Page")
-                    .lore("§7Page " + page)
-                    .build(),
-                    event -> { event.setCancelled(true); new AuctionHouseMenu(player, page - 1, category, sort, binOnly).open(player); });
-        }
-        if (end < listings.size()) {
+        // Pages: Next arrow at slot 6,9 = 53. Left-click forward, right-click back.
+        boolean hasNext = end < listings.size();
+        boolean hasPrev = page > 0;
+        if (hasNext || hasPrev) {
             setItem(53, new ItemBuilder(Material.ARROW)
-                    .displayName("§eNext Page")
-                    .lore("§7Page " + (page + 2))
+                    .displayName("§aNext Page")
+                    .lore("§7Page " + (page + 1),
+                          "",
+                          hasNext ? "§eClick to turn page!" : "§8No next page",
+                          hasPrev ? "§eRight-click to go back!" : "§8No previous page")
                     .build(),
-                    event -> { event.setCancelled(true); new AuctionHouseMenu(player, page + 1, category, sort, binOnly).open(player); });
+                    event -> {
+                        event.setCancelled(true);
+                        if (event.isRightClick() && hasPrev) {
+                            new AuctionHouseMenu(player, page - 1, category, sort, binOnly).open(player);
+                        } else if (event.isLeftClick() && hasNext) {
+                            new AuctionHouseMenu(player, page + 1, category, sort, binOnly).open(player);
+                        }
+                    });
         }
     }
 }
