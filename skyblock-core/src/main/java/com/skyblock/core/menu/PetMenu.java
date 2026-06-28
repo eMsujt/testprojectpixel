@@ -154,56 +154,69 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                     .build(), e -> e.setCancelled(true));
         }
 
-        // Exp Sharing (top row, slot 7 per the wiki) — splits pet XP with a second pet.
-        setItem(7, new ItemBuilder(Material.GLOWSTONE_DUST)
+        // Exp Sharing (top row, slot 8 per the wiki) — a Dandelion Yellow dye.
+        setItem(7, new ItemBuilder(Material.YELLOW_DYE)
                 .displayName("§6Exp Sharing")
-                .lore("§7Share a portion of the XP gained",
-                      "§7with one of your selected pets!",
+                .lore("§7Let your pets gain §aPet Exp §7without",
+                      "§7them being actively deployed!",
                       "",
-                      "§7Selected pet: §cNone",
+                      "§eClick to view!")
+                .build(), e -> { e.setCancelled(true); player.sendMessage("§7Exp Sharing is not yet available."); });
+
+        // Pet Score Rewards (bottom row, slot 3 per the wiki) — a Diamond.
+        setItem(47, new ItemBuilder(Material.DIAMOND)
+                .displayName("§aPet Score Rewards")
+                .lore("§7Pet Score is calculated based on",
+                      "§7how many §aunique §7pets you have",
+                      "§7collected, and their rarities!",
                       "",
-                      "§eClick to manage!")
+                      "§eClick to view your rewards!")
                 .build(), e -> e.setCancelled(true));
 
-        // Close.
-        setItem(49, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .build(), e -> { e.setCancelled(true); player.closeInventory(); });
-
-        // Pet visibility toggle (cosmetic placeholder).
-        setItem(50, new ItemBuilder(Material.ENDER_EYE)
-                .displayName("§aPet visibility")
-                .lore("§7Toggles the visibility of your",
-                      "§7currently selected pet.",
+        // Search (bottom row, slot 6 per the wiki) — a Sign.
+        setItem(50, new ItemBuilder(Material.OAK_SIGN)
+                .displayName("§aSearch")
+                .lore("§7Find pets by name!",
                       "",
-                      "§7Currently: §aShown",
+                      "§eClick to search!")
+                .build(), e -> e.setCancelled(true));
+
+        // Pet visibility toggle (bottom row, slot 7 per the wiki) — a Stone Button.
+        setItem(51, new ItemBuilder(Material.STONE_BUTTON)
+                .displayName("§aPet visibility")
+                .lore("§3▶ §aShow all pets",
+                      "§7  Hide all pets",
                       "",
                       "§eClick to toggle!")
                 .build(), e -> e.setCancelled(true));
 
-        // Sort button (cycles order), like Hypixel's Pets menu.
-        setItem(51, new ItemBuilder(Material.HOPPER)
-                .displayName("§aSort: §e" + sort.label)
-                .lore("§7Click to change the sort order.")
+        // Sort button (bottom row, slot 8 per the wiki) — a Hopper that cycles order.
+        setItem(52, new ItemBuilder(Material.HOPPER)
+                .displayName("§aSort")
+                .lore("§7Pets are currently sorted by:",
+                      "§3▶ §e" + sort.label,
+                      "",
+                      "§eClick to change!")
                 .build(),
                 e -> { e.setCancelled(true); new PetMenu(player, 0, sort.next()).open(player); });
 
+        // Page arrows: previous at slot 1 (45), next at slot 9 (53) per the wiki.
         if (pageClamped > 0) {
-            setItem(47, new ItemBuilder(Material.ARROW)
+            setItem(45, new ItemBuilder(Material.ARROW)
                     .displayName("§ePrevious Page")
                     .lore("§7Page " + pageClamped + "§7/§e" + totalPages)
                     .build(),
                     e -> { e.setCancelled(true); new PetMenu(player, pageClamped - 1, sort).open(player); });
         }
         if (pageClamped < totalPages - 1) {
-            setItem(52, new ItemBuilder(Material.ARROW)
+            setItem(53, new ItemBuilder(Material.ARROW)
                     .displayName("§eNext Page")
                     .lore("§7Page " + (pageClamped + 2) + "§7/§e" + totalPages)
                     .build(),
                     e -> { e.setCancelled(true); new PetMenu(player, pageClamped + 1, sort).open(player); });
         }
 
-        setItem(45, new ItemBuilder(Material.ARROW)
+        setItem(48, new ItemBuilder(Material.ARROW)
                 .displayName("§aGo Back")
                 .lore("§7To SkyBlock Menu")
                 .build(),
