@@ -1,110 +1,72 @@
+# SkyBlock custom mobs. Stats are 1:1 with the Hypixel SkyBlock wiki.
+# health/damage are the SkyBlock values (health can far exceed the vanilla 1024
+# cap — CustomMobManager tracks it separately). xpReward = Combat XP on kill.
 mobs:
-  zombie_soldier:
-    displayName: "Zombie Soldier"
+  # ----- Hub: Graveyard (surface) -----
+  graveyard_zombie:
+    displayName: "Graveyard Zombie"
     entityType: ZOMBIE
     health: 100.0
-    damage: 15.0
-    defense: 20.0
-    level: 5
-    spawnWeight: 30
-    xpReward: 20
-    coinReward: 10
-
-  skeleton_archer:
-    displayName: "Skeleton Archer"
-    entityType: SKELETON
-    health: 80.0
     damage: 20.0
-    defense: 15.0
-    level: 5
-    spawnWeight: 25
-    xpReward: 25
-    coinReward: 12
+    defense: 0.0
+    level: 1
+    spawnWeight: 100
+    xpReward: 6
+    coinReward: 1
 
-  spider_jockey:
-    displayName: "Spider Jockey"
-    entityType: SPIDER
+  zombie_villager:
+    displayName: "Zombie Villager"
+    entityType: ZOMBIE_VILLAGER
     health: 120.0
-    damage: 18.0
-    defense: 25.0
-    level: 8
-    spawnWeight: 15
-    xpReward: 30
-    coinReward: 15
+    damage: 24.0
+    defense: 0.0
+    level: 1
+    spawnWeight: 0
+    xpReward: 7
+    coinReward: 1
 
-  cave_spider:
-    displayName: "Cave Spider"
-    entityType: CAVE_SPIDER
-    health: 60.0
-    damage: 12.0
-    defense: 10.0
-    level: 3
-    spawnWeight: 35
-    xpReward: 15
-    coinReward: 8
+  # ----- Hub: Crypts (under the Graveyard) -----
+  crypt_ghoul:
+    displayName: "Crypt Ghoul"
+    entityType: ZOMBIE
+    health: 2000.0
+    damage: 350.0
+    defense: 0.0
+    level: 30
+    spawnWeight: 0
+    xpReward: 36
+    coinReward: 13
 
-  blaze_warrior:
-    displayName: "Blaze Warrior"
-    entityType: BLAZE
-    health: 200.0
-    damage: 35.0
-    defense: 40.0
-    level: 12
-    spawnWeight: 10
+  golden_ghoul:
+    displayName: "Golden Ghoul"
+    entityType: ZOMBIE
+    health: 45000.0
+    damage: 800.0
+    defense: 0.0
+    level: 60
+    spawnWeight: 0
     xpReward: 50
-    coinReward: 25
+    coinReward: 100
 
-  enderman_elite:
-    displayName: "Enderman Elite"
-    entityType: ENDERMAN
-    health: 300.0
-    damage: 45.0
-    defense: 60.0
-    level: 15
-    spawnWeight: 6
-    xpReward: 75
-    coinReward: 40
-
-  creeper_bomber:
-    displayName: "Creeper Bomber"
-    entityType: CREEPER
-    health: 50.0
-    damage: 60.0
-    defense: 5.0
-    level: 6
-    spawnWeight: 20
-    xpReward: 35
-    coinReward: 20
-
-  witch_hexer:
-    displayName: "Witch Hexer"
-    entityType: WITCH
-    health: 150.0
-    damage: 25.0
-    defense: 30.0
-    level: 10
-    spawnWeight: 12
-    xpReward: 45
-    coinReward: 30
-
-  guardian_watcher:
-    displayName: "Guardian Watcher"
-    entityType: GUARDIAN
+  # ----- Hub: Ruins -----
+  wolf:
+    displayName: "Wolf"
+    entityType: WOLF
     health: 250.0
-    damage: 40.0
-    defense: 50.0
-    level: 14
-    spawnWeight: 8
-    xpReward: 60
-    coinReward: 35
+    damage: 90.0
+    defense: 0.0
+    level: 15
+    spawnWeight: 0
+    xpReward: 15
+    coinReward: 1
 
-  wither_skeleton:
-    displayName: "Wither Skeleton"
-    entityType: WITHER_SKELETON
-    health: 350.0
-    damage: 55.0
-    defense: 70.0
-    level: 18
-    spawnWeight: 4
-    xpReward: 90
-    coinReward: 50
+  old_wolf:
+    displayName: "Old Wolf"
+    entityType: WOLF
+    health: 15000.0
+    damage: 720.0
+    defense: 0.0
+    level: 50
+    spawnWeight: 0
+    xpReward: 40
+    coinReward: 40

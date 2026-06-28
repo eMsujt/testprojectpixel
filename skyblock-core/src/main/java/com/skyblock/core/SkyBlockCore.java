@@ -871,6 +871,13 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.MenuItemListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.InventoryListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.mob.MobLootListener(com.skyblock.core.mob.MobLootManager.getInstance()), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.mob.CustomMobListener(com.skyblock.core.mob.CustomMobManager.getInstance()), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.mob.MobSpawnListener(), this);
+        com.skyblock.core.mob.SpawnMobCommand spawnMobCmd = new com.skyblock.core.mob.SpawnMobCommand();
+        if (getCommand("spawnmob") != null) {
+            getCommand("spawnmob").setExecutor(spawnMobCmd);
+            getCommand("spawnmob").setTabCompleter(spawnMobCmd);
+        }
 
         // Advance the SkyBlock calendar one day every ~20 real minutes (Hypixel's day length),
         // paying every bank account its interest whenever a new season (month) begins.

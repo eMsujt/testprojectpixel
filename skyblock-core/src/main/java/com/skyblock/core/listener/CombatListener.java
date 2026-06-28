@@ -114,6 +114,17 @@ public final class CombatListener implements Listener {
             event.setDamage(Math.max(0.0, damage));
         }
 
+        // Custom mobs hit players for their full SkyBlock damage, not the tiny
+        // vanilla base. Set it before the player's defense is applied below.
+        if (!(event.getDamager() instanceof Player)
+                && event.getDamager() instanceof org.bukkit.entity.LivingEntity mobAttacker) {
+            com.skyblock.core.manager.MobManager.MobDefinition mobDef =
+                    com.skyblock.core.mob.CustomMobManager.getInstance().getDefinition(mobAttacker.getUniqueId());
+            if (mobDef != null) {
+                event.setDamage(mobDef.getDamage());
+            }
+        }
+
         if (event.getEntity() instanceof Player) {
             Player defender = (Player) event.getEntity();
             double defense = stats.getStat(defender.getUniqueId(), Stat.DEFENSE);
@@ -131,6 +142,22 @@ public final class CombatListener implements Listener {
         }
 
         spawnDamageIndicator(event.getEntity().getLocation(), finalDamage, isCrit);
+
+        // Custom mobs carry their real (often huge) SkyBlock health in a side pool,
+        // since the vanilla max-health attribute caps at ~1024. Drain that pool by
+        // the dealt damage, suppress the vanilla hit, and kill on empty so the
+        // death rewards/drops still fire.
+        if (!(event.getEntity() instanceof Player)
+                && event.getEntity() instanceof org.bukkit.entity.LivingEntity victim) {
+            com.skyblock.core.mob.CustomMobManager mobs = com.skyblock.core.mob.CustomMobManager.getInstance();
+            if (mobs.isCustomMob(victim.getUniqueId())) {
+                boolean dead = mobs.damageSkyblock(victim, event.getDamage());
+                event.setDamage(0.0);
+                if (dead) {
+                    victim.setHealth(0.0);
+                }
+            }
+        }
     }
 
     private static final Pattern WEAPON_DAMAGE = Pattern.compile("^Damage:\\s*\\+?([0-9,]+)");
