@@ -61,7 +61,15 @@ public final class SignInput implements Listener {
             restore(prev);
         }
 
-        Block block = player.getLocation().getBlock();
+        // Use a guaranteed-air block (never a tile entity / real block), so placing the
+        // temp sign can't wipe a chest's contents or clobber the player's surroundings.
+        Block block = safeBlock(player);
+        if (block == null) {
+            // No safe spot — fall back to chat so the prompt still works.
+            player.sendMessage("§e" + (label == null ? "Enter a value" : label) + " §7(type in chat):");
+            com.skyblock.core.manager.ChatInputManager.getInstance().request(uid, callback);
+            return;
+        }
         BlockData original = block.getBlockData();
         block.setType(Material.OAK_SIGN, false);
         BlockState state = block.getState();
@@ -86,6 +94,15 @@ public final class SignInput implements Listener {
                 player.openSign(live, Side.FRONT);
             }
         });
+
+        // Safety net: if no SignChangeEvent ever arrives (client dismissed the editor
+        // without submitting), restore the block + drop the prompt after 30s so it can't leak.
+        Bukkit.getScheduler().runTaskLater(SkyBlockCore.getInstance(), () -> {
+            if (pending.get(uid) == p) {
+                pending.remove(uid);
+                restore(p);
+            }
+        }, 600L);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -102,8 +119,23 @@ public final class SignInput implements Listener {
         // opens an inventory, which can't happen inside the sign-change event).
         Bukkit.getScheduler().runTask(SkyBlockCore.getInstance(), () -> {
             restore(p);
-            p.callback().accept(input);
+            if (event.getPlayer().isOnline()) {
+                p.callback().accept(input);
+            }
         });
+    }
+
+    /** The lowest air block at/above the player's feet (so placing a temp sign harms nothing). */
+    private static Block safeBlock(Player player) {
+        Block base = player.getLocation().getBlock();
+        int maxY = player.getWorld().getMaxHeight() - 1;
+        for (int dy = 0; dy <= 5 && base.getY() + dy <= maxY; dy++) {
+            Block b = base.getRelative(0, dy, 0);
+            if (b.getType().isAir()) {
+                return b;
+            }
+        }
+        return null;
     }
 
     @EventHandler

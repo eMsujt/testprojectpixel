@@ -39,12 +39,14 @@ public final class MobSpawnManager {
         return INSTANCE;
     }
 
-    /** A spawn area: which mob, its centre, the radius it covers, and the target count. */
+    /** A spawn point: which mob, its location, the target count, and the mobs it spawned. */
     private static final class SpawnPoint {
         final String mobId;
         final Location loc;
         final int amount;
         final double radius;
+        /** UUIDs of the mobs this point spawned that are still alive (distance-independent). */
+        final java.util.Set<java.util.UUID> spawned = new java.util.HashSet<>();
         long lastSpawnMillis;
 
         SpawnPoint(String mobId, Location loc, int amount, double radius) {
@@ -142,21 +144,32 @@ public final class MobSpawnManager {
             if (now - point.lastSpawnMillis < def.getRespawnSeconds() * 1000L) {
                 continue;
             }
+            // Count this point's own living mobs by UUID (distance-independent), so a
+            // player can't lure them out of a proximity sphere to force extra spawns.
+            point.spawned.removeIf(MobSpawnManager::isGone);
+            if (point.spawned.size() >= point.amount) {
+                continue;
+            }
             if (!playerNear(world, point.loc)) {
                 continue;
             }
-            if (countNear(world, point.loc, point.radius, point.mobId) >= point.amount) {
-                continue;
-            }
             // Spawn at the exact marked location — a fixed "stuck" spawn spot.
-            CustomMobManager.getInstance().spawnMob(def, point.loc.clone());
+            org.bukkit.entity.LivingEntity spawned =
+                    CustomMobManager.getInstance().spawnMob(def, point.loc.clone());
+            point.spawned.add(spawned.getUniqueId());
             point.lastSpawnMillis = now;
         }
     }
 
+    /** A tracked mob is "gone" once it's dead or no longer in the world (despawned). */
+    private static boolean isGone(java.util.UUID id) {
+        Entity e = Bukkit.getEntity(id);
+        return e == null || e.isDead() || !e.isValid();
+    }
+
     private static boolean isNight(World world) {
         long t = world.getTime();
-        return t >= 13000L && t <= 23000L; // ~8pm to ~6am
+        return t >= 13000L; // dusk (~8pm) through to dawn (24000 wraps to day)
     }
 
     private static boolean playerNear(World world, Location loc) {
@@ -167,18 +180,6 @@ public final class MobSpawnManager {
             }
         }
         return false;
-    }
-
-    private static int countNear(World world, Location loc, double radius, String mobId) {
-        int n = 0;
-        double r = radius + 2.0;
-        for (Entity e : world.getNearbyEntities(loc, r, r, r)) {
-            MobManager.MobDefinition d = CustomMobManager.getInstance().getDefinition(e.getUniqueId());
-            if (d != null && d.getId().equals(mobId)) {
-                n++;
-            }
-        }
-        return n;
     }
 
     private void load() {

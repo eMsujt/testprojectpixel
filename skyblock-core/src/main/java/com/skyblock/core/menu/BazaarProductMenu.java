@@ -116,7 +116,13 @@ public final class BazaarProductMenu extends AbstractSkyBlockMenu {
                     open(player);
                     return;
                 }
-                BazaarManager.getInstance().addBuyOrder(player.getUniqueId(), product.getItemId(), (int) qty, price);
+                // Refund the price-improvement: filled units execute at the cheaper resting
+                // ask price, so addBuyOrder reports what was actually committed.
+                double committed = BazaarManager.getInstance().addBuyOrder(player.getUniqueId(), product.getItemId(), (int) qty, price);
+                double refund = total - committed;
+                if (refund > 0.0) {
+                    EconomyManager.getInstance().addCoins(player.getUniqueId(), refund);
+                }
                 player.sendMessage("§aBuy Order set up! §e" + qty + "x " + product.getDisplayName()
                         + " §7at §6" + fmt(price) + " coins §7each. Items land in your claims.");
                 open(player);

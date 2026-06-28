@@ -34,6 +34,9 @@ public final class HealthScale {
      * SkyBlock HP for the entity whose real max health is {@code skyblockMaxHealth}.
      */
     public static double toReal(double vanillaHealth, double skyblockMaxHealth) {
+        if (skyblockMaxHealth <= 0.0) {
+            return 0.0;
+        }
         return skyblockMaxHealth * vanillaHealth / DISPLAY_MAX;
     }
 }

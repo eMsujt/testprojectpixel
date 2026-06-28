@@ -89,7 +89,9 @@ public final class CustomMobManager {
             maxHealth.setBaseValue(com.skyblock.core.util.HealthScale.DISPLAY_MAX);
             entity.setHealth(com.skyblock.core.util.HealthScale.DISPLAY_MAX);
         }
-        entity.setRemoveWhenFarAway(false);
+        // Let them despawn when no players are around so abandoned/lured mobs don't pile
+        // up; the spawn point repopulates when a player returns.
+        entity.setRemoveWhenFarAway(true);
         if (entity instanceof org.bukkit.entity.Ageable ageable) {
             ageable.setAdult();
         }

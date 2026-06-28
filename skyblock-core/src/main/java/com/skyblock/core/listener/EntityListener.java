@@ -75,6 +75,11 @@ public final class EntityListener implements Listener {
         if (!(event.getEntity() instanceof Monster)) {
             return;
         }
+        // Custom mobs are paid their exact coinReward by CustomMobListener; don't also pay
+        // the health-scaled drop here (their vanilla bar is pinned, so it would be a flat 50).
+        if (com.skyblock.core.mob.CustomMobManager.getInstance().isCustomMob(event.getEntity().getUniqueId())) {
+            return;
+        }
         double maxHealth = 20.0;
         AttributeInstance attr = event.getEntity().getAttribute(Attribute.MAX_HEALTH);
         if (attr != null) {
