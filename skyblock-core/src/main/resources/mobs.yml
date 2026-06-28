@@ -1,6 +1,7 @@
 # SkyBlock custom mobs. Stats are 1:1 with the Hypixel SkyBlock wiki.
-# health/damage are the SkyBlock values (health can far exceed the vanilla 1024
-# cap — CustomMobManager tracks it separately). xpReward = Combat XP on kill.
+# health/damage are the SkyBlock values (uncapped — scaled onto the vanilla bar).
+# xpReward = Combat XP on kill. maxPerSpot/respawnSeconds/nightOnly drive the
+# /setmobspawn spawn-point system (wiki-accurate caps + timers).
 mobs:
   # ----- Hub: Graveyard (surface) -----
   graveyard_zombie:
@@ -13,6 +14,9 @@ mobs:
     spawnWeight: 100
     xpReward: 6
     coinReward: 1
+    maxPerSpot: 2
+    respawnSeconds: 8
+    nightOnly: false
 
   zombie_villager:
     displayName: "Zombie Villager"
@@ -24,6 +28,9 @@ mobs:
     spawnWeight: 0
     xpReward: 7
     coinReward: 1
+    maxPerSpot: 1
+    respawnSeconds: 12
+    nightOnly: true
 
   # ----- Hub: Crypts (under the Graveyard) -----
   crypt_ghoul:
@@ -36,6 +43,9 @@ mobs:
     spawnWeight: 0
     xpReward: 36
     coinReward: 13
+    maxPerSpot: 2
+    respawnSeconds: 14
+    nightOnly: false
 
   golden_ghoul:
     displayName: "Golden Ghoul"
@@ -47,6 +57,9 @@ mobs:
     spawnWeight: 0
     xpReward: 50
     coinReward: 100
+    maxPerSpot: 1
+    respawnSeconds: 30
+    nightOnly: false
 
   # ----- Hub: Ruins -----
   wolf:
@@ -59,6 +72,9 @@ mobs:
     spawnWeight: 0
     xpReward: 15
     coinReward: 1
+    maxPerSpot: 2
+    respawnSeconds: 10
+    nightOnly: false
 
   old_wolf:
     displayName: "Old Wolf"
@@ -70,3 +86,6 @@ mobs:
     spawnWeight: 0
     xpReward: 40
     coinReward: 40
+    maxPerSpot: 1
+    respawnSeconds: 20
+    nightOnly: false

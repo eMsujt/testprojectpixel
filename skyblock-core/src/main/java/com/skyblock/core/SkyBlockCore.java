@@ -878,6 +878,13 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("spawnmob").setExecutor(spawnMobCmd);
             getCommand("spawnmob").setTabCompleter(spawnMobCmd);
         }
+        com.skyblock.core.mob.MobSpawnCommand mobSpawnCmd = new com.skyblock.core.mob.MobSpawnCommand();
+        for (String name : new String[]{"setmobspawn", "removemobspawn"}) {
+            if (getCommand(name) != null) {
+                getCommand(name).setExecutor(mobSpawnCmd);
+                getCommand(name).setTabCompleter(mobSpawnCmd);
+            }
+        }
 
         // Advance the SkyBlock calendar one day every ~20 real minutes (Hypixel's day length),
         // paying every bank account its interest whenever a new season (month) begins.
@@ -1113,6 +1120,7 @@ public final class SkyBlockCore extends JavaPlugin {
                 getLogger().info("Citizens detected — functional NPCs will use player models.");
             }
             com.skyblock.core.npc.FunctionalNpcManager.getInstance().spawnAll();
+            com.skyblock.core.mob.MobSpawnManager.getInstance().start(this);
         }, 40L);
 
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
