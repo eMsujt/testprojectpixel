@@ -64,7 +64,7 @@ public final class WardrobeMenu extends AbstractSkyBlockMenu {
                 }
             };
 
-            // Header (row 0): slot number + equipped / empty / locked status.
+            // Status (row 5): slot number + equipped / empty / locked status.
             List<String> headLore = new ArrayList<>();
             if (!unlocked) {
                 headLore.add("§7This slot is locked.");
@@ -80,14 +80,14 @@ public final class WardrobeMenu extends AbstractSkyBlockMenu {
                     : isActive ? Material.LIME_STAINED_GLASS_PANE
                     : hasArmor ? Material.YELLOW_STAINED_GLASS_PANE
                     : Material.GRAY_STAINED_GLASS_PANE;
-            setItem(col, new ItemBuilder(headIcon)
+            setItem(36 + col, new ItemBuilder(headIcon)
                     .displayName((isActive ? "§a" : "§e") + slot.getDisplayName())
                     .lore(headLore.toArray(new String[0]))
                     .build(), equip);
 
-            // Pieces (rows 1–4): the real helmet/chestplate/leggings/boots.
+            // Pieces (rows 1–4): the real helmet/chestplate/leggings/boots, top to bottom.
             for (int a = 0; a < 4; a++) {
-                int pieceSlot = 9 + a * 9 + col;
+                int pieceSlot = a * 9 + col;
                 if (!unlocked) {
                     setItem(pieceSlot, new ItemBuilder(Material.RED_STAINED_GLASS_PANE)
                             .displayName("§cLocked").build(), e -> e.setCancelled(true));

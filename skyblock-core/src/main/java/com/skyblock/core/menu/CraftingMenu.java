@@ -27,7 +27,7 @@ import java.util.Optional;
 public final class CraftingMenu extends AbstractMenu {
 
     private static final int[] GRID = {10, 11, 12, 19, 20, 21, 28, 29, 30};
-    private static final int OUTPUT_SLOT = 24;
+    private static final int OUTPUT_SLOT = 23;
 
     public CraftingMenu(JavaPlugin plugin, Player player) {
         super(plugin, player, "Craft Item", 54);

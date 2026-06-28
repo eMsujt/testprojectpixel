@@ -42,14 +42,6 @@ public class CollectionCategoryMenu extends Menu {
     protected void build() {
         fillBorder();
 
-        setItem(4, new ItemBuilder(Material.ARROW)
-                        .displayName("§7Back to Collections")
-                        .build(),
-                event -> {
-                    event.setCancelled(true);
-                    new CollectionsMenu((Player) event.getWhoClicked()).open((Player) event.getWhoClicked());
-                });
-
         CollectionManager manager = CollectionManager.getInstance();
         Collection[] collections = category.getCollections();
         for (int i = 0; i < collections.length && i < contentCapacity(); i++) {
@@ -60,19 +52,38 @@ public class CollectionCategoryMenu extends Menu {
             long toNext = manager.getItemsToNextTier(playerId, c);
 
             List<String> lore = new ArrayList<>();
-            lore.add("§7Collected: §e" + count);
-            lore.add("§7Tier: §e" + tier);
+            lore.add("§7View your " + c.getDisplayName() + " Collection.");
+            lore.add("");
+            lore.add("§7Collected: §e" + String.format("%,d", count));
+            lore.add("§7Tier: §e" + (tier > 0 ? tier : "Locked"));
             if (toNext > 0) {
                 lore.add("§7Next tier in: §e" + toNext + " §7more");
             } else {
                 lore.add("§aMaxed!");
             }
+            lore.add("");
+            lore.add("§eClick to view!");
 
             setItem(contentSlot(i), new ItemBuilder(mat)
-                    .displayName("§a" + c.getDisplayName())
-                    .lore(lore)
-                    .build());
+                            .displayName("§a" + c.getDisplayName())
+                            .lore(lore)
+                            .build(),
+                    event -> {
+                        event.setCancelled(true);
+                        new com.skyblock.core.menu.CollectionDetailMenu(
+                                (Player) event.getWhoClicked(), c, category)
+                                .open((Player) event.getWhoClicked());
+                    });
         }
+
+        setItem(48, new ItemBuilder(Material.ARROW)
+                        .displayName("§aGo Back")
+                        .lore("§7To Collections")
+                        .build(),
+                event -> {
+                    event.setCancelled(true);
+                    new CollectionsMenu((Player) event.getWhoClicked()).open((Player) event.getWhoClicked());
+                });
     }
 
     private static Material resolveMaterial(Collection c) {
