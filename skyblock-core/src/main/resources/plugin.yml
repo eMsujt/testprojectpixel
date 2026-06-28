@@ -350,8 +350,8 @@ commands:
     usage: /spawnmob <id> [amount]
     permission: skyblock.admin
   setmobspawn:
-    description: Mark a spawn point for a custom mob where you stand.
-    usage: /setmobspawn <mob>
+    description: Mark a spawn area for a custom mob (keeps count mobs alive within radius).
+    usage: /setmobspawn <mob> [count] [radius]
     permission: skyblock.admin
   removemobspawn:
     description: Remove the nearest custom-mob spawn point.

@@ -39,9 +39,10 @@ public final class MobSpawnCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // /setmobspawn <mob>
+        // /setmobspawn <mob> [count] [radius]
         if (args.length < 1) {
-            player.sendMessage("§eUsage: §6/setmobspawn <mob>");
+            player.sendMessage("§eUsage: §6/setmobspawn <mob> [count] [radius]");
+            player.sendMessage("§7Each area keeps §ecount§7 mobs alive within §eradius§7 blocks.");
             player.sendMessage("§7Mobs: §f" + String.join(", ", MobManager.getInstance().getMobs().keySet()));
             return true;
         }
@@ -50,10 +51,26 @@ public final class MobSpawnCommand implements CommandExecutor, TabCompleter {
             player.sendMessage("§cUnknown mob '" + args[0] + "'.");
             return true;
         }
-        spawns.add(def.getId(), player.getLocation());
-        player.sendMessage("§aSpawn point added for §f" + def.getDisplayName()
-                + " §7(max " + def.getMaxPerSpot() + "/spot, " + def.getRespawnSeconds() + "s"
-                + (def.isNightOnly() ? ", night-only" : "") + "). §7Total: §e" + spawns.count(def.getId()));
+        int count = def.getMaxPerSpot();
+        if (args.length >= 2) {
+            try {
+                count = Math.max(1, Math.min(50, Integer.parseInt(args[1])));
+            } catch (NumberFormatException ignored) {
+                // keep default
+            }
+        }
+        double radius = 10.0;
+        if (args.length >= 3) {
+            try {
+                radius = Math.max(1.0, Math.min(60.0, Double.parseDouble(args[2])));
+            } catch (NumberFormatException ignored) {
+                // keep default
+            }
+        }
+        spawns.add(def.getId(), player.getLocation(), count, radius);
+        player.sendMessage("§aSpawn area added for §f" + def.getDisplayName()
+                + " §7(§e" + count + "§7 within §e" + (int) radius + "§7 blocks, " + def.getRespawnSeconds() + "s"
+                + (def.isNightOnly() ? ", night-only" : "") + "). §7Areas for this mob: §e" + spawns.count(def.getId()));
         return true;
     }
 

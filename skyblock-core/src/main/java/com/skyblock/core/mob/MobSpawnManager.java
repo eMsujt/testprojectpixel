@@ -18,19 +18,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Hypixel-style fixed spawn points for custom mobs. Operators mark a point with
- * {@code /setmobspawn <mob>}; a repeating task keeps each point populated up to
- * the mob's {@code maxPerSpot}, on its {@code respawnSeconds} timer, only while a
- * player is nearby, and only at night for night-only mobs. Points persist to
- * {@code mob_spawns.yml}.
+ * Hypixel-style spawn points for custom mobs. Each point covers an <b>area</b>
+ * (a radius) and keeps a target <b>count</b> of its mob alive within it, spawning
+ * them scattered around the point — so one {@code /setmobspawn} can populate a
+ * whole region instead of placing dozens of single points. Spawns honour the
+ * mob's respawn timer + night-only flag, and only fire while a player is nearby.
+ * Points persist to {@code mob_spawns.yml}.
  */
 public final class MobSpawnManager {
 
     private static final String FILE_NAME = "mob_spawns.yml";
-    /** Count mobs (and consider a point "full") within this many blocks of the point. */
-    private static final double SPOT_RADIUS = 6.0;
-    /** Only spawn when a player is within this range, so empty areas stay quiet. */
-    private static final double ACTIVATION_RANGE = 44.0;
+    /** Default area radius (blocks) when none is given to /setmobspawn. */
+    private static final double DEFAULT_RADIUS = 10.0;
+    /** Only spawn when a player is within this range of the point. */
+    private static final double ACTIVATION_RANGE = 48.0;
 
     private static final MobSpawnManager INSTANCE = new MobSpawnManager();
 
@@ -38,15 +39,19 @@ public final class MobSpawnManager {
         return INSTANCE;
     }
 
-    /** A registered spawn point: which mob, where, and when it last spawned one. */
+    /** A spawn area: which mob, its centre, the radius it covers, and the target count. */
     private static final class SpawnPoint {
         final String mobId;
         final Location loc;
+        final int amount;
+        final double radius;
         long lastSpawnMillis;
 
-        SpawnPoint(String mobId, Location loc) {
+        SpawnPoint(String mobId, Location loc, int amount, double radius) {
             this.mobId = mobId;
             this.loc = loc;
+            this.amount = amount;
+            this.radius = radius;
         }
     }
 
@@ -74,11 +79,13 @@ public final class MobSpawnManager {
         }
     }
 
-    /** Registers a spawn point for {@code mobId} at the (block-centred) location. */
-    public void add(String mobId, Location loc) {
+    /**
+     * Registers a spawn area for {@code mobId} centred on {@code loc}, keeping
+     * {@code amount} of the mob alive within {@code radius} blocks.
+     */
+    public void add(String mobId, Location loc, int amount, double radius) {
         Location centred = loc.getBlock().getLocation().add(0.5, 0.0, 0.5);
-        centred.setYaw(loc.getYaw());
-        points.add(new SpawnPoint(mobId, centred));
+        points.add(new SpawnPoint(mobId, centred, Math.max(1, amount), Math.max(1.0, radius)));
         save();
     }
 
@@ -138,12 +145,30 @@ public final class MobSpawnManager {
             if (!playerNear(world, point.loc)) {
                 continue;
             }
-            if (countNear(world, point.loc, point.mobId) >= def.getMaxPerSpot()) {
+            if (countNear(world, point.loc, point.radius, point.mobId) >= point.amount) {
                 continue;
             }
-            CustomMobManager.getInstance().spawnMob(def, point.loc);
+            CustomMobManager.getInstance().spawnMob(def, randomSpot(point));
             point.lastSpawnMillis = now;
         }
+    }
+
+    /** A random ground spot within the point's radius, falling back to the centre. */
+    private static Location randomSpot(SpawnPoint point) {
+        World world = point.loc.getWorld();
+        for (int i = 0; i < 8; i++) {
+            double angle = Math.random() * Math.PI * 2.0;
+            double dist = Math.random() * point.radius;
+            double x = point.loc.getX() + Math.cos(angle) * dist;
+            double z = point.loc.getZ() + Math.sin(angle) * dist;
+            Location at = new Location(world, x, point.loc.getY(), z, (float) (Math.random() * 360.0), 0f);
+            if (at.getBlock().isPassable()
+                    && at.clone().add(0, 1, 0).getBlock().isPassable()
+                    && at.clone().subtract(0, 1, 0).getBlock().getType().isSolid()) {
+                return at;
+            }
+        }
+        return point.loc;
     }
 
     private static boolean isNight(World world) {
@@ -161,9 +186,10 @@ public final class MobSpawnManager {
         return false;
     }
 
-    private static int countNear(World world, Location loc, String mobId) {
+    private static int countNear(World world, Location loc, double radius, String mobId) {
         int n = 0;
-        for (Entity e : world.getNearbyEntities(loc, SPOT_RADIUS, SPOT_RADIUS, SPOT_RADIUS)) {
+        double r = radius + 2.0;
+        for (Entity e : world.getNearbyEntities(loc, r, r, r)) {
             MobManager.MobDefinition d = CustomMobManager.getInstance().getDefinition(e.getUniqueId());
             if (d != null && d.getId().equals(mobId)) {
                 n++;
@@ -172,7 +198,6 @@ public final class MobSpawnManager {
         return n;
     }
 
-    @SuppressWarnings("unchecked")
     private void load() {
         points.clear();
         File file = new File(dataFolder, FILE_NAME);
@@ -193,7 +218,9 @@ public final class MobSpawnManager {
             double x = toDouble(entry.get("x"));
             double y = toDouble(entry.get("y"));
             double z = toDouble(entry.get("z"));
-            points.add(new SpawnPoint(id, new Location(world, x, y, z)));
+            int amount = (int) Math.max(1.0, toDouble(entry.get("amount")));
+            double radius = entry.get("radius") != null ? toDouble(entry.get("radius")) : DEFAULT_RADIUS;
+            points.add(new SpawnPoint(id, new Location(world, x, y, z), amount, radius));
         }
     }
 
@@ -207,6 +234,8 @@ public final class MobSpawnManager {
             m.put("x", p.loc.getX());
             m.put("y", p.loc.getY());
             m.put("z", p.loc.getZ());
+            m.put("amount", p.amount);
+            m.put("radius", p.radius);
             list.add(m);
         }
         cfg.set("spawns", list);
