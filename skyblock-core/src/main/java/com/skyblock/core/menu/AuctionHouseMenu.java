@@ -23,11 +23,12 @@ import java.util.UUID;
  */
 public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
 
+    // Listings fill cols 3-8 (rows 2-5); col 2 (10/19/28/37) is a filler pane on Hypixel.
     static final int[] LISTING_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+            11, 12, 13, 14, 15, 16,
+            20, 21, 22, 23, 24, 25,
+            29, 30, 31, 32, 33, 34,
+            38, 39, 40, 41, 42, 43
     };
 
     private static final int PAGE_SIZE = LISTING_SLOTS.length;
@@ -170,11 +171,15 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                 .lore("§7Show Buy-It-Now listings only.").build(),
                 e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly).open(player); });
 
-        // Slot 49 (free): the Misc category tab sits at slot 45, so don't collide with it.
-        setItem(49, new ItemBuilder(Material.GOLD_BLOCK)
+        // Your Auctions & Claims at slot 47; the wiki Close slot (6,5 = 49) is now a real Close.
+        setItem(47, new ItemBuilder(Material.GOLD_BLOCK)
                 .displayName("§eYour Auctions & Claims")
                 .lore("§7Collect coins/items and manage", "§7your own listings.").build(),
                 e -> { e.setCancelled(true); new AuctionClaimMenu(player).open(player); });
+        setItem(49, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(),
+                e -> { e.setCancelled(true); player.closeInventory(); });
 
         if (page > 0) {
             setItem(46, new ItemBuilder(Material.ARROW)

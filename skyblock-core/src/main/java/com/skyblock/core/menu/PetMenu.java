@@ -47,12 +47,12 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         SortMode next() { return values()[(ordinal() + 1) % values().length]; }
     }
 
-    /** Left-aligned 7-wide pet grid (cols 0-6, rows 1-4), matching the wiki layout. */
+    /** Inset 7-wide pet grid (cols 2-8, rows 2-5), matching the wiki Pets layout. */
     private static final int[] PET_SLOTS = {
-            9, 10, 11, 12, 13, 14, 15,
-            18, 19, 20, 21, 22, 23, 24,
-            27, 28, 29, 30, 31, 32, 33,
-            36, 37, 38, 39, 40, 41, 42
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43
     };
 
     private final int page;
@@ -103,7 +103,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                 }
             }
         }
-        setItem(0, new ItemBuilder(Material.BONE)
+        setItem(4, new ItemBuilder(Material.BONE)
                 .displayName("§aPets")
                 .lore(
                         "§7View and manage all of your Pets.",
@@ -154,8 +154,8 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                     .build(), e -> e.setCancelled(true));
         }
 
-        // Exp Sharing — splits pet XP with a second pet (cosmetic placeholder for now).
-        setItem(48, new ItemBuilder(Material.GLOWSTONE_DUST)
+        // Exp Sharing (top row, slot 7 per the wiki) — splits pet XP with a second pet.
+        setItem(7, new ItemBuilder(Material.GLOWSTONE_DUST)
                 .displayName("§6Exp Sharing")
                 .lore("§7Share a portion of the XP gained",
                       "§7with one of your selected pets!",

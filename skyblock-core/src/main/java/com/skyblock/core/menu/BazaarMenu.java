@@ -35,11 +35,12 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
     /** The 5 category tabs run down the left column (Hypixel layout). */
     private static final int[] CATEGORY_SLOTS = {0, 9, 18, 27, 36};
 
+    // Products fill cols 3-8 (rows 2-5); col 2 (10/19/28/37) is a filler pane on Hypixel.
     static final int[] ORDER_SLOTS = {
-            10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+            11, 12, 13, 14, 15, 16,
+            20, 21, 22, 23, 24, 25,
+            29, 30, 31, 32, 33, 34,
+            38, 39, 40, 41, 42, 43
     };
 
     private final int selectedTab;

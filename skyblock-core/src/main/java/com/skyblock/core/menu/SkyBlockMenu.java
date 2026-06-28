@@ -70,7 +70,7 @@ public final class SkyBlockMenu extends Menu {
                 .lore("§7Through your adventure, you will", "§7unlock recipes for all kinds of",
                       "§7special items! You can view how", "§7to craft these items here.", "",
                       "§8Also accessible via /recipes", "", "§eClick to view!").build(),
-                e -> { e.setCancelled(true); new ItemsMenu(player).open(player); });
+                e -> { e.setCancelled(true); new RecipeBrowserMenu(player).open(player); });
         setItem(22, new ItemBuilder(Material.EXPERIENCE_BOTTLE).displayName("§aSkyBlock Leveling")
                 .lore("§7Determine how far you've", "§7progressed in SkyBlock and earn",
                       "§7rewards from completing unique", "§7tasks.", "", "§eClick to view!").build(),
