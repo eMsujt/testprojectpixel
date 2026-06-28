@@ -132,7 +132,9 @@ public final class FunctionalNpcManager {
         stand.setCustomNameVisible(true);
         stand.setGravity(false);
         stand.setInvulnerable(true);
-        stand.setVisible(false);
+        stand.setVisible(true);
+        stand.setArms(true);
+        stand.setBasePlate(false);
         stand.setMarker(false);
         stand.setPersistent(true);
         stand.addScoreboardTag(NPC_TAG);

@@ -151,9 +151,27 @@ public final class ScoreboardManager {
 
     private static String locationOf(org.bukkit.World world) {
         String name = world.getName();
-        if (name.startsWith("island_")) return "Your Island";
-        if (name.equalsIgnoreCase("world") || name.toLowerCase().contains("hub")) return "Hub";
-        return name;
+        if (name.startsWith("island_")) {
+            return "Your Island";
+        }
+        // Derive the area from the world name directly (so "Hub" -> Hub, "dwarven_mines" ->
+        // Dwarven Mines, etc.) rather than mislabelling the default overworld as the Hub.
+        return prettify(name);
+    }
+
+    /** Turns a world name into a display label: underscores to spaces, Title Case. */
+    private static String prettify(String name) {
+        StringBuilder sb = new StringBuilder();
+        for (String part : name.replace('_', ' ').split(" ")) {
+            if (part.isEmpty()) {
+                continue;
+            }
+            if (sb.length() > 0) {
+                sb.append(' ');
+            }
+            sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1).toLowerCase());
+        }
+        return sb.length() == 0 ? name : sb.toString();
     }
 
     private static String formatCoins(double coins) {

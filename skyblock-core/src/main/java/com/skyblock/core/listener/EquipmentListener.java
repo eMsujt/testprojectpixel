@@ -292,5 +292,11 @@ public final class EquipmentListener implements Listener {
         if (player.getHealth() > maxHealth) {
             player.setHealth(maxHealth);
         }
+        // Keep the vanilla health bar at a fixed 10 hearts (20 half-hearts) regardless of the
+        // player's SkyBlock Health, so high health never spills into extra rows of hearts.
+        player.setHealthScale(20.0);
+        if (!player.isHealthScaled()) {
+            player.setHealthScaled(true);
+        }
     }
 }

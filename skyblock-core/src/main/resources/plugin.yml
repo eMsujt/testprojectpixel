@@ -340,6 +340,10 @@ commands:
     description: Place a functional NPC (Banker, Auction Master, Bazaar, Museum, ...) where you stand.
     usage: /setnpclocation <npc>
     permission: skyblock.admin
+  removenpclocation:
+    description: Remove a placed functional NPC.
+    usage: /removenpclocation <npc>
+    permission: skyblock.admin
   npcshop:
     description: Browse and buy from static Hypixel NPC shops via GUI.
     usage: /npcshop [id]

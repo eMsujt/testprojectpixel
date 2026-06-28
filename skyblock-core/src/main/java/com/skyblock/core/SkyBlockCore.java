@@ -1076,21 +1076,28 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("npc").setTabCompleter(npcCommand);
         }
         // Functional NPCs: /setnpclocation <npc> places a feature NPC (Banker, Auction
-        // Master, Bazaar, Museum, Blacksmith, ...) that opens its menu when right-clicked.
-        com.skyblock.core.npc.FunctionalNpcManager.getInstance().load(getDataFolder());
+        // Master, Bazaar, Museum, Blacksmith, ...) that opens its menu when right-clicked;
+        // /removenpclocation <npc> removes one.
         com.skyblock.core.npc.SetNpcLocationCommand setNpcLocationCommand =
                 new com.skyblock.core.npc.SetNpcLocationCommand(this);
         if (getCommand("setnpclocation") != null) {
             getCommand("setnpclocation").setExecutor(setNpcLocationCommand);
             getCommand("setnpclocation").setTabCompleter(setNpcLocationCommand);
         }
+        com.skyblock.core.npc.RemoveNpcLocationCommand removeNpcLocationCommand =
+                new com.skyblock.core.npc.RemoveNpcLocationCommand(this);
+        if (getCommand("removenpclocation") != null) {
+            getCommand("removenpclocation").setExecutor(removeNpcLocationCommand);
+            getCommand("removenpclocation").setTabCompleter(removeNpcLocationCommand);
+        }
         getServer().getPluginManager().registerEvents(new com.skyblock.core.npc.FunctionalNpcListener(), this);
-        // Build the shared Hub world + auto-place the service NPCs (after NPC load so the
-        // auto-place check respects any operator-placed NPCs). Registers the "hub" warp.
-        com.skyblock.core.manager.HubManager.getInstance().setup();
-        // Spawn placed NPCs one tick later, once all worlds are fully loaded.
-        getServer().getScheduler().runTask(this,
-                () -> com.skyblock.core.npc.FunctionalNpcManager.getInstance().spawnAll());
+        // Load placed NPCs, wire the "hub" warp to the operator's "Hub" world, and spawn the
+        // NPCs — delayed so other plugins' worlds (e.g. the "Hub" world) are loaded first.
+        getServer().getScheduler().runTaskLater(this, () -> {
+            com.skyblock.core.npc.FunctionalNpcManager.getInstance().load(getDataFolder());
+            com.skyblock.core.manager.HubManager.getInstance().setup();
+            com.skyblock.core.npc.FunctionalNpcManager.getInstance().spawnAll();
+        }, 40L);
 
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.PlayerListener.getInstance(), this);
