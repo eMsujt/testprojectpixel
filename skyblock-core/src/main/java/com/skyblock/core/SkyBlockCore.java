@@ -739,6 +739,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("slayer").setTabCompleter(slayerCommand);
         }
         getServer().getPluginManager().registerEvents(SlayerListener.getInstance(), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.util.SignInput.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.DungeonListener.getInstance(), this);
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);

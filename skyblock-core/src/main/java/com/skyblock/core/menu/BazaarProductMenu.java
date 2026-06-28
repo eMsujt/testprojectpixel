@@ -5,7 +5,9 @@ import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarProduct;
 import com.skyblock.core.manager.ChatInputManager;
 import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.util.Coins;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SignInput;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -36,7 +38,7 @@ public final class BazaarProductMenu extends AbstractSkyBlockMenu {
         double buy = mgr.getDisplayBuyPrice(product);
         double sell = mgr.getDisplaySellPrice(product);
         int held = countHeld();
-        long coins = EconomyManager.getInstance().getPurse(player.getUniqueId());
+        double coins = EconomyManager.getInstance().getCoins(player.getUniqueId());
 
         setItem(4, ItemBuilder.forItem(product.getItemId())
                 .displayName("§f" + product.getDisplayName())
@@ -45,7 +47,7 @@ public final class BazaarProductMenu extends AbstractSkyBlockMenu {
                         "§7Sell price: §6" + fmt(sell) + " coins each",
                         "",
                         "§7You have: §e" + held + " §7in your inventory",
-                        "§7Your purse: §6" + String.format("%,d", coins) + " coins")
+                        "§7Your purse: §6" + Coins.format(coins) + " coins")
                 .build(), e -> e.setCancelled(true));
 
         // Instant Buy (1 / 16 / 64).
@@ -94,22 +96,17 @@ public final class BazaarProductMenu extends AbstractSkyBlockMenu {
 
     /** Prompts for quantity + price, escrows the coins, and places a resting buy order. */
     private void createBuyOrder() {
-        player.closeInventory();
-        player.sendMessage("§eEnter the §aquantity §eto buy (or type §ccancel§e):");
-        ChatInputManager.getInstance().request(player.getUniqueId(), qtyRaw -> {
-            if (qtyRaw.equalsIgnoreCase("cancel")) { open(player); return; }
+        SignInput.request(player, "§8Buy quantity", qtyRaw -> {
             long qty = ChatInputManager.parseAmount(qtyRaw);
             if (qty <= 0 || qty > 71680) {
-                player.sendMessage("§cInvalid quantity.");
+                if (!qtyRaw.isBlank()) player.sendMessage("§cInvalid quantity.");
                 open(player);
                 return;
             }
-            player.sendMessage("§eEnter the §6price per unit §e(or type §ccancel§e):");
-            ChatInputManager.getInstance().request(player.getUniqueId(), priceRaw -> {
-                if (priceRaw.equalsIgnoreCase("cancel")) { open(player); return; }
+            SignInput.request(player, "§8Price per unit", priceRaw -> {
                 double price = parsePrice(priceRaw);
                 if (price <= 0) {
-                    player.sendMessage("§cInvalid price.");
+                    if (!priceRaw.isBlank()) player.sendMessage("§cInvalid price.");
                     open(player);
                     return;
                 }
@@ -127,30 +124,25 @@ public final class BazaarProductMenu extends AbstractSkyBlockMenu {
         });
     }
 
-    /** Prompts for quantity + price, escrows the items, and places a resting sell order. */
+    /** Prompts (on signs) for quantity + price, escrows the items, and places a resting sell order. */
     private void createSellOffer() {
         int held = countHeld();
         if (held <= 0) {
             player.sendMessage("§cYou have no " + product.getDisplayName() + " to sell.");
             return;
         }
-        player.closeInventory();
-        player.sendMessage("§eEnter the §aquantity §eto sell (you have §e" + held + "§e, or §ccancel§e):");
-        ChatInputManager.getInstance().request(player.getUniqueId(), qtyRaw -> {
-            if (qtyRaw.equalsIgnoreCase("cancel")) { open(player); return; }
+        SignInput.request(player, "§8Sell quantity", qtyRaw -> {
             long qty = ChatInputManager.parseAmount(qtyRaw);
             int have = countHeld();
             if (qty <= 0 || qty > have) {
-                player.sendMessage("§cInvalid quantity (you have " + have + ").");
+                if (!qtyRaw.isBlank()) player.sendMessage("§cInvalid quantity (you have " + have + ").");
                 open(player);
                 return;
             }
-            player.sendMessage("§eEnter the §6price per unit §e(or type §ccancel§e):");
-            ChatInputManager.getInstance().request(player.getUniqueId(), priceRaw -> {
-                if (priceRaw.equalsIgnoreCase("cancel")) { open(player); return; }
+            SignInput.request(player, "§8Price per unit", priceRaw -> {
                 double price = parsePrice(priceRaw);
                 if (price <= 0) {
-                    player.sendMessage("§cInvalid price.");
+                    if (!priceRaw.isBlank()) player.sendMessage("§cInvalid price.");
                     open(player);
                     return;
                 }
@@ -290,10 +282,7 @@ public final class BazaarProductMenu extends AbstractSkyBlockMenu {
     }
 
     private static String fmt(double coins) {
-        if (coins == Math.floor(coins)) {
-            return String.format("%,d", (long) coins);
-        }
-        return String.format("%,.1f", coins);
+        return Coins.format(coins);
     }
 
     @Override

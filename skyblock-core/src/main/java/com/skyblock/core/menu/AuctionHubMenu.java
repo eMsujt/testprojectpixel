@@ -5,6 +5,7 @@ import com.skyblock.core.manager.AuctionHouseManager.AuctionCategory;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionType;
 import com.skyblock.core.manager.ChatInputManager;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SignInput;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -96,16 +97,10 @@ public final class AuctionHubMenu extends AbstractSkyBlockMenu {
             return;
         }
         ItemStack snapshot = held.clone();
-        player.closeInventory();
-        player.sendMessage("§eEnter the §6Buy It Now price §efor §f" + nameOf(snapshot) + " §e(or §ccancel§e):");
-        ChatInputManager.getInstance().request(player.getUniqueId(), priceRaw -> {
-            if (priceRaw.equalsIgnoreCase("cancel")) {
-                new AuctionHubMenu(player).open(player);
-                return;
-            }
+        SignInput.request(player, "§8BIN price", priceRaw -> {
             long price = ChatInputManager.parseAmount(priceRaw);
             if (price <= 0) {
-                player.sendMessage("§cInvalid price.");
+                if (!priceRaw.isBlank()) player.sendMessage("§cInvalid price.");
                 new AuctionHubMenu(player).open(player);
                 return;
             }

@@ -121,7 +121,7 @@ public final class ScoreboardManager {
                     + (world.isDayTime() ? " " + ChatColor.YELLOW + "☀" : " " + ChatColor.AQUA + "☽"),
             ChatColor.GRAY + " ⏣ " + ChatColor.GREEN + locationOf(world),
             "  ",
-            ChatColor.WHITE + "Purse: " + ChatColor.GOLD + formatCoins(coins),
+            ChatColor.WHITE + "Purse: " + ChatColor.GOLD + com.skyblock.core.util.Coins.format(coins),
             ChatColor.WHITE + "Bits: " + ChatColor.AQUA
                     + String.format("%,d", EconomyManager.getInstance().getBits(player.getUniqueId())),
             "   ",

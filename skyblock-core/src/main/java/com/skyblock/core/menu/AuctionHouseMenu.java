@@ -4,8 +4,8 @@ import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionCategory;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionListing;
 import com.skyblock.core.manager.AuctionHouseManager.ItemRarity;
-import com.skyblock.core.manager.ChatInputManager;
 import com.skyblock.core.model.Rarity;
+import com.skyblock.core.util.SignInput;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -250,14 +250,11 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
         }
     }
 
-    /** Prompts for a search term in chat and reopens the browser filtered to it. */
+    /** Prompts for a search term on a sign and reopens the browser filtered to it. */
     private void openSearch() {
-        player.closeInventory();
-        player.sendMessage("§eType an item name to search for (or §ccancel§e):");
-        ChatInputManager.getInstance().request(player.getUniqueId(), query -> {
-            String term = query.equalsIgnoreCase("cancel") ? search : query;
-            new AuctionHouseMenu(player, 0, category, sort, binOnly,
-                    term == null || term.isBlank() ? null : term, rarity).open(player);
+        SignInput.request(player, "§8Search auctions", query -> {
+            String term = query == null || query.isBlank() ? null : query;
+            new AuctionHouseMenu(player, 0, category, sort, binOnly, term, rarity).open(player);
         });
     }
 

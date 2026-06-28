@@ -3,10 +3,11 @@ package com.skyblock.core.menu;
 import com.skyblock.core.item.SkyblockItems;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarProduct;
-import com.skyblock.core.manager.ChatInputManager;
 import com.skyblock.core.manager.EconomyManager;
 import com.skyblock.core.manager.SackManager;
+import com.skyblock.core.util.Coins;
 import com.skyblock.core.util.ItemBuilder;
+import com.skyblock.core.util.SignInput;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -168,12 +169,10 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
         }
     }
 
-    /** Search: type a product name; opens the first matching product's page. */
+    /** Search: type a product name on a sign; opens the first matching product's page. */
     private void openSearch(Player clicker) {
-        clicker.closeInventory();
-        clicker.sendMessage("§eType a product name to search (or §ccancel§e):");
-        ChatInputManager.getInstance().request(clicker.getUniqueId(), query -> {
-            if (query.equalsIgnoreCase("cancel")) {
+        SignInput.request(clicker, "§8Search product", query -> {
+            if (query.isBlank()) {
                 new BazaarMenu(clicker, selectedTab).open(clicker);
                 return;
             }
@@ -290,10 +289,7 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
     }
 
     private static String formatCoinsFull(double coins) {
-        if (coins == Math.floor(coins)) {
-            return String.format("%,d", (long) coins);
-        }
-        return String.format("%,.1f", coins);
+        return Coins.format(coins);
     }
 
     private List<BazaarProduct> getFilteredProducts() {
