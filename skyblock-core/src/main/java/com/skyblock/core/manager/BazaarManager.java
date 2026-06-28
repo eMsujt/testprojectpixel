@@ -277,6 +277,14 @@ public final class BazaarManager {
                     BazaarOrder o = it.next();
                     if (o.id().equals(orderId) && o.owner().equals(player)) {
                         it.remove();
+                        // Refund the unfilled escrow to the player's claims: a buy order
+                        // escrowed coins (quantity × price), a sell order escrowed items.
+                        if (isBuy) {
+                            claimableCoins.merge(player, o.quantity * o.priceEach, Double::sum);
+                        } else {
+                            claimableItems.computeIfAbsent(player, k -> new HashMap<>())
+                                          .merge(itemEntry.getKey(), o.quantity, Integer::sum);
+                        }
                         if (deque.isEmpty()) priceBook.remove(priceEntry.getKey());
                         if (priceBook.isEmpty()) book.remove(itemEntry.getKey());
                         return true;

@@ -1,7 +1,11 @@
 package com.skyblock.core.menu;
 
+import com.skyblock.core.item.SkyblockItems;
 import com.skyblock.core.manager.BazaarManager;
 import com.skyblock.core.manager.BazaarManager.BazaarProduct;
+import com.skyblock.core.manager.ChatInputManager;
+import com.skyblock.core.manager.EconomyManager;
+import com.skyblock.core.manager.SackManager;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -12,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public final class BazaarMenu extends AbstractSkyBlockMenu {
 
@@ -140,18 +145,155 @@ public final class BazaarMenu extends AbstractSkyBlockMenu {
                 return;
             }
         }
-        if (slot == 49 && event.getWhoClicked() instanceof Player clicker) {
-            clicker.closeInventory();
+        if (!(event.getWhoClicked() instanceof Player clicker)) {
             return;
+        }
+        // Control bar.
+        switch (slot) {
+            case 45 -> { openSearch(clicker); return; }
+            case 47 -> { sellInventoryNow(clicker); return; }
+            case 48 -> { sellSacksNow(clicker); return; }
+            case 49 -> { clicker.closeInventory(); return; }
+            case 50 -> { new BazaarOrdersMenu(clicker).open(clicker); return; }
+            case 51 -> { showHistory(clicker); return; }
+            case 52 -> { showSettings(clicker); return; }
         }
         // Clicking a product opens its instant buy/sell view.
         List<BazaarProduct> products = getFilteredProducts();
         for (int i = 0; i < ORDER_SLOTS.length && i < products.size(); i++) {
-            if (ORDER_SLOTS[i] == slot && event.getWhoClicked() instanceof Player clicker) {
+            if (ORDER_SLOTS[i] == slot) {
                 new BazaarProductMenu(clicker, products.get(i)).open(clicker);
                 return;
             }
         }
+    }
+
+    /** Search: type a product name; opens the first matching product's page. */
+    private void openSearch(Player clicker) {
+        clicker.closeInventory();
+        clicker.sendMessage("§eType a product name to search (or §ccancel§e):");
+        ChatInputManager.getInstance().request(clicker.getUniqueId(), query -> {
+            if (query.equalsIgnoreCase("cancel")) {
+                new BazaarMenu(clicker, selectedTab).open(clicker);
+                return;
+            }
+            String q = query.toLowerCase().trim();
+            BazaarProduct match = null;
+            for (BazaarProduct p : BazaarProduct.values()) {
+                if (p.getDisplayName().toLowerCase().contains(q)) {
+                    match = p;
+                    break;
+                }
+            }
+            if (match != null) {
+                new BazaarProductMenu(clicker, match).open(clicker);
+            } else {
+                clicker.sendMessage("§cNo Bazaar product matches \"" + query + "\".");
+                new BazaarMenu(clicker, selectedTab).open(clicker);
+            }
+        });
+    }
+
+    /** Instantly sells every raw Bazaar material in the player's inventory at the sell price. */
+    private void sellInventoryNow(Player clicker) {
+        BazaarManager mgr = BazaarManager.getInstance();
+        double totalCoins = 0;
+        int totalItems = 0;
+        for (int i = 0; i < clicker.getInventory().getSize(); i++) {
+            ItemStack item = clicker.getInventory().getItem(i);
+            BazaarProduct product = productOf(item);
+            if (product == null) {
+                continue;
+            }
+            double price = mgr.getDisplaySellPrice(product);
+            if (price <= 0) {
+                continue;
+            }
+            int qty = item.getAmount();
+            totalCoins += price * qty;
+            totalItems += qty;
+            clicker.getInventory().setItem(i, null);
+        }
+        if (totalItems > 0) {
+            EconomyManager.getInstance().addCoins(clicker.getUniqueId(), totalCoins);
+            clicker.sendMessage("§aSold §e" + totalItems + " §aitem(s) for §6" + formatCoinsFull(totalCoins) + " coins§a.");
+        } else {
+            clicker.sendMessage("§cNo sellable Bazaar items in your inventory.");
+        }
+        new BazaarMenu(clicker, selectedTab).open(clicker);
+    }
+
+    /** Instantly sells every sellable item stored in the player's sacks. */
+    private void sellSacksNow(Player clicker) {
+        BazaarManager mgr = BazaarManager.getInstance();
+        SackManager sacks = SackManager.getInstance();
+        double totalCoins = 0;
+        int totalItems = 0;
+        for (SackManager.SackType type : SackManager.SackType.values()) {
+            Map<String, Integer> contents = sacks.getSackContents(clicker.getUniqueId(), type);
+            for (Map.Entry<String, Integer> entry : new ArrayList<>(contents.entrySet())) {
+                BazaarProduct product = BazaarManager.PRODUCT_DATA.get(entry.getKey());
+                if (product == null || entry.getValue() <= 0) {
+                    continue;
+                }
+                double price = mgr.getDisplaySellPrice(product);
+                if (price <= 0) {
+                    continue;
+                }
+                int removed = sacks.removeItem(clicker.getUniqueId(), type, entry.getKey(), entry.getValue());
+                if (removed > 0) {
+                    totalCoins += price * removed;
+                    totalItems += removed;
+                }
+            }
+        }
+        if (totalItems > 0) {
+            EconomyManager.getInstance().addCoins(clicker.getUniqueId(), totalCoins);
+            clicker.sendMessage("§aSold §e" + totalItems + " §asack item(s) for §6" + formatCoinsFull(totalCoins) + " coins§a.");
+        } else {
+            clicker.sendMessage("§cNo sellable items in your sacks.");
+        }
+        new BazaarMenu(clicker, selectedTab).open(clicker);
+    }
+
+    /** Bazaar History: shows the player's claimable proceeds (recent fills aren't logged). */
+    private void showHistory(Player clicker) {
+        BazaarManager mgr = BazaarManager.getInstance();
+        double coins = mgr.getClaimableCoins(clicker.getUniqueId());
+        clicker.sendMessage("§6Bazaar ➜ History");
+        clicker.sendMessage("§7Coins waiting in your claims: §6" + formatCoinsFull(coins) + " coins");
+        clicker.sendMessage("§7Open §eManage Orders §7to collect filled orders.");
+    }
+
+    /** Bazaar Settings: shows the player's current sale-fee tier and rate. */
+    private void showSettings(Player clicker) {
+        BazaarManager mgr = BazaarManager.getInstance();
+        BazaarManager.FeeTier tier = mgr.getFeeTier(clicker.getUniqueId());
+        clicker.sendMessage("§6Bazaar ➜ Settings");
+        clicker.sendMessage("§7Your sale fee tier: §e" + tier.name()
+                + " §7(" + String.format("%.2f", tier.getRate() * 100) + "% fee)");
+    }
+
+    /** Resolves an inventory item to its Bazaar product (by SkyBlock id, else material), or null. */
+    private static BazaarProduct productOf(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) {
+            return null;
+        }
+        String id = SkyblockItems.idOf(item);
+        if (id != null) {
+            BazaarProduct byId = BazaarManager.PRODUCT_DATA.get(id);
+            if (byId != null) {
+                return byId;
+            }
+        }
+        return BazaarManager.PRODUCT_DATA.get(item.getType().name());
+    }
+
+    private static String formatCoinsFull(double coins) {
+        if (coins == Math.floor(coins)) {
+            return String.format("%,d", (long) coins);
+        }
+        return String.format("%,.1f", coins);
     }
 
     private List<BazaarProduct> getFilteredProducts() {

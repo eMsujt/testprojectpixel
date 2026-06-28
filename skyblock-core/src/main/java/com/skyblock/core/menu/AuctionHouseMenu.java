@@ -3,6 +3,9 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionCategory;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionListing;
+import com.skyblock.core.manager.AuctionHouseManager.ItemRarity;
+import com.skyblock.core.manager.ChatInputManager;
+import com.skyblock.core.model.Rarity;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -72,6 +75,8 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
     private final AuctionCategory category; // null = all categories
     private final Sort sort;
     private final boolean binOnly;
+    private final String search;       // null/blank = no name filter
+    private final ItemRarity rarity;   // null = any rarity
 
     public AuctionHouseMenu(Player player) {
         this(player, 0, null, Sort.LOWEST, false);
@@ -86,11 +91,18 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
     }
 
     private AuctionHouseMenu(Player player, int page, AuctionCategory category, Sort sort, boolean binOnly) {
+        this(player, page, category, sort, binOnly, null, null);
+    }
+
+    private AuctionHouseMenu(Player player, int page, AuctionCategory category, Sort sort, boolean binOnly,
+                            String search, ItemRarity rarity) {
         super(player, "§6Auctions Browser", 6);
         this.page = Math.max(0, page);
         this.category = category;
         this.sort = sort;
         this.binOnly = binOnly;
+        this.search = search;
+        this.rarity = rarity;
     }
 
     @Override
@@ -111,7 +123,7 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                     .displayName((selected ? "§a" : "§e") + cat.getDisplayName())
                     .lore(selected ? "§aShowing this category" : "§7Click to view!")
                     .build(),
-                    e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, selected ? null : cat, sort, binOnly).open(player); });
+                    e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, selected ? null : cat, sort, binOnly, search, rarity).open(player); });
         }
 
         // Resolve the listing set for the active filter.
@@ -128,9 +140,16 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
             }
         }
 
-        // BIN-only filter + price sort.
+        // BIN-only filter, name search, rarity filter, then price sort.
         if (binOnly) {
             listings.removeIf(l -> !l.binListing());
+        }
+        if (search != null && !search.isBlank()) {
+            String q = search.toLowerCase();
+            listings.removeIf(l -> !l.itemName().toLowerCase().contains(q));
+        }
+        if (rarity != null) {
+            listings.removeIf(l -> !Rarity.fromItem(l.item(), Rarity.COMMON).name().equals(rarity.name()));
         }
         listings.sort(Comparator.comparingDouble(AuctionListing::startingBid));
         if (sort == Sort.HIGHEST) {
@@ -170,18 +189,38 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
         // Bottom control bar, 1:1 with the wiki Auctions Browser (row 6).
         setItem(48, new ItemBuilder(Material.OAK_SIGN)
                 .displayName("§aSearch")
-                .lore("§7Find items by name, type,", "§7lore, or enchants.", "", "§eClick to edit filter!").build());
+                .lore("§7Find items by name.",
+                      "§7Filtered: " + (search == null || search.isBlank() ? "§7None" : "§e" + search),
+                      "",
+                      "§eClick to edit filter!",
+                      "§7Right-click to clear!").build(),
+                e -> {
+                    e.setCancelled(true);
+                    if (e.isRightClick()) {
+                        new AuctionHouseMenu(player, 0, category, sort, binOnly, null, rarity).open(player);
+                    } else {
+                        openSearch();
+                    }
+                });
         setItem(50, new ItemBuilder(Material.HOPPER)
                 .displayName("§aSort: §f" + sort.label)
                 .lore("§7Click to change the order.").build(),
-                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort.next(), binOnly).open(player); });
+                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort.next(), binOnly, search, rarity).open(player); });
         setItem(51, new ItemBuilder(Material.ENDER_EYE)
                 .displayName("§aItem Tier")
-                .lore("§7Filter by item rarity.").build());
+                .lore("§7Currently: " + (rarity == null ? "§7Any" : "§e" + rarity.getDisplayName()),
+                      "",
+                      "§eClick to switch rarity!",
+                      "§7Right-click to clear!").build(),
+                e -> {
+                    e.setCancelled(true);
+                    ItemRarity next = e.isRightClick() ? null : nextRarity(rarity);
+                    new AuctionHouseMenu(player, 0, category, sort, binOnly, search, next).open(player);
+                });
         setItem(52, new ItemBuilder(Material.POWERED_RAIL)
                 .displayName("§aBIN Filter: " + (binOnly ? "§aBIN Only" : "§fShow All"))
                 .lore("§7Show Buy-It-Now listings only.").build(),
-                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly).open(player); });
+                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly, search, rarity).open(player); });
 
         // Go Back to the Auction House hub (slot 6,5 = 49; the browser has no Close).
         setItem(49, new ItemBuilder(Material.ARROW)
@@ -203,11 +242,32 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                     event -> {
                         event.setCancelled(true);
                         if (event.isRightClick() && hasPrev) {
-                            new AuctionHouseMenu(player, page - 1, category, sort, binOnly).open(player);
+                            new AuctionHouseMenu(player, page - 1, category, sort, binOnly, search, rarity).open(player);
                         } else if (event.isLeftClick() && hasNext) {
-                            new AuctionHouseMenu(player, page + 1, category, sort, binOnly).open(player);
+                            new AuctionHouseMenu(player, page + 1, category, sort, binOnly, search, rarity).open(player);
                         }
                     });
         }
+    }
+
+    /** Prompts for a search term in chat and reopens the browser filtered to it. */
+    private void openSearch() {
+        player.closeInventory();
+        player.sendMessage("§eType an item name to search for (or §ccancel§e):");
+        ChatInputManager.getInstance().request(player.getUniqueId(), query -> {
+            String term = query.equalsIgnoreCase("cancel") ? search : query;
+            new AuctionHouseMenu(player, 0, category, sort, binOnly,
+                    term == null || term.isBlank() ? null : term, rarity).open(player);
+        });
+    }
+
+    /** Cycles to the next rarity tier, wrapping past the last back to "any" (null). */
+    private static ItemRarity nextRarity(ItemRarity current) {
+        ItemRarity[] values = ItemRarity.values();
+        if (current == null) {
+            return values[0];
+        }
+        int next = current.ordinal() + 1;
+        return next >= values.length ? null : values[next];
     }
 }
