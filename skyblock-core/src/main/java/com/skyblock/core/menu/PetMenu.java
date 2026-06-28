@@ -39,9 +39,9 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         RARITY_WOOL = Collections.unmodifiableMap(m);
     }
 
-    /** Pet list sort orders, cycled by the Sort button (mirrors Hypixel's Pets menu). */
+    /** Pet list sort orders, cycled by the Sort button (1:1 with Hypixel's Pets menu). */
     private enum SortMode {
-        LEVEL("Highest Level"), RARITY("Highest Rarity"), NAME("Name");
+        LEVEL("Level"), RARITY("Rarity"), ALPHABETICAL("Alphabetical"), SKILL("Skill");
         final String label;
         SortMode(String label) { this.label = label; }
         SortMode next() { return values()[(ordinal() + 1) % values().length]; }
@@ -57,15 +57,18 @@ public final class PetMenu extends AbstractSkyBlockMenu {
 
     private final int page;
     private final SortMode sort;
+    /** When on, clicking a pet converts it back to an item instead of (un)equipping. */
+    private final boolean convertToItem;
 
     public PetMenu(Player player) {
-        this(player, 0, SortMode.LEVEL);
+        this(player, 0, SortMode.LEVEL, false);
     }
 
-    private PetMenu(Player player, int page, SortMode sort) {
+    private PetMenu(Player player, int page, SortMode sort, boolean convertToItem) {
         super(player, title(player, page), 6);
         this.page = page;
         this.sort = sort;
+        this.convertToItem = convertToItem;
     }
 
     /** Hypixel's Pets window title carries the page indicator, e.g. {@code (1/2) Pets}. */
@@ -130,20 +133,33 @@ public final class PetMenu extends AbstractSkyBlockMenu {
             lore.add("");
             lore.addAll(progressLines(xp, level, pet.rarity));
             lore.add("");
-            lore.add(isActive ? "§aCurrently active — §eclick to unequip" : "§eClick to equip!");
+            if (convertToItem) {
+                lore.add("§eClick to convert to an item!");
+            } else {
+                lore.add(isActive ? "§aCurrently active — §eclick to unequip" : "§eClick to equip!");
+            }
 
-            setItem(PET_SLOTS[i - start], petIcon
+            ItemBuilder icon = petIcon
                     .displayName("§7[Lvl " + level + "] " + color + pet.type.getDisplayName())
-                    .lore(lore)
-                    .build(),
+                    .lore(lore);
+            if (isActive) {
+                icon.glow();
+            }
+            setItem(PET_SLOTS[i - start], icon.build(),
                     e -> {
                         e.setCancelled(true);
+                        if (convertToItem) {
+                            // Hypixel turns the pet back into an item here; our pets aren't
+                            // item-backed yet, so keep the pet and tell the player.
+                            player.sendMessage("§cConverting pets back to items isn't available yet.");
+                            return;
+                        }
                         if (isActive) {
                             manager.unequipPet(playerId);
                         } else {
                             manager.equipPet(playerId, pet.id);
                         }
-                        new PetMenu(player, pageClamped, sort).open(player);
+                        new PetMenu(player, pageClamped, sort, convertToItem).open(player);
                     });
         }
 
@@ -154,60 +170,63 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                     .build(), e -> e.setCancelled(true));
         }
 
-        // Exp Sharing (top row, slot 7 per the wiki) — splits pet XP with a second pet.
-        setItem(7, new ItemBuilder(Material.GLOWSTONE_DUST)
-                .displayName("§6Exp Sharing")
-                .lore("§7Share a portion of the XP gained",
-                      "§7with one of your selected pets!",
-                      "",
-                      "§7Selected pet: §cNone",
-                      "",
-                      "§eClick to manage!")
-                .build(), e -> e.setCancelled(true));
+        // --- Bottom control bar, 1:1 with Hypixel's Pets menu ---
 
-        // Close.
-        setItem(49, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .build(), e -> { e.setCancelled(true); player.closeInventory(); });
-
-        // Pet visibility toggle (cosmetic placeholder).
-        setItem(50, new ItemBuilder(Material.ENDER_EYE)
-                .displayName("§aPet visibility")
-                .lore("§7Toggles the visibility of your",
-                      "§7currently selected pet.",
+        // Convert to Item toggle (slot 47) — a Diamond; glows when enabled.
+        ItemBuilder convert = new ItemBuilder(Material.DIAMOND)
+                .displayName("§aConvert to Item")
+                .lore("§7Turn this feature on to convert",
+                      "§7your pets back into items by",
+                      "§7clicking on them!",
                       "",
-                      "§7Currently: §aShown",
+                      "§7Status: " + (convertToItem ? "§aEnabled" : "§cDisabled"),
                       "",
-                      "§eClick to toggle!")
-                .build(), e -> e.setCancelled(true));
+                      "§eClick to toggle!");
+        if (convertToItem) {
+            convert.glow();
+        }
+        setItem(47, convert.build(),
+                e -> { e.setCancelled(true); new PetMenu(player, pageClamped, sort, !convertToItem).open(player); });
 
-        // Sort button (cycles order), like Hypixel's Pets menu.
+        // Sort (slot 51) — a Hopper listing every sort mode, current one highlighted.
+        List<String> sortLore = new ArrayList<>();
+        sortLore.add("");
+        for (SortMode mode : SortMode.values()) {
+            sortLore.add((mode == sort ? "§e> " : "§7> ") + mode.label);
+        }
+        sortLore.add("");
+        sortLore.add("§eClick to change!");
         setItem(51, new ItemBuilder(Material.HOPPER)
-                .displayName("§aSort: §e" + sort.label)
-                .lore("§7Click to change the sort order.")
+                .displayName("§aSort")
+                .lore(sortLore)
                 .build(),
-                e -> { e.setCancelled(true); new PetMenu(player, 0, sort.next()).open(player); });
+                e -> { e.setCancelled(true); new PetMenu(player, 0, sort.next(), convertToItem).open(player); });
 
-        if (pageClamped > 0) {
-            setItem(47, new ItemBuilder(Material.ARROW)
-                    .displayName("§ePrevious Page")
-                    .lore("§7Page " + pageClamped + "§7/§e" + totalPages)
-                    .build(),
-                    e -> { e.setCancelled(true); new PetMenu(player, pageClamped - 1, sort).open(player); });
-        }
-        if (pageClamped < totalPages - 1) {
-            setItem(52, new ItemBuilder(Material.ARROW)
-                    .displayName("§eNext Page")
-                    .lore("§7Page " + (pageClamped + 2) + "§7/§e" + totalPages)
-                    .build(),
-                    e -> { e.setCancelled(true); new PetMenu(player, pageClamped + 1, sort).open(player); });
-        }
-
-        setItem(45, new ItemBuilder(Material.ARROW)
+        // Go Back (slot 48) + Close (slot 49).
+        setItem(48, new ItemBuilder(Material.ARROW)
                 .displayName("§aGo Back")
                 .lore("§7To SkyBlock Menu")
                 .build(),
                 e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
+        setItem(49, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
+                .build(), e -> { e.setCancelled(true); player.closeInventory(); });
+
+        // Page arrows: previous at slot 45, next at slot 53.
+        if (pageClamped > 0) {
+            setItem(45, new ItemBuilder(Material.ARROW)
+                    .displayName("§ePrevious Page")
+                    .lore("§7Page " + pageClamped + "§7/§e" + totalPages)
+                    .build(),
+                    e -> { e.setCancelled(true); new PetMenu(player, pageClamped - 1, sort, convertToItem).open(player); });
+        }
+        if (pageClamped < totalPages - 1) {
+            setItem(53, new ItemBuilder(Material.ARROW)
+                    .displayName("§eNext Page")
+                    .lore("§7Page " + (pageClamped + 2) + "§7/§e" + totalPages)
+                    .build(),
+                    e -> { e.setCancelled(true); new PetMenu(player, pageClamped + 1, sort, convertToItem).open(player); });
+        }
     }
 
     /** Sorts the pet list in place by the active {@link SortMode}. */
@@ -220,8 +239,11 @@ public final class PetMenu extends AbstractSkyBlockMenu {
             case RARITY:
                 pets.sort((a, b) -> b.rarity.compareTo(a.rarity));
                 break;
-            case NAME:
+            case ALPHABETICAL:
                 pets.sort((a, b) -> a.type.getDisplayName().compareToIgnoreCase(b.type.getDisplayName()));
+                break;
+            case SKILL:
+                pets.sort((a, b) -> b.type.getCategory().compareTo(a.type.getCategory()));
                 break;
         }
     }

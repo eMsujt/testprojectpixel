@@ -3,6 +3,8 @@ package com.skyblock.core.npc;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.trait.LookClose;
+import net.citizensnpcs.trait.SkinTrait;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -63,6 +65,17 @@ public final class CitizensNpcProvider implements Listener {
         NPC npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, type.displayName);
         npc.data().setPersistent(TAG, type.id);
         npc.setProtected(true);
+
+        // Apply the real Hypixel skin (texture + signature), if one is configured.
+        NpcSkin skin = NpcSkins.get(type);
+        if (skin != null) {
+            SkinTrait skinTrait = npc.getOrAddTrait(SkinTrait.class);
+            skinTrait.setSkinPersistent(type.id, skin.signature(), skin.texture());
+        }
+
+        // Make the NPC turn to face nearby players, like Hypixel's hub NPCs.
+        npc.getOrAddTrait(LookClose.class).lookClose(true);
+
         npc.spawn(location);
     }
 

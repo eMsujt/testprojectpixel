@@ -1095,6 +1095,7 @@ public final class SkyBlockCore extends JavaPlugin {
         // NPCs — delayed so other plugins' worlds (e.g. the "Hub" world) are loaded first.
         getServer().getScheduler().runTaskLater(this, () -> {
             com.skyblock.core.npc.FunctionalNpcManager.getInstance().load(getDataFolder());
+            com.skyblock.core.npc.NpcSkins.load(getDataFolder());
             com.skyblock.core.manager.HubManager.getInstance().setup();
             // Use real Citizens player NPCs when the Citizens plugin is installed; else armor stands.
             if (getServer().getPluginManager().isPluginEnabled("Citizens")) {
