@@ -26,15 +26,8 @@ public final class CustomMobManager {
 
     private static final CustomMobManager INSTANCE = new CustomMobManager();
 
-    /** SkyBlock max-health values far exceed the vanilla 1024 attribute cap, so we
-     *  keep the vanilla bar low and track the real SkyBlock health ourselves. */
-    private static final double VANILLA_HEALTH_CAP = 1000.0;
-
     /** Tracks living custom-mob instances: entity UUID → definition. */
     private final Map<UUID, MobManager.MobDefinition> activeEntities = new HashMap<>();
-
-    /** Real (SkyBlock) current health per custom mob; can be far above 1024. */
-    private final Map<UUID, Double> skyblockHealth = new HashMap<>();
 
     private CustomMobManager() {
     }
@@ -88,11 +81,13 @@ public final class CustomMobManager {
         Objects.requireNonNull(entity, "entity");
         Objects.requireNonNull(definition, "definition");
 
+        // Pin the vanilla bar to the fixed display size; the real SkyBlock health
+        // (definition.getHealth(), which can be far above 1024) scales onto it, and
+        // CombatListener converts incoming damage into this bar's terms.
         AttributeInstance maxHealth = entity.getAttribute(Attribute.MAX_HEALTH);
         if (maxHealth != null) {
-            double vanillaHp = Math.min(definition.getHealth(), VANILLA_HEALTH_CAP);
-            maxHealth.setBaseValue(vanillaHp);
-            entity.setHealth(vanillaHp);
+            maxHealth.setBaseValue(com.skyblock.core.util.HealthScale.DISPLAY_MAX);
+            entity.setHealth(com.skyblock.core.util.HealthScale.DISPLAY_MAX);
         }
         entity.setRemoveWhenFarAway(false);
         if (entity instanceof org.bukkit.entity.Ageable ageable) {
@@ -101,7 +96,6 @@ public final class CustomMobManager {
         equip(entity, definition);
 
         activeEntities.put(entity.getUniqueId(), definition);
-        skyblockHealth.put(entity.getUniqueId(), definition.getHealth());
         updateName(entity, definition);
     }
 
@@ -137,33 +131,19 @@ public final class CustomMobManager {
      * health-bar name. Returns {@code true} if this reduced it to 0 (the caller
      * should then kill the entity to trigger the death rewards/drops).
      */
-    public boolean damageSkyblock(LivingEntity entity, double amount) {
-        UUID id = entity.getUniqueId();
-        Double cur = skyblockHealth.get(id);
-        MobManager.MobDefinition def = activeEntities.get(id);
-        if (cur == null || def == null) {
-            return false;
+    /** Refreshes a custom mob's health-bar name from its current (scaled) vanilla health. */
+    public void refreshName(LivingEntity entity) {
+        MobManager.MobDefinition def = activeEntities.get(entity.getUniqueId());
+        if (def != null) {
+            updateName(entity, def);
         }
-        double next = cur - amount;
-        if (next <= 0.0) {
-            skyblockHealth.put(id, 0.0);
-            return true;
-        }
-        skyblockHealth.put(id, next);
-        updateName(entity, def);
-        return false;
     }
 
-    /** Returns the custom mob's current SkyBlock health, or 0 if not tracked. */
-    public double getSkyblockHealth(UUID entityId) {
-        return skyblockHealth.getOrDefault(entityId, 0.0);
-    }
-
-    /** Sets the Hypixel-style name "[LvN] Name cur/max❤" on the entity. */
+    /** Sets the Hypixel-style name "[LvN] Name cur/max❤", deriving cur from the vanilla bar. */
     private void updateName(LivingEntity entity, MobManager.MobDefinition def) {
-        double cur = skyblockHealth.getOrDefault(entity.getUniqueId(), def.getHealth());
+        double cur = com.skyblock.core.util.HealthScale.toReal(entity.getHealth(), def.getHealth());
         entity.setCustomName("§8[§7Lv" + def.getBaseLevel() + "§8] §c" + def.getDisplayName()
-                + " §a" + formatHp(cur) + "§f/§a" + formatHp(def.getHealth()) + "§c❤");
+                + " §a" + formatHp(Math.max(0.0, cur)) + "§f/§a" + formatHp(def.getHealth()) + "§c❤");
         entity.setCustomNameVisible(true);
     }
 
@@ -201,7 +181,6 @@ public final class CustomMobManager {
      */
     public void remove(UUID entityId) {
         activeEntities.remove(entityId);
-        skyblockHealth.remove(entityId);
     }
 
     /**

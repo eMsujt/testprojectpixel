@@ -129,7 +129,9 @@ public final class CombatListener implements Listener {
             Player defender = (Player) event.getEntity();
             double defense = stats.getStat(defender.getUniqueId(), Stat.DEFENSE);
             double reduced = event.getDamage() * 100.0 / (100.0 + Math.max(0.0, defense));
-            event.setDamage(reduced);
+            // Scale the SkyBlock damage onto the player's fixed-size vanilla bar.
+            double sbMax = Math.max(1.0, stats.getStat(defender.getUniqueId(), Stat.HEALTH));
+            event.setDamage(com.skyblock.core.util.HealthScale.toVanilla(reduced, sbMax));
         }
 
         CombatStatsManager combatStats = CombatStatsManager.getInstance();
@@ -143,19 +145,20 @@ public final class CombatListener implements Listener {
 
         spawnDamageIndicator(event.getEntity().getLocation(), finalDamage, isCrit);
 
-        // Custom mobs carry their real (often huge) SkyBlock health in a side pool,
-        // since the vanilla max-health attribute caps at ~1024. Drain that pool by
-        // the dealt damage, suppress the vanilla hit, and kill on empty so the
-        // death rewards/drops still fire.
+        // Custom mobs keep their real (often huge) SkyBlock health; their vanilla bar is
+        // pinned to a fixed size, so scale the dealt damage onto it and let vanilla handle
+        // the hit + death (which fires the death rewards/drops). The name updates via
+        // CustomMobListener once the bar value settles.
         if (!(event.getEntity() instanceof Player)
                 && event.getEntity() instanceof org.bukkit.entity.LivingEntity victim) {
-            com.skyblock.core.mob.CustomMobManager mobs = com.skyblock.core.mob.CustomMobManager.getInstance();
-            if (mobs.isCustomMob(victim.getUniqueId())) {
-                boolean dead = mobs.damageSkyblock(victim, event.getDamage());
-                event.setDamage(0.0);
-                if (dead) {
-                    victim.setHealth(0.0);
+            com.skyblock.core.manager.MobManager.MobDefinition mobDef =
+                    com.skyblock.core.mob.CustomMobManager.getInstance().getDefinition(victim.getUniqueId());
+            if (mobDef != null) {
+                // The ghouls' armour is cosmetic — don't let it soak SkyBlock damage.
+                if (event.isApplicable(org.bukkit.event.entity.EntityDamageEvent.DamageModifier.ARMOR)) {
+                    event.setDamage(org.bukkit.event.entity.EntityDamageEvent.DamageModifier.ARMOR, 0.0);
                 }
+                event.setDamage(com.skyblock.core.util.HealthScale.toVanilla(event.getDamage(), mobDef.getHealth()));
             }
         }
     }

@@ -287,11 +287,14 @@ public final class EquipmentListener implements Listener {
         if (attr == null) {
             return;
         }
-        double maxHealth = Math.max(1.0, sm.getStat(player.getUniqueId(), Stat.HEALTH));
-        attr.setBaseValue(maxHealth);
-        if (player.getHealth() > maxHealth) {
-            player.setHealth(maxHealth);
-        }
+        // The vanilla bar is pinned to a fixed value (HealthScale.DISPLAY_MAX) and the real
+        // SkyBlock Health is scaled onto it, so health can exceed the vanilla ~1024 cap.
+        // Preserve the player's current health *fraction* across the max change.
+        double oldMax = attr.getBaseValue();
+        double pct = oldMax > 0.0 ? Math.min(1.0, Math.max(0.0, player.getHealth() / oldMax)) : 1.0;
+        attr.setBaseValue(com.skyblock.core.util.HealthScale.DISPLAY_MAX);
+        double target = Math.max(0.5, com.skyblock.core.util.HealthScale.DISPLAY_MAX * pct);
+        player.setHealth(Math.min(com.skyblock.core.util.HealthScale.DISPLAY_MAX, target));
         // Keep the vanilla health bar at a fixed 10 hearts (20 half-hearts) regardless of the
         // player's SkyBlock Health, so high health never spills into extra rows of hearts.
         player.setHealthScale(20.0);
