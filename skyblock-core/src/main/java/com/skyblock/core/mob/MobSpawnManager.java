@@ -71,7 +71,8 @@ public final class MobSpawnManager {
         if (task != null) {
             task.cancel();
         }
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 100L, 20L);
+        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 40L, 20L);
+        plugin.getLogger().info("Mob spawning started: " + points.size() + " spawn point(s) loaded.");
     }
 
     public void stop() {
@@ -87,8 +88,18 @@ public final class MobSpawnManager {
      */
     public void add(String mobId, Location loc, int amount, double radius) {
         Location centred = loc.getBlock().getLocation().add(0.5, 0.0, 0.5);
-        points.add(new SpawnPoint(mobId, centred, Math.max(1, amount), Math.max(1.0, radius)));
+        SpawnPoint point = new SpawnPoint(mobId, centred, Math.max(1, amount), Math.max(1.0, radius));
+        points.add(point);
         save();
+        // Spawn the point's mobs right away so the operator sees instant feedback (the loop
+        // then just maintains the count). Centred on the marked block.
+        MobManager.MobDefinition def = MobManager.getInstance().getMob(mobId);
+        if (def != null) {
+            for (int i = 0; i < point.amount; i++) {
+                point.spawned.add(CustomMobManager.getInstance().spawnMob(def, centred.clone()).getUniqueId());
+            }
+            point.lastSpawnMillis = System.currentTimeMillis();
+        }
     }
 
     /** Removes the nearest spawn point within {@code radius} blocks; returns its mob id, or null. */

@@ -1120,8 +1120,11 @@ public final class SkyBlockCore extends JavaPlugin {
                 getLogger().info("Citizens detected — functional NPCs will use player models.");
             }
             com.skyblock.core.npc.FunctionalNpcManager.getInstance().spawnAll();
-            com.skyblock.core.mob.MobSpawnManager.getInstance().start(this);
         }, 40L);
+        // Start mob spawning on its own delayed task so an NPC-setup failure above can't
+        // prevent the spawn loop from ever starting.
+        getServer().getScheduler().runTaskLater(this,
+                () -> com.skyblock.core.mob.MobSpawnManager.getInstance().start(this), 60L);
 
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.PlayerListener.getInstance(), this);
