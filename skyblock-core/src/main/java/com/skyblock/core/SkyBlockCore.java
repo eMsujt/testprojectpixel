@@ -1096,6 +1096,13 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getScheduler().runTaskLater(this, () -> {
             com.skyblock.core.npc.FunctionalNpcManager.getInstance().load(getDataFolder());
             com.skyblock.core.manager.HubManager.getInstance().setup();
+            // Use real Citizens player NPCs when the Citizens plugin is installed; else armor stands.
+            if (getServer().getPluginManager().isPluginEnabled("Citizens")) {
+                com.skyblock.core.npc.CitizensNpcProvider provider = new com.skyblock.core.npc.CitizensNpcProvider();
+                getServer().getPluginManager().registerEvents(provider, this);
+                com.skyblock.core.npc.FunctionalNpcManager.getInstance().setCitizensProvider(provider);
+                getLogger().info("Citizens detected — functional NPCs will use player models.");
+            }
             com.skyblock.core.npc.FunctionalNpcManager.getInstance().spawnAll();
         }, 40L);
 
