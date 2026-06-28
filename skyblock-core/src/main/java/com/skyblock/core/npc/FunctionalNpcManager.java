@@ -40,8 +40,16 @@ public final class FunctionalNpcManager {
 
     /** Placed NPC → its world location. */
     private final Map<FunctionalNpc, Location> placed = new EnumMap<>(FunctionalNpc.class);
-    /** Live stand entity UUID → NPC type, for interaction routing. */
+    /** Live stand entity UUID → NPC type, for interaction routing (armor-stand fallback). */
     private final Map<UUID, FunctionalNpc> spawned = new HashMap<>();
+
+    /** When Citizens is installed, NPCs spawn as real player NPCs via this provider instead of armor stands. */
+    private CitizensNpcProvider citizensProvider;
+
+    /** Enables real Citizens player NPCs (called on enable only if Citizens is present). */
+    public void setCitizensProvider(CitizensNpcProvider provider) {
+        this.citizensProvider = provider;
+    }
 
     /**
      * Places (or moves) {@code npc} at {@code location}, respawning its stand and
@@ -116,6 +124,9 @@ public final class FunctionalNpcManager {
                 }
             }
         }
+        if (citizensProvider != null) {
+            citizensProvider.despawnAll();
+        }
         spawned.clear();
         for (Map.Entry<FunctionalNpc, Location> entry : placed.entrySet()) {
             spawn(entry.getKey(), entry.getValue());
@@ -125,6 +136,10 @@ public final class FunctionalNpcManager {
     private void spawn(FunctionalNpc npc, Location location) {
         World world = location.getWorld();
         if (world == null) {
+            return;
+        }
+        if (citizensProvider != null) {
+            citizensProvider.spawn(npc, location);
             return;
         }
         ArmorStand stand = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND);
@@ -152,6 +167,9 @@ public final class FunctionalNpcManager {
             }
             return true;
         });
+        if (citizensProvider != null) {
+            citizensProvider.despawn(npc);
+        }
     }
 
     /** Loads placed NPC locations from disk (does not spawn — call {@link #spawnAll()} after). */
