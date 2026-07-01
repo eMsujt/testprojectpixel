@@ -39,7 +39,7 @@ public final class CraftingMenu extends AbstractMenu {
                 .displayName("§cQuick Crafting Slot")
                 .lore("§7Quick crafting allows you to", "§7craft items without assembling",
                       "§7the recipe.", "", "§cRequires §aVIP §cor above.").build();
-        for (int slot : new int[]{7, 16, 25, 34, 43, 52}) setItem(slot, quick);
+        for (int slot : new int[]{16, 25, 34}) setItem(slot, quick);
 
         setItem(49, new ItemBuilder(Material.ARROW).displayName("§aGo Back")
                 .lore("§7To SkyBlock Menu").build(),

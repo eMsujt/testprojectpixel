@@ -112,9 +112,12 @@ public final class ActionBarManager implements Listener {
         UUID id = player.getUniqueId();
         int defense = (int) StatManager.getInstance().getStat(id, Stat.DEFENSE);
         ManaManager mana = ManaManager.getInstance();
+        // The vanilla bar is pinned to a fixed size; show the real SkyBlock health.
+        double sbMax = Math.max(1.0, StatManager.getInstance().getStat(id, Stat.HEALTH));
+        double realCur = com.skyblock.core.util.HealthScale.toReal(player.getHealth(), sbMax);
         return String.format(
                 "§c%.0f/%.0f❤     §a%d❈ Defense     §b%d/%d✎ Mana",
-                player.getHealth(), player.getMaxHealth(),
+                Math.max(0.0, realCur), sbMax,
                 defense, mana.getCurrentMana(id), mana.getMaxMana(id));
     }
 

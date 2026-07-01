@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,12 +40,13 @@ public final class PetMenu extends AbstractSkyBlockMenu {
         RARITY_WOOL = Collections.unmodifiableMap(m);
     }
 
-    /** Pet list sort orders, cycled by the Sort button (mirrors Hypixel's Pets menu). */
+    /** Pet list sort orders shown by the Sort button, in the wiki's exact order. */
     private enum SortMode {
-        LEVEL("Highest Level"), RARITY("Highest Rarity"), NAME("Name");
+        RARITY("Rarity"), ALPHABETICAL("Alphabetical"), PET_EXP("Pet Exp"), SKILL("Skill");
         final String label;
         SortMode(String label) { this.label = label; }
         SortMode next() { return values()[(ordinal() + 1) % values().length]; }
+        SortMode prev() { return values()[(ordinal() - 1 + values().length) % values().length]; }
     }
 
     /** Inset 7-wide pet grid (cols 2-8, rows 2-5), matching the wiki Pets layout. */
@@ -59,7 +61,7 @@ public final class PetMenu extends AbstractSkyBlockMenu {
     private final SortMode sort;
 
     public PetMenu(Player player) {
-        this(player, 0, SortMode.LEVEL);
+        this(player, 0, SortMode.PET_EXP);
     }
 
     private PetMenu(Player player, int page, SortMode sort) {
@@ -130,14 +132,23 @@ public final class PetMenu extends AbstractSkyBlockMenu {
             lore.add("");
             lore.addAll(progressLines(xp, level, pet.rarity));
             lore.add("");
-            lore.add(isActive ? "§aCurrently active — §eclick to unequip" : "§eClick to equip!");
+            lore.add(isActive ? "§aCurrently summoned!" : "§eClick to summon!");
 
-            setItem(PET_SLOTS[i - start], petIcon
+            ItemBuilder icon = petIcon
                     .displayName("§7[Lvl " + level + "] " + color + pet.type.getDisplayName())
-                    .lore(lore)
-                    .build(),
+                    .lore(lore);
+            if (isActive) {
+                icon.glow();
+            }
+            setItem(PET_SLOTS[i - start], icon.build(),
                     e -> {
                         e.setCancelled(true);
+                        if (e.isRightClick()) {
+                            // Hypixel right-click converts the pet back to an item; ours
+                            // aren't item-backed yet, so keep the pet and tell the player.
+                            player.sendMessage("§cConverting pets back to items isn't available yet.");
+                            return;
+                        }
                         if (isActive) {
                             manager.unequipPet(playerId);
                         } else {
@@ -154,74 +165,125 @@ public final class PetMenu extends AbstractSkyBlockMenu {
                     .build(), e -> e.setCancelled(true));
         }
 
-        // Exp Sharing (top row, slot 7 per the wiki) — splits pet XP with a second pet.
-        setItem(7, new ItemBuilder(Material.GLOWSTONE_DUST)
+        // --- Bottom control bar, 1:1 with the wiki's current Pets UI ---
+
+        // Exp Sharing (slot 7) — a Dandelion Yellow dye.
+        setItem(7, new ItemBuilder(Material.YELLOW_DYE)
                 .displayName("§6Exp Sharing")
-                .lore("§7Share a portion of the XP gained",
-                      "§7with one of your selected pets!",
+                .lore("§7Let your pets gain §aPet Exp §7without",
+                      "§7them being actively deployed!",
                       "",
-                      "§7Selected pet: §cNone",
+                      "§eClick to view!")
+                .build(), e -> { e.setCancelled(true); player.sendMessage("§7Exp Sharing is not yet available."); });
+
+        // Pet Score Rewards (slot 47) — a Diamond.
+        setItem(47, new ItemBuilder(Material.DIAMOND)
+                .displayName("§aPet Score Rewards")
+                .lore("§7Pet Score is calculated based on",
+                      "§7how many §aunique §7pets you have and",
+                      "§7the §ararity §7of these pets.",
                       "",
-                      "§eClick to manage!")
+                      "§7You gain an additional score for",
+                      "§7each max level pet you have!",
+                      "",
+                      "§7Your Pet Score: §e" + petScore(pets))
                 .build(), e -> e.setCancelled(true));
 
-        // Close.
+        // Search (slot 50) — a Sign.
+        setItem(50, new ItemBuilder(Material.OAK_SIGN)
+                .displayName("§aSearch")
+                .lore("§7Find pets by name!",
+                      "",
+                      "§eClick to search!")
+                .build(), e -> e.setCancelled(true));
+
+        // Pet Visibility (slot 51) — a Stone Button.
+        setItem(51, new ItemBuilder(Material.STONE_BUTTON)
+                .displayName("§aPet visibility")
+                .lore("",
+                      "§3▶ Show all pets",
+                      "§7  Hide all pets",
+                      "§7  Only your pet",
+                      "",
+                      "§7Pet name tags: §aEnabled",
+                      "",
+                      "§bRight-click to toggle name tags!",
+                      "§eLeft-click to switch visibility!")
+                .build(), e -> e.setCancelled(true));
+
+        // Sort (slot 52) — a Hopper. Left-click cycles forward, right-click backward.
+        List<String> sortLore = new ArrayList<>();
+        sortLore.add("");
+        for (SortMode mode : SortMode.values()) {
+            sortLore.add((mode == sort ? "§3▶ " : "§7  ") + mode.label);
+        }
+        sortLore.add("");
+        sortLore.add("§bRight-Click to go backwards!");
+        sortLore.add("§eClick to switch sort!");
+        setItem(52, new ItemBuilder(Material.HOPPER)
+                .displayName("§aSort")
+                .lore(sortLore)
+                .build(),
+                e -> {
+                    e.setCancelled(true);
+                    new PetMenu(player, 0, e.isRightClick() ? sort.prev() : sort.next()).open(player);
+                });
+
+        // Go Back (slot 48) + Close (slot 49).
+        setItem(48, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To SkyBlock Menu")
+                .build(),
+                e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
         setItem(49, new ItemBuilder(Material.BARRIER)
                 .displayName("§cClose")
                 .build(), e -> { e.setCancelled(true); player.closeInventory(); });
 
-        // Pet visibility toggle (cosmetic placeholder).
-        setItem(50, new ItemBuilder(Material.ENDER_EYE)
-                .displayName("§aPet visibility")
-                .lore("§7Toggles the visibility of your",
-                      "§7currently selected pet.",
-                      "",
-                      "§7Currently: §aShown",
-                      "",
-                      "§eClick to toggle!")
-                .build(), e -> e.setCancelled(true));
-
-        // Sort button (cycles order), like Hypixel's Pets menu.
-        setItem(51, new ItemBuilder(Material.HOPPER)
-                .displayName("§aSort: §e" + sort.label)
-                .lore("§7Click to change the sort order.")
-                .build(),
-                e -> { e.setCancelled(true); new PetMenu(player, 0, sort.next()).open(player); });
-
+        // Page arrows: previous at slot 45, next at slot 53.
         if (pageClamped > 0) {
-            setItem(47, new ItemBuilder(Material.ARROW)
-                    .displayName("§ePrevious Page")
+            setItem(45, new ItemBuilder(Material.ARROW)
+                    .displayName("§aPrevious Page")
                     .lore("§7Page " + pageClamped + "§7/§e" + totalPages)
                     .build(),
                     e -> { e.setCancelled(true); new PetMenu(player, pageClamped - 1, sort).open(player); });
         }
         if (pageClamped < totalPages - 1) {
-            setItem(52, new ItemBuilder(Material.ARROW)
-                    .displayName("§eNext Page")
+            setItem(53, new ItemBuilder(Material.ARROW)
+                    .displayName("§aNext Page")
                     .lore("§7Page " + (pageClamped + 2) + "§7/§e" + totalPages)
                     .build(),
                     e -> { e.setCancelled(true); new PetMenu(player, pageClamped + 1, sort).open(player); });
         }
+    }
 
-        setItem(45, new ItemBuilder(Material.ARROW)
-                .displayName("§aGo Back")
-                .lore("§7To SkyBlock Menu")
-                .build(),
-                e -> { e.setCancelled(true); new SkyBlockMenu(player).open(player); });
+    /** Pet Score: sum of the best rarity tier (Common=1 … Special=8) per unique pet type. */
+    private static int petScore(List<Pet> pets) {
+        Map<String, Integer> bestByType = new HashMap<>();
+        for (Pet p : pets) {
+            bestByType.merge(p.type.name(), p.rarity.ordinal() + 1, Math::max);
+        }
+        int score = 0;
+        for (int points : bestByType.values()) {
+            score += points;
+        }
+        return score;
     }
 
     /** Sorts the pet list in place by the active {@link SortMode}. */
     private void sortPets(List<Pet> pets, PetManager manager, UUID playerId) {
         switch (sort) {
-            case LEVEL:
-                pets.sort((a, b) -> Integer.compare(
-                        manager.getLevel(playerId, b.type), manager.getLevel(playerId, a.type)));
-                break;
             case RARITY:
                 pets.sort((a, b) -> b.rarity.compareTo(a.rarity));
                 break;
-            case NAME:
+            case ALPHABETICAL:
                 pets.sort((a, b) -> a.type.getDisplayName().compareToIgnoreCase(b.type.getDisplayName()));
+                break;
+            case PET_EXP:
+                pets.sort((a, b) -> Long.compare(
+                        manager.getExperience(playerId, b.type), manager.getExperience(playerId, a.type)));
+                break;
+            case SKILL:
+                pets.sort((a, b) -> b.type.getCategory().compareTo(a.type.getCategory()));
                 break;
         }
     }

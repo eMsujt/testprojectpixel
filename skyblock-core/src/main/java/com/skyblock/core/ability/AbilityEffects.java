@@ -129,13 +129,18 @@ public final class AbilityEffects {
 
     /** Heals the player by the lore-stated flat amount plus its percent of max health. */
     private static void instantHeal(Player player, LoreAbility ability) {
-        double maxHealth = player.getMaxHealth();
-        double heal = firstNumber(ability.lines, HEAL_FLAT, 0)
-                + maxHealth * (firstNumber(ability.lines, PERCENT, 0) / 100.0);
+        // The vanilla bar is pinned to a fixed size; the flat heal is in real SkyBlock HP
+        // so scale it onto the bar, while the percent heal is already a fraction of it.
+        double barMax = player.getMaxHealth();
+        double sbMax = Math.max(1.0, com.skyblock.core.manager.StatManager.getInstance()
+                .getStat(player.getUniqueId(), com.skyblock.core.model.Stat.HEALTH));
+        double flat = com.skyblock.core.util.HealthScale.toVanilla(
+                firstNumber(ability.lines, HEAL_FLAT, 0), sbMax);
+        double heal = flat + barMax * (firstNumber(ability.lines, PERCENT, 0) / 100.0);
         if (heal <= 0) {
-            heal = maxHealth * 0.2;
+            heal = barMax * 0.2;
         }
-        player.setHealth(Math.min(maxHealth, player.getHealth() + heal));
+        player.setHealth(Math.min(barMax, player.getHealth() + heal));
         player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0),
                 8, 0.4, 0.4, 0.4, 0);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.6f, 1.6f);

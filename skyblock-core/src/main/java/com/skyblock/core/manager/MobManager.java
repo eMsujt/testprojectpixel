@@ -43,10 +43,14 @@ public final class MobManager {
         private final int spawnWeight;
         private final int xpReward;
         private final int coinReward;
+        private final int maxPerSpot;
+        private final int respawnSeconds;
+        private final boolean nightOnly;
 
         MobDefinition(String id, String displayName, EntityType entityType,
                       double health, double damage, double defense,
-                      int baseLevel, int spawnWeight, int xpReward, int coinReward) {
+                      int baseLevel, int spawnWeight, int xpReward, int coinReward,
+                      int maxPerSpot, int respawnSeconds, boolean nightOnly) {
             this.id = id;
             this.displayName = displayName;
             this.entityType = entityType;
@@ -57,6 +61,9 @@ public final class MobManager {
             this.spawnWeight = spawnWeight;
             this.xpReward = xpReward;
             this.coinReward = coinReward;
+            this.maxPerSpot = maxPerSpot;
+            this.respawnSeconds = respawnSeconds;
+            this.nightOnly = nightOnly;
         }
 
         public String getId()            { return id; }
@@ -69,6 +76,12 @@ public final class MobManager {
         public int getSpawnWeight()       { return spawnWeight; }
         public int getXpReward()          { return xpReward; }
         public int getCoinReward()        { return coinReward; }
+        /** Max of this mob alive at one spawn point. */
+        public int getMaxPerSpot()        { return maxPerSpot; }
+        /** Seconds between spawns at a point once below the cap. */
+        public int getRespawnSeconds()    { return respawnSeconds; }
+        /** Whether this mob only spawns at night (8pm–6am). */
+        public boolean isNightOnly()      { return nightOnly; }
 
         /** Returns the multiplier applied to a base stat at the given level. */
         private double scaleFactor(int level) {
@@ -155,8 +168,12 @@ public final class MobManager {
             int    spawnWeight = Math.max(0, mob.getInt("spawnWeight", 1));
             int    xpReward    = mob.getInt("xpReward", 0);
             int    coinReward  = mob.getInt("coinReward", 0);
+            int    maxPerSpot  = Math.max(1, mob.getInt("maxPerSpot", 1));
+            int    respawnSecs = Math.max(1, mob.getInt("respawnSeconds", 15));
+            boolean nightOnly  = mob.getBoolean("nightOnly", false);
             mobs.put(id, new MobDefinition(id, displayName, entityType,
-                    health, damage, defense, baseLevel, spawnWeight, xpReward, coinReward));
+                    health, damage, defense, baseLevel, spawnWeight, xpReward, coinReward,
+                    maxPerSpot, respawnSecs, nightOnly));
         }
         plugin.getLogger().info("Loaded " + mobs.size() + " mob definition(s) from mobs.yml");
     }

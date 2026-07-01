@@ -345,6 +345,18 @@ commands:
     description: Remove a placed functional NPC.
     usage: /removenpclocation <npc>
     permission: skyblock.admin
+  spawnmob:
+    description: Spawn a custom SkyBlock mob (Crypt Ghoul, Golden Ghoul, Old Wolf, ...).
+    usage: /spawnmob <id> [amount]
+    permission: skyblock.admin
+  setmobspawn:
+    description: Mark a fixed spawn point for a custom mob where you stand.
+    usage: /setmobspawn <mob> [count]
+    permission: skyblock.admin
+  removemobspawn:
+    description: Remove the nearest custom-mob spawn point.
+    usage: /removemobspawn
+    permission: skyblock.admin
   npcshop:
     description: Browse and buy from static Hypixel NPC shops via GUI.
     usage: /npcshop [id]

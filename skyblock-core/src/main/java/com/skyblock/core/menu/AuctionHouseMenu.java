@@ -3,6 +3,9 @@ package com.skyblock.core.menu;
 import com.skyblock.core.manager.AuctionHouseManager;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionCategory;
 import com.skyblock.core.manager.AuctionHouseManager.AuctionListing;
+import com.skyblock.core.manager.AuctionHouseManager.ItemRarity;
+import com.skyblock.core.model.Rarity;
+import com.skyblock.core.util.SignInput;
 import com.skyblock.core.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,6 +35,12 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
     };
 
     private static final int PAGE_SIZE = LISTING_SLOTS.length;
+
+    /** Border panes framing the listing grid (top row + the columns either side). */
+    private static final int[] BORDER_SLOTS = {
+            1, 2, 3, 4, 5, 6, 7, 8,
+            10, 19, 28, 37, 17, 26, 35, 44, 46, 47
+    };
 
     /** Category tabs down the left column; the MISC tab also lists MINIONS auctions. */
     private static final AuctionCategory[] TAB_CATEGORIES = {
@@ -66,6 +75,8 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
     private final AuctionCategory category; // null = all categories
     private final Sort sort;
     private final boolean binOnly;
+    private final String search;       // null/blank = no name filter
+    private final ItemRarity rarity;   // null = any rarity
 
     public AuctionHouseMenu(Player player) {
         this(player, 0, null, Sort.LOWEST, false);
@@ -80,16 +91,29 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
     }
 
     private AuctionHouseMenu(Player player, int page, AuctionCategory category, Sort sort, boolean binOnly) {
+        this(player, page, category, sort, binOnly, null, null);
+    }
+
+    private AuctionHouseMenu(Player player, int page, AuctionCategory category, Sort sort, boolean binOnly,
+                            String search, ItemRarity rarity) {
         super(player, "§6Auctions Browser", 6);
         this.page = Math.max(0, page);
         this.category = category;
         this.sort = sort;
         this.binOnly = binOnly;
+        this.search = search;
+        this.rarity = rarity;
     }
 
     @Override
     protected void populate() {
         AuctionHouseManager manager = AuctionHouseManager.getInstance();
+
+        // Border panes frame the listing grid.
+        ItemStack border = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName(" ").build();
+        for (int slot : BORDER_SLOTS) {
+            setItem(slot, border);
+        }
 
         // Category tabs (left column).
         for (int i = 0; i < TAB_CATEGORIES.length; i++) {
@@ -99,7 +123,7 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                     .displayName((selected ? "§a" : "§e") + cat.getDisplayName())
                     .lore(selected ? "§aShowing this category" : "§7Click to view!")
                     .build(),
-                    e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, selected ? null : cat, sort, binOnly).open(player); });
+                    e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, selected ? null : cat, sort, binOnly, search, rarity).open(player); });
         }
 
         // Resolve the listing set for the active filter.
@@ -116,9 +140,16 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
             }
         }
 
-        // BIN-only filter + price sort.
+        // BIN-only filter, name search, rarity filter, then price sort.
         if (binOnly) {
             listings.removeIf(l -> !l.binListing());
+        }
+        if (search != null && !search.isBlank()) {
+            String q = search.toLowerCase();
+            listings.removeIf(l -> !l.itemName().toLowerCase().contains(q));
+        }
+        if (rarity != null) {
+            listings.removeIf(l -> !Rarity.fromItem(l.item(), Rarity.COMMON).name().equals(rarity.name()));
         }
         listings.sort(Comparator.comparingDouble(AuctionListing::startingBid));
         if (sort == Sort.HIGHEST) {
@@ -155,45 +186,85 @@ public final class AuctionHouseMenu extends AbstractSkyBlockMenu {
                     .build());
         }
 
-        // Bottom control bar.
+        // Bottom control bar, 1:1 with the wiki Auctions Browser (row 6).
         setItem(48, new ItemBuilder(Material.OAK_SIGN)
-                .displayName("§aSearch Auctions")
-                .lore("§7Search for a specific item.").build());
+                .displayName("§aSearch")
+                .lore("§7Find items by name.",
+                      "§7Filtered: " + (search == null || search.isBlank() ? "§7None" : "§e" + search),
+                      "",
+                      "§eClick to edit filter!",
+                      "§7Right-click to clear!").build(),
+                e -> {
+                    e.setCancelled(true);
+                    if (e.isRightClick()) {
+                        new AuctionHouseMenu(player, 0, category, sort, binOnly, null, rarity).open(player);
+                    } else {
+                        openSearch();
+                    }
+                });
         setItem(50, new ItemBuilder(Material.HOPPER)
                 .displayName("§aSort: §f" + sort.label)
                 .lore("§7Click to change the order.").build(),
-                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort.next(), binOnly).open(player); });
+                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort.next(), binOnly, search, rarity).open(player); });
         setItem(51, new ItemBuilder(Material.ENDER_EYE)
                 .displayName("§aItem Tier")
-                .lore("§7Filter by item rarity.").build());
+                .lore("§7Currently: " + (rarity == null ? "§7Any" : "§e" + rarity.getDisplayName()),
+                      "",
+                      "§eClick to switch rarity!",
+                      "§7Right-click to clear!").build(),
+                e -> {
+                    e.setCancelled(true);
+                    ItemRarity next = e.isRightClick() ? null : nextRarity(rarity);
+                    new AuctionHouseMenu(player, 0, category, sort, binOnly, search, next).open(player);
+                });
         setItem(52, new ItemBuilder(Material.POWERED_RAIL)
-                .displayName("§aBIN Only: " + (binOnly ? "§aON" : "§cOFF"))
+                .displayName("§aBIN Filter: " + (binOnly ? "§aBIN Only" : "§fShow All"))
                 .lore("§7Show Buy-It-Now listings only.").build(),
-                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly).open(player); });
+                e -> { e.setCancelled(true); new AuctionHouseMenu(player, 0, category, sort, !binOnly, search, rarity).open(player); });
 
-        // Your Auctions & Claims at slot 47; the wiki Close slot (6,5 = 49) is now a real Close.
-        setItem(47, new ItemBuilder(Material.GOLD_BLOCK)
-                .displayName("§eYour Auctions & Claims")
-                .lore("§7Collect coins/items and manage", "§7your own listings.").build(),
-                e -> { e.setCancelled(true); new AuctionClaimMenu(player).open(player); });
-        setItem(49, new ItemBuilder(Material.BARRIER)
-                .displayName("§cClose")
-                .build(),
-                e -> { e.setCancelled(true); player.closeInventory(); });
+        // Go Back to the Auction House hub (slot 6,5 = 49; the browser has no Close).
+        setItem(49, new ItemBuilder(Material.ARROW)
+                .displayName("§aGo Back")
+                .lore("§7To Auction House").build(),
+                e -> { e.setCancelled(true); new AuctionHubMenu(player).open(player); });
 
-        if (page > 0) {
-            setItem(46, new ItemBuilder(Material.ARROW)
-                    .displayName("§ePrevious Page")
-                    .lore("§7Page " + page)
-                    .build(),
-                    event -> { event.setCancelled(true); new AuctionHouseMenu(player, page - 1, category, sort, binOnly).open(player); });
-        }
-        if (end < listings.size()) {
+        // Pages: Next arrow at slot 6,9 = 53. Left-click forward, right-click back.
+        boolean hasNext = end < listings.size();
+        boolean hasPrev = page > 0;
+        if (hasNext || hasPrev) {
             setItem(53, new ItemBuilder(Material.ARROW)
-                    .displayName("§eNext Page")
-                    .lore("§7Page " + (page + 2))
+                    .displayName("§aNext Page")
+                    .lore("§7Page " + (page + 1),
+                          "",
+                          hasNext ? "§eClick to turn page!" : "§8No next page",
+                          hasPrev ? "§eRight-click to go back!" : "§8No previous page")
                     .build(),
-                    event -> { event.setCancelled(true); new AuctionHouseMenu(player, page + 1, category, sort, binOnly).open(player); });
+                    event -> {
+                        event.setCancelled(true);
+                        if (event.isRightClick() && hasPrev) {
+                            new AuctionHouseMenu(player, page - 1, category, sort, binOnly, search, rarity).open(player);
+                        } else if (event.isLeftClick() && hasNext) {
+                            new AuctionHouseMenu(player, page + 1, category, sort, binOnly, search, rarity).open(player);
+                        }
+                    });
         }
+    }
+
+    /** Prompts for a search term on a sign and reopens the browser filtered to it. */
+    private void openSearch() {
+        SignInput.request(player, "§8Search auctions", query -> {
+            String term = query == null || query.isBlank() ? null : query;
+            new AuctionHouseMenu(player, 0, category, sort, binOnly, term, rarity).open(player);
+        });
+    }
+
+    /** Cycles to the next rarity tier, wrapping past the last back to "any" (null). */
+    private static ItemRarity nextRarity(ItemRarity current) {
+        ItemRarity[] values = ItemRarity.values();
+        if (current == null) {
+            return values[0];
+        }
+        int next = current.ordinal() + 1;
+        return next >= values.length ? null : values[next];
     }
 }

@@ -739,6 +739,7 @@ public final class SkyBlockCore extends JavaPlugin {
             getCommand("slayer").setTabCompleter(slayerCommand);
         }
         getServer().getPluginManager().registerEvents(SlayerListener.getInstance(), this);
+        getServer().getPluginManager().registerEvents(com.skyblock.core.util.SignInput.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.DungeonListener.getInstance(), this);
         FishingCommand fishingCommand = new FishingCommand(fishingManager, trophyFishManager);
         getCommand("fishing").setExecutor(fishingCommand);
@@ -870,6 +871,20 @@ public final class SkyBlockCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.MenuItemListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.InventoryListener.getInstance(), this);
         getServer().getPluginManager().registerEvents(new com.skyblock.core.mob.MobLootListener(com.skyblock.core.mob.MobLootManager.getInstance()), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.mob.CustomMobListener(com.skyblock.core.mob.CustomMobManager.getInstance()), this);
+        getServer().getPluginManager().registerEvents(new com.skyblock.core.mob.MobSpawnListener(), this);
+        com.skyblock.core.mob.SpawnMobCommand spawnMobCmd = new com.skyblock.core.mob.SpawnMobCommand();
+        if (getCommand("spawnmob") != null) {
+            getCommand("spawnmob").setExecutor(spawnMobCmd);
+            getCommand("spawnmob").setTabCompleter(spawnMobCmd);
+        }
+        com.skyblock.core.mob.MobSpawnCommand mobSpawnCmd = new com.skyblock.core.mob.MobSpawnCommand();
+        for (String name : new String[]{"setmobspawn", "removemobspawn"}) {
+            if (getCommand(name) != null) {
+                getCommand(name).setExecutor(mobSpawnCmd);
+                getCommand(name).setTabCompleter(mobSpawnCmd);
+            }
+        }
 
         // Advance the SkyBlock calendar one day every ~20 real minutes (Hypixel's day length),
         // paying every bank account its interest whenever a new season (month) begins.
@@ -1095,6 +1110,7 @@ public final class SkyBlockCore extends JavaPlugin {
         // NPCs — delayed so other plugins' worlds (e.g. the "Hub" world) are loaded first.
         getServer().getScheduler().runTaskLater(this, () -> {
             com.skyblock.core.npc.FunctionalNpcManager.getInstance().load(getDataFolder());
+            com.skyblock.core.npc.NpcSkins.load(getDataFolder());
             com.skyblock.core.manager.HubManager.getInstance().setup();
             // Use real Citizens player NPCs when the Citizens plugin is installed; else armor stands.
             if (getServer().getPluginManager().isPluginEnabled("Citizens")) {
@@ -1105,6 +1121,10 @@ public final class SkyBlockCore extends JavaPlugin {
             }
             com.skyblock.core.npc.FunctionalNpcManager.getInstance().spawnAll();
         }, 40L);
+        // Start mob spawning on its own delayed task so an NPC-setup failure above can't
+        // prevent the spawn loop from ever starting.
+        getServer().getScheduler().runTaskLater(this,
+                () -> com.skyblock.core.mob.MobSpawnManager.getInstance().start(this), 60L);
 
         getServer().getPluginManager().registerEvents(PlayerDataManager.getInstance(), this);
         getServer().getPluginManager().registerEvents(com.skyblock.core.listener.PlayerListener.getInstance(), this);

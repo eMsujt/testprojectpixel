@@ -287,10 +287,20 @@ public final class EquipmentListener implements Listener {
         if (attr == null) {
             return;
         }
-        double maxHealth = Math.max(1.0, sm.getStat(player.getUniqueId(), Stat.HEALTH));
-        attr.setBaseValue(maxHealth);
-        if (player.getHealth() > maxHealth) {
-            player.setHealth(maxHealth);
+        // The vanilla bar is pinned to a fixed value (HealthScale.DISPLAY_MAX) and the real
+        // SkyBlock Health is scaled onto it, so health can exceed the vanilla ~1024 cap.
+        // CRITICAL: only touch health when first transitioning off the vanilla max (join).
+        // On every later recompute (inventory click, hotbar swap, gear change) the max is
+        // already pinned, so re-writing health would heal a wounded player and could make
+        // them un-killable. Then we only clamp downward if it overflows.
+        double display = com.skyblock.core.util.HealthScale.DISPLAY_MAX;
+        double oldMax = attr.getBaseValue();
+        attr.setBaseValue(display);
+        if (oldMax != display) {
+            double pct = oldMax > 0.0 ? Math.min(1.0, Math.max(0.0, player.getHealth() / oldMax)) : 1.0;
+            player.setHealth(Math.max(0.5, display * pct));
+        } else if (player.getHealth() > display) {
+            player.setHealth(display);
         }
         // Keep the vanilla health bar at a fixed 10 hearts (20 half-hearts) regardless of the
         // player's SkyBlock Health, so high health never spills into extra rows of hearts.

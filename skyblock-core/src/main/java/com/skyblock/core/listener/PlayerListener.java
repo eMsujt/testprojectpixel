@@ -23,11 +23,12 @@ public final class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        double maxHealth = statsManager.get(player.getUniqueId(), Stat.HEALTH);
+        // Vanilla bar pinned to the fixed display max; real SkyBlock Health scales onto it.
         org.bukkit.attribute.AttributeInstance attr = player.getAttribute(Attribute.MAX_HEALTH);
         if (attr != null) {
-            attr.setBaseValue(maxHealth);
+            attr.setBaseValue(com.skyblock.core.util.HealthScale.DISPLAY_MAX);
         }
-        player.setHealth(maxHealth);
+        player.setHealth(com.skyblock.core.util.HealthScale.DISPLAY_MAX);
+        player.setHealthScale(20.0);
     }
 }

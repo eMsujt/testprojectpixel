@@ -10,15 +10,20 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * 3-row GUI where a player drops the item to reforge in slot 11,
- * clicks the anvil at slot 13 to apply a random reforge, and collects
- * the result from slot 15.
+ * The Blacksmith "Reforge Item" menu, laid out 1:1 with the wiki {@code Blacksmith/UI}:
+ * a 5-row GUI with red border columns, an empty input slot at 13, the Anvil
+ * "Reforge Item" button directly below it at 22, and a Close button at 40. The
+ * player drops an item in slot 13 and clicks the anvil to apply a random reforge
+ * for coins — the reforged item stays in slot 13 (there is no separate result slot).
  */
 public final class ReforgeMenu extends AbstractSkyBlockMenu {
 
-    static final int ITEM_SLOT   = 11;
-    static final int REFORGE_SLOT = 13;
-    static final int RESULT_SLOT  = 15;
+    static final int ITEM_SLOT    = 13;
+    static final int REFORGE_SLOT = 22;
+    static final int CLOSE_SLOT   = 40;
+
+    /** Left/right border columns (1 and 9), filled with red panes per the wiki. */
+    private static final int[] BORDER_SLOTS = {0, 9, 18, 27, 36, 8, 17, 26, 35, 44};
 
     private static final ReforgeManager.ReforgeType[] REFORGE_TYPES;
 
@@ -30,29 +35,35 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
     }
 
     public ReforgeMenu(Player player) {
-        super(player, "§5Reforge Anvil", 6);
+        super(player, "Reforge Item", 5);
     }
 
     @Override
     protected void populate() {
-        ItemStack pane = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName("§r").build();
-        for (int slot = 0; slot < 54; slot++) {
-            if (slot != ITEM_SLOT && slot != REFORGE_SLOT && slot != RESULT_SLOT) {
-                setItem(slot, pane);
+        ItemStack black = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).displayName(" ").build();
+        ItemStack red = new ItemBuilder(Material.RED_STAINED_GLASS_PANE).displayName(" ").build();
+        for (int slot = 0; slot < 45; slot++) {
+            if (slot != ITEM_SLOT && slot != REFORGE_SLOT && slot != CLOSE_SLOT) {
+                setItem(slot, black);
             }
         }
+        for (int slot : BORDER_SLOTS) {
+            setItem(slot, red);
+        }
 
-        // ITEM_SLOT (place) and RESULT_SLOT (collect) are interactive — left empty
-        // after open() so the player can drop an item in and take the reforged result.
+        // ITEM_SLOT is interactive — cleared after open() so the player can drop an item in.
         setItem(REFORGE_SLOT, new ItemBuilder(Material.ANVIL)
-                .displayName("§6Reforge Item")
-                .lore("§7Place an item in the left slot,",
-                      "§7then click here to apply a",
-                      "§7random reforge to it.",
+                .displayName("§eReforge Item")
+                .lore("§7Place an item above to reforge",
+                      "§7it! Reforging items adds a",
+                      "§7random modifier to the item that",
+                      "§7grants stat boosts.",
                       "",
-                      "§7Cost scales with the item's rarity.",
-                      "§7Collect the result from the",
-                      "§7right slot!")
+                      "§eClick to reforge!")
+                .build());
+
+        setItem(CLOSE_SLOT, new ItemBuilder(Material.BARRIER)
+                .displayName("§cClose")
                 .build());
     }
 
@@ -60,48 +71,43 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
     public void open(Player player) {
         super.open(player);
         getInventory().setItem(ITEM_SLOT, null);
-        getInventory().setItem(RESULT_SLOT, null);
     }
 
     @Override
     public boolean isInteractiveSlot(int slot) {
-        return slot == ITEM_SLOT || slot == RESULT_SLOT;
+        return slot == ITEM_SLOT;
     }
 
     @Override
     public void onClose(Player player) {
-        returnItem(player, ITEM_SLOT);
-        returnItem(player, RESULT_SLOT);
-    }
-
-    private void returnItem(Player player, int slot) {
-        ItemStack item = getInventory().getItem(slot);
+        ItemStack item = getInventory().getItem(ITEM_SLOT);
         if (item != null && item.getType() != Material.AIR) {
             for (ItemStack overflow : player.getInventory().addItem(item).values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), overflow);
             }
-            getInventory().setItem(slot, null);
+            getInventory().setItem(ITEM_SLOT, null);
         }
     }
 
     @Override
     public void handleClick(InventoryClickEvent event) {
         int slot = event.getRawSlot();
-        if (slot == ITEM_SLOT || slot == RESULT_SLOT) {
-            // allow the player to freely place / take the item being reforged or collected
+        if (slot == ITEM_SLOT) {
+            // Let the player freely place / take the item being reforged.
             return;
         }
         event.setCancelled(true);
-        if (slot == REFORGE_SLOT && event.getWhoClicked() instanceof Player player) {
+        if (!(event.getWhoClicked() instanceof Player player)) {
+            return;
+        }
+        if (slot == CLOSE_SLOT) {
+            player.closeInventory();
+            return;
+        }
+        if (slot == REFORGE_SLOT) {
             ItemStack item = getInventory().getItem(ITEM_SLOT);
-            if (item == null || item.getType() == Material.AIR
-                    || item.getType() == Material.BLACK_STAINED_GLASS_PANE) {
-                player.sendMessage("§cPlace an item in the left slot first.");
-                return;
-            }
-            ItemStack pending = getInventory().getItem(RESULT_SLOT);
-            if (pending != null && pending.getType() != Material.AIR) {
-                player.sendMessage("§cTake your reforged item first.");
+            if (item == null || item.getType() == Material.AIR) {
+                player.sendMessage("§cPlace an item above the anvil to reforge it.");
                 return;
             }
             // Reforging costs coins, scaling with the item's rarity (wiki Reforging/Prices).
@@ -115,12 +121,10 @@ public final class ReforgeMenu extends AbstractSkyBlockMenu {
             ReforgeManager mgr = ReforgeManager.getInstance();
             ReforgeManager.ReforgeType chosen =
                     REFORGE_TYPES[(int) (Math.random() * REFORGE_TYPES.length)];
-            // Stamp the reforge onto the item itself (PDC + renamed), so its stats follow the item
+            // Stamp the reforge onto the item in place (PDC + renamed), so its stats follow the item
             // and reach combat via EquipmentListener.recompute once it's equipped/held.
-            ItemStack reforged = item.clone();
-            mgr.applyReforge(reforged, chosen);
-            getInventory().setItem(RESULT_SLOT, reforged);
-            getInventory().setItem(ITEM_SLOT, null);
+            mgr.applyReforge(item, chosen);
+            getInventory().setItem(ITEM_SLOT, item);
             player.sendMessage("§aReforged to §6" + chosen.getDisplayName()
                     + " §afor §6" + String.format("%,d", cost) + " coins§a! §7(+"
                     + chosen.getStrengthBonus() + "❁ +" + chosen.getDefenseBonus()

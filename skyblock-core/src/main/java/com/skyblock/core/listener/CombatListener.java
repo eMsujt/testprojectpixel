@@ -114,23 +114,55 @@ public final class CombatListener implements Listener {
             event.setDamage(Math.max(0.0, damage));
         }
 
+        // Custom mobs hit players for their full SkyBlock damage, not the tiny
+        // vanilla base. Set it before the player's defense is applied below.
+        if (!(event.getDamager() instanceof Player)
+                && event.getDamager() instanceof org.bukkit.entity.LivingEntity mobAttacker) {
+            com.skyblock.core.manager.MobManager.MobDefinition mobDef =
+                    com.skyblock.core.mob.CustomMobManager.getInstance().getDefinition(mobAttacker.getUniqueId());
+            if (mobDef != null) {
+                event.setDamage(mobDef.getDamage());
+            }
+        }
+
+        // Real SkyBlock damage (before it's scaled onto the fixed-size health bar) — used for
+        // stats + the floating indicator so they read in real HP, not pinned-bar units.
+        double realDamage = event.getDamage();
         if (event.getEntity() instanceof Player) {
             Player defender = (Player) event.getEntity();
             double defense = stats.getStat(defender.getUniqueId(), Stat.DEFENSE);
-            double reduced = event.getDamage() * 100.0 / (100.0 + Math.max(0.0, defense));
-            event.setDamage(reduced);
+            realDamage = event.getDamage() * 100.0 / (100.0 + Math.max(0.0, defense));
+            // Scale the SkyBlock damage onto the player's fixed-size vanilla bar.
+            double sbMax = Math.max(1.0, stats.getStat(defender.getUniqueId(), Stat.HEALTH));
+            event.setDamage(com.skyblock.core.util.HealthScale.toVanilla(realDamage, sbMax));
         }
 
         CombatStatsManager combatStats = CombatStatsManager.getInstance();
-        double finalDamage = event.getFinalDamage();
         if (event.getDamager() instanceof Player) {
-            combatStats.addDamageDealt(((Player) event.getDamager()).getUniqueId(), finalDamage);
+            combatStats.addDamageDealt(((Player) event.getDamager()).getUniqueId(), realDamage);
         }
         if (event.getEntity() instanceof Player) {
-            combatStats.addDamageTaken(((Player) event.getEntity()).getUniqueId(), finalDamage);
+            combatStats.addDamageTaken(((Player) event.getEntity()).getUniqueId(), realDamage);
         }
 
-        spawnDamageIndicator(event.getEntity().getLocation(), finalDamage, isCrit);
+        spawnDamageIndicator(event.getEntity().getLocation(), realDamage, isCrit);
+
+        // Custom mobs keep their real (often huge) SkyBlock health; their vanilla bar is
+        // pinned to a fixed size, so scale the dealt damage onto it and let vanilla handle
+        // the hit + death (which fires the death rewards/drops). The name updates via
+        // CustomMobListener once the bar value settles.
+        if (!(event.getEntity() instanceof Player)
+                && event.getEntity() instanceof org.bukkit.entity.LivingEntity victim) {
+            com.skyblock.core.manager.MobManager.MobDefinition mobDef =
+                    com.skyblock.core.mob.CustomMobManager.getInstance().getDefinition(victim.getUniqueId());
+            if (mobDef != null) {
+                // The ghouls' armour is cosmetic — don't let it soak SkyBlock damage.
+                if (event.isApplicable(org.bukkit.event.entity.EntityDamageEvent.DamageModifier.ARMOR)) {
+                    event.setDamage(org.bukkit.event.entity.EntityDamageEvent.DamageModifier.ARMOR, 0.0);
+                }
+                event.setDamage(com.skyblock.core.util.HealthScale.toVanilla(event.getDamage(), mobDef.getHealth()));
+            }
+        }
     }
 
     private static final Pattern WEAPON_DAMAGE = Pattern.compile("^Damage:\\s*\\+?([0-9,]+)");

@@ -39,7 +39,7 @@ public final class CustomMobListener implements Listener {
      *
      * @param event the entity death event
      */
-    @EventHandler
+    @EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
         UUID entityId = event.getEntity().getUniqueId();
         if (!customMobManager.isCustomMob(entityId)) {
@@ -77,6 +77,28 @@ public final class CustomMobListener implements Listener {
      *
      * @param event the entities-unload event
      */
+    /**
+     * Refreshes a custom mob's "[LvN] Name cur/max❤" name after it takes damage,
+     * once its scaled vanilla health bar has settled (next tick).
+     */
+    @EventHandler
+    public void onEntityDamage(org.bukkit.event.entity.EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof org.bukkit.entity.LivingEntity living)
+                || !customMobManager.isCustomMob(living.getUniqueId())) {
+            return;
+        }
+        com.skyblock.core.SkyBlockCore plugin = com.skyblock.core.SkyBlockCore.getInstance();
+        if (plugin == null || !plugin.isEnabled()) {
+            return; // don't schedule during shutdown
+        }
+        org.bukkit.Bukkit.getScheduler().runTask(plugin,
+                () -> {
+                    if (living.isValid()) {
+                        customMobManager.refreshName(living);
+                    }
+                });
+    }
+
     @EventHandler
     public void onEntitiesUnload(EntitiesUnloadEvent event) {
         for (org.bukkit.entity.Entity entity : event.getEntities()) {

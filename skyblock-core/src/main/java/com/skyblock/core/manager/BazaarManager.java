@@ -277,6 +277,14 @@ public final class BazaarManager {
                     BazaarOrder o = it.next();
                     if (o.id().equals(orderId) && o.owner().equals(player)) {
                         it.remove();
+                        // Refund the unfilled escrow to the player's claims: a buy order
+                        // escrowed coins (quantity × price), a sell order escrowed items.
+                        if (isBuy) {
+                            claimableCoins.merge(player, o.quantity * o.priceEach, Double::sum);
+                        } else {
+                            claimableItems.computeIfAbsent(player, k -> new HashMap<>())
+                                          .merge(itemEntry.getKey(), o.quantity, Integer::sum);
+                        }
                         if (deque.isEmpty()) priceBook.remove(priceEntry.getKey());
                         if (priceBook.isEmpty()) book.remove(itemEntry.getKey());
                         return true;
@@ -434,9 +442,17 @@ public final class BazaarManager {
         if (remaining > 0) insertSell(item, new BazaarOrder(seller, remaining, price));
     }
 
-    public void addBuyOrder(UUID buyer, String item, int quantity, double price) {
+    /**
+     * Places a buy order, matching against resting asks first. The caller escrows
+     * {@code quantity * price} coins up front; this returns the coins actually
+     * committed (matched fills execute at the cheaper resting ask price, the
+     * remainder rests at {@code price}), so the caller can refund the difference —
+     * otherwise price-improvement on filled units would silently vanish.
+     */
+    public double addBuyOrder(UUID buyer, String item, int quantity, double price) {
         if (quantity <= 0) throw new IllegalArgumentException("quantity must be positive");
         int remaining = quantity;
+        double committed = 0.0;
         TreeMap<Double, Deque<BazaarOrder>> asks = sellOrders.get(item);
         if (asks != null) {
             // Match against resting asks (cheapest first); execute at resting ask price.
@@ -446,6 +462,7 @@ public final class BazaarManager {
                 int         fill = Math.min(remaining, top.quantity);
                 creditCoins(top.owner, fill * top.priceEach, getFeeTier(top.owner));
                 creditItems(buyer, item, fill);
+                committed    += fill * top.priceEach;
                 top.quantity -= fill;
                 remaining    -= fill;
                 if (top.quantity == 0) {
@@ -455,7 +472,11 @@ public final class BazaarManager {
             }
             if (asks.isEmpty()) sellOrders.remove(item);
         }
-        if (remaining > 0) insertBuy(item, new BazaarOrder(buyer, remaining, price));
+        if (remaining > 0) {
+            insertBuy(item, new BazaarOrder(buyer, remaining, price));
+            committed += remaining * price;
+        }
+        return committed;
     }
 
     // ---- Instant (taker) operations ----
